@@ -36,7 +36,7 @@ This is kind of a personal project, yet still on paper.
 
 ### What Can I Use?
 
-For now, please try the latest [J2V8 v6.2.0](releases/tag/0.6.2.0) unofficially released by me. I'll try to keep up with latest V8 in a slow pace. If you like my work, please **Star** this project. And, you may send messages to [@sjtucaocao](https://twitter.com/sjtucaocao).
+For now, please try the latest [J2V8 v6.2.0](https://github.com/caoccao/Javet/releases/tag/0.6.2.0) unofficially released by me. I'll try to keep up with latest V8 in a slow pace. If you like my work, please **Star** this project. And, you may send messages to [@sjtucaocao](https://twitter.com/sjtucaocao).
 
 * V8 is upgraded to v8.3.110.9 which was released in May, 2020.
 * Windows and Linux are supported.
