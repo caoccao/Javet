@@ -19,7 +19,7 @@ final class JavetLibLoader {
     private static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
     private static final String FILE_SEPARATOR = System.getProperty("file.separator");
     private static final String LIB_VERSION = "0.7.0";
-    private static final String LIB_FILE_NAME_FORMAT = "javet-{0}-x86_64.v.{1}.{2}";
+    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-x86_64.v.{1}.{2}";
     private static final String RESOURCE_NAME_FORMAT = "/{0}";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";

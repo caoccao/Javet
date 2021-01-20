@@ -8,8 +8,8 @@
 #include <map>
 #include <cstdlib>
 #include "com_caoccao_javet_interop_V8Native.h"
-#include "constants.h"
-#include "globals.h"
+#include "javet_constants.h"
+#include "javet_globals.h"
 
 JNIEXPORT jint JNICALL JNI_OnLoad
 (JavaVM* vm, void*) {
