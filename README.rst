@@ -13,6 +13,7 @@ Javet Project Status
 
 This is a personal project for now. It supports limited features compared to J2V8.
 
+* `Build <docs/build.rst>`_
 * `Development <docs/development.rst>`_
 * `TODO List <docs/todo_list.rst>`_
 
