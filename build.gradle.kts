@@ -27,7 +27,7 @@ task<Exec>("buildJNIHeaders") {
         commandLine(
             "javac",
             "-h",
-            "jni",
+            "cpp/jni",
             "-d",
             "build/generated/tmp/jni",
             "src/main/java/com/caoccao/javet/interop/V8Native.java"
