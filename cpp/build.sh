@@ -1,10 +1,11 @@
-#!/usr/bin/sh
+#!/bin/sh
 
 # Usage sample: build -DV8_DIR=~/v8
 JAVET_VERSION=0.7.0
 rm -rf build
 mkdir build
 cd build
+mkdir -p ../../src/main/resources
 cmake ../ -DJAVET_VERSION=${JAVET_VERSION} "$@" \
   && make -j4 \
   && execstack -c libjavet-linux-x86_64.v.${JAVET_VERSION}.so \
@@ -17,3 +18,4 @@ else
   echo Build Failed
 fi
 cd ../
+
