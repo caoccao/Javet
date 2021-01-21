@@ -17,5 +17,12 @@
 
 #pragma once
 
-#define ERROR_JNI_ON_LOAD -1;
+#include <v8.h>
 
+namespace Javet {
+	namespace Callback {
+		void PropertyAccessorCallback(
+			v8::Local<v8::String> propertyName,
+			const v8::PropertyCallbackInfo<v8::Value>& propertyCallbackInfo);
+	}
+}

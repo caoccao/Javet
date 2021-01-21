@@ -15,7 +15,17 @@
  *   limitations under the License.
  */
 
-#pragma once
+#include <v8.h>
+#include "javet_callbacks.h"
 
-#define ERROR_JNI_ON_LOAD -1;
+namespace Javet {
+	namespace Callback {
+		void PropertyAccessorCallback(
+			v8::Local<v8::String> propertyName,
+			const v8::PropertyCallbackInfo<v8::Value>& propertyCallbackInfo) {
+			propertyCallbackInfo.GetReturnValue().Set(
+				propertyCallbackInfo.GetIsolate()->GetCurrentContext()->Global());
+		}
+	}
+}
 

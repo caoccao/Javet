@@ -17,14 +17,19 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestJavetLibLoader {
+public class TestV8Host {
     @Test
-    public void testLoad() throws JavetOSNotSupportedException {
-        assertTrue(JavetLibLoader.load());
+    public void testSetFlags() {
+        V8Host v8Host = V8Host.getInstance();
+        assertNotNull(v8Host);
+        assertTrue(v8Host.isLibLoaded());
+        if (!v8Host.isIsolateCreated()) {
+            v8Host.setFlags("--use_strict");
+        }
     }
 }

@@ -9,11 +9,27 @@ extern "C" {
 #endif
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    createRuntime
+ * Signature: (Ljava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createRuntime
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getVersion
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
   (JNIEnv *, jclass);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setFlags
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
+  (JNIEnv *, jclass, jstring);
 
 #ifdef __cplusplus
 }

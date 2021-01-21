@@ -20,7 +20,7 @@ This is a personal project for now. It supports limited features compared to J2V
 Javet License
 =============
 
-For now, Javet follows `Eclipse Public License - v 2.0 <LICENSE>`_.
+For now, Javet follows `APACHE LICENSE, VERSION 2.0 <LICENSE>`_.
 
 Why Javet?
 ==========

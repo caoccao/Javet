@@ -17,5 +17,22 @@
 
 #pragma once
 
-#define ERROR_JNI_ON_LOAD -1;
+#include <jni.h>
+#include <v8.h>
+#include <v8-inspector.h>
+
+namespace Javet {
+
+	class V8Runtime {
+	public:
+		v8::Isolate* v8Isolate;
+		v8::Persistent<v8::Context> v8Context;
+		v8::Persistent<v8::Object>* v8GlobalObject;
+		v8::Locker* v8Locker;
+		jobject managedObject;
+		jthrowable managedException;
+		v8_inspector::V8Inspector* v8Inspector;
+	};
+
+}
 

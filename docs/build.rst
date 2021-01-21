@@ -10,8 +10,8 @@ Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``8.
 Some Tips on Building V8
 ------------------------
 
-* Linux requires Python 2.7, CMake 3.10+.
-* Windows requires Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with windbg.
+* Linux requires Python 2.7, CMake 3.10+. Ubuntu 18.04 is the recommended Linux distribution.
+* Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
 
 Also, please make sure ``args.gn`` file looks like the following.
 
@@ -33,7 +33,7 @@ Also, please make sure ``args.gn`` file looks like the following.
 Build Javet JNI Library
 =======================
 
-Once V8 is ready, please navigate to ``./cpp`` and execute corresponding build script.
+Once V8 is ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
 
 * Linux - ``sh build.sh -DV8_DIR=/where_the_v8_directory_is``.
 * Windows - ``build.cmd -DV8_DIR=\where_the_v8_directory_is``.
@@ -47,7 +47,7 @@ Build Javet Jar
 
 Once both ``libjavet-linux-x86_64.v.*.*.*.so`` and ``libjavet-windows-x86_64.v.*.*.*.dll`` are built, please put them altogether under ``src/main/resources`` then kick off ``gradle build test``.
 
-After a while, ``javet-*.*.*.jar`` will be placed in folder ``build``.
+After a while, ``javet-*.*.*.jar`` will be placed in folder ``build/libs``.
 
 Note: This jar file supports both Linux and Windows.
 

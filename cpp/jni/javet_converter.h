@@ -15,7 +15,14 @@
  *   limitations under the License.
  */
 
+
 #pragma once
 
-#define ERROR_JNI_ON_LOAD -1;
+#include <jni.h>
+#include <v8.h>
 
+namespace Javet {
+	namespace Converter {
+		v8::Local<v8::String> toV8String(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jstring& managedString);
+	}
+}

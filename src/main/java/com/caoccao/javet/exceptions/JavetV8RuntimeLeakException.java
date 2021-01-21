@@ -15,16 +15,12 @@
  *
  */
 
-package com.caoccao.javet.interop;
+package com.caoccao.javet.exceptions;
 
-import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
-import org.junit.jupiter.api.Test;
+import java.text.MessageFormat;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class TestJavetLibLoader {
-    @Test
-    public void testLoad() throws JavetOSNotSupportedException {
-        assertTrue(JavetLibLoader.load());
+public class JavetV8RuntimeLeakException extends JavetException {
+    public JavetV8RuntimeLeakException(int count) {
+        super(MessageFormat.format("{0} V8 runtime(s) leaked", Integer.toString(count)));
     }
 }
