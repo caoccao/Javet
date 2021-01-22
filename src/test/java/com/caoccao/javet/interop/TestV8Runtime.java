@@ -19,35 +19,19 @@ package com.caoccao.javet.interop;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class TestV8Host {
+public class TestV8Runtime {
     @Test
-    public void testCreateV8RuntimeWithoutGlobalName() {
-        V8Host v8Host = V8Host.getInstance();
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            assertNotNull(v8Runtime);
-            assertTrue(v8Host.isIsolateCreated());
-        }
-    }
-
-    @Test
-    public void testCreateV8RuntimeWithGlobalName() {
+    public void testClose() {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
-            assertNotNull(v8Runtime);
-            assertTrue(v8Host.isIsolateCreated());
         }
     }
 
     @Test
-    public void testSetFlags() {
+    public void testReset() {
         V8Host v8Host = V8Host.getInstance();
-        assertNotNull(v8Host);
-        assertTrue(v8Host.isLibLoaded());
-        if (!v8Host.isIsolateCreated()) {
-            v8Host.setFlags("--use_strict");
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+            v8Runtime.reset();
         }
     }
 }

@@ -21,9 +21,18 @@ final class V8Native {
     private V8Native() {
     }
 
-    native static long createRuntime(String globalAlias);
+    native static void closeV8Runtime(long v8RuntimeHandle);
+
+    native static long createV8Runtime(String globalName);
+
+    native static Object execute(
+            long v8RuntimeHandle, String script, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM, boolean isModule);
 
     native static String getVersion();
+
+    native static void resetV8Runtime(long v8RuntimeHandle, String globalName);
 
     /**
      * Sets flags.

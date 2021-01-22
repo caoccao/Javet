@@ -21,7 +21,7 @@
 
 namespace Javet {
 	namespace Callback {
-		void PropertyAccessorCallback(
+		void GlobalPropertyAccessorCallback(
 			v8::Local<v8::String> propertyName,
 			const v8::PropertyCallbackInfo<v8::Value>& propertyCallbackInfo);
 	}

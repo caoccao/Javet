@@ -21,21 +21,24 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class V8Host implements AutoCloseable {
     private static V8Host instance = new V8Host();
+    private boolean closed;
     private boolean libLoaded;
     private boolean isolateCreated;
-    private AtomicInteger v8RuntimeCount;
+    private ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
     private JavetException lastException;
 
     private V8Host() {
+        closed = true;
         libLoaded = false;
         lastException = null;
-        v8RuntimeCount = new AtomicInteger(0);
+        v8RuntimeMap = new ConcurrentHashMap<>();
         try {
             libLoaded = JavetLibLoader.load();
+            closed = false;
         } catch (JavetOSNotSupportedException e) {
             lastException = e;
         }
@@ -44,6 +47,27 @@ public final class V8Host implements AutoCloseable {
 
     public static V8Host getInstance() {
         return instance;
+    }
+
+    public V8Runtime createV8Runtime() {
+        return createV8Runtime(null);
+    }
+
+    public V8Runtime createV8Runtime(String globalName) {
+        if (closed) {
+            return null;
+        }
+        final long handle = V8Native.createV8Runtime(globalName);
+        isolateCreated = true;
+        V8Runtime v8Runtime = new V8Runtime(this, handle, globalName);
+        v8RuntimeMap.put(handle, v8Runtime);
+        return v8Runtime;
+    }
+
+    public void closeV8Runtime(V8Runtime v8Runtime) {
+        if (v8Runtime != null) {
+            V8Native.closeV8Runtime(v8Runtime.getHandle());
+        }
     }
 
     public boolean isLibLoaded() {
@@ -58,17 +82,27 @@ public final class V8Host implements AutoCloseable {
         return isolateCreated;
     }
 
-    public void setFlags(String flags) {
-        if (libLoaded && !isolateCreated) {
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public boolean setFlags(String flags) {
+        if (!closed && libLoaded && !isolateCreated) {
             V8Native.setFlags(flags);
+            return true;
         }
+        return false;
     }
 
     @Override
     public void close() throws JavetException {
-        final int count = v8RuntimeCount.get();
-        if (count != 0) {
-            throw new JavetV8RuntimeLeakException(count);
+        if (closed) {
+            return;
+        }
+        closed = true;
+        final int v8RuntimeCount = v8RuntimeMap.size();
+        if (v8RuntimeCount != 0) {
+            throw new JavetV8RuntimeLeakException(v8RuntimeCount);
         }
     }
 }

@@ -15,19 +15,7 @@
  *
  */
 
-package com.caoccao.javet;
+package com.caoccao.javet.values;
 
-import com.caoccao.javet.interfaces.JavetClosable;
-import com.caoccao.javet.interop.V8Runtime;
-
-public abstract class V8Object implements JavetClosable {
-    protected V8Runtime v8Runtime;
-
-    public V8Runtime getV8Runtime() {
-        return v8Runtime;
-    }
-
-    @Override
-    public void close() throws RuntimeException {
-    }
+public final class V8ValueNull extends V8Value {
 }

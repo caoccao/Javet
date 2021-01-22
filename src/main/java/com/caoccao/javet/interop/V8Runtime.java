@@ -17,27 +17,78 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.V8Object;
-import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
+import com.caoccao.javet.interfaces.JavetClosable;
+import com.caoccao.javet.interfaces.JavetResettable;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.V8ValueString;
 
-public final class V8Runtime extends V8Object {
+@SuppressWarnings("unchecked")
+public final class V8Runtime implements JavetClosable, JavetResettable {
+    private String globalName;
+    private long handle;
+    private V8Host v8Host;
 
-    private V8Runtime() {
+    V8Runtime(V8Host v8Host, long handle, String globalName) {
+        this.globalName = globalName;
+        this.handle = handle;
+        this.v8Host = v8Host;
     }
 
-    public static V8Runtime create()
-            throws JavetOSNotSupportedException {
-        return create(null);
+    long getHandle() {
+        return handle;
     }
 
-    public static V8Runtime create(String isolate)
-            throws JavetOSNotSupportedException {
-        JavetLibLoader.load();
-        return null;
+    public String getGlobalName() {
+        return globalName;
+    }
+
+    public void setGlobalName(String globalName) {
+        this.globalName = globalName;
+    }
+
+    public <T extends V8Value> T execute(String scriptString) {
+        return execute(scriptString, new V8ScriptOrigin(), true);
+    }
+
+    public <T extends V8Value> T execute(String scriptString, V8ScriptOrigin v8ScriptOrigin) {
+        return execute(scriptString, v8ScriptOrigin, true);
+    }
+
+    public <T extends V8Value> T execute(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) {
+        T returnValue = (T) V8Native.execute(handle, scriptString,
+                resultRequired, v8ScriptOrigin.getResourceName(),
+                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
+        if (returnValue != null) {
+            returnValue.setV8Runtime(this);
+        }
+        return returnValue;
+    }
+
+    public String executeString(String scriptString) {
+        return ((V8ValueString) execute(scriptString, new V8ScriptOrigin(), true)).getValue();
+    }
+
+    public String executeString(String scriptString, V8ScriptOrigin v8ScriptOrigin) {
+        return ((V8ValueString) execute(scriptString, v8ScriptOrigin, true)).getValue();
+    }
+
+    public void executeVoid(String scriptString) {
+        executeVoid(scriptString, new V8ScriptOrigin());
+    }
+
+    public void executeVoid(String scriptString, V8ScriptOrigin v8ScriptOrigin) {
+        execute(scriptString, v8ScriptOrigin, false);
     }
 
     @Override
-    public V8Runtime getV8Runtime() {
-        return this;
+    public void close() throws RuntimeException {
+        v8Host.closeV8Runtime(this);
+        handle = 0;
+    }
+
+    @Override
+    public void reset() {
+        V8Native.resetV8Runtime(handle, globalName);
     }
 }

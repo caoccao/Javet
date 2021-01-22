@@ -23,6 +23,42 @@
 
 namespace Javet {
 	namespace Converter {
+		static jclass jclassInteger;
+		static jmethodID jmethodIDIntegerValueOf;
+
+		static jclass jclassLong;
+		static jmethodID jmethodIDLongValueOf;
+
+		static jclass jclassV8ValueInteger;
+		static jmethodID jmethodIDV8ValueIntegerConstructor;
+
+		static jclass jclassV8ValueLong;
+		static jmethodID jmethodIDV8ValueLongConstructor;
+
+		static jclass jclassV8ValueNull;
+		static jmethodID jmethodIDV8ValueNullConstructor;
+
+		static jclass jclassV8ValueString;
+		static jmethodID jmethodIDV8ValueStringConstructor;
+
+		static jclass jclassV8ValueUndefined;
+		static jmethodID jmethodIDV8ValueUndefinedConstructor;
+
+		void initializeJavetConverter(JNIEnv* jniEnv);
+
+		jobject toJObject(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
+
+		inline v8::Local<v8::Boolean> toV8Boolean(v8::Isolate* v8Isolate, jboolean& managedBoolean) {
+			return v8::Boolean::New(v8Isolate, managedBoolean);
+		}
+
+		inline v8::Local<v8::Integer> toV8Integer(v8::Isolate* v8Isolate, jint& managedInteger) {
+			return v8::Integer::New(v8Isolate, managedInteger);
+		}
+
+		v8::ScriptOrigin* toV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Isolate* v8Isolate,
+			jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule);
+
 		v8::Local<v8::String> toV8String(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jstring& managedString);
 	}
 }
