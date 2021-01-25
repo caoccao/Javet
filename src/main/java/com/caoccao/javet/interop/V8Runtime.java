@@ -18,7 +18,6 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeUnlockConflictException;
 import com.caoccao.javet.interfaces.JavetClosable;
 import com.caoccao.javet.interfaces.JavetResettable;
 import com.caoccao.javet.values.V8TypedValue;
@@ -43,6 +42,13 @@ public final class V8Runtime implements JavetClosable, JavetResettable {
         return handle;
     }
 
+    private void checkLock() throws JavetV8RuntimeLockConflictException {
+        final long currentThreadId = Thread.currentThread().getId();
+        if (threadId != currentThreadId) {
+            throw new JavetV8RuntimeLockConflictException(threadId, currentThreadId);
+        }
+    }
+
     public String getGlobalName() {
         return globalName;
     }
@@ -52,22 +58,18 @@ public final class V8Runtime implements JavetClosable, JavetResettable {
     }
 
     public void lock() throws JavetV8RuntimeLockConflictException {
-        final long currentThreadId = Thread.currentThread().getId();
         if (threadId == INVALID_THREAD_ID) {
-            threadId = currentThreadId;
-        } else if (threadId != currentThreadId) {
-            throw new JavetV8RuntimeLockConflictException();
+            V8Native.lockV8Runtime(handle);
+            threadId = Thread.currentThread().getId();
+        } else {
+            checkLock();
         }
-        V8Native.lockV8Runtime(handle);
     }
 
-    public void unlock() throws JavetV8RuntimeUnlockConflictException {
-        final long currentThreadId = Thread.currentThread().getId();
-        if (threadId == INVALID_THREAD_ID || threadId != currentThreadId) {
-            throw new JavetV8RuntimeUnlockConflictException();
-        }
-        V8Native.unlockV8Runtime(handle);
+    public void unlock() throws JavetV8RuntimeLockConflictException {
+        checkLock();
         threadId = INVALID_THREAD_ID;
+        V8Native.unlockV8Runtime(handle);
     }
 
     public <T extends V8Value> T execute(String scriptString) {
@@ -139,7 +141,7 @@ public final class V8Runtime implements JavetClosable, JavetResettable {
         if (threadId != INVALID_THREAD_ID) {
             try {
                 unlock();
-            } catch (JavetV8RuntimeUnlockConflictException e) {
+            } catch (JavetV8RuntimeLockConflictException e) {
             }
         }
         v8Host.closeV8Runtime(this);

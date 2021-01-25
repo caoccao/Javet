@@ -26,15 +26,10 @@ namespace Javet {
 			*/
 
 			jclassJavetV8RuntimeLockConflictException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8RuntimeLockConflictException"));
-			jclassJavetV8RuntimeUnlockConflictException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8RuntimeUnlockConflictException"));
 		}
 
 		void throwJavetV8RuntimeLockConflictException(JNIEnv* jniEnv, const char* message) {
 			jniEnv->ThrowNew(jclassJavetV8RuntimeLockConflictException, message);
-		}
-
-		void throwJavetV8RuntimeUnlockConflictException(JNIEnv* jniEnv, const char* message) {
-			jniEnv->ThrowNew(jclassJavetV8RuntimeUnlockConflictException, message);
 		}
 	}
 }

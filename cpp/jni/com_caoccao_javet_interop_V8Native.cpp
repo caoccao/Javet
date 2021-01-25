@@ -59,18 +59,23 @@ JNIEXPORT jint JNICALL JNI_OnLoad
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
-(JNIEnv*, jclass, jlong v8RuntimeHandle) {
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle) {
 	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
-	v8Runtime->caller = nullptr;
-	v8Runtime->v8Context.Reset();
-	if (v8Runtime->v8GlobalObject != nullptr) {
-		v8Runtime->v8GlobalObject->Reset();
-		v8Runtime->v8GlobalObject = nullptr;
+	if (v8Runtime->v8Locker != nullptr) {
+		Javet::Exceptions::throwJavetV8RuntimeLockConflictException(jniEnv, "Cannot close V8 runtime because the native lock is not released");
 	}
-	// Isolate must be the last one to be disposed.
-	if (v8Runtime->v8Isolate != nullptr) {
-		v8Runtime->v8Isolate->Dispose();
-		v8Runtime->v8Isolate = nullptr;
+	else {
+		v8Runtime->caller = nullptr;
+		v8Runtime->v8Context.Reset();
+		if (v8Runtime->v8GlobalObject != nullptr) {
+			v8Runtime->v8GlobalObject->Reset();
+			v8Runtime->v8GlobalObject = nullptr;
+		}
+		// Isolate must be the last one to be disposed.
+		if (v8Runtime->v8Isolate != nullptr) {
+			v8Runtime->v8Isolate->Dispose();
+			v8Runtime->v8Isolate = nullptr;
+		}
 	}
 }
 
@@ -187,8 +192,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle) {
 	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
 	if (v8Runtime->v8Locker == nullptr) {
-		Javet::Exceptions::throwJavetV8RuntimeUnlockConflictException(jniEnv, "Cannot release V8 native lock because it has not been acquired yet");
-		//jniEnv->ThrowNew(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8RuntimeUnlockConflictException"), "");
+		Javet::Exceptions::throwJavetV8RuntimeLockConflictException(jniEnv, "Cannot release V8 native lock because it has not been acquired yet");
 	}
 	else {
 		delete v8Runtime->v8Locker;

@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.exceptions;
 
+import java.text.MessageFormat;
+
 public class JavetV8RuntimeLockConflictException extends JavetException {
     public JavetV8RuntimeLockConflictException(String message) {
         super(message);
@@ -24,5 +26,11 @@ public class JavetV8RuntimeLockConflictException extends JavetException {
 
     public JavetV8RuntimeLockConflictException() {
         this("V8 runtime lock conflict is detected");
+    }
+
+    public JavetV8RuntimeLockConflictException(long lockedThreadId, long currentThreadId) {
+        this(MessageFormat.format(
+                "V8 runtime lock conflict is detected with locked thread ID {0} and current thread ID {1}",
+                Long.toString(lockedThreadId), Long.toString(currentThreadId)));
     }
 }

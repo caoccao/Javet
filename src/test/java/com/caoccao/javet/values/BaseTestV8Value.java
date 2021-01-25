@@ -18,7 +18,6 @@
 package com.caoccao.javet.values;
 
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeUnlockConflictException;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +33,7 @@ public abstract class BaseTestV8Value {
     }
 
     @AfterEach
-    public void afterEach() throws JavetV8RuntimeUnlockConflictException {
+    public void afterEach() throws JavetV8RuntimeLockConflictException {
         v8Runtime.unlock();
         v8Runtime.close();
     }

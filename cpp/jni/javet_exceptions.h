@@ -27,7 +27,5 @@ namespace Javet {
 		void initializeJavetExceptions(JNIEnv* jniEnv);
 
 		void throwJavetV8RuntimeLockConflictException(JNIEnv* jniEnv, const char* message);
-
-		void throwJavetV8RuntimeUnlockConflictException(JNIEnv* jniEnv, const char* message);
 	}
 }

@@ -19,7 +19,6 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeUnlockConflictException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +36,7 @@ public class TestV8Native {
         try {
             final int iterations = 3;
             for (int i = 0; i < iterations; ++i) {
-                assertThrows(JavetV8RuntimeUnlockConflictException.class, () -> {
+                assertThrows(JavetV8RuntimeLockConflictException.class, () -> {
                     V8Native.unlockV8Runtime(handle);
                 }, "It should not allow unlock before lock.");
                 V8Native.lockV8Runtime(handle);
