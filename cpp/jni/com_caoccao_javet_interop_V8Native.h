@@ -41,11 +41,27 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    lockV8Runtime
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    resetV8Runtime
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
   (JNIEnv *, jclass, jlong, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    unlockV8Runtime
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

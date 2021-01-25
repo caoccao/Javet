@@ -17,13 +17,35 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
+import com.caoccao.javet.exceptions.JavetV8RuntimeUnlockConflictException;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestV8Runtime {
     @Test
     public void testClose() {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+        }
+    }
+
+    @Test
+    public void testLockAndUnlock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeUnlockConflictException {
+        V8Host v8Host = V8Host.getInstance();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+            final int iterations = 3;
+            for (int i = 0; i < iterations; ++i) {
+                assertThrows(JavetV8RuntimeUnlockConflictException.class, () -> {
+                    v8Runtime.unlock();
+                }, "It should not allow unlock before lock.");
+                v8Runtime.lock();
+                assertThrows(JavetV8RuntimeLockConflictException.class, () -> {
+                    v8Runtime.lock();
+                }, "It should not allow double lock.");
+                v8Runtime.unlock();
+            }
         }
     }
 

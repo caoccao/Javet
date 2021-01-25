@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
+import com.caoccao.javet.exceptions.JavetV8RuntimeUnlockConflictException;
 import com.caoccao.javet.interfaces.JavetClosable;
 import com.caoccao.javet.interfaces.JavetResettable;
 import com.caoccao.javet.values.V8TypedValue;
@@ -24,13 +26,16 @@ import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
 public final class V8Runtime implements JavetClosable, JavetResettable {
+    private static final long INVALID_THREAD_ID = -1L;
     private String globalName;
     private long handle;
+    private long threadId;
     private V8Host v8Host;
 
     V8Runtime(V8Host v8Host, long handle, String globalName) {
         this.globalName = globalName;
         this.handle = handle;
+        this.threadId = INVALID_THREAD_ID;
         this.v8Host = v8Host;
     }
 
@@ -44,6 +49,25 @@ public final class V8Runtime implements JavetClosable, JavetResettable {
 
     public void setGlobalName(String globalName) {
         this.globalName = globalName;
+    }
+
+    public void lock() throws JavetV8RuntimeLockConflictException {
+        final long currentThreadId = Thread.currentThread().getId();
+        if (threadId == INVALID_THREAD_ID) {
+            threadId = currentThreadId;
+        } else if (threadId != currentThreadId) {
+            throw new JavetV8RuntimeLockConflictException();
+        }
+        V8Native.lockV8Runtime(handle);
+    }
+
+    public void unlock() throws JavetV8RuntimeUnlockConflictException {
+        final long currentThreadId = Thread.currentThread().getId();
+        if (threadId == INVALID_THREAD_ID || threadId != currentThreadId) {
+            throw new JavetV8RuntimeUnlockConflictException();
+        }
+        V8Native.unlockV8Runtime(handle);
+        threadId = INVALID_THREAD_ID;
     }
 
     public <T extends V8Value> T execute(String scriptString) {
@@ -112,6 +136,12 @@ public final class V8Runtime implements JavetClosable, JavetResettable {
 
     @Override
     public void close() throws RuntimeException {
+        if (threadId != INVALID_THREAD_ID) {
+            try {
+                unlock();
+            } catch (JavetV8RuntimeUnlockConflictException e) {
+            }
+        }
         v8Host.closeV8Runtime(this);
         handle = 0;
     }

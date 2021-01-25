@@ -28,6 +28,7 @@
 #include "javet_callbacks.h"
 #include "javet_constants.h"
 #include "javet_converter.h"
+#include "javet_exceptions.h"
 #include "javet_globals.h"
 #include "javet_v8_runtime.h"
 
@@ -53,6 +54,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad
 	v8::V8::InitializePlatform(Javet::GlobalV8Platform.get());
 	v8::V8::Initialize();
 	Javet::Converter::initializeJavetConverter(jniEnv);
+	Javet::Exceptions::initializeJavetExceptions(jniEnv);
 	return JNI_VERSION_1_8;
 }
 
@@ -133,6 +135,17 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 	return jniEnv->NewStringUTF(utfString);
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle) {
+	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	if (v8Runtime->v8Locker != nullptr) {
+		Javet::Exceptions::throwJavetV8RuntimeLockConflictException(jniEnv, "Cannot acquire V8 native lock because it has not been released yet");
+	}
+	else {
+		v8Runtime->v8Locker = new v8::Locker(v8Runtime->v8Isolate);
+	}
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jstring mGlobalName) {
 	Java_com_caoccao_javet_interop_V8Native_closeV8Runtime(jniEnv, caller, v8RuntimeHandle);
@@ -167,6 +180,19 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
 		v8::V8::SetFlagsFromString(str, jniEnv->GetStringUTFLength(flags));
 		jniEnv->ReleaseStringUTFChars(flags, str);
 		v8::V8::Initialize();
+	}
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle) {
+	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	if (v8Runtime->v8Locker == nullptr) {
+		Javet::Exceptions::throwJavetV8RuntimeUnlockConflictException(jniEnv, "Cannot release V8 native lock because it has not been acquired yet");
+		//jniEnv->ThrowNew(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8RuntimeUnlockConflictException"), "");
+	}
+	else {
+		delete v8Runtime->v8Locker;
+		v8Runtime->v8Locker = nullptr;
 	}
 }
 

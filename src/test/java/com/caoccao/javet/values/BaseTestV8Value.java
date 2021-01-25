@@ -17,24 +17,25 @@
 
 package com.caoccao.javet.values;
 
+import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
+import com.caoccao.javet.exceptions.JavetV8RuntimeUnlockConflictException;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class BaseTestV8Value {
     protected V8Runtime v8Runtime;
 
     @BeforeEach
-    public void beforeEach() {
+    public void beforeEach() throws JavetV8RuntimeLockConflictException {
         v8Runtime = V8Host.getInstance().createV8Runtime();
+        v8Runtime.lock();
     }
 
     @AfterEach
-    public void afterEach() {
+    public void afterEach() throws JavetV8RuntimeUnlockConflictException {
+        v8Runtime.unlock();
         v8Runtime.close();
     }
 }

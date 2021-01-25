@@ -32,7 +32,11 @@ final class V8Native {
 
     native static String getVersion();
 
+    native static void lockV8Runtime(long v8RuntimeHandle);
+
     native static void resetV8Runtime(long v8RuntimeHandle, String globalName);
+
+    native static void unlockV8Runtime(long v8RuntimeHandle);
 
     /**
      * Sets flags.

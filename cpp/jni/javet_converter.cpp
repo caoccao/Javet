@@ -67,15 +67,24 @@ namespace Javet {
 				//jobject longValue = jniEnv->CallStaticObjectMethod(jclassLong, jmethodIDLongValueOf, v8Value->IntegerValue(v8Context).FromMaybe(0L));
 				//return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromLong, longValue, false);
 				v8::String::Value stringValue(v8Context->GetIsolate(), v8Value);
-				return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromString, jniEnv->NewString(*stringValue, stringValue.length()), false);
+				jstring mStringValue = jniEnv->NewString(*stringValue, stringValue.length());
+				jobject mV8Value = jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromString, mStringValue, false);
+				jniEnv->DeleteLocalRef(mStringValue);
+				return mV8Value;
 			}
 			if (v8Value->IsString()) {
 				v8::String::Value stringValue(v8Context->GetIsolate(), v8Value->ToString(v8Context).ToLocalChecked());
-				return jniEnv->NewObject(jclassV8ValueString, jmethodIDV8ValueStringConstructor, jniEnv->NewString(*stringValue, stringValue.length()));
+				jstring mStringValue = jniEnv->NewString(*stringValue, stringValue.length());
+				jobject mV8Value = jniEnv->NewObject(jclassV8ValueString, jmethodIDV8ValueStringConstructor, mStringValue);
+				jniEnv->DeleteLocalRef(mStringValue);
+				return mV8Value;
 			}
 			// Something is wrong. It defaults to toString().
 			v8::String::Value stringValue(v8Context->GetIsolate(), v8Value);
-			return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueUnknownConstructor, jniEnv->NewString(*stringValue, stringValue.length()), false);
+			jstring mStringValue = jniEnv->NewString(*stringValue, stringValue.length());
+			jobject mV8Value = jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueUnknownConstructor, jniEnv->NewString(*stringValue, stringValue.length()), false);
+			jniEnv->DeleteLocalRef(mStringValue);
+			return mV8Value;
 		}
 
 		v8::ScriptOrigin* toV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Isolate* v8Isolate,
