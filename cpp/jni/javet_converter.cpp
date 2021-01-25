@@ -31,24 +31,31 @@ namespace Javet {
 			jclassLong = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/lang/Long"));
 			jmethodIDLongValueOf = jniEnv->GetStaticMethodID(jclassLong, "valueOf", "(J)Ljava/lang/Long;");
 
-			jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueInteger"));
-			jmethodIDV8ValueIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueInteger, "<init>", "(Ljava/lang/Integer;Z)V");
-
-			jclassV8ValueLong = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueLong"));
-			jmethodIDV8ValueLongConstructorFromLong = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/Long;Z)V");
-			jmethodIDV8ValueLongConstructorFromString = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/String;Z)V");
-
 			jclassV8ValueNull = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueNull"));
 			jmethodIDV8ValueNullConstructor = jniEnv->GetMethodID(jclassV8ValueNull, "<init>", "()V");
-
-			jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueString"));
-			jmethodIDV8ValueStringConstructor = jniEnv->GetMethodID(jclassV8ValueString, "<init>", "(Ljava/lang/String;)V");
 
 			jclassV8ValueUndefined = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueUndefined"));
 			jmethodIDV8ValueUndefinedConstructor = jniEnv->GetMethodID(jclassV8ValueUndefined, "<init>", "()V");
 
-			jclassV8ValueUnknown = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueUnknown"));
+			// Primitive
+
+			jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
+			jmethodIDV8ValueIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueInteger, "<init>", "(Ljava/lang/Integer;Z)V");
+
+			jclassV8ValueLong = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueLong"));
+			jmethodIDV8ValueLongConstructorFromLong = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/Long;Z)V");
+			jmethodIDV8ValueLongConstructorFromString = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/String;Z)V");
+
+			jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueString"));
+			jmethodIDV8ValueStringConstructor = jniEnv->GetMethodID(jclassV8ValueString, "<init>", "(Ljava/lang/String;)V");
+
+			jclassV8ValueUnknown = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueUnknown"));
 			jmethodIDV8ValueUnknownConstructor = jniEnv->GetMethodID(jclassV8ValueUnknown, "<init>", "(Ljava/lang/String;)V");
+
+			// Reference
+
+			jclassV8ValueArray = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueArray"));
+			jmethodIDV8ValueArrayConstructor = jniEnv->GetMethodID(jclassV8ValueArray, "<init>", "(J)V");
 		}
 
 		jobject toJObject(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value) {
@@ -58,6 +65,13 @@ namespace Javet {
 			if (v8Value->IsNull()) {
 				return jniEnv->NewObject(jclassV8ValueNull, jmethodIDV8ValueNullConstructor);
 			}
+			// Reference types
+			// Note: Reference typesmust be checked before primitive types are checked.
+			if (v8Value->IsArray()) {
+				v8::Persistent<v8::Object>* v8PersistentObjectPointer = new v8::Persistent<v8::Object>(v8Context->GetIsolate(), v8Value->ToObject(v8Context).ToLocalChecked());
+				return jniEnv->NewObject(jclassV8ValueArray, jmethodIDV8ValueArrayConstructor, reinterpret_cast<jlong>(v8PersistentObjectPointer));
+			}
+			// Primitive types
 			if (v8Value->IsInt32()) {
 				jobject integerValue = jniEnv->CallStaticObjectMethod(jclassInteger, jmethodIDIntegerValueOf, v8Value->Int32Value(v8Context).FromMaybe(0));
 				return jniEnv->NewObject(jclassV8ValueInteger, jmethodIDV8ValueIntegerConstructor, integerValue, false);
@@ -82,7 +96,7 @@ namespace Javet {
 			// Something is wrong. It defaults to toString().
 			v8::String::Value stringValue(v8Context->GetIsolate(), v8Value);
 			jstring mStringValue = jniEnv->NewString(*stringValue, stringValue.length());
-			jobject mV8Value = jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueUnknownConstructor, jniEnv->NewString(*stringValue, stringValue.length()), false);
+			jobject mV8Value = jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueUnknownConstructor, mStringValue, false);
 			jniEnv->DeleteLocalRef(mStringValue);
 			return mV8Value;
 		}

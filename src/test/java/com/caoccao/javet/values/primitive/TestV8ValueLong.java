@@ -15,23 +15,24 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.values.primitive;
 
-import com.caoccao.javet.interop.V8Host;
-import com.caoccao.javet.interop.V8Runtime;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.BaseTestV8Value;
+import com.caoccao.javet.values.primitive.V8ValueLong;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestV8ValueInteger extends  BaseTestV8Value {
+public class TestV8ValueLong extends BaseTestV8Value {
     @Test
-    public void testInteger() {
-        V8ValueInteger v8ValueInteger = v8Runtime.execute("1 + 1");
-        assertNotNull(v8ValueInteger);
-        assertFalse(v8ValueInteger.isUnsigned());
-        assertEquals(2, v8ValueInteger.getValue());
-        assertEquals(-1, v8Runtime.executeInteger("1 - 2"));
+    public void testLong() throws JavetException {
+        assertEquals("4611686018427387904", v8Runtime.executeString("(2n ** 62n).toString()"));
+        V8ValueLong v8ValueLong = v8Runtime.execute("2n ** 62n");
+        assertFalse(v8ValueLong.isUnsigned());
+        assertNotNull(v8ValueLong);
+        assertEquals(4611686018427387904L, v8ValueLong.getValue());
+        assertEquals(v8Runtime, v8ValueLong.getV8Runtime());
+        assertEquals(-2L, v8Runtime.executeLong("-2n"));
     }
 }

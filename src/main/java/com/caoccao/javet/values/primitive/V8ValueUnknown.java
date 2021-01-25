@@ -15,18 +15,14 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.values.primitive;
 
-public final class V8ValueInteger extends V8Number<Integer> {
-    public V8ValueInteger() {
-        this(Integer.valueOf(0));
+public final class V8ValueUnknown extends V8ValuePrimitive<String> {
+    public V8ValueUnknown() {
+        this(null);
     }
 
-    public V8ValueInteger(Integer value) {
+    public V8ValueUnknown(String value) {
         super(value);
-    }
-
-    public V8ValueInteger(Integer value, boolean unsigned) {
-        super(value, unsigned);
     }
 }

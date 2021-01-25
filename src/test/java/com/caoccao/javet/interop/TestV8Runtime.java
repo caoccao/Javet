@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import org.junit.jupiter.api.Test;
 
@@ -24,14 +25,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestV8Runtime {
     @Test
-    public void testClose() {
+    public void testClose() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
         }
     }
 
     @Test
-    public void testLockAndUnlock() throws JavetV8RuntimeLockConflictException {
+    public void testLockAndUnlock() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             final int iterations = 3;
@@ -48,7 +49,7 @@ public class TestV8Runtime {
     }
 
     @Test
-    public void testReset() {
+    public void testReset() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             v8Runtime.reset();

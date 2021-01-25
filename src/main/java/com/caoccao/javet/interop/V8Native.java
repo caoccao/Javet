@@ -30,9 +30,13 @@ final class V8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    native static int getLength(long v8RuntimeHandle, int v8ValueType, long v8ValueHandle);
+
     native static String getVersion();
 
     native static void lockV8Runtime(long v8RuntimeHandle);
+
+    native static void removeReferenceHandle(long referenceHandle);
 
     native static void resetV8Runtime(long v8RuntimeHandle, String globalName);
 

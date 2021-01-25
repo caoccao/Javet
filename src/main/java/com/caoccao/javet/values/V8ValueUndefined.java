@@ -18,4 +18,7 @@
 package com.caoccao.javet.values;
 
 public final class V8ValueUndefined extends V8Value {
+    public V8ValueUndefined() {
+        super();
+    }
 }

@@ -2,8 +2,34 @@
 Build
 =====
 
-Build V8
-========
+Download Pre-built V8
+=====================
+
+I have prepared pre-built Linux and Windows version of V8 v8.3.110.9. Please download the headers and binary from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them locally.
+
+Build Javet JNI Library
+=======================
+
+Once V8 is ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
+
+* Linux - ``sh build.sh -DV8_DIR=/where_the_v8_directory_is``.
+* Windows - ``build.cmd -DV8_DIR=\where_the_v8_directory_is``.
+
+Note: The V8 directory needs to be absolute path.
+
+After a while, ``libjavet-linux-x86_64.v.*.*.*.so`` or ``libjavet-windows-x86_64.v.*.*.*.dll`` will be placed in folder ``src/main/resources``.
+
+Build Javet Jar
+===============
+
+Once both ``libjavet-linux-x86_64.v.*.*.*.so`` and ``libjavet-windows-x86_64.v.*.*.*.dll`` are built, please put them altogether under ``src/main/resources`` then kick off ``gradle build test``.
+
+After a while, ``javet-*.*.*.jar`` will be placed in folder ``build/libs``.
+
+Note: This jar file supports both Linux and Windows.
+
+Build V8 (Optional)
+===================
 
 Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``8.3.110.9`` on either Windows or Linux. If you face any issues, you may contact `@sjtucaocao <https://twitter.com/sjtucaocao>`_.
 
@@ -29,26 +55,5 @@ Also, please make sure ``args.gn`` file looks like the following.
     use_custom_libcxx = false
 
 ``v8_monolith`` is the build target.
-
-Build Javet JNI Library
-=======================
-
-Once V8 is ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
-
-* Linux - ``sh build.sh -DV8_DIR=/where_the_v8_directory_is``.
-* Windows - ``build.cmd -DV8_DIR=\where_the_v8_directory_is``.
-
-Note: The V8 directory needs to be absolute path.
-
-After a while, ``libjavet-linux-x86_64.v.*.*.*.so`` or ``libjavet-windows-x86_64.v.*.*.*.dll`` will be placed in folder ``src/main/resources``.
-
-Build Javet Jar
-===============
-
-Once both ``libjavet-linux-x86_64.v.*.*.*.so`` and ``libjavet-windows-x86_64.v.*.*.*.dll`` are built, please put them altogether under ``src/main/resources`` then kick off ``gradle build test``.
-
-After a while, ``javet-*.*.*.jar`` will be placed in folder ``build/libs``.
-
-Note: This jar file supports both Linux and Windows.
 
 [`Home <../README.rst>`_]

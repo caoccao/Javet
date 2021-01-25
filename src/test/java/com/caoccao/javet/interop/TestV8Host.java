@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestV8Host {
     @Test
-    public void testCreateV8RuntimeWithoutGlobalName() {
+    public void testCreateV8RuntimeWithoutGlobalName() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertNotNull(v8Runtime);
@@ -33,7 +34,7 @@ public class TestV8Host {
     }
 
     @Test
-    public void testCreateV8RuntimeWithGlobalName() {
+    public void testCreateV8RuntimeWithGlobalName() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertNotNull(v8Runtime);

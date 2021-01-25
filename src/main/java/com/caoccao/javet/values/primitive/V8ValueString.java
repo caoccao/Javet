@@ -15,10 +15,14 @@
  *
  */
 
-package com.caoccao.javet.interfaces;
+package com.caoccao.javet.values.primitive;
 
-import com.caoccao.javet.exceptions.JavetException;
+public final class V8ValueString extends V8ValuePrimitive<String> {
+    public V8ValueString() {
+        this(null);
+    }
 
-public interface JavetClosable extends AutoCloseable {
-    void close() throws JavetException;
+    public V8ValueString(String value) {
+        super(value);
+    }
 }

@@ -15,10 +15,10 @@
  *
  */
 
-package com.caoccao.javet.interfaces;
+package com.caoccao.javet.exceptions;
 
-import com.caoccao.javet.exceptions.JavetException;
-
-public interface JavetClosable extends AutoCloseable {
-    void close() throws JavetException;
+public class JavetV8RuntimeAlreadyRegisteredException extends JavetException {
+    public JavetV8RuntimeAlreadyRegisteredException() {
+        super("V8 runtime is already registered");
+    }
 }

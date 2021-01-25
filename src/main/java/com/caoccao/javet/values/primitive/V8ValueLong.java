@@ -15,14 +15,22 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.values.primitive;
 
-public final class V8ValueString extends V8TypedValue<String> {
-    public V8ValueString() {
-        this(null);
+public final class V8ValueLong extends V8ValueNumber<Long> {
+    public V8ValueLong() {
+        this(Long.valueOf(0));
     }
 
-    public V8ValueString(String value) {
+    public V8ValueLong(Long value) {
         super(value);
+    }
+
+    public V8ValueLong(Long value, boolean unsigned) {
+        super(value, unsigned);
+    }
+
+    public V8ValueLong(String value, boolean unsigned) {
+        super(Long.valueOf(value), unsigned);
     }
 }

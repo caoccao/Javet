@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
@@ -33,7 +34,7 @@ public abstract class BaseTestV8Value {
     }
 
     @AfterEach
-    public void afterEach() throws JavetV8RuntimeLockConflictException {
+    public void afterEach() throws JavetException {
         v8Runtime.unlock();
         v8Runtime.close();
     }

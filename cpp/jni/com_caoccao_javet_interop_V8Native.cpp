@@ -28,9 +28,20 @@
 #include "javet_callbacks.h"
 #include "javet_constants.h"
 #include "javet_converter.h"
+#include "javet_enums.h"
 #include "javet_exceptions.h"
 #include "javet_globals.h"
 #include "javet_v8_runtime.h"
+
+#define HANDLES_TO_OBJECTS(v8RuntimeHandle, v8ValueHandle) \
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
+	auto v8PersistentObjectPointer = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle); \
+	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate); \
+	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+	auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context); \
+	v8::Context::Scope v8ContextScope(v8Context); \
+	auto v8LocalObject = v8PersistentObjectPointer->Get(v8Runtime->v8Isolate);
+
 
  /*
   * Development Guide:
@@ -60,7 +71,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle) {
-	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
 	if (v8Runtime->v8Locker != nullptr) {
 		Javet::Exceptions::throwJavetV8RuntimeLockConflictException(jniEnv, "Cannot close V8 runtime because the native lock is not released");
 	}
@@ -82,7 +93,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 // Creating multiple isolates allows running JavaScript code in multiple threads, truly parallel.
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 (JNIEnv* jniEnv, jclass caller, jstring mGlobalName) {
-	Javet::V8Runtime* v8Runtime = new Javet::V8Runtime();
+	auto v8Runtime = new Javet::V8Runtime();
 	v8Runtime->mException = nullptr;
 	jlong v8RuntimeHandle = reinterpret_cast<jlong>(v8Runtime);
 	Java_com_caoccao_javet_interop_V8Native_resetV8Runtime(jniEnv, caller, v8RuntimeHandle, mGlobalName);
@@ -92,16 +103,12 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jstring mScript, jboolean mReturnResult,
 	jstring mResourceName, jint mResourceLineOffset, jint mResourceColumnOffset, jint mScriptId, jboolean mIsWASM, jboolean mIsModule) {
-	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
-	// Keep the execution locked.
-	v8::Locker v8Locker(v8Runtime->v8Isolate);
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
 	v8::ScriptOrigin* scriptOriginPointer = Javet::Converter::toV8ScriptOringinPointer(
 		jniEnv, v8Runtime->v8Isolate, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, mIsModule);
 	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate);
-	// Create a stack-allocated handle scope.
 	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
 	auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context);
-	// Enter the context for compiling and running the script.
 	v8::Context::Scope v8ContextScope(v8Context);
 	v8::TryCatch v8TryCatch(v8Runtime->v8Isolate);
 	auto umScript = Javet::Converter::toV8String(jniEnv, v8Runtime->v8Isolate, mScript);
@@ -134,15 +141,24 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 	return nullptr;
 }
 
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jint v8ValueType, jlong v8ValueHandle) {
+	HANDLES_TO_OBJECTS(v8RuntimeHandle, v8ValueHandle)
+	if (v8ValueType == Javet::Enums::NativeType::Array) {
+		return v8LocalObject.As<v8::Array>()->Length();
+	}
+	return 0;
+}
+
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
-(JNIEnv* jniEnv, jclass) {
+(JNIEnv* jniEnv, jclass caller) {
 	const char* utfString = v8::V8::GetVersion();
 	return jniEnv->NewStringUTF(utfString);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle) {
-	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
 	if (v8Runtime->v8Locker != nullptr) {
 		Javet::Exceptions::throwJavetV8RuntimeLockConflictException(jniEnv, "Cannot acquire V8 native lock because it has not been released yet");
 	}
@@ -151,10 +167,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 	}
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHandle
+(JNIEnv* jniEnv, jclass caller, jlong referenceHandle) {
+	auto v8PersistentObjectPointer = reinterpret_cast<v8::Persistent<v8::Object>*>(referenceHandle);
+	delete v8PersistentObjectPointer;
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jstring mGlobalName) {
 	Java_com_caoccao_javet_interop_V8Native_closeV8Runtime(jniEnv, caller, v8RuntimeHandle);
-	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
 	// TODO Is caller needed to be stored?
 	v8Runtime->caller = jniEnv->NewGlobalRef(caller);
 	v8::Isolate::CreateParams create_params;
@@ -190,7 +212,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle) {
-	Javet::V8Runtime* v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
 	if (v8Runtime->v8Locker == nullptr) {
 		Javet::Exceptions::throwJavetV8RuntimeLockConflictException(jniEnv, "Cannot release V8 native lock because it has not been acquired yet");
 	}

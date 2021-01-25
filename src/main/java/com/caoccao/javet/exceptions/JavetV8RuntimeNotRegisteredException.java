@@ -15,14 +15,10 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.exceptions;
 
-public final class V8ValueUnknown extends V8TypedValue<String> {
-    public V8ValueUnknown() {
-        this(null);
-    }
-
-    public V8ValueUnknown(String value) {
-        super(value);
+public class JavetV8RuntimeNotRegisteredException extends JavetException {
+    public JavetV8RuntimeNotRegisteredException() {
+        super("V8 runtime is not registered");
     }
 }

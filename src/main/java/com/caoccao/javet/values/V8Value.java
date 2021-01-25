@@ -17,21 +17,47 @@
 
 package com.caoccao.javet.values;
 
+import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyRegisteredException;
+import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
+import com.caoccao.javet.exceptions.JavetV8RuntimeNotRegisteredException;
 import com.caoccao.javet.interfaces.JavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 
 public abstract class V8Value implements JavetClosable {
     protected V8Runtime v8Runtime;
 
+    public V8Value() {
+        v8Runtime = null;
+    }
+
     public V8Runtime getV8Runtime() {
         return v8Runtime;
     }
 
-    public void setV8Runtime(V8Runtime v8Runtime) {
+    public void setV8Runtime(V8Runtime v8Runtime)
+            throws JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException {
+        if (this.v8Runtime != null) {
+            throw new JavetV8RuntimeAlreadyRegisteredException();
+        }
         this.v8Runtime = v8Runtime;
+        this.v8Runtime.checkLock();
+    }
+
+    public void checkV8Runtime()
+            throws JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException {
+        if (v8Runtime == null) {
+            throw new JavetV8RuntimeNotRegisteredException();
+        }
+        this.v8Runtime.checkLock();
+    }
+
+    protected void releaseReference() {
     }
 
     @Override
-    public void close() throws RuntimeException {
+    public void close() throws JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException {
+        checkV8Runtime();
+        releaseReference();
+        v8Runtime = null;
     }
 }
