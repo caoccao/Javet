@@ -19,8 +19,8 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.interfaces.JavetClosable;
 import com.caoccao.javet.interfaces.JavetResettable;
+import com.caoccao.javet.values.V8TypedValue;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.V8ValueString;
 
 @SuppressWarnings("unchecked")
 public final class V8Runtime implements JavetClosable, JavetResettable {
@@ -65,12 +65,41 @@ public final class V8Runtime implements JavetClosable, JavetResettable {
         return returnValue;
     }
 
+    public Integer executeInteger(String scriptString) {
+        return executeInteger(scriptString, new V8ScriptOrigin());
+    }
+
+    public Integer executeInteger(String scriptString, V8ScriptOrigin v8ScriptOrigin) {
+        return executeObject(scriptString, v8ScriptOrigin);
+    }
+
+    public Long executeLong(String scriptString) {
+        return executeLong(scriptString, new V8ScriptOrigin());
+    }
+
+    public Long executeLong(String scriptString, V8ScriptOrigin v8ScriptOrigin) {
+        return executeObject(scriptString, v8ScriptOrigin);
+    }
+
     public String executeString(String scriptString) {
-        return ((V8ValueString) execute(scriptString, new V8ScriptOrigin(), true)).getValue();
+        return executeString(scriptString, new V8ScriptOrigin());
     }
 
     public String executeString(String scriptString, V8ScriptOrigin v8ScriptOrigin) {
-        return ((V8ValueString) execute(scriptString, v8ScriptOrigin, true)).getValue();
+        return executeObject(scriptString, v8ScriptOrigin);
+    }
+
+    private <R extends Object, T extends V8TypedValue<R>> R executeObject(String scriptString) {
+        return executeObject(scriptString, new V8ScriptOrigin());
+    }
+
+    private <R extends Object, T extends V8TypedValue<R>> R executeObject(String scriptString, V8ScriptOrigin v8ScriptOrigin) {
+        V8Value v8Value = execute(scriptString, v8ScriptOrigin, true);
+        try {
+            return ((T) v8Value).getValue();
+        } catch (Throwable t) {
+        }
+        return null;
     }
 
     public void executeVoid(String scriptString) {

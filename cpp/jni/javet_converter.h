@@ -33,7 +33,8 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueIntegerConstructor;
 
 		static jclass jclassV8ValueLong;
-		static jmethodID jmethodIDV8ValueLongConstructor;
+		static jmethodID jmethodIDV8ValueLongConstructorFromLong;
+		static jmethodID jmethodIDV8ValueLongConstructorFromString;
 
 		static jclass jclassV8ValueNull;
 		static jmethodID jmethodIDV8ValueNullConstructor;
@@ -43,6 +44,9 @@ namespace Javet {
 
 		static jclass jclassV8ValueUndefined;
 		static jmethodID jmethodIDV8ValueUndefinedConstructor;
+
+		static jclass jclassV8ValueUnknown;
+		static jmethodID jmethodIDV8ValueUnknownConstructor;
 
 		void initializeJavetConverter(JNIEnv* jniEnv);
 

@@ -35,8 +35,8 @@ namespace Javet {
 			jmethodIDV8ValueIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueInteger, "<init>", "(Ljava/lang/Integer;Z)V");
 
 			jclassV8ValueLong = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueLong"));
-			//jmethodIDV8ValueLongConstructor = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/Long;Z)V");
-			jmethodIDV8ValueLongConstructor = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/String;Z)V");
+			jmethodIDV8ValueLongConstructorFromLong = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/Long;Z)V");
+			jmethodIDV8ValueLongConstructorFromString = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/String;Z)V");
 
 			jclassV8ValueNull = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueNull"));
 			jmethodIDV8ValueNullConstructor = jniEnv->GetMethodID(jclassV8ValueNull, "<init>", "()V");
@@ -46,6 +46,9 @@ namespace Javet {
 
 			jclassV8ValueUndefined = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueUndefined"));
 			jmethodIDV8ValueUndefinedConstructor = jniEnv->GetMethodID(jclassV8ValueUndefined, "<init>", "()V");
+
+			jclassV8ValueUnknown = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueUnknown"));
+			jmethodIDV8ValueUnknownConstructor = jniEnv->GetMethodID(jclassV8ValueUnknown, "<init>", "(Ljava/lang/String;)V");
 		}
 
 		jobject toJObject(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value) {
@@ -62,15 +65,17 @@ namespace Javet {
 			if (v8Value->IsBigInt()) {
 				// Note: There's something wrong with IntegerValue().
 				//jobject longValue = jniEnv->CallStaticObjectMethod(jclassLong, jmethodIDLongValueOf, v8Value->IntegerValue(v8Context).FromMaybe(0L));
-				//return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructor, longValue, false);
+				//return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromLong, longValue, false);
 				v8::String::Value stringValue(v8Context->GetIsolate(), v8Value);
-				return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructor, jniEnv->NewString(*stringValue, stringValue.length()), false);
+				return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromString, jniEnv->NewString(*stringValue, stringValue.length()), false);
 			}
 			if (v8Value->IsString()) {
 				v8::String::Value stringValue(v8Context->GetIsolate(), v8Value->ToString(v8Context).ToLocalChecked());
 				return jniEnv->NewObject(jclassV8ValueString, jmethodIDV8ValueStringConstructor, jniEnv->NewString(*stringValue, stringValue.length()));
 			}
-			return nullptr;
+			// Something is wrong. It defaults to toString().
+			v8::String::Value stringValue(v8Context->GetIsolate(), v8Value);
+			return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueUnknownConstructor, jniEnv->NewString(*stringValue, stringValue.length()), false);
 		}
 
 		v8::ScriptOrigin* toV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Isolate* v8Isolate,
