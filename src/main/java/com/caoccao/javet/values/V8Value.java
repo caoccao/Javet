@@ -51,7 +51,7 @@ public abstract class V8Value implements IJavetClosable {
         this.v8Runtime.checkLock();
     }
 
-    protected abstract void releaseReference();
+    protected abstract void releaseReference() throws JavetV8RuntimeLockConflictException;
 
     @Override
     public void close() throws JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException {

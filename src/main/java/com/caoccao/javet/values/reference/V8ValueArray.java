@@ -1,7 +1,7 @@
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeNotRegisteredException;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueType;
 
 public class V8ValueArray extends V8ValueReference implements IV8ValueCollection {
@@ -15,8 +15,16 @@ public class V8ValueArray extends V8ValueReference implements IV8ValueCollection
     }
 
     @Override
-    public int getLength() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeNotRegisteredException {
+    public int getLength()
+            throws JavetException {
         checkV8Runtime();
         return v8Runtime.getLength(this);
+    }
+
+    @Override
+    public <T extends V8Value> T getValue(int index)
+            throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getValue(this, index);
     }
 }

@@ -41,6 +41,38 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getOwnPropertyNames
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getOwnPropertyNames
+  (JNIEnv *, jclass, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getPropertyNames
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPropertyNames
+  (JNIEnv *, jclass, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getValue
+ * Signature: (JJII)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getValue__JJII
+  (JNIEnv *, jclass, jlong, jlong, jint, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getValue
+ * Signature: (JJILjava/lang/String;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getValue__JJILjava_lang_String_2
+  (JNIEnv *, jclass, jlong, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getVersion
  * Signature: ()Ljava/lang/String;
  */

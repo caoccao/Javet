@@ -1,6 +1,8 @@
 package com.caoccao.javet.values.reference;
 
-public interface IV8ValueReference {
+import com.caoccao.javet.interfaces.IJavetClosable;
+
+public interface IV8ValueReference extends IJavetClosable {
     long getHandle();
 
     int getType();

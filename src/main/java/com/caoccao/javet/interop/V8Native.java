@@ -32,6 +32,14 @@ final class V8Native {
 
     native static int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    native static Object getOwnPropertyNames(long handle, long handle1, int type);
+
+    native static Object getPropertyNames(long handle, long handle1, int type);
+
+    native static Object getValue(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
+
+    native static Object getValue(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key);
+
     native static String getVersion();
 
     native static void lockV8Runtime(long v8RuntimeHandle);

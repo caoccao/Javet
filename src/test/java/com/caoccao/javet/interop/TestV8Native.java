@@ -17,19 +17,13 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
+import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestV8Native {
-    @BeforeAll
-    public static void beforeAll() throws JavetOSNotSupportedException {
-        JavetLibLoader.load();
-    }
-
+public class TestV8Native extends BaseTestJavet {
     @Test
     public void testLockAndUnlock() {
         final long handle = V8Native.createV8Runtime(null);

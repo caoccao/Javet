@@ -18,6 +18,7 @@
 namespace Javet {
     namespace Enums {
         enum V8ValueType {
+            Object = 1,
             Array = 21,
         };
     }

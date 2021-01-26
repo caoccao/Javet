@@ -17,13 +17,14 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestV8Host {
+public class TestV8Host extends BaseTestJavet {
     @Test
     public void testCreateV8RuntimeWithoutGlobalName() throws JavetException {
         V8Host v8Host = V8Host.getInstance();

@@ -14,14 +14,14 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    protected void releaseReference() {
-        v8Runtime.removeReferenceHandle(this);
+    protected void releaseReference() throws JavetV8RuntimeLockConflictException {
+        v8Runtime.removeReference(this);
     }
 
     @Override
     public void setV8Runtime(V8Runtime v8Runtime) throws JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException {
         super.setV8Runtime(v8Runtime);
-        v8Runtime.addReferenceHandle(this);
+        v8Runtime.addReference(this);
     }
 
     @Override

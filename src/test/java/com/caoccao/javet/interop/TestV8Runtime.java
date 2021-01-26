@@ -17,13 +17,14 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TestV8Runtime {
+public class TestV8Runtime extends BaseTestJavet {
     @Test
     public void testClose() throws JavetException {
         V8Host v8Host = V8Host.getInstance();

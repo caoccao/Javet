@@ -37,6 +37,9 @@ namespace Javet {
 
 		// Primitive
 
+		static jclass jclassV8ValueBoolean;
+		static jmethodID jmethodIDV8ValueBooleanConstructor;
+
 		static jclass jclassV8ValueInteger;
 		static jmethodID jmethodIDV8ValueIntegerConstructor;
 
@@ -55,9 +58,16 @@ namespace Javet {
 		static jclass jclassV8ValueArray;
 		static jmethodID jmethodIDV8ValueArrayConstructor;
 
+		static jclass jclassV8ValueObject;
+		static jmethodID jmethodIDV8ValueObjectConstructor;
+
 		void initializeJavetConverter(JNIEnv* jniEnv);
 
-		jobject toJObject(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
+		jobject toJV8Value(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
+
+		jobject toJV8ValueNull(JNIEnv* jniEnv);
+
+		jobject toJV8ValueUndefined(JNIEnv* jniEnv);
 
 		inline v8::Local<v8::Boolean> toV8Boolean(v8::Isolate* v8Isolate, jboolean& managedBoolean) {
 			return v8::Boolean::New(v8Isolate, managedBoolean);

@@ -23,15 +23,22 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestV8ValueLong extends BaseTestV8Value {
+public class TestV8ValueBoolean extends BaseTestV8Value {
     @Test
-    public void testLong() throws JavetException {
-        assertEquals("4611686018427387904", v8Runtime.executeString("(2n ** 62n).toString()"));
-        V8ValueLong v8ValueLong = v8Runtime.execute("2n ** 62n");
-        assertFalse(v8ValueLong.isUnsigned());
-        assertNotNull(v8ValueLong);
-        assertEquals(4611686018427387904L, v8ValueLong.getValue());
-        assertEquals(v8Runtime, v8ValueLong.getV8Runtime());
-        assertEquals(-2L, v8Runtime.executeLong("-2n"));
+    public void testBoolean() throws JavetException {
+        try (V8ValueBoolean v8ValueBoolean = v8Runtime.execute("1 == 1")) {
+            assertNotNull(v8ValueBoolean);
+            assertTrue(v8ValueBoolean.isPresent());
+            assertTrue(v8ValueBoolean.getValue());
+            assertEquals(v8Runtime, v8ValueBoolean.getV8Runtime());
+        }
+        try (V8ValueBoolean v8ValueBoolean = v8Runtime.execute("1 != 1")) {
+            assertNotNull(v8ValueBoolean);
+            assertTrue(v8ValueBoolean.isPresent());
+            assertFalse(v8ValueBoolean.getValue());
+            assertEquals(v8Runtime, v8ValueBoolean.getV8Runtime());
+        }
+        assertTrue(v8Runtime.executeBoolean("true"));
+        assertFalse(v8Runtime.executeBoolean("false"));
     }
 }
