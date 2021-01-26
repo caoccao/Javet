@@ -2,6 +2,23 @@
 Build
 =====
 
+Build Environment
+=================
+
+Linux Environment
+-----------------
+
+* CMake 3.10+
+* Ubuntu 18.04
+
+Windows Environment
+-------------------
+
+* Latest Windows 10
+* Visual Studio 2019 Community
+* CMake 3.16+ (comes with Visual Studio)
+* Latest Windows 10 SDK with WinDbg
+
 Download Pre-built V8
 =====================
 

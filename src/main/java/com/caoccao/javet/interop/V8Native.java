@@ -30,7 +30,7 @@ final class V8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
-    native static int getLength(long v8RuntimeHandle, int v8ValueType, long v8ValueHandle);
+    native static int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static String getVersion();
 

@@ -13,7 +13,7 @@ public class TestV8ValueArray extends BaseTestV8Value {
         try (V8ValueArray v8ValueArray = v8Runtime.execute("[1,2,3]")) {
             assertNotNull(v8ValueArray);
             assertEquals(v8Runtime, v8ValueArray.getV8Runtime());
-            assertEquals(3, v8ValueArray.length());
+            assertEquals(3, v8ValueArray.getLength());
         }
     }
 }

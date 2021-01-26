@@ -5,7 +5,7 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
-public abstract class V8ValueReference extends V8Value {
+public abstract class V8ValueReference extends V8Value implements IV8ValueReference {
     protected long handle;
 
     public V8ValueReference(long handle) {
@@ -15,7 +15,6 @@ public abstract class V8ValueReference extends V8Value {
 
     @Override
     protected void releaseReference() {
-        super.releaseReference();
         v8Runtime.removeReferenceHandle(this);
     }
 
@@ -25,8 +24,10 @@ public abstract class V8ValueReference extends V8Value {
         v8Runtime.addReferenceHandle(this);
     }
 
+    @Override
     public abstract int getType();
 
+    @Override
     public long getHandle() {
         return handle;
     }

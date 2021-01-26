@@ -142,9 +142,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
-(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jint v8ValueType, jlong v8ValueHandle) {
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	HANDLES_TO_OBJECTS(v8RuntimeHandle, v8ValueHandle)
-	if (v8ValueType == Javet::Enums::NativeType::Array) {
+	if (v8ValueType == Javet::Enums::V8ValueType::Array) {
 		return v8LocalObject.As<v8::Array>()->Length();
 	}
 	return 0;

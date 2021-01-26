@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.interfaces;
 
-public interface JavetResettable {
-    void reset();
+import com.caoccao.javet.exceptions.JavetException;
+
+public interface IJavetClosable extends AutoCloseable {
+    void close() throws JavetException;
 }

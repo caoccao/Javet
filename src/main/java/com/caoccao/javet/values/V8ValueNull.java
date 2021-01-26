@@ -21,4 +21,8 @@ public final class V8ValueNull extends V8Value {
     public V8ValueNull() {
         super();
     }
+
+    @Override
+    protected void releaseReference() {
+    }
 }

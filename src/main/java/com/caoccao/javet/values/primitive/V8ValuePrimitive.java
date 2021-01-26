@@ -17,8 +17,6 @@
 
 package com.caoccao.javet.values.primitive;
 
-import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeNotRegisteredException;
 import com.caoccao.javet.values.V8Value;
 
 public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
@@ -30,6 +28,10 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
 
     public V8ValuePrimitive(T value) {
         this.value = value;
+    }
+
+    @Override
+    protected void releaseReference() {
     }
 
     public T getValue() {

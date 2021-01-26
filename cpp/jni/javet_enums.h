@@ -17,8 +17,8 @@
 
 namespace Javet {
     namespace Enums {
-        enum NativeType {
-            Array = 1,
+        enum V8ValueType {
+            Array = 21,
         };
     }
 }

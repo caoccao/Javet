@@ -19,12 +19,12 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-import com.caoccao.javet.interfaces.JavetClosable;
-import com.caoccao.javet.interfaces.JavetLoggable;
-import com.caoccao.javet.interfaces.JavetResettable;
+import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.interfaces.IJavetLoggable;
+import com.caoccao.javet.interfaces.IJavetResettable;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
-import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.IV8ValueCollection;
 import com.caoccao.javet.values.reference.V8ValueReference;
 
 import java.util.Map;
@@ -32,7 +32,8 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
-public final class V8Runtime implements JavetClosable, JavetResettable, JavetLoggable {
+public final class V8Runtime
+        implements IJavetClosable, IJavetResettable, IJavetLoggable {
     private static final long INVALID_THREAD_ID = -1L;
     private String globalName;
     private long handle;
@@ -50,7 +51,7 @@ public final class V8Runtime implements JavetClosable, JavetResettable, JavetLog
         this.v8Host = v8Host;
     }
 
-    long getHandle() {
+    public long getHandle() {
         return handle;
     }
 
@@ -152,8 +153,8 @@ public final class V8Runtime implements JavetClosable, JavetResettable, JavetLog
         execute(scriptString, v8ScriptOrigin, false);
     }
 
-    public int getLength(V8ValueReference v8ValueReference) {
-        return V8Native.getLength(handle, v8ValueReference.getType(), v8ValueReference.getHandle());
+    public int getLength(IV8ValueCollection iV8ValueCollection) {
+        return V8Native.getLength(handle, iV8ValueCollection.getHandle(), iV8ValueCollection.getType());
     }
 
     @Override

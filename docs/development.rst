@@ -8,7 +8,7 @@ Development Tools
 JDK
 ---
 
-JDK 8 is the minimal supported JDK version. Javet development required JDK 8 to be installed.
+Javet development requires JDK 8 to be installed, though Javet supports JDK 8+. 
 
 IDE
 ---

@@ -20,10 +20,10 @@ package com.caoccao.javet.values;
 import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyRegisteredException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeNotRegisteredException;
-import com.caoccao.javet.interfaces.JavetClosable;
+import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 
-public abstract class V8Value implements JavetClosable {
+public abstract class V8Value implements IJavetClosable {
     protected V8Runtime v8Runtime;
 
     public V8Value() {
@@ -51,8 +51,7 @@ public abstract class V8Value implements JavetClosable {
         this.v8Runtime.checkLock();
     }
 
-    protected void releaseReference() {
-    }
+    protected abstract void releaseReference();
 
     @Override
     public void close() throws JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException {

@@ -21,4 +21,8 @@ public final class V8ValueUndefined extends V8Value {
     public V8ValueUndefined() {
         super();
     }
+
+    @Override
+    protected void releaseReference() {
+    }
 }
