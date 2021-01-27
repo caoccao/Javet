@@ -118,10 +118,10 @@ public final class V8Runtime
     }
 
     public <T extends V8Value> T getValue(
-            IV8ValueCollection iV8ValueCollection, int index) throws JavetException {
+            IV8ValueObject iV8ValueObject, int index) throws JavetException {
         checkLock();
         return decorateV8Value((T) V8Native.getValue(
-                handle, iV8ValueCollection.getHandle(), iV8ValueCollection.getType(), index));
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), index));
     }
 
     public <T extends V8Value> T getValue(

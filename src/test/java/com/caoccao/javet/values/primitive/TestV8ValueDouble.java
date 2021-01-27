@@ -21,12 +21,14 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.BaseTestV8Value;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestV8ValueDouble extends BaseTestV8Value {
     public static final double DELTA = 0.001;
+
     @Test
-    public void testDouble() throws JavetException {
+    public void testNumber() throws JavetException {
         try (V8ValueDouble v8ValueDouble = v8Runtime.execute("1.23")) {
             assertNotNull(v8ValueDouble);
             assertEquals(v8Runtime, v8ValueDouble.getV8Runtime());
@@ -34,5 +36,10 @@ public class TestV8ValueDouble extends BaseTestV8Value {
         }
         assertEquals(-0.5, v8Runtime.executeDouble("-0.5"), DELTA);
         assertEquals(0, v8Runtime.executeDouble("-0.0"), DELTA);
+    }
+
+    @Test
+    public void testNumberObject() throws JavetException {
+        assertEquals(1.23, v8Runtime.executeDouble("Number(1.23)"), DELTA);
     }
 }

@@ -60,6 +60,9 @@ namespace Javet {
 		static jclass jclassV8ValueArray;
 		static jmethodID jmethodIDV8ValueArrayConstructor;
 
+		static jclass jclassV8ValueError;
+		static jmethodID jmethodIDV8ValueErrorConstructor;
+
 		static jclass jclassV8ValueObject;
 		static jmethodID jmethodIDV8ValueObjectConstructor;
 
@@ -67,7 +70,7 @@ namespace Javet {
 
 		jobject toJV8Value(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
 
-		jobject toJV8ValueNull(JNIEnv* jniEnv);
+		inline jobject toJV8ValueNull(JNIEnv* jniEnv);
 
 		jobject toJV8ValueUndefined(JNIEnv* jniEnv);
 

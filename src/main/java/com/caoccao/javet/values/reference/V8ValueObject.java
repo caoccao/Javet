@@ -27,6 +27,13 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public <T extends V8Value> T getValue(int index)
+            throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getValue(this, index);
+    }
+
+    @Override
     public <T extends V8Value> T getValue(String key)
             throws JavetException {
         checkV8Runtime();

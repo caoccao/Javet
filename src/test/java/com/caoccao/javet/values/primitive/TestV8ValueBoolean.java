@@ -41,4 +41,10 @@ public class TestV8ValueBoolean extends BaseTestV8Value {
         assertTrue(v8Runtime.executeBoolean("true"));
         assertFalse(v8Runtime.executeBoolean("false"));
     }
+
+    @Test
+    public void testBooleanObject() throws JavetException {
+        assertTrue(v8Runtime.executeBoolean("Boolean(true)"));
+        assertFalse(v8Runtime.executeBoolean("Boolean(false)"));
+    }
 }

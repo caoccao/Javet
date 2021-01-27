@@ -21,16 +21,22 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.BaseTestV8Value;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestV8ValueInteger extends BaseTestV8Value {
     @Test
-    public void testInteger() throws JavetException {
+    public void testInt32() throws JavetException {
         try (V8ValueInteger v8ValueInteger = v8Runtime.execute("1 + 1")) {
             assertNotNull(v8ValueInteger);
             assertEquals(2, v8ValueInteger.getValue());
             assertEquals(v8Runtime, v8ValueInteger.getV8Runtime());
         }
         assertEquals(-1, v8Runtime.executeInteger("1 - 2"));
+    }
+
+    @Test
+    public void testInt32Object() throws JavetException {
+        assertEquals(123, v8Runtime.executeInteger("Number(123)"));
     }
 }
