@@ -21,14 +21,10 @@
 #include <jni.h>
 #include <v8.h>
 
+#define JAVET_CONVERTER_BIGINT_STANDARD
+
 namespace Javet {
 	namespace Converter {
-		static jclass jclassInteger;
-		static jmethodID jmethodIDIntegerValueOf;
-
-		static jclass jclassLong;
-		static jmethodID jmethodIDLongValueOf;
-
 		static jclass jclassV8ValueNull;
 		static jmethodID jmethodIDV8ValueNullConstructor;
 
@@ -39,6 +35,9 @@ namespace Javet {
 
 		static jclass jclassV8ValueBoolean;
 		static jmethodID jmethodIDV8ValueBooleanConstructor;
+
+		static jclass jclassV8ValueDouble;
+		static jmethodID jmethodIDV8ValueDoubleConstructor;
 
 		static jclass jclassV8ValueInteger;
 		static jmethodID jmethodIDV8ValueIntegerConstructor;
@@ -52,6 +51,9 @@ namespace Javet {
 
 		static jclass jclassV8ValueUnknown;
 		static jmethodID jmethodIDV8ValueUnknownConstructor;
+
+		static jclass jclassV8ValueZonedDateTime;
+		static jmethodID jmethodIDV8ValueZonedDateTimeConstructor;
 
 		// Reference
 

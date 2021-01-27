@@ -4,6 +4,8 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
+import java.time.ZonedDateTime;
+
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
     IV8ValueCollection getPropertyNames() throws JavetException;
@@ -13,6 +15,10 @@ public interface IV8ValueObject extends IV8ValueReference {
     <T extends V8Value> T getValue(String key) throws JavetException;
 
     default Boolean getValueBoolean(String key) throws JavetException {
+        return getValueObject(key);
+    }
+
+    default Double getValueDouble(String key) throws JavetException {
         return getValueObject(key);
     }
 
@@ -35,6 +41,10 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default String getValueString(String key) throws JavetException {
+        return getValueObject(key);
+    }
+
+    default ZonedDateTime getValueZonedDateTime(String key) throws JavetException {
         return getValueObject(key);
     }
 }

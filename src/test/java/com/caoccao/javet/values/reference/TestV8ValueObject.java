@@ -9,6 +9,8 @@ import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueObject extends BaseTestV8Value {
@@ -54,7 +56,7 @@ public class TestV8ValueObject extends BaseTestV8Value {
     public void testGetValue() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'};"
-                        + "x['i'] = true;"
+                        + "x['i'] = true;x['j'] = 1.23;x['k'] = new Date(1611710223719);"
                         + "x;")) {
             assertNotNull(v8ValueObject);
             assertEquals(v8Runtime, v8ValueObject.getV8Runtime());
@@ -76,6 +78,10 @@ public class TestV8ValueObject extends BaseTestV8Value {
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
             assertTrue(v8ValueObject.getValueBoolean("i"));
+            assertEquals(1.23, v8ValueObject.getValueDouble("j"), 0.001);
+            assertEquals(
+                    "2021-01-27T01:17:03.719Z[UTC]",
+                    v8ValueObject.getValueZonedDateTime("k").withZoneSameInstant(ZoneId.of("UTC")).toString());
             assertEquals(1, v8Runtime.getReferenceCount());
         }
     }

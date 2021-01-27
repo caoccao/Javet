@@ -25,12 +25,6 @@ namespace Javet {
 			 @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html
 			*/
 
-			jclassInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/lang/Integer"));
-			jmethodIDIntegerValueOf = jniEnv->GetStaticMethodID(jclassInteger, "valueOf", "(I)Ljava/lang/Integer;");
-
-			jclassLong = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/lang/Long"));
-			jmethodIDLongValueOf = jniEnv->GetStaticMethodID(jclassLong, "valueOf", "(J)Ljava/lang/Long;");
-
 			jclassV8ValueNull = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8ValueNull"));
 			jmethodIDV8ValueNullConstructor = jniEnv->GetMethodID(jclassV8ValueNull, "<init>", "()V");
 
@@ -42,18 +36,24 @@ namespace Javet {
 			jclassV8ValueBoolean = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueBoolean"));
 			jmethodIDV8ValueBooleanConstructor = jniEnv->GetMethodID(jclassV8ValueBoolean, "<init>", "(Z)V");
 
+			jclassV8ValueDouble = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueDouble"));
+			jmethodIDV8ValueDoubleConstructor = jniEnv->GetMethodID(jclassV8ValueDouble, "<init>", "(D)V");
+
 			jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
-			jmethodIDV8ValueIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueInteger, "<init>", "(Ljava/lang/Integer;Z)V");
+			jmethodIDV8ValueIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueInteger, "<init>", "(I)V");
 
 			jclassV8ValueLong = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueLong"));
-			jmethodIDV8ValueLongConstructorFromLong = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/Long;Z)V");
-			jmethodIDV8ValueLongConstructorFromString = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/String;Z)V");
+			jmethodIDV8ValueLongConstructorFromLong = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(J)V");
+			jmethodIDV8ValueLongConstructorFromString = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/String;)V");
 
 			jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueString"));
 			jmethodIDV8ValueStringConstructor = jniEnv->GetMethodID(jclassV8ValueString, "<init>", "(Ljava/lang/String;)V");
 
 			jclassV8ValueUnknown = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueUnknown"));
 			jmethodIDV8ValueUnknownConstructor = jniEnv->GetMethodID(jclassV8ValueUnknown, "<init>", "(Ljava/lang/String;)V");
+
+			jclassV8ValueZonedDateTime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueZonedDateTime"));
+			jmethodIDV8ValueZonedDateTimeConstructor = jniEnv->GetMethodID(jclassV8ValueZonedDateTime, "<init>", "(J)V");
 
 			// Reference
 
@@ -85,24 +85,28 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueBoolean, jmethodIDV8ValueBooleanConstructor, v8Value->IsTrue());
 			}
 			if (v8Value->IsInt32()) {
-				jobject integerValue = jniEnv->CallStaticObjectMethod(jclassInteger, jmethodIDIntegerValueOf, v8Value->Int32Value(v8Context).FromMaybe(0));
-				return jniEnv->NewObject(jclassV8ValueInteger, jmethodIDV8ValueIntegerConstructor, integerValue, false);
+				return jniEnv->NewObject(jclassV8ValueInteger, jmethodIDV8ValueIntegerConstructor, v8Value->Int32Value(v8Context).FromMaybe(0));
 			}
-			if (v8Value->IsBigInt()) {
-				// Note: There's something wrong with IntegerValue().
-				//jobject longValue = jniEnv->CallStaticObjectMethod(jclassLong, jmethodIDLongValueOf, v8Value->IntegerValue(v8Context).FromMaybe(0L));
-				//return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromLong, longValue, false);
+			if (v8Value->IsBigInt() || v8Value->IsBigIntObject()) {
+#ifdef JAVET_CONVERTER_BIGINT_STANDARD
+				// This is the standard way of getting int64.
+				return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromLong,
+					v8Value->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
+#else
+				// There is another way of getting int64. This branch is disabled by default.
 				v8::String::Value stringValue(v8Context->GetIsolate(), v8Value);
 				jstring mStringValue = jniEnv->NewString(*stringValue, stringValue.length());
-				jobject mV8Value = jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromString, mStringValue, false);
+				jobject mV8Value = jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromString, mStringValue);
 				jniEnv->DeleteLocalRef(mStringValue);
 				return mV8Value;
-			}
-			if (v8Value->IsNumber()) {
-				// TODO
+#endif // JAVET_CONVERTER_BIGINT_STANDARD
 			}
 			if (v8Value->IsDate()) {
-				// TODO
+				auto v8Date = v8Value->ToObject(v8Context).ToLocalChecked().As<v8::Date>();
+				return jniEnv->NewObject(jclassV8ValueZonedDateTime, jmethodIDV8ValueZonedDateTimeConstructor, static_cast<std::int64_t>(v8Date->ValueOf()));
+			}
+			if (v8Value->IsNumber()) {
+				return jniEnv->NewObject(jclassV8ValueDouble, jmethodIDV8ValueDoubleConstructor, v8Value->NumberValue(v8Context).FromMaybe(0));
 			}
 			if (v8Value->IsSymbol()) {
 				// TODO
@@ -113,6 +117,18 @@ namespace Javet {
 				jobject mV8Value = jniEnv->NewObject(jclassV8ValueString, jmethodIDV8ValueStringConstructor, mStringValue);
 				jniEnv->DeleteLocalRef(mStringValue);
 				return mV8Value;
+			}
+			if (v8Value->IsArrayBuffer()) {
+				// TODO
+			}
+			if (v8Value->IsTypedArray()) {
+				// TODO
+			}
+			if (v8Value->IsProxy()) {
+				// TODO
+			}
+			if (v8Value->IsName()) {
+				// TODO
 			}
 			// Object needs to be the last one.
 			if (v8Value->IsObject()) {

@@ -17,12 +17,20 @@
 
 package com.caoccao.javet.values.primitive;
 
-public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
-    public V8ValueInteger() {
-        this(Integer.valueOf(0));
+import com.caoccao.javet.utils.DateTimeUtils;
+
+import java.time.ZonedDateTime;
+
+public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> {
+    public V8ValueZonedDateTime() {
+        this(null);
     }
 
-    public V8ValueInteger(int value) {
+    public V8ValueZonedDateTime(ZonedDateTime value) {
         super(value);
+    }
+
+    public V8ValueZonedDateTime(long jsTimestamp) {
+        super(DateTimeUtils.toZonedDateTime(jsTimestamp));
     }
 }

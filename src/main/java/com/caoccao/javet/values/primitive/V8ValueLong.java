@@ -17,20 +17,16 @@
 
 package com.caoccao.javet.values.primitive;
 
-public final class V8ValueLong extends V8ValueNumber<Long> {
+public final class V8ValueLong extends V8ValuePrimitive<Long> {
     public V8ValueLong() {
         this(Long.valueOf(0));
     }
 
-    public V8ValueLong(Long value) {
+    public V8ValueLong(long value) {
         super(value);
     }
 
-    public V8ValueLong(Long value, boolean unsigned) {
-        super(value, unsigned);
-    }
-
-    public V8ValueLong(String value, boolean unsigned) {
-        super(Long.valueOf(value), unsigned);
+    public V8ValueLong(String value) {
+        super(Long.valueOf(value));
     }
 }

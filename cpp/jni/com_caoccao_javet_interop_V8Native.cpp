@@ -122,13 +122,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 	}
 	else if (!maybeLocalCompiledScript.IsEmpty()) {
 		v8::Local<v8::Script> compliedScript = maybeLocalCompiledScript.ToLocalChecked();
-		v8::MaybeLocal<v8::Value> maybeLocalValueResult;
-		if (mReturnResult) {
-			maybeLocalValueResult = compliedScript->Run(v8Context);
-		}
-		else {
-			compliedScript->Run(v8Context);
-		}
+		v8::MaybeLocal<v8::Value> maybeLocalValueResult = compliedScript->Run(v8Context);
 		if (v8TryCatch.HasCaught()) {
 			// TODO Exception handling
 			v8TryCatch.Reset();
