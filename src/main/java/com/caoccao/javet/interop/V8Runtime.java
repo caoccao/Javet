@@ -24,7 +24,10 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLoggable;
 import com.caoccao.javet.interfaces.IJavetResettable;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.*;
+import com.caoccao.javet.values.reference.IV8ValueCollection;
+import com.caoccao.javet.values.reference.IV8ValueObject;
+import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueReference;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -98,6 +101,16 @@ public final class V8Runtime
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
+    public boolean containsKey(IV8ValueObject iV8ValueObject, int key) throws JavetException {
+        checkLock();
+        return V8Native.containsKey(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
+    }
+
+    public boolean containsKey(IV8ValueObject iV8ValueObject, String key) throws JavetException {
+        checkLock();
+        return V8Native.containsKey(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
+    }
+
     public int getLength(IV8ValueCollection iV8ValueCollection) throws JavetException {
         checkLock();
         return V8Native.getLength(handle, iV8ValueCollection.getHandle(), iV8ValueCollection.getType());
@@ -115,6 +128,11 @@ public final class V8Runtime
         checkLock();
         return decorateV8Value((V8ValueArray) V8Native.getPropertyNames(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType()));
+    }
+
+    public int getSize(IV8ValueObject iV8ValueObject) throws JavetException {
+        checkLock();
+        return V8Native.getSize(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType());
     }
 
     public <T extends V8Value> T getValue(

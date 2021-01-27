@@ -1,7 +1,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8ValueType;
+import com.caoccao.javet.values.V8ValueReferenceType;
 
 public class V8ValueError extends V8ValueObject {
 
@@ -14,7 +14,7 @@ public class V8ValueError extends V8ValueObject {
 
     @Override
     public int getType() {
-        return V8ValueType.Error;
+        return V8ValueReferenceType.Error;
     }
 
     public String getMessage() throws JavetException {

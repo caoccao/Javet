@@ -17,6 +17,22 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    containsKey
+ * Signature: (JJII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_containsKey__JJII
+  (JNIEnv *, jclass, jlong, jlong, jint, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    containsKey
+ * Signature: (JJILjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_containsKey__JJILjava_lang_String_2
+  (JNIEnv *, jclass, jlong, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    createV8Runtime
  * Signature: (Ljava/lang/String;)J
  */
@@ -37,6 +53,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
  * Signature: (JJI)I
  */
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
+  (JNIEnv *, jclass, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getSize
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
   (JNIEnv *, jclass, jlong, jlong, jint);
 
 /*

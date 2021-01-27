@@ -23,6 +23,10 @@ final class V8Native {
 
     native static void closeV8Runtime(long v8RuntimeHandle);
 
+    native static boolean containsKey(long handle, long handle1, int type, int key);
+
+    native static boolean containsKey(long handle, long handle1, int type, String key);
+
     native static long createV8Runtime(String globalName);
 
     native static Object execute(
@@ -31,6 +35,8 @@ final class V8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     native static int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static Object getOwnPropertyNames(long handle, long handle1, int type);
 

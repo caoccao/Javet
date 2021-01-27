@@ -55,7 +55,7 @@ public class TestV8ValueObject extends BaseTestV8Value {
     @Test
     public void testGetValue() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute(
-                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'};"
+                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1, 3: 'x'}, '中文': '測試'};"
                         + "x['i'] = true;x['j'] = 1.23;x['k'] = new Date(1611710223719);"
                         + "x;")) {
             assertNotNull(v8ValueObject);
@@ -75,6 +75,11 @@ public class TestV8ValueObject extends BaseTestV8Value {
                 assertNotNull(childV8ValueObject);
                 assertEquals(v8Runtime, childV8ValueObject.getV8Runtime());
                 assertEquals(1, childV8ValueObject.getValueInteger("h"));
+                assertEquals("x", childV8ValueObject.getValueString(3));
+                assertTrue(childV8ValueObject.containsKey("h"));
+                assertTrue(childV8ValueObject.containsKey(3));
+                assertFalse(childV8ValueObject.containsKey("p"));
+                assertFalse(childV8ValueObject.containsKey(1));
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
             assertTrue(v8ValueObject.getValueBoolean("i"));

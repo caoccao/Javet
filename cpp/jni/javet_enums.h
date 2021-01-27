@@ -17,9 +17,15 @@
 
 namespace Javet {
     namespace Enums {
-        enum V8ValueType {
+        enum V8ValueReferenceType {
             Object = 1,
             Error = 2,
+            Regex = 3,
+            Promise = 4,
+            Proxy = 5,
+            Symbol = 6,
+            Arguments = 7,
+            Map = 8,
             Array = 21,
         };
     }

@@ -8,6 +8,10 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    boolean containsKey(int key) throws JavetException;
+
+    boolean containsKey(String key) throws JavetException;
+
     IV8ValueCollection getPropertyNames() throws JavetException;
 
     IV8ValueCollection getOwnPropertyNames() throws JavetException;

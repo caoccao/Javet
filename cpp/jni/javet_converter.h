@@ -57,14 +57,32 @@ namespace Javet {
 
 		// Reference
 
+		static jclass jclassV8ValueArguments;
+		static jmethodID jmethodIDV8ValueArgumentsConstructor;
+
 		static jclass jclassV8ValueArray;
 		static jmethodID jmethodIDV8ValueArrayConstructor;
 
 		static jclass jclassV8ValueError;
 		static jmethodID jmethodIDV8ValueErrorConstructor;
 
+		static jclass jclassV8ValueMap;
+		static jmethodID jmethodIDV8ValueMapConstructor;
+
 		static jclass jclassV8ValueObject;
 		static jmethodID jmethodIDV8ValueObjectConstructor;
+
+		static jclass jclassV8ValuePromise;
+		static jmethodID jmethodIDV8ValuePromiseConstructor;
+
+		static jclass jclassV8ValueProxy;
+		static jmethodID jmethodIDV8ValueProxyConstructor;
+
+		static jclass jclassV8ValueRegex;
+		static jmethodID jmethodIDV8ValueRegexConstructor;
+
+		static jclass jclassV8ValueSymbol;
+		static jmethodID jmethodIDV8ValueSymbolConstructor;
 
 		void initializeJavetConverter(JNIEnv* jniEnv);
 
@@ -72,15 +90,17 @@ namespace Javet {
 
 		inline jobject toJV8ValueNull(JNIEnv* jniEnv);
 
+		inline jobject toJV8ValueReference(
+			JNIEnv* jniEnv, jclass jclassV8ValueReference, jmethodID jmethodIDV8ValueReferenceConstructor,
+			v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
+
 		jobject toJV8ValueUndefined(JNIEnv* jniEnv);
 
-		inline v8::Local<v8::Boolean> toV8Boolean(v8::Isolate* v8Isolate, jboolean& managedBoolean) {
-			return v8::Boolean::New(v8Isolate, managedBoolean);
-		}
+		inline v8::Local<v8::Boolean> toV8Boolean(v8::Isolate* v8Isolate, jboolean& managedBoolean);
 
-		inline v8::Local<v8::Integer> toV8Integer(v8::Isolate* v8Isolate, jint& managedInteger) {
-			return v8::Integer::New(v8Isolate, managedInteger);
-		}
+		v8::Local<v8::Integer> toV8Integer(v8::Isolate* v8Isolate, jint& managedInteger);
+
+		inline jlong toV8PersistentObjectReference(v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
 
 		v8::ScriptOrigin* toV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Isolate* v8Isolate,
 			jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule);
