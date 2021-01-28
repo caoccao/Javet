@@ -15,6 +15,8 @@
  *   limitations under the License.
  */
 
+#pragma once
+
 namespace Javet {
     namespace Enums {
         enum V8ValueReferenceType {
@@ -26,6 +28,7 @@ namespace Javet {
             Symbol = 6,
             Arguments = 7,
             Map = 8,
+            Set = 9,
             Array = 21,
         };
     }

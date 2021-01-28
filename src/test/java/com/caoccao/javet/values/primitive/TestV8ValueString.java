@@ -17,23 +17,24 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.BaseTestV8Value;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TestV8ValueString extends BaseTestV8Value {
+public class TestV8ValueString extends BaseTestJavetRuntime {
     @Test
     public void testString() throws JavetException {
         V8ValueString v8ValueString = v8Runtime.execute("'abc' + 'def'");
         assertNotNull(v8ValueString);
         assertEquals("abcdef", v8ValueString.getValue());
-        assertEquals(v8Runtime, v8ValueString.getV8Runtime());
+        assertEquals("abcdef", v8ValueString.toString());
         assertEquals("中文測試", v8Runtime.executeString("'中文測試'"));
         assertEquals("français", v8Runtime.executeString("'français'"));
         assertEquals("こにちは", v8Runtime.executeString("'こにちは'"));
+        assertEquals(v8Runtime, v8ValueString.getV8Runtime());
     }
 
     @Test

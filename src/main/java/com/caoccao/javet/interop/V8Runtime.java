@@ -24,10 +24,7 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLoggable;
 import com.caoccao.javet.interfaces.IJavetResettable;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.IV8ValueCollection;
-import com.caoccao.javet.values.reference.IV8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueReference;
+import com.caoccao.javet.values.reference.*;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -210,5 +207,10 @@ public final class V8Runtime
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    public String toString(IV8ValueReference iV8ValueReference) throws JavetV8RuntimeLockConflictException {
+        checkLock();
+        return V8Native.toString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
     }
 }

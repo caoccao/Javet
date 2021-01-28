@@ -1,7 +1,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.BaseTestV8Value;
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.values.V8ValueNull;
 import com.caoccao.javet.values.V8ValueUndefined;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
@@ -13,7 +13,7 @@ import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestV8ValueObject extends BaseTestV8Value {
+public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute(

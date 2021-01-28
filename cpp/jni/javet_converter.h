@@ -81,6 +81,9 @@ namespace Javet {
 		static jclass jclassV8ValueRegex;
 		static jmethodID jmethodIDV8ValueRegexConstructor;
 
+		static jclass jclassV8ValueSet;
+		static jmethodID jmethodIDV8ValueSetConstructor;
+
 		static jclass jclassV8ValueSymbol;
 		static jmethodID jmethodIDV8ValueSymbolConstructor;
 

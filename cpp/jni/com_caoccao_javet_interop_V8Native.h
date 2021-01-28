@@ -129,19 +129,27 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    unlockV8Runtime
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    setFlags
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
   (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    toString
+ * Signature: (JJI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
+  (JNIEnv *, jclass, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    unlockV8Runtime
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

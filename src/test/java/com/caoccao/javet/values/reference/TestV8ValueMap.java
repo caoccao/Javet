@@ -1,12 +1,12 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.BaseTestV8Value;
+import com.caoccao.javet.BaseTestJavetRuntime;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestV8ValueMap extends BaseTestV8Value {
+public class TestV8ValueMap extends BaseTestJavetRuntime {
     @Test
     public void testMap() throws JavetException {
         try (V8ValueMap v8ValueMap = v8Runtime.execute(
@@ -20,6 +20,7 @@ public class TestV8ValueMap extends BaseTestV8Value {
             assertTrue(v8ValueMap.containsKey(3));
             assertFalse(v8ValueMap.containsKey("p"));
             assertFalse(v8ValueMap.containsKey(0));
+            assertEquals( "[object Map]", v8ValueMap.toString());
         }
     }
 }

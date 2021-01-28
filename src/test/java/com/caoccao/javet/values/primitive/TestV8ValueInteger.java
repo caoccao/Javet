@@ -17,19 +17,20 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.BaseTestV8Value;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TestV8ValueInteger extends BaseTestV8Value {
+public class TestV8ValueInteger extends BaseTestJavetRuntime {
     @Test
     public void testInt32() throws JavetException {
         try (V8ValueInteger v8ValueInteger = v8Runtime.execute("1 + 1")) {
             assertNotNull(v8ValueInteger);
             assertEquals(2, v8ValueInteger.getValue());
+            assertEquals("2", v8ValueInteger.toString());
             assertEquals(v8Runtime, v8ValueInteger.getV8Runtime());
         }
         assertEquals(-1, v8Runtime.executeInteger("1 - 2"));

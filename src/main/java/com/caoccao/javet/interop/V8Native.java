@@ -23,9 +23,9 @@ final class V8Native {
 
     native static void closeV8Runtime(long v8RuntimeHandle);
 
-    native static boolean containsKey(long handle, long handle1, int type, int key);
+    native static boolean containsKey(long v8RuntimeHandle, long v8ValueHandle, int type, int key);
 
-    native static boolean containsKey(long handle, long handle1, int type, String key);
+    native static boolean containsKey(long v8RuntimeHandle, long v8ValueHandle, int type, String key);
 
     native static long createV8Runtime(String globalName);
 
@@ -38,9 +38,9 @@ final class V8Native {
 
     native static int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    native static Object getOwnPropertyNames(long handle, long handle1, int type);
+    native static Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    native static Object getPropertyNames(long handle, long handle1, int type);
+    native static Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static Object getValue(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
 
@@ -54,8 +54,6 @@ final class V8Native {
 
     native static void resetV8Runtime(long v8RuntimeHandle, String globalName);
 
-    native static void unlockV8Runtime(long v8RuntimeHandle);
-
     /**
      * Sets flags.
      * <p>
@@ -65,4 +63,8 @@ final class V8Native {
      * @param flags the flags
      */
     native static void setFlags(String flags);
+
+    native static String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType) ;
+
+    native static void unlockV8Runtime(long v8RuntimeHandle);
 }

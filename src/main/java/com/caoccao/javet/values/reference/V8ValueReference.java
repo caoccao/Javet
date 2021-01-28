@@ -1,7 +1,9 @@
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyRegisteredException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
+import com.caoccao.javet.exceptions.JavetV8RuntimeNotRegisteredException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
@@ -30,5 +32,15 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     @Override
     public long getHandle() {
         return handle;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            checkV8Runtime();
+            return v8Runtime.toString(this);
+        } catch (JavetException e) {
+            return e.getMessage();
+        }
     }
 }

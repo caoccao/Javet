@@ -15,17 +15,29 @@
  *   limitations under the License.
  */
 
-
 #pragma once
+
 #include <jni.h>
+#include <v8.h>
 
 namespace Javet {
 	namespace Exceptions {
+		static jclass jclassJavetCompilationException;
+		static jmethodID jmethodIDJavetCompilationExceptionConstructor;
+		static jclass jclassJavetConverterException;
+		static jclass jclassJavetExecutionException;
+		static jmethodID jmethodIDJavetExecutionExceptionConstructor;
+		static jclass jclassJavetUnknownCompilationException;
+		static jmethodID jmethodIDJavetUnknownCompilationExceptionConstructor;
+		static jclass jclassJavetUnknownExecutionException;
+		static jmethodID jmethodIDJavetUnknownExecutionExceptionConstructor;
 		static jclass jclassJavetV8RuntimeLockConflictException;
-		static jclass jclassJavetV8RuntimeUnlockConflictException;
 
 		void initializeJavetExceptions(JNIEnv* jniEnv);
 
+		void throwJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch);
+		void throwJavetConverterException(JNIEnv* jniEnv, const char* message);
+		void throwJavetExecutionException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch);
 		void throwJavetV8RuntimeLockConflictException(JNIEnv* jniEnv, const char* message);
 	}
 }

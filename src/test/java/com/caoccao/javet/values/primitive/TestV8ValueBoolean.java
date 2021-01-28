@@ -17,25 +17,27 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.BaseTestV8Value;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestV8ValueBoolean extends BaseTestV8Value {
+public class TestV8ValueBoolean extends BaseTestJavetRuntime {
     @Test
     public void testBoolean() throws JavetException {
         try (V8ValueBoolean v8ValueBoolean = v8Runtime.execute("1 == 1")) {
             assertNotNull(v8ValueBoolean);
             assertTrue(v8ValueBoolean.isPresent());
             assertTrue(v8ValueBoolean.getValue());
+            assertEquals("true", v8ValueBoolean.toString());
             assertEquals(v8Runtime, v8ValueBoolean.getV8Runtime());
         }
         try (V8ValueBoolean v8ValueBoolean = v8Runtime.execute("1 != 1")) {
             assertNotNull(v8ValueBoolean);
             assertTrue(v8ValueBoolean.isPresent());
             assertFalse(v8ValueBoolean.getValue());
+            assertEquals("false", v8ValueBoolean.toString());
             assertEquals(v8Runtime, v8ValueBoolean.getV8Runtime());
         }
         assertTrue(v8Runtime.executeBoolean("true"));

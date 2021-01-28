@@ -17,8 +17,8 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.BaseTestV8Value;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -26,7 +26,7 @@ import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestV8ValueZonedDateTime extends BaseTestV8Value {
+public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
 
     public static final int DELTA = 2000;
 

@@ -15,20 +15,12 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.exceptions;
 
-import com.caoccao.javet.BaseTestJavetRuntime;
-import com.caoccao.javet.exceptions.JavetException;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-public class TestV8ValueNull extends BaseTestJavetRuntime {
-    @Test
-    public void testNull() throws JavetException {
-        V8ValueNull v8ValueNull = v8Runtime.execute("null");
-        assertNotNull(v8ValueNull);
-        assertEquals(v8Runtime, v8ValueNull.getV8Runtime());
+public class JavetExecutionException extends BaseJavetScriptingException {
+    public JavetExecutionException(
+            String message, String resourceName, String sourceLine,
+            int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
+        super(message, resourceName, sourceLine, lineNumber, startColumn, endColumn, startPosition, endPosition);
     }
 }

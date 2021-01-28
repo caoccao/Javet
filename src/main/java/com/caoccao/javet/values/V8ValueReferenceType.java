@@ -9,5 +9,6 @@ public final class V8ValueReferenceType {
     public static final int Symbol = 6;
     public static final int Arguments = 7;
     public static final int Map = 8;
+    public static final int Set = 9;
     public static final int Array = 21;
 }

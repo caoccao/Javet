@@ -15,9 +15,8 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet;
 
-import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.interop.V8Host;
@@ -27,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public abstract class BaseTestV8Value extends BaseTestJavet {
+public abstract class BaseTestJavetRuntime extends BaseTestJavet {
     protected V8Runtime v8Runtime;
 
     @BeforeEach

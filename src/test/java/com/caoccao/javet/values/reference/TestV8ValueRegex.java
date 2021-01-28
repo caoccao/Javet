@@ -1,13 +1,13 @@
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.BaseTestV8Value;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TestV8ValueRegex extends BaseTestV8Value {
+public class TestV8ValueRegex extends BaseTestJavetRuntime {
     @Test
     public void testRegex() throws JavetException {
         try (V8ValueRegex v8ValueRegex = v8Runtime.execute("/123/g")) {

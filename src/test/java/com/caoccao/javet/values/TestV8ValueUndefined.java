@@ -17,13 +17,14 @@
 
 package com.caoccao.javet.values;
 
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TestV8ValueUndefined extends BaseTestV8Value {
+public class TestV8ValueUndefined extends BaseTestJavetRuntime {
     @Test
     public void testUndefined() throws JavetException {
         V8ValueUndefined v8ValueUndefined = v8Runtime.execute("undefined");

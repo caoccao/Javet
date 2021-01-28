@@ -81,6 +81,9 @@ namespace Javet {
 			jclassV8ValueRegex = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueRegex"));
 			jmethodIDV8ValueRegexConstructor = jniEnv->GetMethodID(jclassV8ValueRegex, "<init>", "(J)V");
 
+			jclassV8ValueSet = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueSet"));
+			jmethodIDV8ValueSetConstructor = jniEnv->GetMethodID(jclassV8ValueSet, "<init>", "(J)V");
+
 			jclassV8ValueSymbol = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueSymbol"));
 			jmethodIDV8ValueSymbolConstructor = jniEnv->GetMethodID(jclassV8ValueSymbol, "<init>", "(J)V");
 		}
@@ -135,7 +138,7 @@ namespace Javet {
 				// TODO
 			}
 			if (v8Value->IsSet()) {
-				// TODO
+				return jniEnv->NewObject(jclassV8ValueSet, jmethodIDV8ValueSetConstructor, toV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsSetIterator()) {
 				// TODO

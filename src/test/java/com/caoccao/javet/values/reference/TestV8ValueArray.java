@@ -1,7 +1,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.BaseTestV8Value;
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.values.V8ValueNull;
 import com.caoccao.javet.values.V8ValueUndefined;
 import com.caoccao.javet.values.primitive.*;
@@ -11,7 +11,7 @@ import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestV8ValueArray extends BaseTestV8Value {
+public class TestV8ValueArray extends BaseTestJavetRuntime {
     @Test
     public void testGetValue() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.execute(
@@ -31,6 +31,9 @@ public class TestV8ValueArray extends BaseTestV8Value {
             assertEquals(1.23, v8ValueArray.getValueDouble(4), 0.001);
             assertTrue(v8ValueArray.getValue(-1) instanceof V8ValueUndefined);
             assertTrue(v8ValueArray.getValue(100) instanceof V8ValueUndefined);
+            assertEquals(
+                    "1,2,3,true,1.23,4,5,,Wed Jan 27 2021 09:17:03 GMT+0800 (China Standard Time)",
+                    v8ValueArray.toString());
             assertEquals(1, v8Runtime.getReferenceCount());
             try (V8ValueArray childV8ValueArray = v8ValueArray.getValue(5)) {
                 assertNotNull(childV8ValueArray);

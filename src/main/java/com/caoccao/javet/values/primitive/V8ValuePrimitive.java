@@ -49,4 +49,9 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
     public boolean isPresent() {
         return value != null;
     }
+
+    @Override
+    public String toString() {
+        return isEmpty() ? null : value.toString();
+    }
 }
