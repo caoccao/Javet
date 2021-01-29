@@ -13,12 +13,16 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
                 "const a = new Set(); a.add('x', 1); a.add('y', 'b'); a.add(3, 'c'); a;")) {
             assertNotNull(v8ValueSet);
             assertEquals(3, v8ValueSet.getSize());
-            assertTrue(v8ValueSet.containsKey("x"));
-            assertTrue(v8ValueSet.containsKey("y"));
-            assertTrue(v8ValueSet.containsKey(3));
-            assertFalse(v8ValueSet.containsKey("p"));
-            assertFalse(v8ValueSet.containsKey(0));
+            assertTrue(v8ValueSet.has("x"));
+            assertTrue(v8ValueSet.has("y"));
+            assertTrue(v8ValueSet.has(3));
+            assertFalse(v8ValueSet.has("p"));
+            assertFalse(v8ValueSet.has(0));
             assertEquals("[object Set]", v8ValueSet.toString());
+            try (IV8ValueCollection iV8ValueCollection = v8ValueSet.getOwnPropertyNames()) {
+                assertNotNull(iV8ValueCollection);
+                assertEquals(0, iV8ValueCollection.getLength());
+            }
         }
     }
 }

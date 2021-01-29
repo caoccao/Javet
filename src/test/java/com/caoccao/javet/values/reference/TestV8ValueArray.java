@@ -19,32 +19,32 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertNotNull(v8ValueArray);
             assertEquals(v8Runtime, v8ValueArray.getV8Runtime());
             assertEquals(6, v8ValueArray.getLength());
-            assertEquals(1, ((V8ValueInteger) v8ValueArray.getValue(0)).getValue());
-            assertEquals(1, v8ValueArray.getValueInteger(0));
-            assertEquals("2", ((V8ValueString) v8ValueArray.getValue(1)).getValue());
-            assertEquals("2", v8ValueArray.getValueString(1));
-            assertEquals(3L, ((V8ValueLong) v8ValueArray.getValue(2)).getValue());
-            assertEquals(3L, v8ValueArray.getValueLong(2));
-            assertTrue(((V8ValueBoolean) v8ValueArray.getValue(3)).getValue());
-            assertTrue(v8ValueArray.getValueBoolean(3));
-            assertEquals(1.23, ((V8ValueDouble) v8ValueArray.getValue(4)).getValue(), 0.001);
-            assertEquals(1.23, v8ValueArray.getValueDouble(4), 0.001);
-            assertTrue(v8ValueArray.getValue(-1) instanceof V8ValueUndefined);
-            assertTrue(v8ValueArray.getValue(100) instanceof V8ValueUndefined);
+            assertEquals(1, ((V8ValueInteger) v8ValueArray.get(0)).getValue());
+            assertEquals(1, v8ValueArray.getInteger(0));
+            assertEquals("2", ((V8ValueString) v8ValueArray.get(1)).getValue());
+            assertEquals("2", v8ValueArray.getString(1));
+            assertEquals(3L, ((V8ValueLong) v8ValueArray.get(2)).getValue());
+            assertEquals(3L, v8ValueArray.getLong(2));
+            assertTrue(((V8ValueBoolean) v8ValueArray.get(3)).getValue());
+            assertTrue(v8ValueArray.getBoolean(3));
+            assertEquals(1.23, ((V8ValueDouble) v8ValueArray.get(4)).getValue(), 0.001);
+            assertEquals(1.23, v8ValueArray.getDouble(4), 0.001);
+            assertTrue(v8ValueArray.get(-1) instanceof V8ValueUndefined);
+            assertTrue(v8ValueArray.get(100) instanceof V8ValueUndefined);
             assertEquals(
                     "1,2,3,true,1.23,4,5,,Wed Jan 27 2021 09:17:03 GMT+0800 (China Standard Time)",
                     v8ValueArray.toString());
             assertEquals(1, v8Runtime.getReferenceCount());
-            try (V8ValueArray childV8ValueArray = v8ValueArray.getValue(5)) {
+            try (V8ValueArray childV8ValueArray = v8ValueArray.get(5)) {
                 assertNotNull(childV8ValueArray);
                 assertEquals(v8Runtime, childV8ValueArray.getV8Runtime());
                 assertEquals(4, childV8ValueArray.getLength());
-                assertEquals(4, childV8ValueArray.getValueInteger(0));
-                assertEquals(5, childV8ValueArray.getValueInteger(1));
-                assertTrue(childV8ValueArray.getValue(2) instanceof V8ValueNull);
+                assertEquals(4, childV8ValueArray.getInteger(0));
+                assertEquals(5, childV8ValueArray.getInteger(1));
+                assertTrue(childV8ValueArray.get(2) instanceof V8ValueNull);
                 assertEquals(
                         "2021-01-27T01:17:03.719Z[UTC]",
-                        childV8ValueArray.getValueZonedDateTime(3).withZoneSameInstant(ZoneId.of("UTC")).toString());
+                        childV8ValueArray.getZonedDateTime(3).withZoneSameInstant(ZoneId.of("UTC")).toString());
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
             assertEquals(1, v8Runtime.getReferenceCount());

@@ -18,7 +18,6 @@
 package com.caoccao.javet;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import org.junit.jupiter.api.AfterEach;
@@ -30,7 +29,7 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
     protected V8Runtime v8Runtime;
 
     @BeforeEach
-    public void beforeEach() throws JavetV8RuntimeLockConflictException {
+    public void beforeEach() throws JavetException {
         v8Runtime = V8Host.getInstance().createV8Runtime();
         v8Runtime.lock();
         assertEquals(0, v8Runtime.getReferenceCount());

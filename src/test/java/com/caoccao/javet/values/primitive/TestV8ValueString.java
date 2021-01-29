@@ -27,14 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestV8ValueString extends BaseTestJavetRuntime {
     @Test
     public void testString() throws JavetException {
-        V8ValueString v8ValueString = v8Runtime.execute("'abc' + 'def'");
-        assertNotNull(v8ValueString);
-        assertEquals("abcdef", v8ValueString.getValue());
-        assertEquals("abcdef", v8ValueString.toString());
+        try (V8ValueString v8ValueString = v8Runtime.execute("'abc' + 'def'")) {
+            assertNotNull(v8ValueString);
+            assertEquals("abcdef", v8ValueString.getValue());
+            assertEquals("abcdef", v8ValueString.toString());
+            assertEquals(v8Runtime, v8ValueString.getV8Runtime());
+        }
         assertEquals("中文測試", v8Runtime.executeString("'中文測試'"));
         assertEquals("français", v8Runtime.executeString("'français'"));
         assertEquals("こにちは", v8Runtime.executeString("'こにちは'"));
-        assertEquals(v8Runtime, v8ValueString.getV8Runtime());
     }
 
     @Test

@@ -8,33 +8,53 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
-    boolean containsKey(int key) throws JavetException;
+    boolean hasOwnProperty(int key) throws JavetException;
 
-    boolean containsKey(String key) throws JavetException;
+    boolean hasOwnProperty(String key) throws JavetException;
 
     IV8ValueCollection getPropertyNames() throws JavetException;
 
     IV8ValueCollection getOwnPropertyNames() throws JavetException;
 
-    default Boolean getValueBoolean(int index) throws JavetException {
-        return getValueObject(index);
+    <T extends V8Value> T getProperty(int index) throws JavetException;
+
+    <T extends V8Value> T getProperty(String key) throws JavetException;
+
+    default Boolean getPropertyBoolean(int index) throws JavetException {
+        return getPropertyObject(index);
     }
 
-    default Double getValueDouble(int index) throws JavetException {
-        return getValueObject(index);
+    default Boolean getPropertyBoolean(String key) throws JavetException {
+        return getPropertyObject(key);
     }
 
-    default Integer getValueInteger(int index) throws JavetException {
-        return getValueObject(index);
+    default Double getPropertyDouble(int index) throws JavetException {
+        return getPropertyObject(index);
     }
 
-    default Long getValueLong(int index) throws JavetException {
-        return getValueObject(index);
+    default Double getPropertyDouble(String key) throws JavetException {
+        return getPropertyObject(key);
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getValueObject(int index)
+    default Integer getPropertyInteger(int index) throws JavetException {
+        return getPropertyObject(index);
+    }
+
+    default Integer getPropertyInteger(String key) throws JavetException {
+        return getPropertyObject(key);
+    }
+
+    default Long getPropertyLong(int index) throws JavetException {
+        return getPropertyObject(index);
+    }
+
+    default Long getPropertyLong(String key) throws JavetException {
+        return getPropertyObject(key);
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R getPropertyObject(int index)
             throws JavetException {
-        V8Value v8Value = getValue(index);
+        V8Value v8Value = getProperty(index);
         try {
             return ((T) v8Value).getValue();
         } catch (Throwable t) {
@@ -42,37 +62,9 @@ public interface IV8ValueObject extends IV8ValueReference {
         return null;
     }
 
-    default String getValueString(int index) throws JavetException {
-        return getValueObject(index);
-    }
-
-    default ZonedDateTime getValueZonedDateTime(int index) throws JavetException {
-        return getValueObject(index);
-    }
-
-    <T extends V8Value> T getValue(int index) throws JavetException;
-
-    <T extends V8Value> T getValue(String key) throws JavetException;
-
-    default Boolean getValueBoolean(String key) throws JavetException {
-        return getValueObject(key);
-    }
-
-    default Double getValueDouble(String key) throws JavetException {
-        return getValueObject(key);
-    }
-
-    default Integer getValueInteger(String key) throws JavetException {
-        return getValueObject(key);
-    }
-
-    default Long getValueLong(String key) throws JavetException {
-        return getValueObject(key);
-    }
-
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getValueObject(String key)
+    default <R extends Object, T extends V8ValuePrimitive<R>> R getPropertyObject(String key)
             throws JavetException {
-        V8Value v8Value = getValue(key);
+        V8Value v8Value = getProperty(key);
         try {
             return ((T) v8Value).getValue();
         } catch (Throwable t) {
@@ -80,11 +72,19 @@ public interface IV8ValueObject extends IV8ValueReference {
         return null;
     }
 
-    default String getValueString(String key) throws JavetException {
-        return getValueObject(key);
+    default String getPropertyString(int index) throws JavetException {
+        return getPropertyObject(index);
     }
 
-    default ZonedDateTime getValueZonedDateTime(String key) throws JavetException {
-        return getValueObject(key);
+    default String getPropertyString(String key) throws JavetException {
+        return getPropertyObject(key);
+    }
+
+    default ZonedDateTime getPropertyZonedDateTime(int index) throws JavetException {
+        return getPropertyObject(index);
+    }
+
+    default ZonedDateTime getPropertyZonedDateTime(String key) throws JavetException {
+        return getPropertyObject(key);
     }
 }

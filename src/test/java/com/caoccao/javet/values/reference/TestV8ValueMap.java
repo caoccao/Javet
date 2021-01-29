@@ -13,14 +13,18 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
                 "const a = new Map(); a.set('x', 1); a.set('y', 'b'); a.set(3, 'c'); a;")) {
             assertNotNull(v8ValueMap);
             assertEquals(3, v8ValueMap.getSize());
-            assertEquals(1, v8ValueMap.getValueInteger("x"));
-            assertEquals("b", v8ValueMap.getValueString("y"));
-            assertEquals("c", v8ValueMap.getValueString(3));
-            assertTrue(v8ValueMap.containsKey("x"));
-            assertTrue(v8ValueMap.containsKey(3));
-            assertFalse(v8ValueMap.containsKey("p"));
-            assertFalse(v8ValueMap.containsKey(0));
+            assertEquals(1, v8ValueMap.getInteger("x"));
+            assertEquals("b", v8ValueMap.getString("y"));
+            assertEquals("c", v8ValueMap.getString(3));
+            assertTrue(v8ValueMap.has("x"));
+            assertTrue(v8ValueMap.has(3));
+            assertFalse(v8ValueMap.has("p"));
+            assertFalse(v8ValueMap.has(0));
             assertEquals( "[object Map]", v8ValueMap.toString());
+            try (IV8ValueCollection iV8ValueCollection = v8ValueMap.getOwnPropertyNames()) {
+                assertNotNull(iV8ValueCollection);
+                assertEquals(0, iV8ValueCollection.getLength());
+            }
         }
     }
 }

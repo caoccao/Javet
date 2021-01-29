@@ -15,18 +15,10 @@
  *
  */
 
-package com.caoccao.javet.values.primitive;
+package com.caoccao.javet.exceptions;
 
-public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
-    public V8ValueInteger() {
-        this(Integer.valueOf(0));
-    }
-
-    public V8ValueInteger(int value) {
-        super(value);
-    }
-
-    public int toPrimitive() {
-        return value.intValue();
+public class JavetV8RuntimeAlreadyClosedException extends JavetException {
+    public JavetV8RuntimeAlreadyClosedException() {
+        super("V8 runtime is already closed");
     }
 }

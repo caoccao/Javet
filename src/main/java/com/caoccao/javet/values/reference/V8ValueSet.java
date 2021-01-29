@@ -1,13 +1,9 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetNotSupportedException;
-import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
-public class V8ValueSet extends V8ValueObject {
-
-    public static final String SET_GET = "Set.get()";
+public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
 
     public V8ValueSet(long handle) {
         super(handle);
@@ -18,18 +14,26 @@ public class V8ValueSet extends V8ValueObject {
         return V8ValueReferenceType.Set;
     }
 
+    @Override
+    public IV8ValueCollection getKeys() throws JavetException {
+        return null;
+    }
+
+    @Override
     public int getSize() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getSize(this);
     }
 
     @Override
-    public <T extends V8Value> T getValue(int index) throws JavetException {
-        throw new JavetNotSupportedException(SET_GET);
+    public boolean has(int value) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.has(this, value);
     }
 
     @Override
-    public <T extends V8Value> T getValue(String key) throws JavetException {
-        throw new JavetNotSupportedException(SET_GET);
+    public boolean has(String value) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.has(this, value);
     }
 }

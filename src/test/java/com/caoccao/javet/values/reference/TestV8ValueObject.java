@@ -22,13 +22,13 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 assertNotNull(iV8ValueCollection);
                 assertEquals(7, iV8ValueCollection.getLength());
                 // Order is preserved since ES2015.
-                assertEquals("a", iV8ValueCollection.getValueString(0));
-                assertEquals("b", iV8ValueCollection.getValueString(1));
-                assertEquals("c", iV8ValueCollection.getValueString(2));
-                assertEquals("d", iV8ValueCollection.getValueString(3));
-                assertEquals("e", iV8ValueCollection.getValueString(4));
-                assertEquals("g", iV8ValueCollection.getValueString(5));
-                assertEquals("中文", iV8ValueCollection.getValueString(6));
+                assertEquals("a", iV8ValueCollection.getPropertyString(0));
+                assertEquals("b", iV8ValueCollection.getPropertyString(1));
+                assertEquals("c", iV8ValueCollection.getPropertyString(2));
+                assertEquals("d", iV8ValueCollection.getPropertyString(3));
+                assertEquals("e", iV8ValueCollection.getPropertyString(4));
+                assertEquals("g", iV8ValueCollection.getPropertyString(5));
+                assertEquals("中文", iV8ValueCollection.getPropertyString(6));
             }
         }
     }
@@ -41,13 +41,13 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 assertNotNull(iV8ValueCollection);
                 assertEquals(7, iV8ValueCollection.getLength());
                 // Order is preserved since ES2015.
-                assertEquals("a", iV8ValueCollection.getValueString(0));
-                assertEquals("b", iV8ValueCollection.getValueString(1));
-                assertEquals("c", iV8ValueCollection.getValueString(2));
-                assertEquals("d", iV8ValueCollection.getValueString(3));
-                assertEquals("e", iV8ValueCollection.getValueString(4));
-                assertEquals("g", iV8ValueCollection.getValueString(5));
-                assertEquals("中文", iV8ValueCollection.getValueString(6));
+                assertEquals("a", iV8ValueCollection.getPropertyString(0));
+                assertEquals("b", iV8ValueCollection.getPropertyString(1));
+                assertEquals("c", iV8ValueCollection.getPropertyString(2));
+                assertEquals("d", iV8ValueCollection.getPropertyString(3));
+                assertEquals("e", iV8ValueCollection.getPropertyString(4));
+                assertEquals("g", iV8ValueCollection.getPropertyString(5));
+                assertEquals("中文", iV8ValueCollection.getPropertyString(6));
             }
         }
     }
@@ -60,33 +60,33 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                         + "x;")) {
             assertNotNull(v8ValueObject);
             assertEquals(v8Runtime, v8ValueObject.getV8Runtime());
-            assertEquals(1, ((V8ValueInteger) v8ValueObject.getValue("a")).getValue());
-            assertEquals(1, v8ValueObject.getValueInteger("a"));
-            assertEquals("2", ((V8ValueString) v8ValueObject.getValue("b")).getValue());
-            assertEquals("2", v8ValueObject.getValueString("b"));
-            assertEquals(3L, ((V8ValueLong) v8ValueObject.getValue("c")).getValue());
-            assertEquals(3L, v8ValueObject.getValueLong("c"));
-            assertEquals(1, v8ValueObject.getValueInteger("d"));
-            assertTrue(v8ValueObject.getValue("e") instanceof V8ValueNull);
-            assertEquals("測試", v8ValueObject.getValueString("中文"));
-            assertTrue(v8ValueObject.getValue("$") instanceof V8ValueUndefined);
+            assertEquals(1, ((V8ValueInteger) v8ValueObject.getProperty("a")).getValue());
+            assertEquals(1, v8ValueObject.getPropertyInteger("a"));
+            assertEquals("2", ((V8ValueString) v8ValueObject.getProperty("b")).getValue());
+            assertEquals("2", v8ValueObject.getPropertyString("b"));
+            assertEquals(3L, ((V8ValueLong) v8ValueObject.getProperty("c")).getValue());
+            assertEquals(3L, v8ValueObject.getPropertyLong("c"));
+            assertEquals(1, v8ValueObject.getPropertyInteger("d"));
+            assertTrue(v8ValueObject.getProperty("e") instanceof V8ValueNull);
+            assertEquals("測試", v8ValueObject.getPropertyString("中文"));
+            assertTrue(v8ValueObject.getProperty("$") instanceof V8ValueUndefined);
             assertEquals(1, v8Runtime.getReferenceCount());
-            try (V8ValueObject childV8ValueObject = v8ValueObject.getValue("g")) {
+            try (V8ValueObject childV8ValueObject = v8ValueObject.getProperty("g")) {
                 assertNotNull(childV8ValueObject);
                 assertEquals(v8Runtime, childV8ValueObject.getV8Runtime());
-                assertEquals(1, childV8ValueObject.getValueInteger("h"));
-                assertEquals("x", childV8ValueObject.getValueString(3));
-                assertTrue(childV8ValueObject.containsKey("h"));
-                assertTrue(childV8ValueObject.containsKey(3));
-                assertFalse(childV8ValueObject.containsKey("p"));
-                assertFalse(childV8ValueObject.containsKey(1));
+                assertEquals(1, childV8ValueObject.getPropertyInteger("h"));
+                assertEquals("x", childV8ValueObject.getPropertyString(3));
+                assertTrue(childV8ValueObject.hasOwnProperty("h"));
+                assertTrue(childV8ValueObject.hasOwnProperty(3));
+                assertFalse(childV8ValueObject.hasOwnProperty("p"));
+                assertFalse(childV8ValueObject.hasOwnProperty(1));
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
-            assertTrue(v8ValueObject.getValueBoolean("i"));
-            assertEquals(1.23, v8ValueObject.getValueDouble("j"), 0.001);
+            assertTrue(v8ValueObject.getPropertyBoolean("i"));
+            assertEquals(1.23, v8ValueObject.getPropertyDouble("j"), 0.001);
             assertEquals(
                     "2021-01-27T01:17:03.719Z[UTC]",
-                    v8ValueObject.getValueZonedDateTime("k").withZoneSameInstant(ZoneId.of("UTC")).toString());
+                    v8ValueObject.getPropertyZonedDateTime("k").withZoneSameInstant(ZoneId.of("UTC")).toString());
             assertEquals(1, v8Runtime.getReferenceCount());
         }
     }

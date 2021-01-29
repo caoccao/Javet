@@ -20,7 +20,7 @@ public class V8ValueSymbol extends V8ValueObject {
     }
 
     public String getDescription() throws JavetException {
-        return getValueString(DESCRIPTION);
+        return getPropertyString(DESCRIPTION);
     }
 
     @Override

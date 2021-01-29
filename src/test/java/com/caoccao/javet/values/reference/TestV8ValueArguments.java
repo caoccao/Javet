@@ -13,8 +13,8 @@ public class TestV8ValueArguments extends BaseTestJavetRuntime {
         try (V8ValueArguments v8ValueArguments = v8Runtime.execute(
                 "const a = function(a, b) { return arguments; }; a(1, '2')")) {
             assertNotNull(v8ValueArguments);
-            assertEquals(1, v8ValueArguments.getValueInteger(0));
-            assertEquals("2", v8ValueArguments.getValueString(1));
+            assertEquals(1, v8ValueArguments.getInteger(0));
+            assertEquals("2", v8ValueArguments.getString(1));
         }
     }
 }

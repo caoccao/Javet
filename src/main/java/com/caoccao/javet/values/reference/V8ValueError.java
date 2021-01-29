@@ -18,10 +18,10 @@ public class V8ValueError extends V8ValueObject {
     }
 
     public String getMessage() throws JavetException {
-        return getValueString(MESSAGE);
+        return getPropertyString(MESSAGE);
     }
 
     public String getStack() throws JavetException {
-        return getValueString(STACK);
+        return getPropertyString(STACK);
     }
 }

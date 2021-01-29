@@ -27,12 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestV8ValueLong extends BaseTestJavetRuntime {
     @Test
     public void testBigInt() throws JavetException {
-        V8ValueLong v8ValueLong = v8Runtime.execute("2n ** 62n");
-        assertNotNull(v8ValueLong);
-        assertEquals(4611686018427387904L, v8ValueLong.getValue());
-        assertEquals("4611686018427387904", v8ValueLong.toString());
-        assertEquals(-2L, v8Runtime.executeLong("-2n"));
-        assertEquals(v8Runtime, v8ValueLong.getV8Runtime());
+        try (V8ValueLong v8ValueLong = v8Runtime.execute("2n ** 62n")) {
+            assertNotNull(v8ValueLong);
+            assertEquals(4611686018427387904L, v8ValueLong.getValue());
+            assertEquals("4611686018427387904", v8ValueLong.toString());
+            assertEquals(-2L, v8Runtime.executeLong("-2n"));
+            assertEquals(v8Runtime, v8ValueLong.getV8Runtime());
+        }
     }
 
     @Test

@@ -23,16 +23,14 @@ final class V8Native {
 
     native static void closeV8Runtime(long v8RuntimeHandle);
 
-    native static boolean containsKey(long v8RuntimeHandle, long v8ValueHandle, int type, int key);
-
-    native static boolean containsKey(long v8RuntimeHandle, long v8ValueHandle, int type, String key);
-
     native static long createV8Runtime(String globalName);
 
     native static Object execute(
             long v8RuntimeHandle, String script, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
+
+    native static Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     native static int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -42,11 +40,13 @@ final class V8Native {
 
     native static Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    native static Object getValue(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
-
-    native static Object getValue(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key);
+    native static Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     native static String getVersion();
+
+    native static boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    native static boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
     native static void lockV8Runtime(long v8RuntimeHandle);
 
@@ -64,7 +64,7 @@ final class V8Native {
      */
     native static void setFlags(String flags);
 
-    native static String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType) ;
+    native static String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static void unlockV8Runtime(long v8RuntimeHandle);
 }

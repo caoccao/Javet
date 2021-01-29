@@ -25,4 +25,8 @@ public final class V8ValueString extends V8ValuePrimitive<String> {
     public V8ValueString(String value) {
         super(value);
     }
+
+    public String toPrimitive() {
+        return value;
+    }
 }

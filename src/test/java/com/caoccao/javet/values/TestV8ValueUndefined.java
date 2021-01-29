@@ -27,10 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestV8ValueUndefined extends BaseTestJavetRuntime {
     @Test
     public void testUndefined() throws JavetException {
-        V8ValueUndefined v8ValueUndefined = v8Runtime.execute("undefined");
-        assertNotNull(v8ValueUndefined);
-        v8ValueUndefined = v8Runtime.execute("");
-        assertNotNull(v8ValueUndefined);
-        assertEquals(v8Runtime, v8ValueUndefined.getV8Runtime());
+        try (V8ValueUndefined v8ValueUndefined = v8Runtime.execute("undefined")) {
+            assertNotNull(v8ValueUndefined);
+            assertEquals(v8Runtime, v8ValueUndefined.getV8Runtime());
+        }
+        try (V8ValueUndefined v8ValueUndefined = v8Runtime.execute("")) {
+            assertNotNull(v8ValueUndefined);
+            assertEquals(v8Runtime, v8ValueUndefined.getV8Runtime());
+        }
     }
 }

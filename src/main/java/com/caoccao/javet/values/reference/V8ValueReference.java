@@ -1,9 +1,6 @@
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyRegisteredException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeNotRegisteredException;
+import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
@@ -16,12 +13,15 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    protected void releaseReference() throws JavetV8RuntimeLockConflictException {
+    protected void releaseReference() throws
+            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         v8Runtime.removeReference(this);
     }
 
     @Override
-    public void setV8Runtime(V8Runtime v8Runtime) throws JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException {
+    public void setV8Runtime(V8Runtime v8Runtime) throws
+            JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyClosedException {
         super.setV8Runtime(v8Runtime);
         v8Runtime.addReference(this);
     }
@@ -32,6 +32,24 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     @Override
     public long getHandle() {
         return handle;
+    }
+
+    @Override
+    public void checkV8Runtime() throws
+            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
+        if (handle == 0L) {
+            throw new JavetV8ValueAlreadyClosedException();
+        }
+        super.checkV8Runtime();
+    }
+
+    @Override
+    public void close() throws
+            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
+        super.close();
+        handle = 0L;
     }
 
     @Override
