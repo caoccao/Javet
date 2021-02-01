@@ -31,15 +31,11 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
     }
 
     @Override
-    protected void releaseReference() {
+    protected void addReference() {
     }
 
     public T getValue() {
         return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
     }
 
     public boolean isEmpty() {
@@ -48,6 +44,14 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
 
     public boolean isPresent() {
         return value != null;
+    }
+
+    @Override
+    protected void releaseReference() {
+    }
+
+    public void setValue(T value) {
+        this.value = value;
     }
 
     @Override

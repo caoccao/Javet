@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.interfaces;
 
+import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
+
 public interface IJavetResettable {
-    void reset();
+    void reset() throws JavetV8RuntimeLockConflictException;
 }

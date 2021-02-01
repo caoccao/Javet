@@ -23,6 +23,10 @@ public final class V8ValueUndefined extends V8Value {
     }
 
     @Override
+    protected void addReference() {
+    }
+
+    @Override
     protected void releaseReference() {
     }
 }

@@ -48,6 +48,8 @@ final class V8Native {
 
     native static Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
+    native static Object getGlobalObject(long v8RuntimeHandle);
+
     native static int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -70,6 +72,8 @@ final class V8Native {
 
     native static void resetV8Runtime(long v8RuntimeHandle, String globalName);
 
+    native static boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+
     /**
      * Sets flags.
      * <p>
@@ -80,7 +84,7 @@ final class V8Native {
      */
     native static void setFlags(String flags);
 
-    native static void setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+    native static boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     native static String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

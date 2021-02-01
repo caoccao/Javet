@@ -10,19 +10,71 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
-    default boolean hasOwnProperty(int key) throws JavetException {
-        return hasOwnProperty(new V8ValueInteger(key));
+    default <T extends V8Value> T get(int key) throws JavetException {
+        return get(new V8ValueInteger(key));
     }
 
-    default boolean hasOwnProperty(String key) throws JavetException {
-        return hasOwnProperty(new V8ValueString(key));
+    default <T extends V8Value> T get(String key) throws JavetException {
+        return get(new V8ValueString(key));
     }
 
-    boolean hasOwnProperty(V8Value key) throws JavetException;
+    <T extends V8Value> T get(V8Value key) throws JavetException;
 
-    IV8ValueCollection getPropertyNames() throws JavetException;
+    default Boolean getBoolean(int key) throws JavetException {
+        return getObject(key);
+    }
+
+    default Boolean getBoolean(String key) throws JavetException {
+        return getObject(key);
+    }
+
+    default Double getDouble(int key) throws JavetException {
+        return getObject(key);
+    }
+
+    default Double getDouble(String key) throws JavetException {
+        return getObject(key);
+    }
+
+    default Integer getInteger(int key) throws JavetException {
+        return getObject(key);
+    }
+
+    default Integer getInteger(String key) throws JavetException {
+        return getObject(key);
+    }
+
+    default Long getLong(int key) throws JavetException {
+        return getObject(key);
+    }
+
+    default Long getLong(String key) throws JavetException {
+        return getObject(key);
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R getObject(int key)
+            throws JavetException {
+        V8Value v8Value = get(key);
+        try {
+            return ((T) v8Value).getValue();
+        } catch (Throwable t) {
+        }
+        return null;
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R getObject(String key)
+            throws JavetException {
+        V8Value v8Value = get(key);
+        try {
+            return ((T) v8Value).getValue();
+        } catch (Throwable t) {
+        }
+        return null;
+    }
 
     IV8ValueCollection getOwnPropertyNames() throws JavetException;
+
+    IV8ValueCollection getPropertyNames() throws JavetException;
 
     default <T extends V8Value> T getProperty(int index) throws JavetException {
         return getProperty(new V8ValueInteger(index));
@@ -102,13 +154,49 @@ public interface IV8ValueObject extends IV8ValueReference {
         return getPropertyObject(key);
     }
 
-    default void setProperty(int key, V8Value value) throws JavetException {
-        setProperty(new V8ValueInteger(key), value);
+    default String getString(int key) throws JavetException {
+        return getObject(key);
     }
 
-    default void setProperty(String key, V8Value value) throws JavetException {
-        setProperty(new V8ValueString(key), value);
+    default String getString(String key) throws JavetException {
+        return getObject(key);
     }
 
-    void setProperty(V8Value key, V8Value value) throws JavetException;
+    default ZonedDateTime getZonedDateTime(int key) throws JavetException {
+        return getObject(key);
+    }
+
+    default ZonedDateTime getZonedDateTime(String key) throws JavetException {
+        return getObject(key);
+    }
+
+    default boolean hasOwnProperty(int key) throws JavetException {
+        return hasOwnProperty(new V8ValueInteger(key));
+    }
+
+    default boolean hasOwnProperty(String key) throws JavetException {
+        return hasOwnProperty(new V8ValueString(key));
+    }
+
+    boolean hasOwnProperty(V8Value key) throws JavetException;
+
+    default boolean set(int key, V8Value value) throws JavetException {
+        return set(new V8ValueInteger(key), value);
+    }
+
+    default boolean set(String key, V8Value value) throws JavetException {
+        return set(new V8ValueString(key), value);
+    }
+
+    boolean set(V8Value key, V8Value value) throws JavetException;
+
+    default boolean setProperty(int key, V8Value value) throws JavetException {
+        return setProperty(new V8ValueInteger(key), value);
+    }
+
+    default boolean setProperty(String key, V8Value value) throws JavetException {
+        return setProperty(new V8ValueString(key), value);
+    }
+
+    boolean setProperty(V8Value key, V8Value value) throws JavetException;
 }

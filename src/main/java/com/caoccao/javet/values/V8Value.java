@@ -28,19 +28,8 @@ public abstract class V8Value implements IJavetClosable {
         v8Runtime = null;
     }
 
-    public V8Runtime getV8Runtime() {
-        return v8Runtime;
-    }
-
-    public void setV8Runtime(V8Runtime v8Runtime) throws
-            JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException {
-        if (this.v8Runtime != null) {
-            throw new JavetV8RuntimeAlreadyRegisteredException();
-        }
-        this.v8Runtime = v8Runtime;
-        this.v8Runtime.checkLock();
-    }
+    protected abstract void addReference() throws
+            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException;
 
     public void checkV8Runtime() throws
             JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
@@ -51,8 +40,6 @@ public abstract class V8Value implements IJavetClosable {
         this.v8Runtime.checkLock();
     }
 
-    protected abstract void releaseReference() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException;
-
     @Override
     public void close() throws
             JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
@@ -60,5 +47,22 @@ public abstract class V8Value implements IJavetClosable {
         checkV8Runtime();
         releaseReference();
         v8Runtime = null;
+    }
+
+    public V8Runtime getV8Runtime() {
+        return v8Runtime;
+    }
+
+    protected abstract void releaseReference() throws
+            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException;
+
+    public void setV8Runtime(V8Runtime v8Runtime) throws
+            JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyClosedException {
+        if (this.v8Runtime != null) {
+            throw new JavetV8RuntimeAlreadyRegisteredException();
+        }
+        this.v8Runtime = v8Runtime;
+        this.v8Runtime.checkLock();
     }
 }

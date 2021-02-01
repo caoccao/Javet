@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestV8Runtime extends BaseTestJavet {
@@ -29,6 +30,21 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testClose() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+        }
+    }
+
+    @Test
+    public void testExecute() throws JavetException {
+        V8Host v8Host = V8Host.getInstance();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.lock();
+            v8Runtime.executeVoid("var a = 1;");
+            assertEquals(2, v8Runtime.executeInteger("a + 1"));
+        }
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+            v8Runtime.lock();
+            v8Runtime.executeVoid("var a = 1;");
+            assertEquals(2, v8Runtime.executeInteger("a + 1"));
         }
     }
 

@@ -1,15 +1,14 @@
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8ValueNull;
 import com.caoccao.javet.values.V8ValueUndefined;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueLong;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,7 +52,17 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testGetValue() throws JavetException {
+    public void testGetAndSet() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.execute("const a = {}; a;")) {
+            v8ValueObject.set("a", new V8ValueInteger(1));
+            v8ValueObject.set("b", new V8ValueString("2"));
+            assertEquals(1, v8ValueObject.getInteger("a"));
+            assertEquals("2", v8ValueObject.getString("b"));
+        }
+    }
+
+    @Test
+    public void testGetProperty() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1, 3: 'x'}, '中文': '測試'};"
                         + "x['i'] = true;x['j'] = 1.23;x['k'] = new Date(1611710223719);"
@@ -88,6 +97,42 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                     "2021-01-27T01:17:03.719Z[UTC]",
                     v8ValueObject.getPropertyZonedDateTime("k").withZoneSameInstant(ZoneId.of("UTC")).toString());
             assertEquals(1, v8Runtime.getReferenceCount());
+        }
+    }
+
+    @Test
+    public void testSetProperty() throws JavetException {
+        ZonedDateTime now = ZonedDateTime.now();
+        try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {
+            assertNotNull(v8ValueObject);
+            assertEquals(v8Runtime, v8ValueObject.getV8Runtime());
+            try (IV8ValueCollection iV8ValueCollection = v8ValueObject.getOwnPropertyNames()) {
+                assertEquals(0, iV8ValueCollection.getLength());
+            }
+            v8ValueObject.setProperty("a", new V8ValueString("1"));
+            v8ValueObject.setProperty(new V8ValueString("b"), new V8ValueInteger(2));
+            v8ValueObject.setProperty(new V8ValueString("c"), new V8ValueLong(3));
+            v8ValueObject.setProperty(new V8ValueString("d"), new V8ValueZonedDateTime(now));
+            v8ValueObject.setProperty(new V8ValueString("e"), new V8ValueDouble(1.23));
+            v8ValueObject.setProperty(new V8ValueString("f"), new V8ValueBoolean(true));
+            try (IV8ValueCollection iV8ValueCollection = v8ValueObject.getOwnPropertyNames()) {
+                assertEquals(6, iV8ValueCollection.getLength());
+                assertEquals("a", iV8ValueCollection.getString(0));
+                assertEquals("b", iV8ValueCollection.getString(1));
+                assertEquals("c", iV8ValueCollection.getString(2));
+                assertEquals("d", iV8ValueCollection.getString(3));
+                assertEquals("e", iV8ValueCollection.getString(4));
+                assertEquals("f", iV8ValueCollection.getString(5));
+            }
+            assertEquals("1", v8ValueObject.getPropertyString("a"));
+            assertEquals(2, v8ValueObject.getPropertyInteger("b"));
+            assertEquals(3L, v8ValueObject.getPropertyLong("c"));
+            assertEquals(
+                    now.toInstant().toEpochMilli(),
+                    v8ValueObject.getPropertyZonedDateTime("d").toInstant().toEpochMilli());
+            assertEquals(1.23, v8ValueObject.getPropertyDouble("e"), 0.001);
+            assertTrue(v8ValueObject.getPropertyBoolean("f"));
+            assertEquals("[object Object]", v8ValueObject.toString());
         }
     }
 }

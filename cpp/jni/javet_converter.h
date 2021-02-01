@@ -39,6 +39,7 @@ namespace Javet {
 
 		static jclass jclassV8ValueDouble;
 		static jmethodID jmethodIDV8ValueDoubleConstructor;
+		static jmethodID jmethodIDV8ValueDoubleToPrimitive;
 
 		static jclass jclassV8ValueInteger;
 		static jmethodID jmethodIDV8ValueIntegerConstructor;
@@ -71,6 +72,9 @@ namespace Javet {
 		static jclass jclassV8ValueError;
 		static jmethodID jmethodIDV8ValueErrorConstructor;
 
+		static jclass jclassV8ValueGlobalObject;
+		static jmethodID jmethodIDV8ValueGlobalObjectConstructor;
+
 		static jclass jclassV8ValueMap;
 		static jmethodID jmethodIDV8ValueMapConstructor;
 
@@ -98,6 +102,8 @@ namespace Javet {
 
 		inline jobject toJV8ValueNull(JNIEnv* jniEnv);
 
+		jobject toJV8ValueGlobalObject(JNIEnv* jniEnv, v8::Persistent<v8::Object>* v8PersistentObjectPointer);
+
 		inline jobject toJV8ValueReference(
 			JNIEnv* jniEnv, jclass jclassV8ValueReference, jmethodID jmethodIDV8ValueReferenceConstructor,
 			v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
@@ -107,6 +113,8 @@ namespace Javet {
 		inline v8::Local<v8::Boolean> toV8Boolean(v8::Local<v8::Context> v8Context, jboolean& managedBoolean);
 
 		inline v8::Local<v8::Value> toV8Date(v8::Local<v8::Context> v8Context, jlong& managedLong);
+
+		inline v8::Local<v8::Number> toV8Double(v8::Local<v8::Context> v8Context, jdouble& managedDouble);
 
 		inline v8::Local<v8::Integer> toV8Integer(v8::Local<v8::Context> v8Context, jint& managedInteger);
 

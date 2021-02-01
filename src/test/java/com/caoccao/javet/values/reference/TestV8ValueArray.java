@@ -1,7 +1,7 @@
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8ValueNull;
 import com.caoccao.javet.values.V8ValueUndefined;
 import com.caoccao.javet.values.primitive.*;
@@ -12,8 +12,26 @@ import java.time.ZoneId;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueArray extends BaseTestJavetRuntime {
+
     @Test
-    public void testGetValue() throws JavetException {
+    public void testGetAndSet() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.execute("const a = new Array(); a;")) {
+            v8ValueArray.set(0, new V8ValueString("x"));
+            v8ValueArray.set(1, new V8ValueString("y"));
+            v8ValueArray.set(2, new V8ValueString("z"));
+            v8ValueArray.set("a", new V8ValueInteger(1));
+            v8ValueArray.set("b", new V8ValueString("2"));
+            assertEquals(3, v8ValueArray.getLength());
+            assertEquals("x", v8ValueArray.getString(0));
+            assertEquals("y", v8ValueArray.getString(1));
+            assertEquals("z", v8ValueArray.getString(2));
+            assertEquals(1, v8ValueArray.getInteger("a"));
+            assertEquals("2", v8ValueArray.getString("b"));
+        }
+    }
+
+    @Test
+    public void testGet() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.execute(
                 "[1,'2',3n, true, 1.23, [4, 5, null, new Date(1611710223719)]]")) {
             assertNotNull(v8ValueArray);

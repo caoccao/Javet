@@ -10,6 +10,12 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public <T extends V8Value> T get(V8Value key) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.get(this, key);
+    }
+
+    @Override
     public int getType() {
         return V8ValueReferenceType.Object;
     }
@@ -40,8 +46,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public void setProperty(V8Value key, V8Value value) throws JavetException {
+    public boolean set(V8Value key, V8Value value) throws JavetException {
         checkV8Runtime();
-        v8Runtime.setProperty(this, key, value);
+        return v8Runtime.set(this, key, value);
+    }
+
+    @Override
+    public boolean setProperty(V8Value key, V8Value value) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.setProperty(this, key, value);
     }
 }

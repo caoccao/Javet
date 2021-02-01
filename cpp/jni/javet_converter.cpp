@@ -17,6 +17,13 @@
 
 #include "javet_converter.h"
 
+#define IS_JAVA_BOOLEAN(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueBoolean)
+#define IS_JAVA_DOUBLE(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueDouble)
+#define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueInteger)
+#define IS_JAVA_LONG(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueLong)
+#define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueString)
+#define IS_JAVA_ZONED_DATE_TIME(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueZonedDateTime)
+
 namespace Javet {
 	namespace Converter {
 		void initializeJavetConverter(JNIEnv* jniEnv) {
@@ -39,6 +46,7 @@ namespace Javet {
 
 			jclassV8ValueDouble = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueDouble"));
 			jmethodIDV8ValueDoubleConstructor = jniEnv->GetMethodID(jclassV8ValueDouble, "<init>", "(D)V");
+			jmethodIDV8ValueDoubleToPrimitive = jniEnv->GetMethodID(jclassV8ValueDouble, "toPrimitive", "()D");
 
 			jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
 			jmethodIDV8ValueIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueInteger, "<init>", "(I)V");
@@ -70,6 +78,9 @@ namespace Javet {
 
 			jclassV8ValueError = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueError"));
 			jmethodIDV8ValueErrorConstructor = jniEnv->GetMethodID(jclassV8ValueError, "<init>", "(J)V");
+
+			jclassV8ValueGlobalObject = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueGlobalObject"));
+			jmethodIDV8ValueGlobalObjectConstructor = jniEnv->GetMethodID(jclassV8ValueGlobalObject, "<init>", "(J)V");
 
 			jclassV8ValueMap = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueMap"));
 			jmethodIDV8ValueMapConstructor = jniEnv->GetMethodID(jclassV8ValueMap, "<init>", "(J)V");
@@ -230,6 +241,10 @@ namespace Javet {
 			return jniEnv->NewObject(jclassV8ValueNull, jmethodIDV8ValueNullConstructor);
 		}
 
+		jobject toJV8ValueGlobalObject(JNIEnv* jniEnv, v8::Persistent<v8::Object>* v8PersistentObjectPointer) {
+			return jniEnv->NewObject(jclassV8ValueGlobalObject, jmethodIDV8ValueGlobalObjectConstructor, v8PersistentObjectPointer);
+		}
+
 		inline jobject toJV8ValueReference(
 			JNIEnv* jniEnv, jclass jclassV8ValueReference, jmethodID jmethodIDV8ValueReferenceConstructor,
 			v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value) {
@@ -250,6 +265,10 @@ namespace Javet {
 
 		inline v8::Local<v8::Value> toV8Date(v8::Local<v8::Context> v8Context, jlong& managedLong) {
 			return v8::Date::New(v8Context, (double)managedLong).ToLocalChecked();
+		}
+
+		inline v8::Local<v8::Number> toV8Double(v8::Local<v8::Context> v8Context, jdouble& managedDouble) {
+			return v8::Number::New(v8Context->GetIsolate(), managedDouble);
 		}
 
 		inline v8::Local<v8::Integer> toV8Integer(v8::Local<v8::Context> v8Context, jint& managedInteger) {
@@ -299,23 +318,27 @@ namespace Javet {
 		}
 
 		v8::Local<v8::Value> toV8Value(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jobject obj) {
-			if (jniEnv->IsInstanceOf(obj, jclassV8ValueInteger)) {
+			if (IS_JAVA_INTEGER(jniEnv, obj)) {
 				jint integerObject = jniEnv->CallIntMethod(obj, jmethodIDV8ValueIntegerToPrimitive);
 				return Javet::Converter::toV8Integer(v8Context, integerObject);
 			}
-			else if (jniEnv->IsInstanceOf(obj, jclassV8ValueString)) {
+			else if (IS_JAVA_STRING(jniEnv, obj)) {
 				jstring stringObject = (jstring)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueStringToPrimitive);
 				return Javet::Converter::toV8String(jniEnv, v8Context, stringObject);
 			}
-			else if (jniEnv->IsInstanceOf(obj, jclassV8ValueBoolean)) {
-				jboolean booleanObject = (jboolean)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueBooleanToPrimitive);
+			else if (IS_JAVA_BOOLEAN(jniEnv, obj)) {
+				jboolean booleanObject = jniEnv->CallBooleanMethod(obj, jmethodIDV8ValueBooleanToPrimitive);
 				return Javet::Converter::toV8Boolean(v8Context, booleanObject);
 			}
-			else if (jniEnv->IsInstanceOf(obj, jclassV8ValueLong)) {
-				jlong longObject = (jlong)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueLongToPrimitive);
+			else if (IS_JAVA_DOUBLE(jniEnv, obj)) {
+				jdouble doubleObject = jniEnv->CallDoubleMethod(obj, jmethodIDV8ValueDoubleToPrimitive);
+				return Javet::Converter::toV8Double(v8Context, doubleObject);
+			}
+			else if (IS_JAVA_LONG(jniEnv, obj)) {
+				jlong longObject = jniEnv->CallLongMethod(obj, jmethodIDV8ValueLongToPrimitive);
 				return Javet::Converter::toV8Long(v8Context, longObject);
 			}
-			else if (jniEnv->IsInstanceOf(obj, jclassV8ValueZonedDateTime)) {
+			else if (IS_JAVA_ZONED_DATE_TIME(jniEnv, obj)) {
 				jlong longObject = (jlong)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueZonedDateTimeToPrimitive);
 				return Javet::Converter::toV8Date(v8Context, longObject);
 			}
