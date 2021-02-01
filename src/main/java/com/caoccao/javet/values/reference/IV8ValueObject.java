@@ -1,15 +1,52 @@
+/*
+ *   Copyright (c) 2021. caoccao.com Sam Cao
+ *   All rights reserved.
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValuePrimitive;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.*;
 
 import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    default boolean delete(int key) throws JavetException {
+        return delete(new V8ValueInteger(key));
+    }
+
+    default boolean delete(long key) throws JavetException {
+        return delete(new V8ValueLong(key));
+    }
+
+    default boolean delete(String key) throws JavetException {
+        return delete(new V8ValueString(key));
+    }
+
+    boolean delete(V8Value key) throws JavetException;
+
+    default boolean deleteNull() throws JavetException {
+        return delete(new V8ValueNull());
+    }
+
+    default boolean deleteUndefined() throws JavetException {
+        return delete(new V8ValueUndefined());
+    }
+
     default <T extends V8Value> T get(int key) throws JavetException {
         return get(new V8ValueInteger(key));
     }
@@ -50,6 +87,14 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default Long getLong(String key) throws JavetException {
         return getObject(key);
+    }
+
+    default V8ValueNull getNull(int key) throws JavetException {
+        return get(key);
+    }
+
+    default V8ValueNull getNull(String key) throws JavetException {
+        return get(key);
     }
 
     default <R extends Object, T extends V8ValuePrimitive<R>> R getObject(int key)
@@ -162,6 +207,14 @@ public interface IV8ValueObject extends IV8ValueReference {
         return getObject(key);
     }
 
+    default V8ValueUndefined getUndefined(int key) throws JavetException {
+        return get(key);
+    }
+
+    default V8ValueUndefined getUndefined(String key) throws JavetException {
+        return get(key);
+    }
+
     default ZonedDateTime getZonedDateTime(int key) throws JavetException {
         return getObject(key);
     }
@@ -190,6 +243,14 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     boolean set(V8Value key, V8Value value) throws JavetException;
 
+    default boolean setNull(int key) throws JavetException {
+        return set(new V8ValueInteger(key), new V8ValueNull());
+    }
+
+    default boolean setNull(String key) throws JavetException {
+        return set(new V8ValueString(key), new V8ValueNull());
+    }
+
     default boolean setProperty(int key, V8Value value) throws JavetException {
         return setProperty(new V8ValueInteger(key), value);
     }
@@ -199,4 +260,28 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     boolean setProperty(V8Value key, V8Value value) throws JavetException;
+
+    default boolean setPropertyNull(int key) throws JavetException {
+        return setProperty(new V8ValueInteger(key), new V8ValueNull());
+    }
+
+    default boolean setPropertyNull(String key) throws JavetException {
+        return setProperty(new V8ValueString(key), new V8ValueNull());
+    }
+
+    default boolean setPropertyUndefined(int key) throws JavetException {
+        return setProperty(new V8ValueInteger(key), new V8ValueUndefined());
+    }
+
+    default boolean setPropertyUndefined(String key) throws JavetException {
+        return setProperty(new V8ValueString(key), new V8ValueUndefined());
+    }
+
+    default boolean setUndefined(int key) throws JavetException {
+        return set(new V8ValueInteger(key), new V8ValueUndefined());
+    }
+
+    default boolean setUndefined(String key) throws JavetException {
+        return set(new V8ValueString(key), new V8ValueUndefined());
+    }
 }

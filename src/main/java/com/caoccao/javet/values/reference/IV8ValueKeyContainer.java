@@ -19,10 +19,33 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.*;
 
 @SuppressWarnings("unchecked")
-public interface IV8ValueCollection extends IV8ValueObject {
-    int getLength() throws JavetException;
+public interface IV8ValueKeyContainer extends IV8ValueObject {
+    IV8ValueCollection getKeys() throws JavetException;
 
-    int push(V8Value v8Value) throws JavetException;
+    int getSize() throws JavetException;
+
+    default boolean has(int value) throws JavetException {
+        return has(new V8ValueInteger(value));
+    }
+
+    default boolean has(long value) throws JavetException {
+        return has(new V8ValueLong(value));
+    }
+
+    default boolean has(String value) throws JavetException {
+        return has(new V8ValueString(value));
+    }
+
+    boolean has(V8Value value) throws JavetException;
+
+    default boolean hasNull() throws JavetException {
+        return has(new V8ValueNull());
+    }
+
+    default boolean hasUndefined() throws JavetException {
+        return has(new V8ValueUndefined());
+    }
 }

@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    add
+ * Signature: (JJILjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
+  (JNIEnv *, jclass, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    closeV8Runtime
  * Signature: (J)V
  */
@@ -38,6 +46,14 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
   (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    delete
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_delete
+  (JNIEnv *, jclass, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

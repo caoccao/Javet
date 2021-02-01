@@ -15,10 +15,11 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

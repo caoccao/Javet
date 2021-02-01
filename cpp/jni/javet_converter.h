@@ -25,12 +25,6 @@
 
 namespace Javet {
 	namespace Converter {
-		static jclass jclassV8ValueNull;
-		static jmethodID jmethodIDV8ValueNullConstructor;
-
-		static jclass jclassV8ValueUndefined;
-		static jmethodID jmethodIDV8ValueUndefinedConstructor;
-
 		// Primitive
 
 		static jclass jclassV8ValueBoolean;
@@ -50,9 +44,15 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueLongConstructorFromString;
 		static jmethodID jmethodIDV8ValueLongToPrimitive;
 
+		static jclass jclassV8ValueNull;
+		static jmethodID jmethodIDV8ValueNullConstructor;
+
 		static jclass jclassV8ValueString;
 		static jmethodID jmethodIDV8ValueStringConstructor;
 		static jmethodID jmethodIDV8ValueStringToPrimitive;
+
+		static jclass jclassV8ValueUndefined;
+		static jmethodID jmethodIDV8ValueUndefinedConstructor;
 
 		static jclass jclassV8ValueUnknown;
 		static jmethodID jmethodIDV8ValueUnknownConstructor;
@@ -119,6 +119,10 @@ namespace Javet {
 		inline v8::Local<v8::Integer> toV8Integer(v8::Local<v8::Context> v8Context, jint& managedInteger);
 
 		inline v8::Local<v8::BigInt> toV8Long(v8::Local<v8::Context> v8Context, jlong& managedLong);
+
+		inline v8::Local<v8::Primitive> toV8Null(v8::Local<v8::Context> v8Context);
+
+		inline v8::Local<v8::Primitive> toV8Undefined(v8::Local<v8::Context> v8Context);
 
 		inline jlong toV8PersistentObjectReference(v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
 

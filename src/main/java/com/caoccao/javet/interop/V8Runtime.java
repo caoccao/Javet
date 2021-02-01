@@ -53,6 +53,12 @@ public final class V8Runtime
         this.v8Host = v8Host;
     }
 
+    public void add(IV8ValueSet iV8ValueKeySet, V8Value value) throws JavetException {
+        checkLock();
+        decorateV8Value(value);
+        V8Native.add(handle, iV8ValueKeySet.getHandle(), iV8ValueKeySet.getType(), value);
+    }
+
     public void addReference(V8ValueReference v8ValueReference) throws
             JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException {
         checkLock();
@@ -124,10 +130,15 @@ public final class V8Runtime
     private <T extends V8Value> T decorateV8Value(T v8Value) throws
             JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyRegisteredException,
             JavetV8RuntimeAlreadyClosedException {
-        if (v8Value != null) {
+        if (v8Value != null && v8Value.getV8Runtime() != this) {
             v8Value.setV8Runtime(this);
         }
         return v8Value;
+    }
+
+    public boolean delete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        checkLock();
+        return V8Native.delete(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
     }
 
     @Override
@@ -196,9 +207,9 @@ public final class V8Runtime
         return decorateV8Value((V8ValueGlobalObject) V8Native.getGlobalObject(handle));
     }
 
-    public int getSize(IV8ValueSet iV8ValueSet) throws JavetException {
+    public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
         checkLock();
-        return V8Native.getSize(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType());
+        return V8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType());
     }
 
     public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
@@ -206,9 +217,9 @@ public final class V8Runtime
         return V8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
     }
 
-    public boolean has(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
+    public boolean has(IV8ValueKeyContainer iV8ValueKeyContainer, V8Value value) throws JavetException {
         checkLock();
-        return V8Native.has(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType(), value);
+        return V8Native.has(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType(), value);
     }
 
     public boolean isLocked() {

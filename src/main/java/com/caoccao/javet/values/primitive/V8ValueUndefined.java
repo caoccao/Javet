@@ -15,7 +15,9 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.values.primitive;
+
+import com.caoccao.javet.values.V8Value;
 
 public final class V8ValueUndefined extends V8Value {
     public V8ValueUndefined() {

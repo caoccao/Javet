@@ -15,20 +15,20 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.values.primitive;
 
-import com.caoccao.javet.BaseTestJavetRuntime;
-import com.caoccao.javet.exceptions.JavetException;
-import org.junit.jupiter.api.Test;
+import com.caoccao.javet.values.V8Value;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+public final class V8ValueNull extends V8Value {
+    public V8ValueNull() {
+        super();
+    }
 
-public class TestV8ValueNull extends BaseTestJavetRuntime {
-    @Test
-    public void testNull() throws JavetException {
-        V8ValueNull v8ValueNull = v8Runtime.execute("null");
-        assertNotNull(v8ValueNull);
-        assertEquals(v8Runtime, v8ValueNull.getV8Runtime());
+    @Override
+    protected void addReference() {
+    }
+
+    @Override
+    protected void releaseReference() {
     }
 }

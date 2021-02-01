@@ -30,6 +30,8 @@ final class V8Native {
     private V8Native() {
     }
 
+    native static void add(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
     native static void closeV8Runtime(long v8RuntimeHandle);
 
     native static void compileOnly(
@@ -40,6 +42,8 @@ final class V8Native {
     native static long createV8Runtime(String globalName);
 
     native static Object createV8Value(long v8RuntimeHandle, int v8ValueType);
+
+    native static boolean delete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     native static Object execute(
             long v8RuntimeHandle, String script, boolean returnResult,
