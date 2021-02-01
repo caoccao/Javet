@@ -17,13 +17,29 @@
 
 package com.caoccao.javet.interop;
 
+/**
+ * The type V8 native is the pure interface that defines the JNI C++ implementation.
+ * <p>
+ * Guidelines:
+ * 1. Please keep V8Native as small, simple as possible so that the C++ implementation is minimized.
+ * 2. Please make sure V8Native doesn't not reference any other types so that JNI code generation is quick and clean.
+ * 3. Please keep the methods in ascending order so that the generated .h file keeps the same order.
+ * 4. Please don't not inject any other non-native code.
+ */
 final class V8Native {
     private V8Native() {
     }
 
     native static void closeV8Runtime(long v8RuntimeHandle);
 
+    native static void compileOnly(
+            long v8RuntimeHandle, String script,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM, boolean isModule);
+
     native static long createV8Runtime(String globalName);
+
+    native static Object createV8Value(long v8RuntimeHandle, int v8ValueType);
 
     native static Object execute(
             long v8RuntimeHandle, String script, boolean returnResult,
@@ -63,6 +79,8 @@ final class V8Native {
      * @param flags the flags
      */
     native static void setFlags(String flags);
+
+    native static void setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     native static String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

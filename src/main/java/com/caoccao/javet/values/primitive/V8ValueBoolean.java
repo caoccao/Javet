@@ -8,4 +8,8 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
     public V8ValueBoolean(boolean value) {
         super(value);
     }
+
+    public boolean toPrimitive() {
+        return value.booleanValue();
+    }
 }

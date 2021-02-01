@@ -9,6 +9,35 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestJavetCompilationException extends BaseTestJavetRuntime {
     @Test
+    public void testUnexpectedIdentifier() {
+        try {
+            v8Runtime.compileOnly("const a = 1;\na a a a;");
+            fail("Exception should be thrown.");
+        } catch (JavetCompilationException e) {
+            assertEquals("SyntaxError: Unexpected identifier", e.getMessage());
+            JavetScriptingError javetScriptingError = e.getError();
+            assertEquals("SyntaxError: Unexpected identifier", javetScriptingError.getMessage());
+            assertEquals("undefined", javetScriptingError.getResourceName());
+            assertEquals("a a a a;", javetScriptingError.getSourceLine());
+            assertEquals(2, javetScriptingError.getLineNumber());
+            assertEquals(2, javetScriptingError.getStartColumn());
+            assertEquals(3, javetScriptingError.getEndColumn());
+            assertEquals(15, javetScriptingError.getStartPosition());
+            assertEquals(16, javetScriptingError.getEndPosition());
+            assertEquals(
+                    "Error: SyntaxError: Unexpected identifier\n" +
+                            "Resource: undefined\n" +
+                            "Source Code: a a a a;\n" +
+                            "Line Number: 2\n" +
+                            "Column: 2, 3\n" +
+                            "Position: 15, 16",
+                    javetScriptingError.toString());
+        } catch (JavetException e) {
+            fail("JavetCompilationException should be thrown.");
+        }
+    }
+
+    @Test
     public void testUnexpectedToken() {
         try (V8Value v8Value = v8Runtime.execute("const a = 1;\na ==== 2;")) {
             fail("Exception should be thrown.");

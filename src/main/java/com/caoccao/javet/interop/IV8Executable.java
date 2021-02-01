@@ -8,6 +8,11 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8Executable {
+    default void compileOnly(String scriptString) throws JavetException {
+        compileOnly(scriptString, new V8ScriptOrigin());
+    }
+
+    void compileOnly(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException;
 
     default <T extends V8Value> T execute(String scriptString) throws JavetException {
         return execute(scriptString, new V8ScriptOrigin());

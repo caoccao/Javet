@@ -15,13 +15,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean hasOwnProperty(int key) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.hasOwnProperty(this, key);
-    }
-
-    @Override
-    public boolean hasOwnProperty(String key) throws JavetException {
+    public boolean hasOwnProperty(V8Value key) throws JavetException {
         checkV8Runtime();
         return v8Runtime.hasOwnProperty(this, key);
     }
@@ -39,16 +33,15 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T getProperty(int index)
-            throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.getProperty(this, index);
-    }
-
-    @Override
-    public <T extends V8Value> T getProperty(String key)
+    public <T extends V8Value> T getProperty(V8Value key)
             throws JavetException {
         checkV8Runtime();
         return v8Runtime.getProperty(this, key);
+    }
+
+    @Override
+    public void setProperty(V8Value key, V8Value value) throws JavetException {
+        checkV8Runtime();
+        v8Runtime.setProperty(this, key, value);
     }
 }

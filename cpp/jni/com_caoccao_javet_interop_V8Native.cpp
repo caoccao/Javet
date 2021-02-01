@@ -33,13 +33,25 @@
 #include "javet_globals.h"
 #include "javet_v8_runtime.h"
 
-/*
- * Development Guide:
- * 1. Namespace is not recommended in this project.
- * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
- */
+ /*
+  * Development Guide:
+  * 1. Namespace is not recommended in this project.
+  * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
+  */
 
-#define HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
+#define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueInteger)
+#define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueString)
+#define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, jmethodIDV8ValueIntegerToPrimitive)
+#define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueStringToPrimitive)
+
+#define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
+	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate); \
+	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+	auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context); \
+	v8::Context::Scope v8ContextScope(v8Context); \
+
+#define RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
 	auto v8PersistentObjectPointer = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle); \
 	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate); \
@@ -104,7 +116,26 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 	}
 }
 
-// Creating multiple isolates allows running JavaScript code in multiple threads, truly parallel.
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_compileOnly
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jstring mScript,
+	jstring mResourceName, jint mResourceLineOffset, jint mResourceColumnOffset, jint mScriptId, jboolean mIsWASM, jboolean mIsModule) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	v8::TryCatch v8TryCatch(v8Runtime->v8Isolate);
+	auto umScript = Javet::Converter::toV8String(jniEnv, v8Context, mScript);
+	v8::ScriptOrigin* scriptOriginPointer = Javet::Converter::toV8ScriptOringinPointer(
+		jniEnv, v8Context, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, mIsModule);
+	auto maybeLocalCompiledScript = v8::Script::Compile(v8Context, umScript, scriptOriginPointer);
+	if (scriptOriginPointer != nullptr) {
+		delete scriptOriginPointer;
+	}
+	if (v8TryCatch.HasCaught()) {
+		Javet::Exceptions::throwJavetCompilationException(jniEnv, v8Context, v8TryCatch);
+	}
+}
+
+/*
+Creating multiple isolates allows running JavaScript code in multiple threads, truly parallel.
+*/
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 (JNIEnv* jniEnv, jclass caller, jstring mGlobalName) {
 	auto v8Runtime = new Javet::V8Runtime();
@@ -114,31 +145,52 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 	return v8RuntimeHandle;
 }
 
+/*
+It only supports containers like Object, Array, Map, Set for now.
+Error, Promise, RegExp, Proxy, Symbol, etc. are not supported.
+*/
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jint v8ValueType) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	v8::Local<v8::Value> v8ValueValue;
+	if (v8ValueType == Javet::Enums::V8ValueReferenceType::Object) {
+		v8ValueValue = v8::Object::New(v8Context->GetIsolate());
+	}
+	else if (v8ValueType == Javet::Enums::V8ValueReferenceType::Array) {
+		v8ValueValue = v8::Array::New(v8Context->GetIsolate());
+	}
+	else if (v8ValueType == Javet::Enums::V8ValueReferenceType::Map) {
+		v8ValueValue = v8::Map::New(v8Context->GetIsolate());
+	}
+	else if (v8ValueType == Javet::Enums::V8ValueReferenceType::Set) {
+		v8ValueValue = v8::Set::New(v8Context->GetIsolate());
+	}
+	if (!v8ValueValue.IsEmpty()) {
+		return Javet::Converter::toJV8Value(jniEnv, v8Context, v8ValueValue);
+	}
+	return nullptr;
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jstring mScript, jboolean mReturnResult,
 	jstring mResourceName, jint mResourceLineOffset, jint mResourceColumnOffset, jint mScriptId, jboolean mIsWASM, jboolean mIsModule) {
-	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	v8::TryCatch v8TryCatch(v8Runtime->v8Isolate);
+	auto umScript = Javet::Converter::toV8String(jniEnv, v8Context, mScript);
 	v8::ScriptOrigin* scriptOriginPointer = Javet::Converter::toV8ScriptOringinPointer(
-		jniEnv, v8Runtime->v8Isolate, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, mIsModule);
-	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate);
-	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
-	auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context);
-	v8::Context::Scope v8ContextScope(v8Context);
-	v8::TryCatch v8TryCatchCompilation(v8Runtime->v8Isolate);
-	auto umScript = Javet::Converter::toV8String(jniEnv, v8Runtime->v8Isolate, mScript);
+		jniEnv, v8Context, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, mIsModule);
 	auto maybeLocalCompiledScript = v8::Script::Compile(v8Context, umScript, scriptOriginPointer);
 	if (scriptOriginPointer != nullptr) {
 		delete scriptOriginPointer;
 	}
-	if (v8TryCatchCompilation.HasCaught()) {
-		Javet::Exceptions::throwJavetCompilationException(jniEnv, v8Context, v8TryCatchCompilation);
+	if (v8TryCatch.HasCaught()) {
+		Javet::Exceptions::throwJavetCompilationException(jniEnv, v8Context, v8TryCatch);
 	}
 	else if (!maybeLocalCompiledScript.IsEmpty()) {
-		v8::TryCatch v8TryCatchExecution(v8Runtime->v8Isolate);
 		v8::Local<v8::Script> compliedScript = maybeLocalCompiledScript.ToLocalChecked();
 		v8::MaybeLocal<v8::Value> maybeLocalValueResult = compliedScript->Run(v8Context);
-		if (v8TryCatchExecution.HasCaught()) {
-			Javet::Exceptions::throwJavetExecutionException(jniEnv, v8Context, v8TryCatchExecution);
+		if (v8TryCatch.HasCaught()) {
+			Javet::Exceptions::throwJavetExecutionException(jniEnv, v8Context, v8TryCatch);
 		}
 		else {
 			if (mReturnResult) {
@@ -157,36 +209,36 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (jniEnv->IsInstanceOf(key, jclassV8ValueInteger)) {
-		jint integerKey = jniEnv->CallIntMethod(key, jmethodIDV8ValueIntegerToPrimitive);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	v8::Local<v8::Value> v8ValueValue;
+	if (IS_JAVA_INTEGER(jniEnv, key)) {
+		jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
 		if (v8ValueType == Javet::Enums::V8ValueReferenceType::Array
 			|| v8ValueType == Javet::Enums::V8ValueReferenceType::Arguments) {
 			if (integerKey >= 0) {
-				auto localValueResult = v8LocalObject.As<v8::Array>()->Get(v8Context, integerKey).ToLocalChecked();
-				return Javet::Converter::toJV8Value(jniEnv, v8Context, localValueResult);
+				v8ValueValue = v8LocalObject.As<v8::Array>()->Get(v8Context, integerKey).ToLocalChecked();
 			}
 		}
 		else if (v8ValueType == Javet::Enums::V8ValueReferenceType::Map) {
-			auto localValueResult = v8LocalObject.As<v8::Map>()->Get(
-				v8Context, Javet::Converter::toV8Integer(v8Context->GetIsolate(), integerKey)).ToLocalChecked();
-			return Javet::Converter::toJV8Value(jniEnv, v8Context, localValueResult);
+			auto v8ValueKey = Javet::Converter::toV8Value(jniEnv, v8Context, key);
+			v8ValueValue = v8LocalObject.As<v8::Map>()->Get(v8Context, v8ValueKey).ToLocalChecked();
 		}
 	}
-	else if (jniEnv->IsInstanceOf(key, jclassV8ValueString)) {
-		jstring stringKey = (jstring)jniEnv->CallObjectMethod(key, jmethodIDV8ValueStringToPrimitive);
+	else {
+		auto v8ValueKey = Javet::Converter::toV8Value(jniEnv, v8Context, key);
 		if (v8ValueType == Javet::Enums::V8ValueReferenceType::Map) {
-			auto localValueResult = v8LocalObject.As<v8::Map>()->Get(
-				v8Context, Javet::Converter::toV8String(jniEnv, v8Context->GetIsolate(), stringKey)).ToLocalChecked();
-			return Javet::Converter::toJV8Value(jniEnv, v8Context, localValueResult);
+			v8ValueValue = v8LocalObject.As<v8::Map>()->Get(v8Context, v8ValueKey).ToLocalChecked();
 		}
+	}
+	if (!v8ValueValue.IsEmpty()) {
+		return Javet::Converter::toJV8Value(jniEnv, v8Context, v8ValueValue);
 	}
 	return Javet::Converter::toJV8ValueUndefined(jniEnv);
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (v8ValueType == Javet::Enums::V8ValueReferenceType::Array) {
 		return v8LocalObject.As<v8::Array>()->Length();
 	}
@@ -195,7 +247,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (v8ValueType == Javet::Enums::V8ValueReferenceType::Map) {
 		return (jint)v8LocalObject.As<v8::Map>()->Size();
 	}
@@ -207,31 +259,32 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getOwnPropertyNames
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	auto localValueResult = v8LocalObject->GetOwnPropertyNames(v8Context).ToLocalChecked();
 	return Javet::Converter::toJV8Value(jniEnv, v8Context, localValueResult);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPropertyNames
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	auto localValueResult = v8LocalObject->GetPropertyNames(v8Context).ToLocalChecked();
 	return Javet::Converter::toJV8Value(jniEnv, v8Context, localValueResult);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (jniEnv->IsInstanceOf(key, jclassV8ValueInteger)) {
-		jint integerKey = jniEnv->CallIntMethod(key, jmethodIDV8ValueIntegerToPrimitive);
-		auto localValueResult = v8LocalObject->Get(v8Context, integerKey).ToLocalChecked();
-		return Javet::Converter::toJV8Value(jniEnv, v8Context, localValueResult);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	v8::Local<v8::Value> v8ValueValue;
+	if (IS_JAVA_INTEGER(jniEnv, key)) {
+		jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+		v8ValueValue = v8LocalObject->Get(v8Context, integerKey).ToLocalChecked();
 	}
-	else if (jniEnv->IsInstanceOf(key, jclassV8ValueString)) {
-		jstring stringKey = (jstring)jniEnv->CallObjectMethod(key, jmethodIDV8ValueStringToPrimitive);
-		auto localValueResult = v8LocalObject->Get(
-			v8Context, Javet::Converter::toV8String(jniEnv, v8Context->GetIsolate(), stringKey)).ToLocalChecked();
-		return Javet::Converter::toJV8Value(jniEnv, v8Context, localValueResult);
+	else {
+		auto v8ValueKey = Javet::Converter::toV8Value(jniEnv, v8Context, key);
+		v8ValueValue = v8LocalObject->Get(v8Context, v8ValueKey).ToLocalChecked();
+	}
+	if (!v8ValueValue.IsEmpty()) {
+		return Javet::Converter::toJV8Value(jniEnv, v8Context, v8ValueValue);
 	}
 	return Javet::Converter::toJV8ValueUndefined(jniEnv);
 }
@@ -244,27 +297,14 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_has
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (jniEnv->IsInstanceOf(value, jclassV8ValueInteger)) {
-		jint integerValue = jniEnv->CallIntMethod(value, jmethodIDV8ValueIntegerToPrimitive);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	v8::Local<v8::Value> v8ValueKey = Javet::Converter::toV8Value(jniEnv, v8Context, value);
+	if (!v8ValueKey.IsEmpty()) {
 		if (v8ValueType == Javet::Enums::V8ValueReferenceType::Map) {
-			return v8LocalObject.As<v8::Map>()->Has(
-				v8Context, Javet::Converter::toV8Integer(v8Context->GetIsolate(), integerValue)).FromMaybe(false);
+			return v8LocalObject.As<v8::Map>()->Has(v8Context, v8ValueKey).FromMaybe(false);
 		}
 		else if (v8ValueType == Javet::Enums::V8ValueReferenceType::Set) {
-			return v8LocalObject.As<v8::Set>()->Has(
-				v8Context, Javet::Converter::toV8Integer(v8Context->GetIsolate(), integerValue)).FromMaybe(false);
-		}
-	}
-	else if (jniEnv->IsInstanceOf(value, jclassV8ValueString)) {
-		jstring stringValue = (jstring)jniEnv->CallObjectMethod(value, jmethodIDV8ValueStringToPrimitive);
-		if (v8ValueType == Javet::Enums::V8ValueReferenceType::Map) {
-			return v8LocalObject.As<v8::Map>()->Has(
-				v8Context, Javet::Converter::toV8String(jniEnv, v8Context->GetIsolate(), stringValue)).FromMaybe(false);
-		}
-		else if (v8ValueType == Javet::Enums::V8ValueReferenceType::Set) {
-			return v8LocalObject.As<v8::Set>()->Has(
-				v8Context, Javet::Converter::toV8String(jniEnv, v8Context->GetIsolate(), stringValue)).FromMaybe(false);
+			return v8LocalObject.As<v8::Set>()->Has(v8Context, v8ValueKey).FromMaybe(false);
 		}
 	}
 	return false;
@@ -272,15 +312,15 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_has
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnProperty
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (jniEnv->IsInstanceOf(key, jclassV8ValueInteger)) {
-		jint integerKey = jniEnv->CallIntMethod(key, jmethodIDV8ValueIntegerToPrimitive);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (IS_JAVA_INTEGER(jniEnv, key)) {
+		jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
 		return v8LocalObject->HasOwnProperty(v8Context, integerKey).FromMaybe(false);
 	}
-	else if (jniEnv->IsInstanceOf(key, jclassV8ValueString)) {
-		jstring stringKey = (jstring)jniEnv->CallObjectMethod(key, jmethodIDV8ValueStringToPrimitive);
-		return v8LocalObject->HasOwnProperty(
-			v8Context, Javet::Converter::toV8String(jniEnv, v8Context->GetIsolate(), stringKey)).FromMaybe(false);
+	else if (IS_JAVA_STRING(jniEnv, key)){
+		jstring stringKey = TO_JAVA_STRING(jniEnv, key);
+		auto v8ValueKey = Javet::Converter::toV8String(jniEnv, v8Context, stringKey);
+		return v8LocalObject->HasOwnProperty(v8Context, v8ValueKey).FromMaybe(false);
 	}
 	return false;
 }
@@ -317,12 +357,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
 	// Create a stack-allocated handle scope.
 	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
 	auto v8IsolateHandle = v8::ObjectTemplate::New(v8Runtime->v8Isolate);
+	auto v8Context = v8::Context::New(v8Runtime->v8Isolate, nullptr, v8IsolateHandle);
 	// Redirects global calls to a given global name. E.g. parseInt() -> window.parseInt().
 	if (mGlobalName != nullptr) {
-		auto umGlobalName = Javet::Converter::toV8String(jniEnv, v8Runtime->v8Isolate, mGlobalName);
+		auto umGlobalName = Javet::Converter::toV8String(jniEnv, v8Context, mGlobalName);
 		v8IsolateHandle->SetAccessor(umGlobalName, Javet::Callback::GlobalPropertyAccessorCallback);
 	}
-	auto v8Context = v8::Context::New(v8Runtime->v8Isolate, nullptr, v8IsolateHandle);
 	v8Runtime->v8Context.Reset(v8Runtime->v8Isolate, v8Context);
 	v8Runtime->v8GlobalObject->Reset(
 		v8Runtime->v8Isolate,
@@ -339,9 +379,17 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
 	}
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key, jobject value) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	v8::Local<v8::Value> v8ValueKey = Javet::Converter::toV8Value(jniEnv, v8Context, key);
+	v8::Local<v8::Value> v8ValueValue = Javet::Converter::toV8Value(jniEnv, v8Context, value);
+	// TODO
+}
+
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
 (JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
-	HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	v8::Local<v8::String> v8String;
 	if (v8ValueType == Javet::Enums::V8ValueReferenceType::Array) {
 		v8String = v8LocalObject.As<v8::Array>()->ToString(v8Context).ToLocalChecked();

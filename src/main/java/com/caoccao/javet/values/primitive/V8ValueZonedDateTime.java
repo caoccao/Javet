@@ -33,4 +33,8 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
     public V8ValueZonedDateTime(long jsTimestamp) {
         super(DateTimeUtils.toZonedDateTime(jsTimestamp));
     }
+
+    public long toPrimitive() {
+        return value.toInstant().toEpochMilli();
+    }
 }

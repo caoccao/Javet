@@ -8,4 +8,8 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     public V8ValueDouble(double value) {
         super(value);
     }
+
+    public double toPrimitive() {
+        return value.doubleValue();
+    }
 }

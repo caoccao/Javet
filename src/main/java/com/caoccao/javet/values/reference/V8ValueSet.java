@@ -1,6 +1,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
 public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
@@ -26,13 +27,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
-    public boolean has(int value) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.has(this, value);
-    }
-
-    @Override
-    public boolean has(String value) throws JavetException {
+    public boolean has(V8Value value) throws JavetException {
         checkV8Runtime();
         return v8Runtime.has(this, value);
     }

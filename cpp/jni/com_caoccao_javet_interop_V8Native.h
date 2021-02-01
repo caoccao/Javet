@@ -17,11 +17,27 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    compileOnly
+ * Signature: (JLjava/lang/String;Ljava/lang/String;IIIZZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_compileOnly
+  (JNIEnv *, jclass, jlong, jstring, jstring, jint, jint, jint, jboolean, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    createV8Runtime
  * Signature: (Ljava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
   (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    createV8Value
+ * Signature: (JI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -134,6 +150,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
   (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setProperty
+ * Signature: (JJILjava/lang/Object;Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
+  (JNIEnv *, jclass, jlong, jlong, jint, jobject, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

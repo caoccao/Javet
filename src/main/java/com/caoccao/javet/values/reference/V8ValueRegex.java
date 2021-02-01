@@ -10,6 +10,6 @@ public class V8ValueRegex extends V8ValueObject {
 
     @Override
     public int getType() {
-        return V8ValueReferenceType.Regex;
+        return V8ValueReferenceType.RegExp;
     }
 }

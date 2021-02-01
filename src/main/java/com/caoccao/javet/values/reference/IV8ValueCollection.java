@@ -45,4 +45,6 @@ public interface IV8ValueCollection extends IV8ValueObject {
     default ZonedDateTime getZonedDateTime(int index) throws JavetException {
         return getObject(index);
     }
+
+    int push(V8Value v8Value) throws JavetException;
 }

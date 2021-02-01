@@ -2,15 +2,23 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.primitive.V8ValueString;
 
 import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueMap extends IV8ValueSet {
-    <T extends V8Value> T get(int key) throws JavetException;
+    default <T extends V8Value> T get(int key) throws JavetException {
+        return get(new V8ValueInteger(key));
+    }
 
-    <T extends V8Value> T get(String key) throws JavetException;
+    default <T extends V8Value> T get(String key) throws JavetException {
+        return get(new V8ValueString(key));
+    }
+
+    <T extends V8Value> T get(V8Value key) throws JavetException;
 
     default Boolean getBoolean(int key) throws JavetException {
         return getObject(key);

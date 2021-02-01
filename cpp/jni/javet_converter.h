@@ -35,25 +35,30 @@ namespace Javet {
 
 		static jclass jclassV8ValueBoolean;
 		static jmethodID jmethodIDV8ValueBooleanConstructor;
+		static jmethodID jmethodIDV8ValueBooleanToPrimitive;
 
 		static jclass jclassV8ValueDouble;
 		static jmethodID jmethodIDV8ValueDoubleConstructor;
 
 		static jclass jclassV8ValueInteger;
 		static jmethodID jmethodIDV8ValueIntegerConstructor;
+		static jmethodID jmethodIDV8ValueIntegerToPrimitive;
 
 		static jclass jclassV8ValueLong;
 		static jmethodID jmethodIDV8ValueLongConstructorFromLong;
 		static jmethodID jmethodIDV8ValueLongConstructorFromString;
+		static jmethodID jmethodIDV8ValueLongToPrimitive;
 
 		static jclass jclassV8ValueString;
 		static jmethodID jmethodIDV8ValueStringConstructor;
+		static jmethodID jmethodIDV8ValueStringToPrimitive;
 
 		static jclass jclassV8ValueUnknown;
 		static jmethodID jmethodIDV8ValueUnknownConstructor;
 
 		static jclass jclassV8ValueZonedDateTime;
 		static jmethodID jmethodIDV8ValueZonedDateTimeConstructor;
+		static jmethodID jmethodIDV8ValueZonedDateTimeToPrimitive;
 
 		// Reference
 
@@ -99,15 +104,21 @@ namespace Javet {
 
 		jobject toJV8ValueUndefined(JNIEnv* jniEnv);
 
-		inline v8::Local<v8::Boolean> toV8Boolean(v8::Isolate* v8Isolate, jboolean& managedBoolean);
+		inline v8::Local<v8::Boolean> toV8Boolean(v8::Local<v8::Context> v8Context, jboolean& managedBoolean);
 
-		v8::Local<v8::Integer> toV8Integer(v8::Isolate* v8Isolate, jint& managedInteger);
+		inline v8::Local<v8::Value> toV8Date(v8::Local<v8::Context> v8Context, jlong& managedLong);
+
+		inline v8::Local<v8::Integer> toV8Integer(v8::Local<v8::Context> v8Context, jint& managedInteger);
+
+		inline v8::Local<v8::BigInt> toV8Long(v8::Local<v8::Context> v8Context, jlong& managedLong);
 
 		inline jlong toV8PersistentObjectReference(v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
 
-		v8::ScriptOrigin* toV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Isolate* v8Isolate,
+		v8::ScriptOrigin* toV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context,
 			jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule);
 
-		v8::Local<v8::String> toV8String(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jstring& managedString);
+		v8::Local<v8::String> toV8String(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jstring& managedString);
+
+		v8::Local<v8::Value> toV8Value(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jobject obj);
 	}
 }

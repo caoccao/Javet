@@ -11,13 +11,7 @@ public class V8ValueMap extends V8ValueSet implements IV8ValueMap {
     }
 
     @Override
-    public <T extends V8Value> T get(int key) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.get(this, key);
-    }
-
-    @Override
-    public <T extends V8Value> T get(String key) throws JavetException {
+    public <T extends V8Value> T get(V8Value key) throws JavetException {
         checkV8Runtime();
         return v8Runtime.get(this, key);
     }

@@ -2,23 +2,37 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.primitive.V8ValueString;
 
 import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
-    boolean hasOwnProperty(int key) throws JavetException;
+    default boolean hasOwnProperty(int key) throws JavetException {
+        return hasOwnProperty(new V8ValueInteger(key));
+    }
 
-    boolean hasOwnProperty(String key) throws JavetException;
+    default boolean hasOwnProperty(String key) throws JavetException {
+        return hasOwnProperty(new V8ValueString(key));
+    }
+
+    boolean hasOwnProperty(V8Value key) throws JavetException;
 
     IV8ValueCollection getPropertyNames() throws JavetException;
 
     IV8ValueCollection getOwnPropertyNames() throws JavetException;
 
-    <T extends V8Value> T getProperty(int index) throws JavetException;
+    default <T extends V8Value> T getProperty(int index) throws JavetException {
+        return getProperty(new V8ValueInteger(index));
+    }
 
-    <T extends V8Value> T getProperty(String key) throws JavetException;
+    default <T extends V8Value> T getProperty(String key) throws JavetException {
+        return getProperty(new V8ValueString(key));
+    }
+
+    <T extends V8Value> T getProperty(V8Value key) throws JavetException;
 
     default Boolean getPropertyBoolean(int index) throws JavetException {
         return getPropertyObject(index);
@@ -87,4 +101,14 @@ public interface IV8ValueObject extends IV8ValueReference {
     default ZonedDateTime getPropertyZonedDateTime(String key) throws JavetException {
         return getPropertyObject(key);
     }
+
+    default void setProperty(int key, V8Value value) throws JavetException {
+        setProperty(new V8ValueInteger(key), value);
+    }
+
+    default void setProperty(String key, V8Value value) throws JavetException {
+        setProperty(new V8ValueString(key), value);
+    }
+
+    void setProperty(V8Value key, V8Value value) throws JavetException;
 }

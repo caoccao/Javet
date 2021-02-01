@@ -25,8 +25,7 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLoggable;
 import com.caoccao.javet.interfaces.IJavetResettable;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.reference.*;
 
 import java.util.Map;
@@ -35,7 +34,7 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
 public final class V8Runtime
-        implements IJavetClosable, IJavetResettable, IJavetLoggable, IV8Executable {
+        implements IJavetClosable, IJavetResettable, IJavetLoggable, IV8Executable, IV8Creatable {
     private static final long INVALID_THREAD_ID = -1L;
     private String globalName;
     private long handle;
@@ -43,8 +42,10 @@ public final class V8Runtime
     private Map<Long, V8ValueReference> referenceMap;
     private long threadId;
     private V8Host v8Host;
+    private V8ValueObject root;
 
     V8Runtime(V8Host v8Host, long handle, String globalName) {
+        assert handle != 0;
         this.globalName = globalName;
         this.handle = handle;
         logger = Logger.getLogger(getClass().getName());
@@ -86,6 +87,39 @@ public final class V8Runtime
         handle = 0L;
     }
 
+    @Override
+    public V8ValueArray createV8ValueArray() throws JavetException {
+        checkLock();
+        return decorateV8Value((V8ValueArray) V8Native.createV8Value(handle, V8ValueReferenceType.Array));
+    }
+
+    @Override
+    public V8ValueMap createV8ValueMap() throws JavetException {
+        checkLock();
+        return decorateV8Value((V8ValueMap) V8Native.createV8Value(handle, V8ValueReferenceType.Map));
+    }
+
+    @Override
+    public V8ValueObject createV8ValueObject() throws JavetException {
+        checkLock();
+        return decorateV8Value((V8ValueObject) V8Native.createV8Value(handle, V8ValueReferenceType.Object));
+    }
+
+    @Override
+    public V8ValueSet createV8ValueSet() throws JavetException {
+        checkLock();
+        return decorateV8Value((V8ValueSet) V8Native.createV8Value(handle, V8ValueReferenceType.Set));
+    }
+
+    @Override
+    public void compileOnly(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
+        checkLock();
+        V8Native.compileOnly(
+                handle, scriptString, v8ScriptOrigin.getResourceName(),
+                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
+    }
+
     private <T extends V8Value> T decorateV8Value(T v8Value) throws
             JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyRegisteredException,
             JavetV8RuntimeAlreadyClosedException {
@@ -103,16 +137,6 @@ public final class V8Runtime
                 handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
-    }
-
-    public <T extends V8Value> T get(
-            IV8ValueObject iV8ValueObject, int key) throws JavetException {
-        return get(iV8ValueObject, new V8ValueInteger(key));
-    }
-
-    public <T extends V8Value> T get(
-            IV8ValueObject iV8ValueObject, String key) throws JavetException {
-        return get(iV8ValueObject, new V8ValueString(key));
     }
 
     public <T extends V8Value> T get(
@@ -147,16 +171,6 @@ public final class V8Runtime
     }
 
     public <T extends V8Value> T getProperty(
-            IV8ValueObject iV8ValueObject, int key) throws JavetException {
-        return getProperty(iV8ValueObject, new V8ValueInteger(key));
-    }
-
-    public <T extends V8Value> T getProperty(
-            IV8ValueObject iV8ValueObject, String key) throws JavetException {
-        return getProperty(iV8ValueObject, new V8ValueString(key));
-    }
-
-    public <T extends V8Value> T getProperty(
             IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         checkLock();
         return decorateV8Value((T) V8Native.getProperty(
@@ -170,30 +184,23 @@ public final class V8Runtime
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType()));
     }
 
+    public V8ValueObject getRoot() throws
+            JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyRegisteredException {
+        if (root == null) {
+            root = decorateV8Value(new V8ValueObject(handle));
+        }
+        return root;
+    }
+
     public int getSize(IV8ValueSet iV8ValueSet) throws JavetException {
         checkLock();
         return V8Native.getSize(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType());
     }
 
-    public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, int key) throws JavetException {
-        return hasOwnProperty(iV8ValueObject, new V8ValueInteger(key));
-    }
-
-    public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, String key) throws JavetException {
-        return hasOwnProperty(iV8ValueObject, new V8ValueString(key));
-    }
-
     public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         checkLock();
         return V8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
-    }
-
-    public boolean has(IV8ValueSet iV8ValueSet, int value) throws JavetException {
-        return has(iV8ValueSet, new V8ValueInteger(value));
-    }
-
-    public boolean has(IV8ValueSet iV8ValueSet, String value) throws JavetException {
-        return has(iV8ValueSet, new V8ValueString(value));
     }
 
     public boolean has(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
@@ -245,6 +252,11 @@ public final class V8Runtime
             V8Native.removeReferenceHandle(referenceHandle);
         }
         referenceMap.clear();
+    }
+
+    public void setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
+        checkLock();
+        V8Native.setProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key, value);
     }
 
     public String toString(IV8ValueReference iV8ValueReference)

@@ -29,4 +29,8 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
     public V8ValueLong(String value) {
         super(Long.valueOf(value));
     }
+
+    public long toPrimitive() {
+        return value.longValue();
+    }
 }

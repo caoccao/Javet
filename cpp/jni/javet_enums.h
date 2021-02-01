@@ -22,7 +22,7 @@ namespace Javet {
         enum V8ValueReferenceType {
             Object = 1,
             Error = 2,
-            Regex = 3,
+            RegExp = 3,
             Promise = 4,
             Proxy = 5,
             Symbol = 6,
