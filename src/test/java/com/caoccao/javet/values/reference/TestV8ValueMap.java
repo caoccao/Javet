@@ -71,4 +71,22 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
             assertEquals(0, v8ValueMap.getSize());
         }
     }
+
+    @Test
+    public void testNestedMap() throws JavetException {
+        try (V8ValueMap outerObject = v8Runtime.execute("const o = new Map(); o;")) {
+            assertEquals(
+                    "[]",
+                    v8Runtime.executeString(
+                    "JSON.stringify(o, (key, value) => value instanceof Map ? [...value] : value);"));
+            try (V8ValueMap innerObject = v8Runtime.createV8ValueMap()) {
+                innerObject.set("a", new V8ValueString("1"));
+                outerObject.set("x", innerObject);
+            }
+            assertEquals(
+                    "[[\"x\",[[\"a\",\"1\"]]]]",
+                    v8Runtime.executeString(
+                            "JSON.stringify(o, (key, value) => value instanceof Map ? [...value] : value);"));
+        }
+    }
 }

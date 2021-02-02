@@ -65,36 +65,49 @@ namespace Javet {
 
 		static jclass jclassV8ValueArguments;
 		static jmethodID jmethodIDV8ValueArgumentsConstructor;
+		static jmethodID jmethodIDV8ValueArgumentsGetHandle;
 
 		static jclass jclassV8ValueArray;
 		static jmethodID jmethodIDV8ValueArrayConstructor;
+		static jmethodID jmethodIDV8ValueArrayGetHandle;
 
 		static jclass jclassV8ValueError;
 		static jmethodID jmethodIDV8ValueErrorConstructor;
+		static jmethodID jmethodIDV8ValueErrorGetHandle;
 
 		static jclass jclassV8ValueGlobalObject;
 		static jmethodID jmethodIDV8ValueGlobalObjectConstructor;
+		static jmethodID jmethodIDV8ValueGlobalObjectGetHandle;
 
 		static jclass jclassV8ValueMap;
 		static jmethodID jmethodIDV8ValueMapConstructor;
+		static jmethodID jmethodIDV8ValueMapGetHandle;
 
 		static jclass jclassV8ValueObject;
 		static jmethodID jmethodIDV8ValueObjectConstructor;
+		static jmethodID jmethodIDV8ValueObjectGetHandle;
 
 		static jclass jclassV8ValuePromise;
 		static jmethodID jmethodIDV8ValuePromiseConstructor;
+		static jmethodID jmethodIDV8ValuePromiseGetHandle;
 
 		static jclass jclassV8ValueProxy;
 		static jmethodID jmethodIDV8ValueProxyConstructor;
+		static jmethodID jmethodIDV8ValueProxyGetHandle;
 
-		static jclass jclassV8ValueRegex;
-		static jmethodID jmethodIDV8ValueRegexConstructor;
+		static jclass jclassV8ValueReference;
+
+		static jclass jclassV8ValueRegExp;
+		static jmethodID jmethodIDV8ValueRegExpConstructor;
+		static jmethodID jmethodIDV8ValueRegExpGetHandle;
 
 		static jclass jclassV8ValueSet;
 		static jmethodID jmethodIDV8ValueSetConstructor;
+		static jmethodID jmethodIDV8ValueSetGetHandle;
 
 		static jclass jclassV8ValueSymbol;
 		static jmethodID jmethodIDV8ValueSymbolConstructor;
+		static jmethodID jmethodIDV8ValueSymbolGetHandle;
 
 		void initializeJavetConverter(JNIEnv* jniEnv);
 

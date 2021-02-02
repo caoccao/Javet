@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,6 +52,25 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
             assertTrue(v8ValueSet.delete(1));
             assertTrue(v8ValueSet.delete("x"));
             assertEquals(0, v8ValueSet.getSize());
+        }
+    }
+
+    @Test
+    public void testNestedSet() throws JavetException {
+        try (V8ValueSet outerObject = v8Runtime.execute("const o = new Set(); o;")) {
+            assertEquals(
+                    "[]",
+                    v8Runtime.executeString(
+                    "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);"));
+            outerObject.add(new V8ValueString("1"));
+            try (V8ValueSet innerObject = v8Runtime.createV8ValueSet()) {
+                innerObject.add(new V8ValueString("2"));
+                outerObject.add(innerObject);
+            }
+            assertEquals(
+                    "[\"1\",[\"2\"]]",
+                    v8Runtime.executeString(
+                            "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);"));
         }
     }
 

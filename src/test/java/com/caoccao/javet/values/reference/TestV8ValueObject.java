@@ -121,6 +121,18 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testNestedObject() throws JavetException {
+        try (V8ValueObject outerObject = v8Runtime.execute("const o = {}; o;")) {
+            assertEquals("{}", v8Runtime.executeString("JSON.stringify(o);"));
+            try (V8ValueObject innerObject = v8Runtime.createV8ValueObject()) {
+                innerObject.set("a", new V8ValueString("1"));
+                outerObject.set("x", innerObject);
+            }
+            assertEquals("{\"x\":{\"a\":\"1\"}}", v8Runtime.executeString("JSON.stringify(o);"));
+        }
+    }
+
+    @Test
     public void testSetProperty() throws JavetException {
         ZonedDateTime now = ZonedDateTime.now();
         try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {

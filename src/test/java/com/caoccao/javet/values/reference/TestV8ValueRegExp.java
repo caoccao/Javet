@@ -24,14 +24,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TestV8ValueRegex extends BaseTestJavetRuntime {
+public class TestV8ValueRegExp extends BaseTestJavetRuntime {
     @Test
-    public void testRegex() throws JavetException {
-        try (V8ValueRegex v8ValueRegex = v8Runtime.execute("/123/g")) {
-            assertNotNull(v8ValueRegex);
+    public void testRegExp() throws JavetException {
+        try (V8ValueRegExp v8ValueRegExp = v8Runtime.execute("/123/g")) {
+            assertNotNull(v8ValueRegExp);
         }
-        try (V8ValueRegex v8ValueRegex = v8Runtime.execute("new RegExp('123')")) {
-            assertNotNull(v8ValueRegex);
+        try (V8ValueRegExp v8ValueRegExp = v8Runtime.execute("new RegExp('123')")) {
+            assertNotNull(v8ValueRegExp);
         }
     }
 }
