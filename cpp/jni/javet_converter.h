@@ -71,6 +71,10 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueArrayConstructor;
 		static jmethodID jmethodIDV8ValueArrayGetHandle;
 
+		static jclass jclassV8ValueFunction;
+		static jmethodID jmethodIDV8ValueFunctionConstructor;
+		static jmethodID jmethodIDV8ValueFunctionGetHandle;
+
 		static jclass jclassV8ValueError;
 		static jmethodID jmethodIDV8ValueErrorConstructor;
 		static jmethodID jmethodIDV8ValueErrorGetHandle;
@@ -145,5 +149,7 @@ namespace Javet {
 		v8::Local<v8::String> toV8String(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jstring& managedString);
 
 		v8::Local<v8::Value> toV8Value(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jobject obj);
+
+		std::unique_ptr<v8::Local<v8::Value>[]> toV8Values(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jobjectArray& mValues);
 	}
 }

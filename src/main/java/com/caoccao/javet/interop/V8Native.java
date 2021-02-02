@@ -32,6 +32,10 @@ final class V8Native {
 
     native static void add(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
+    native static Object callObjectFunction(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            String functionName, boolean returnResult, Object[] values);
+
     native static void closeV8Runtime(long v8RuntimeHandle);
 
     native static void compileOnly(

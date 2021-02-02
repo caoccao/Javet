@@ -19,8 +19,6 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.primitive.V8ValueNull;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.primitive.*;
 import org.junit.jupiter.api.Test;
 
@@ -44,9 +42,9 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals("z", v8ValueArray.getString(2));
             assertEquals(1, v8ValueArray.getInteger("a"));
             assertEquals("2", v8ValueArray.getString("b"));
-            assertEquals( "x,y,z", v8ValueArray.toString());
-            assertEquals( "[object Array]", v8ValueArray.protoToString());
-            assertEquals( "[\"x\",\"y\",\"z\"]", v8Runtime.executeString("JSON.stringify(a);"));
+            assertEquals("x,y,z", v8ValueArray.toString());
+            assertEquals("[object Array]", v8ValueArray.protoToString());
+            assertEquals("[\"x\",\"y\",\"z\"]", v8Runtime.executeString("JSON.stringify(a);"));
         }
     }
 
@@ -83,6 +81,31 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
             assertEquals(1, v8Runtime.getReferenceCount());
+        }
+    }
+
+    @Test
+    public void testPushPop() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.execute("[]")) {
+            assertEquals(0, v8ValueArray.getLength());
+            assertEquals(1, v8ValueArray.pushBoolean(true));
+            assertEquals(2, v8ValueArray.pushDouble(1.23));
+            assertEquals(3, v8ValueArray.pushInteger(4));
+            assertEquals(4, v8ValueArray.pushLong(5L));
+            assertEquals(5, v8ValueArray.pushString("x"));
+            assertEquals(6, v8ValueArray.pushNull());
+            assertEquals(7, v8ValueArray.pushUndefined());
+            assertEquals(7, v8ValueArray.getLength());
+            assertEquals("true,1.23,4,5,x,,", v8ValueArray.toString());
+            assertNotNull(v8ValueArray.popUndefined());
+            assertNotNull(v8ValueArray.popNull());
+            assertEquals("x", v8ValueArray.popString());
+            assertEquals(5L, v8ValueArray.popLong());
+            assertEquals(4, v8ValueArray.popInteger());
+            assertEquals(1.23, v8ValueArray.popDouble(), 0.001);
+            assertEquals(true, v8ValueArray.popBoolean());
+            assertEquals(0, v8ValueArray.getLength());
+            assertEquals("", v8ValueArray.toString());
         }
     }
 }

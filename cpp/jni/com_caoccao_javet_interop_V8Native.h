@@ -17,6 +17,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    callObjectFunction
+ * Signature: (JJILjava/lang/String;Z[Ljava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callObjectFunction
+  (JNIEnv *, jclass, jlong, jlong, jint, jstring, jboolean, jobjectArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    closeV8Runtime
  * Signature: (J)V
  */

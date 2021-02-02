@@ -27,6 +27,12 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public V8Value call(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.callObjectFunction(this, functionName, returnResult, v8Values);
+    }
+
+    @Override
     public boolean delete(V8Value key) throws JavetException {
         checkV8Runtime();
         return v8Runtime.delete(this, key);

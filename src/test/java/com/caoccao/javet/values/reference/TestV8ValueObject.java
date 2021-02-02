@@ -30,6 +30,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
+    public void testCall() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.execute("const a = [1, 2, 3]; a;")) {
+            assertEquals(3, v8ValueArray.getLength());
+            v8ValueArray.call("push", new V8ValueInteger(4));
+            assertEquals(4, v8ValueArray.getLength());
+            assertEquals(4, v8ValueArray.getInteger(3));
+            assertEquals("1,2,3,4", v8ValueArray.toString());
+        }
+    }
+
+    @Test
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;")) {

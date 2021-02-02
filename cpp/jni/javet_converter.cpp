@@ -30,6 +30,7 @@
 // Reference
 #define IS_JAVA_ARGUMENTS(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueArguments)
 #define IS_JAVA_ARRAY(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueArray)
+#define IS_JAVA_FUNCTION(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueFunction)
 #define IS_JAVA_ERROR(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueError)
 #define IS_JAVA_GLOBAL_OBJECT(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueGlobalObject)
 #define IS_JAVA_MAP(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueMap)
@@ -94,6 +95,10 @@ namespace Javet {
 			jclassV8ValueArray = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueArray"));
 			jmethodIDV8ValueArrayConstructor = jniEnv->GetMethodID(jclassV8ValueArray, "<init>", "(J)V");
 			jmethodIDV8ValueArrayGetHandle = jniEnv->GetMethodID(jclassV8ValueArray, "getHandle", "()J");
+
+			jclassV8ValueFunction = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueFunction"));
+			jmethodIDV8ValueFunctionConstructor = jniEnv->GetMethodID(jclassV8ValueFunction, "<init>", "(J)V");
+			jmethodIDV8ValueFunctionGetHandle = jniEnv->GetMethodID(jclassV8ValueFunction, "getHandle", "()J");
 
 			jclassV8ValueError = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueError"));
 			jmethodIDV8ValueErrorConstructor = jniEnv->GetMethodID(jclassV8ValueError, "<init>", "(J)V");
@@ -214,7 +219,7 @@ namespace Javet {
 				// TODO
 			}
 			if (v8Value->IsFunction()) {
-				// TODO
+				return jniEnv->NewObject(jclassV8ValueFunction, jmethodIDV8ValueFunctionConstructor, toV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsProxy()) {
 				return jniEnv->NewObject(jclassV8ValueProxy, jmethodIDV8ValueProxyConstructor, toV8PersistentObjectReference(v8Context, v8Value));
@@ -431,6 +436,21 @@ namespace Javet {
 				}
 			}
 			return toV8Undefined(v8Context);
+		}
+
+		std::unique_ptr<v8::Local<v8::Value>[]> toV8Values(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jobjectArray& mValues) {
+			std::unique_ptr<v8::Local<v8::Value>[]> umValuesPointer;
+			uint32_t valueCount = 0;
+			if (mValues != nullptr) {
+				valueCount = jniEnv->GetArrayLength(mValues);
+			}
+			if (valueCount > 0) {
+				umValuesPointer.reset(new v8::Local<v8::Value>[valueCount]);
+				for (int i = 0; i < valueCount; ++i) {
+					umValuesPointer.get()[i] = toV8Value(jniEnv, v8Context, jniEnv->GetObjectArrayElement(mValues, i));
+				}
+			}
+			return umValuesPointer;
 		}
 	}
 }

@@ -39,7 +39,7 @@ public final class V8Runtime
     private String globalName;
     private long handle;
     private Logger logger;
-    private Map<Long, V8ValueReference> referenceMap;
+    private Map<Long, IV8ValueReference> referenceMap;
     private long threadId;
     private V8Host v8Host;
 
@@ -59,10 +59,22 @@ public final class V8Runtime
         V8Native.add(handle, iV8ValueKeySet.getHandle(), iV8ValueKeySet.getType(), value);
     }
 
-    public void addReference(V8ValueReference v8ValueReference) throws
+    public void addReference(IV8ValueReference iV8ValueReference) throws
             JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException {
         checkLock();
-        referenceMap.put(v8ValueReference.getHandle(), v8ValueReference);
+        referenceMap.put(iV8ValueReference.getHandle(), iV8ValueReference);
+    }
+
+    public V8Value callObjectFunction(
+            IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values) throws
+            JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyRegisteredException {
+        checkLock();
+        for (V8Value v8Value : v8Values) {
+            decorateV8Value(v8Value);
+        }
+        return decorateV8Value((V8Value) V8Native.callObjectFunction(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), functionName, returnResult, v8Values));
     }
 
     public void checkLock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
@@ -162,6 +174,10 @@ public final class V8Runtime
         return globalName;
     }
 
+    public void setGlobalName(String globalName) {
+        this.globalName = globalName;
+    }
+
     public V8ValueGlobalObject getGlobalObject() throws
             JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
             JavetV8RuntimeAlreadyRegisteredException {
@@ -250,10 +266,10 @@ public final class V8Runtime
         V8Native.resetV8Runtime(handle, globalName);
     }
 
-    public void removeReference(V8ValueReference v8ValueReference)
+    public void removeReference(IV8ValueReference iV8ValueReference)
             throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         checkLock();
-        final long referenceHandle = v8ValueReference.getHandle();
+        final long referenceHandle = iV8ValueReference.getHandle();
         if (referenceMap.containsKey(referenceHandle)) {
             V8Native.removeReferenceHandle(referenceHandle);
             referenceMap.remove(referenceHandle);
@@ -272,10 +288,6 @@ public final class V8Runtime
         checkLock();
         decorateV8Value(value);
         return V8Native.set(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key, value);
-    }
-
-    public void setGlobalName(String globalName) {
-        this.globalName = globalName;
     }
 
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {

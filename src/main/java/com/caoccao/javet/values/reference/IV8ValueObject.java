@@ -25,6 +25,36 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    V8Value call(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
+
+    default V8Value call(String functionName, V8Value... v8Values) throws JavetException {
+        return call(functionName, true, v8Values);
+    }
+
+    default Boolean callBoolean(String functionName, V8Value... v8Values) throws JavetException {
+        return ((V8ValueBoolean) call(functionName, true, v8Values)).getValue();
+    }
+
+    default Double callDouble(String functionName, V8Value... v8Values) throws JavetException {
+        return ((V8ValueDouble) call(functionName, true, v8Values)).getValue();
+    }
+
+    default Integer callInteger(String functionName, V8Value... v8Values) throws JavetException {
+        return ((V8ValueInteger) call(functionName, true, v8Values)).getValue();
+    }
+
+    default Long callLong(String functionName, V8Value... v8Values) throws JavetException {
+        return ((V8ValueLong) call(functionName, true, v8Values)).getValue();
+    }
+
+    default String callString(String functionName, V8Value... v8Values) throws JavetException {
+        return ((V8ValueString) call(functionName, true, v8Values)).getValue();
+    }
+
+    default void callVoid(String functionName, V8Value... v8Values) throws JavetException {
+        call(functionName, false, v8Values);
+    }
+
     default boolean delete(int key) throws JavetException {
         return delete(new V8ValueInteger(key));
     }
