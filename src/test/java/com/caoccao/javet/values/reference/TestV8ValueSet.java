@@ -86,6 +86,7 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
             assertFalse(v8ValueSet.has("p"));
             assertFalse(v8ValueSet.has(0));
             assertEquals("[object Set]", v8ValueSet.toString());
+            assertEquals("[object Set]", v8ValueSet.protoToString());
             try (IV8ValueCollection iV8ValueCollection = v8ValueSet.getOwnPropertyNames()) {
                 assertNotNull(iV8ValueCollection);
                 assertEquals(0, iV8ValueCollection.getLength());

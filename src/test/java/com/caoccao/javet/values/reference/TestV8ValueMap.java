@@ -40,6 +40,7 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
             assertFalse(v8ValueMap.has("p"));
             assertFalse(v8ValueMap.has(0));
             assertEquals("[object Map]", v8ValueMap.toString());
+            assertEquals("[object Map]", v8ValueMap.protoToString());
             try (IV8ValueCollection iV8ValueCollection = v8ValueMap.getOwnPropertyNames()) {
                 assertNotNull(iV8ValueCollection);
                 assertEquals(0, iV8ValueCollection.getLength());

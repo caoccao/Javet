@@ -76,6 +76,16 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
+    public String protoToString() {
+        try {
+            checkV8Runtime();
+            return v8Runtime.protoToString(this);
+        } catch (JavetException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Override
     public String toString() {
         try {
             checkV8Runtime();

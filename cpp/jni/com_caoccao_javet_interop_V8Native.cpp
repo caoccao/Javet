@@ -417,6 +417,17 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 	}
 }
 
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_protoToString
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	v8::Local<v8::String> v8String;
+	if (v8LocalObject->IsObject()) {
+		v8String = v8LocalObject->ObjectProtoToString(v8Context).ToLocalChecked();
+	}
+	v8::String::Value stringValue(v8Context->GetIsolate(), v8String);
+	return jniEnv->NewString(*stringValue, stringValue.length());
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHandle
 (JNIEnv* jniEnv, jclass caller, jlong referenceHandle) {
 	auto v8PersistentObjectPointer = reinterpret_cast<v8::Persistent<v8::Object>*>(referenceHandle);
@@ -524,7 +535,7 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
 	else if (IS_V8_SET(v8ValueType)) {
 		v8String = v8LocalObject.As<v8::Set>()->ToString(v8Context).ToLocalChecked();
 	}
-	else {
+	else if (v8LocalObject->IsObject()) {
 		v8String = v8LocalObject->ToString(v8Context).ToLocalChecked();
 	}
 	v8::String::Value stringValue(v8Context->GetIsolate(), v8String);

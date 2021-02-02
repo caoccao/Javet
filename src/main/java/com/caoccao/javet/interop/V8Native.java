@@ -72,6 +72,8 @@ final class V8Native {
 
     native static void lockV8Runtime(long v8RuntimeHandle);
 
+    native static String protoToString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     native static void removeReferenceHandle(long referenceHandle);
 
     native static void resetV8Runtime(long v8RuntimeHandle, String globalName);

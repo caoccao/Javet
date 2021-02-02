@@ -44,6 +44,9 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals("z", v8ValueArray.getString(2));
             assertEquals(1, v8ValueArray.getInteger("a"));
             assertEquals("2", v8ValueArray.getString("b"));
+            assertEquals( "x,y,z", v8ValueArray.toString());
+            assertEquals( "[object Array]", v8ValueArray.protoToString());
+            assertEquals( "[\"x\",\"y\",\"z\"]", v8Runtime.executeString("JSON.stringify(a);"));
         }
     }
 
@@ -66,9 +69,6 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(1.23, v8ValueArray.getDouble(4), 0.001);
             assertTrue(v8ValueArray.get(-1) instanceof V8ValueUndefined);
             assertTrue(v8ValueArray.get(100) instanceof V8ValueUndefined);
-            assertEquals(
-                    "1,2,3,true,1.23,4,5,,Wed Jan 27 2021 09:17:03 GMT+0800 (China Standard Time)",
-                    v8ValueArray.toString());
             assertEquals(1, v8Runtime.getReferenceCount());
             try (V8ValueArray childV8ValueArray = v8ValueArray.get(5)) {
                 assertNotNull(childV8ValueArray);

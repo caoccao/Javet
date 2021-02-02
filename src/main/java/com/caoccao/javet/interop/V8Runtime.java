@@ -162,8 +162,10 @@ public final class V8Runtime
         return globalName;
     }
 
-    public void setGlobalName(String globalName) {
-        this.globalName = globalName;
+    public V8ValueGlobalObject getGlobalObject() throws
+            JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyRegisteredException {
+        return decorateV8Value((V8ValueGlobalObject) V8Native.getGlobalObject(handle));
     }
 
     public long getHandle() {
@@ -201,10 +203,9 @@ public final class V8Runtime
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType()));
     }
 
-    public V8ValueGlobalObject getGlobalObject() throws
-            JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyRegisteredException {
-        return decorateV8Value((V8ValueGlobalObject) V8Native.getGlobalObject(handle));
+    public int getReferenceCount() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+        checkLock();
+        return referenceMap.size();
     }
 
     public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
@@ -235,17 +236,18 @@ public final class V8Runtime
         }
     }
 
+    public String protoToString(IV8ValueReference iV8ValueReference)
+            throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+        checkLock();
+        return V8Native.protoToString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
+    }
+
     @Override
     public void reset() throws JavetV8RuntimeLockConflictException {
         if (isLocked()) {
             throw new JavetV8RuntimeLockConflictException();
         }
         V8Native.resetV8Runtime(handle, globalName);
-    }
-
-    public int getReferenceCount() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
-        checkLock();
-        return referenceMap.size();
     }
 
     public void removeReference(V8ValueReference v8ValueReference)
@@ -270,6 +272,10 @@ public final class V8Runtime
         checkLock();
         decorateV8Value(value);
         return V8Native.set(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key, value);
+    }
+
+    public void setGlobalName(String globalName) {
+        this.globalName = globalName;
     }
 
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {

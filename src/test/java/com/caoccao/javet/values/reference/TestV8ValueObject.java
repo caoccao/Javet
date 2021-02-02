@@ -165,6 +165,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(1.23, v8ValueObject.getPropertyDouble("e"), 0.001);
             assertTrue(v8ValueObject.getPropertyBoolean("f"));
             assertEquals("[object Object]", v8ValueObject.toString());
+            assertEquals("[object Object]", v8ValueObject.protoToString());
         }
     }
 }
