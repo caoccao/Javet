@@ -20,9 +20,7 @@ package com.caoccao.javet.values.utils;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueObject;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.caoccao.javet.values.virtual.V8VirtualList;
 
 public final class V8ValueIteratorUtils {
     public static final String FUNCTION_NEXT = "next";
@@ -32,8 +30,8 @@ public final class V8ValueIteratorUtils {
     private V8ValueIteratorUtils() {
     }
 
-    public static List<Integer> convertIteratorToIntegerList(V8ValueObject iterator) throws JavetException {
-        List<Integer> resultList = new ArrayList<>();
+    public static V8VirtualList<Integer> convertIteratorToIntegerList(V8ValueObject iterator) throws JavetException {
+        V8VirtualList<Integer> resultList = new V8VirtualList<>();
         while (true) {
             try (V8ValueObject next = iterator.invoke(FUNCTION_NEXT)) {
                 if (next.getBoolean(PROPERTY_DONE)) {
@@ -45,8 +43,8 @@ public final class V8ValueIteratorUtils {
         return resultList;
     }
 
-    public static List<V8Value> convertIteratorToV8ValueList(V8ValueObject iterator) throws JavetException {
-        List<V8Value> resultList = new ArrayList<>();
+    public static V8VirtualList<V8Value> convertIteratorToV8ValueList(V8ValueObject iterator) throws JavetException {
+        V8VirtualList<V8Value> resultList = new V8VirtualList<>();
         while (true) {
             try (V8ValueObject next = iterator.invoke(FUNCTION_NEXT)) {
                 if (next.getBoolean(PROPERTY_DONE)) {

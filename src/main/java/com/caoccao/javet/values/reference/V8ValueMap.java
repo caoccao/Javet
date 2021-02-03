@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.utils.V8ValueIteratorUtils;
+import com.caoccao.javet.values.virtual.V8VirtualList;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
-    public List<V8Value> getEntries() throws JavetException {
+    public V8VirtualList<V8Value> getEntries() throws JavetException {
         checkV8Runtime();
         try (V8ValueObject mapIterator = invoke(FUNCTION_ENTRIES)) {
             return V8ValueIteratorUtils.convertIteratorToV8ValueList(mapIterator);
@@ -43,7 +44,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
-    public List<V8Value> getKeys() throws JavetException {
+    public V8VirtualList<V8Value> getKeys() throws JavetException {
         checkV8Runtime();
         try (V8ValueObject mapIterator = invoke(FUNCTION_KEYS)) {
             return V8ValueIteratorUtils.convertIteratorToV8ValueList(mapIterator);

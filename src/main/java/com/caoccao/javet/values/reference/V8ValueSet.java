@@ -21,8 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.utils.V8ValueIteratorUtils;
-
-import java.util.List;
+import com.caoccao.javet.values.virtual.V8VirtualList;
 
 public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
 
@@ -44,7 +43,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
-    public List<V8Value> getKeys() throws JavetException {
+    public V8VirtualList<V8Value> getKeys() throws JavetException {
         checkV8Runtime();
         try (V8ValueObject setIterator = invoke(FUNCTION_KEYS)) {
             return V8ValueIteratorUtils.convertIteratorToV8ValueList(setIterator);

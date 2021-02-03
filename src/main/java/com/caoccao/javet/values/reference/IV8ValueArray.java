@@ -20,12 +20,11 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
-
-import java.util.List;
+import com.caoccao.javet.values.virtual.V8VirtualList;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueArray extends IV8ValueObject {
-    List<Integer> getKeys() throws JavetException;
+    V8VirtualList<Integer> getKeys() throws JavetException;
 
     int getLength() throws JavetException;
 

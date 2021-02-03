@@ -22,8 +22,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.utils.V8ValueIteratorUtils;
-
-import java.util.List;
+import com.caoccao.javet.values.virtual.V8VirtualList;
 
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
@@ -42,7 +41,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public List<Integer> getKeys() throws JavetException {
+    public V8VirtualList<Integer> getKeys() throws JavetException {
         checkV8Runtime();
         try (V8ValueObject arrayIterator = invoke(FUNCTION_KEYS)) {
             return V8ValueIteratorUtils.convertIteratorToIntegerList(arrayIterator);

@@ -22,9 +22,8 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.virtual.V8VirtualList;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,11 +76,12 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
                 assertNotNull(iV8ValueArray);
                 assertEquals(0, iV8ValueArray.getLength());
             }
-            List<V8Value> keys = v8ValueSet.getKeys();
-            assertEquals(3, keys.size());
-            assertEquals("x", ((V8ValueString) keys.get(0)).getValue());
-            assertEquals("y", ((V8ValueString) keys.get(1)).getValue());
-            assertEquals(3, ((V8ValueInteger) keys.get(2)).getValue());
+            try (V8VirtualList<V8Value> keys = v8ValueSet.getKeys()) {
+                assertEquals(3, keys.size());
+                assertEquals("x", ((V8ValueString) keys.get(0)).getValue());
+                assertEquals("y", ((V8ValueString) keys.get(1)).getValue());
+                assertEquals(3, ((V8ValueInteger) keys.get(2)).getValue());
+            }
         }
     }
 

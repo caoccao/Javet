@@ -263,7 +263,7 @@ namespace Javet {
 				return toJV8ValuePrimitive(jniEnv, jclassV8ValueString, jmethodIDV8ValueStringConstructor, v8Context, v8Value);
 			}
 			if (v8Value->IsName()) {
-				// Name is not supported.
+				// It defaults to V8ValueObject.
 			}
 			// Object needs to be the last one.
 			if (v8Value->IsObject()) {

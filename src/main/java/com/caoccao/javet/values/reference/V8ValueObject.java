@@ -21,13 +21,10 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     public static final String FUNCTION_STRINGIFY = "stringify";
-    public static final String OBJECT_JSON = "JSON";
+    public static final String PROPERTY_JSON = "JSON";
 
     public V8ValueObject(long handle) {
         super(handle);
@@ -98,7 +95,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public String toJsonString() {
         try {
             checkV8Runtime();
-            try (V8ValueObject jsonObject = v8Runtime.getGlobalObject().get(OBJECT_JSON)) {
+            try (V8ValueObject jsonObject = v8Runtime.getGlobalObject().get(PROPERTY_JSON)) {
                 return jsonObject.invokeString(FUNCTION_STRINGIFY, this);
             }
         } catch (JavetException e) {
