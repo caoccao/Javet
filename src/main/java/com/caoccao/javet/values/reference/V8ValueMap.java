@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.values.utils.V8ValueIteratorUtils;
 
 import java.util.List;
 
@@ -27,16 +28,25 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
 
     public static final String FUNCTION_KEYS = "keys";
     public static final String FUNCTION_VALUES = "values";
+    public static final String FUNCTION_ENTRIES = "entries";
 
     public V8ValueMap(long handle) {
         super(handle);
     }
 
     @Override
+    public List<V8Value> getEntries() throws JavetException {
+        checkV8Runtime();
+        try (V8ValueObject mapIterator = invoke(FUNCTION_ENTRIES)) {
+            return V8ValueIteratorUtils.convertIteratorToV8ValueList(mapIterator);
+        }
+    }
+
+    @Override
     public List<V8Value> getKeys() throws JavetException {
         checkV8Runtime();
         try (V8ValueObject mapIterator = invoke(FUNCTION_KEYS)) {
-            return convertIteratorToV8ValueList(mapIterator);
+            return V8ValueIteratorUtils.convertIteratorToV8ValueList(mapIterator);
         }
     }
 
@@ -55,7 +65,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     public List<V8Value> getValues() throws JavetException {
         checkV8Runtime();
         try (V8ValueObject mapIterator = invoke(FUNCTION_VALUES)) {
-            return convertIteratorToV8ValueList(mapIterator);
+            return V8ValueIteratorUtils.convertIteratorToV8ValueList(mapIterator);
         }
     }
 
