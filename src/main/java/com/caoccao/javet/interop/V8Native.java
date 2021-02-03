@@ -34,7 +34,7 @@ final class V8Native {
 
     native static Object call(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            String functionName, boolean returnResult, Object[] values);
+            Object receiver, boolean returnResult, Object[] values);
 
     native static void closeV8Runtime(long v8RuntimeHandle);
 
@@ -76,7 +76,7 @@ final class V8Native {
 
     native static Object invoke(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object receiver, boolean returnResult, Object[] values);
+            String functionName, boolean returnResult, Object[] values);
 
     native static void lockV8Runtime(long v8RuntimeHandle);
 

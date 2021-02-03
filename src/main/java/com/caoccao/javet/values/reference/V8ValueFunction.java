@@ -33,9 +33,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public <T extends V8Value> T invoke(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+    public <T extends V8Value> T call(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
             throws JavetException {
         checkV8Runtime();
-        return v8Runtime.invoke(this, receiver, returnResult, v8Values);
+        return v8Runtime.call(this, receiver, returnResult, v8Values);
     }
 }

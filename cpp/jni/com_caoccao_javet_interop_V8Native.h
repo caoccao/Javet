@@ -18,10 +18,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    call
- * Signature: (JJILjava/lang/String;Z[Ljava/lang/Object;)Ljava/lang/Object;
+ * Signature: (JJILjava/lang/Object;Z[Ljava/lang/Object;)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
-  (JNIEnv *, jclass, jlong, jlong, jint, jstring, jboolean, jobjectArray);
+  (JNIEnv *, jclass, jlong, jlong, jint, jobject, jboolean, jobjectArray);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -154,10 +154,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnPropert
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    invoke
- * Signature: (JJILjava/lang/Object;Z[Ljava/lang/Object;)Ljava/lang/Object;
+ * Signature: (JJILjava/lang/String;Z[Ljava/lang/Object;)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
-  (JNIEnv *, jclass, jlong, jlong, jint, jobject, jboolean, jobjectArray);
+  (JNIEnv *, jclass, jlong, jlong, jint, jstring, jboolean, jobjectArray);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

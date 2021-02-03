@@ -66,13 +66,13 @@ public final class V8Runtime
     }
 
     public <T extends V8Value> T call(
-            IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values) throws
+            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values) throws
             JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
             JavetV8RuntimeAlreadyRegisteredException {
         checkLock();
         decorateV8Values(v8Values);
         return decorateV8Value((T) V8Native.call(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), functionName, returnResult, v8Values));
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), receiver, returnResult, v8Values));
     }
 
     public void checkLock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
@@ -259,13 +259,13 @@ public final class V8Runtime
     }
 
     public <T extends V8Value> T invoke(
-            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values) throws
+            IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values) throws
             JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
             JavetV8RuntimeAlreadyRegisteredException {
         checkLock();
         decorateV8Values(v8Values);
         return decorateV8Value((T) V8Native.invoke(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), receiver, returnResult, v8Values));
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), functionName, returnResult, v8Values));
     }
 
     public boolean isLocked() {

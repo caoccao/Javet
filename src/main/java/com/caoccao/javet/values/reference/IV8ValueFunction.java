@@ -23,31 +23,31 @@ import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueFunction extends IV8ValueObject {
-    <T extends V8Value> T invoke(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+    <T extends V8Value> T call(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
             throws JavetException;
 
-    default <T extends V8Value> T invoke(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return invoke(receiver, true, v8Values);
+    default <T extends V8Value> T call(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        return call(receiver, true, v8Values);
     }
 
-    default Boolean invokeBoolean(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return invokeObject(receiver, v8Values);
+    default Boolean callBoolean(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        return callObject(receiver, v8Values);
     }
 
-    default Double invokeDouble(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return invokeObject(receiver, v8Values);
+    default Double callDouble(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        return callObject(receiver, v8Values);
     }
 
-    default Integer invokeInteger(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return invokeObject(receiver, v8Values);
+    default Integer callInteger(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        return callObject(receiver, v8Values);
     }
 
-    default Long invokeLong(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return invokeObject(receiver, v8Values);
+    default Long callLong(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        return callObject(receiver, v8Values);
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R invokeObject(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        try (V8Value v8Value = invoke(receiver, v8Values)) {
+    default <R extends Object, T extends V8ValuePrimitive<R>> R callObject(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        try (V8Value v8Value = call(receiver, v8Values)) {
             try {
                 return ((T) v8Value).getValue();
             } catch (Throwable t) {
@@ -56,11 +56,11 @@ public interface IV8ValueFunction extends IV8ValueObject {
         return null;
     }
 
-    default String invokeString(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return invokeObject(receiver, v8Values);
+    default String callString(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        return callObject(receiver, v8Values);
     }
 
-    default void invokeVoid(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        invoke(receiver, false, v8Values);
+    default void callVoid(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        call(receiver, false, v8Values);
     }
 }

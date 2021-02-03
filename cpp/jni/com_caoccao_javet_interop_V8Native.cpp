@@ -123,27 +123,25 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
-(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mFunctionName, jboolean mReturnResult, jobjectArray mValues) {
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mReceiver, jboolean mReturnResult, jobjectArray mValues) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (v8LocalObject->IsObject()) {
-		auto v8Function = v8LocalObject->Get(v8Context, Javet::Converter::toV8String(jniEnv, v8Context, mFunctionName)).ToLocalChecked();
-		if (v8Function->IsFunction()) {
-			v8::TryCatch v8TryCatch(v8Runtime->v8Isolate);
-			v8::MaybeLocal<v8::Value> maybeLocalValueResult;
-			uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
-			if (valueCount > 0) {
-				auto umValuesPointer = Javet::Converter::toV8Values(jniEnv, v8Context, mValues);
-				maybeLocalValueResult = v8Function.As<v8::Function>()->Call(v8Context, v8LocalObject, valueCount, umValuesPointer.get());
-			}
-			else {
-				maybeLocalValueResult = v8Function.As<v8::Function>()->Call(v8Context, v8LocalObject, 0, nullptr);
-			}
-			if (v8TryCatch.HasCaught()) {
-				Javet::Exceptions::throwJavetExecutionException(jniEnv, v8Context, v8TryCatch);
-			}
-			else if (mReturnResult) {
-				SAFE_CONVERT_AND_RETURN_JAVE_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
-			}
+	if (v8LocalObject->IsFunction()) {
+		v8::TryCatch v8TryCatch(v8Runtime->v8Isolate);
+		v8::MaybeLocal<v8::Value> maybeLocalValueResult;
+		auto umReceiver = Javet::Converter::toV8Value(jniEnv, v8Context, mReceiver);
+		uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
+		if (valueCount > 0) {
+			auto umValuesPointer = Javet::Converter::toV8Values(jniEnv, v8Context, mValues);
+			maybeLocalValueResult = v8LocalObject.As<v8::Function>()->Call(v8Context, umReceiver, valueCount, umValuesPointer.get());
+		}
+		else {
+			maybeLocalValueResult = v8LocalObject.As<v8::Function>()->Call(v8Context, umReceiver, 0, nullptr);
+		}
+		if (v8TryCatch.HasCaught()) {
+			Javet::Exceptions::throwJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+		}
+		else if (mReturnResult) {
+			SAFE_CONVERT_AND_RETURN_JAVE_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
 		}
 	}
 	return nullptr;
@@ -434,25 +432,27 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnPropert
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
-(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mReceiver, jboolean mReturnResult, jobjectArray mValues) {
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mFunctionName, jboolean mReturnResult, jobjectArray mValues) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (v8LocalObject->IsFunction()) {
-		v8::TryCatch v8TryCatch(v8Runtime->v8Isolate);
-		v8::MaybeLocal<v8::Value> maybeLocalValueResult;
-		auto umReceiver = Javet::Converter::toV8Value(jniEnv, v8Context, mReceiver);
-		uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
-		if (valueCount > 0) {
-			auto umValuesPointer = Javet::Converter::toV8Values(jniEnv, v8Context, mValues);
-			maybeLocalValueResult = v8LocalObject.As<v8::Function>()->Call(v8Context, umReceiver, valueCount, umValuesPointer.get());
-		}
-		else {
-			maybeLocalValueResult = v8LocalObject.As<v8::Function>()->Call(v8Context, umReceiver, 0, nullptr);
-		}
-		if (v8TryCatch.HasCaught()) {
-			Javet::Exceptions::throwJavetExecutionException(jniEnv, v8Context, v8TryCatch);
-		}
-		else if (mReturnResult) {
-			SAFE_CONVERT_AND_RETURN_JAVE_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
+	if (v8LocalObject->IsObject()) {
+		auto v8Function = v8LocalObject->Get(v8Context, Javet::Converter::toV8String(jniEnv, v8Context, mFunctionName)).ToLocalChecked();
+		if (v8Function->IsFunction()) {
+			v8::TryCatch v8TryCatch(v8Runtime->v8Isolate);
+			v8::MaybeLocal<v8::Value> maybeLocalValueResult;
+			uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
+			if (valueCount > 0) {
+				auto umValuesPointer = Javet::Converter::toV8Values(jniEnv, v8Context, mValues);
+				maybeLocalValueResult = v8Function.As<v8::Function>()->Call(v8Context, v8LocalObject, valueCount, umValuesPointer.get());
+			}
+			else {
+				maybeLocalValueResult = v8Function.As<v8::Function>()->Call(v8Context, v8LocalObject, 0, nullptr);
+			}
+			if (v8TryCatch.HasCaught()) {
+				Javet::Exceptions::throwJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+			}
+			else if (mReturnResult) {
+				SAFE_CONVERT_AND_RETURN_JAVE_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
+			}
 		}
 	}
 	return nullptr;

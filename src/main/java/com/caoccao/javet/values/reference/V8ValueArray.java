@@ -52,12 +52,12 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     public <T extends V8Value> T pop() throws JavetException {
         checkV8Runtime();
-        return call(FUNCTION_POP);
+        return invoke(FUNCTION_POP);
     }
 
     @Override
     public int push(V8Value v8Value) throws JavetException {
         checkV8Runtime();
-        return callInteger(FUNCTION_PUSH, v8Value);
+        return invokeInteger(FUNCTION_PUSH, v8Value);
     }
 }

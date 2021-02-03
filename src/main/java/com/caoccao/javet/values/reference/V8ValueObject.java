@@ -31,10 +31,10 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T call(String functionName, boolean returnResult, V8Value... v8Values)
+    public <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values)
             throws JavetException {
         checkV8Runtime();
-        return v8Runtime.call(this, functionName, returnResult, v8Values);
+        return v8Runtime.invoke(this, functionName, returnResult, v8Values);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         try {
             checkV8Runtime();
             try (V8ValueObject jsonObject = v8Runtime.getGlobalObject().get(OBJECT_JSON)) {
-                return jsonObject.callString(FUNCTION_STRINGIFY, this);
+                return jsonObject.invokeString(FUNCTION_STRINGIFY, this);
             }
         } catch (JavetException e) {
             return e.getMessage();

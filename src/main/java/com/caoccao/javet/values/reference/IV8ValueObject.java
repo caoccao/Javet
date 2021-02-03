@@ -25,31 +25,31 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
-    <T extends V8Value> T call(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
+    <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
 
-    default <T extends V8Value> T call(String functionName, V8Value... v8Values) throws JavetException {
-        return call(functionName, true, v8Values);
+    default <T extends V8Value> T invoke(String functionName, V8Value... v8Values) throws JavetException {
+        return invoke(functionName, true, v8Values);
     }
 
-    default Boolean callBoolean(String functionName, V8Value... v8Values) throws JavetException {
-        return callObject(functionName, v8Values);
+    default Boolean invokeBoolean(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
     }
 
-    default Double callDouble(String functionName, V8Value... v8Values) throws JavetException {
-        return callObject(functionName, v8Values);
+    default Double invokeDouble(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
     }
 
-    default Integer callInteger(String functionName, V8Value... v8Values) throws JavetException {
-        return callObject(functionName, v8Values);
+    default Integer invokeInteger(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
     }
 
-    default Long callLong(String functionName, V8Value... v8Values) throws JavetException {
-        return callObject(functionName, v8Values);
+    default Long invokeLong(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R callObject(
+    default <R extends Object, T extends V8ValuePrimitive<R>> R invokeObject(
             String functionName, V8Value... v8Values) throws JavetException {
-        try (V8Value v8Value = call(functionName, v8Values)) {
+        try (V8Value v8Value = invoke(functionName, v8Values)) {
             try {
                 return ((T) v8Value).getValue();
             } catch (Throwable t) {
@@ -58,12 +58,12 @@ public interface IV8ValueObject extends IV8ValueReference {
         return null;
     }
 
-    default String callString(String functionName, V8Value... v8Values) throws JavetException {
-        return callObject(functionName, v8Values);
+    default String invokeString(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
     }
 
-    default void callVoid(String functionName, V8Value... v8Values) throws JavetException {
-        call(functionName, false, v8Values);
+    default void invokeVoid(String functionName, V8Value... v8Values) throws JavetException {
+        invoke(functionName, false, v8Values);
     }
 
     default boolean delete(int key) throws JavetException {
