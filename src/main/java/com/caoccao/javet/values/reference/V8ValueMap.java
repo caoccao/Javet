@@ -21,15 +21,23 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
+import java.util.List;
+
 public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
+
+    public static final String FUNCTION_KEYS = "keys";
+    public static final String FUNCTION_VALUES = "values";
 
     public V8ValueMap(long handle) {
         super(handle);
     }
 
     @Override
-    public IV8ValueArray getKeys() throws JavetException {
-        return null;
+    public List<V8Value> getKeys() throws JavetException {
+        checkV8Runtime();
+        try (V8ValueObject mapIterator = invoke(FUNCTION_KEYS)) {
+            return convertIteratorToV8ValueList(mapIterator);
+        }
     }
 
     @Override
@@ -44,8 +52,11 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
-    public IV8ValueArray getValues() throws JavetException {
-        return null;
+    public List<V8Value> getValues() throws JavetException {
+        checkV8Runtime();
+        try (V8ValueObject mapIterator = invoke(FUNCTION_VALUES)) {
+            return convertIteratorToV8ValueList(mapIterator);
+        }
     }
 
     @Override

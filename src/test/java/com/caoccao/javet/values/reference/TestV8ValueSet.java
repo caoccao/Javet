@@ -19,8 +19,12 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,26 +60,7 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testNestedSet() throws JavetException {
-        try (V8ValueSet outerObject = v8Runtime.execute("const o = new Set(); o;")) {
-            assertEquals(
-                    "[]",
-                    v8Runtime.executeString(
-                    "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);"));
-            outerObject.add(new V8ValueString("1"));
-            try (V8ValueSet innerObject = v8Runtime.createV8ValueSet()) {
-                innerObject.add(new V8ValueString("2"));
-                outerObject.add(innerObject);
-            }
-            assertEquals(
-                    "[\"1\",[\"2\"]]",
-                    v8Runtime.executeString(
-                            "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);"));
-        }
-    }
-
-    @Test
-    public void testSet() throws JavetException {
+    public void testHas() throws JavetException {
         try (V8ValueSet v8ValueSet = v8Runtime.execute(
                 "const a = new Set(); a.add('x', 1); a.add('y', 'b'); a.add(3, 'c'); a;")) {
             assertNotNull(v8ValueSet);
@@ -92,6 +77,30 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
                 assertNotNull(iV8ValueArray);
                 assertEquals(0, iV8ValueArray.getLength());
             }
+            List<V8Value> keys = v8ValueSet.getKeys();
+            assertEquals(3, keys.size());
+            assertEquals("x", ((V8ValueString) keys.get(0)).getValue());
+            assertEquals("y", ((V8ValueString) keys.get(1)).getValue());
+            assertEquals(3, ((V8ValueInteger) keys.get(2)).getValue());
+        }
+    }
+
+    @Test
+    public void testNestedSet() throws JavetException {
+        try (V8ValueSet outerObject = v8Runtime.execute("const o = new Set(); o;")) {
+            assertEquals(
+                    "[]",
+                    v8Runtime.executeString(
+                            "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);"));
+            outerObject.add(new V8ValueString("1"));
+            try (V8ValueSet innerObject = v8Runtime.createV8ValueSet()) {
+                innerObject.add(new V8ValueString("2"));
+                outerObject.add(innerObject);
+            }
+            assertEquals(
+                    "[\"1\",[\"2\"]]",
+                    v8Runtime.executeString(
+                            "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);"));
         }
     }
 }

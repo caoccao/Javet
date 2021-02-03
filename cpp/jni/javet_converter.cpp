@@ -186,13 +186,13 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueMap, jmethodIDV8ValueMapConstructor, toV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsMapIterator()) {
-				// TODO
+				// It defaults to V8ValueObject.
 			}
 			if (v8Value->IsSet()) {
 				return jniEnv->NewObject(jclassV8ValueSet, jmethodIDV8ValueSetConstructor, toV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsSetIterator()) {
-				// TODO
+				// It defaults to V8ValueObject.
 			}
 			if (v8Value->IsWeakMap()) {
 				// TODO
@@ -260,7 +260,7 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueDouble, jmethodIDV8ValueDoubleConstructor, v8Value->NumberValue(v8Context).FromMaybe(0));
 			}
 			if (v8Value->IsString() || v8Value->IsStringObject()) {
-				return toJV8ValueReference(jniEnv, jclassV8ValueString, jmethodIDV8ValueStringConstructor, v8Context, v8Value);
+				return toJV8ValuePrimitive(jniEnv, jclassV8ValueString, jmethodIDV8ValueStringConstructor, v8Context, v8Value);
 			}
 			if (v8Value->IsName()) {
 				// Name is not supported.
@@ -270,7 +270,7 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueObject, jmethodIDV8ValueObjectConstructor, toV8PersistentObjectReference(v8Context, v8Value));
 			}
 			// Something is wrong. It defaults to toString().
-			return toJV8ValueReference(jniEnv, jclassV8ValueUnknown, jmethodIDV8ValueUnknownConstructor, v8Context, v8Value);
+			return toJV8ValuePrimitive(jniEnv, jclassV8ValueUnknown, jmethodIDV8ValueUnknownConstructor, v8Context, v8Value);
 		}
 
 		inline jobject toJV8ValueNull(JNIEnv* jniEnv) {
@@ -281,14 +281,14 @@ namespace Javet {
 			return jniEnv->NewObject(jclassV8ValueGlobalObject, jmethodIDV8ValueGlobalObjectConstructor, v8PersistentObjectPointer);
 		}
 
-		inline jobject toJV8ValueReference(
-			JNIEnv* jniEnv, jclass jclassV8ValueReference, jmethodID jmethodIDV8ValueReferenceConstructor,
+		inline jobject toJV8ValuePrimitive(
+			JNIEnv* jniEnv, jclass jclassV8ValuePrimitive, jmethodID jmethodIDV8ValuePrimitiveConstructor,
 			v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value) {
 			v8::String::Value stringValue(v8Context->GetIsolate(), v8Value->ToString(v8Context).ToLocalChecked());
 			jstring mStringValue = jniEnv->NewString(*stringValue, stringValue.length());
-			jobject mV8ValueReference = jniEnv->NewObject(jclassV8ValueReference, jmethodIDV8ValueReferenceConstructor, mStringValue);
+			jobject mV8ValuePrimitive = jniEnv->NewObject(jclassV8ValuePrimitive, jmethodIDV8ValuePrimitiveConstructor, mStringValue);
 			jniEnv->DeleteLocalRef(mStringValue);
-			return mV8ValueReference;
+			return mV8ValuePrimitive;
 		}
 
 		jobject toJV8ValueUndefined(JNIEnv* jniEnv) {

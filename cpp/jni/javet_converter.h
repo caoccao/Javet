@@ -121,8 +121,8 @@ namespace Javet {
 
 		jobject toJV8ValueGlobalObject(JNIEnv* jniEnv, v8::Persistent<v8::Object>* v8PersistentObjectPointer);
 
-		inline jobject toJV8ValueReference(
-			JNIEnv* jniEnv, jclass jclassV8ValueReference, jmethodID jmethodIDV8ValueReferenceConstructor,
+		inline jobject toJV8ValuePrimitive(
+			JNIEnv* jniEnv, jclass jclassV8ValuePrimitive, jmethodID jmethodIDV8ValuePrimitiveConstructor,
 			v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
 
 		jobject toJV8ValueUndefined(JNIEnv* jniEnv);

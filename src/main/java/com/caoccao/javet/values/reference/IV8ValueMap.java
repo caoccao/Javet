@@ -18,8 +18,11 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
+
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueMap extends IV8ValueKeyContainer {
-    IV8ValueArray getValues() throws JavetException;
+     List<V8Value> getValues() throws JavetException;
 }

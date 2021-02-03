@@ -21,20 +21,45 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     public static final String FUNCTION_STRINGIFY = "stringify";
+    public static final String FUNCTION_NEXT = "next";
     public static final String OBJECT_JSON = "JSON";
+    public static final String PROPERTY_DONE = "done";
+    public static final String PROPERTY_VALUE = "value";
 
     public V8ValueObject(long handle) {
         super(handle);
     }
 
-    @Override
-    public <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values)
-            throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.invoke(this, functionName, returnResult, v8Values);
+    protected List<Integer> convertIteratorToIntegerList(V8ValueObject iterator) throws JavetException {
+        List<Integer> keys = new ArrayList<>();
+        while (true) {
+            try (V8ValueObject next = iterator.invoke(FUNCTION_NEXT)) {
+                if (next.getBoolean(PROPERTY_DONE)) {
+                    break;
+                }
+                keys.add(next.getInteger(PROPERTY_VALUE));
+            }
+        }
+        return keys;
+    }
+
+    protected List<V8Value> convertIteratorToV8ValueList(V8ValueObject iterator) throws JavetException {
+        List<V8Value> keys = new ArrayList<>();
+        while (true) {
+            try (V8ValueObject next = iterator.invoke(FUNCTION_NEXT)) {
+                if (next.getBoolean(PROPERTY_DONE)) {
+                    break;
+                }
+                keys.add(next.get(PROPERTY_VALUE));
+            }
+        }
+        return keys;
     }
 
     @Override
@@ -77,6 +102,13 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
             throws JavetException {
         checkV8Runtime();
         return v8Runtime.getProperty(this, key);
+    }
+
+    @Override
+    public <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values)
+            throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.invoke(this, functionName, returnResult, v8Values);
     }
 
     @Override

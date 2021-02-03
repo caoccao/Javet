@@ -44,4 +44,12 @@ public class TestV8ValueGlobalObject extends BaseTestJavetRuntime {
         assertEquals(2, v8Runtime.executeInteger("a + 1"));
         assertEquals(4, v8Runtime.executeInteger("a + b"));
     }
+
+    @Test
+    public void testInvokeGlobalFunction() throws JavetException {
+        v8Runtime.executeVoid("function a() { return 1; }");
+        try (V8ValueGlobalObject v8RuntimeGlobalObject = v8Runtime.getGlobalObject()) {
+            assertEquals(1, v8RuntimeGlobalObject.invokeInteger("a"));
+        }
+    }
 }

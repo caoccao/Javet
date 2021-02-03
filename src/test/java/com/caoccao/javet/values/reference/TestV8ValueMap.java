@@ -19,9 +19,12 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,6 +49,16 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
                 assertNotNull(iV8ValueArray);
                 assertEquals(0, iV8ValueArray.getLength());
             }
+            List<V8Value> keys = v8ValueMap.getKeys();
+            assertEquals(3, keys.size());
+            assertEquals("x", ((V8ValueString) keys.get(0)).getValue());
+            assertEquals("y", ((V8ValueString) keys.get(1)).getValue());
+            assertEquals(3, ((V8ValueInteger) keys.get(2)).getValue());
+            List<V8Value> values = v8ValueMap.getValues();
+            assertEquals(3, values.size());
+            assertEquals(1, ((V8ValueInteger) values.get(0)).getValue());
+            assertEquals("b", ((V8ValueString) values.get(1)).getValue());
+            assertEquals("c", ((V8ValueString) values.get(2)).getValue());
         }
     }
 
