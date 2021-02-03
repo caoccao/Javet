@@ -39,7 +39,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
-    public IV8ValueCollection getKeys() throws JavetException {
+    public IV8ValueArray getKeys() throws JavetException {
         return null;
     }
 

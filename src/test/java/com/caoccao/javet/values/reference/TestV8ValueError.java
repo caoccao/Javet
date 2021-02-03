@@ -31,9 +31,9 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             assertNotNull(v8ValueError);
             assertEquals("test", v8ValueError.getMessage());
             assertEquals("Error: test\n    at <anonymous>:1:1", v8ValueError.getStack());
-            try (IV8ValueCollection iV8ValueCollection = v8ValueError.getOwnPropertyNames()) {
-                assertNotNull(iV8ValueCollection);
-                assertEquals(0, iV8ValueCollection.getLength());
+            try (IV8ValueArray iV8ValueArray = v8ValueError.getOwnPropertyNames()) {
+                assertNotNull(iV8ValueArray);
+                assertEquals(0, iV8ValueArray.getLength());
             }
         }
     }

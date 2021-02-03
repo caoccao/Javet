@@ -22,14 +22,19 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
+
+    public static final String FUNCTION_STRINGIFY = "stringify";
+    public static final String OBJECT_JSON = "JSON";
+
     public V8ValueObject(long handle) {
         super(handle);
     }
 
     @Override
-    public V8Value call(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException {
+    public <T extends V8Value> T call(String functionName, boolean returnResult, V8Value... v8Values)
+            throws JavetException {
         checkV8Runtime();
-        return v8Runtime.callObjectFunction(this, functionName, returnResult, v8Values);
+        return v8Runtime.call(this, functionName, returnResult, v8Values);
     }
 
     @Override
@@ -56,13 +61,13 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public IV8ValueCollection getOwnPropertyNames() throws JavetException {
+    public IV8ValueArray getOwnPropertyNames() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getOwnPropertyNames(this);
     }
 
     @Override
-    public IV8ValueCollection getPropertyNames() throws JavetException {
+    public IV8ValueArray getPropertyNames() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getPropertyNames(this);
     }
@@ -84,5 +89,17 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public boolean setProperty(V8Value key, V8Value value) throws JavetException {
         checkV8Runtime();
         return v8Runtime.setProperty(this, key, value);
+    }
+
+    @Override
+    public String toJsonString() {
+        try {
+            checkV8Runtime();
+            try (V8ValueObject jsonObject = v8Runtime.getGlobalObject().get(OBJECT_JSON)) {
+                return jsonObject.callString(FUNCTION_STRINGIFY, this);
+            }
+        } catch (JavetException e) {
+            return e.getMessage();
+        }
     }
 }

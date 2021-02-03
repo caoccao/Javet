@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +33,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             try (V8ValueFunction v8ValueFunctionPush = v8ValueArray.get("push")) {
                 assertNotNull(v8ValueFunctionPush);
                 assertEquals("function push() { [native code] }", v8ValueFunctionPush.toString());
+                assertEquals(1, v8ValueFunctionPush.invokeInteger(v8ValueArray, new V8ValueString("x")));
             }
+            assertEquals(1, v8ValueArray.getLength());
+            assertEquals("x", v8ValueArray.toString());
         }
     }
 }

@@ -17,10 +17,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    callObjectFunction
+ * Method:    call
  * Signature: (JJILjava/lang/String;Z[Ljava/lang/Object;)Ljava/lang/Object;
  */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callObjectFunction
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
   (JNIEnv *, jclass, jlong, jlong, jint, jstring, jboolean, jobjectArray);
 
 /*
@@ -153,19 +153,19 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnPropert
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    invoke
+ * Signature: (JJILjava/lang/Object;Z[Ljava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
+  (JNIEnv *, jclass, jlong, jlong, jint, jobject, jboolean, jobjectArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    lockV8Runtime
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
   (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    protoToString
- * Signature: (JJI)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_protoToString
-  (JNIEnv *, jclass, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -206,6 +206,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
   (JNIEnv *, jclass, jlong, jlong, jint, jobject, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    toProtoString
+ * Signature: (JJI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toProtoString
+  (JNIEnv *, jclass, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

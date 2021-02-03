@@ -22,63 +22,73 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 
 @SuppressWarnings("unchecked")
-public interface IV8ValueCollection extends IV8ValueObject {
+public interface IV8ValueArray extends IV8ValueObject {
     int getLength() throws JavetException;
 
-    default boolean popBoolean() throws JavetException {
-        return ((V8ValueBoolean) pop()).getValue();
+    <T extends V8Value> T pop() throws JavetException;
+
+    default Boolean popBoolean() throws JavetException {
+        return popObject();
     }
 
-    default double popDouble() throws JavetException {
-        return ((V8ValueDouble) pop()).getValue();
+    default Double popDouble() throws JavetException {
+        return popObject();
     }
 
-    default int popInteger() throws JavetException {
-        return ((V8ValueInteger) pop()).getValue();
+    default Integer popInteger() throws JavetException {
+        return popObject();
     }
 
-    default long popLong() throws JavetException {
-        return ((V8ValueLong) pop()).getValue();
+    default Long popLong() throws JavetException {
+        return popObject();
     }
 
     default V8ValueNull popNull() throws JavetException {
-        return ((V8ValueNull) pop());
+        return pop();
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R popObject() throws JavetException {
+        try (V8Value v8Value = pop()) {
+            try {
+                return ((T) v8Value).getValue();
+            } catch (Throwable t) {
+            }
+        }
+        return null;
     }
 
     default String popString() throws JavetException {
-        return ((V8ValueString) pop()).getValue();
+        return popObject();
     }
 
     default V8ValueUndefined popUndefined() throws JavetException {
-        return ((V8ValueUndefined) pop());
+        return pop();
     }
-
-    V8Value pop() throws JavetException;
 
     int push(V8Value v8Value) throws JavetException;
 
-    default int pushBoolean(boolean value) throws JavetException {
+    default int push(boolean value) throws JavetException {
         return push(new V8ValueBoolean(value));
     }
 
-    default int pushDouble(double value) throws JavetException {
+    default int push(double value) throws JavetException {
         return push(new V8ValueDouble(value));
     }
 
-    default int pushInteger(int value) throws JavetException {
+    default int push(int value) throws JavetException {
         return push(new V8ValueInteger(value));
     }
 
-    default int pushLong(long value) throws JavetException {
+    default int push(long value) throws JavetException {
         return push(new V8ValueLong(value));
+    }
+
+    default int push(String value) throws JavetException {
+        return push(new V8ValueString(value));
     }
 
     default int pushNull() throws JavetException {
         return push(new V8ValueNull());
-    }
-
-    default int pushString(String value) throws JavetException {
-        return push(new V8ValueString(value));
     }
 
     default int pushUndefined() throws JavetException {

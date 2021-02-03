@@ -65,15 +65,13 @@ public final class V8Runtime
         referenceMap.put(iV8ValueReference.getHandle(), iV8ValueReference);
     }
 
-    public V8Value callObjectFunction(
+    public <T extends V8Value> T call(
             IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values) throws
             JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
             JavetV8RuntimeAlreadyRegisteredException {
         checkLock();
-        for (V8Value v8Value : v8Values) {
-            decorateV8Value(v8Value);
-        }
-        return decorateV8Value((V8Value) V8Native.callObjectFunction(
+        decorateV8Values(v8Values);
+        return decorateV8Value((T) V8Native.call(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), functionName, returnResult, v8Values));
     }
 
@@ -142,14 +140,31 @@ public final class V8Runtime
     private <T extends V8Value> T decorateV8Value(T v8Value) throws
             JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyRegisteredException,
             JavetV8RuntimeAlreadyClosedException {
-        if (v8Value != null && v8Value.getV8Runtime() != this) {
-            v8Value.setV8Runtime(this);
+        if (v8Value != null) {
+            if (v8Value.getV8Runtime() == null) {
+                v8Value.setV8Runtime(this);
+            } else if (v8Value.getV8Runtime() != this) {
+                throw new JavetV8RuntimeAlreadyRegisteredException();
+            }
         }
         return v8Value;
     }
 
+    private <T extends V8Value> int decorateV8Values(T... v8Values) throws
+            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyRegisteredException,
+            JavetV8RuntimeAlreadyClosedException {
+        if (v8Values != null && v8Values.length > 0) {
+            for (T v8Value : v8Values) {
+                decorateV8Value(v8Value);
+            }
+            return v8Values.length;
+        }
+        return 0;
+    }
+
     public boolean delete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         checkLock();
+        decorateV8Value(key);
         return V8Native.delete(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
     }
 
@@ -188,9 +203,9 @@ public final class V8Runtime
         return handle;
     }
 
-    public int getLength(IV8ValueCollection iV8ValueCollection) throws JavetException {
+    public int getLength(IV8ValueArray iV8ValueArray) throws JavetException {
         checkLock();
-        return V8Native.getLength(handle, iV8ValueCollection.getHandle(), iV8ValueCollection.getType());
+        return V8Native.getLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType());
     }
 
     @Override
@@ -198,7 +213,7 @@ public final class V8Runtime
         return logger;
     }
 
-    public IV8ValueCollection getOwnPropertyNames(
+    public IV8ValueArray getOwnPropertyNames(
             IV8ValueObject iV8ValueObject) throws JavetException {
         checkLock();
         return decorateV8Value((V8ValueArray) V8Native.getOwnPropertyNames(
@@ -208,18 +223,20 @@ public final class V8Runtime
     public <T extends V8Value> T getProperty(
             IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         checkLock();
+        decorateV8Value(key);
         return decorateV8Value((T) V8Native.getProperty(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key));
     }
 
-    public IV8ValueCollection getPropertyNames(
+    public IV8ValueArray getPropertyNames(
             IV8ValueObject iV8ValueObject) throws JavetException {
         checkLock();
         return decorateV8Value((V8ValueArray) V8Native.getPropertyNames(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType()));
     }
 
-    public int getReferenceCount() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+    public int getReferenceCount()
+            throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         checkLock();
         return referenceMap.size();
     }
@@ -231,12 +248,24 @@ public final class V8Runtime
 
     public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         checkLock();
+        decorateV8Value(key);
         return V8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
     }
 
     public boolean has(IV8ValueKeyContainer iV8ValueKeyContainer, V8Value value) throws JavetException {
         checkLock();
+        decorateV8Value(value);
         return V8Native.has(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType(), value);
+    }
+
+    public <T extends V8Value> T invoke(
+            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values) throws
+            JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyRegisteredException {
+        checkLock();
+        decorateV8Values(v8Values);
+        return decorateV8Value((T) V8Native.invoke(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), receiver, returnResult, v8Values));
     }
 
     public boolean isLocked() {
@@ -250,12 +279,6 @@ public final class V8Runtime
         } else {
             checkLock();
         }
-    }
-
-    public String protoToString(IV8ValueReference iV8ValueReference)
-            throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
-        checkLock();
-        return V8Native.protoToString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
     }
 
     @Override
@@ -286,14 +309,20 @@ public final class V8Runtime
 
     public boolean set(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         checkLock();
-        decorateV8Value(value);
+        decorateV8Values(key, value);
         return V8Native.set(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key, value);
     }
 
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         checkLock();
-        decorateV8Value(value);
+        decorateV8Values(key, value);
         return V8Native.setProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key, value);
+    }
+
+    public String toProtoString(IV8ValueReference iV8ValueReference)
+            throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+        checkLock();
+        return V8Native.toProtoString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
     }
 
     public String toString(IV8ValueReference iV8ValueReference)

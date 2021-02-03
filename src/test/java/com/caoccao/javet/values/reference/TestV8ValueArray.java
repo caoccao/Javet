@@ -43,8 +43,8 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(1, v8ValueArray.getInteger("a"));
             assertEquals("2", v8ValueArray.getString("b"));
             assertEquals("x,y,z", v8ValueArray.toString());
-            assertEquals("[object Array]", v8ValueArray.protoToString());
-            assertEquals("[\"x\",\"y\",\"z\"]", v8Runtime.executeString("JSON.stringify(a);"));
+            assertEquals("[object Array]", v8ValueArray.toProtoString());
+            assertEquals("[\"x\",\"y\",\"z\"]", v8ValueArray.toJsonString());
         }
     }
 
@@ -88,11 +88,11 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
     public void testPushPop() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.execute("[]")) {
             assertEquals(0, v8ValueArray.getLength());
-            assertEquals(1, v8ValueArray.pushBoolean(true));
-            assertEquals(2, v8ValueArray.pushDouble(1.23));
-            assertEquals(3, v8ValueArray.pushInteger(4));
-            assertEquals(4, v8ValueArray.pushLong(5L));
-            assertEquals(5, v8ValueArray.pushString("x"));
+            assertEquals(1, v8ValueArray.push(true));
+            assertEquals(2, v8ValueArray.push(1.23));
+            assertEquals(3, v8ValueArray.push(4));
+            assertEquals(4, v8ValueArray.push(5L));
+            assertEquals(5, v8ValueArray.push("x"));
             assertEquals(6, v8ValueArray.pushNull());
             assertEquals(7, v8ValueArray.pushUndefined());
             assertEquals(7, v8ValueArray.getLength());

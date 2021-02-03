@@ -21,5 +21,5 @@ import com.caoccao.javet.exceptions.JavetException;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueMap extends IV8ValueKeyContainer {
-    IV8ValueCollection getValues() throws JavetException;
+    IV8ValueArray getValues() throws JavetException;
 }

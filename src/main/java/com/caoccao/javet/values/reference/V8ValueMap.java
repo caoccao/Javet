@@ -28,7 +28,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
-    public IV8ValueCollection getKeys() throws JavetException {
+    public IV8ValueArray getKeys() throws JavetException {
         return null;
     }
 
@@ -44,7 +44,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
-    public IV8ValueCollection getValues() throws JavetException {
+    public IV8ValueArray getValues() throws JavetException {
         return null;
     }
 

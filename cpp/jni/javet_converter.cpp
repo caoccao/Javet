@@ -218,11 +218,12 @@ namespace Javet {
 			if (v8Value->IsGeneratorFunction()) {
 				// TODO
 			}
+			if (v8Value->IsProxy()) {
+				// Proxy is also a function. So, it needs to be tested before IsFunction().
+				return jniEnv->NewObject(jclassV8ValueProxy, jmethodIDV8ValueProxyConstructor, toV8PersistentObjectReference(v8Context, v8Value));
+			}
 			if (v8Value->IsFunction()) {
 				return jniEnv->NewObject(jclassV8ValueFunction, jmethodIDV8ValueFunctionConstructor, toV8PersistentObjectReference(v8Context, v8Value));
-			}
-			if (v8Value->IsProxy()) {
-				return jniEnv->NewObject(jclassV8ValueProxy, jmethodIDV8ValueProxyConstructor, toV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsNativeError()) {
 				return jniEnv->NewObject(jclassV8ValueError, jmethodIDV8ValueErrorConstructor, toV8PersistentObjectReference(v8Context, v8Value));
@@ -440,10 +441,7 @@ namespace Javet {
 
 		std::unique_ptr<v8::Local<v8::Value>[]> toV8Values(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jobjectArray& mValues) {
 			std::unique_ptr<v8::Local<v8::Value>[]> umValuesPointer;
-			uint32_t valueCount = 0;
-			if (mValues != nullptr) {
-				valueCount = jniEnv->GetArrayLength(mValues);
-			}
+			uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
 			if (valueCount > 0) {
 				umValuesPointer.reset(new v8::Local<v8::Value>[valueCount]);
 				for (int i = 0; i < valueCount; ++i) {

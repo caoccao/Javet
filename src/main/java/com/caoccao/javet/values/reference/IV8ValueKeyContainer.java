@@ -23,7 +23,7 @@ import com.caoccao.javet.values.primitive.*;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueKeyContainer extends IV8ValueObject {
-    IV8ValueCollection getKeys() throws JavetException;
+    IV8ValueArray getKeys() throws JavetException;
 
     int getSize() throws JavetException;
 

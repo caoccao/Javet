@@ -79,8 +79,8 @@ public interface IV8Executable {
         return executeObject(scriptString, new V8ScriptOrigin());
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R executeObject(String scriptString, V8ScriptOrigin v8ScriptOrigin)
-            throws JavetException {
+    default <R extends Object, T extends V8ValuePrimitive<R>> R executeObject(
+            String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
         try (V8Value v8Value = execute(scriptString, v8ScriptOrigin, true)) {
             try {
                 return ((T) v8Value).getValue();

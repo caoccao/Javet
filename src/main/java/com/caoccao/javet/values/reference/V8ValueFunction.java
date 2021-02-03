@@ -17,9 +17,11 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
-public class V8ValueFunction extends V8ValueObject {
+public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     public V8ValueFunction(long handle) {
         super(handle);
@@ -28,5 +30,12 @@ public class V8ValueFunction extends V8ValueObject {
     @Override
     public int getType() {
         return V8ValueReferenceType.Function;
+    }
+
+    @Override
+    public <T extends V8Value> T invoke(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+            throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.invoke(this, receiver, returnResult, v8Values);
     }
 }

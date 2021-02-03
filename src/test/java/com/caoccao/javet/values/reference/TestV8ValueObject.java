@@ -44,17 +44,17 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;")) {
-            try (IV8ValueCollection iV8ValueCollection = v8ValueObject.getOwnPropertyNames()) {
-                assertNotNull(iV8ValueCollection);
-                assertEquals(7, iV8ValueCollection.getLength());
+            try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
+                assertNotNull(iV8ValueArray);
+                assertEquals(7, iV8ValueArray.getLength());
                 // Order is preserved since ES2015.
-                assertEquals("a", iV8ValueCollection.getPropertyString(0));
-                assertEquals("b", iV8ValueCollection.getPropertyString(1));
-                assertEquals("c", iV8ValueCollection.getPropertyString(2));
-                assertEquals("d", iV8ValueCollection.getPropertyString(3));
-                assertEquals("e", iV8ValueCollection.getPropertyString(4));
-                assertEquals("g", iV8ValueCollection.getPropertyString(5));
-                assertEquals("中文", iV8ValueCollection.getPropertyString(6));
+                assertEquals("a", iV8ValueArray.getPropertyString(0));
+                assertEquals("b", iV8ValueArray.getPropertyString(1));
+                assertEquals("c", iV8ValueArray.getPropertyString(2));
+                assertEquals("d", iV8ValueArray.getPropertyString(3));
+                assertEquals("e", iV8ValueArray.getPropertyString(4));
+                assertEquals("g", iV8ValueArray.getPropertyString(5));
+                assertEquals("中文", iV8ValueArray.getPropertyString(6));
             }
         }
     }
@@ -63,17 +63,17 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     public void testGetPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;")) {
-            try (IV8ValueCollection iV8ValueCollection = v8ValueObject.getPropertyNames()) {
-                assertNotNull(iV8ValueCollection);
-                assertEquals(7, iV8ValueCollection.getLength());
+            try (IV8ValueArray iV8ValueArray = v8ValueObject.getPropertyNames()) {
+                assertNotNull(iV8ValueArray);
+                assertEquals(7, iV8ValueArray.getLength());
                 // Order is preserved since ES2015.
-                assertEquals("a", iV8ValueCollection.getPropertyString(0));
-                assertEquals("b", iV8ValueCollection.getPropertyString(1));
-                assertEquals("c", iV8ValueCollection.getPropertyString(2));
-                assertEquals("d", iV8ValueCollection.getPropertyString(3));
-                assertEquals("e", iV8ValueCollection.getPropertyString(4));
-                assertEquals("g", iV8ValueCollection.getPropertyString(5));
-                assertEquals("中文", iV8ValueCollection.getPropertyString(6));
+                assertEquals("a", iV8ValueArray.getPropertyString(0));
+                assertEquals("b", iV8ValueArray.getPropertyString(1));
+                assertEquals("c", iV8ValueArray.getPropertyString(2));
+                assertEquals("d", iV8ValueArray.getPropertyString(3));
+                assertEquals("e", iV8ValueArray.getPropertyString(4));
+                assertEquals("g", iV8ValueArray.getPropertyString(5));
+                assertEquals("中文", iV8ValueArray.getPropertyString(6));
             }
         }
     }
@@ -134,12 +134,12 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testNestedObject() throws JavetException {
         try (V8ValueObject outerObject = v8Runtime.execute("const o = {}; o;")) {
-            assertEquals("{}", v8Runtime.executeString("JSON.stringify(o);"));
+            assertEquals("{}", outerObject.toJsonString());
             try (V8ValueObject innerObject = v8Runtime.createV8ValueObject()) {
                 innerObject.set("a", new V8ValueString("1"));
                 outerObject.set("x", innerObject);
             }
-            assertEquals("{\"x\":{\"a\":\"1\"}}", v8Runtime.executeString("JSON.stringify(o);"));
+            assertEquals("{\"x\":{\"a\":\"1\"}}", outerObject.toJsonString());
         }
     }
 
@@ -149,8 +149,8 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {
             assertNotNull(v8ValueObject);
             assertEquals(v8Runtime, v8ValueObject.getV8Runtime());
-            try (IV8ValueCollection iV8ValueCollection = v8ValueObject.getOwnPropertyNames()) {
-                assertEquals(0, iV8ValueCollection.getLength());
+            try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
+                assertEquals(0, iV8ValueArray.getLength());
             }
             v8ValueObject.setProperty("a", new V8ValueString("1"));
             v8ValueObject.setProperty(new V8ValueString("b"), new V8ValueInteger(2));
@@ -158,14 +158,14 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.setProperty(new V8ValueString("d"), new V8ValueZonedDateTime(now));
             v8ValueObject.setProperty(new V8ValueString("e"), new V8ValueDouble(1.23));
             v8ValueObject.setProperty(new V8ValueString("f"), new V8ValueBoolean(true));
-            try (IV8ValueCollection iV8ValueCollection = v8ValueObject.getOwnPropertyNames()) {
-                assertEquals(6, iV8ValueCollection.getLength());
-                assertEquals("a", iV8ValueCollection.getString(0));
-                assertEquals("b", iV8ValueCollection.getString(1));
-                assertEquals("c", iV8ValueCollection.getString(2));
-                assertEquals("d", iV8ValueCollection.getString(3));
-                assertEquals("e", iV8ValueCollection.getString(4));
-                assertEquals("f", iV8ValueCollection.getString(5));
+            try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
+                assertEquals(6, iV8ValueArray.getLength());
+                assertEquals("a", iV8ValueArray.getString(0));
+                assertEquals("b", iV8ValueArray.getString(1));
+                assertEquals("c", iV8ValueArray.getString(2));
+                assertEquals("d", iV8ValueArray.getString(3));
+                assertEquals("e", iV8ValueArray.getString(4));
+                assertEquals("f", iV8ValueArray.getString(5));
             }
             assertEquals("1", v8ValueObject.getPropertyString("a"));
             assertEquals(2, v8ValueObject.getPropertyInteger("b"));
@@ -176,7 +176,17 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(1.23, v8ValueObject.getPropertyDouble("e"), 0.001);
             assertTrue(v8ValueObject.getPropertyBoolean("f"));
             assertEquals("[object Object]", v8ValueObject.toString());
-            assertEquals("[object Object]", v8ValueObject.protoToString());
+            assertEquals("[object Object]", v8ValueObject.toProtoString());
+        }
+    }
+
+    @Test
+    public void testToJsonString() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {
+            v8ValueObject.setProperty("a", new V8ValueString("1"));
+            v8ValueObject.setProperty("b", new V8ValueInteger(2));
+            v8ValueObject.setProperty("c", new V8ValueDouble(1.23));
+            assertEquals("{\"a\":\"1\",\"b\":2,\"c\":1.23}", v8ValueObject.toJsonString());
         }
     }
 }

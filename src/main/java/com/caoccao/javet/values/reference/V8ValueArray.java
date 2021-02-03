@@ -22,7 +22,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 
-public class V8ValueArray extends V8ValueObject implements IV8ValueCollection {
+public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     public static final String FUNCTION_PUSH = "push";
     public static final String FUNCTION_POP = "pop";
@@ -50,7 +50,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueCollection {
     }
 
     @Override
-    public V8Value pop() throws JavetException {
+    public <T extends V8Value> T pop() throws JavetException {
         checkV8Runtime();
         return call(FUNCTION_POP);
     }

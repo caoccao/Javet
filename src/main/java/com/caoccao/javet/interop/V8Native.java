@@ -32,7 +32,7 @@ final class V8Native {
 
     native static void add(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
-    native static Object callObjectFunction(
+    native static Object call(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             String functionName, boolean returnResult, Object[] values);
 
@@ -74,9 +74,11 @@ final class V8Native {
 
     native static boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
-    native static void lockV8Runtime(long v8RuntimeHandle);
+    native static Object invoke(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object receiver, boolean returnResult, Object[] values);
 
-    native static String protoToString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    native static void lockV8Runtime(long v8RuntimeHandle);
 
     native static void removeReferenceHandle(long referenceHandle);
 
@@ -95,6 +97,8 @@ final class V8Native {
     native static void setFlags(String flags);
 
     native static boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+
+    native static String toProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

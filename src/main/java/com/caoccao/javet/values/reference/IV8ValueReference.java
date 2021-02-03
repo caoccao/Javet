@@ -24,5 +24,5 @@ public interface IV8ValueReference extends IJavetClosable {
 
     int getType();
 
-    String protoToString();
+    String toProtoString();
 }
