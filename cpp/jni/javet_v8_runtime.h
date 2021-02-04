@@ -27,9 +27,8 @@ namespace Javet {
 	public:
 		v8::Isolate* v8Isolate;
 		v8::Persistent<v8::Context> v8Context;
-		v8::Persistent<v8::Object>* v8GlobalObject;
+		v8::Persistent<v8::Object> v8GlobalObject;
 		v8::Locker* v8Locker;
-		jobject caller;
 		jthrowable mException;
 		v8_inspector::V8Inspector* v8Inspector;
 	};

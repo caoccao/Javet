@@ -18,9 +18,34 @@
 #pragma once
 
 #include <v8.h>
+#include <jni.h>
+#include "javet_v8_runtime.h"
 
 namespace Javet {
 	namespace Callback {
+
+		class V8Callback {
+		public:
+			jobject callbackContext;
+			jlong handle;
+			Javet::V8Runtime* internalV8Runtime;
+
+			jstring GetFunctionName(JNIEnv* jniEnv);
+			jobject GetExternalV8Runtime(JNIEnv* jniEnv);
+			void Invoke(JNIEnv* jniEnv);
+			jboolean IsReturnResult(JNIEnv* jniEnv);
+		};
+
+		static jclass jclassV8Runtime;
+		static jmethodID jmethodIDV8RuntimeReceiveCallback;
+
+		static jclass jclassV8CallbackContext;
+		static jmethodID jmethodIDV8CallbackContextGetFunctionName;
+		static jmethodID jmethodIDV8CallbackContextGetV8Runtime;
+		static jmethodID jmethodIDV8CallbackContextIsReturnResult;
+
+		void Initialize(JNIEnv* jniEnv);
+
 		void GlobalPropertyAccessorCallback(
 			v8::Local<v8::String> propertyName,
 			const v8::PropertyCallbackInfo<v8::Value>& propertyCallbackInfo);

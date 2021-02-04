@@ -21,7 +21,7 @@
 #include <libplatform/libplatform.h>
 
 namespace Javet {
-	std::unique_ptr<v8::Platform> GlobalV8Platform = nullptr;
-	JavaVM* GlobalJavaVM = nullptr;
+	static std::unique_ptr<v8::Platform> GlobalV8Platform = nullptr;
+	static JavaVM* GlobalJavaVM = nullptr;
 }
 

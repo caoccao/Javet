@@ -15,11 +15,10 @@
  *
  */
 
-package com.caoccao.javet.interfaces;
+package com.caoccao.javet.exceptions;
 
-import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyClosedException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
-
-public interface IJavetResettable {
-    void reset() throws JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException;
+public class JavetV8CallbackNotRegisteredException extends JavetException {
+    public JavetV8CallbackNotRegisteredException() {
+        super("V8 callback is not registered");
+    }
 }

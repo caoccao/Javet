@@ -41,6 +41,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_compileOnly
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    createCallback
+ * Signature: (JJILjava/lang/Object;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createCallback
+  (JNIEnv *, jclass, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    createV8Runtime
  * Signature: (Ljava/lang/String;)J
  */
@@ -165,6 +173,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    removeCallbackHandle
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeCallbackHandle
   (JNIEnv *, jclass, jlong);
 
 /*

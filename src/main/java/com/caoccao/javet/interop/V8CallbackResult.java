@@ -17,21 +17,32 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.reference.*;
+class V8CallbackResult {
+    protected String errorMessage;
+    protected Throwable throwable;
+    protected Object result;
 
-import java.lang.reflect.Method;
+    public Throwable getThrowable() {
+        return throwable;
+    }
 
-public interface IV8Creatable {
-    V8CallbackContext createCallback(
-            IV8ValueObject iV8ValueObject, String functionName,
-            Object callbackReceiver, Method callbackMethod) throws JavetException;
+    public void setThrowable(Throwable throwable) {
+        this.throwable = throwable;
+    }
 
-    V8ValueArray createV8ValueArray() throws JavetException;
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-    V8ValueMap createV8ValueMap() throws JavetException;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
-    V8ValueObject createV8ValueObject() throws JavetException;
+    public Object getResult() {
+        return result;
+    }
 
-    V8ValueSet createV8ValueSet() throws JavetException;
+    public void setResult(Object result) {
+        this.result = result;
+    }
 }

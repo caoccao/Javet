@@ -17,10 +17,7 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyClosedException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyRegisteredException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
+import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLoggable;
 import com.caoccao.javet.interfaces.IJavetResettable;
@@ -28,14 +25,18 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.reference.*;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
-public final class V8Runtime
-        implements IJavetClosable, IJavetResettable, IJavetLoggable, IV8Executable, IV8Creatable {
+public final class V8Runtime implements
+        IJavetClosable, IJavetResettable, IJavetLoggable, IV8Executable, IV8Creatable {
+    private static final String ERROR_V8_CALLBACK_CONTEXT_IS_NOT_FOUND = "V8 callback context is not found";
     private static final long INVALID_THREAD_ID = -1L;
+
+    private Map<Long, V8CallbackContext> callbackContextMap;
     private String globalName;
     private long handle;
     private Logger logger;
@@ -45,6 +46,7 @@ public final class V8Runtime
 
     V8Runtime(V8Host v8Host, long handle, String globalName) {
         assert handle != 0;
+        callbackContextMap = new TreeMap<>();
         this.globalName = globalName;
         this.handle = handle;
         logger = Logger.getLogger(getClass().getName());
@@ -87,13 +89,7 @@ public final class V8Runtime
 
     @Override
     public void close() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
-        if (!referenceMap.isEmpty()) {
-            logWarn("{0} V8 object(s) not recycled.", referenceMap.size());
-            if (!isLocked()) {
-                lock();
-                removeReferences();
-            }
-        }
+        removeReferences();
         if (isLocked()) {
             try {
                 unlock();
@@ -111,6 +107,23 @@ public final class V8Runtime
                 handle, scriptString, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
+    }
+
+    @Override
+    public V8CallbackContext createCallback(
+            IV8ValueObject iV8ValueObject, String functionName,
+            Object callbackReceiver, Method callbackMethod) throws JavetException {
+        checkLock();
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                this, functionName, callbackReceiver, callbackMethod);
+        long v8CallbackHandle = V8Native.createCallback(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), v8CallbackContext);
+        if (v8CallbackHandle == 0L) {
+            throw new JavetV8CallbackNotRegisteredException();
+        }
+        v8CallbackContext.setHandle(v8CallbackHandle);
+        callbackContextMap.put(v8CallbackContext.getHandle(), v8CallbackContext);
+        return v8CallbackContext;
     }
 
     @Override
@@ -183,6 +196,12 @@ public final class V8Runtime
         checkLock();
         return decorateV8Value((T) V8Native.get(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key));
+    }
+
+    public int getCallbackContextCount()
+            throws JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException {
+        checkLock();
+        return callbackContextMap.size();
     }
 
     public String getGlobalName() {
@@ -281,12 +300,44 @@ public final class V8Runtime
         }
     }
 
-    @Override
-    public void reset() throws JavetV8RuntimeLockConflictException {
-        if (isLocked()) {
-            throw new JavetV8RuntimeLockConflictException();
+    public Object receiveCallback(long v8CallbackContextHandle) {
+        V8CallbackResult v8CallbackResult = new V8CallbackResult();
+        try {
+            V8CallbackContext v8CallbackContext = callbackContextMap.get(v8CallbackContextHandle);
+            if (v8CallbackContext == null) {
+                v8CallbackResult.setErrorMessage(ERROR_V8_CALLBACK_CONTEXT_IS_NOT_FOUND);
+            } else {
+                v8CallbackContext.callbackMethod.invoke(v8CallbackContext.callbackReceiver);
+            }
+        } catch (Throwable t) {
+            v8CallbackResult.setErrorMessage(t.getMessage());
+            v8CallbackResult.setThrowable(t);
         }
-        V8Native.resetV8Runtime(handle, globalName);
+        return v8CallbackResult;
+    }
+
+    public void removeCallback(V8CallbackContext v8CallbackContext)
+            throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+        checkLock();
+        final long v8CallbackHandle = v8CallbackContext.getHandle();
+        if (callbackContextMap.containsKey(v8CallbackHandle)) {
+            V8Native.removeCallbackHandle(v8CallbackHandle);
+            callbackContextMap.remove(v8CallbackHandle);
+        }
+    }
+
+    private void removeCallbacks()
+            throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+        if (!callbackContextMap.isEmpty()) {
+            logWarn("{0} V8 callback(s) not recycled.", callbackContextMap.size());
+            if (!isLocked()) {
+                lock();
+            }
+            for (V8CallbackContext v8CallbackContext : callbackContextMap.values()) {
+                removeCallback(v8CallbackContext);
+            }
+            callbackContextMap.clear();
+        }
     }
 
     public void removeReference(IV8ValueReference iV8ValueReference)
@@ -300,11 +351,28 @@ public final class V8Runtime
     }
 
     private void removeReferences() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
-        checkLock();
-        for (Long referenceHandle : referenceMap.keySet()) {
-            V8Native.removeReferenceHandle(referenceHandle);
+        if (!referenceMap.isEmpty()) {
+            logWarn("{0} V8 object(s) not recycled.", referenceMap.size());
+            if (!isLocked()) {
+                lock();
+            }
+            for (IV8ValueReference iV8ValueReference : referenceMap.values()) {
+                removeReference(iV8ValueReference);
+            }
+            referenceMap.clear();
         }
-        referenceMap.clear();
+    }
+
+    @Override
+    public void reset() throws JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException {
+        removeReferences();
+        if (isLocked()) {
+            try {
+                unlock();
+            } catch (JavetV8RuntimeLockConflictException e) {
+            }
+        }
+        V8Native.resetV8Runtime(handle, globalName);
     }
 
     public boolean set(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {

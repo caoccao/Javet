@@ -20,7 +20,7 @@
 
 namespace Javet {
 	namespace Exceptions {
-		void initializeJavetExceptions(JNIEnv* jniEnv) {
+		void Initialize(JNIEnv* jniEnv) {
 			/*
 			 @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html
 			 @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html
@@ -38,7 +38,7 @@ namespace Javet {
 			jclassJavetV8RuntimeLockConflictException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8RuntimeLockConflictException"));
 		}
 
-		void throwJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
+		void ThrowJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
 			auto isolate = v8Context->GetIsolate();
 			v8::String::Value exceptionMessage(isolate, v8TryCatch.Exception());
 			jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
@@ -73,11 +73,11 @@ namespace Javet {
 			jniEnv->DeleteLocalRef(jStringExceptionMessage);
 		}
 
-		void throwJavetConverterException(JNIEnv* jniEnv, const char* message) {
+		void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message) {
 			jniEnv->ThrowNew(jclassJavetConverterException, message);
 		}
 
-		void throwJavetExecutionException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
+		void ThrowJavetExecutionException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
 			auto isolate = v8Context->GetIsolate();
 			v8::String::Value exceptionMessage(isolate, v8TryCatch.Exception());
 			jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
@@ -112,7 +112,7 @@ namespace Javet {
 			jniEnv->DeleteLocalRef(jStringExceptionMessage);
 		}
 
-		void throwJavetV8RuntimeLockConflictException(JNIEnv* jniEnv, const char* message) {
+		void ThrowJavetV8RuntimeLockConflictException(JNIEnv* jniEnv, const char* message) {
 			jniEnv->ThrowNew(jclassJavetV8RuntimeLockConflictException, message);
 		}
 	}

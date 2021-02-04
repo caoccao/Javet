@@ -24,7 +24,6 @@ import com.caoccao.javet.values.virtual.V8VirtualList;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -89,6 +88,19 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
             assertEquals(1, v8Runtime.getReferenceCount());
+        }
+    }
+
+    @Test
+    public void testNestedArray() throws JavetException {
+        try (V8ValueArray outerArray = v8Runtime.execute("[1,2,3]")) {
+            assertEquals(3, outerArray.getLength());
+            try (V8ValueArray innerArray = v8Runtime.createV8ValueArray()) {
+                assertEquals(1, innerArray.push("a"));
+                assertEquals(1, innerArray.getLength());
+                assertEquals(4, outerArray.push(innerArray));
+            }
+            assertEquals("[1,2,3,[\"a\"]]", outerArray.toJsonString());
         }
     }
 

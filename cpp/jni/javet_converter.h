@@ -113,43 +113,43 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueSymbolConstructor;
 		static jmethodID jmethodIDV8ValueSymbolGetHandle;
 
-		void initializeJavetConverter(JNIEnv* jniEnv);
+		void Initialize(JNIEnv* jniEnv);
 
-		jobject toJV8Value(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
+		jobject ToExternalV8Value(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
 
-		inline jobject toJV8ValueNull(JNIEnv* jniEnv);
+		inline jobject ToExternalV8ValueNull(JNIEnv* jniEnv);
 
-		jobject toJV8ValueGlobalObject(JNIEnv* jniEnv, v8::Persistent<v8::Object>* v8PersistentObjectPointer);
+		jobject ToExternalV8ValueGlobalObject(JNIEnv* jniEnv, v8::Persistent<v8::Object>& v8PersistentObject);
 
-		inline jobject toJV8ValuePrimitive(
+		inline jobject ToExternalV8ValuePrimitive(
 			JNIEnv* jniEnv, jclass jclassV8ValuePrimitive, jmethodID jmethodIDV8ValuePrimitiveConstructor,
-			v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
+			v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
 
-		jobject toJV8ValueUndefined(JNIEnv* jniEnv);
+		jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv);
 
-		inline v8::Local<v8::Boolean> toV8Boolean(v8::Local<v8::Context> v8Context, jboolean& managedBoolean);
+		inline v8::Local<v8::Boolean> ToV8Boolean(v8::Local<v8::Context>& v8Context, jboolean& managedBoolean);
 
-		inline v8::Local<v8::Value> toV8Date(v8::Local<v8::Context> v8Context, jlong& managedLong);
+		inline v8::Local<v8::Value> ToV8Date(v8::Local<v8::Context>& v8Context, jlong& managedLong);
 
-		inline v8::Local<v8::Number> toV8Double(v8::Local<v8::Context> v8Context, jdouble& managedDouble);
+		inline v8::Local<v8::Number> ToV8Double(v8::Local<v8::Context>& v8Context, jdouble& managedDouble);
 
-		inline v8::Local<v8::Integer> toV8Integer(v8::Local<v8::Context> v8Context, jint& managedInteger);
+		inline v8::Local<v8::Integer> ToV8Integer(v8::Local<v8::Context>& v8Context, jint& managedInteger);
 
-		inline v8::Local<v8::BigInt> toV8Long(v8::Local<v8::Context> v8Context, jlong& managedLong);
+		inline v8::Local<v8::BigInt> ToV8Long(v8::Local<v8::Context>& v8Context, jlong& managedLong);
 
-		inline v8::Local<v8::Primitive> toV8Null(v8::Local<v8::Context> v8Context);
+		inline v8::Local<v8::Primitive> ToV8Null(v8::Local<v8::Context>& v8Context);
 
-		inline v8::Local<v8::Primitive> toV8Undefined(v8::Local<v8::Context> v8Context);
+		inline v8::Local<v8::Primitive> ToV8Undefined(v8::Local<v8::Context>& v8Context);
 
-		inline jlong toV8PersistentObjectReference(v8::Local<v8::Context> v8Context, v8::Local<v8::Value> v8Value);
+		inline jlong ToV8PersistentObjectReference(v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
 
-		v8::ScriptOrigin* toV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context,
+		v8::ScriptOrigin* ToV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context,
 			jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule);
 
-		v8::Local<v8::String> toV8String(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jstring& managedString);
+		v8::Local<v8::String> ToV8String(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, jstring& managedString);
 
-		v8::Local<v8::Value> toV8Value(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jobject obj);
+		v8::Local<v8::Value> ToV8Value(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, jobject& obj);
 
-		std::unique_ptr<v8::Local<v8::Value>[]> toV8Values(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, jobjectArray& mValues);
+		std::unique_ptr<v8::Local<v8::Value>[]> ToV8Values(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, jobjectArray& mValues);
 	}
 }
