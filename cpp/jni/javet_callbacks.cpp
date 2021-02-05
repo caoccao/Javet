@@ -21,6 +21,15 @@
 
 namespace Javet {
 	namespace Callback {
+		void V8Callback::Dispose(JNIEnv* jniEnv) {
+			if (!v8PersistentExternalData.IsEmpty()) {
+				v8PersistentExternalData.ClearWeak();
+				v8PersistentExternalData.Reset();
+			}
+			if (callbackContext != nullptr) {
+				jniEnv->DeleteGlobalRef(callbackContext);
+			}
+		}
 
 		jstring V8Callback::GetFunctionName(JNIEnv* jniEnv) {
 			return (jstring)jniEnv->CallObjectMethod(callbackContext, jmethodIDV8CallbackContextGetFunctionName);
@@ -63,9 +72,17 @@ namespace Javet {
 			return jniEnv->CallBooleanMethod(callbackContext, jmethodIDV8CallbackContextIsReturnResult);
 		}
 
+		void V8Callback::NotifyToDispose(JNIEnv* jniEnv) {
+			jniEnv->CallVoidMethod(
+				GetExternalV8Runtime(jniEnv),
+				jmethodIDV8RuntimeRemoveCallback,
+				callbackContext);
+		}
+
 		void Initialize(JNIEnv* jniEnv) {
 			jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
 			jmethodIDV8RuntimeReceiveCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveCallback", "(JLcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
+			jmethodIDV8RuntimeRemoveCallback = jniEnv->GetMethodID(jclassV8Runtime, "removeCallback", "(Lcom/caoccao/javet/interop/V8CallbackContext;)V");
 
 			jclassV8CallbackContext = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8CallbackContext"));
 			jmethodIDV8CallbackContextGetFunctionName = jniEnv->GetMethodID(jclassV8CallbackContext, "getFunctionName", "()Ljava/lang/String;");

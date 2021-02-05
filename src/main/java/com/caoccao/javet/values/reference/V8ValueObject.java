@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
+@SuppressWarnings("unchecked")
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     public static final String FUNCTION_STRINGIFY = "stringify";
@@ -31,8 +32,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public V8ValueObject clone() {
-        return new V8ValueObject(handle);
+    public <T extends V8Value> T toClone() throws JavetException{
+        return v8Runtime.cloneV8Value(this);
     }
 
     @Override

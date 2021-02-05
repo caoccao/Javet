@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.exceptions.JavetException;
+
 public final class V8ValueUnknown extends V8ValuePrimitive<String> {
     public V8ValueUnknown() {
         this(null);
@@ -27,7 +29,7 @@ public final class V8ValueUnknown extends V8ValuePrimitive<String> {
     }
 
     @Override
-    public V8ValueUnknown clone() {
-        return new V8ValueUnknown(value);
+    public V8ValueUnknown toClone() throws JavetException {
+        return v8Runtime.decorateV8Value(new V8ValueUnknown(value));
     }
 }

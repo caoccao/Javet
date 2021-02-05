@@ -15,18 +15,12 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.reference;
+package com.caoccao.javet.interop;
 
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
 
-public class V8ValueRegExp extends V8ValueObject {
-
-    public V8ValueRegExp(long handle) {
-        super(handle);
-    }
-
-    @Override
-    public int getType() {
-        return V8ValueReferenceType.RegExp;
-    }
+@SuppressWarnings("unchecked")
+public interface IV8Cloneable {
+    <T extends V8Value> T toClone() throws JavetException;
 }

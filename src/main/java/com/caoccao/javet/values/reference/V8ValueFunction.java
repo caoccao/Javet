@@ -28,11 +28,6 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public V8ValueFunction clone() {
-        return new V8ValueFunction(handle);
-    }
-
-    @Override
     public int getType() {
         return V8ValueReferenceType.Function;
     }

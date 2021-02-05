@@ -117,9 +117,10 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      *
      * @param arg the arg
      * @return the V8 value
+     * @throws JavetException the javet exception
      */
-    public V8Value echo(V8Value arg) {
-        return arg.clone();
+    public V8Value echo(V8Value arg) throws JavetException {
+        return arg.toClone();
     }
 
     /**
@@ -134,7 +135,7 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
     public V8ValueArray echo(V8Value... args) throws JavetException {
         V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
         for (V8Value arg : args) {
-            v8ValueArray.push(arg.clone());
+            v8ValueArray.push(arg.toClone());
         }
         return v8ValueArray;
     }

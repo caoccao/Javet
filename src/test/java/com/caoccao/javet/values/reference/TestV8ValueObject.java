@@ -181,6 +181,19 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testToClone() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {
+            v8ValueObject.setProperty("a", new V8ValueString("1"));
+            assertEquals("{\"a\":\"1\"}", v8ValueObject.toJsonString());
+            try (V8ValueObject clonedV8ValueObject = v8ValueObject.toClone()) {
+                assertEquals("{\"a\":\"1\"}", clonedV8ValueObject.toJsonString());
+                assertNotEquals(v8ValueObject.getHandle(), clonedV8ValueObject.getHandle());
+                assertEquals(v8Runtime, clonedV8ValueObject.getV8Runtime());
+            }
+        }
+    }
+
+    @Test
     public void testToJsonString() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {
             v8ValueObject.setProperty("a", new V8ValueString("1"));

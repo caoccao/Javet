@@ -44,7 +44,7 @@ public class MockCallbackReceiver extends V8CallbackReceiver {
     }
 
     @Override
-    public V8Value echo(V8Value arg) {
+    public V8Value echo(V8Value arg) throws JavetException {
         called = true;
         return super.echo(arg);
     }

@@ -38,11 +38,6 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
-    public V8ValueSet clone() {
-        return new V8ValueSet(handle);
-    }
-
-    @Override
     public int getType() {
         return V8ValueReferenceType.Set;
     }

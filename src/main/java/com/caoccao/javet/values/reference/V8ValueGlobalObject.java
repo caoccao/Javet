@@ -28,8 +28,8 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     }
 
     @Override
-    public V8ValueGlobalObject clone() {
-        return new V8ValueGlobalObject(handle);
+    public V8ValueGlobalObject toClone() {
+        return this;
     }
 
     @Override

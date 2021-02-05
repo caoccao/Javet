@@ -25,4 +25,20 @@ public abstract class BaseTestJavet {
     public static void beforeAll() {
         V8Host.getInstance().setFlags("--use_strict");
     }
+
+    protected void sleep(long milliSeconds) {
+        sleep(milliSeconds, 1);
+    }
+
+    protected void sleep(long milliSeconds, int rounds) {
+        assert milliSeconds > 0L;
+        assert rounds > 0L;
+        for (int i = 0; i < rounds; ++i) {
+            try {
+                Thread.sleep(milliSeconds);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

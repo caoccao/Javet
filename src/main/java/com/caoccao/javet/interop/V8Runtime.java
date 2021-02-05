@@ -91,6 +91,14 @@ public final class V8Runtime implements
         }
     }
 
+    public <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws
+            JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyRegisteredException {
+        checkLock();
+        return decorateV8Value((T) V8Native.cloneV8Value(
+                handle, iV8ValueReference.getHandle(), iV8ValueReference.getType()));
+    }
+
     @Override
     public void close() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         removeCallbacks();

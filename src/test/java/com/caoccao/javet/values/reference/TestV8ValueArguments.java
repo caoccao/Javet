@@ -21,8 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueArguments extends BaseTestJavetRuntime {
     @Test
@@ -32,6 +31,11 @@ public class TestV8ValueArguments extends BaseTestJavetRuntime {
             assertNotNull(v8ValueArguments);
             assertEquals(1, v8ValueArguments.getInteger(0));
             assertEquals("2", v8ValueArguments.getString(1));
+            try (V8ValueArguments clonedV8ValueArguments = v8ValueArguments.toClone()) {
+                assertEquals(1, v8ValueArguments.getInteger(0));
+                assertEquals("2", v8ValueArguments.getString(1));
+                assertNotEquals(v8ValueArguments.getHandle(), clonedV8ValueArguments.getHandle());
+            }
         }
     }
 }

@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.exceptions.JavetException;
+
 public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
     public V8ValueInteger() {
         this(Integer.valueOf(0));
@@ -27,8 +29,8 @@ public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
     }
 
     @Override
-    public V8ValueInteger clone() {
-        return new V8ValueInteger(value);
+    public V8ValueInteger toClone() throws JavetException {
+        return v8Runtime.decorateV8Value(new V8ValueInteger(value));
     }
 
     public int toPrimitive() {

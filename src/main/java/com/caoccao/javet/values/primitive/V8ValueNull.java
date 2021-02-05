@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
 public final class V8ValueNull extends V8Value {
@@ -32,12 +33,12 @@ public final class V8ValueNull extends V8Value {
     }
 
     @Override
-    public V8ValueNull clone() {
-        return new V8ValueNull();
+    protected void releaseReference() {
     }
 
     @Override
-    protected void releaseReference() {
+    public V8ValueNull toClone() throws JavetException {
+        return v8Runtime.decorateV8Value(new V8ValueNull());
     }
 
     @Override

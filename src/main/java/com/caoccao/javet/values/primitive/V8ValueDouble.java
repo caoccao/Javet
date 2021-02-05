@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.exceptions.JavetException;
+
 public class V8ValueDouble extends V8ValuePrimitive<Double> {
     public V8ValueDouble() {
         this(0D);
@@ -27,8 +29,8 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     }
 
     @Override
-    public V8ValueDouble clone() {
-        return new V8ValueDouble(value);
+    public V8ValueDouble toClone() throws JavetException {
+        return v8Runtime.decorateV8Value(new V8ValueDouble(value));
     }
 
     public double toPrimitive() {

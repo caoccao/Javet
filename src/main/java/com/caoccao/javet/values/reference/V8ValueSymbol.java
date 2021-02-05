@@ -32,11 +32,6 @@ public class V8ValueSymbol extends V8ValueObject {
     }
 
     @Override
-    public V8ValueSymbol clone() {
-        return new V8ValueSymbol(handle);
-    }
-
-    @Override
     public int getType() {
         return V8ValueReferenceType.Symbol;
     }

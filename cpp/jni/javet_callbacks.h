@@ -27,17 +27,21 @@ namespace Javet {
 		class V8Callback {
 		public:
 			jobject callbackContext;
+			v8::Persistent<v8::External> v8PersistentExternalData;
 			jlong handle;
 			Javet::V8Runtime* internalV8Runtime;
 
+			void Dispose(JNIEnv* jniEnv);
 			jstring GetFunctionName(JNIEnv* jniEnv);
 			jobject GetExternalV8Runtime(JNIEnv* jniEnv);
 			void Invoke(JNIEnv* jniEnv, const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbackInfo);
 			jboolean IsReturnResult(JNIEnv* jniEnv);
+			void NotifyToDispose(JNIEnv* jniEnv);
 		};
 
 		static jclass jclassV8Runtime;
 		static jmethodID jmethodIDV8RuntimeReceiveCallback;
+		static jmethodID jmethodIDV8RuntimeRemoveCallback;
 
 		static jclass jclassV8CallbackContext;
 		static jmethodID jmethodIDV8CallbackContextGetFunctionName;

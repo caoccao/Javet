@@ -36,6 +36,9 @@ final class V8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);
 
+    native static Object cloneV8Value(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     native static void closeV8Runtime(long v8RuntimeHandle);
 
     native static void compileOnly(

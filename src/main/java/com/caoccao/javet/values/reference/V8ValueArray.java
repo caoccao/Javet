@@ -35,11 +35,6 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public V8ValueArray clone() {
-        return new V8ValueArray(handle);
-    }
-
-    @Override
     public <T extends V8Value> T get(int index) throws JavetException {
         checkV8Runtime();
         return v8Runtime.get(this, new V8ValueInteger(index));

@@ -23,7 +23,9 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,13 +38,20 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.lock();
             assertEquals(0, v8Runtime.getCallbackContextCount());
             MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
-            V8CallbackContext v8CallbackContext = v8Runtime.createCallback(
-                    v8Runtime.getGlobalObject(), "blank", mockCallbackReceiver,
-                    mockCallbackReceiver.getMethod("blank"));
+            V8ValueObject globalObject = v8Runtime.getGlobalObject();
+            V8CallbackContext v8CallbackContext = null;
+            try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                v8CallbackContext = v8Runtime.createCallback(
+                        v8ValueObject, "blank", mockCallbackReceiver,
+                        mockCallbackReceiver.getMethod("blank"));
+                globalObject.set("a", v8ValueObject);
+            }
             assertEquals(1, v8Runtime.getCallbackContextCount());
             assertFalse(mockCallbackReceiver.isCalled());
-            v8Runtime.executeVoid("blank();");
+            v8Runtime.executeVoid("a.blank();");
             assertTrue(mockCallbackReceiver.isCalled());
+            globalObject.delete("a");
+            assertTrue(globalObject.get("a") instanceof V8ValueUndefined);
             v8Runtime.removeCallback(v8CallbackContext);
             assertEquals(0, v8Runtime.getCallbackContextCount());
         }
@@ -60,7 +69,7 @@ public class TestV8Runtime extends BaseTestJavet {
                     mockCallbackReceiver.getMethodVarargs("echo"));
             assertEquals(1, v8Runtime.getCallbackContextCount());
             assertFalse(mockCallbackReceiver.isCalled());
-            try (V8ValueArray v8ValueArray = v8Runtime.execute("const a = echo(1, '2', 3n); a;")) {
+            try (V8ValueArray v8ValueArray = v8Runtime.execute("var a = echo(1, '2', 3n); a;")) {
                 assertEquals(3, v8ValueArray.getLength());
                 assertEquals(1, v8ValueArray.getInteger(0));
                 assertEquals("2", v8ValueArray.getString(1));

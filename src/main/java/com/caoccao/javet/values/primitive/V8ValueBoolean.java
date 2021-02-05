@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.exceptions.JavetException;
+
 public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
     public V8ValueBoolean() {
         this(false);
@@ -27,8 +29,8 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
     }
 
     @Override
-    public V8ValueBoolean clone() {
-        return new V8ValueBoolean(value);
+    public V8ValueBoolean toClone() throws JavetException {
+        return v8Runtime.decorateV8Value(new V8ValueBoolean(value));
     }
 
     public boolean toPrimitive() {

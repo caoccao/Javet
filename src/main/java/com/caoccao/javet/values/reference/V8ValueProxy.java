@@ -26,11 +26,6 @@ public class V8ValueProxy extends V8ValueObject {
     }
 
     @Override
-    public V8ValueProxy clone() {
-        return new V8ValueProxy(handle);
-    }
-
-    @Override
     public int getType() {
         return V8ValueReferenceType.Proxy;
     }

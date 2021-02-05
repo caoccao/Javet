@@ -39,15 +39,20 @@
   * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
   */
 
-#define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueInteger)
-#define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueString)
-#define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, jmethodIDV8ValueIntegerToPrimitive)
-#define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueStringToPrimitive)
+#define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::Main::jclassV8ValueInteger)
+#define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::Main::jclassV8ValueString)
+#define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::Main::jmethodIDV8ValueIntegerToPrimitive)
+#define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::Main::jmethodIDV8ValueStringToPrimitive)
 #define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
 #define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
 #define IS_V8_MAP(type) (type == Javet::Enums::V8ValueReferenceType::Map)
 #define IS_V8_OBJECT(type) (type == Javet::Enums::V8ValueReferenceType::Object)
 #define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
+
+#define FETCH_JNI_ENV \
+	JNIEnv* jniEnv; \
+	Javet::GlobalJavaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8); \
+	Javet::GlobalJavaVM->AttachCurrentThread((void**)&jniEnv, nullptr); \
 
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
@@ -73,36 +78,44 @@
 		Javet::Exceptions::ThrowJavetConverterException(jniEnv, e.what()); \
 	}
 
-static jclass jclassV8ValueInteger;
-static jmethodID jmethodIDV8ValueIntegerToPrimitive;
+namespace Javet {
+	namespace Main {
+		static jclass jclassV8ValueInteger;
+		static jmethodID jmethodIDV8ValueIntegerToPrimitive;
 
-static jclass jclassV8ValueString;
-static jmethodID jmethodIDV8ValueStringToPrimitive;
+		static jclass jclassV8ValueString;
+		static jmethodID jmethodIDV8ValueStringToPrimitive;
 
-/*
-These Java classes and methods need to be initialized within this file
-because the memory address probed changes in another file,
-or runtime memory corruption will take place.
-*/
-void Initialize(JNIEnv* jniEnv) {
-	jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
-	jmethodIDV8ValueIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueInteger, "toPrimitive", "()I");
+		/*
+		These Java classes and methods need to be initialized within this file
+		because the memory address probed changes in another file,
+		or runtime memory corruption will take place.
+		*/
+		void Initialize(JNIEnv* jniEnv) {
+			jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
+			jmethodIDV8ValueIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueInteger, "toPrimitive", "()I");
 
-	jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueString"));
-	jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, "toPrimitive", "()Ljava/lang/String;");
-}
+			jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueString"));
+			jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, "toPrimitive", "()Ljava/lang/String;");
+		}
 
-/*
-This callback function has to stay within the same file
-so that the memory address doesn't get messed up.
-*/
-void InvokeCallback(const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbackInfo) {
-	JNIEnv* jniEnv;
-	Javet::GlobalJavaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8);
-	Javet::GlobalJavaVM->AttachCurrentThread((void**)&jniEnv, nullptr);
-	auto v8ExternalData = v8FunctionCallbackInfo.Data().As<v8::External>();
-	auto v8CallbackPointer = (Javet::Callback::V8Callback*)v8ExternalData->Value();
-	v8CallbackPointer->Invoke(jniEnv, v8FunctionCallbackInfo);
+		/*
+		This callback function has to stay within the same file
+		so that the memory address doesn't get messed up.
+		*/
+		void InvokeCallback(const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbackInfo) {
+			FETCH_JNI_ENV;
+			auto v8ExternalData = v8FunctionCallbackInfo.Data().As<v8::External>();
+			auto v8CallbackPointer = (Javet::Callback::V8Callback*)v8ExternalData->Value();
+			v8CallbackPointer->Invoke(jniEnv, v8FunctionCallbackInfo);
+		}
+
+		void RecycleCallback(v8::WeakCallbackInfo<Javet::Callback::V8Callback> const& data) {
+			FETCH_JNI_ENV;
+			Javet::Callback::V8Callback* v8CallbackPointer = data.GetParameter();
+			v8CallbackPointer->NotifyToDispose(jniEnv);
+		}
+	}
 }
 
 JNIEXPORT jint JNICALL JNI_OnLoad
@@ -122,7 +135,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad
 	Javet::Callback::Initialize(jniEnv);
 	Javet::Converter::Initialize(jniEnv);
 	Javet::Exceptions::Initialize(jniEnv);
-	Initialize(jniEnv);
+	Javet::Main::Initialize(jniEnv);
 	return JNI_VERSION_1_8;
 }
 
@@ -158,6 +171,13 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
 		}
 	}
 	return nullptr;
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
+(JNIEnv* jniEnv, jclass caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	auto clonedV8LocalObject = v8::Local<v8::Object>::New(v8Context->GetIsolate(), v8LocalObject);
+	return Javet::Converter::ToExternalV8Value(jniEnv, v8Context, clonedV8LocalObject);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
@@ -203,7 +223,7 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createCallback
 		v8CallbackPointer->internalV8Runtime = v8Runtime;
 		v8CallbackPointer->handle = reinterpret_cast<jlong>(v8CallbackPointer);
 		auto v8ExternalData = v8::External::New(v8Context->GetIsolate(), v8CallbackPointer);
-		auto maybeLocalFunction = v8::Function::New(v8Context, InvokeCallback, v8ExternalData);
+		auto maybeLocalFunction = v8::Function::New(v8Context, Javet::Main::InvokeCallback, v8ExternalData);
 		if (maybeLocalFunction.IsEmpty()) {
 			// TODO exception
 		}
@@ -215,6 +235,8 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createCallback
 				maybeLocalFunction.ToLocalChecked());
 			unusedResult.Check();
 		}
+		v8CallbackPointer->v8PersistentExternalData.Reset(v8Context->GetIsolate(), v8ExternalData);
+		v8CallbackPointer->v8PersistentExternalData.SetWeak(v8CallbackPointer, &Javet::Main::RecycleCallback, v8::WeakCallbackType::kParameter);
 		return v8CallbackPointer->handle;
 	}
 	return 0;
@@ -507,7 +529,8 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeCallbackHandle
 (JNIEnv* jniEnv, jclass caller, jlong callbackHandle) {
 	auto v8CallbackPointer = reinterpret_cast<Javet::Callback::V8Callback*>(callbackHandle);
-	jniEnv->DeleteGlobalRef(v8CallbackPointer->callbackContext);
+	// Disposing logic has to be taken out of destructor because JNI Env is required.
+	v8CallbackPointer->Dispose(jniEnv);
 	delete v8CallbackPointer;
 }
 
