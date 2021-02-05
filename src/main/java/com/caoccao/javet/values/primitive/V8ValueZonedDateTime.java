@@ -22,6 +22,7 @@ import com.caoccao.javet.utils.JavetDateTimeUtils;
 
 import java.time.ZonedDateTime;
 
+@SuppressWarnings("unchecked")
 public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> {
     public V8ValueZonedDateTime() {
         this(null);

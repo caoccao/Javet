@@ -24,6 +24,7 @@ import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.utils.V8ValueIteratorUtils;
 import com.caoccao.javet.values.virtual.V8VirtualList;
 
+@SuppressWarnings("unchecked")
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     public static final String FUNCTION_KEYS = "keys";

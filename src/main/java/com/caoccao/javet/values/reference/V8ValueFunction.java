@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
+@SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     public V8ValueFunction(long handle) {

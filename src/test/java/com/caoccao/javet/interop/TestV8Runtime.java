@@ -19,12 +19,15 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueError;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
@@ -97,6 +100,35 @@ public class TestV8Runtime extends BaseTestJavet {
                 assertEquals(1, v8ValueInteger.getValue());
             }
             assertTrue(mockCallbackReceiver.isCalled());
+            v8Runtime.removeCallback(v8CallbackContext);
+            assertEquals(0, v8Runtime.getCallbackContextCount());
+        }
+    }
+
+    @Test
+    public void testCallbackError() throws JavetException, NoSuchMethodException {
+        V8Host v8Host = V8Host.getInstance();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.lock();
+            MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+            V8CallbackContext v8CallbackContext = v8Runtime.createCallback(
+                    v8Runtime.getGlobalObject(), "testError", mockCallbackReceiver,
+                    mockCallbackReceiver.getMethod("error"));
+            assertEquals(1, v8Runtime.getCallbackContextCount());
+            assertFalse(mockCallbackReceiver.isCalled());
+            try {
+                v8Runtime.executeVoid("testError();");
+                fail("Failed to report Java error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("Error: Mock error", e.getMessage());
+            }
+            assertTrue(mockCallbackReceiver.isCalled());
+            try (V8ValueError v8ValueError = v8Runtime.execute(
+                    "let a; try { testError(); } catch (error) { a = error; } a;")) {
+                assertNotNull(v8ValueError);
+                assertEquals("Mock error", v8ValueError.getMessage());
+            }
+            mockCallbackReceiver.setCalled(false);
             v8Runtime.removeCallback(v8CallbackContext);
             assertEquals(0, v8Runtime.getCallbackContextCount());
         }

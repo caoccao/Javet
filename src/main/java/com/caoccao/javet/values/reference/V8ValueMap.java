@@ -25,6 +25,7 @@ import com.caoccao.javet.values.virtual.V8VirtualList;
 
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
 
     public static final String FUNCTION_KEYS = "keys";

@@ -28,6 +28,7 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.TreeMap;
@@ -317,7 +318,7 @@ public final class V8Runtime implements
         }
     }
 
-    public V8Value receiveCallback(long v8CallbackContextHandle, V8ValueArray args) throws JavetException {
+    public V8Value receiveCallback(long v8CallbackContextHandle, V8ValueArray args) throws Throwable {
         V8Value[] values = null;
         try {
             if (args != null) {
@@ -333,6 +334,7 @@ public final class V8Runtime implements
                 IV8CallbackReceiver callbackReceiver = v8CallbackContext.getCallbackReceiver();
                 Object result = null;
                 if (args == null || args.getLength() == 0) {
+                    // Invoke method without args
                     result = method.invoke(callbackReceiver);
                 } else {
                     final int length = args.getLength();
@@ -341,10 +343,12 @@ public final class V8Runtime implements
                         values[i] = args.get(i);
                     }
                     if (method.isVarArgs()) {
+                        // Invoke method with varargs
                         result = method.invoke(callbackReceiver, new Object[]{values});
                     } else {
                         Object[] objectValues = new Object[length];
                         System.arraycopy(values, 0, objectValues, 0, length);
+                        // Invoke method with regular signature
                         result = method.invoke(callbackReceiver, objectValues);
                     }
                 }
@@ -364,7 +368,11 @@ public final class V8Runtime implements
                 }
             }
         } catch (Throwable t) {
-            logWarn(t.getMessage());
+            if (t instanceof InvocationTargetException) {
+                throw t.getCause();
+            } else {
+                throw t;
+            }
         } finally {
             JavetResourceUtils.safeClose(args);
             JavetResourceUtils.safeClose(values);

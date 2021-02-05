@@ -23,6 +23,7 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.utils.V8ValueIteratorUtils;
 import com.caoccao.javet.values.virtual.V8VirtualList;
 
+@SuppressWarnings("unchecked")
 public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
 
     public static final String FUNCTION_KEYS = "keys";

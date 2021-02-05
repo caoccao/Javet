@@ -103,11 +103,11 @@ namespace Javet {
 		This callback function has to stay within the same file
 		so that the memory address doesn't get messed up.
 		*/
-		void InvokeCallback(const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbackInfo) {
+		void InvokeCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 			FETCH_JNI_ENV;
-			auto v8ExternalData = v8FunctionCallbackInfo.Data().As<v8::External>();
+			auto v8ExternalData = args.Data().As<v8::External>();
 			auto v8CallbackPointer = (Javet::Callback::V8Callback*)v8ExternalData->Value();
-			v8CallbackPointer->Invoke(jniEnv, v8FunctionCallbackInfo);
+			v8CallbackPointer->Invoke(jniEnv, args);
 		}
 
 		void RecycleCallback(v8::WeakCallbackInfo<Javet::Callback::V8Callback> const& data) {
@@ -219,25 +219,27 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createCallback
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (v8LocalObject->IsObject()) {
 		Javet::Callback::V8Callback* v8CallbackPointer = new Javet::Callback::V8Callback;
-		v8CallbackPointer->callbackContext = jniEnv->NewGlobalRef(mCallbackContext);
-		v8CallbackPointer->internalV8Runtime = v8Runtime;
-		v8CallbackPointer->handle = reinterpret_cast<jlong>(v8CallbackPointer);
 		auto v8ExternalData = v8::External::New(v8Context->GetIsolate(), v8CallbackPointer);
 		auto maybeLocalFunction = v8::Function::New(v8Context, Javet::Main::InvokeCallback, v8ExternalData);
 		if (maybeLocalFunction.IsEmpty()) {
-			// TODO exception
+			delete v8CallbackPointer;
+			// The creation fails with handle 0L returned. External V8 runtime will throw exception accordingly.
 		}
 		else {
+			v8CallbackPointer->callbackContext = jniEnv->NewGlobalRef(mCallbackContext);
+			v8CallbackPointer->internalV8Runtime = v8Runtime;
+			v8CallbackPointer->handle = reinterpret_cast<jlong>(v8CallbackPointer);
 			jstring mFunctionName = v8CallbackPointer->GetFunctionName(jniEnv);
 			auto unusedResult = v8LocalObject->Set(
 				v8Context,
 				Javet::Converter::ToV8String(jniEnv, v8Context, mFunctionName),
 				maybeLocalFunction.ToLocalChecked());
 			unusedResult.Check();
+			v8CallbackPointer->v8PersistentExternalData.Reset(v8Context->GetIsolate(), v8ExternalData);
+			v8CallbackPointer->v8PersistentExternalData.SetWeak(
+				v8CallbackPointer, &Javet::Main::RecycleCallback, v8::WeakCallbackType::kParameter);
+			return v8CallbackPointer->handle;
 		}
-		v8CallbackPointer->v8PersistentExternalData.Reset(v8Context->GetIsolate(), v8ExternalData);
-		v8CallbackPointer->v8PersistentExternalData.SetWeak(v8CallbackPointer, &Javet::Main::RecycleCallback, v8::WeakCallbackType::kParameter);
-		return v8CallbackPointer->handle;
 	}
 	return 0;
 }

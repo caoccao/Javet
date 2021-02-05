@@ -139,12 +139,12 @@ namespace Javet {
 			jmethodIDV8ValueSymbolGetHandle = jniEnv->GetMethodID(jclassV8ValueSymbol, "getHandle", "()J");
 		}
 
-		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbackInfo) {
-			int argLength = v8FunctionCallbackInfo.Length();
+		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args) {
+			int argLength = args.Length();
 			if (argLength > 0) {
 				auto v8Array = v8::Array::New(v8Context->GetIsolate(), argLength);
 				for (int i = 0; i < argLength; ++i) {
-					v8Array->Set(v8Context, i, v8FunctionCallbackInfo[i]);
+					v8Array->Set(v8Context, i, args[i]);
 				}
 				return ToExternalV8Value(jniEnv, v8Context, v8Array);
 			}

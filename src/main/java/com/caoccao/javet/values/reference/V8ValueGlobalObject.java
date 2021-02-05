@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+@SuppressWarnings("unchecked")
 public final class V8ValueGlobalObject extends V8ValueObject {
     public V8ValueGlobalObject(long handle) {
         super(handle);

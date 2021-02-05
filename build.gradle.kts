@@ -38,6 +38,13 @@ dependencies {
     runtimeOnly(fileTree("libs"))
 }
 
+afterEvaluate {
+    tasks.withType(JavaCompile::class) {
+        options.compilerArgs.add("-Xlint:unchecked")
+        options.compilerArgs.add("-Xlint:deprecation")
+    }
+}
+
 task<Exec>("buildJNIHeaders") {
     mkdir("$buildDir/generated/tmp/jni")
     project.exec {

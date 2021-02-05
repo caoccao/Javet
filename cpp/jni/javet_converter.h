@@ -117,7 +117,7 @@ namespace Javet {
 
 		jobject ToExternalV8Value(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
 
-		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbackInfo);
+		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args);
 
 		inline jobject ToExternalV8ValueNull(JNIEnv* jniEnv);
 

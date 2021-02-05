@@ -23,6 +23,7 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@SuppressWarnings("unchecked")
 public class V8VirtualList<T extends Object> extends ArrayList<T> implements IJavetClosable {
     public V8VirtualList(int initialCapacity) {
         super(initialCapacity);

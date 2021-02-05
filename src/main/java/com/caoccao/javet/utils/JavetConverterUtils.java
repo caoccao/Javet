@@ -24,6 +24,7 @@ import com.caoccao.javet.values.primitive.*;
 
 import java.time.ZonedDateTime;
 
+@SuppressWarnings("unchecked")
 public final class JavetConverterUtils {
     public static final IJavetConverter<Boolean> DEFAULT_BOOLEAN_CONVERTER = new IJavetConverter<>() {
         @Override

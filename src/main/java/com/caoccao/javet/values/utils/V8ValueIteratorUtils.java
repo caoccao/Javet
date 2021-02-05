@@ -22,6 +22,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.virtual.V8VirtualList;
 
+@SuppressWarnings("unchecked")
 public final class V8ValueIteratorUtils {
     public static final String FUNCTION_NEXT = "next";
     public static final String PROPERTY_DONE = "done";

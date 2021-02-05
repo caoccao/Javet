@@ -19,6 +19,7 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.values.V8Value;
 
+@SuppressWarnings("unchecked")
 public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
     protected T value;
 

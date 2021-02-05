@@ -71,4 +71,9 @@ public class MockCallbackReceiver extends V8CallbackReceiver {
         called = true;
         return super.echo(args);
     }
+
+    public void error() throws Exception {
+        called = true;
+        throw new Exception("Mock error");
+    }
 }
