@@ -30,6 +30,11 @@ public class V8ValueError extends V8ValueObject {
     }
 
     @Override
+    public V8ValueError clone() {
+        return new V8ValueError(handle);
+    }
+
+    @Override
     public int getType() {
         return V8ValueReferenceType.Error;
     }

@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+@Deprecated
 class V8CallbackResult {
     protected String errorMessage;
     protected Throwable throwable;

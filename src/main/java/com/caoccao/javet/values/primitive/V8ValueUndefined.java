@@ -20,6 +20,9 @@ package com.caoccao.javet.values.primitive;
 import com.caoccao.javet.values.V8Value;
 
 public final class V8ValueUndefined extends V8Value {
+
+    public static final String UNDEFINED = "undefined";
+
     public V8ValueUndefined() {
         super();
     }
@@ -29,6 +32,16 @@ public final class V8ValueUndefined extends V8Value {
     }
 
     @Override
+    public V8ValueUndefined clone() {
+        return new V8ValueUndefined();
+    }
+
+    @Override
     protected void releaseReference() {
+    }
+
+    @Override
+    public String toString() {
+        return UNDEFINED;
     }
 }

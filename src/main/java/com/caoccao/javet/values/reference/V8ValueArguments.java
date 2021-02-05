@@ -25,6 +25,11 @@ public class V8ValueArguments extends V8ValueArray {
     }
 
     @Override
+    public V8ValueArguments clone() {
+        return new V8ValueArguments(handle);
+    }
+
+    @Override
     public int getType() {
         return V8ValueReferenceType.Arguments;
     }

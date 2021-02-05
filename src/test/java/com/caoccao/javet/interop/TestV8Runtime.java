@@ -21,34 +21,82 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
+import com.caoccao.javet.values.reference.V8ValueArray;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Runtime extends BaseTestJavet {
     @Test
-    public void testClose() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
-        }
-    }
-
-    @Test
-    public void testCallback() throws JavetException, NoSuchMethodException {
+    public void testCallbackBlank() throws JavetException, NoSuchMethodException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.lock();
             assertEquals(0, v8Runtime.getCallbackContextCount());
-            MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver();
+            MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
             V8CallbackContext v8CallbackContext = v8Runtime.createCallback(
-                    v8Runtime.getGlobalObject(), "test", mockCallbackReceiver,
-                    MockCallbackReceiver.class.getMethod("test", new Class[]{}));
+                    v8Runtime.getGlobalObject(), "blank", mockCallbackReceiver,
+                    mockCallbackReceiver.getMethod("blank"));
             assertEquals(1, v8Runtime.getCallbackContextCount());
             assertFalse(mockCallbackReceiver.isCalled());
-            v8Runtime.executeVoid("test();");
+            v8Runtime.executeVoid("blank();");
             assertTrue(mockCallbackReceiver.isCalled());
             v8Runtime.removeCallback(v8CallbackContext);
             assertEquals(0, v8Runtime.getCallbackContextCount());
+        }
+    }
+
+    @Test
+    public void testCallbackEchoLILO() throws JavetException, NoSuchMethodException {
+        V8Host v8Host = V8Host.getInstance();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.lock();
+            assertEquals(0, v8Runtime.getCallbackContextCount());
+            MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+            V8CallbackContext v8CallbackContext = v8Runtime.createCallback(
+                    v8Runtime.getGlobalObject(), "echo", mockCallbackReceiver,
+                    mockCallbackReceiver.getMethodVarargs("echo"));
+            assertEquals(1, v8Runtime.getCallbackContextCount());
+            assertFalse(mockCallbackReceiver.isCalled());
+            try (V8ValueArray v8ValueArray = v8Runtime.execute("const a = echo(1, '2', 3n); a;")) {
+                assertEquals(3, v8ValueArray.getLength());
+                assertEquals(1, v8ValueArray.getInteger(0));
+                assertEquals("2", v8ValueArray.getString(1));
+                assertEquals(3L, v8ValueArray.getLong(2));
+            }
+            assertTrue(mockCallbackReceiver.isCalled());
+            v8Runtime.removeCallback(v8CallbackContext);
+            assertEquals(0, v8Runtime.getCallbackContextCount());
+        }
+    }
+
+    @Test
+    public void testCallbackEchoVIVO() throws JavetException, NoSuchMethodException {
+        V8Host v8Host = V8Host.getInstance();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.lock();
+            assertEquals(0, v8Runtime.getCallbackContextCount());
+            MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+            V8CallbackContext v8CallbackContext = v8Runtime.createCallback(
+                    v8Runtime.getGlobalObject(), "echo", mockCallbackReceiver,
+                    mockCallbackReceiver.getMethod("echo", V8Value.class));
+            assertEquals(1, v8Runtime.getCallbackContextCount());
+            assertFalse(mockCallbackReceiver.isCalled());
+            try (V8ValueInteger v8ValueInteger = v8Runtime.execute("const a = echo(1); a;")) {
+                assertEquals(1, v8ValueInteger.getValue());
+            }
+            assertTrue(mockCallbackReceiver.isCalled());
+            v8Runtime.removeCallback(v8CallbackContext);
+            assertEquals(0, v8Runtime.getCallbackContextCount());
+        }
+    }
+
+    @Test
+    public void testClose() throws JavetException {
+        V8Host v8Host = V8Host.getInstance();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
         }
     }
 

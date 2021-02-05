@@ -28,6 +28,11 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     }
 
     @Override
+    public V8ValueGlobalObject clone() {
+        return new V8ValueGlobalObject(handle);
+    }
+
+    @Override
     protected void releaseReference() {
         // Global object lives as long as V8 runtime lives.
     }

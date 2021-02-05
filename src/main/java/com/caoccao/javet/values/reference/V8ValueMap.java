@@ -36,6 +36,11 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
+    public V8ValueMap clone() {
+        return new V8ValueMap(handle);
+    }
+
+    @Override
     public V8VirtualList<V8Value> getEntries() throws JavetException {
         checkV8Runtime();
         try (V8ValueObject mapIterator = invoke(FUNCTION_ENTRIES)) {

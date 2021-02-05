@@ -17,10 +17,17 @@
 
 package com.caoccao.javet.mock;
 
-public class MockCallbackReceiver {
-    private boolean called;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8CallbackReceiver;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueArray;
 
-    public MockCallbackReceiver() {
+public class MockCallbackReceiver extends V8CallbackReceiver {
+    protected boolean called;
+
+    public MockCallbackReceiver(V8Runtime v8Runtime) {
+        super(v8Runtime);
         called = false;
     }
 
@@ -28,7 +35,40 @@ public class MockCallbackReceiver {
         return called;
     }
 
-    public void test() {
+    public void setCalled(boolean called) {
+        this.called = called;
+    }
+
+    public void blank() {
         called = true;
+    }
+
+    @Override
+    public V8Value echo(V8Value arg) {
+        called = true;
+        return super.echo(arg);
+    }
+
+    @Override
+    public String echoString(String str) {
+        called = true;
+        return super.echoString(str);
+    }
+
+    @Override
+    public String echoString(V8Value arg) {
+        called = true;
+        return super.echoString(arg);
+    }
+
+    @Override
+    public String echoString(V8Value... args) {
+        called = true;
+        return super.echoString(args);
+    }
+
+    public V8ValueArray echo(V8Value... args) throws JavetException {
+        called = true;
+        return super.echo(args);
     }
 }

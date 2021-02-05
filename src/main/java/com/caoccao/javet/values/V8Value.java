@@ -21,7 +21,7 @@ import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 
-public abstract class V8Value implements IJavetClosable {
+public abstract class V8Value implements IJavetClosable, Cloneable {
     protected V8Runtime v8Runtime;
 
     public V8Value() {
@@ -49,12 +49,11 @@ public abstract class V8Value implements IJavetClosable {
         v8Runtime = null;
     }
 
+    public abstract V8Value clone();
+
     public V8Runtime getV8Runtime() {
         return v8Runtime;
     }
-
-    protected abstract void releaseReference() throws
-            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException;
 
     public void setV8Runtime(V8Runtime v8Runtime) throws
             JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException,
@@ -65,4 +64,7 @@ public abstract class V8Value implements IJavetClosable {
         this.v8Runtime = v8Runtime;
         this.v8Runtime.checkLock();
     }
+
+    protected abstract void releaseReference() throws
+            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException;
 }

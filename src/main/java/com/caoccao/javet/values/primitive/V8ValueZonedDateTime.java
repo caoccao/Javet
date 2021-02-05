@@ -17,7 +17,7 @@
 
 package com.caoccao.javet.values.primitive;
 
-import com.caoccao.javet.utils.DateTimeUtils;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
 
 import java.time.ZonedDateTime;
 
@@ -31,7 +31,12 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
     }
 
     public V8ValueZonedDateTime(long jsTimestamp) {
-        super(DateTimeUtils.toZonedDateTime(jsTimestamp));
+        super(JavetDateTimeUtils.toZonedDateTime(jsTimestamp));
+    }
+
+    @Override
+    public V8ValueZonedDateTime clone() {
+        return new V8ValueZonedDateTime(value);
     }
 
     public long toPrimitive() {

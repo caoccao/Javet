@@ -26,6 +26,11 @@ public class V8ValueRegExp extends V8ValueObject {
     }
 
     @Override
+    public V8ValueRegExp clone() {
+        return new V8ValueRegExp(handle);
+    }
+
+    @Override
     public int getType() {
         return V8ValueReferenceType.RegExp;
     }

@@ -31,6 +31,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public V8ValueObject clone() {
+        return new V8ValueObject(handle);
+    }
+
+    @Override
     public boolean delete(V8Value key) throws JavetException {
         checkV8Runtime();
         return v8Runtime.delete(this, key);

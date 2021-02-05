@@ -32,7 +32,7 @@ namespace Javet {
 
 			jstring GetFunctionName(JNIEnv* jniEnv);
 			jobject GetExternalV8Runtime(JNIEnv* jniEnv);
-			void Invoke(JNIEnv* jniEnv);
+			void Invoke(JNIEnv* jniEnv, const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbackInfo);
 			jboolean IsReturnResult(JNIEnv* jniEnv);
 		};
 
@@ -43,6 +43,9 @@ namespace Javet {
 		static jmethodID jmethodIDV8CallbackContextGetFunctionName;
 		static jmethodID jmethodIDV8CallbackContextGetV8Runtime;
 		static jmethodID jmethodIDV8CallbackContextIsReturnResult;
+
+		static jclass jclassJavetResourceUtils;
+		static jmethodID jmethodIDJavetResourceUtilsSafeClose;
 
 		void Initialize(JNIEnv* jniEnv);
 

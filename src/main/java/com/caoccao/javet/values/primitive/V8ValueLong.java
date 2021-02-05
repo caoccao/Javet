@@ -30,6 +30,11 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
         super(Long.valueOf(value));
     }
 
+    @Override
+    public V8ValueLong clone() {
+        return new V8ValueLong(value);
+    }
+
     public long toPrimitive() {
         return value.longValue();
     }

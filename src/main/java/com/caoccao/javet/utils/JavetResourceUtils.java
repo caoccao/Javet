@@ -15,23 +15,27 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.reference;
+package com.caoccao.javet.utils;
 
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.values.V8Value;
 
-public class V8ValueProxy extends V8ValueObject {
-
-    public V8ValueProxy(long handle) {
-        super(handle);
+public final class JavetResourceUtils {
+    private JavetResourceUtils() {
     }
 
-    @Override
-    public V8ValueProxy clone() {
-        return new V8ValueProxy(handle);
+    public static void safeClose(V8Value... values) throws JavetException {
+        if (values != null && values.length > 0) {
+            for (V8Value value : values) {
+                safeClose(value);
+            }
+        }
     }
 
-    @Override
-    public int getType() {
-        return V8ValueReferenceType.Proxy;
+    public static void safeClose(Object obj) throws JavetException {
+        if (obj != null && obj instanceof IJavetClosable) {
+            ((IJavetClosable) obj).close();
+        }
     }
 }

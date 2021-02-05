@@ -139,6 +139,18 @@ namespace Javet {
 			jmethodIDV8ValueSymbolGetHandle = jniEnv->GetMethodID(jclassV8ValueSymbol, "getHandle", "()J");
 		}
 
+		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbackInfo) {
+			int argLength = v8FunctionCallbackInfo.Length();
+			if (argLength > 0) {
+				auto v8Array = v8::Array::New(v8Context->GetIsolate(), argLength);
+				for (int i = 0; i < argLength; ++i) {
+					v8Array->Set(v8Context, i, v8FunctionCallbackInfo[i]);
+				}
+				return ToExternalV8Value(jniEnv, v8Context, v8Array);
+			}
+			return nullptr;
+		}
+
 		jobject ToExternalV8Value(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value) {
 			if (v8Value->IsUndefined()) {
 				return ToExternalV8ValueUndefined(jniEnv);
@@ -444,9 +456,9 @@ namespace Javet {
 			uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
 			if (valueCount > 0) {
 				umValuesPointer.reset(new v8::Local<v8::Value>[valueCount]);
-				for (int i = 0; i < valueCount; ++i) {
-					jobject arrayObject = jniEnv->GetObjectArrayElement(mValues, i);
-					umValuesPointer.get()[i] = ToV8Value(jniEnv, v8Context, arrayObject);
+				for (uint32_t i = 0; i < valueCount; ++i) {
+					jobject obj = jniEnv->GetObjectArrayElement(mValues, i);
+					umValuesPointer.get()[i] = ToV8Value(jniEnv, v8Context, obj);
 				}
 			}
 			return umValuesPointer;

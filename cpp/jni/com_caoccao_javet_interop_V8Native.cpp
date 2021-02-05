@@ -102,7 +102,7 @@ void InvokeCallback(const v8::FunctionCallbackInfo<v8::Value>& v8FunctionCallbac
 	Javet::GlobalJavaVM->AttachCurrentThread((void**)&jniEnv, nullptr);
 	auto v8ExternalData = v8FunctionCallbackInfo.Data().As<v8::External>();
 	auto v8CallbackPointer = (Javet::Callback::V8Callback*)v8ExternalData->Value();
-	v8CallbackPointer->Invoke(jniEnv);
+	v8CallbackPointer->Invoke(jniEnv, v8FunctionCallbackInfo);
 }
 
 JNIEXPORT jint JNICALL JNI_OnLoad

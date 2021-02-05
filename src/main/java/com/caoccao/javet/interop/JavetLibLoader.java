@@ -18,7 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
-import com.caoccao.javet.utils.OSDetectionUtils;
+import com.caoccao.javet.utils.JavetOSDetectionUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -82,7 +82,7 @@ final class JavetLibLoader {
             } catch (Exception e) {
                 // Lib file is locked.
             }
-            if (isDeployed && OSDetectionUtils.IS_LINUX) {
+            if (isDeployed && JavetOSDetectionUtils.IS_LINUX) {
                 try {
                     Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
                 } catch (Throwable e) {
@@ -93,14 +93,14 @@ final class JavetLibLoader {
     }
 
     private static File getLibFile() throws JavetOSNotSupportedException {
-        if (OSDetectionUtils.IS_WINDOWS) {
+        if (JavetOSDetectionUtils.IS_WINDOWS) {
             return new File(TEMP_DIRECTORY, MessageFormat.format(LIB_FILE_NAME_FORMAT,
                     OS_WINDOWS, LIB_VERSION, LIB_FILE_EXTENSION_WINDOWS));
-        } else if (OSDetectionUtils.IS_LINUX) {
+        } else if (JavetOSDetectionUtils.IS_LINUX) {
             return new File(TEMP_DIRECTORY, MessageFormat.format(LIB_FILE_NAME_FORMAT,
                     OS_LINUX, LIB_VERSION, LIB_FILE_EXTENSION_LINUX));
         } else {
-            throw new JavetOSNotSupportedException(OSDetectionUtils.OS_NAME);
+            throw new JavetOSNotSupportedException(JavetOSDetectionUtils.OS_NAME);
         }
     }
 

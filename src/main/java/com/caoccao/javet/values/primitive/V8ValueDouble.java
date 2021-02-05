@@ -26,6 +26,11 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
         super(value);
     }
 
+    @Override
+    public V8ValueDouble clone() {
+        return new V8ValueDouble(value);
+    }
+
     public double toPrimitive() {
         return value.doubleValue();
     }

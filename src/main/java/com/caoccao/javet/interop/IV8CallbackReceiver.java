@@ -15,23 +15,8 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.reference;
+package com.caoccao.javet.interop;
 
-import com.caoccao.javet.values.V8ValueReferenceType;
-
-public class V8ValueProxy extends V8ValueObject {
-
-    public V8ValueProxy(long handle) {
-        super(handle);
-    }
-
-    @Override
-    public V8ValueProxy clone() {
-        return new V8ValueProxy(handle);
-    }
-
-    @Override
-    public int getType() {
-        return V8ValueReferenceType.Proxy;
-    }
+public interface IV8CallbackReceiver {
+    V8Runtime getV8Runtime();
 }

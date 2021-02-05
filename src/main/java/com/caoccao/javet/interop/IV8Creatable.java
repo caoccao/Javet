@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 public interface IV8Creatable {
     V8CallbackContext createCallback(
             IV8ValueObject iV8ValueObject, String functionName,
-            Object callbackReceiver, Method callbackMethod) throws JavetException;
+            IV8CallbackReceiver callbackReceiver, Method callbackMethod) throws JavetException;
 
     V8ValueArray createV8ValueArray() throws JavetException;
 

@@ -21,8 +21,11 @@ import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLoggable;
 import com.caoccao.javet.interfaces.IJavetResettable;
+import com.caoccao.javet.utils.JavetConverterUtils;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.*;
 
 import java.lang.reflect.Method;
@@ -33,10 +36,10 @@ import java.util.logging.Logger;
 @SuppressWarnings("unchecked")
 public final class V8Runtime implements
         IJavetClosable, IJavetResettable, IJavetLoggable, IV8Executable, IV8Creatable {
-    private static final String ERROR_V8_CALLBACK_CONTEXT_IS_NOT_FOUND = "V8 callback context is not found";
     private static final long INVALID_THREAD_ID = -1L;
 
     private Map<Long, V8CallbackContext> callbackContextMap;
+    private JavetConverterUtils converter;
     private String globalName;
     private long handle;
     private Logger logger;
@@ -47,6 +50,7 @@ public final class V8Runtime implements
     V8Runtime(V8Host v8Host, long handle, String globalName) {
         assert handle != 0;
         callbackContextMap = new TreeMap<>();
+        converter = new JavetConverterUtils();
         this.globalName = globalName;
         this.handle = handle;
         logger = Logger.getLogger(getClass().getName());
@@ -89,6 +93,7 @@ public final class V8Runtime implements
 
     @Override
     public void close() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+        removeCallbacks();
         removeReferences();
         if (isLocked()) {
             try {
@@ -112,7 +117,7 @@ public final class V8Runtime implements
     @Override
     public V8CallbackContext createCallback(
             IV8ValueObject iV8ValueObject, String functionName,
-            Object callbackReceiver, Method callbackMethod) throws JavetException {
+            IV8CallbackReceiver callbackReceiver, Method callbackMethod) throws JavetException {
         checkLock();
         V8CallbackContext v8CallbackContext = new V8CallbackContext(
                 this, functionName, callbackReceiver, callbackMethod);
@@ -150,7 +155,7 @@ public final class V8Runtime implements
         return decorateV8Value((V8ValueSet) V8Native.createV8Value(handle, V8ValueReferenceType.Set));
     }
 
-    private <T extends V8Value> T decorateV8Value(T v8Value) throws
+    public <T extends V8Value> T decorateV8Value(T v8Value) throws
             JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyRegisteredException,
             JavetV8RuntimeAlreadyClosedException {
         if (v8Value != null) {
@@ -163,7 +168,7 @@ public final class V8Runtime implements
         return v8Value;
     }
 
-    private <T extends V8Value> int decorateV8Values(T... v8Values) throws
+    public <T extends V8Value> int decorateV8Values(T... v8Values) throws
             JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyRegisteredException,
             JavetV8RuntimeAlreadyClosedException {
         if (v8Values != null && v8Values.length > 0) {
@@ -202,6 +207,10 @@ public final class V8Runtime implements
             throws JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException {
         checkLock();
         return callbackContextMap.size();
+    }
+
+    public JavetConverterUtils getConverter() {
+        return converter;
     }
 
     public String getGlobalName() {
@@ -300,20 +309,59 @@ public final class V8Runtime implements
         }
     }
 
-    public Object receiveCallback(long v8CallbackContextHandle) {
-        V8CallbackResult v8CallbackResult = new V8CallbackResult();
+    public V8Value receiveCallback(long v8CallbackContextHandle, V8ValueArray args) throws JavetException {
+        V8Value[] values = null;
         try {
+            if (args != null) {
+                decorateV8Value(args);
+            }
             V8CallbackContext v8CallbackContext = callbackContextMap.get(v8CallbackContextHandle);
             if (v8CallbackContext == null) {
-                v8CallbackResult.setErrorMessage(ERROR_V8_CALLBACK_CONTEXT_IS_NOT_FOUND);
+                logWarn(
+                        "V8 callback context is not found by handle {0}.",
+                        Long.toString(v8CallbackContextHandle));
             } else {
-                v8CallbackContext.callbackMethod.invoke(v8CallbackContext.callbackReceiver);
+                Method method = v8CallbackContext.getCallbackMethod();
+                IV8CallbackReceiver callbackReceiver = v8CallbackContext.getCallbackReceiver();
+                Object result = null;
+                if (args == null || args.getLength() == 0) {
+                    result = method.invoke(callbackReceiver);
+                } else {
+                    final int length = args.getLength();
+                    values = new V8Value[length];
+                    for (int i = 0; i < length; ++i) {
+                        values[i] = args.get(i);
+                    }
+                    if (method.isVarArgs()) {
+                        result = method.invoke(callbackReceiver, new Object[]{values});
+                    } else {
+                        Object[] objectValues = new Object[length];
+                        System.arraycopy(values, 0, objectValues, 0, length);
+                        result = method.invoke(callbackReceiver, objectValues);
+                    }
+                }
+                if (result != null) {
+                    if (result instanceof V8Value) {
+                        decorateV8Value((V8Value) result);
+                    } else {
+                        result = converter.toV8Value(this, result);
+                    }
+                } else {
+                    result = converter.toV8Value(this, null);
+                }
+                if (v8CallbackContext.isReturnResult()) {
+                    return (V8Value) result;
+                } else {
+                    JavetResourceUtils.safeClose(result);
+                }
             }
         } catch (Throwable t) {
-            v8CallbackResult.setErrorMessage(t.getMessage());
-            v8CallbackResult.setThrowable(t);
+            logWarn(t.getMessage());
+        } finally {
+            JavetResourceUtils.safeClose(args);
+            JavetResourceUtils.safeClose(values);
         }
-        return v8CallbackResult;
+        return decorateV8Value(new V8ValueUndefined());
     }
 
     public void removeCallback(V8CallbackContext v8CallbackContext)

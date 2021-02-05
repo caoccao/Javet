@@ -25,4 +25,9 @@ public final class V8ValueUnknown extends V8ValuePrimitive<String> {
     public V8ValueUnknown(String value) {
         super(value);
     }
+
+    @Override
+    public V8ValueUnknown clone() {
+        return new V8ValueUnknown(value);
+    }
 }

@@ -26,6 +26,11 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
         super(value);
     }
 
+    @Override
+    public V8ValueBoolean clone() {
+        return new V8ValueBoolean(value);
+    }
+
     public boolean toPrimitive() {
         return value.booleanValue();
     }

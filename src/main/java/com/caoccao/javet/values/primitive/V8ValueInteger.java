@@ -26,6 +26,11 @@ public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
         super(value);
     }
 
+    @Override
+    public V8ValueInteger clone() {
+        return new V8ValueInteger(value);
+    }
+
     public int toPrimitive() {
         return value.intValue();
     }

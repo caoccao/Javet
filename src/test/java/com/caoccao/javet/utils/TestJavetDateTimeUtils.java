@@ -25,11 +25,11 @@ import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestDateTimeUtils {
+public class TestJavetDateTimeUtils {
     @Test
     public void testConversion() {
         long jsTimestamp = 1611653084680L;
-        ZonedDateTime zonedDateTime = DateTimeUtils.toZonedDateTime(jsTimestamp);
+        ZonedDateTime zonedDateTime = JavetDateTimeUtils.toZonedDateTime(jsTimestamp);
         if (zonedDateTime.getZone().getId().equals("Asia/Shanghai")) {
             assertEquals(2021, zonedDateTime.getYear());
             assertEquals(1, zonedDateTime.getMonthValue());

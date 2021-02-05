@@ -26,6 +26,11 @@ public final class V8ValueString extends V8ValuePrimitive<String> {
         super(value);
     }
 
+    @Override
+    public V8ValueString clone() {
+        return new V8ValueString(value);
+    }
+
     public String toPrimitive() {
         return value;
     }

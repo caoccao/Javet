@@ -20,6 +20,9 @@ package com.caoccao.javet.values.primitive;
 import com.caoccao.javet.values.V8Value;
 
 public final class V8ValueNull extends V8Value {
+
+    public static final String NULL = "null";
+
     public V8ValueNull() {
         super();
     }
@@ -29,6 +32,16 @@ public final class V8ValueNull extends V8Value {
     }
 
     @Override
+    public V8ValueNull clone() {
+        return new V8ValueNull();
+    }
+
+    @Override
     protected void releaseReference() {
+    }
+
+    @Override
+    public String toString() {
+        return NULL;
     }
 }

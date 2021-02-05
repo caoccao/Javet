@@ -26,6 +26,11 @@ public class V8ValuePromise extends V8ValueObject {
     }
 
     @Override
+    public V8ValuePromise clone() {
+        return new V8ValuePromise(handle);
+    }
+
+    @Override
     public int getType() {
         return V8ValueReferenceType.Promise;
     }

@@ -24,8 +24,8 @@ import java.time.ZonedDateTime;
 /**
  * The type Date time utils.
  */
-public final class DateTimeUtils {
-    private DateTimeUtils() {
+public final class JavetDateTimeUtils {
+    private JavetDateTimeUtils() {
     }
 
     /**

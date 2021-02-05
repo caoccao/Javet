@@ -23,7 +23,7 @@ import java.util.Objects;
 class V8CallbackContext {
     protected static final String ERROR_V8_CALLBACK_HANDLE_IS_INVALID = "V8 callback handle is invalid";
     protected Method callbackMethod;
-    protected Object callbackReceiver;
+    protected IV8CallbackReceiver callbackReceiver;
     protected String functionName;
     protected long handle;
     protected boolean returnResult;
@@ -32,7 +32,7 @@ class V8CallbackContext {
     public V8CallbackContext(
             V8Runtime v8Runtime,
             String functionName,
-            Object callbackReceiver,
+            IV8CallbackReceiver callbackReceiver,
             Method callbackMethod) {
         Objects.requireNonNull(v8Runtime);
         Objects.requireNonNull(functionName);
@@ -42,11 +42,11 @@ class V8CallbackContext {
         this.callbackReceiver = callbackReceiver;
         this.functionName = functionName;
         handle = 0L;
-        this.returnResult = callbackMethod.getReturnType().equals(Void.class);
+        this.returnResult = !callbackMethod.getReturnType().equals(Void.TYPE);
         this.v8Runtime = v8Runtime;
     }
 
-    public Object getCallbackReceiver() {
+    public IV8CallbackReceiver getCallbackReceiver() {
         return callbackReceiver;
     }
 
