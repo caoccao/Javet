@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.exceptions.JavetException;
+
 @SuppressWarnings("unchecked")
 public final class V8ValueGlobalObject extends V8ValueObject {
     public V8ValueGlobalObject(long handle) {
@@ -29,12 +31,30 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     }
 
     @Override
-    public V8ValueGlobalObject toClone() {
-        return this;
+    public void clearWeak() throws JavetException {
+    }
+
+    @Override
+    public void close(boolean forceClose) throws JavetException {
+        // Global object lives as long as V8 runtime lives.
+    }
+
+    @Override
+    public boolean isWeak() throws JavetException {
+        return false;
     }
 
     @Override
     protected void releaseReference() {
         // Global object lives as long as V8 runtime lives.
+    }
+
+    @Override
+    public void setWeak() throws JavetException {
+    }
+
+    @Override
+    public V8ValueGlobalObject toClone() {
+        return this;
     }
 }

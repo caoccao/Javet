@@ -92,6 +92,11 @@ public final class V8Runtime implements
         }
     }
 
+    public void clearWeak(IV8ValueReference iV8ValueReference) throws JavetException {
+        checkLock();
+        V8Native.clearWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
+    }
+
     public <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws
             JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException,
             JavetV8RuntimeAlreadyRegisteredException {
@@ -309,6 +314,11 @@ public final class V8Runtime implements
         return threadId != INVALID_THREAD_ID;
     }
 
+    public boolean isWeak(IV8ValueReference iV8ValueReference) throws JavetException {
+        checkLock();
+        return V8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
+    }
+
     public void lock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         if (!isLocked()) {
             V8Native.lockV8Runtime(handle);
@@ -429,12 +439,11 @@ public final class V8Runtime implements
 
     /**
      * Requests GC for testing.
-     * Be careful! It may crush the V8 with improper arguments.
      * Note: --expose_gc must be set.
      *
      * @param fullGC true = Full GC, false = Minor GC
      */
-    void requestGarbageCollectionForTesting(boolean fullGC) {
+    public void requestGarbageCollectionForTesting(boolean fullGC) {
         V8Native.requestGarbageCollectionForTesting(handle, fullGC);
     }
 
@@ -460,6 +469,11 @@ public final class V8Runtime implements
         checkLock();
         decorateV8Values(key, value);
         return V8Native.setProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key, value);
+    }
+
+    public void setWeak(IV8ValueReference iV8ValueReference) throws JavetException {
+        checkLock();
+        V8Native.setWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType(), iV8ValueReference);
     }
 
     public String toProtoString(IV8ValueReference iV8ValueReference)

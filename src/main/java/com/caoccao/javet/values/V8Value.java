@@ -43,9 +43,7 @@ public abstract class V8Value implements IJavetClosable, IV8Cloneable {
     }
 
     @Override
-    public void close() throws
-            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
+    public void close() throws JavetException {
         checkV8Runtime();
         releaseReference();
         v8Runtime = null;

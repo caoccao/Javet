@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
@@ -39,6 +40,10 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
         return value;
     }
 
+    public void setValue(T value) {
+        this.value = value;
+    }
+
     public boolean isEmpty() {
         return value == null;
     }
@@ -49,10 +54,6 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
 
     @Override
     protected void releaseReference() {
-    }
-
-    public void setValue(T value) {
-        this.value = value;
     }
 
     @Override

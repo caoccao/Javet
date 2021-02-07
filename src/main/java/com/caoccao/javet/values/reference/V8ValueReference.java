@@ -36,6 +36,47 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
+    public void checkV8Runtime() throws
+            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
+            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
+        if (handle == 0L) {
+            throw new JavetV8ValueAlreadyClosedException();
+        }
+        super.checkV8Runtime();
+    }
+
+    @Override
+    public void clearWeak() throws JavetException {
+        v8Runtime.clearWeak(this);
+    }
+
+    @Override
+    public void close() throws JavetException {
+        close(false);
+    }
+
+    @Override
+    public void close(boolean forceClose) throws JavetException {
+        if (forceClose || !isWeak()) {
+            super.close();
+            handle = 0L;
+        }
+    }
+
+    @Override
+    public abstract int getType();
+
+    @Override
+    public long getHandle() {
+        return handle;
+    }
+
+    @Override
+    public boolean isWeak() throws JavetException {
+        return v8Runtime.isWeak(this);
+    }
+
+    @Override
     protected void releaseReference() throws
             JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         v8Runtime.removeReference(this);
@@ -50,29 +91,8 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public abstract int getType();
-
-    @Override
-    public long getHandle() {
-        return handle;
-    }
-
-    @Override
-    public void checkV8Runtime() throws
-            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
-        if (handle == 0L) {
-            throw new JavetV8ValueAlreadyClosedException();
-        }
-        super.checkV8Runtime();
-    }
-
-    @Override
-    public void close() throws
-            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
-        super.close();
-        handle = 0L;
+    public void setWeak() throws JavetException {
+        v8Runtime.setWeak(this);
     }
 
     @Override

@@ -37,6 +37,8 @@ final class V8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);
 
+    native static void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     native static Object cloneV8Value(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -85,6 +87,8 @@ final class V8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             String functionName, boolean returnResult, Object[] values);
 
+    native static boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     native static void lockV8Runtime(long v8RuntimeHandle);
 
     native static void removeCallbackHandle(long callbackContextHandle);
@@ -108,6 +112,8 @@ final class V8Native {
     native static void setFlags(String flags);
 
     native static boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+
+    native static void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
     native static String toProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

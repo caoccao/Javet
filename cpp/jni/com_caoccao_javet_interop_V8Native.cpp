@@ -115,6 +115,13 @@ namespace Javet {
 			Javet::Callback::V8Callback* v8CallbackPointer = data.GetParameter();
 			v8CallbackPointer->NotifyToDispose(jniEnv);
 		}
+
+		void CloseWeakObjectReference(const v8::WeakCallbackInfo<Javet::Callback::V8ValueReference>& data) {
+			FETCH_JNI_ENV;
+			auto v8ValueReference = data.GetParameter();
+			v8ValueReference->Close(jniEnv);
+			delete v8ValueReference;
+		}
 	}
 }
 
@@ -171,6 +178,16 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
 		}
 	}
 	return nullptr;
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearWeak
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (v8LocalObject->IsObject() && !v8PersistentObjectPointer->IsEmpty() && v8PersistentObjectPointer->IsWeak()) {
+		auto v8ValueReference = v8PersistentObjectPointer->ClearWeak<Javet::Callback::V8ValueReference>();
+		v8ValueReference->Clear(jniEnv);
+		delete v8ValueReference;
+	}
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
@@ -518,6 +535,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
 	return nullptr;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (v8LocalObject->IsObject() && !v8PersistentObjectPointer->IsEmpty()) {
+		return (jboolean)v8PersistentObjectPointer->IsWeak();
+	}
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
@@ -634,6 +659,17 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
 		}
 	}
 	return false;
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject objectReference) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (v8LocalObject->IsObject() && !v8PersistentObjectPointer->IsEmpty() && !v8PersistentObjectPointer->IsWeak()) {
+		auto v8ValueReference = new Javet::Callback::V8ValueReference;
+		v8ValueReference->objectReference = jniEnv->NewGlobalRef(objectReference);
+		v8ValueReference->v8PersistentObjectPointer = v8PersistentObjectPointer;
+		v8PersistentObjectPointer->SetWeak(v8ValueReference, Javet::Main::CloseWeakObjectReference, v8::WeakCallbackType::kParameter);
+	}
 }
 
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toProtoString

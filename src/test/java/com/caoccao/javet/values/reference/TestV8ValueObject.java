@@ -41,6 +41,28 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testClearWeak() throws JavetException {
+        V8ValueObject a = v8Runtime.createV8ValueObject();
+        V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
+        globalObject.set("a", a);
+        a.setWeak();
+        assertTrue(a.isWeak());
+        assertEquals(1, v8Runtime.getReferenceCount());
+        a.close();
+        assertEquals(1, v8Runtime.getReferenceCount(),
+                "Close() should not work because 'a' is weak.");
+        a.clearWeak();
+        assertFalse(a.isWeak());
+        assertEquals(1, v8Runtime.getReferenceCount());
+        a.close();
+        assertEquals(0, v8Runtime.getReferenceCount());
+        assertEquals(0L, a.getHandle());
+        try (V8ValueObject b = globalObject.get("a")) {
+            assertTrue(b instanceof V8ValueObject);
+        }
+    }
+
+    @Test
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.execute(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;")) {
@@ -201,5 +223,27 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.setProperty("c", new V8ValueDouble(1.23));
             assertEquals("{\"a\":\"1\",\"b\":2,\"c\":1.23}", v8ValueObject.toJsonString());
         }
+    }
+
+    @Test
+    public void testSetWeak() throws JavetException {
+        V8ValueObject a = v8Runtime.createV8ValueObject();
+        V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
+        globalObject.set("a", a);
+        a.setWeak();
+        assertTrue(a.isWeak());
+        assertEquals(1, v8Runtime.getReferenceCount());
+        a.close();
+        assertEquals(1, v8Runtime.getReferenceCount(),
+                "Close() should not work because 'a' is weak.");
+        a.clearWeak();
+        assertFalse(a.isWeak());
+        assertEquals(1, v8Runtime.getReferenceCount());
+        a.setWeak();
+        globalObject.delete("a");
+        v8Runtime.requestGarbageCollectionForTesting(true);
+        assertEquals(0, v8Runtime.getReferenceCount());
+        assertEquals(0L, a.getHandle());
+        assertTrue(globalObject.get("a") instanceof V8ValueUndefined);
     }
 }

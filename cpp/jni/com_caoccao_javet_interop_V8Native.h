@@ -25,6 +25,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    clearWeak
+ * Signature: (JJI)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearWeak
+  (JNIEnv *, jclass, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    cloneV8Value
  * Signature: (JJI)Ljava/lang/Object;
  */
@@ -177,6 +185,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isWeak
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
+  (JNIEnv *, jclass, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    lockV8Runtime
  * Signature: (J)V
  */
@@ -238,6 +254,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
   (JNIEnv *, jclass, jlong, jlong, jint, jobject, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setWeak
+ * Signature: (JJILjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
+  (JNIEnv *, jclass, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

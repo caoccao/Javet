@@ -17,12 +17,22 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 
 public interface IV8ValueReference extends IJavetClosable {
+
+    void clearWeak() throws JavetException;
+
+    void close(boolean forceClose) throws JavetException;
+
     long getHandle();
 
     int getType();
+
+    boolean isWeak() throws JavetException;
+
+    void setWeak() throws JavetException;
 
     String toProtoString();
 }

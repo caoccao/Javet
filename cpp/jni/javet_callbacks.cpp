@@ -92,7 +92,25 @@ namespace Javet {
 				callbackContext);
 		}
 
+		void V8ValueReference::Clear(JNIEnv* jniEnv) {
+			if (v8PersistentObjectPointer != nullptr) {
+				jniEnv->DeleteGlobalRef(objectReference);
+			}
+		}
+
+		void V8ValueReference::Close(JNIEnv* jniEnv) {
+			if (v8PersistentObjectPointer != nullptr) {
+				v8PersistentObjectPointer->Reset();
+				v8PersistentObjectPointer = nullptr;
+				jniEnv->CallVoidMethod(reinterpret_cast<jobject>(objectReference), jmethodIDIV8ValueReferenceClose, true);
+				jniEnv->DeleteGlobalRef(objectReference);
+			}
+		}
+
 		void Initialize(JNIEnv* jniEnv) {
+			jclassIV8ValueReference = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/IV8ValueReference"));
+			jmethodIDIV8ValueReferenceClose = jniEnv->GetMethodID(jclassIV8ValueReference, "close", "(Z)V");
+
 			jclassJavetResourceUtils = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/JavetResourceUtils"));
 			jmethodIDJavetResourceUtilsSafeClose = jniEnv->GetStaticMethodID(jclassJavetResourceUtils, "safeClose", "(Ljava/lang/Object;)V");
 

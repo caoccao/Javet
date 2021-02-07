@@ -24,6 +24,14 @@
 namespace Javet {
 	namespace Callback {
 
+		class V8ValueReference {
+		public:
+			jobject objectReference;
+			v8::Persistent<v8::Object>* v8PersistentObjectPointer;
+			void Clear(JNIEnv* jniEnv);
+			void Close(JNIEnv* jniEnv);
+		};
+
 		class V8Callback {
 		public:
 			jobject callbackContext;
@@ -38,6 +46,9 @@ namespace Javet {
 			jboolean IsReturnResult(JNIEnv* jniEnv);
 			void NotifyToDispose(JNIEnv* jniEnv);
 		};
+
+		static jclass jclassIV8ValueReference;
+		static jmethodID jmethodIDIV8ValueReferenceClose;
 
 		static jclass jclassJavetResourceUtils;
 		static jmethodID jmethodIDJavetResourceUtilsSafeClose;
