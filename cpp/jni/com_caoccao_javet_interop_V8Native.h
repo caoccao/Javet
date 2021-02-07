@@ -201,6 +201,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHa
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    requestGarbageCollectionForTesting
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCollectionForTesting
+  (JNIEnv *, jclass, jlong, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    resetV8Runtime
  * Signature: (JLjava/lang/String;)V
  */

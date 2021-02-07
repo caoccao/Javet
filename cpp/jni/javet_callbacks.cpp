@@ -28,6 +28,7 @@ namespace Javet {
 			}
 			if (callbackContext != nullptr) {
 				jniEnv->DeleteGlobalRef(callbackContext);
+				callbackContext = nullptr;
 			}
 		}
 

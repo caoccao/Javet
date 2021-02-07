@@ -24,7 +24,6 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueError;
@@ -51,6 +50,7 @@ public class TestV8Runtime extends BaseTestJavet {
             }
             assertEquals(1, v8Runtime.getCallbackContextCount());
             assertFalse(mockCallbackReceiver.isCalled());
+            assertTrue(globalObject.hasOwnProperty("a"));
             v8Runtime.executeVoid("a.blank();");
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
@@ -78,6 +78,7 @@ public class TestV8Runtime extends BaseTestJavet {
                 assertEquals("2", v8ValueArray.getString(1));
                 assertEquals(3L, v8ValueArray.getLong(2));
             }
+            assertTrue(v8Runtime.getGlobalObject().hasOwnProperty("a"));
             assertTrue(mockCallbackReceiver.isCalled());
             v8Runtime.removeCallback(v8CallbackContext);
             assertEquals(0, v8Runtime.getCallbackContextCount());
@@ -100,6 +101,7 @@ public class TestV8Runtime extends BaseTestJavet {
                 assertEquals(1, v8ValueInteger.getValue());
             }
             assertTrue(mockCallbackReceiver.isCalled());
+            assertTrue(v8Runtime.getGlobalObject().get("a") instanceof V8ValueUndefined);
             v8Runtime.removeCallback(v8CallbackContext);
             assertEquals(0, v8Runtime.getCallbackContextCount());
         }

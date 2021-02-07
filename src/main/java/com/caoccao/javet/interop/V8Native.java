@@ -24,7 +24,8 @@ package com.caoccao.javet.interop;
  * 1. Please keep V8Native as small, simple as possible so that the C++ implementation is minimized.
  * 2. Please make sure V8Native doesn't not reference any other types so that JNI code generation is quick and clean.
  * 3. Please keep the methods in ascending order so that the generated .h file keeps the same order.
- * 4. Please don't not inject any other non-native code.
+ * 4. Please keep all methods be static.
+ * 5. Please don't not inject any other non-native code.
  */
 final class V8Native {
     private V8Native() {
@@ -89,6 +90,8 @@ final class V8Native {
     native static void removeCallbackHandle(long callbackContextHandle);
 
     native static void removeReferenceHandle(long referenceHandle);
+
+    native static void requestGarbageCollectionForTesting(long v8RuntimeHandle, boolean fullGC);
 
     native static void resetV8Runtime(long v8RuntimeHandle, String globalName);
 

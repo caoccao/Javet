@@ -17,14 +17,22 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.config.JavetConfig;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class V8Host implements AutoCloseable {
+    private static final String FLAG_EXPOSE_GC = "--expose_gc";
+    private static final String FLAG_USE_STRICT = "--use_strict";
+    private static final String SPACE = " ";
+
     private static V8Host instance = new V8Host();
+
     private boolean closed;
     private boolean libLoaded;
     private boolean isolateCreated;
@@ -59,6 +67,7 @@ public final class V8Host implements AutoCloseable {
         }
         final long handle = V8Native.createV8Runtime(globalName);
         isolateCreated = true;
+        JavetConfig.seal();
         V8Runtime v8Runtime = new V8Runtime(this, handle, globalName);
         v8RuntimeMap.put(handle, v8Runtime);
         return v8Runtime;
@@ -86,9 +95,16 @@ public final class V8Host implements AutoCloseable {
         return closed;
     }
 
-    public boolean setFlags(String flags) {
+    public boolean setFlags() {
         if (!closed && libLoaded && !isolateCreated) {
-            V8Native.setFlags(flags);
+            List<String> flags = new ArrayList<>();
+            if (JavetConfig.isUseStrict()) {
+                flags.add(FLAG_USE_STRICT);
+            }
+            if (JavetConfig.isExposeGC()) {
+                flags.add(FLAG_EXPOSE_GC);
+            }
+            V8Native.setFlags(String.join(SPACE, flags));
             return true;
         }
         return false;

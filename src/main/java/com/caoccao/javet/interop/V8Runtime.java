@@ -427,6 +427,17 @@ public final class V8Runtime implements
         }
     }
 
+    /**
+     * Requests GC for testing.
+     * Be careful! It may crush the V8 with improper arguments.
+     * Note: --expose_gc must be set.
+     *
+     * @param fullGC true = Full GC, false = Minor GC
+     */
+    void requestGarbageCollectionForTesting(boolean fullGC) {
+        V8Native.requestGarbageCollectionForTesting(handle, fullGC);
+    }
+
     @Override
     public void reset() throws JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException {
         removeReferences();

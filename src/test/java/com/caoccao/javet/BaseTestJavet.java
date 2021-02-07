@@ -17,13 +17,18 @@
 
 package com.caoccao.javet;
 
+import com.caoccao.javet.config.JavetConfig;
 import com.caoccao.javet.interop.V8Host;
 import org.junit.jupiter.api.BeforeAll;
 
 public abstract class BaseTestJavet {
     @BeforeAll
     public static void beforeAll() {
-        V8Host.getInstance().setFlags("--use_strict");
+        if (!JavetConfig.isSealed()) {
+            JavetConfig.setExposeGC(true);
+            JavetConfig.setUseStrict(true);
+        }
+        V8Host.getInstance().setFlags();
     }
 
     protected void sleep(long milliSeconds) {

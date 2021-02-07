@@ -62,4 +62,4 @@ Why not Deploy J2V8 to Maven Repository?
 * There has been no Windows / Linux releases deployed since 2016 / 2017. I really don't know who to contact with.
 * You may easily integrate the jar files in your local maven repository.
 
-[`Home <../README.rst>`_]
+[`Home <../../README.rst>`_] [`FAQ <index.rst>`_]

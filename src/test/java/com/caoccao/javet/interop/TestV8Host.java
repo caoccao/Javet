@@ -42,14 +42,4 @@ public class TestV8Host extends BaseTestJavet {
             assertTrue(v8Host.isIsolateCreated());
         }
     }
-
-    @Test
-    public void testSetFlags() {
-        V8Host v8Host = V8Host.getInstance();
-        assertNotNull(v8Host);
-        assertTrue(v8Host.isLibLoaded());
-        if (!v8Host.isIsolateCreated()) {
-            v8Host.setFlags("--use_strict");
-        }
-    }
 }

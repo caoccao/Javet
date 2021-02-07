@@ -15,6 +15,7 @@ This is a personal project for now. It supports limited features compared to J2V
 
 * `Build <docs/build.rst>`_
 * `Development <docs/development.rst>`_
+* `FAQ <docs/faq/index.rst>`_
 * `TODO List <docs/todo_list.rst>`_
 
 Javet License
@@ -25,7 +26,7 @@ For now, Javet follows `APACHE LICENSE, VERSION 2.0 <LICENSE>`_.
 Why Javet?
 ==========
 
-Please refer to `History with J2V8 <docs/history_with_j2v8.rst>`_ for detail.
+Please refer to `History with J2V8 <docs/faq/history_with_j2v8.rst>`_ for detail.
 
 Well, Why not Let Me Start from Scratch?
 ========================================
