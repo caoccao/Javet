@@ -41,6 +41,7 @@ namespace Javet {
 			jobject GetCallbackOwnerFunction();
 			void Invoke(const v8::FunctionCallbackInfo<v8::Value>& args);
 			jboolean IsReturnResult();
+			jboolean IsThisObjectRequired();
 			void SetHandle();
 		};
 
@@ -59,6 +60,7 @@ namespace Javet {
 		static jclass jclassV8CallbackContext;
 		static jmethodID jmethodIDV8CallbackContextGetCallbackOwnerFunction;
 		static jmethodID jmethodIDV8CallbackContextIsReturnResult;
+		static jmethodID jmethodIDV8CallbackContextIsThisObjectRequired;
 		static jmethodID jmethodIDV8CallbackContextSetHandle;
 
 		void Initialize(JNIEnv* jniEnv);

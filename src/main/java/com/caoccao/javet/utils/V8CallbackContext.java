@@ -19,7 +19,6 @@ package com.caoccao.javet.utils;
 
 import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
 import com.caoccao.javet.interop.IV8CallbackReceiver;
-import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.IV8ValueFunction;
 
 import java.lang.reflect.Method;
@@ -31,19 +30,34 @@ public class V8CallbackContext {
     protected Method callbackMethod;
     protected IV8ValueFunction callbackOwnerFunction;
     protected IV8CallbackReceiver callbackReceiver;
+    protected JavetConverterUtils converter;
     protected long handle;
     protected boolean returnResult;
+    protected boolean thisObjectRequired;
 
     public V8CallbackContext(
             IV8CallbackReceiver callbackReceiver,
             Method callbackMethod) {
+        this(callbackReceiver, callbackMethod, false);
+    }
+
+    public V8CallbackContext(
+            IV8CallbackReceiver callbackReceiver,
+            Method callbackMethod,
+            boolean thisObjectRequired) {
         Objects.requireNonNull(callbackReceiver);
         Objects.requireNonNull(callbackMethod);
         callbackOwnerFunction = null;
         this.callbackMethod = callbackMethod;
         this.callbackReceiver = callbackReceiver;
+        converter = new JavetConverterUtils();
         handle = 0L;
         this.returnResult = !callbackMethod.getReturnType().equals(Void.TYPE);
+        this.thisObjectRequired = thisObjectRequired;
+    }
+
+    public boolean isThisObjectRequired() {
+        return thisObjectRequired;
     }
 
     public IV8ValueFunction getCallbackOwnerFunction() {
@@ -66,6 +80,10 @@ public class V8CallbackContext {
 
     public Method getCallbackMethod() {
         return callbackMethod;
+    }
+
+    public JavetConverterUtils getConverter() {
+        return converter;
     }
 
     public long getHandle() {

@@ -39,7 +39,6 @@ public final class V8Runtime implements
         IJavetClosable, IJavetResettable, IJavetLoggable, IV8Executable, IV8Creatable {
     private static final long INVALID_THREAD_ID = -1L;
 
-    private JavetConverterUtils converter;
     private String globalName;
     private long handle;
     private Logger logger;
@@ -49,7 +48,6 @@ public final class V8Runtime implements
 
     V8Runtime(V8Host v8Host, long handle, String globalName) {
         assert handle != 0;
-        converter = new JavetConverterUtils();
         this.globalName = globalName;
         this.handle = handle;
         logger = Logger.getLogger(getClass().getName());
@@ -199,10 +197,6 @@ public final class V8Runtime implements
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key));
     }
 
-    public JavetConverterUtils getConverter() {
-        return converter;
-    }
-
     public String getGlobalName() {
         return globalName;
     }
@@ -294,6 +288,9 @@ public final class V8Runtime implements
 
     public void lock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         if (!isLocked()) {
+            if (handle == 0L) {
+                throw new JavetV8RuntimeAlreadyClosedException();
+            }
             V8Native.lockV8Runtime(handle);
             threadId = Thread.currentThread().getId();
         } else {

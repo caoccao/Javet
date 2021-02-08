@@ -21,7 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.utils.V8ValueIteratorUtils;
+import com.caoccao.javet.utils.V8ValueIteratorUtils;
 import com.caoccao.javet.values.virtual.V8VirtualList;
 
 @SuppressWarnings("unchecked")

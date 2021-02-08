@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.utils;
+package com.caoccao.javet.utils;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;

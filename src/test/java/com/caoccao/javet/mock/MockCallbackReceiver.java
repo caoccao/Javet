@@ -18,10 +18,12 @@
 package com.caoccao.javet.mock;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.utils.V8CallbackReceiver;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.V8CallbackReceiver;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 public class MockCallbackReceiver extends V8CallbackReceiver {
     protected boolean called;
@@ -49,6 +51,11 @@ public class MockCallbackReceiver extends V8CallbackReceiver {
         return super.echo(arg);
     }
 
+    public V8Value echoThis(V8Value thisObject) throws JavetException {
+        called = true;
+        return new V8ValueString(((V8ValueObject) thisObject).toJsonString());
+    }
+
     @Override
     public String echoString(String str) {
         called = true;
@@ -70,6 +77,33 @@ public class MockCallbackReceiver extends V8CallbackReceiver {
     public V8ValueArray echo(V8Value... args) throws JavetException {
         called = true;
         return super.echo(args);
+    }
+
+    public V8ValueString echoThis(V8Value thisObject, V8Value arg) throws JavetException {
+        called = true;
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            try (V8Value clonedThisObject = thisObject.toClone()) {
+                v8ValueArray.push(clonedThisObject);
+            }
+            try (V8Value clonedArg = arg.toClone()) {
+                v8ValueArray.push(clonedArg);
+            }
+            return new V8ValueString(v8ValueArray.toJsonString());
+        }
+    }
+
+    public V8ValueArray echoThis(V8Value thisObject, V8Value... args) throws JavetException {
+        called = true;
+        V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
+        try (V8Value clonedThisObject = thisObject.toClone()) {
+            v8ValueArray.push(clonedThisObject);
+        }
+        for (V8Value arg : args) {
+            try (V8Value clonedArg = arg.toClone()) {
+                v8ValueArray.push(clonedArg);
+            }
+        }
+        return v8ValueArray;
     }
 
     public void error() throws Exception {

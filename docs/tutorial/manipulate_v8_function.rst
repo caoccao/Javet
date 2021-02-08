@@ -1,15 +1,15 @@
-==================
-Play with Function
-==================
+======================
+Manipulate V8 Function
+======================
 
 Know the Implication
 ====================
 
 Lifecycle of a function is recommended to be managed by V8. This is a bit different from the common usage of other V8 value objects.
 
-Why? Because in order to keep track of the callback capability, Javet needs to persist few tiny objects in JVM as well as in V8. Those persisted objects get released immediately when ``close()`` is explicitly called and ``isWeak()`` is ``false``.
+Why? Because in order to keep track of the callback capability, Javet needs to persist few tiny objects in JVM as well as in V8. Those persisted objects get released immediately when ``close()`` is explicitly called and ``isWeak()`` is ``false``. However, once a function is set to a certain object, it is typically no longer needed. If closing that function explicitly really recycles it, the following callback will cause memory corruption.
 
-When the function is set to weak by ``setWeak()``, the lifecycle control is handed over to V8. V8 decides when to recycle the function and notified Javet to recycle those persisted objects.
+The solution is to set the function to weak by ``setWeak()`` so that the lifecycle management is handed over to V8. V8 decides when to recycle the function and notifies Javet to recycle those persisted objects.
 
 Option 1: The Common Way
 ========================

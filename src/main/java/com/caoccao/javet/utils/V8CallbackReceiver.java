@@ -63,24 +63,46 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      * @throws NoSuchMethodException the no such method exception
      */
     public final Method getMethod(String methodName) throws NoSuchMethodException {
-        return getMethod(methodName, 0);
+        return getMethod(methodName, false, 0);
+    }
+
+    /**
+     * Gets method.
+     *
+     * @param methodName         the method name
+     * @param thisObjectRequired the this object required
+     * @return the method
+     * @throws NoSuchMethodException the no such method exception
+     */
+    public final Method getMethod(String methodName, boolean thisObjectRequired) throws NoSuchMethodException {
+        return getMethod(methodName, thisObjectRequired, 0);
     }
 
     /**
      * Gets method that takes given number of arguments by method name.
      *
-     * @param methodName the method name
-     * @param argCount   the arg count
+     * @param methodName         the method name
+     * @param thisObjectRequired the this object required
+     * @param argCount           the arg count
      * @return the method
      * @throws NoSuchMethodException the no such method exception
      */
-    public final Method getMethod(String methodName, int argCount) throws NoSuchMethodException {
+    public final Method getMethod(String methodName, boolean thisObjectRequired, int argCount)
+            throws NoSuchMethodException {
         if (argCount < 0) {
-            return getClass().getMethod(methodName, V8Value[].class);
+            if (thisObjectRequired) {
+                return getClass().getMethod(methodName, V8Value.class, V8Value[].class);
+            } else {
+                return getClass().getMethod(methodName, V8Value[].class);
+            }
         } else if (argCount == 0) {
-            return getClass().getMethod(methodName);
+            if (thisObjectRequired) {
+                return getClass().getMethod(methodName, V8Value.class);
+            } else {
+                return getClass().getMethod(methodName);
+            }
         } else {
-            Class[] classes = new Class[argCount];
+            Class[] classes = new Class[thisObjectRequired ? argCount + 1 : argCount];
             Arrays.fill(classes, V8Value.class);
             return getClass().getMethod(methodName, classes);
         }
@@ -106,7 +128,19 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      * @throws NoSuchMethodException the no such method exception
      */
     public final Method getMethodVarargs(String methodName) throws NoSuchMethodException {
-        return getMethod(methodName, -1);
+        return getMethod(methodName, false, -1);
+    }
+
+    /**
+     * Gets method that takes an arbitrary number of arguments by method name.
+     *
+     * @param methodName         the method name
+     * @param thisObjectRequired the this object required
+     * @return the method varargs
+     * @throws NoSuchMethodException the no such method exception
+     */
+    public final Method getMethodVarargs(String methodName, boolean thisObjectRequired) throws NoSuchMethodException {
+        return getMethod(methodName, thisObjectRequired, -1);
     }
 
     @Override
@@ -137,7 +171,9 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
     public V8ValueArray echo(V8Value... args) throws JavetException {
         V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
         for (V8Value arg : args) {
-            v8ValueArray.push(arg.toClone());
+            try (V8Value clonedArg = arg.toClone()) {
+                v8ValueArray.push(clonedArg);
+            }
         }
         return v8ValueArray;
     }

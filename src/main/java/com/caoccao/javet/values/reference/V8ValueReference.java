@@ -58,6 +58,10 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void close(boolean forceClose) throws JavetException {
+        // If the caller is from V8, lock may not be acquired. So it enforces the lock.
+        if (v8Runtime != null) {
+            v8Runtime.lock();
+        }
         if (forceClose || !isWeak()) {
             super.close();
             handle = 0L;

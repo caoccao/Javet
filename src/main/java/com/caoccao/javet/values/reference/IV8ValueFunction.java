@@ -64,5 +64,5 @@ public interface IV8ValueFunction extends IV8ValueObject {
         call(receiver, false, v8Values);
     }
 
-    V8Value receiveCallback(V8ValueArray args) throws Throwable;
+    V8Value receiveCallback(V8Value thisObject, V8ValueArray args) throws Throwable;
 }

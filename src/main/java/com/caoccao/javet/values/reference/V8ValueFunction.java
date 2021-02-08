@@ -28,6 +28,8 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
@@ -63,6 +65,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     public void close(boolean forceClose) throws JavetException {
+        checkV8Runtime();
         if (forceClose || !isWeak()) {
             if (v8CallbackContext != null) {
                 v8Runtime.removeJNIGlobalRef(v8CallbackContext.getHandle());
@@ -83,19 +86,22 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public V8Value receiveCallback(V8ValueArray args) throws Throwable {
+    public V8Value receiveCallback(V8Value thisObject, V8ValueArray args) throws Throwable {
         if (v8CallbackContext != null) {
+            checkV8Runtime();
             V8Value[] values = null;
             try {
-                if (args != null) {
-                    v8Runtime.decorateV8Value(args);
-                }
+                v8Runtime.decorateV8Values(thisObject, args);
                 Method method = v8CallbackContext.getCallbackMethod();
                 IV8CallbackReceiver callbackReceiver = v8CallbackContext.getCallbackReceiver();
                 Object result = null;
                 if (args == null || args.getLength() == 0) {
                     // Invoke method without args
-                    result = method.invoke(callbackReceiver);
+                    if (v8CallbackContext.isThisObjectRequired()) {
+                        result = method.invoke(callbackReceiver, thisObject);
+                    } else {
+                        result = method.invoke(callbackReceiver);
+                    }
                 } else {
                     final int length = args.getLength();
                     values = new V8Value[length];
@@ -104,22 +110,31 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                     }
                     if (method.isVarArgs()) {
                         // Invoke method with varargs
-                        result = method.invoke(callbackReceiver, new Object[]{values});
+                        if (getV8CallbackContext().isThisObjectRequired()) {
+                            result = method.invoke(callbackReceiver, thisObject, values);
+                        } else {
+                            result = method.invoke(callbackReceiver, new Object[]{values});
+                        }
                     } else {
-                        Object[] objectValues = new Object[length];
-                        System.arraycopy(values, 0, objectValues, 0, length);
+                        List<Object> objectValues = new ArrayList<>();
+                        if (getV8CallbackContext().isThisObjectRequired()) {
+                            objectValues.add(thisObject);
+                        }
+                        for (V8Value value : values) {
+                            objectValues.add(value);
+                        }
                         // Invoke method with regular signature
-                        result = method.invoke(callbackReceiver, objectValues);
+                        result = method.invoke(callbackReceiver, objectValues.toArray());
                     }
                 }
                 if (result != null) {
                     if (result instanceof V8Value) {
                         v8Runtime.decorateV8Value((V8Value) result);
                     } else {
-                        result = v8Runtime.getConverter().toV8Value(v8Runtime, result);
+                        result = v8CallbackContext.getConverter().toV8Value(v8Runtime, result);
                     }
                 } else {
-                    result = v8Runtime.getConverter().toV8Value(v8Runtime, null);
+                    result = v8CallbackContext.getConverter().toV8Value(v8Runtime, null);
                 }
                 if (v8CallbackContext.isReturnResult()) {
                     return (V8Value) result;
@@ -133,6 +148,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                     throw t;
                 }
             } finally {
+                JavetResourceUtils.safeClose(thisObject);
                 JavetResourceUtils.safeClose(args);
                 JavetResourceUtils.safeClose(values);
             }

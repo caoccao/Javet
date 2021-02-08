@@ -32,11 +32,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T toClone() throws JavetException{
-        return v8Runtime.cloneV8Value(this);
-    }
-
-    @Override
     public boolean delete(V8Value key) throws JavetException {
         checkV8Runtime();
         return v8Runtime.delete(this, key);
@@ -95,6 +90,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public boolean setProperty(V8Value key, V8Value value) throws JavetException {
         checkV8Runtime();
         return v8Runtime.setProperty(this, key, value);
+    }
+
+    @Override
+    public <T extends V8Value> T toClone() throws JavetException{
+        return v8Runtime.cloneV8Value(this);
     }
 
     @Override
