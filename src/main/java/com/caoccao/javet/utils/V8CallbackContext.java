@@ -15,35 +15,49 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.interop;
+package com.caoccao.javet.utils;
+
+import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
+import com.caoccao.javet.interop.IV8CallbackReceiver;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.reference.IV8ValueFunction;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-class V8CallbackContext {
-    protected static final String ERROR_V8_CALLBACK_HANDLE_IS_INVALID = "V8 callback handle is invalid";
+public class V8CallbackContext {
+    protected static final String ERROR_V8_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
+            "V8 callback context handle is invalid";
     protected Method callbackMethod;
+    protected IV8ValueFunction callbackOwnerFunction;
     protected IV8CallbackReceiver callbackReceiver;
-    protected String functionName;
     protected long handle;
     protected boolean returnResult;
-    protected V8Runtime v8Runtime;
 
     public V8CallbackContext(
-            V8Runtime v8Runtime,
-            String functionName,
             IV8CallbackReceiver callbackReceiver,
             Method callbackMethod) {
-        Objects.requireNonNull(v8Runtime);
-        Objects.requireNonNull(functionName);
         Objects.requireNonNull(callbackReceiver);
         Objects.requireNonNull(callbackMethod);
+        callbackOwnerFunction = null;
         this.callbackMethod = callbackMethod;
         this.callbackReceiver = callbackReceiver;
-        this.functionName = functionName;
         handle = 0L;
         this.returnResult = !callbackMethod.getReturnType().equals(Void.TYPE);
-        this.v8Runtime = v8Runtime;
+    }
+
+    public IV8ValueFunction getCallbackOwnerFunction() {
+        return callbackOwnerFunction;
+    }
+
+    public void setCallbackOwnerFunction(IV8ValueFunction callbackOwnerFunction)
+            throws JavetV8CallbackAlreadyRegisteredException {
+        Objects.requireNonNull(callbackOwnerFunction);
+        if (this.callbackOwnerFunction == null) {
+            this.callbackOwnerFunction = callbackOwnerFunction;
+        } else if (this.callbackOwnerFunction != callbackOwnerFunction) {
+            throw new JavetV8CallbackAlreadyRegisteredException();
+        }
     }
 
     public IV8CallbackReceiver getCallbackReceiver() {
@@ -54,21 +68,13 @@ class V8CallbackContext {
         return callbackMethod;
     }
 
-    public String getFunctionName() {
-        return functionName;
-    }
-
     public long getHandle() {
         return handle;
     }
 
     public void setHandle(long handle) {
-        assert handle > 0L : ERROR_V8_CALLBACK_HANDLE_IS_INVALID;
+        assert handle > 0L : ERROR_V8_CALLBACK_CONTEXT_HANDLE_IS_INVALID;
         this.handle = handle;
-    }
-
-    public V8Runtime getV8Runtime() {
-        return v8Runtime;
     }
 
     public boolean isReturnResult() {

@@ -18,16 +18,15 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.V8CallbackContext;
 import com.caoccao.javet.values.reference.*;
 
 import java.lang.reflect.Method;
 
 public interface IV8Creatable {
-    V8CallbackContext createCallback(
-            IV8ValueObject iV8ValueObject, String functionName,
-            IV8CallbackReceiver callbackReceiver, Method callbackMethod) throws JavetException;
-
     V8ValueArray createV8ValueArray() throws JavetException;
+
+    V8ValueFunction createV8ValueFunction(V8CallbackContext v8CallbackContext) throws JavetException;
 
     V8ValueMap createV8ValueMap() throws JavetException;
 

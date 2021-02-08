@@ -26,26 +26,26 @@ namespace Javet {
 
 		class V8ValueReference {
 		public:
+			v8::Isolate* v8Isolate;
 			jobject objectReference;
 			v8::Persistent<v8::Object>* v8PersistentObjectPointer;
 			void Clear(JNIEnv* jniEnv);
 			void Close(JNIEnv* jniEnv);
 		};
 
-		class V8Callback {
+		class V8CallbackContextReference {
 		public:
 			jobject callbackContext;
-			v8::Persistent<v8::External> v8PersistentExternalData;
-			jlong handle;
-			Javet::V8Runtime* internalV8Runtime;
-
-			void Dispose(JNIEnv* jniEnv);
-			jstring GetFunctionName(JNIEnv* jniEnv);
-			jobject GetExternalV8Runtime(JNIEnv* jniEnv);
-			void Invoke(JNIEnv* jniEnv, const v8::FunctionCallbackInfo<v8::Value>& args);
-			jboolean IsReturnResult(JNIEnv* jniEnv);
-			void NotifyToDispose(JNIEnv* jniEnv);
+			JNIEnv* jniEnv;
+			V8CallbackContextReference(JNIEnv* jniEnv, jobject callbackContext);
+			jobject GetCallbackOwnerFunction();
+			void Invoke(const v8::FunctionCallbackInfo<v8::Value>& args);
+			jboolean IsReturnResult();
+			void SetHandle();
 		};
+
+		static jclass jclassIV8ValueFunction;
+		static jmethodID jmethodIDIV8ValueFunctionReceiveCallback;
 
 		static jclass jclassIV8ValueReference;
 		static jmethodID jmethodIDIV8ValueReferenceClose;
@@ -56,14 +56,10 @@ namespace Javet {
 		static jclass jclassThrowable;
 		static jmethodID jmethodIDThrowableGetMessage;
 
-		static jclass jclassV8Runtime;
-		static jmethodID jmethodIDV8RuntimeReceiveCallback;
-		static jmethodID jmethodIDV8RuntimeRemoveCallback;
-
 		static jclass jclassV8CallbackContext;
-		static jmethodID jmethodIDV8CallbackContextGetFunctionName;
-		static jmethodID jmethodIDV8CallbackContextGetV8Runtime;
+		static jmethodID jmethodIDV8CallbackContextGetCallbackOwnerFunction;
 		static jmethodID jmethodIDV8CallbackContextIsReturnResult;
+		static jmethodID jmethodIDV8CallbackContextSetHandle;
 
 		void Initialize(JNIEnv* jniEnv);
 

@@ -16,38 +16,45 @@
  */
 
 #include "javet_callbacks.h"
+#include "javet_constants.h"
 #include "javet_converter.h"
 #include "javet_globals.h"
 
 namespace Javet {
 	namespace Callback {
-		void V8Callback::Dispose(JNIEnv* jniEnv) {
-			if (!v8PersistentExternalData.IsEmpty()) {
-				v8PersistentExternalData.ClearWeak();
-				v8PersistentExternalData.Reset();
-			}
-			if (callbackContext != nullptr) {
-				jniEnv->DeleteGlobalRef(callbackContext);
-				callbackContext = nullptr;
+		void V8ValueReference::Clear(JNIEnv* jniEnv) {
+			if (v8PersistentObjectPointer != nullptr) {
+				jniEnv->DeleteGlobalRef(objectReference);
 			}
 		}
 
-		jstring V8Callback::GetFunctionName(JNIEnv* jniEnv) {
-			return (jstring)jniEnv->CallObjectMethod(callbackContext, jmethodIDV8CallbackContextGetFunctionName);
+		void V8ValueReference::Close(JNIEnv* jniEnv) {
+			if (v8PersistentObjectPointer != nullptr) {
+				v8PersistentObjectPointer->Reset();
+				v8PersistentObjectPointer = nullptr;
+				jniEnv->CallVoidMethod(reinterpret_cast<jobject>(objectReference), jmethodIDIV8ValueReferenceClose, true);
+				jniEnv->DeleteGlobalRef(objectReference);
+			}
 		}
 
-		jobject V8Callback::GetExternalV8Runtime(JNIEnv* jniEnv) {
-			return jniEnv->CallObjectMethod(callbackContext, jmethodIDV8CallbackContextGetV8Runtime);
+		V8CallbackContextReference::V8CallbackContextReference(JNIEnv* jniEnv, jobject callbackContext) {
+			this->jniEnv = jniEnv;
+			this->callbackContext = callbackContext;
 		}
 
-		void V8Callback::Invoke(JNIEnv* jniEnv, const v8::FunctionCallbackInfo<v8::Value>& args) {
-			v8::Isolate* v8Isolate = internalV8Runtime->v8Isolate;
+		jobject V8CallbackContextReference::GetCallbackOwnerFunction() {
+			return jniEnv->CallObjectMethod(callbackContext, jmethodIDV8CallbackContextGetCallbackOwnerFunction);
+		}
+
+		void V8CallbackContextReference::Invoke(const v8::FunctionCallbackInfo<v8::Value>& args) {
+			v8::Isolate* v8Isolate = args.GetIsolate();
 			v8::Isolate::Scope v8IsolateScope(v8Isolate);
-			v8::Local<v8::Context> v8Context = internalV8Runtime->v8Context.Get(v8Isolate);
-			jobject externalV8Runtime = GetExternalV8Runtime(jniEnv);
-			jboolean isReturnResult = IsReturnResult(jniEnv);
+			v8::HandleScope v8HandleScope(v8Isolate);
+			auto v8Context = v8Isolate->GetCurrentContext();
+			jobject callbackOwnerFunction = GetCallbackOwnerFunction();
+			jboolean isReturnResult = IsReturnResult();
 			jobject externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Context, args);
-			jobject mResult = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeReceiveCallback, handle, externalArgs);
+			jobject mResult = jniEnv->CallObjectMethod(callbackOwnerFunction, jmethodIDIV8ValueFunctionReceiveCallback, externalArgs);
 			if (jniEnv->ExceptionCheck()) {
 				jthrowable externalException = jniEnv->ExceptionOccurred();
 				jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
@@ -81,33 +88,18 @@ namespace Javet {
 			}
 		}
 
-		jboolean V8Callback::IsReturnResult(JNIEnv* jniEnv) {
+		jboolean V8CallbackContextReference::IsReturnResult() {
 			return jniEnv->CallBooleanMethod(callbackContext, jmethodIDV8CallbackContextIsReturnResult);
 		}
 
-		void V8Callback::NotifyToDispose(JNIEnv* jniEnv) {
-			jniEnv->CallVoidMethod(
-				GetExternalV8Runtime(jniEnv),
-				jmethodIDV8RuntimeRemoveCallback,
-				callbackContext);
-		}
-
-		void V8ValueReference::Clear(JNIEnv* jniEnv) {
-			if (v8PersistentObjectPointer != nullptr) {
-				jniEnv->DeleteGlobalRef(objectReference);
-			}
-		}
-
-		void V8ValueReference::Close(JNIEnv* jniEnv) {
-			if (v8PersistentObjectPointer != nullptr) {
-				v8PersistentObjectPointer->Reset();
-				v8PersistentObjectPointer = nullptr;
-				jniEnv->CallVoidMethod(reinterpret_cast<jobject>(objectReference), jmethodIDIV8ValueReferenceClose, true);
-				jniEnv->DeleteGlobalRef(objectReference);
-			}
+		void V8CallbackContextReference::SetHandle() {
+			jniEnv->CallVoidMethod(callbackContext, jmethodIDV8CallbackContextSetHandle, reinterpret_cast<jlong>(callbackContext));
 		}
 
 		void Initialize(JNIEnv* jniEnv) {
+			jclassIV8ValueFunction = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/IV8ValueFunction"));
+			jmethodIDIV8ValueFunctionReceiveCallback = jniEnv->GetMethodID(jclassIV8ValueFunction, "receiveCallback", "(Lcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
+
 			jclassIV8ValueReference = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/IV8ValueReference"));
 			jmethodIDIV8ValueReferenceClose = jniEnv->GetMethodID(jclassIV8ValueReference, "close", "(Z)V");
 
@@ -117,14 +109,10 @@ namespace Javet {
 			jclassThrowable = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/lang/Throwable"));
 			jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
 
-			jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
-			jmethodIDV8RuntimeReceiveCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveCallback", "(JLcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
-			jmethodIDV8RuntimeRemoveCallback = jniEnv->GetMethodID(jclassV8Runtime, "removeCallback", "(Lcom/caoccao/javet/interop/V8CallbackContext;)V");
-
-			jclassV8CallbackContext = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8CallbackContext"));
-			jmethodIDV8CallbackContextGetFunctionName = jniEnv->GetMethodID(jclassV8CallbackContext, "getFunctionName", "()Ljava/lang/String;");
-			jmethodIDV8CallbackContextGetV8Runtime = jniEnv->GetMethodID(jclassV8CallbackContext, "getV8Runtime", "()Lcom/caoccao/javet/interop/V8Runtime;");
+			jclassV8CallbackContext = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/V8CallbackContext"));
+			jmethodIDV8CallbackContextGetCallbackOwnerFunction = jniEnv->GetMethodID(jclassV8CallbackContext, "getCallbackOwnerFunction", "()Lcom/caoccao/javet/values/reference/IV8ValueFunction;");
 			jmethodIDV8CallbackContextIsReturnResult = jniEnv->GetMethodID(jclassV8CallbackContext, "isReturnResult", "()Z");
+			jmethodIDV8CallbackContextSetHandle = jniEnv->GetMethodID(jclassV8CallbackContext, "setHandle", "(J)V");
 		}
 
 		void GlobalPropertyAccessorCallback(

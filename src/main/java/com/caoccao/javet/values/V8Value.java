@@ -30,8 +30,7 @@ public abstract class V8Value implements IJavetClosable, IV8Cloneable {
         v8Runtime = null;
     }
 
-    protected abstract void addReference() throws
-            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException;
+    protected abstract void addReference() throws JavetException;
 
     public void checkV8Runtime() throws
             JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
@@ -55,9 +54,7 @@ public abstract class V8Value implements IJavetClosable, IV8Cloneable {
         return v8Runtime;
     }
 
-    public void setV8Runtime(V8Runtime v8Runtime) throws
-            JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException {
+    public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
         if (this.v8Runtime != null) {
             throw new JavetV8RuntimeAlreadyRegisteredException();
         }
@@ -65,6 +62,5 @@ public abstract class V8Value implements IJavetClosable, IV8Cloneable {
         this.v8Runtime.checkLock();
     }
 
-    protected abstract void releaseReference() throws
-            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException;
+    protected abstract void releaseReference() throws JavetException;
 }

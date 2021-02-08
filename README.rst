@@ -15,6 +15,7 @@ This is a personal project for now. It supports limited features compared to J2V
 
 * `Build <docs/build.rst>`_
 * `Development <docs/development.rst>`_
+* `Tutorial <docs/tutorial/index.rst>`_
 * `FAQ <docs/faq/index.rst>`_
 * `TODO List <docs/todo_list.rst>`_
 

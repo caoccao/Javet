@@ -15,9 +15,11 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.interop;
+package com.caoccao.javet.utils;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.IV8CallbackReceiver;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 

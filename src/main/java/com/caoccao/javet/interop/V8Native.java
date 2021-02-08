@@ -49,12 +49,9 @@ final class V8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
-    native static long createCallback(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8CallbackContext);
-
     native static long createV8Runtime(String globalName);
 
-    native static Object createV8Value(long v8RuntimeHandle, int v8ValueType);
+    native static Object createV8Value(long v8RuntimeHandle, int v8ValueType, Object context);
 
     native static boolean delete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
@@ -91,7 +88,7 @@ final class V8Native {
 
     native static void lockV8Runtime(long v8RuntimeHandle);
 
-    native static void removeCallbackHandle(long callbackContextHandle);
+    native static void removeJNIGlobalRef(long handle);
 
     native static void removeReferenceHandle(long referenceHandle);
 

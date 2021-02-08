@@ -57,14 +57,6 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_compileOnly
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    createCallback
- * Signature: (JJILjava/lang/Object;)J
- */
-JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createCallback
-  (JNIEnv *, jclass, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    createV8Runtime
  * Signature: (Ljava/lang/String;)J
  */
@@ -74,10 +66,10 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    createV8Value
- * Signature: (JI)Ljava/lang/Object;
+ * Signature: (JILjava/lang/Object;)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
-  (JNIEnv *, jclass, jlong, jint);
+  (JNIEnv *, jclass, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -201,10 +193,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    removeCallbackHandle
+ * Method:    removeJNIGlobalRef
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeCallbackHandle
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRef
   (JNIEnv *, jclass, jlong);
 
 /*

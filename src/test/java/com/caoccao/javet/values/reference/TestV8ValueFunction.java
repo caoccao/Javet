@@ -19,11 +19,17 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.exceptions.JavetV8ValueAlreadyClosedException;
+import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.utils.V8CallbackContext;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @Test
@@ -38,5 +44,102 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8ValueArray.getLength());
             assertEquals("x", v8ValueArray.toString());
         }
+    }
+
+    @Test
+    public void testCallbackBlank() throws JavetException, NoSuchMethodException {
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext);
+        assertTrue(v8CallbackContext.getHandle() > 0L);
+        try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
+            globalObject.set("a", a);
+            a.set("blank", v8ValueFunction);
+            assertFalse(mockCallbackReceiver.isCalled());
+            v8Runtime.executeVoid("a.blank();");
+            assertTrue(mockCallbackReceiver.isCalled());
+            v8ValueFunction.setWeak();
+            a.delete("blank");
+            globalObject.delete("a");
+        }
+        assertEquals(1, v8Runtime.getReferenceCount());
+        v8Runtime.requestGarbageCollectionForTesting(true);
+        assertEquals(0, v8Runtime.getReferenceCount());
+        assertThrows(JavetV8ValueAlreadyClosedException.class, () -> v8ValueFunction.close());
+    }
+
+    @Test
+    public void testCallbackEchoLILO() throws JavetException, NoSuchMethodException {
+        assertEquals(0, v8Runtime.getReferenceCount());
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethodVarargs("echo"));
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+            assertEquals(1, v8Runtime.getReferenceCount());
+            globalObject.set("echo", v8ValueFunction);
+            assertFalse(mockCallbackReceiver.isCalled());
+            try (V8ValueArray v8ValueArray = v8Runtime.execute("var a = echo(1, '2', 3n); a;")) {
+                assertEquals(3, v8ValueArray.getLength());
+                assertEquals(1, v8ValueArray.getInteger(0));
+                assertEquals("2", v8ValueArray.getString(1));
+                assertEquals(3L, v8ValueArray.getLong(2));
+            }
+            assertTrue(globalObject.hasOwnProperty("a"));
+            assertTrue(mockCallbackReceiver.isCalled());
+            globalObject.delete("echo");
+        }
+        assertEquals(0, v8Runtime.getReferenceCount());
+    }
+
+    @Test
+    public void testCallbackEchoVIVO() throws JavetException, NoSuchMethodException {
+        assertEquals(0, v8Runtime.getReferenceCount());
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethod("echo", V8Value.class));
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+            assertEquals(1, v8Runtime.getReferenceCount());
+            globalObject.set("echo", v8ValueFunction);
+            assertFalse(mockCallbackReceiver.isCalled());
+            try (V8ValueInteger v8ValueInteger = v8Runtime.execute("const a = echo(1); a;")) {
+                assertEquals(1, v8ValueInteger.getValue());
+            }
+            globalObject.delete("echo");
+        }
+        assertTrue(mockCallbackReceiver.isCalled());
+        assertTrue(globalObject.get("a") instanceof V8ValueUndefined);
+        assertEquals(0, v8Runtime.getReferenceCount());
+    }
+
+    @Test
+    public void testCallbackError() throws JavetException, NoSuchMethodException {
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethod("error"));
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+            assertEquals(1, v8Runtime.getReferenceCount());
+            globalObject.set("testError", v8ValueFunction);
+            assertFalse(mockCallbackReceiver.isCalled());
+            try {
+                v8Runtime.executeVoid("testError();");
+                fail("Failed to report Java error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("Error: Mock error", e.getMessage());
+            }
+            assertTrue(mockCallbackReceiver.isCalled());
+            try (V8ValueError v8ValueError = v8Runtime.execute(
+                    "let a; try { testError(); } catch (error) { a = error; } a;")) {
+                assertNotNull(v8ValueError);
+                assertEquals("Mock error", v8ValueError.getMessage());
+            }
+            globalObject.delete("testError");
+        }
+        mockCallbackReceiver.setCalled(false);
+        assertEquals(0, v8Runtime.getReferenceCount());
     }
 }

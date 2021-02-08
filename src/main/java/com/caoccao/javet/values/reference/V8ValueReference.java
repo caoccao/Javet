@@ -30,8 +30,8 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    protected void addReference() throws
-            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+    protected void addReference() throws JavetException {
+        checkV8Runtime();
         v8Runtime.addReference(this);
     }
 
@@ -47,6 +47,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void clearWeak() throws JavetException {
+        checkV8Runtime();
         v8Runtime.clearWeak(this);
     }
 
@@ -73,25 +74,25 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public boolean isWeak() throws JavetException {
+        checkV8Runtime();
         return v8Runtime.isWeak(this);
     }
 
     @Override
-    protected void releaseReference() throws
-            JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+    protected void releaseReference() throws JavetException {
+        checkV8Runtime();
         v8Runtime.removeReference(this);
     }
 
     @Override
-    public void setV8Runtime(V8Runtime v8Runtime) throws
-            JavetV8RuntimeAlreadyRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException {
+    public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
         super.setV8Runtime(v8Runtime);
         addReference();
     }
 
     @Override
     public void setWeak() throws JavetException {
+        checkV8Runtime();
         v8Runtime.setWeak(this);
     }
 
