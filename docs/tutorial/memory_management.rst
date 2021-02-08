@@ -18,7 +18,7 @@ Smart pointers in C++ cannot easily work across JNI to JVM, in other words, raw 
 V8 GC
 -----
 
-V8 generally categorize objects in memory to 3 types.
+V8 generally categorizes objects in memory to 3 types.
 
 1. ``v8::Local`` - It lives within the local scope of a C++ function call.
 2. ``v8::Persistent`` - Its lifecycle is managed by V8 GC.

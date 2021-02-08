@@ -30,4 +30,6 @@ Print **1 + 1**
         // Step 4: Resource including the lock is recycled automatically at the end of the try resource block.
     }
 
+Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java>`_ for more detail.
+
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]

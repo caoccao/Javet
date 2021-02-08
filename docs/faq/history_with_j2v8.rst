@@ -8,7 +8,7 @@ J2V8 is an excellent project on embedding V8 in Java. However, J2V8 community ha
 
 The last Windows version 4.6.0 was released on 2016 and the last Linux version 4.8.0 was released on 2017. The V8 in Windows v4.6.0 doesn't even fully support ES6.
 
-The latest community activities were around Android versions. The NodeJS API was dropped. The Windows build has been seriously broken for years. The Linux build is nearly broken.
+The latest community activities were around Android versions. The NodeJS API was dropped. The Windows build has been seriously broken for years. The Linux build is nearly broken. There are serious memory leak issues which are hard to be fixed under the current architecture.
 
 Its API has stopped evolving for years. Many new features I expect just don't get any chances to be implemented. Obviously, if the build system was broken and couldn't be easily fixed, almost no one would like to contribute. That includes me. When I was trying to fix the build system for Windows and Linux, I had to admit that's so, so, so, challenging. Why is that? I think it's not merely J2V8 community's problem because in the meanwhile V8, NodeJS and ECMAScript move forward rapidly causing many unexpected challenges. Someone or some team needs to look after J2V8 from time to time. Unfortunately, reality is cruel.
 
