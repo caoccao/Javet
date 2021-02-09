@@ -2,8 +2,11 @@
 Manipulate V8 Function
 ======================
 
+Lifecycle
+=========
+
 Know the Implication
-====================
+--------------------
 
 Lifecycle of a function is recommended to be managed by V8. This is a bit different from the common usage of other V8 value objects.
 
@@ -12,7 +15,7 @@ Why? Because in order to keep track of the callback capability, Javet needs to p
 The solution is to set the function to weak by ``setWeak()`` so that the lifecycle management is handed over to V8. V8 decides when to recycle the function and notifies Javet to recycle those persisted objects.
 
 Option 1: The Common Way
-========================
+------------------------
 
 .. code-block:: java
 
@@ -23,7 +26,7 @@ Option 1: The Common Way
     // Outside the code block, this function is no longer valid. Calling this function in V8 will result in memory corruption.
 
 Option 2: The Recommended Way
-=============================
+-----------------------------
 
 .. code-block:: java
 
@@ -32,5 +35,37 @@ Option 2: The Recommended Way
     v8ValueFunction.setWeak();
     // Once this function is set to weak, its lifecycle is automatically managed by Javet + V8.
     // There is no need to call close() any more.
+
+Automatic Type Conversion
+=========================
+
+Javet is capable of automatically converting its internal ``V8Value`` to other types and that capability can be manipulated by ``JavetConverterUtils`` which also supports custom type conversion. So, the following 4 functions are all the same and valid.
+
+.. code-block:: java
+
+    // Option 1
+    public String echo(String str) {
+        return str;
+    }
+
+    // Option 2
+    public String echo(V8Value arg) {
+        return arg == null ? null : arg.toString();
+    }
+
+    // Option 3
+    public V8Value echo(String str) {
+        return new V8ValueString(str);
+    }
+
+    // Option 4
+    public V8Value echo(V8Value arg) throws JavetException {
+        return arg.toClone();
+    }
+
+    // All 4 functions above can be handled in Javet as the following function
+    echo("123");
+
+Note: Primitive types must be in their object form in the method signature. E.g. ``boolean`` must be set to ``Boolean``, ``int`` must be set to ``Integer``, etc. Why? Because the converted value could be ``null`` which would cause JDK to complain with an exception.
 
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]

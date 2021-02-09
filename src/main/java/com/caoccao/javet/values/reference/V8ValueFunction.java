@@ -19,13 +19,16 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
+import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
 import com.caoccao.javet.interop.IV8CallbackReceiver;
+import com.caoccao.javet.utils.JavetConverterUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.V8CallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -80,6 +83,24 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
         }
     }
 
+    protected Object convert(JavetConverterUtils converter, Class expectedClass, V8Value v8Value)
+            throws JavetException {
+        if (v8Value == null) {
+            // Skip null
+        } else if (expectedClass.isAssignableFrom(v8Value.getClass())) {
+            // Skip assignable
+        } else {
+            Object convertedObject = converter.toObject(v8Value);
+            if (expectedClass.isAssignableFrom(convertedObject.getClass())) {
+                return convertedObject;
+            } else {
+                throw JavetV8CallbackSignatureMismatchException.parameterTypeMismatch(
+                        expectedClass, convertedObject.getClass());
+            }
+        }
+        return v8Value;
+    }
+
     @Override
     public int getType() {
         return V8ValueReferenceType.Function;
@@ -89,57 +110,71 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     public V8Value receiveCallback(V8Value thisObject, V8ValueArray args) throws Throwable {
         if (v8CallbackContext != null) {
             checkV8Runtime();
-            V8Value[] values = null;
+            List<Object> values = new ArrayList<>();
             try {
                 v8Runtime.decorateV8Values(thisObject, args);
+                JavetConverterUtils converter = v8CallbackContext.getConverter();
                 Method method = v8CallbackContext.getCallbackMethod();
                 IV8CallbackReceiver callbackReceiver = v8CallbackContext.getCallbackReceiver();
-                Object result = null;
-                if (args == null || args.getLength() == 0) {
-                    // Invoke method without args
-                    if (v8CallbackContext.isThisObjectRequired()) {
-                        result = method.invoke(callbackReceiver, thisObject);
-                    } else {
-                        result = method.invoke(callbackReceiver);
-                    }
-                } else {
+                Object resultObject = null;
+                if (v8CallbackContext.isThisObjectRequired()) {
+                    values.add(thisObject);
+                }
+                if (args != null) {
                     final int length = args.getLength();
-                    values = new V8Value[length];
                     for (int i = 0; i < length; ++i) {
-                        values[i] = args.get(i);
-                    }
-                    if (method.isVarArgs()) {
-                        // Invoke method with varargs
-                        if (getV8CallbackContext().isThisObjectRequired()) {
-                            result = method.invoke(callbackReceiver, thisObject, values);
-                        } else {
-                            result = method.invoke(callbackReceiver, new Object[]{values});
-                        }
-                    } else {
-                        List<Object> objectValues = new ArrayList<>();
-                        if (getV8CallbackContext().isThisObjectRequired()) {
-                            objectValues.add(thisObject);
-                        }
-                        for (V8Value value : values) {
-                            objectValues.add(value);
-                        }
-                        // Invoke method with regular signature
-                        result = method.invoke(callbackReceiver, objectValues.toArray());
+                        values.add(args.get(i));
                     }
                 }
-                if (result != null) {
-                    if (result instanceof V8Value) {
-                        v8Runtime.decorateV8Value((V8Value) result);
-                    } else {
-                        result = v8CallbackContext.getConverter().toV8Value(v8Runtime, result);
-                    }
+                if (values.isEmpty()) {
+                    resultObject = method.invoke(callbackReceiver);
                 } else {
-                    result = v8CallbackContext.getConverter().toV8Value(v8Runtime, null);
+                    final int length = values.size();
+                    List<Object> objectValues = new ArrayList<>();
+                    Class<?>[] parameterTypes = method.getParameterTypes();
+                    if (method.isVarArgs()) {
+                        for (int i = 0; i < parameterTypes.length; ++i) {
+                            Class<?> parameterClass = parameterTypes[i];
+                            if (parameterClass.isArray() && i == parameterTypes.length - 1) {
+                                // VarArgs is special. It requires special API to manipulate the array.
+                                Class componentType = parameterClass.getComponentType();
+                                Object varObject = Array.newInstance(componentType, length - i);
+                                for (int j = i; j < length; ++j) {
+                                    Array.set(varObject, j - i, convert(
+                                            converter, componentType, (V8Value) values.get(j)));
+                                }
+                                objectValues.add(varObject);
+                            } else {
+                                objectValues.add(convert(
+                                        converter, parameterClass, (V8Value) values.get(i)));
+                            }
+                        }
+                    } else {
+                        if (method.getParameterCount() != length) {
+                            throw JavetV8CallbackSignatureMismatchException.parameterSizeMismatch(
+                                    length, method.getParameterCount());
+                        }
+                        for (int i = 0; i < parameterTypes.length; ++i) {
+                            objectValues.add(convert(converter, parameterTypes[i], (V8Value) values.get(i)));
+                        }
+                    }
+                    resultObject = method.invoke(callbackReceiver, objectValues.toArray());
                 }
                 if (v8CallbackContext.isReturnResult()) {
-                    return (V8Value) result;
+                    if (resultObject != null) {
+                        if (resultObject instanceof V8Value) {
+                            v8Runtime.decorateV8Value((V8Value) resultObject);
+                        } else {
+                            resultObject = converter.toV8Value(v8Runtime, resultObject);
+                        }
+                    } else {
+                        resultObject = converter.toV8Value(v8Runtime, null);
+                    }
+                    // The lifecycle of the result is handed over to JNI native implementation.
+                    // So, close() or setWeak() must not be called.
+                    return (V8Value) resultObject;
                 } else {
-                    JavetResourceUtils.safeClose(result);
+                    JavetResourceUtils.safeClose(resultObject);
                 }
             } catch (Throwable t) {
                 if (t instanceof InvocationTargetException) {
@@ -148,7 +183,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                     throw t;
                 }
             } finally {
-                JavetResourceUtils.safeClose(thisObject);
+                if (!v8CallbackContext.isThisObjectRequired()) {
+                    JavetResourceUtils.safeClose(thisObject);
+                }
                 JavetResourceUtils.safeClose(args);
                 JavetResourceUtils.safeClose(values);
             }

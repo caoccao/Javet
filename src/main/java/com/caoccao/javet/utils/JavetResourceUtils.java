@@ -21,14 +21,24 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.values.V8Value;
 
+import java.util.List;
+
 public final class JavetResourceUtils {
     private JavetResourceUtils() {
     }
 
-    public static void safeClose(V8Value... values) throws JavetException {
-        if (values != null && values.length > 0) {
-            for (V8Value value : values) {
-                safeClose(value);
+    public static void safeClose(List<Object> objects) throws JavetException {
+        if (objects != null && !objects.isEmpty()) {
+            for (Object obj : objects) {
+                safeClose(obj);
+            }
+        }
+    }
+
+    public static void safeClose(Object... objects) throws JavetException {
+        if (objects != null && objects.length > 0) {
+            for (Object obj : objects) {
+                safeClose(obj);
             }
         }
     }

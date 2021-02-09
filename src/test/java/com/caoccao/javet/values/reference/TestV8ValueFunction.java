@@ -29,6 +29,8 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueFunction extends BaseTestJavetRuntime {
@@ -149,6 +151,46 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testCallbackEchoStringWithoutThis() throws JavetException, NoSuchMethodException {
+        assertEquals(0, v8Runtime.getReferenceCount());
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoString", String.class));
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+            assertEquals(1, v8Runtime.getReferenceCount());
+            globalObject.set("echoString", v8ValueFunction);
+            assertFalse(mockCallbackReceiver.isCalled());
+            assertEquals("abc", v8Runtime.executeString("const a = echoString('abc'); a;"));
+        }
+        assertTrue(mockCallbackReceiver.isCalled());
+        assertEquals(0, v8Runtime.getReferenceCount());
+    }
+
+    @Test
+    public void testCallbackEchoStringWithThis() throws JavetException, NoSuchMethodException {
+        assertEquals(0, v8Runtime.getReferenceCount());
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoThisString", V8Value.class, String.class), true);
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+            assertEquals(1, v8Runtime.getReferenceCount());
+            try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
+                a.set("x", new V8ValueString("1"));
+                a.set("echoThisString", v8ValueFunction);
+                globalObject.set("a", a);
+            }
+            assertFalse(mockCallbackReceiver.isCalled());
+            try (V8ValueString v8ValueString = v8Runtime.execute("const x = a.echoThisString('123'); x;")) {
+                assertEquals("[{\"x\":\"1\"},\"123\"]", v8ValueString.getValue());
+            }
+        }
+        assertTrue(mockCallbackReceiver.isCalled());
+        assertEquals(0, v8Runtime.getReferenceCount());
+    }
+
+    @Test
     public void testCallbackEchoVIVOWithoutThis() throws JavetException, NoSuchMethodException {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
@@ -217,6 +259,80 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("testError");
         }
         mockCallbackReceiver.setCalled(false);
+        assertEquals(0, v8Runtime.getReferenceCount());
+    }
+
+    @Test
+    public void testCallbackJoinWithThis() throws JavetException, NoSuchMethodException {
+        assertEquals(0, v8Runtime.getReferenceCount());
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("joinWithThis",
+                        V8ValueObject.class, Boolean.class, Double.class, Integer.class, Long.class,
+                        String.class, ZonedDateTime.class, V8ValueString.class),
+                true);
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+            assertEquals(1, v8Runtime.getReferenceCount());
+            try (V8ValueObject x = v8Runtime.createV8ValueObject()) {
+                globalObject.set("x", x);
+                x.set("p", new V8ValueString("q"));
+                x.set("joinWithThis", v8ValueFunction);
+            }
+            assertFalse(mockCallbackReceiver.isCalled());
+            String resultString = v8Runtime.executeString(
+                    "const a = x.joinWithThis(true, 1.23, 2, 3n, '4', new Date(1611710223719), '6'); a;");
+            assertEquals("{\"p\":\"q\"},true,1.23,2,3,4,2021-01-27T01:17:03.719Z[UTC],6", resultString);
+        }
+        assertTrue(mockCallbackReceiver.isCalled());
+        assertEquals(0, v8Runtime.getReferenceCount());
+    }
+
+    @Test
+    public void testCallbackJoinIntegerArrayWithThis() throws JavetException, NoSuchMethodException {
+        assertEquals(0, v8Runtime.getReferenceCount());
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod(
+                        "joinIntegerArrayWithThis", V8ValueObject.class, String.class, Integer[].class),
+                true);
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+            assertEquals(1, v8Runtime.getReferenceCount());
+            try (V8ValueObject x = v8Runtime.createV8ValueObject()) {
+                globalObject.set("x", x);
+                x.set("p", new V8ValueString("q"));
+                x.set("joinIntegerArrayWithThis", v8ValueFunction);
+            }
+            assertFalse(mockCallbackReceiver.isCalled());
+            String resultString = v8Runtime.executeString(
+                    "const a = x.joinIntegerArrayWithThis('x', 1, 2, 3); a;");
+            assertEquals("{\"p\":\"q\"},x,1,2,3", resultString);
+        }
+        assertTrue(mockCallbackReceiver.isCalled());
+        assertEquals(0, v8Runtime.getReferenceCount());
+    }
+
+    @Test
+    public void testCallbackJoinWithoutThis() throws JavetException, NoSuchMethodException {
+        assertEquals(0, v8Runtime.getReferenceCount());
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        V8CallbackContext v8CallbackContext = new V8CallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethod("joinWithoutThis",
+                Boolean.class, Double.class, Integer.class, Long.class, String.class, ZonedDateTime.class,
+                V8ValueString.class));
+        V8ValueObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+            assertEquals(1, v8Runtime.getReferenceCount());
+            globalObject.set("joinWithoutThis", v8ValueFunction);
+            assertFalse(mockCallbackReceiver.isCalled());
+            String resultString = v8Runtime.executeString(
+                    "const a = joinWithoutThis(true, 1.23, 2, 3n, '4', new Date(1611710223719), '6'); a;");
+            assertEquals("true,1.23,2,3,4,2021-01-27T01:17:03.719Z[UTC],6", resultString);
+        }
+        assertTrue(mockCallbackReceiver.isCalled());
         assertEquals(0, v8Runtime.getReferenceCount());
     }
 }

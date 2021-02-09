@@ -24,7 +24,7 @@ import com.caoccao.javet.values.reference.IV8ValueFunction;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-public class V8CallbackContext {
+public final class V8CallbackContext {
     protected static final String ERROR_V8_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
             "V8 callback context handle is invalid";
     protected Method callbackMethod;

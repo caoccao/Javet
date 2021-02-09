@@ -23,6 +23,8 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public final class JavetConverterUtils {
@@ -148,8 +150,10 @@ public final class JavetConverterUtils {
     protected IJavetConverter<String> stringConverter;
     protected IJavetConverter<Object> undefinedConverter;
     protected IJavetConverter<ZonedDateTime> zonedDateTimeConverter;
+    protected List<IJavetConverter<? extends Object>> customConverters;
 
     public JavetConverterUtils() {
+        customConverters = new ArrayList<>();
         reset();
     }
 
@@ -217,6 +221,17 @@ public final class JavetConverterUtils {
         this.zonedDateTimeConverter = zonedDateTimeConverter;
     }
 
+    public boolean registerCustomConverter(IJavetConverter converter) {
+        if (customConverters.contains(converter)) {
+            return false;
+        }
+        return customConverters.add(converter);
+    }
+
+    public boolean unregisterCustomConverter(IJavetConverter converter) {
+        return customConverters.remove(converter);
+    }
+
     public void reset() {
         resetBooleanConverter();
         resetDoubleConverter();
@@ -226,6 +241,7 @@ public final class JavetConverterUtils {
         resetStringConverter();
         resetUndefinedConverter();
         resetZonedDateTimeConverter();
+        resetCustomConverters();
     }
 
     public void resetBooleanConverter() {
@@ -260,7 +276,11 @@ public final class JavetConverterUtils {
         zonedDateTimeConverter = DEFAULT_ZONED_DATE_TIME_CONVERTER;
     }
 
-    public Object toObject(V8Runtime v8Runtime, V8Value v8Value) throws JavetException {
+    public void resetCustomConverters() {
+        customConverters.clear();
+    }
+
+    public Object toObject(V8Value v8Value) throws JavetException {
         if (v8Value == null || v8Value instanceof V8ValueNull) {
             return nullConverter.toObject(v8Value);
         } else if (v8Value instanceof V8ValueBoolean) {
@@ -277,6 +297,14 @@ public final class JavetConverterUtils {
             return undefinedConverter.toObject(v8Value);
         } else if (v8Value instanceof V8ValueZonedDateTime) {
             return zonedDateTimeConverter.toObject(v8Value);
+        }
+        if (!customConverters.isEmpty()) {
+            for (IJavetConverter converter : customConverters) {
+                Object convertedObject = converter.toObject(v8Value);
+                if (convertedObject != null) {
+                    return convertedObject;
+                }
+            }
         }
         return v8Value;
     }
@@ -298,6 +326,14 @@ public final class JavetConverterUtils {
             return stringConverter.toV8Value(v8Runtime, (String) obj);
         } else if (obj instanceof ZonedDateTime) {
             return zonedDateTimeConverter.toV8Value(v8Runtime, (ZonedDateTime) obj);
+        }
+        if (!customConverters.isEmpty()) {
+            for (IJavetConverter converter : customConverters) {
+                V8Value convertedObject = converter.toV8Value(v8Runtime, obj);
+                if (convertedObject != null) {
+                    return convertedObject;
+                }
+            }
         }
         return undefinedConverter.toV8Value(v8Runtime, obj);
     }

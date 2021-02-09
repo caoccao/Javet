@@ -25,6 +25,11 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MockCallbackReceiver extends V8CallbackReceiver {
     protected boolean called;
 
@@ -106,8 +111,62 @@ public class MockCallbackReceiver extends V8CallbackReceiver {
         return v8ValueArray;
     }
 
+    public String echoThisString(V8Value thisObject, String arg) throws JavetException {
+        called = true;
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            try (V8Value clonedThisObject = thisObject.toClone()) {
+                v8ValueArray.push(clonedThisObject);
+            }
+            v8ValueArray.push(arg);
+            return v8ValueArray.toJsonString();
+        }
+    }
+
     public void error() throws Exception {
         called = true;
         throw new Exception("Mock error");
+    }
+
+    public String joinWithThis(
+            V8ValueObject thisObject,
+            Boolean b, Double d, Integer i, Long l, String s, ZonedDateTime z, V8ValueString v) {
+        called = true;
+        List<String> lines = new ArrayList<>();
+        lines.add(thisObject.toJsonString());
+        lines.add(b.toString());
+        lines.add(d.toString());
+        lines.add(i.toString());
+        lines.add(l.toString());
+        lines.add(s);
+        lines.add(z.withZoneSameInstant(ZoneId.of("UTC")).toString());
+        lines.add(v.getValue());
+        return String.join(",", lines);
+    }
+
+    public String joinIntegerArrayWithThis(
+            V8ValueObject thisObject,
+            String s, Integer... integers) {
+        called = true;
+        List<String> lines = new ArrayList<>();
+        lines.add(thisObject.toJsonString());
+        lines.add(s);
+        for (Integer integer : integers) {
+            lines.add(integer.toString());
+        }
+        return String.join(",", lines);
+    }
+
+    public String joinWithoutThis(
+            Boolean b, Double d, Integer i, Long l, String s, ZonedDateTime z, V8ValueString v) {
+        called = true;
+        List<String> lines = new ArrayList<>();
+        lines.add(b.toString());
+        lines.add(d.toString());
+        lines.add(i.toString());
+        lines.add(l.toString());
+        lines.add(s);
+        lines.add(z.withZoneSameInstant(ZoneId.of("UTC")).toString());
+        lines.add(v.getValue());
+        return String.join(",", lines);
     }
 }
