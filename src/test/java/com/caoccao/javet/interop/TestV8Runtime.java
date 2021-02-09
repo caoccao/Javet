@@ -20,6 +20,8 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
+import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +48,11 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.lock();
             v8Runtime.executeVoid("var a = 1;");
             assertEquals(2, v8Runtime.executeInteger("a + 1"));
+            try (V8ValueObject window = v8Runtime.createV8ValueObject()) {
+                v8Runtime.getGlobalObject().set("window", window);
+                window.set("x", new V8ValueString("1"));
+            }
+            assertEquals("1", v8Runtime.executeString("window.x;"));
         }
     }
 

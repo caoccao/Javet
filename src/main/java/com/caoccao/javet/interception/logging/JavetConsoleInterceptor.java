@@ -152,7 +152,7 @@ public class JavetConsoleInterceptor extends BaseJavetInterceptor {
             register(console, JS_FUNCTION_WARN, JAVA_CONSOLE_WARN);
             return true;
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            e.printStackTrace(error);
         }
         return false;
     }
@@ -169,10 +169,5 @@ public class JavetConsoleInterceptor extends BaseJavetInterceptor {
     @Override
     public boolean unregister(IV8ValueObject iV8ValueObject) throws JavetException {
         return iV8ValueObject.delete(PROPERTY_CONSOLE);
-    }
-
-    @Override
-    public V8Runtime getV8Runtime() {
-        return null;
     }
 }

@@ -131,13 +131,6 @@ namespace Javet {
 			jmethodIDV8CallbackContextIsThisObjectRequired = jniEnv->GetMethodID(jclassV8CallbackContext, "isThisObjectRequired", "()Z");
 			jmethodIDV8CallbackContextSetHandle = jniEnv->GetMethodID(jclassV8CallbackContext, "setHandle", "(J)V");
 		}
-
-		void GlobalPropertyAccessorCallback(
-			v8::Local<v8::String> propertyName,
-			const v8::PropertyCallbackInfo<v8::Value>& propertyCallbackInfo) {
-			propertyCallbackInfo.GetReturnValue().Set(
-				propertyCallbackInfo.GetIsolate()->GetCurrentContext()->Global());
-		}
 	}
 }
 

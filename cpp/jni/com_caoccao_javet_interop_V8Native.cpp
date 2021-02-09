@@ -112,6 +112,12 @@ namespace Javet {
 			v8CallbackContextReference.Invoke(args);
 		}
 
+		void GlobalAccessorGetterCallback(
+			v8::Local<v8::String> propertyName,
+			const v8::PropertyCallbackInfo<v8::Value>& args) {
+			args.GetReturnValue().Set(args.GetIsolate()->GetCurrentContext()->Global());
+		}
+
 		void CloseWeakObjectReference(const v8::WeakCallbackInfo<Javet::Callback::V8ValueReference>& data) {
 			FETCH_JNI_ENV;
 			auto v8ValueReference = data.GetParameter();
@@ -562,7 +568,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
 	// Redirects global calls to a given global name. E.g. parseInt() -> window.parseInt().
 	if (mGlobalName != nullptr) {
 		auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8Context, mGlobalName);
-		v8IsolateHandle->SetAccessor(umGlobalName, Javet::Callback::GlobalPropertyAccessorCallback);
+		v8IsolateHandle->SetAccessor(umGlobalName, Javet::Main::GlobalAccessorGetterCallback);
 	}
 	v8Runtime->v8Context.Reset(v8Runtime->v8Isolate, v8Context);
 	v8Runtime->v8GlobalObject.Reset(
