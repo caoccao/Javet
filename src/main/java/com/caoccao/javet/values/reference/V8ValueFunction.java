@@ -37,6 +37,10 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
+    /*
+    The lifecycle of V8ValueFunction depends on V8CallbackContext which is
+    managed by JNI native implementation.
+     */
     protected V8CallbackContext v8CallbackContext;
 
     public V8ValueFunction(long handle) {

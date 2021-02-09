@@ -18,12 +18,10 @@
 package com.caoccao.javet.values;
 
 import com.caoccao.javet.exceptions.*;
-import com.caoccao.javet.interfaces.IJavetClosable;
-import com.caoccao.javet.interop.IV8Cloneable;
 import com.caoccao.javet.interop.V8Runtime;
 
 @SuppressWarnings("unchecked")
-public abstract class V8Value implements IJavetClosable, IV8Cloneable {
+public abstract class V8Value implements IV8Value {
     protected V8Runtime v8Runtime;
 
     public V8Value() {
@@ -32,7 +30,7 @@ public abstract class V8Value implements IJavetClosable, IV8Cloneable {
 
     protected abstract void addReference() throws JavetException;
 
-    public void checkV8Runtime() throws
+    protected void checkV8Runtime() throws
             JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
             JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
         if (v8Runtime == null) {
@@ -48,6 +46,7 @@ public abstract class V8Value implements IJavetClosable, IV8Cloneable {
         v8Runtime = null;
     }
 
+    @Override
     public abstract <T extends V8Value> T toClone() throws JavetException;
 
     public V8Runtime getV8Runtime() {

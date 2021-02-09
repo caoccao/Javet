@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class V8Host implements AutoCloseable {
+    private static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
     private static final String FLAG_EXPOSE_GC = "--expose_gc";
+    private static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
     private static final String FLAG_USE_STRICT = "--use_strict";
     private static final String SPACE = " ";
 
@@ -98,11 +100,17 @@ public final class V8Host implements AutoCloseable {
     public boolean setFlags() {
         if (!closed && libLoaded && !isolateCreated) {
             List<String> flags = new ArrayList<>();
-            if (JavetConfig.isUseStrict()) {
-                flags.add(FLAG_USE_STRICT);
+            if (JavetConfig.isAllowNativesSyntax()){
+                flags.add(FLAG_ALLOW_NATIVES_SYNTAX);
             }
             if (JavetConfig.isExposeGC()) {
                 flags.add(FLAG_EXPOSE_GC);
+            }
+            if (JavetConfig.isUseStrict()) {
+                flags.add(FLAG_USE_STRICT);
+            }
+            if (JavetConfig.isTrackRetainingPath()) {
+                flags.add(FLAG_TRACK_RETAINING_PATH);
             }
             V8Native.setFlags(String.join(SPACE, flags));
             return true;

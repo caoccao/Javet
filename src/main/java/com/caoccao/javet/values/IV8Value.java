@@ -15,26 +15,15 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.reference;
+package com.caoccao.javet.values;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.IV8Value;
+import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.interop.IV8Cloneable;
+import com.caoccao.javet.interop.V8Runtime;
 
-public interface IV8ValueReference extends IV8Value {
+public interface IV8Value extends IJavetClosable, IV8Cloneable {
+    V8Runtime getV8Runtime();
 
-    void clearWeak() throws JavetException;
-
-    void close(boolean forceClose) throws JavetException;
-
-    long getHandle();
-
-    int getType();
-
-    boolean isWeak() throws JavetException;
-
-    boolean isWeak(boolean forceSync) throws JavetException;
-
-    void setWeak() throws JavetException;
-
-    String toProtoString();
+    <T extends V8Value> T toClone() throws JavetException;
 }

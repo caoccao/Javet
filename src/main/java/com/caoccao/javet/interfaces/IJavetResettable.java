@@ -17,9 +17,10 @@
 
 package com.caoccao.javet.interfaces;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyClosedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 
 public interface IJavetResettable {
-    void reset() throws JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException;
+    void reset() throws JavetException;
 }

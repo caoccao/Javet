@@ -57,4 +57,6 @@ Automatically Manage V8 Objects
      This is quite useful when the lifecycle is not determined, E.g. V8 function.
      */
 
+Note: V8 does not recycle objects that are referenced by other objects. Please make sure the object chain is broken so that GC can work as expected. ``com.caoccao.javet.interception.logging.JavetConsoleInterceptor`` is a good sample showing how to deal with that.
+
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]

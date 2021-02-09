@@ -226,7 +226,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testSetWeak() throws JavetException {
+    public void testSetWeakDirectDescendant() throws JavetException {
         V8ValueObject a = v8Runtime.createV8ValueObject();
         V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
         globalObject.set("a", a);
@@ -245,5 +245,19 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         assertEquals(0L, a.getHandle());
         assertTrue(globalObject.get("a") instanceof V8ValueUndefined);
+    }
+
+    @Test
+    public void testSetWeakIndirectDescendant() throws JavetException {
+        V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
+            globalObject.set("a", a);
+            V8ValueObject b = v8Runtime.createV8ValueObject();
+            a.set("b", b);
+            b.setWeak();
+        }
+        assertEquals(1, v8Runtime.getReferenceCount());
+        globalObject.delete("a");
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 }

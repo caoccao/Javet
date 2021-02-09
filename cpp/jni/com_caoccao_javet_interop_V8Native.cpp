@@ -534,13 +534,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRe
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHandle
 (JNIEnv* jniEnv, jclass callerClass, jlong referenceHandle) {
 	auto v8PersistentObjectPointer = reinterpret_cast<v8::Persistent<v8::Object>*>(referenceHandle);
+	v8PersistentObjectPointer->Reset();
 	delete v8PersistentObjectPointer;
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCollectionForTesting
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jboolean fullGC) {
 	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-	v8Runtime->v8Isolate->RequestGarbageCollectionForTesting((bool)fullGC
+	v8Runtime->v8Isolate->RequestGarbageCollectionForTesting(((bool)fullGC)
 		? v8::Isolate::GarbageCollectionType::kFullGarbageCollection
 		: v8::Isolate::GarbageCollectionType::kMinorGarbageCollection);
 }

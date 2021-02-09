@@ -15,26 +15,13 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.reference;
+package com.caoccao.javet.interfaces;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.IV8Value;
+import com.caoccao.javet.values.reference.IV8ValueObject;
 
-public interface IV8ValueReference extends IV8Value {
+public interface IJavetInterceptor {
+    boolean register(IV8ValueObject iV8ValueObject) throws JavetException;
 
-    void clearWeak() throws JavetException;
-
-    void close(boolean forceClose) throws JavetException;
-
-    long getHandle();
-
-    int getType();
-
-    boolean isWeak() throws JavetException;
-
-    boolean isWeak(boolean forceSync) throws JavetException;
-
-    void setWeak() throws JavetException;
-
-    String toProtoString();
+    boolean unregister(IV8ValueObject iV8ValueObject) throws JavetException;
 }

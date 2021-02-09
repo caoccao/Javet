@@ -24,7 +24,6 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLoggable;
 import com.caoccao.javet.interfaces.IJavetResettable;
-import com.caoccao.javet.utils.JavetConverterUtils;
 import com.caoccao.javet.utils.V8CallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
@@ -99,7 +98,7 @@ public final class V8Runtime implements
     }
 
     @Override
-    public void close() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+    public void close() throws JavetException {
         removeReferences();
         if (isLocked()) {
             try {
@@ -314,15 +313,19 @@ public final class V8Runtime implements
         }
     }
 
-    private void removeReferences() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+    private void removeReferences() throws JavetException {
         if (!referenceMap.isEmpty()) {
-            logWarn("{0} V8 object(s) not recycled.", referenceMap.size());
             if (!isLocked()) {
                 lock();
             }
+            int weakReferenceCount = 0;
             for (IV8ValueReference iV8ValueReference : referenceMap.values()) {
+                if (iV8ValueReference.isWeak()) {
+                    ++weakReferenceCount;
+                }
                 removeReference(iV8ValueReference);
             }
+            logWarn("{0}/{1} V8 object(s) not recycled.", weakReferenceCount, referenceMap.size());
             referenceMap.clear();
         }
     }
@@ -338,7 +341,7 @@ public final class V8Runtime implements
     }
 
     @Override
-    public void reset() throws JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException {
+    public void reset() throws JavetException {
         removeReferences();
         if (isLocked()) {
             try {

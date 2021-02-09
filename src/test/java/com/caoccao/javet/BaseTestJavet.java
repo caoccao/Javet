@@ -25,8 +25,10 @@ public abstract class BaseTestJavet {
     @BeforeAll
     public static void beforeAll() {
         if (!JavetConfig.isSealed()) {
+            JavetConfig.setAllowNativesSyntax(true);
             JavetConfig.setExposeGC(true);
             JavetConfig.setUseStrict(true);
+            JavetConfig.setTrackRetainingPath(true);
         }
         V8Host.getInstance().setFlags();
     }

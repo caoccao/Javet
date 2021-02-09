@@ -18,14 +18,28 @@
 package com.caoccao.javet.config;
 
 public final class JavetConfig {
+    private static boolean allowNativesSyntax;
     private static boolean exposeGC;
     private static boolean sealed;
+    private static boolean trackRetainingPath;
     private static boolean useStrict;
 
     private JavetConfig() {
+        allowNativesSyntax = false;
         exposeGC = false;
         sealed = false;
+        trackRetainingPath = false;
         useStrict = true;
+    }
+
+    public static boolean isTrackRetainingPath() {
+        return trackRetainingPath;
+    }
+
+    public static void setTrackRetainingPath(boolean trackRetainingPath) {
+        if (!sealed) {
+            JavetConfig.trackRetainingPath = trackRetainingPath;
+        }
     }
 
     public static boolean isSealed() {
@@ -55,6 +69,16 @@ public final class JavetConfig {
     public static void setUseStrict(boolean useStrict) {
         if (!sealed) {
             JavetConfig.useStrict = useStrict;
+        }
+    }
+
+    public static boolean isAllowNativesSyntax() {
+        return allowNativesSyntax;
+    }
+
+    public static void setAllowNativesSyntax(boolean allowNativesSyntax) {
+        if (!sealed) {
+            JavetConfig.allowNativesSyntax = allowNativesSyntax;
         }
     }
 }
