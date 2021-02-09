@@ -1,0 +1,36 @@
+========
+Polyfill
+========
+
+Yes, you can polyfill Javet with NodeJS modules.
+
+decimal.js
+==========
+
+.. code-block:: java
+
+    public void loadJS() throws IOException, JavetException {
+        File decimalJSFile = new File(System.getProperty("user.dir"), "scripts/node/node_modules/decimal.js/decimal.js");
+        if (decimalJSFile.exists() && decimalJSFile.canRead()) {
+            logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
+            String decimalJSString = Files.readString(decimalJSFile.toPath());
+            v8Runtime = V8Host.getInstance().createV8Runtime();
+            v8Runtime.lock();
+            v8Runtime.executeVoid(decimalJSString);
+        } else {
+            logError("{0} is not found.", decimalJSFile.getAbsolutePath());
+            logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
+        }
+    }
+
+    public void test() throws JavetException {
+        logInfo("1.23 + 2.34 = {0}", v8Runtime.executeString(
+                "const a = new Decimal(1.23);" +
+                        "const b = new Decimal(2.34);" +
+                        "a.add(b).toString();"
+        ));
+    }
+
+Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/DecimalJavet.java>`_ for more detail.
+
+[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]

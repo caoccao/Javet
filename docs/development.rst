@@ -20,4 +20,9 @@ Gradle
 
 For now, Gradle v6.7 + Kotlin DSL constructs the build system.
 
+NodeJS
+------
+
+NodeJS 14.5+ is required if you want to go over the tutorial because a few examples use some node modules. After installing NodeJS, please visit ``scripts/node`` directory and run ``npm install``.
+
 [`Home <../README.rst>`_]

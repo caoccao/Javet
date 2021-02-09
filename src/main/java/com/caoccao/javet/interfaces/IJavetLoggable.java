@@ -23,6 +23,14 @@ import java.util.logging.Logger;
 public interface IJavetLoggable {
     Logger getLogger();
 
+    default void logError(String format, Object... objects) {
+        getLogger().severe(MessageFormat.format(format, objects));
+    }
+
+    default void logInfo(String format, Object... objects) {
+        getLogger().info(MessageFormat.format(format, objects));
+    }
+
     default void logWarn(String format, Object... objects) {
         getLogger().warning(MessageFormat.format(format, objects));
     }
