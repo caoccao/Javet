@@ -32,6 +32,8 @@ public interface IV8ValueReference extends IJavetClosable {
 
     boolean isWeak() throws JavetException;
 
+    boolean isWeak(boolean forceSync) throws JavetException;
+
     void setWeak() throws JavetException;
 
     String toProtoString();

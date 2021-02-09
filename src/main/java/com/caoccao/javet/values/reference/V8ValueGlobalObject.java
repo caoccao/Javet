@@ -45,7 +45,7 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     }
 
     @Override
-    protected void releaseReference() {
+    protected void removeReference() {
         // Global object lives as long as V8 runtime lives.
     }
 

@@ -23,10 +23,12 @@ import com.caoccao.javet.values.V8Value;
 
 public abstract class V8ValueReference extends V8Value implements IV8ValueReference {
     protected long handle;
+    protected boolean weak;
 
     public V8ValueReference(long handle) {
         super();
         this.handle = handle;
+        weak = false;
     }
 
     @Override
@@ -49,6 +51,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     public void clearWeak() throws JavetException {
         checkV8Runtime();
         v8Runtime.clearWeak(this);
+        weak = false;
     }
 
     @Override
@@ -58,13 +61,14 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void close(boolean forceClose) throws JavetException {
-        // If the caller is from V8, lock may not be acquired. So it enforces the lock.
-        if (v8Runtime != null) {
-            v8Runtime.lock();
+        // V8 lock free
+        if (handle == 0L) {
+            throw new JavetV8ValueAlreadyClosedException();
         }
         if (forceClose || !isWeak()) {
             super.close();
             handle = 0L;
+            weak = false;
         }
     }
 
@@ -78,13 +82,22 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public boolean isWeak() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.isWeak(this);
+        // V8 lock free
+        return weak;
     }
 
     @Override
-    protected void releaseReference() throws JavetException {
-        checkV8Runtime();
+    public boolean isWeak(boolean force) throws JavetException {
+        if (force) {
+            checkV8Runtime();
+            weak = v8Runtime.isWeak(this);
+        }
+        return weak;
+    }
+
+    @Override
+    protected void removeReference() throws JavetException {
+        // V8 lock free
         v8Runtime.removeReference(this);
     }
 
@@ -98,6 +111,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     public void setWeak() throws JavetException {
         checkV8Runtime();
         v8Runtime.setWeak(this);
+        weak = true;
     }
 
     @Override

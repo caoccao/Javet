@@ -34,7 +34,7 @@ public final class V8ValueUndefined extends V8Value {
     }
 
     @Override
-    protected void releaseReference() {
+    protected void removeReference() {
     }
 
     @Override

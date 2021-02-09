@@ -25,11 +25,11 @@ This is a personal project for now. It supports limited features compared to J2V
 Motivation
 ==========
 
-I used to take a try of J2V8 and find it's quite compelling. However, J2V8 is slowing dying, also with serious memory leak issues, V8 version issue, etc.
+I used to take a try of J2V8 and find it's quite compelling. However, J2V8 is slowly dying, with serious memory leak issues, V8 version issue, etc.
 
 Sometimes starting from scratch implies lower cost than upgrading an existing solution. I think it might be true here in this project. I've learned quite a lot by manually fixing the Windows and Linux build system of J2V8.
 
-Also, I've got many ideas on how the API will look like. I think I would be able to write a new one from scratch and leave J2V8 behind.
+Also, I had got many ideas on how the API will look like. At the end of 2020, I thought I would be able to write a new one from scratch and leave J2V8 behind. Indeed, I made it few months later.
 
 Please refer to `History with J2V8 <docs/faq/history_with_j2v8.rst>`_ for detail.
 

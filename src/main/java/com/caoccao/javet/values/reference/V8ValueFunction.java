@@ -65,7 +65,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     public void close(boolean forceClose) throws JavetException {
-        checkV8Runtime();
+        // V8 lock free
         if (forceClose || !isWeak()) {
             if (v8CallbackContext != null) {
                 v8Runtime.removeJNIGlobalRef(v8CallbackContext.getHandle());

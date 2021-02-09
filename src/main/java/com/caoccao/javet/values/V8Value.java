@@ -43,8 +43,8 @@ public abstract class V8Value implements IJavetClosable, IV8Cloneable {
 
     @Override
     public void close() throws JavetException {
-        checkV8Runtime();
-        releaseReference();
+        // V8 lock free
+        removeReference();
         v8Runtime = null;
     }
 
@@ -62,5 +62,5 @@ public abstract class V8Value implements IJavetClosable, IV8Cloneable {
         this.v8Runtime.checkLock();
     }
 
-    protected abstract void releaseReference() throws JavetException;
+    protected abstract void removeReference() throws JavetException;
 }

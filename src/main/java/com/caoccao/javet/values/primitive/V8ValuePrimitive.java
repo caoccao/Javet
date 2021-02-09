@@ -53,7 +53,7 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
     }
 
     @Override
-    protected void releaseReference() {
+    protected void removeReference() {
     }
 
     @Override
