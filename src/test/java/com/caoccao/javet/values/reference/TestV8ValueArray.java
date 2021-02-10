@@ -31,7 +31,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
 
     @Test
     public void testGetAndSet() throws JavetException {
-        try (V8ValueArray v8ValueArray = v8Runtime.execute("const a = new Array(); a;")) {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = new Array(); a;").execute()) {
             v8ValueArray.set(0, new V8ValueString("x"));
             v8ValueArray.set(1, new V8ValueString("y"));
             v8ValueArray.set(2, new V8ValueString("z"));
@@ -57,8 +57,8 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
 
     @Test
     public void testGet() throws JavetException {
-        try (V8ValueArray v8ValueArray = v8Runtime.execute(
-                "[1,'2',3n, true, 1.23, [4, 5, null, new Date(1611710223719)]]")) {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
+                "[1,'2',3n, true, 1.23, [4, 5, null, new Date(1611710223719)]]").execute()) {
             assertNotNull(v8ValueArray);
             assertEquals(v8Runtime, v8ValueArray.getV8Runtime());
             assertEquals(6, v8ValueArray.getLength());
@@ -93,7 +93,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
 
     @Test
     public void testNestedArray() throws JavetException {
-        try (V8ValueArray outerArray = v8Runtime.execute("[1,2,3]")) {
+        try (V8ValueArray outerArray = v8Runtime.getExecutor("[1,2,3]").execute()) {
             assertEquals(3, outerArray.getLength());
             try (V8ValueArray innerArray = v8Runtime.createV8ValueArray()) {
                 assertEquals(1, innerArray.push("a"));
@@ -106,7 +106,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
 
     @Test
     public void testPushPop() throws JavetException {
-        try (V8ValueArray v8ValueArray = v8Runtime.execute("[]")) {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[]").execute()) {
             assertEquals(0, v8ValueArray.getLength());
             assertEquals(1, v8ValueArray.push(true));
             assertEquals(2, v8ValueArray.push(1.23));

@@ -36,18 +36,18 @@ public class TestV8ValueGlobalObject extends BaseTestJavetRuntime {
             assertEquals(1, v8RuntimeGlobalObject.getPropertyInteger("a"));
         }
         assertEquals(0, v8Runtime.getReferenceCount());
-        v8Runtime.executeVoid("var b = 3;");
+        v8Runtime.getExecutor("var b = 3;").executeVoid();
         try (V8ValueGlobalObject v8RuntimeGlobalObject = v8Runtime.getGlobalObject()) {
             assertNotNull(v8RuntimeGlobalObject);
             assertEquals(3, v8RuntimeGlobalObject.getPropertyInteger("b"));
         }
-        assertEquals(2, v8Runtime.executeInteger("a + 1"));
-        assertEquals(4, v8Runtime.executeInteger("a + b"));
+        assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
+        assertEquals(4, v8Runtime.getExecutor("a + b").executeInteger());
     }
 
     @Test
     public void testInvokeGlobalFunction() throws JavetException {
-        v8Runtime.executeVoid("function a() { return 1; }");
+        v8Runtime.getExecutor("function a() { return 1; }").executeVoid();
         try (V8ValueGlobalObject v8RuntimeGlobalObject = v8Runtime.getGlobalObject()) {
             assertEquals(1, v8RuntimeGlobalObject.invokeInteger("a"));
         }

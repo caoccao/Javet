@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testCall() throws JavetException {
-        try (V8ValueArray v8ValueArray = v8Runtime.execute("const a = [1, 2, 3]; a;")) {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = [1, 2, 3]; a;").execute()) {
             assertEquals(3, v8ValueArray.getLength());
             v8ValueArray.invoke("push", new V8ValueInteger(4));
             assertEquals(4, v8ValueArray.getLength());
@@ -64,8 +64,8 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
 
     @Test
     public void testGetOwnPropertyNames() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.execute(
-                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;")) {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
+                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
                 assertNotNull(iV8ValueArray);
                 assertEquals(7, iV8ValueArray.getLength());
@@ -83,8 +83,8 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
 
     @Test
     public void testGetPropertyNames() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.execute(
-                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;")) {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
+                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getPropertyNames()) {
                 assertNotNull(iV8ValueArray);
                 assertEquals(7, iV8ValueArray.getLength());
@@ -102,7 +102,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
 
     @Test
     public void testGetSetDelete() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.execute("const a = {}; a;")) {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
             assertTrue(v8ValueObject.set("a", new V8ValueInteger(1)));
             assertTrue(v8ValueObject.set("b", new V8ValueString("2")));
             assertEquals(1, v8ValueObject.getInteger("a"));
@@ -116,10 +116,10 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
 
     @Test
     public void testGetProperty() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.execute(
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1, 3: 'x'}, '中文': '測試'};"
                         + "x['i'] = true;x['j'] = 1.23;x['k'] = new Date(1611710223719);"
-                        + "x;")) {
+                        + "x;").execute()) {
             assertNotNull(v8ValueObject);
             assertEquals(v8Runtime, v8ValueObject.getV8Runtime());
             assertEquals(1, ((V8ValueInteger) v8ValueObject.getProperty("a")).getValue());
@@ -155,7 +155,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
 
     @Test
     public void testNestedObject() throws JavetException {
-        try (V8ValueObject outerObject = v8Runtime.execute("const o = {}; o;")) {
+        try (V8ValueObject outerObject = v8Runtime.getExecutor("const o = {}; o;").execute()) {
             assertEquals("{}", outerObject.toJsonString());
             try (V8ValueObject innerObject = v8Runtime.createV8ValueObject()) {
                 innerObject.set("a", new V8ValueString("1"));
@@ -168,7 +168,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testSetProperty() throws JavetException {
         ZonedDateTime now = ZonedDateTime.now();
-        try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {
             assertNotNull(v8ValueObject);
             assertEquals(v8Runtime, v8ValueObject.getV8Runtime());
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
@@ -204,7 +204,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
 
     @Test
     public void testToClone() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {
             v8ValueObject.setProperty("a", new V8ValueString("1"));
             assertEquals("{\"a\":\"1\"}", v8ValueObject.toJsonString());
             try (V8ValueObject clonedV8ValueObject = v8ValueObject.toClone()) {
@@ -217,7 +217,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
 
     @Test
     public void testToJsonString() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.execute("const x = {}; x;")) {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {
             v8ValueObject.setProperty("a", new V8ValueString("1"));
             v8ValueObject.setProperty("b", new V8ValueInteger(2));
             v8ValueObject.setProperty("c", new V8ValueDouble(1.23));

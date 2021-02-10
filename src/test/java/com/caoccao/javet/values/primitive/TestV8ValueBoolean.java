@@ -26,27 +26,27 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueBoolean extends BaseTestJavetRuntime {
     @Test
     public void testBoolean() throws JavetException {
-        try (V8ValueBoolean v8ValueBoolean = v8Runtime.execute("1 == 1")) {
+        try (V8ValueBoolean v8ValueBoolean = v8Runtime.getExecutor("1 == 1").execute()) {
             assertNotNull(v8ValueBoolean);
             assertTrue(v8ValueBoolean.isPresent());
             assertTrue(v8ValueBoolean.getValue());
             assertEquals("true", v8ValueBoolean.toString());
             assertEquals(v8Runtime, v8ValueBoolean.getV8Runtime());
         }
-        try (V8ValueBoolean v8ValueBoolean = v8Runtime.execute("1 != 1")) {
+        try (V8ValueBoolean v8ValueBoolean = v8Runtime.getExecutor("1 != 1").execute()) {
             assertNotNull(v8ValueBoolean);
             assertTrue(v8ValueBoolean.isPresent());
             assertFalse(v8ValueBoolean.getValue());
             assertEquals("false", v8ValueBoolean.toString());
             assertEquals(v8Runtime, v8ValueBoolean.getV8Runtime());
         }
-        assertTrue(v8Runtime.executeBoolean("true"));
-        assertFalse(v8Runtime.executeBoolean("false"));
+        assertTrue(v8Runtime.getExecutor("true").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("false").executeBoolean());
     }
 
     @Test
     public void testBooleanObject() throws JavetException {
-        assertTrue(v8Runtime.executeBoolean("Boolean(true)"));
-        assertFalse(v8Runtime.executeBoolean("Boolean(false)"));
+        assertTrue(v8Runtime.getExecutor("Boolean(true)").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("Boolean(false)").executeBoolean());
     }
 }

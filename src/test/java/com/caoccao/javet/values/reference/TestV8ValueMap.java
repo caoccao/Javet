@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueMap extends BaseTestJavetRuntime {
     @Test
     public void testGetAndHas() throws JavetException {
-        try (V8ValueMap v8ValueMap = v8Runtime.execute(
-                "const a = new Map(); a.set('x', 1); a.set('y', 'b'); a.set(3, 'c'); a;")) {
+        try (V8ValueMap v8ValueMap = v8Runtime.getExecutor(
+                "const a = new Map(); a.set('x', 1); a.set('y', 'b'); a.set(3, 'c'); a;").execute()) {
             assertNotNull(v8ValueMap);
             assertEquals(3, v8ValueMap.getSize());
             assertEquals(1, v8ValueMap.getInteger("x"));
@@ -79,7 +79,7 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
 
     @Test
     public void testGetSetAndDelete() throws JavetException {
-        try (V8ValueMap v8ValueMap = v8Runtime.execute("const a = new Map(); a;")) {
+        try (V8ValueMap v8ValueMap = v8Runtime.getExecutor("const a = new Map(); a;").execute()) {
             v8ValueMap.set("a", new V8ValueInteger(1));
             v8ValueMap.set("b", new V8ValueString("2"));
             assertEquals(2, v8ValueMap.getSize());
@@ -104,19 +104,19 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
 
     @Test
     public void testNestedMap() throws JavetException {
-        try (V8ValueMap outerObject = v8Runtime.execute("const o = new Map(); o;")) {
+        try (V8ValueMap outerObject = v8Runtime.getExecutor("const o = new Map(); o;").execute()) {
             assertEquals(
                     "[]",
-                    v8Runtime.executeString(
-                            "JSON.stringify(o, (key, value) => value instanceof Map ? [...value] : value);"));
+                    v8Runtime.getExecutor(
+                            "JSON.stringify(o, (key, value) => value instanceof Map ? [...value] : value);").executeString());
             try (V8ValueMap innerObject = v8Runtime.createV8ValueMap()) {
                 innerObject.set("a", new V8ValueString("1"));
                 outerObject.set("x", innerObject);
             }
             assertEquals(
                     "[[\"x\",[[\"a\",\"1\"]]]]",
-                    v8Runtime.executeString(
-                            "JSON.stringify(o, (key, value) => value instanceof Map ? [...value] : value);"));
+                    v8Runtime.getExecutor(
+                            "JSON.stringify(o, (key, value) => value instanceof Map ? [...value] : value);").executeString());
         }
     }
 }

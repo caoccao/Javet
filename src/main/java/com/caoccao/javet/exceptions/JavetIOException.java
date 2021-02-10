@@ -15,19 +15,22 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.reference;
+package com.caoccao.javet.exceptions;
 
-import com.caoccao.javet.BaseTestJavetRuntime;
-import com.caoccao.javet.exceptions.JavetException;
-import org.junit.jupiter.api.Test;
+import java.nio.file.Path;
+import java.text.MessageFormat;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+public class JavetIOException extends JavetException {
+    private JavetIOException(String message) {
+        super(message);
+    }
 
-public class TestV8ValuePromise extends BaseTestJavetRuntime {
-    @Test
-    public void testPromise() throws JavetException {
-        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor("new Promise(()=>{})").execute()) {
-            assertNotNull(v8ValuePromise);
-        }
+    private JavetIOException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static JavetIOException failedToReadPath(Path path, Throwable cause) {
+        return new JavetIOException(
+                MessageFormat.format("Failed to read {0}", path.toFile().getAbsolutePath()), cause);
     }
 }

@@ -18,100 +18,24 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
-import java.time.ZonedDateTime;
+import java.io.File;
+import java.nio.file.Path;
 
 @SuppressWarnings("unchecked")
 public interface IV8Executable {
-    default void compileOnly(String scriptString) throws JavetException {
-        compileOnly(scriptString, new V8ScriptOrigin());
-    }
-
     void compileOnly(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException;
-
-    default <T extends V8Value> T execute(String scriptString) throws JavetException {
-        return execute(scriptString, new V8ScriptOrigin());
-    }
-
-    default <T extends V8Value> T execute(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
-        return execute(scriptString, v8ScriptOrigin, true);
-    }
 
     <T extends V8Value> T execute(
             String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException;
 
-    default Boolean executeBoolean(String scriptString) throws JavetException {
-        return executeBoolean(scriptString, new V8ScriptOrigin());
+    default IV8Executor getExecutor(File scriptFile) {
+        return getExecutor(scriptFile.toPath());
     }
 
-    default Boolean executeBoolean(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
-        return executeObject(scriptString, v8ScriptOrigin);
-    }
+    IV8Executor getExecutor(Path scriptPath);
 
-    default Double executeDouble(String scriptString) throws JavetException {
-        return executeDouble(scriptString, new V8ScriptOrigin());
-    }
-
-    default Double executeDouble(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
-        return executeObject(scriptString, v8ScriptOrigin);
-    }
-
-    default Integer executeInteger(String scriptString) throws JavetException {
-        return executeInteger(scriptString, new V8ScriptOrigin());
-    }
-
-    default Integer executeInteger(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
-        return executeObject(scriptString, v8ScriptOrigin);
-    }
-
-    default Long executeLong(String scriptString) throws JavetException {
-        return executeLong(scriptString, new V8ScriptOrigin());
-    }
-
-    default Long executeLong(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
-        return executeObject(scriptString, v8ScriptOrigin);
-    }
-
-    default <R extends Object, T extends V8ValuePrimitive<R>> R executeObject(String scriptString)
-            throws JavetException {
-        return executeObject(scriptString, new V8ScriptOrigin());
-    }
-
-    default <R extends Object, T extends V8ValuePrimitive<R>> R executeObject(
-            String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
-        try (V8Value v8Value = execute(scriptString, v8ScriptOrigin, true)) {
-            try {
-                return ((T) v8Value).getValue();
-            } catch (Throwable t) {
-            }
-        }
-        return null;
-    }
-
-    default String executeString(String scriptString) throws JavetException {
-        return executeString(scriptString, new V8ScriptOrigin());
-    }
-
-    default String executeString(String scriptString, V8ScriptOrigin v8ScriptOrigin)
-            throws JavetException {
-        return executeObject(scriptString, v8ScriptOrigin);
-    }
-
-    default void executeVoid(String scriptString) throws JavetException {
-        executeVoid(scriptString, new V8ScriptOrigin());
-    }
-
-    default void executeVoid(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
-        execute(scriptString, v8ScriptOrigin, false);
-    }
-
-    default ZonedDateTime executeZonedDateTime(String scriptString) throws JavetException {
-        return executeZonedDateTime(scriptString, new V8ScriptOrigin());
-    }
-
-    default ZonedDateTime executeZonedDateTime(String scriptString, V8ScriptOrigin v8ScriptOrigin) throws JavetException {
-        return executeObject(scriptString, v8ScriptOrigin);
-    }
+    IV8Executor getExecutor(String scriptString);
 }

@@ -41,18 +41,18 @@ public class TestV8Runtime extends BaseTestJavet {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.lock();
-            v8Runtime.executeVoid("var a = 1;");
-            assertEquals(2, v8Runtime.executeInteger("a + 1"));
+            v8Runtime.getExecutor("var a = 1;").executeVoid();
+            assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
         }
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             v8Runtime.lock();
-            v8Runtime.executeVoid("var a = 1;");
-            assertEquals(2, v8Runtime.executeInteger("a + 1"));
+            v8Runtime.getExecutor("var a = 1;").executeVoid();
+            assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
             try (V8ValueObject window = v8Runtime.createV8ValueObject()) {
                 v8Runtime.getGlobalObject().set("window", window);
                 window.set("x", new V8ValueString("1"));
             }
-            assertEquals("1", v8Runtime.executeString("window.x;"));
+            assertEquals("1", v8Runtime.getExecutor("window.x;").executeString());
         }
     }
 

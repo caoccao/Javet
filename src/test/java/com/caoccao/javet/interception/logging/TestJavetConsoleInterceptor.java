@@ -43,12 +43,12 @@ public class TestJavetConsoleInterceptor extends BaseTestJavetRuntime {
                 javetConsoleInterceptor.setTrace(printStream);
                 javetConsoleInterceptor.setWarn(printStream);
                 javetConsoleInterceptor.register(v8Runtime.getGlobalObject());
-                v8Runtime.executeVoid("console.debug('debug');");
-                v8Runtime.executeVoid("console.error('error');");
-                v8Runtime.executeVoid("console.info('info');");
-                v8Runtime.executeVoid("console.log('log');");
-                v8Runtime.executeVoid("console.trace('trace');");
-                v8Runtime.executeVoid("console.warn('warn');");
+                v8Runtime.getExecutor("console.debug('debug');").executeVoid();
+                v8Runtime.getExecutor("console.error('error');").executeVoid();
+                v8Runtime.getExecutor("console.info('info');").executeVoid();
+                v8Runtime.getExecutor("console.log('log');").executeVoid();
+                v8Runtime.getExecutor("console.trace('trace');").executeVoid();
+                v8Runtime.getExecutor("console.warn('warn');").executeVoid();
                 javetConsoleInterceptor.unregister(v8Runtime.getGlobalObject());
                 assertEquals(
                         String.join(LINE_SEPARATOR, "debug", "error", "info", "log", "trace", "warn"),

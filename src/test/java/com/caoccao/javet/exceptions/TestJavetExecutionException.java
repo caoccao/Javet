@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class TestJavetExecutionException extends BaseTestJavetRuntime {
     @Test
     public void testAssignmentToConstantVariable() {
-        try (V8Value v8Value = v8Runtime.execute("const a = 1; a = 2;")) {
+        try (V8Value v8Value = v8Runtime.getExecutor("const a = 1; a = 2;").execute()) {
             fail("Exception should be thrown.");
         } catch (JavetExecutionException e) {
             assertEquals("TypeError: Assignment to constant variable.", e.getMessage());
@@ -55,7 +55,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
 
     @Test
     public void testNotAFunction() {
-        try (V8Value v8Value = v8Runtime.execute("const a = 1;\nObject.getPPP(a);")) {
+        try (V8Value v8Value = v8Runtime.getExecutor("const a = 1;\nObject.getPPP(a);").execute()) {
             fail("Exception should be thrown.");
         } catch (JavetExecutionException e) {
             assertEquals("TypeError: Object.getPPP is not a function", e.getMessage());
@@ -83,7 +83,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
 
     @Test
     public void testNotDefined() {
-        try (V8Value v8Value = v8Runtime.execute("Symbol(abc);")) {
+        try (V8Value v8Value = v8Runtime.getExecutor("Symbol(abc);").execute()) {
             fail("Exception should be thrown.");
         } catch (JavetExecutionException e) {
             assertEquals("ReferenceError: abc is not defined", e.getMessage());

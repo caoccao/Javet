@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestV8ValueError extends BaseTestJavetRuntime {
     @Test
     public void testError() throws JavetException {
-        try (V8ValueError v8ValueError = v8Runtime.execute("Error('test')")) {
+        try (V8ValueError v8ValueError = v8Runtime.getExecutor("Error('test')").execute()) {
             assertNotNull(v8ValueError);
             assertEquals("test", v8ValueError.getMessage());
             assertEquals("Error: test\n    at <anonymous>:1:1", v8ValueError.getStack());

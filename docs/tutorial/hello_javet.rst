@@ -12,7 +12,7 @@ Print **Hello Javet**
         // Step 2: Request a lock.
         v8Runtime.lock();
         // Step 3: Execute a string as JavaScript code and print the result to console.
-        System.out.println(v8Runtime.executeString("'Hello Javet'")); // Hello Javet
+        System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString()); // Hello Javet
         // Step 4: Resource including the lock is recycled automatically at the end of the try resource block.
     }
 
@@ -26,7 +26,7 @@ Print **1 + 1**
         // Step 2: Request a lock.
         v8Runtime.lock();
         // Step 3: Execute a string as JavaScript code and print the result to console.
-        System.out.println(v8Runtime.executeInteger("1 + 1")); // 2
+        System.out.println(v8Runtime.getExecutor("1 + 1").executeInteger()); // 2
         // Step 4: Resource including the lock is recycled automatically at the end of the try resource block.
     }
 

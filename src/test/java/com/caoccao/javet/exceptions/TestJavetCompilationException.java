@@ -28,7 +28,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
     @Test
     public void testUnexpectedIdentifier() {
         try {
-            v8Runtime.compileOnly("const a = 1;\na a a a;");
+            v8Runtime.getExecutor("const a = 1;\na a a a;").compileOnly();
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
             assertEquals("SyntaxError: Unexpected identifier", e.getMessage());
@@ -56,7 +56,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
 
     @Test
     public void testUnexpectedToken() {
-        try (V8Value v8Value = v8Runtime.execute("const a = 1;\na ==== 2;")) {
+        try (V8Value v8Value = v8Runtime.getExecutor("const a = 1;\na ==== 2;").execute()) {
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
             assertEquals("SyntaxError: Unexpected token '='", e.getMessage());
@@ -84,7 +84,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
 
     @Test
     public void testInvalidOrUnexpectedToken() {
-        try (V8Value v8Value = v8Runtime.execute("1a2b")) {
+        try (V8Value v8Value = v8Runtime.getExecutor("1a2b").execute()) {
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
             assertEquals("SyntaxError: Invalid or unexpected token", e.getMessage());

@@ -24,8 +24,6 @@ import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.logging.Logger;
 
 public class DecimalJavet implements IJavetLoggable, IJavetClosable {
@@ -49,14 +47,15 @@ public class DecimalJavet implements IJavetLoggable, IJavetClosable {
         }
     }
 
-    public void loadJS() throws IOException, JavetException {
-        File decimalJSFile = new File(System.getProperty("user.dir"), "scripts/node/node_modules/decimal.js/decimal.js");
+    public void loadJS() throws JavetException {
+        File decimalJSFile = new File(
+                System.getProperty("user.dir"),
+                "scripts/node/node_modules/decimal.js/decimal.js");
         if (decimalJSFile.exists() && decimalJSFile.canRead()) {
             logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
-            String decimalJSString = Files.readString(decimalJSFile.toPath());
             v8Runtime = V8Host.getInstance().createV8Runtime();
             v8Runtime.lock();
-            v8Runtime.executeVoid(decimalJSString);
+            v8Runtime.getExecutor(decimalJSFile).executeVoid();
         } else {
             logError("{0} is not found.", decimalJSFile.getAbsolutePath());
             logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
@@ -64,11 +63,10 @@ public class DecimalJavet implements IJavetLoggable, IJavetClosable {
     }
 
     public void test() throws JavetException {
-        logInfo("1.23 + 2.34 = {0}", v8Runtime.executeString(
+        logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
                 "const a = new Decimal(1.23);" +
                         "const b = new Decimal(2.34);" +
-                        "a.add(b).toString();"
-        ));
+                        "a.add(b).toString();").executeString());
     }
 
     @Override

@@ -29,18 +29,18 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
 
     @Test
     public void testNumber() throws JavetException {
-        try (V8ValueDouble v8ValueDouble = v8Runtime.execute("1.23")) {
+        try (V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("1.23").execute()) {
             assertNotNull(v8ValueDouble);
             assertEquals(1.23, v8ValueDouble.getValue(), DELTA);
             assertEquals("1.23", v8ValueDouble.toString());
             assertEquals(v8Runtime, v8ValueDouble.getV8Runtime());
         }
-        assertEquals(-0.5, v8Runtime.executeDouble("-0.5"), DELTA);
-        assertEquals(0, v8Runtime.executeDouble("-0.0"), DELTA);
+        assertEquals(-0.5, v8Runtime.getExecutor("-0.5").executeDouble(), DELTA);
+        assertEquals(0, v8Runtime.getExecutor("-0.0").executeDouble(), DELTA);
     }
 
     @Test
     public void testNumberObject() throws JavetException {
-        assertEquals(1.23, v8Runtime.executeDouble("Number(1.23)"), DELTA);
+        assertEquals(1.23, v8Runtime.getExecutor("Number(1.23)").executeDouble(), DELTA);
     }
 }

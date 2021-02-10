@@ -27,12 +27,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueSymbol extends BaseTestJavetRuntime {
     @Test
     public void testSymbol() throws JavetException {
-        try (V8ValueSymbol v8ValueSymbol = v8Runtime.execute("Symbol('test')")) {
+        try (V8ValueSymbol v8ValueSymbol = v8Runtime.getExecutor("Symbol('test')").execute()) {
             assertNotNull(v8ValueSymbol);
             assertEquals("test", v8ValueSymbol.getDescription());
             assertEquals("Symbol(test)", v8ValueSymbol.toString());
         }
-        try (V8ValueSymbol v8ValueSymbol = v8Runtime.execute("Symbol(123)")) {
+        try (V8ValueSymbol v8ValueSymbol = v8Runtime.getExecutor("Symbol(123)").execute()) {
             assertNotNull(v8ValueSymbol);
             assertEquals("123", v8ValueSymbol.getDescription());
             assertEquals("Symbol(123)", v8ValueSymbol.toString());

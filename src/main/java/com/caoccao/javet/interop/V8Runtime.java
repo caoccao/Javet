@@ -24,18 +24,22 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLoggable;
 import com.caoccao.javet.interfaces.IJavetResettable;
+import com.caoccao.javet.interop.executors.IV8Executor;
+import com.caoccao.javet.interop.executors.V8PathExecutor;
+import com.caoccao.javet.interop.executors.V8StringExecutor;
 import com.caoccao.javet.utils.V8CallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.reference.*;
 
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
 public final class V8Runtime implements
-        IJavetClosable, IJavetResettable, IJavetLoggable, IV8Executable, IV8Creatable {
+        IJavetClosable, IJavetResettable, IV8Executable, IJavetLoggable, IV8Creatable {
     private static final long INVALID_THREAD_ID = -1L;
 
     private String globalName;
@@ -194,6 +198,16 @@ public final class V8Runtime implements
         checkLock();
         return decorateV8Value((T) V8Native.get(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key));
+    }
+
+    @Override
+    public IV8Executor getExecutor(Path scriptPath) {
+        return new V8PathExecutor(this, scriptPath);
+    }
+
+    @Override
+    public IV8Executor getExecutor(String scriptString) {
+        return new V8StringExecutor(this, scriptString);
     }
 
     public String getGlobalName() {

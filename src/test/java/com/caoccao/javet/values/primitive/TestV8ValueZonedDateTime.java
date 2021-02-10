@@ -33,13 +33,13 @@ public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
     @Test
     public void testZonedDateTime() throws JavetException {
         ZonedDateTime now = ZonedDateTime.now();
-        try (V8ValueZonedDateTime v8ValueZonedDateTime = v8Runtime.execute("new Date()")) {
+        try (V8ValueZonedDateTime v8ValueZonedDateTime = v8Runtime.getExecutor("new Date()").execute()) {
             assertNotNull(v8ValueZonedDateTime);
             assertEquals(v8Runtime, v8ValueZonedDateTime.getV8Runtime());
             long deltaEpochSecond = v8ValueZonedDateTime.getValue().toEpochSecond() - now.toEpochSecond();
             assertTrue(deltaEpochSecond >= 0 && deltaEpochSecond <= DELTA);
         }
-        ZonedDateTime zonedDateTime = v8Runtime.executeZonedDateTime("new Date(1611710223719)");
+        ZonedDateTime zonedDateTime = v8Runtime.getExecutor("new Date(1611710223719)").executeZonedDateTime();
         zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.of("UTC"));
         assertEquals(2021, zonedDateTime.getYear());
         assertEquals(1, zonedDateTime.getMonthValue());

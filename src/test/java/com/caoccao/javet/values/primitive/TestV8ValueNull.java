@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestV8ValueNull extends BaseTestJavetRuntime {
     @Test
     public void testNull() throws JavetException {
-        V8ValueNull v8ValueNull = v8Runtime.execute("null");
+        V8ValueNull v8ValueNull = v8Runtime.getExecutor("null").execute();
         assertNotNull(v8ValueNull);
         assertEquals(v8Runtime, v8ValueNull.getV8Runtime());
     }

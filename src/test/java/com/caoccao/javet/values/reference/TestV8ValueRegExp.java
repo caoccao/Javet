@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestV8ValueRegExp extends BaseTestJavetRuntime {
     @Test
     public void testRegExp() throws JavetException {
-        try (V8ValueRegExp v8ValueRegExp = v8Runtime.execute("/123/g")) {
+        try (V8ValueRegExp v8ValueRegExp = v8Runtime.getExecutor("/123/g").execute()) {
             assertNotNull(v8ValueRegExp);
         }
-        try (V8ValueRegExp v8ValueRegExp = v8Runtime.execute("new RegExp('123')")) {
+        try (V8ValueRegExp v8ValueRegExp = v8Runtime.getExecutor("new RegExp('123')").execute()) {
             assertNotNull(v8ValueRegExp);
         }
     }

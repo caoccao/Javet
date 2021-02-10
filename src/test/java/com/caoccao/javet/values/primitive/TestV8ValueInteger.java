@@ -27,17 +27,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestV8ValueInteger extends BaseTestJavetRuntime {
     @Test
     public void testInt32() throws JavetException {
-        try (V8ValueInteger v8ValueInteger = v8Runtime.execute("1 + 1")) {
+        try (V8ValueInteger v8ValueInteger = v8Runtime.getExecutor("1 + 1").execute()) {
             assertNotNull(v8ValueInteger);
             assertEquals(2, v8ValueInteger.getValue());
             assertEquals("2", v8ValueInteger.toString());
             assertEquals(v8Runtime, v8ValueInteger.getV8Runtime());
         }
-        assertEquals(-1, v8Runtime.executeInteger("1 - 2"));
+        assertEquals(-1, v8Runtime.getExecutor("1 - 2").executeInteger());
     }
 
     @Test
     public void testInt32Object() throws JavetException {
-        assertEquals(123, v8Runtime.executeInteger("Number(123)"));
+        assertEquals(123, v8Runtime.getExecutor("Number(123)").executeInteger());
     }
 }

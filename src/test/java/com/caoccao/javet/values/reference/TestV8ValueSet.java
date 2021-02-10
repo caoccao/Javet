@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueSet extends BaseTestJavetRuntime {
     @Test
     public void testAddHasAndDelete() throws JavetException {
-        try (V8ValueSet v8ValueSet = v8Runtime.execute("const a = new Set(); a;")) {
+        try (V8ValueSet v8ValueSet = v8Runtime.getExecutor("const a = new Set(); a;").execute()) {
             assertNotNull(v8ValueSet);
             assertEquals(0, v8ValueSet.getSize());
             v8ValueSet.add(1);
@@ -60,8 +60,8 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
 
     @Test
     public void testHas() throws JavetException {
-        try (V8ValueSet v8ValueSet = v8Runtime.execute(
-                "const a = new Set(); a.add('x', 1); a.add('y', 'b'); a.add(3, 'c'); a;")) {
+        try (V8ValueSet v8ValueSet = v8Runtime.getExecutor(
+                "const a = new Set(); a.add('x', 1); a.add('y', 'b'); a.add(3, 'c'); a;").execute()) {
             assertNotNull(v8ValueSet);
             assertEquals(3, v8ValueSet.getSize());
             assertTrue(v8ValueSet.has("x"));
@@ -87,11 +87,11 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
 
     @Test
     public void testNestedSet() throws JavetException {
-        try (V8ValueSet outerObject = v8Runtime.execute("const o = new Set(); o;")) {
+        try (V8ValueSet outerObject = v8Runtime.getExecutor("const o = new Set(); o;").execute()) {
             assertEquals(
                     "[]",
-                    v8Runtime.executeString(
-                            "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);"));
+                    v8Runtime.getExecutor(
+                            "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);").executeString());
             outerObject.add(new V8ValueString("1"));
             try (V8ValueSet innerObject = v8Runtime.createV8ValueSet()) {
                 innerObject.add(new V8ValueString("2"));
@@ -99,8 +99,8 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
             }
             assertEquals(
                     "[\"1\",[\"2\"]]",
-                    v8Runtime.executeString(
-                            "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);"));
+                    v8Runtime.getExecutor(
+                            "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);").executeString());
         }
     }
 }

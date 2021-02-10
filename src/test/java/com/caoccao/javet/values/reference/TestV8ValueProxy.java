@@ -26,7 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestV8ValueProxy extends BaseTestJavetRuntime {
     @Test
     public void testProxy() throws JavetException {
-        try (V8ValueProxy v8ValueProxy = v8Runtime.execute("const b = {}; const a = new Proxy(RegExp, b); a;")) {
+        try (V8ValueProxy v8ValueProxy = v8Runtime.getExecutor(
+                "const b = {}; const a = new Proxy(RegExp, b); a;").execute()) {
             assertNotNull(v8ValueProxy);
         }
     }
