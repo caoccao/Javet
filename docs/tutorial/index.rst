@@ -8,4 +8,6 @@ Tutorial
 * `Manipulate V8 Function <manipulate_v8_function.rst>`_
 * `Polyfill <polyfill.rst>`_
 
+Complete tutorial is available at `here <../../src/test/java/com/caoccao/javet/tutorial>`_.
+
 [`Home <../../README.rst>`_]

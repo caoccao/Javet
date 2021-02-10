@@ -11,7 +11,7 @@ decimal.js
 
     public void loadJS() throws JavetException {
         File decimalJSFile = new File(
-                System.getProperty("user.dir"),
+                JavetOSUtils.WORKING_DIRECTORY,
                 "scripts/node/node_modules/decimal.js/decimal.js");
         if (decimalJSFile.exists() && decimalJSFile.canRead()) {
             logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());

@@ -18,7 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
-import com.caoccao.javet.utils.JavetOSDetectionUtils;
+import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,9 +26,8 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 
 final class JavetLibLoader {
-    public static final String CHMOD = "chmod";
-    public static final String XRR = "755";
-    private static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
+    private static final String CHMOD = "chmod";
+    private static final String XRR = "755";
     private static final String LIB_VERSION = "0.7.0";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-x86_64.v.{1}.{2}";
     private static final String RESOURCE_NAME_FORMAT = "/{0}";
@@ -82,7 +81,7 @@ final class JavetLibLoader {
             } catch (Exception e) {
                 // Lib file is locked.
             }
-            if (isDeployed && JavetOSDetectionUtils.IS_LINUX) {
+            if (isDeployed && JavetOSUtils.IS_LINUX) {
                 try {
                     Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
                 } catch (Throwable e) {
@@ -93,14 +92,20 @@ final class JavetLibLoader {
     }
 
     private static File getLibFile() throws JavetOSNotSupportedException {
-        if (JavetOSDetectionUtils.IS_WINDOWS) {
-            return new File(TEMP_DIRECTORY, MessageFormat.format(LIB_FILE_NAME_FORMAT,
-                    OS_WINDOWS, LIB_VERSION, LIB_FILE_EXTENSION_WINDOWS));
-        } else if (JavetOSDetectionUtils.IS_LINUX) {
-            return new File(TEMP_DIRECTORY, MessageFormat.format(LIB_FILE_NAME_FORMAT,
-                    OS_LINUX, LIB_VERSION, LIB_FILE_EXTENSION_LINUX));
+        if (JavetOSUtils.IS_WINDOWS) {
+            return new File(
+                    JavetOSUtils.TEMP_DIRECTORY,
+                    MessageFormat.format(
+                            LIB_FILE_NAME_FORMAT,
+                            OS_WINDOWS, LIB_VERSION, LIB_FILE_EXTENSION_WINDOWS));
+        } else if (JavetOSUtils.IS_LINUX) {
+            return new File(
+                    JavetOSUtils.TEMP_DIRECTORY,
+                    MessageFormat.format(
+                            LIB_FILE_NAME_FORMAT,
+                            OS_LINUX, LIB_VERSION, LIB_FILE_EXTENSION_LINUX));
         } else {
-            throw new JavetOSNotSupportedException(JavetOSDetectionUtils.OS_NAME);
+            throw new JavetOSNotSupportedException(JavetOSUtils.OS_NAME);
         }
     }
 

@@ -17,10 +17,13 @@
 
 package com.caoccao.javet.utils;
 
-public final class JavetOSDetectionUtils {
+public final class JavetOSUtils {
     public static final String OS_NAME = System.getProperty("os.name");
     public static final boolean IS_LINUX = OS_NAME.startsWith("Linux");
     public static final boolean IS_WINDOWS = OS_NAME.startsWith("Windows");
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
+    public static final String WORKING_DIRECTORY = System.getProperty("user.dir");
 
-    private JavetOSDetectionUtils() {}
+    private JavetOSUtils() {}
 }

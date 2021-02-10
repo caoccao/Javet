@@ -36,11 +36,6 @@ import java.util.Objects;
  */
 public class V8CallbackReceiver implements IV8CallbackReceiver {
     /**
-     * The constant LINE_SEPARATOR.
-     */
-    protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
-    /**
      * The V8 runtime.
      */
     protected V8Runtime v8Runtime;
@@ -211,6 +206,6 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
         for (V8Value arg : args) {
             stringList.add(arg == null ? null : arg.toString());
         }
-        return String.join(LINE_SEPARATOR, stringList);
+        return String.join(JavetOSUtils.LINE_SEPARATOR, stringList);
     }
 }

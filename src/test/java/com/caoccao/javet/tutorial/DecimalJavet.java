@@ -22,6 +22,7 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLoggable;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -49,7 +50,7 @@ public class DecimalJavet implements IJavetLoggable, IJavetClosable {
 
     public void loadJS() throws JavetException {
         File decimalJSFile = new File(
-                System.getProperty("user.dir"),
+                JavetOSUtils.WORKING_DIRECTORY,
                 "scripts/node/node_modules/decimal.js/decimal.js");
         if (decimalJSFile.exists() && decimalJSFile.canRead()) {
             logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
