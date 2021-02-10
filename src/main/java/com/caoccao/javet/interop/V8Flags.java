@@ -15,16 +15,16 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.config;
+package com.caoccao.javet.interop;
 
-public final class JavetConfig {
-    private static boolean allowNativesSyntax;
-    private static boolean exposeGC;
-    private static boolean sealed;
-    private static boolean trackRetainingPath;
-    private static boolean useStrict;
+public final class V8Flags {
+    private boolean allowNativesSyntax;
+    private boolean exposeGC;
+    private boolean sealed;
+    private boolean trackRetainingPath;
+    private boolean useStrict;
 
-    private JavetConfig() {
+    V8Flags() {
         allowNativesSyntax = false;
         exposeGC = false;
         sealed = false;
@@ -32,53 +32,53 @@ public final class JavetConfig {
         useStrict = true;
     }
 
-    public static boolean isTrackRetainingPath() {
+    public boolean isTrackRetainingPath() {
         return trackRetainingPath;
     }
 
-    public static void setTrackRetainingPath(boolean trackRetainingPath) {
+    public void setTrackRetainingPath(boolean trackRetainingPath) {
         if (!sealed) {
-            JavetConfig.trackRetainingPath = trackRetainingPath;
+            this.trackRetainingPath = trackRetainingPath;
         }
     }
 
-    public static boolean isSealed() {
+    public boolean isSealed() {
         return sealed;
     }
 
-    public static void seal() {
+    public void seal() {
         if (!sealed) {
             sealed = true;
         }
     }
 
-    public static boolean isExposeGC() {
+    public boolean isExposeGC() {
         return exposeGC;
     }
 
-    public static void setExposeGC(boolean exposeGC) {
+    public void setExposeGC(boolean exposeGC) {
         if (!sealed) {
-            JavetConfig.exposeGC = exposeGC;
+            this.exposeGC = exposeGC;
         }
     }
 
-    public static boolean isUseStrict() {
+    public boolean isUseStrict() {
         return useStrict;
     }
 
-    public static void setUseStrict(boolean useStrict) {
+    public void setUseStrict(boolean useStrict) {
         if (!sealed) {
-            JavetConfig.useStrict = useStrict;
+            this.useStrict = useStrict;
         }
     }
 
-    public static boolean isAllowNativesSyntax() {
+    public boolean isAllowNativesSyntax() {
         return allowNativesSyntax;
     }
 
-    public static void setAllowNativesSyntax(boolean allowNativesSyntax) {
+    public void setAllowNativesSyntax(boolean allowNativesSyntax) {
         if (!sealed) {
-            JavetConfig.allowNativesSyntax = allowNativesSyntax;
+            this.allowNativesSyntax = allowNativesSyntax;
         }
     }
 }

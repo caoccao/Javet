@@ -21,11 +21,11 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Runtime extends BaseTestJavet {
 
@@ -77,7 +77,15 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testReset() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+            v8Runtime.lock();
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+            v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
+            v8Runtime.unlock();
             v8Runtime.reset();
+            v8Runtime.lock();
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+            assertTrue(v8Runtime.getGlobalObject().get("a") instanceof V8ValueUndefined);
+            v8Runtime.unlock();
         }
     }
 

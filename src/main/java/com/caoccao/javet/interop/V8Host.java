@@ -17,7 +17,6 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.config.JavetConfig;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
@@ -27,12 +26,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class V8Host implements AutoCloseable {
+    private static final long INVALID_HANDLE = 0L;
     private static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
     private static final String FLAG_EXPOSE_GC = "--expose_gc";
     private static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
     private static final String FLAG_USE_STRICT = "--use_strict";
     private static final String SPACE = " ";
-
     private static V8Host instance = new V8Host();
 
     private boolean closed;
@@ -40,11 +39,13 @@ public final class V8Host implements AutoCloseable {
     private boolean isolateCreated;
     private ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
     private JavetException lastException;
+    private V8Flags flags;
 
     private V8Host() {
         closed = true;
         libLoaded = false;
         lastException = null;
+        flags = new V8Flags();
         v8RuntimeMap = new ConcurrentHashMap<>();
         try {
             libLoaded = JavetLibLoader.load();
@@ -63,22 +64,41 @@ public final class V8Host implements AutoCloseable {
         return createV8Runtime(null);
     }
 
+    public V8Flags getFlags() {
+        return flags;
+    }
+
     public V8Runtime createV8Runtime(String globalName) {
+        return createV8Runtime(false, globalName);
+    }
+
+    public synchronized V8Runtime createV8Runtime(boolean pooled, String globalName) {
         if (closed) {
             return null;
         }
         final long handle = V8Native.createV8Runtime(globalName);
         isolateCreated = true;
-        JavetConfig.seal();
-        V8Runtime v8Runtime = new V8Runtime(this, handle, globalName);
+        flags.seal();
+        V8Runtime v8Runtime = new V8Runtime(this, handle, pooled, globalName);
         v8RuntimeMap.put(handle, v8Runtime);
         return v8Runtime;
     }
 
-    public void closeV8Runtime(V8Runtime v8Runtime) {
-        if (v8Runtime != null) {
-            V8Native.closeV8Runtime(v8Runtime.getHandle());
+    public synchronized void closeV8Runtime(V8Runtime v8Runtime) {
+        if (closed) {
+            return;
         }
+        if (v8Runtime != null) {
+            final long handle = v8Runtime.getHandle();
+            if (handle > INVALID_HANDLE && v8RuntimeMap.containsKey(handle)) {
+                V8Native.closeV8Runtime(v8Runtime.getHandle());
+                v8RuntimeMap.remove(handle);
+            }
+        }
+    }
+
+    public int getV8RuntimeCount() {
+        return v8RuntimeMap.size();
     }
 
     public boolean isLibLoaded() {
@@ -100,16 +120,16 @@ public final class V8Host implements AutoCloseable {
     public boolean setFlags() {
         if (!closed && libLoaded && !isolateCreated) {
             List<String> flags = new ArrayList<>();
-            if (JavetConfig.isAllowNativesSyntax()){
+            if (this.flags.isAllowNativesSyntax()) {
                 flags.add(FLAG_ALLOW_NATIVES_SYNTAX);
             }
-            if (JavetConfig.isExposeGC()) {
+            if (this.flags.isExposeGC()) {
                 flags.add(FLAG_EXPOSE_GC);
             }
-            if (JavetConfig.isUseStrict()) {
+            if (this.flags.isUseStrict()) {
                 flags.add(FLAG_USE_STRICT);
             }
-            if (JavetConfig.isTrackRetainingPath()) {
+            if (this.flags.isTrackRetainingPath()) {
                 flags.add(FLAG_TRACK_RETAINING_PATH);
             }
             V8Native.setFlags(String.join(SPACE, flags));
@@ -124,7 +144,7 @@ public final class V8Host implements AutoCloseable {
             return;
         }
         closed = true;
-        final int v8RuntimeCount = v8RuntimeMap.size();
+        final int v8RuntimeCount = getV8RuntimeCount();
         if (v8RuntimeCount != 0) {
             throw new JavetV8RuntimeLeakException(v8RuntimeCount);
         }

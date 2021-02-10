@@ -3,16 +3,17 @@ Javet
 
 Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in Java. It was inspired by J2V8. I'll try to keep up with latest V8 in a slow pace. If you like my work, please **Star** this project. And, you may visit http://caoccao.blogspot.com/.
 
-Javet Features
-==============
+Features
+========
 
 * It supports both Windows and Linux with V8 v8.3.110.9.
 * It exposes the majority of V8 API in JVM.
 * It allows injecting JS functions into V8.
 * It supports ``BigInt <-> Long``, ``Date <-> ZonedDateTime``.
+* It supports Javet engine pool like DB connection pool with a huge performance improvement.
 
-Javet Project Status
-====================
+Project Status
+==============
 
 This is a personal project for now. It supports limited features compared to J2V8.
 
@@ -33,7 +34,7 @@ Also, I had got many ideas on how the API will look like. At the end of 2020, I 
 
 Please refer to `History with J2V8 <docs/faq/history_with_j2v8.rst>`_ for detail.
 
-Javet License
-=============
+License
+=======
 
 Javet follows `APACHE LICENSE, VERSION 2.0 <LICENSE>`_.

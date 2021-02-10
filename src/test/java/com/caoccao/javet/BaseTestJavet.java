@@ -17,35 +17,68 @@
 
 package com.caoccao.javet;
 
-import com.caoccao.javet.config.JavetConfig;
+import com.caoccao.javet.interfaces.IJavetLoggable;
+import com.caoccao.javet.interop.V8Flags;
 import com.caoccao.javet.interop.V8Host;
 import org.junit.jupiter.api.BeforeAll;
 
-public abstract class BaseTestJavet {
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Logger;
+
+public abstract class BaseTestJavet implements IJavetLoggable {
+    public static final long DEFAULT_WAIT_INTERVAL = 10;
+    protected Logger logger;
+
+    public BaseTestJavet() {
+        logger = Logger.getLogger(getClass().getName());
+    }
+
     @BeforeAll
     public static void beforeAll() {
-        if (!JavetConfig.isSealed()) {
-            JavetConfig.setAllowNativesSyntax(true);
-            JavetConfig.setExposeGC(true);
-            JavetConfig.setUseStrict(true);
-            JavetConfig.setTrackRetainingPath(true);
+        V8Flags flags = V8Host.getInstance().getFlags();
+        if (!flags.isSealed()) {
+            flags.setAllowNativesSyntax(true);
+            flags.setExposeGC(true);
+            flags.setUseStrict(true);
+            flags.setTrackRetainingPath(true);
         }
         V8Host.getInstance().setFlags();
     }
 
-    protected void sleep(long milliSeconds) {
-        sleep(milliSeconds, 1);
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 
-    protected void sleep(long milliSeconds, int rounds) {
-        assert milliSeconds > 0L;
-        assert rounds > 0L;
-        for (int i = 0; i < rounds; ++i) {
+    public void runAndWait(long timeOutInMilliseconds, long interval, IRunner runner) throws TimeoutException {
+        ZonedDateTime startZonedDateTime = ZonedDateTime.now();
+        ZonedDateTime endZonedDateTime = startZonedDateTime.plus(timeOutInMilliseconds, ChronoUnit.MILLIS);
+        while (true) {
+            if (runner.run()) {
+                return;
+            }
+            if (timeOutInMilliseconds > 0) {
+                if (endZonedDateTime.isBefore(ZonedDateTime.now())) {
+                    break;
+                }
+            }
             try {
-                Thread.sleep(milliSeconds);
+                TimeUnit.MILLISECONDS.sleep(interval);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new TimeoutException("Failed to sleep");
             }
         }
+        throw new TimeoutException("Runner failed");
+    }
+
+    public void runAndWait(long timeOutInMilliseconds, IRunner runner) throws TimeoutException {
+        runAndWait(timeOutInMilliseconds, DEFAULT_WAIT_INTERVAL, runner);
+    }
+
+    public interface IRunner {
+        boolean run();
     }
 }

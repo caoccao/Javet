@@ -144,7 +144,8 @@ namespace Javet {
 			if (argLength > 0) {
 				auto v8Array = v8::Array::New(v8Context->GetIsolate(), argLength);
 				for (int i = 0; i < argLength; ++i) {
-					v8Array->Set(v8Context, i, args[i]);
+					auto maybeResult = v8Array->Set(v8Context, i, args[i]);
+					maybeResult.Check();
 				}
 				return ToExternalV8Value(jniEnv, v8Context, v8Array);
 			}

@@ -41,19 +41,22 @@ import java.util.logging.Logger;
 public final class V8Runtime implements
         IJavetClosable, IJavetResettable, IV8Executable, IJavetLoggable, IV8Creatable {
     private static final long INVALID_THREAD_ID = -1L;
+    private static final long INVALID_HANDLE = 0L;
 
     private String globalName;
     private long handle;
     private Logger logger;
+    private boolean pooled;
     private Map<Long, IV8ValueReference> referenceMap;
     private long threadId;
     private V8Host v8Host;
 
-    V8Runtime(V8Host v8Host, long handle, String globalName) {
+    V8Runtime(V8Host v8Host, long handle, boolean pooled, String globalName) {
         assert handle != 0;
         this.globalName = globalName;
         this.handle = handle;
         logger = Logger.getLogger(getClass().getName());
+        this.pooled = pooled;
         referenceMap = new TreeMap<>();
         threadId = INVALID_THREAD_ID;
         this.v8Host = v8Host;
@@ -81,7 +84,7 @@ public final class V8Runtime implements
     }
 
     public void checkLock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
-        if (handle == 0L) {
+        if (handle == INVALID_HANDLE) {
             throw new JavetV8RuntimeAlreadyClosedException();
         }
         final long currentThreadId = Thread.currentThread().getId();
@@ -103,15 +106,25 @@ public final class V8Runtime implements
 
     @Override
     public void close() throws JavetException {
-        removeReferences();
-        if (isLocked()) {
-            try {
-                unlock();
-            } catch (JavetV8RuntimeLockConflictException e) {
-            }
+        if (pooled) {
+            close(false);
+        }else {
+            close(true);
         }
-        v8Host.closeV8Runtime(this);
-        handle = 0L;
+    }
+
+    public void close(boolean forceClose) throws JavetException {
+        if (handle != INVALID_HANDLE && forceClose) {
+            removeReferences();
+            if (isLocked()) {
+                try {
+                    unlock();
+                } catch (JavetV8RuntimeLockConflictException e) {
+                }
+            }
+            v8Host.closeV8Runtime(this);
+            handle = INVALID_HANDLE;
+        }
     }
 
     @Override
@@ -294,6 +307,10 @@ public final class V8Runtime implements
         return threadId != INVALID_THREAD_ID;
     }
 
+    public boolean isPooled() {
+        return pooled;
+    }
+
     public boolean isWeak(IV8ValueReference iV8ValueReference) throws JavetException {
         checkLock();
         return V8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
@@ -301,7 +318,7 @@ public final class V8Runtime implements
 
     public void lock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         if (!isLocked()) {
-            if (handle == 0L) {
+            if (handle == INVALID_HANDLE) {
                 throw new JavetV8RuntimeAlreadyClosedException();
             }
             V8Native.lockV8Runtime(handle);
@@ -312,7 +329,7 @@ public final class V8Runtime implements
     }
 
     public void removeJNIGlobalRef(long handle) {
-        if (handle != 0L) {
+        if (handle != INVALID_HANDLE) {
             V8Native.removeJNIGlobalRef(handle);
         }
     }

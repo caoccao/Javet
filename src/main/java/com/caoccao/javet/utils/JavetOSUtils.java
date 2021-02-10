@@ -26,4 +26,8 @@ public final class JavetOSUtils {
     public static final String WORKING_DIRECTORY = System.getProperty("user.dir");
 
     private JavetOSUtils() {}
+
+    public static int getCPUCount() {
+        return Runtime.getRuntime().availableProcessors();
+    }
 }

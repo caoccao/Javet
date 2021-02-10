@@ -25,6 +25,9 @@ import java.time.ZonedDateTime;
  * The type Date time utils.
  */
 public final class JavetDateTimeUtils {
+
+    public static final ZoneId ZONE_ID_UTC = ZoneId.of("UTC");
+
     private JavetDateTimeUtils() {
     }
 
@@ -49,5 +52,9 @@ public final class JavetDateTimeUtils {
      */
     public static ZonedDateTime toZonedDateTime(long jsTimestamp, ZoneId zoneId) {
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(jsTimestamp), zoneId);
+    }
+
+    public static ZonedDateTime getUTCNow() {
+        return ZonedDateTime.now(ZONE_ID_UTC);
     }
 }
