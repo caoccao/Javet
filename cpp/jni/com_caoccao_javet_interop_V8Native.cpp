@@ -519,6 +519,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
 	if (v8LocalObject->IsObject() && !v8PersistentObjectPointer->IsEmpty()) {
 		return (jboolean)v8PersistentObjectPointer->IsWeak();
 	}
+	return false;
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime

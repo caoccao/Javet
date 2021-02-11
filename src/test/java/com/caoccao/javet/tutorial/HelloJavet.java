@@ -22,6 +22,7 @@ import com.caoccao.javet.interception.logging.JavetConsoleInterceptor;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
+import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
 
 public class HelloJavet {
@@ -57,7 +58,7 @@ public class HelloJavet {
 
     public void playWithPoolAndConsole() throws JavetException {
         // Create a Javet engine pool.
-        try (JavetEnginePool javetEnginePool = new JavetEnginePool()) {
+        try (IJavetEnginePool javetEnginePool = new JavetEnginePool()) {
             // Get a Javet engine from the pool.
             try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
                 // Get a V8 runtime from the engine.

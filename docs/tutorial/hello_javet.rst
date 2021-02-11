@@ -36,7 +36,7 @@ Play with Pool and Console
 .. code-block:: java
 
     // Create a Javet engine pool.
-    try (JavetEnginePool javetEnginePool = new JavetEnginePool()) {
+    try (IJavetEnginePool javetEnginePool = new JavetEnginePool()) {
         // Get a Javet engine from the pool.
         try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
             // Get a V8 runtime from the engine.
