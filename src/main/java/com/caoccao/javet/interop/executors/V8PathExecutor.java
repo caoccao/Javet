@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.interop.V8Runtime;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -36,7 +37,7 @@ public class V8PathExecutor extends V8StringExecutor {
     public String getScriptString() throws JavetIOException {
         if (scriptString == null) {
             try {
-                scriptString = Files.readString(scriptPath);
+                scriptString = new String(Files.readAllBytes(scriptPath), StandardCharsets.UTF_8);
                 v8ScriptOrigin.setResourceName(scriptPath.toFile().getAbsolutePath());
             } catch (IOException e) {
                 throw JavetIOException.failedToReadPath(scriptPath, e);

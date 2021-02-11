@@ -24,6 +24,10 @@ public class JavetV8CallbackSignatureMismatchException extends JavetException {
         super(MessageFormat.format("V8 callback signature mismatches: " + format, objects));
     }
 
+    protected JavetV8CallbackSignatureMismatchException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public static JavetV8CallbackSignatureMismatchException parameterSizeMismatch(
             int expectedSize, int actualSize) {
         return new JavetV8CallbackSignatureMismatchException(
@@ -36,5 +40,10 @@ public class JavetV8CallbackSignatureMismatchException extends JavetException {
         return new JavetV8CallbackSignatureMismatchException(
                 "expected parameter type is {0}, actual parameter type is {1}",
                 expectedType.getName(), actualType.getName());
+    }
+
+    public static JavetV8CallbackSignatureMismatchException unknown(
+            Throwable cause) {
+        return new JavetV8CallbackSignatureMismatchException(cause.getMessage(), cause);
     }
 }

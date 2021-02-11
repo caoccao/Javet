@@ -22,11 +22,12 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyClosedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyRegisteredException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.interfaces.IJavetClosable;
-import com.caoccao.javet.interfaces.IJavetLoggable;
+import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interfaces.IJavetResettable;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.V8CallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
@@ -35,17 +36,16 @@ import com.caoccao.javet.values.reference.*;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
 public final class V8Runtime implements
-        IJavetClosable, IJavetResettable, IV8Executable, IJavetLoggable, IV8Creatable {
+        IJavetClosable, IJavetResettable, IV8Executable, IV8Creatable {
     private static final long INVALID_THREAD_ID = -1L;
     private static final long INVALID_HANDLE = 0L;
 
     private String globalName;
     private long handle;
-    private Logger logger;
+    private IJavetLogger logger;
     private boolean pooled;
     private Map<Long, IV8ValueReference> referenceMap;
     private long threadId;
@@ -55,7 +55,7 @@ public final class V8Runtime implements
         assert handle != 0;
         this.globalName = globalName;
         this.handle = handle;
-        logger = Logger.getLogger(getClass().getName());
+        logger = new JavetDefaultLogger(getClass().getName());
         this.pooled = pooled;
         referenceMap = new TreeMap<>();
         threadId = INVALID_THREAD_ID;
@@ -108,7 +108,7 @@ public final class V8Runtime implements
     public void close() throws JavetException {
         if (pooled) {
             close(false);
-        }else {
+        } else {
             close(true);
         }
     }
@@ -227,8 +227,8 @@ public final class V8Runtime implements
         return globalName;
     }
 
-    public void setGlobalName(String globalName) {
-        this.globalName = globalName;
+    public IJavetLogger getLogger() {
+        return logger;
     }
 
     public V8ValueGlobalObject getGlobalObject() throws JavetException {
@@ -242,11 +242,6 @@ public final class V8Runtime implements
     public int getLength(IV8ValueArray iV8ValueArray) throws JavetException {
         checkLock();
         return V8Native.getLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType());
-    }
-
-    @Override
-    public Logger getLogger() {
-        return logger;
     }
 
     public IV8ValueArray getOwnPropertyNames(
@@ -356,7 +351,7 @@ public final class V8Runtime implements
                 }
                 removeReference(iV8ValueReference);
             }
-            logWarn("{0}/{1} V8 object(s) not recycled.", weakReferenceCount, referenceMap.size());
+            logger.logWarn("{0}/{1} V8 object(s) not recycled.", weakReferenceCount, referenceMap.size());
             referenceMap.clear();
         }
     }
@@ -387,6 +382,14 @@ public final class V8Runtime implements
         checkLock();
         decorateV8Values(key, value);
         return V8Native.set(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key, value);
+    }
+
+    public void setGlobalName(String globalName) {
+        this.globalName = globalName;
+    }
+
+    public void setLogger(IJavetLogger logger) {
+        this.logger = logger;
     }
 
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {

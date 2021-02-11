@@ -28,7 +28,7 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public final class JavetConverterUtils {
-    public static final IJavetConverter<Boolean> DEFAULT_BOOLEAN_CONVERTER = new IJavetConverter<>() {
+    public static final IJavetConverter<Boolean> DEFAULT_BOOLEAN_CONVERTER = new IJavetConverter<Boolean>() {
         @Override
         public Boolean toObject(V8Value v8Value) throws JavetException {
             if (v8Value != null && v8Value instanceof V8ValueBoolean) {
@@ -43,7 +43,7 @@ public final class JavetConverterUtils {
         }
     };
 
-    public static final IJavetConverter<Double> DEFAULT_DOUBLE_CONVERTER = new IJavetConverter<>() {
+    public static final IJavetConverter<Double> DEFAULT_DOUBLE_CONVERTER = new IJavetConverter<Double>() {
         @Override
         public Double toObject(V8Value v8Value) throws JavetException {
             if (v8Value != null && v8Value instanceof V8ValueDouble) {
@@ -58,7 +58,7 @@ public final class JavetConverterUtils {
         }
     };
 
-    public static final IJavetConverter<Integer> DEFAULT_INTEGER_CONVERTER = new IJavetConverter<>() {
+    public static final IJavetConverter<Integer> DEFAULT_INTEGER_CONVERTER = new IJavetConverter<Integer>() {
         @Override
         public Integer toObject(V8Value v8Value) throws JavetException {
             if (v8Value != null && v8Value instanceof V8ValueInteger) {
@@ -73,7 +73,7 @@ public final class JavetConverterUtils {
         }
     };
 
-    public static final IJavetConverter<Long> DEFAULT_LONG_CONVERTER = new IJavetConverter<>() {
+    public static final IJavetConverter<Long> DEFAULT_LONG_CONVERTER = new IJavetConverter<Long>() {
         @Override
         public Long toObject(V8Value v8Value) throws JavetException {
             if (v8Value != null && v8Value instanceof V8ValueLong) {
@@ -88,7 +88,7 @@ public final class JavetConverterUtils {
         }
     };
 
-    public static final IJavetConverter<Object> DEFAULT_NULL_CONVERTER = new IJavetConverter<>() {
+    public static final IJavetConverter<Object> DEFAULT_NULL_CONVERTER = new IJavetConverter<Object>() {
         @Override
         public Object toObject(V8Value v8Value) throws JavetException {
             return null;
@@ -100,7 +100,7 @@ public final class JavetConverterUtils {
         }
     };
 
-    public static final IJavetConverter<String> DEFAULT_STRING_CONVERTER = new IJavetConverter<>() {
+    public static final IJavetConverter<String> DEFAULT_STRING_CONVERTER = new IJavetConverter<String>() {
         @Override
         public String toObject(V8Value v8Value) throws JavetException {
             if (v8Value != null && v8Value instanceof V8ValueString) {
@@ -115,7 +115,7 @@ public final class JavetConverterUtils {
         }
     };
 
-    public static final IJavetConverter<Object> DEFAULT_UNDEFINED_CONVERTER = new IJavetConverter<>() {
+    public static final IJavetConverter<Object> DEFAULT_UNDEFINED_CONVERTER = new IJavetConverter<Object>() {
         @Override
         public Object toObject(V8Value v8Value) throws JavetException {
             return null;
@@ -127,7 +127,7 @@ public final class JavetConverterUtils {
         }
     };
 
-    public static final IJavetConverter<ZonedDateTime> DEFAULT_ZONED_DATE_TIME_CONVERTER = new IJavetConverter<>() {
+    public static final IJavetConverter<ZonedDateTime> DEFAULT_ZONED_DATE_TIME_CONVERTER = new IJavetConverter<ZonedDateTime>() {
         @Override
         public ZonedDateTime toObject(V8Value v8Value) throws JavetException {
             if (v8Value != null && v8Value instanceof V8ValueZonedDateTime) {

@@ -17,23 +17,23 @@
 
 package com.caoccao.javet;
 
-import com.caoccao.javet.interfaces.IJavetLoggable;
+import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Flags;
 import com.caoccao.javet.interop.V8Host;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 
-public abstract class BaseTestJavet implements IJavetLoggable {
+public abstract class BaseTestJavet {
     public static final long DEFAULT_WAIT_INTERVAL = 10;
-    protected Logger logger;
+    protected IJavetLogger logger;
 
     public BaseTestJavet() {
-        logger = Logger.getLogger(getClass().getName());
+        logger = new JavetDefaultLogger(getClass().getName());
     }
 
     @BeforeAll
@@ -46,11 +46,6 @@ public abstract class BaseTestJavet implements IJavetLoggable {
             flags.setTrackRetainingPath(true);
         }
         V8Host.getInstance().setFlags();
-    }
-
-    @Override
-    public Logger getLogger() {
-        return logger;
     }
 
     public void runAndWait(long timeOutInMilliseconds, long interval, IRunner runner) throws TimeoutException {

@@ -18,7 +18,7 @@
 package com.caoccao.javet.tutorial;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interception.logging.JavetConsoleInterceptor;
+import com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
@@ -62,16 +62,18 @@ public class HelloJavet {
             // Get a Javet engine from the pool.
             try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
                 // Get a V8 runtime from the engine.
+                // lock() is not necessary because the Javet engine handles that.
                 V8Runtime v8Runtime = javetEngine.getV8Runtime();
                 // Create a Javet console interceptor.
-                JavetConsoleInterceptor javetConsoleInterceptor = new JavetConsoleInterceptor(v8Runtime);
+                JavetStandardConsoleInterceptor javetConsoleInterceptor = new JavetStandardConsoleInterceptor(v8Runtime);
                 // Register the Javet console to V8 global object.
                 javetConsoleInterceptor.register(v8Runtime.getGlobalObject());
                 // V8 console log is redirected to JVM console log.
                 v8Runtime.getExecutor("console.log('Hello Javet from Pool');").executeVoid();
                 // Unregister the Javet console to V8 global object.
                 javetConsoleInterceptor.unregister(v8Runtime.getGlobalObject());
-                // There is no need to close the V8 runtime when it is managed by the Javet pool.
+                // unlock() is not necessary because the Javet engine handles that.
+                // close() is not necessary because the Javet pool handles that.
             }
         }
     }

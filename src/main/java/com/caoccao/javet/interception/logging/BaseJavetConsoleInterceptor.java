@@ -18,6 +18,7 @@
 package com.caoccao.javet.interception.logging;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
 import com.caoccao.javet.interception.BaseJavetInterceptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.V8CallbackContext;
@@ -26,11 +27,10 @@ import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class JavetConsoleInterceptor extends BaseJavetInterceptor {
+public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     protected static final String JS_FUNCTION_DEBUG = "debug";
     protected static final String JS_FUNCTION_ERROR = "error";
     protected static final String JS_FUNCTION_INFO = "info";
@@ -46,65 +46,9 @@ public class JavetConsoleInterceptor extends BaseJavetInterceptor {
     protected static final String EMPTY = "";
     protected static final String SPACE = " ";
     protected static final String PROPERTY_CONSOLE = "console";
-    protected PrintStream debug;
-    protected PrintStream error;
-    protected PrintStream info;
-    protected PrintStream log;
-    protected PrintStream trace;
-    protected PrintStream warn;
 
-    public JavetConsoleInterceptor(V8Runtime v8Runtime) {
+    public BaseJavetConsoleInterceptor(V8Runtime v8Runtime) {
         super(v8Runtime);
-        debug = info = log = trace = warn = System.out;
-        error = System.err;
-    }
-
-    public PrintStream getDebug() {
-        return debug;
-    }
-
-    public void setDebug(PrintStream debug) {
-        this.debug = debug;
-    }
-
-    public PrintStream getError() {
-        return error;
-    }
-
-    public void setError(PrintStream error) {
-        this.error = error;
-    }
-
-    public PrintStream getInfo() {
-        return info;
-    }
-
-    public void setInfo(PrintStream info) {
-        this.info = info;
-    }
-
-    public PrintStream getLog() {
-        return log;
-    }
-
-    public void setLog(PrintStream log) {
-        this.log = log;
-    }
-
-    public PrintStream getTrace() {
-        return trace;
-    }
-
-    public void setTrace(PrintStream trace) {
-        this.trace = trace;
-    }
-
-    public PrintStream getWarn() {
-        return warn;
-    }
-
-    public void setWarn(PrintStream warn) {
-        this.warn = warn;
     }
 
     protected String concat(V8Value... v8Values) {
@@ -116,29 +60,17 @@ public class JavetConsoleInterceptor extends BaseJavetInterceptor {
                 Arrays.stream(v8Values).map(v8Value -> v8Value.toString()).collect(Collectors.toList()));
     }
 
-    public void consoleDebug(V8Value... v8Values) {
-        debug.println(concat(v8Values));
-    }
+    public abstract void consoleDebug(V8Value... v8Values);
 
-    public void consoleError(V8Value... v8Values) {
-        error.println(concat(v8Values));
-    }
+    public abstract void consoleError(V8Value... v8Values);
 
-    public void consoleInfo(V8Value... v8Values) {
-        info.println(concat(v8Values));
-    }
+    public abstract void consoleInfo(V8Value... v8Values);
 
-    public void consoleLog(V8Value... v8Values) {
-        log.println(concat(v8Values));
-    }
+    public abstract void consoleLog(V8Value... v8Values);
 
-    public void consoleTrace(V8Value... v8Values) {
-        trace.println(concat(v8Values));
-    }
+    public abstract void consoleTrace(V8Value... v8Values);
 
-    public void consoleWarn(V8Value... v8Values) {
-        warn.println(concat(v8Values));
-    }
+    public abstract void consoleWarn(V8Value... v8Values);
 
     @Override
     public boolean register(IV8ValueObject iV8ValueObject) throws JavetException {
@@ -152,9 +84,8 @@ public class JavetConsoleInterceptor extends BaseJavetInterceptor {
             register(console, JS_FUNCTION_WARN, JAVA_CONSOLE_WARN);
             return true;
         } catch (NoSuchMethodException e) {
-            e.printStackTrace(error);
+            throw JavetV8CallbackSignatureMismatchException.unknown(e);
         }
-        return false;
     }
 
     protected void register(IV8ValueObject iV8ValueObject, String jsFunctionName, String javaFunctionName)

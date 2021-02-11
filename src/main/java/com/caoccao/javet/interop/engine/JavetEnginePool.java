@@ -18,8 +18,10 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -78,7 +80,7 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
 
     @Override
     public IJavetEngine getEngine() {
-        config.getEventListener().getEngineBegin();
+        config.getJavetLogger().debug("JavetEnginePool.getEngine() begins.");
         JavetEngine engine = null;
         while (!quitting) {
             synchronized (internalLock) {
@@ -98,12 +100,12 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
             try {
                 TimeUnit.MILLISECONDS.sleep(config.getPoolDaemonCheckIntervalMillis());
             } catch (InterruptedException e) {
-                config.getEventListener().error("Failed to sleep a while to wait for an idle engine.", e);
+                config.getJavetLogger().logError(e, "Failed to sleep a while to wait for an idle engine.");
             }
         }
         JavetEngineUsage usage = engine.getUsage();
         usage.increaseUsedCount();
-        config.getEventListener().getEngineEnd();
+        config.getJavetLogger().debug("JavetEnginePool.getEngine() ends.");
         return engine;
     }
 
@@ -124,16 +126,16 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
 
     @Override
     public void releaseEngine(IJavetEngine engine) {
-        config.getEventListener().releaseEngineBegin();
+        config.getJavetLogger().debug("JavetEnginePool.releaseEngine() begins.");
         synchronized (externalLock) {
             externalLock.notify();
         }
-        config.getEventListener().releaseEngineEnd();
+        config.getJavetLogger().debug("JavetEnginePool.releaseEngine() ends.");
     }
 
     @Override
     public void run() {
-        config.getEventListener().runDaemonBegin();
+        config.getJavetLogger().debug("JavetEnginePool.run() begins.");
         while (!quitting) {
             synchronized (internalLock) {
                 if (!activeEngineList.isEmpty()) {
@@ -149,11 +151,11 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                             if (true || usage.getEngineUsedCount() >= config.getMaxEngineUsedCount() ||
                                     resetEngineZonedDateTime.isBefore(getUTCNow())) {
                                 try {
-                                    config.getEventListener().resetEngineBegin();
+                                    config.getJavetLogger().debug("JavetEnginePool reset engine begins.");
                                     engine.reset();
-                                    config.getEventListener().resetEngineEnd();
+                                    config.getJavetLogger().debug("JavetEnginePool reset engine ends.");
                                 } catch (Exception e) {
-                                    config.getEventListener().error("Failed to reset idle engine.", e);
+                                    config.getJavetLogger().logError(e, "Failed to reset idle engine.");
                                 }
                             }
                             idleEngineList.push(engine);
@@ -174,7 +176,7 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                             try {
                                 engine.close(true);
                             } catch (Throwable t) {
-                                config.getEventListener().error("Failed to release idle engine.", t);
+                                config.getJavetLogger().logError(t, "Failed to release idle engine.");
                             }
                         } else {
                             idleEngineList.push(engine);
@@ -186,12 +188,12 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                 try {
                     externalLock.wait(config.getPoolDaemonCheckIntervalMillis());
                 } catch (InterruptedException e) {
-                    config.getEventListener().error(
-                            "Failed to sleep a while to wait for next round in Javet engine pool daemon.", e);
+                    config.getJavetLogger().logError(e,
+                            "Failed to sleep a while to wait for next round in Javet engine pool daemon.");
                 }
             }
         }
-        config.getEventListener().runDaemonQuitting();
+        config.getJavetLogger().debug("JavetEnginePool daemon is quitting.");
         synchronized (internalLock) {
             if (!idleEngineList.isEmpty()) {
                 final int idleEngineCount = getIdleEngineCount();
@@ -200,8 +202,7 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                     try {
                         engine.close(true);
                     } catch (Throwable t) {
-                        config.getEventListener().error(
-                                "Failed to release idle engine.", t);
+                        config.getJavetLogger().logError(t, "Failed to release idle engine.");
                     }
                 }
             }
@@ -212,41 +213,39 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                     try {
                         engine.close(true);
                     } catch (Throwable t) {
-                        config.getEventListener().error(
-                                "Failed to release active engine.", t);
+                        config.getJavetLogger().logError(t, "Failed to release active engine.");
                     }
                 }
-
             }
         }
-        config.getEventListener().runDaemonEnd();
+        config.getJavetLogger().debug("JavetEnginePool.run() ends.");
     }
 
     protected void startDaemon() {
-        config.getEventListener().startDaemonBegin();
+        config.getJavetLogger().debug("JavetEnginePool.startDaemon() begins.");
         activeEngineList.clear();
         idleEngineList.clear();
         quitting = false;
         daemonThread = new Thread(this);
         daemonThread.start();
         active = true;
-        config.getEventListener().startDaemonEnd();
+        config.getJavetLogger().debug("JavetEnginePool.startDaemon() ends.");
     }
 
     protected void stopDaemon() {
-        config.getEventListener().stopDaemonBegin();
+        config.getJavetLogger().debug("JavetEnginePool.stopDaemon() begins.");
         quitting = true;
         try {
             if (daemonThread != null) {
                 daemonThread.join();
             }
         } catch (Exception e) {
-            config.getEventListener().error(e.getMessage(), e);
+            config.getJavetLogger().logError(e, e.getMessage());
         } finally {
             daemonThread = null;
         }
         active = false;
         quitting = false;
-        config.getEventListener().stopDaemonEnd();
+        config.getJavetLogger().debug("JavetEnginePool.stopDaemon() ends.");
     }
 }

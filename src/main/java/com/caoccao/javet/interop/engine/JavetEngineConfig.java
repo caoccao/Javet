@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.interop.engine;
 
+import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.util.Objects;
@@ -28,64 +30,8 @@ public final class JavetEngineConfig {
     public static final int DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1000;
     public static final int DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS = 3600;
     public static final String DEFAULT_GLOBAL_NAME = "window";
-    public static IJavetEnginePoolEventListener DEFAULT_EVENT_LISTENER = new IJavetEnginePoolEventListener() {
-        @Override
-        public void error(String message, Throwable cause) {
-        }
-
-        @Override
-        public void getEngineBegin() {
-        }
-
-        @Override
-        public void getEngineEnd() {
-        }
-
-        @Override
-        public void releaseEngineBegin() {
-        }
-
-        @Override
-        public void releaseEngineEnd() {
-        }
-
-        @Override
-        public void resetEngineBegin() {
-        }
-
-        @Override
-        public void resetEngineEnd() {
-        }
-
-        @Override
-        public void runDaemonBegin() {
-        }
-
-        @Override
-        public void runDaemonQuitting() {
-        }
-
-        @Override
-        public void runDaemonEnd() {
-        }
-
-        @Override
-        public void startDaemonBegin() {
-        }
-
-        @Override
-        public void startDaemonEnd() {
-        }
-
-        @Override
-        public void stopDaemonBegin() {
-        }
-
-        @Override
-        public void stopDaemonEnd() {
-        }
-    };
-    private IJavetEnginePoolEventListener eventListener;
+    public static IJavetLogger DEFAULT_JAVET_LOGGER = new JavetDefaultLogger(JavetEnginePool.class.getName());
+    private IJavetLogger javetLogger;
     private String globalName;
     private int maxEngineUsedCount;
     private int poolMaxSize;
@@ -99,7 +45,7 @@ public final class JavetEngineConfig {
     }
 
     public void reset() {
-        eventListener = DEFAULT_EVENT_LISTENER;
+        javetLogger = DEFAULT_JAVET_LOGGER;
         globalName = DEFAULT_GLOBAL_NAME;
         maxEngineUsedCount = DEFAULT_MAX_ENGINE_USED_COUNT;
         final int cpuCount = JavetOSUtils.getCPUCount();
@@ -134,13 +80,13 @@ public final class JavetEngineConfig {
         this.maxEngineUsedCount = maxEngineUsedCount;
     }
 
-    public IJavetEnginePoolEventListener getEventListener() {
-        return eventListener;
+    public IJavetLogger getJavetLogger() {
+        return javetLogger;
     }
 
-    public void setEventListener(IJavetEnginePoolEventListener eventListener) {
-        Objects.requireNonNull(eventListener);
-        this.eventListener = eventListener;
+    public void setJavetLogger(IJavetLogger javetLogger) {
+        Objects.requireNonNull(javetLogger);
+        this.javetLogger = javetLogger;
     }
 
     public int getPoolMaxSize() {

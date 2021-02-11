@@ -92,7 +92,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
                         assertEquals(2, iV8Executor.executeInteger());
                     } catch (Exception e) {
                         failureCount.incrementAndGet();
-                        logError("Failed to execute. Error: {0}.", e.getMessage());
+                        logger.logError("Failed to execute. Error: {0}.", e.getMessage());
                     }
                 });
                 thread.start();
@@ -106,7 +106,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
+                logger.logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
             }
         }
         runAndWait(TEST_MAX_TIMEOUT, () -> threadCount == javetEnginePool.getIdleEngineCount());
@@ -136,7 +136,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
                         assertEquals(2, iV8Executor.executeInteger());
                     } catch (Exception e) {
                         failureCount.incrementAndGet();
-                        logError("Failed to execute. Error: {0}.", e.getMessage());
+                        logger.logError("Failed to execute. Error: {0}.", e.getMessage());
                     }
                 });
                 thread.start();
@@ -150,7 +150,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
+                logger.logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
             }
         }
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEngineConfig.getPoolMaxSize() == javetEnginePool.getIdleEngineCount());

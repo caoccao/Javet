@@ -19,20 +19,20 @@ package com.caoccao.javet.tutorial;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
-import com.caoccao.javet.interfaces.IJavetLoggable;
+import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.io.File;
-import java.util.logging.Logger;
 
-public class DecimalJavet implements IJavetLoggable, IJavetClosable {
-    private Logger logger;
+public class DecimalJavet implements IJavetClosable {
+    private IJavetLogger logger;
     private V8Runtime v8Runtime;
 
     public DecimalJavet() {
-        logger = Logger.getLogger(getClass().getName());
+        logger = new JavetDefaultLogger(getClass().getName());
         v8Runtime = null;
     }
 
@@ -42,7 +42,7 @@ public class DecimalJavet implements IJavetLoggable, IJavetClosable {
             decimalJavet.loadJS();
             decimalJavet.test();
         } catch (Throwable t) {
-            decimalJavet.logError(t.getMessage());
+            decimalJavet.getLogger().error(t, t.getMessage());
         } finally {
             decimalJavet.close();
         }
@@ -53,25 +53,24 @@ public class DecimalJavet implements IJavetLoggable, IJavetClosable {
                 JavetOSUtils.WORKING_DIRECTORY,
                 "scripts/node/node_modules/decimal.js/decimal.js");
         if (decimalJSFile.exists() && decimalJSFile.canRead()) {
-            logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
+            logger.logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
             v8Runtime = V8Host.getInstance().createV8Runtime();
             v8Runtime.lock();
             v8Runtime.getExecutor(decimalJSFile).executeVoid();
         } else {
-            logError("{0} is not found.", decimalJSFile.getAbsolutePath());
-            logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
+            logger.logError("{0} is not found.", decimalJSFile.getAbsolutePath());
+            logger.logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
         }
     }
 
     public void test() throws JavetException {
-        logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
+        logger.logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
                 "const a = new Decimal(1.23);" +
                         "const b = new Decimal(2.34);" +
                         "a.add(b).toString();").executeString());
     }
 
-    @Override
-    public Logger getLogger() {
+    public IJavetLogger getLogger() {
         return logger;
     }
 
