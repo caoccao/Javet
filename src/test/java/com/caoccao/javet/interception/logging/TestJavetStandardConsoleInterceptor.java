@@ -53,7 +53,7 @@ public class TestJavetStandardConsoleInterceptor extends BaseTestJavetRuntime {
                 interceptor.unregister(v8Runtime.getGlobalObject());
                 assertEquals(
                         String.join(LINE_SEPARATOR, "debug", "error", "info", "log", "trace", "warn"),
-                        byteArrayOutputStream.toString().trim());
+                        byteArrayOutputStream.toString(StandardCharsets.UTF_8.name()).trim());
             }
         }
         v8Runtime.requestGarbageCollectionForTesting(true);

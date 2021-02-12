@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public abstract class BaseTestJavet {
-    public static final long DEFAULT_WAIT_INTERVAL = 10;
+    public static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 10;
     protected IJavetLogger logger;
 
     public BaseTestJavet() {
@@ -48,20 +48,22 @@ public abstract class BaseTestJavet {
         V8Host.getInstance().setFlags();
     }
 
-    public void runAndWait(long timeOutInMilliseconds, long interval, IRunner runner) throws TimeoutException {
+    public void runAndWait(
+            long timeOutInMilliseconds,
+            long intervalInMilliseconds,
+            IRunner runner)
+            throws TimeoutException {
         ZonedDateTime startZonedDateTime = ZonedDateTime.now();
         ZonedDateTime endZonedDateTime = startZonedDateTime.plus(timeOutInMilliseconds, ChronoUnit.MILLIS);
         while (true) {
             if (runner.run()) {
                 return;
             }
-            if (timeOutInMilliseconds > 0) {
-                if (endZonedDateTime.isBefore(ZonedDateTime.now())) {
-                    break;
-                }
+            if (timeOutInMilliseconds > 0 && endZonedDateTime.isBefore(ZonedDateTime.now())) {
+                break;
             }
             try {
-                TimeUnit.MILLISECONDS.sleep(interval);
+                TimeUnit.MILLISECONDS.sleep(intervalInMilliseconds);
             } catch (InterruptedException e) {
                 throw new TimeoutException("Failed to sleep");
             }
@@ -70,7 +72,7 @@ public abstract class BaseTestJavet {
     }
 
     public void runAndWait(long timeOutInMilliseconds, IRunner runner) throws TimeoutException {
-        runAndWait(timeOutInMilliseconds, DEFAULT_WAIT_INTERVAL, runner);
+        runAndWait(timeOutInMilliseconds, DEFAULT_INTERVAL_IN_MILLISECONDS, runner);
     }
 
     public interface IRunner {

@@ -14,18 +14,18 @@ decimal.js
                 JavetOSUtils.WORKING_DIRECTORY,
                 "scripts/node/node_modules/decimal.js/decimal.js");
         if (decimalJSFile.exists() && decimalJSFile.canRead()) {
-            logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
+            logger.logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
             v8Runtime = V8Host.getInstance().createV8Runtime();
             v8Runtime.lock();
             v8Runtime.getExecutor(decimalJSFile).executeVoid();
         } else {
-            logError("{0} is not found.", decimalJSFile.getAbsolutePath());
-            logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
+            logger.logError("{0} is not found.", decimalJSFile.getAbsolutePath());
+            logger.logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
         }
     }
 
     public void test() throws JavetException {
-        logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
+        logger.logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
                 "const a = new Decimal(1.23);" +
                         "const b = new Decimal(2.34);" +
                         "a.add(b).toString();").executeString());

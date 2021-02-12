@@ -30,17 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
-    public void testCall() throws JavetException {
-        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = [1, 2, 3]; a;").execute()) {
-            assertEquals(3, v8ValueArray.getLength());
-            v8ValueArray.invoke("push", new V8ValueInteger(4));
-            assertEquals(4, v8ValueArray.getLength());
-            assertEquals(4, v8ValueArray.getInteger(3));
-            assertEquals("1,2,3,4", v8ValueArray.toString());
-        }
-    }
-
-    @Test
     public void testClearWeak() throws JavetException {
         V8ValueObject a = v8Runtime.createV8ValueObject();
         V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
@@ -150,6 +139,17 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                     "2021-01-27T01:17:03.719Z[UTC]",
                     v8ValueObject.getPropertyZonedDateTime("k").withZoneSameInstant(ZoneId.of("UTC")).toString());
             assertEquals(1, v8Runtime.getReferenceCount());
+        }
+    }
+
+    @Test
+    public void testInvoke() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = [1, 2, 3]; a;").execute()) {
+            assertEquals(3, v8ValueArray.getLength());
+            v8ValueArray.invoke("push", new V8ValueInteger(4));
+            assertEquals(4, v8ValueArray.getLength());
+            assertEquals(4, v8ValueArray.getInteger(3));
+            assertEquals("1,2,3,4", v8ValueArray.toString());
         }
     }
 

@@ -72,7 +72,7 @@ public final class V8Host implements AutoCloseable {
         return createV8Runtime(false, globalName);
     }
 
-    public synchronized V8Runtime createV8Runtime(boolean pooled, String globalName) {
+    public V8Runtime createV8Runtime(boolean pooled, String globalName) {
         if (closed) {
             return null;
         }
@@ -84,7 +84,7 @@ public final class V8Host implements AutoCloseable {
         return v8Runtime;
     }
 
-    public synchronized void closeV8Runtime(V8Runtime v8Runtime) {
+    public void closeV8Runtime(V8Runtime v8Runtime) {
         if (closed) {
             return;
         }
