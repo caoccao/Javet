@@ -6,7 +6,7 @@ Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in 
 Features
 ========
 
-* It supports both Windows and Linux with V8 v8.3.110.9.
+* It supports both Windows and Linux with V8 v8.9.255.
 * It exposes the majority of V8 API in JVM.
 * It allows injecting JS functions into V8.
 * It supports ``BigInt <-> Long``, ``Date <-> ZonedDateTime``.

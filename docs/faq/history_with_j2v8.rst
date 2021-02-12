@@ -53,7 +53,7 @@ TL;DR: It's too hard.
   * Python2 scripts form the outer layer of the build system, also hide the actual building logic from someone who tries to fix the build system. I don't want to spend my precious time fixing Python2 scripts, because I've been on Python3 for many years. I wish my hair could be as much as Guido van Rossum's. Obviously, I am not, so no more Python2.
   * Maven is old but the least problematic. At least it allows me to package the jar files with my hack to the ``pom.xml``.
 
-With these uncertainties, to me, automating the build system is something with ROI closing to 0. Supposing I achieved it in a particular version of V8, let's say v8.3.110.9, it would for sure break in v8.9.213. Yes, I've confirmed that.
+With these uncertainties, to me, automating the build system is something with ROI closing to 0. Supposing I achieved it in a particular version of V8, let's say v8.3.110.9, it would for sure break in v8.9.x. Later, I managed to built v8.9.255 which has been embeded into Javet.
 
 Why not Deploy J2V8 to Maven Repository?
 ========================================

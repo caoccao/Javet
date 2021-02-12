@@ -10,6 +10,7 @@ Linux Environment
 
 * CMake 3.10+
 * Ubuntu 18.04
+* JDK 8
 
 Windows Environment
 -------------------
@@ -18,11 +19,12 @@ Windows Environment
 * Visual Studio 2019 Community
 * CMake 3.16+ (comes with Visual Studio)
 * Latest Windows 10 SDK with WinDbg
+* JDK 8
 
 Download Pre-built V8
 =====================
 
-I have prepared pre-built Linux and Windows version of V8 v8.3.110.9. Please download the headers and binary from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them locally.
+I have prepared pre-built Linux and Windows version of V8 v8.9.255. Please download the headers and binary from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them locally.
 
 Build Javet JNI Library
 =======================
@@ -48,7 +50,7 @@ Note: This jar file supports both Linux and Windows.
 Build V8 (Optional)
 ===================
 
-Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``8.3.110.9`` on either Windows or Linux. If you face any issues, you may contact `@sjtucaocao <https://twitter.com/sjtucaocao>`_.
+Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``8.9.255. If you face any issues, you may contact `@sjtucaocao <https://twitter.com/sjtucaocao>`_.
 
 Some Tips on Building V8
 ------------------------
