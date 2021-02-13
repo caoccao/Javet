@@ -3,6 +3,8 @@ Javet
 
 Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in Java. It was inspired by J2V8. I'll try to keep up with latest V8 in a slow pace. If you like my work, please **Star** this project. And, you may visit http://caoccao.blogspot.com/.
 
+Latest version is **0.7.0**.
+
 Features
 ========
 
