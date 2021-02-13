@@ -379,7 +379,7 @@ public final class V8Runtime implements
             } catch (JavetV8RuntimeLockConflictException e) {
             }
         }
-        V8Native.resetV8Isolate(handle, globalName);
+        V8Native.resetV8Context(handle, globalName);
     }
 
     /**
