@@ -94,7 +94,9 @@ final class V8Native {
 
     native static void requestGarbageCollectionForTesting(long v8RuntimeHandle, boolean fullGC);
 
-    native static void resetV8Runtime(long v8RuntimeHandle, String globalName);
+    native static void resetV8Context(long v8RuntimeHandle, String globalName);
+
+    native static void resetV8Isolate(long v8RuntimeHandle, String globalName);
 
     native static boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 

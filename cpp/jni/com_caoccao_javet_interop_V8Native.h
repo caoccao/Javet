@@ -217,10 +217,18 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCol
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    resetV8Runtime
+ * Method:    resetV8Context
  * Signature: (JLjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
+  (JNIEnv *, jclass, jlong, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    resetV8Isolate
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
   (JNIEnv *, jclass, jlong, jstring);
 
 /*

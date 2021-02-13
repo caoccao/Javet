@@ -23,7 +23,6 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyRegisteredException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interfaces.IJavetResettable;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
@@ -39,7 +38,7 @@ import java.util.TreeMap;
 
 @SuppressWarnings("unchecked")
 public final class V8Runtime implements
-        IJavetClosable, IJavetResettable, IV8Executable, IV8Creatable {
+        IJavetClosable, IV8Executable, IV8Creatable {
     private static final long INVALID_THREAD_ID = -1L;
     private static final long INVALID_HANDLE = 0L;
 
@@ -366,8 +365,13 @@ public final class V8Runtime implements
         V8Native.requestGarbageCollectionForTesting(handle, fullGC);
     }
 
-    @Override
-    public void reset() throws JavetException {
+    /**
+     * Reset V8 context.
+     * This is a light-weight and recommended reset.
+     *
+     * @throws JavetException the javet exception
+     */
+    public void resetContext() throws JavetException {
         removeReferences();
         if (isLocked()) {
             try {
@@ -375,7 +379,24 @@ public final class V8Runtime implements
             } catch (JavetV8RuntimeLockConflictException e) {
             }
         }
-        V8Native.resetV8Runtime(handle, globalName);
+        V8Native.resetV8Isolate(handle, globalName);
+    }
+
+    /**
+     * Reset V8 isolate.
+     * This is a heavy reset. Please avoid using it in performance sensitive scenario.
+     *
+     * @throws JavetException the javet exception
+     */
+    public void resetIsolate() throws JavetException {
+        removeReferences();
+        if (isLocked()) {
+            try {
+                unlock();
+            } catch (JavetV8RuntimeLockConflictException e) {
+            }
+        }
+        V8Native.resetV8Isolate(handle, globalName);
     }
 
     public boolean set(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {

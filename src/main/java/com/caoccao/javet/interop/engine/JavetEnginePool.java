@@ -18,10 +18,8 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
-import com.caoccao.javet.utils.JavetDefaultLogger;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -148,11 +146,11 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                             JavetEngineUsage usage = engine.getUsage();
                             ZonedDateTime resetEngineZonedDateTime = usage.getLastActiveZonedDatetime()
                                     .plus(config.getResetEngineTimeoutSeconds(), ChronoUnit.SECONDS);
-                            if (true || usage.getEngineUsedCount() >= config.getMaxEngineUsedCount() ||
+                            if (usage.getEngineUsedCount() >= config.getMaxEngineUsedCount() ||
                                     resetEngineZonedDateTime.isBefore(getUTCNow())) {
                                 try {
                                     config.getJavetLogger().debug("JavetEnginePool reset engine begins.");
-                                    engine.reset();
+                                    engine.resetIsolate();
                                     config.getJavetLogger().debug("JavetEnginePool reset engine ends.");
                                 } catch (Exception e) {
                                     config.getJavetLogger().logError(e, "Failed to reset idle engine.");

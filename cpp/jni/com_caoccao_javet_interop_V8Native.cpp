@@ -241,7 +241,7 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 	auto v8Runtime = new Javet::V8Runtime();
 	v8Runtime->mException = nullptr;
 	jlong v8RuntimeHandle = reinterpret_cast<jlong>(v8Runtime);
-	Java_com_caoccao_javet_interop_V8Native_resetV8Runtime(jniEnv, callerClass, v8RuntimeHandle, mGlobalName);
+	Java_com_caoccao_javet_interop_V8Native_resetV8Isolate(jniEnv, callerClass, v8RuntimeHandle, mGlobalName);
 	return v8RuntimeHandle;
 }
 
@@ -553,7 +553,27 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCol
 		: v8::Isolate::GarbageCollectionType::kMinorGarbageCollection);
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Runtime
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mGlobalName) {
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	v8::Locker v8Locker(v8Runtime->v8Isolate);
+	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate);
+	// Create a stack-allocated handle scope.
+	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
+	auto v8IsolateHandle = v8::ObjectTemplate::New(v8Runtime->v8Isolate);
+	auto v8Context = v8::Context::New(v8Runtime->v8Isolate, nullptr, v8IsolateHandle);
+	// Redirects global calls to a given global name. E.g. parseInt() -> window.parseInt().
+	if (mGlobalName != nullptr) {
+		auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8Context, mGlobalName);
+		v8IsolateHandle->SetAccessor(umGlobalName, Javet::Main::GlobalAccessorGetterCallback);
+	}
+	v8Runtime->v8Context.Reset(v8Runtime->v8Isolate, v8Context);
+	v8Runtime->v8GlobalObject.Reset(
+		v8Runtime->v8Isolate,
+		v8Context->Global()->GetPrototype()->ToObject(v8Context).ToLocalChecked());
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mGlobalName) {
 	Java_com_caoccao_javet_interop_V8Native_closeV8Runtime(jniEnv, callerClass, v8RuntimeHandle);
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
