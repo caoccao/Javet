@@ -17,12 +17,15 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 final class JavetLibLoader {
@@ -43,7 +46,7 @@ final class JavetLibLoader {
     private JavetLibLoader() {
     }
 
-    static boolean load() throws JavetOSNotSupportedException {
+    static boolean load() throws JavetOSNotSupportedException, JavetIOException {
         if (!javetLibLoaded) {
             synchronized (lockObject) {
                 if (!javetLibLoaded) {
@@ -91,16 +94,16 @@ final class JavetLibLoader {
         return isDeployed;
     }
 
-    private static File getLibFile() throws JavetOSNotSupportedException {
+    private static File getLibFile(String rootDirectory) throws JavetOSNotSupportedException {
         if (JavetOSUtils.IS_WINDOWS) {
             return new File(
-                    JavetOSUtils.TEMP_DIRECTORY,
+                    rootDirectory,
                     MessageFormat.format(
                             LIB_FILE_NAME_FORMAT,
                             OS_WINDOWS, LIB_VERSION, LIB_FILE_EXTENSION_WINDOWS));
         } else if (JavetOSUtils.IS_LINUX) {
             return new File(
-                    JavetOSUtils.TEMP_DIRECTORY,
+                    rootDirectory,
                     MessageFormat.format(
                             LIB_FILE_NAME_FORMAT,
                             OS_LINUX, LIB_VERSION, LIB_FILE_EXTENSION_LINUX));
@@ -109,9 +112,13 @@ final class JavetLibLoader {
         }
     }
 
-    private static void internalLoad() throws JavetOSNotSupportedException {
-        File libFile = getLibFile();
-        deployLibFile(libFile);
-        System.load(libFile.getAbsolutePath());
+    private static void internalLoad() throws JavetOSNotSupportedException, JavetIOException {
+        File tempDirectoryLibFile = getLibFile(JavetOSUtils.TEMP_DIRECTORY);
+        try {
+            deployLibFile(tempDirectoryLibFile);
+            System.load(tempDirectoryLibFile.getAbsolutePath());
+        } catch (Throwable t) {
+            throw JavetIOException.failedToReadPath(tempDirectoryLibFile.toPath(), t);
+        }
     }
 }

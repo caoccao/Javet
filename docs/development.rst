@@ -20,6 +20,11 @@ Gradle
 
 For now, Gradle v6.7 + Kotlin DSL constructs the build system.
 
+Maven
+-----
+
+Maven v3.6.3+ is the one.
+
 NodeJS
 ------
 

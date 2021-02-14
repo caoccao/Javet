@@ -47,6 +47,17 @@ After a while, ``javet-*.*.*.jar`` will be placed in folder ``build/libs``.
 
 Note: This jar file supports both Linux and Windows.
 
+Upload Javet to Maven Central (Optional)
+----------------------------------------
+
+Package Jar files in Maven.
+
+.. code-block:: sh
+
+    mvn package
+
+Jar files are built under ``./target``.
+
 Build V8 (Optional)
 ===================
 

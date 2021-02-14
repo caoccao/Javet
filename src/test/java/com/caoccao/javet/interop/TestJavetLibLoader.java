@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
+import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestJavetLibLoader extends BaseTestJavet {
     @Test
-    public void testLoad() throws JavetOSNotSupportedException {
+    public void testLoad() throws JavetOSNotSupportedException, JavetIOException {
         assertTrue(JavetLibLoader.load());
     }
 }

@@ -18,8 +18,11 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
+import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,17 +43,20 @@ public final class V8Host implements AutoCloseable {
     private ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
     private JavetException lastException;
     private V8Flags flags;
+    private IJavetLogger logger;
 
     private V8Host() {
         closed = true;
         libLoaded = false;
         lastException = null;
         flags = new V8Flags();
+        logger = new JavetDefaultLogger(getClass().getName());
         v8RuntimeMap = new ConcurrentHashMap<>();
         try {
             libLoaded = JavetLibLoader.load();
             closed = false;
-        } catch (JavetOSNotSupportedException e) {
+        } catch (JavetOSNotSupportedException | JavetIOException e) {
+            logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
             lastException = e;
         }
         isolateCreated = false;

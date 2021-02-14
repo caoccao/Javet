@@ -37,6 +37,9 @@ class ChangeJavetVersion(object):
       'build.gradle.kts', '\n',
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
+      'pom.xml', '\n',
+      re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'))
+    self._update(
       'cpp/build.cmd', '\n',
       re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
