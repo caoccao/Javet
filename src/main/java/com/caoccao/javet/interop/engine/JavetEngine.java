@@ -78,10 +78,20 @@ class JavetEngine implements IJavetEngine {
         return JavetDateTimeUtils.getUTCNow();
     }
 
+    protected void resetContext() throws JavetException {
+        v8Runtime.resetContext();
+        usage.reset();
+        if (active) {
+            v8Runtime.lock();
+        }
+    }
+
     protected void resetIsolate() throws JavetException {
         v8Runtime.resetIsolate();
         usage.reset();
-        setActive(false);
+        if (active) {
+            v8Runtime.lock();
+        }
     }
 
     protected void touchLastActiveZonedDateTime() {
