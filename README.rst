@@ -3,12 +3,12 @@ Javet
 
 Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in Java. It was inspired by J2V8. I'll try to keep up with latest V8 in a slow pace. If you like my work, please **Star** this project. And, you may visit http://caoccao.blogspot.com/.
 
-Latest version is **0.7.0**.
+Latest version is **0.7.1**.
 
 Major Features
 ==============
 
-* It supports both Windows and Linux with V8 v8.9.255.
+* It supports both Windows and Linux with V8 ``v8.9.255``.
 * It exposes the majority of V8 API in JVM.
 * It allows injecting JS functions into V8.
 * It supports ``BigInt <-> Long``, ``Date <-> ZonedDateTime``.
@@ -25,7 +25,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
     </dependency>
 
 Gradle Kotlin
@@ -34,7 +34,7 @@ Gradle Kotlin
 .. code-block:: kotlin
 
     dependencies {
-        implementation("com.caoccao.javet:javet:0.7.0")
+        implementation("com.caoccao.javet:javet:0.7.1")
     }
 
 Gradle Groovy
@@ -42,7 +42,7 @@ Gradle Groovy
 
 .. code-block:: groovy
 
-    compile group: 'com.caoccao.javet', name: 'javet', version: '0.7.0'
+    compile group: 'com.caoccao.javet', name: 'javet', version: '0.7.1'
 
 Hello Javet
 ===========

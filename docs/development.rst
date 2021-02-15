@@ -25,8 +25,13 @@ Maven
 
 Maven v3.6.3+ is the one.
 
-NodeJS
-------
+Python 3.8+ (Optional)
+----------------------
+
+Python 3.8+ is required if you want to upgrade the version.
+
+NodeJS (Optional)
+-----------------
 
 NodeJS 14.5+ is required if you want to go over the tutorial because a few examples use some node modules. After installing NodeJS, please visit ``scripts/node`` directory and run ``npm install``.
 

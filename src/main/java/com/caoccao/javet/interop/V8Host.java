@@ -74,6 +74,10 @@ public final class V8Host implements AutoCloseable {
         return flags;
     }
 
+    public String getJavetVersion() {
+        return JavetLibLoader.LIB_VERSION;
+    }
+
     public V8Runtime createV8Runtime(String globalName) {
         return createV8Runtime(false, globalName);
     }
