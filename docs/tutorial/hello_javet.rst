@@ -2,6 +2,36 @@
 Hello Javet
 ===========
 
+Reference Javet
+===============
+
+Maven
+-----
+
+.. code-block:: xml
+
+    <dependency>
+        <groupId>com.caoccao.javet</groupId>
+        <artifactId>javet</artifactId>
+        <version>0.7.0</version>
+    </dependency>
+
+Gradle Kotlin
+-------------
+
+.. code-block:: kotlin
+
+    dependencies {
+        implementation("com.caoccao.javet:javet:0.7.0")
+    }
+
+Gradle Groovy
+-------------
+
+.. code-block:: groovy
+
+    compile group: 'com.caoccao.javet', name: 'javet', version: '0.7.0'
+
 Print **Hello Javet**
 =====================
 

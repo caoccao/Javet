@@ -5,8 +5,8 @@ Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in 
 
 Latest version is **0.7.0**.
 
-Features
-========
+Major Features
+==============
 
 * It supports both Windows and Linux with V8 v8.9.255.
 * It exposes the majority of V8 API in JVM.
@@ -14,10 +14,48 @@ Features
 * It supports ``BigInt <-> Long``, ``Date <-> ZonedDateTime``.
 * It supports Javet engine pool like DB connection pool with a huge performance improvement.
 
-Project Status
-==============
+Quick Start
+===========
 
-This is a personal project for now. It supports limited features compared to J2V8.
+Maven
+-----
+
+.. code-block:: xml
+
+    <dependency>
+        <groupId>com.caoccao.javet</groupId>
+        <artifactId>javet</artifactId>
+        <version>0.7.0</version>
+    </dependency>
+
+Gradle Kotlin
+-------------
+
+.. code-block:: kotlin
+
+    dependencies {
+        implementation("com.caoccao.javet:javet:0.7.0")
+    }
+
+Gradle Groovy
+-------------
+
+.. code-block:: groovy
+
+    compile group: 'com.caoccao.javet', name: 'javet', version: '0.7.0'
+
+Hello Javet
+===========
+
+.. code-block:: java
+
+    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+        v8Runtime.lock();
+        System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
+    }
+
+Documents
+=========
 
 * `Build <docs/build.rst>`_
 * `Development <docs/development.rst>`_
