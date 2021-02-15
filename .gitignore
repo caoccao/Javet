@@ -73,4 +73,5 @@ _build
 .classpath
 .project
 .settings
+release.properties
 target

@@ -54,7 +54,10 @@ Package Jar files in Maven.
 
 .. code-block:: sh
 
-    mvn package
+    # mvn package
+    mvn clean
+    mvn release:prepare
+    mvn release:perform
 
 Jar files are built under ``./target``.
 
