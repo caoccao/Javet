@@ -73,5 +73,6 @@ _build
 .classpath
 .project
 .settings
+pom.xml.releaseBackup
 release.properties
 target
