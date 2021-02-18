@@ -33,7 +33,7 @@ public class JavetDefaultLogger implements IJavetLogger {
     }
 
     @Override
-    public void error(Throwable cause, String message) {
+    public void error(String message, Throwable cause) {
         logger.severe(message);
         logger.severe(cause.getMessage());
     }

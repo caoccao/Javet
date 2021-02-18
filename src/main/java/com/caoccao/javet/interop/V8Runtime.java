@@ -227,8 +227,16 @@ public final class V8Runtime implements
         return globalName;
     }
 
+    public void setGlobalName(String globalName) {
+        this.globalName = globalName;
+    }
+
     public IJavetLogger getLogger() {
         return logger;
+    }
+
+    public void setLogger(IJavetLogger logger) {
+        this.logger = logger;
     }
 
     public V8ValueGlobalObject getGlobalObject() throws JavetException {
@@ -345,6 +353,7 @@ public final class V8Runtime implements
             if (!isLocked()) {
                 lock();
             }
+            final int referenceCount = referenceMap.size();
             int weakReferenceCount = 0;
             for (IV8ValueReference iV8ValueReference : referenceMap.values()) {
                 if (iV8ValueReference.isWeak()) {
@@ -352,7 +361,7 @@ public final class V8Runtime implements
                 }
                 removeReference(iV8ValueReference);
             }
-            logger.logWarn("{0}/{1} V8 object(s) not recycled.", weakReferenceCount, referenceMap.size());
+            logger.logWarn("{0} V8 object(s) not recycled, {1} weak.", referenceCount, weakReferenceCount);
             referenceMap.clear();
         }
     }
@@ -375,13 +384,14 @@ public final class V8Runtime implements
      */
     public void resetContext() throws JavetException {
         removeReferences();
-        if (isLocked()) {
-            try {
-                unlock();
-            } catch (JavetV8RuntimeLockConflictException e) {
-            }
+        boolean locked = isLocked();
+        if (locked) {
+            unlock();
         }
         V8Native.resetV8Context(handle, globalName);
+        if (locked) {
+            lock();
+        }
     }
 
     /**
@@ -392,27 +402,20 @@ public final class V8Runtime implements
      */
     public void resetIsolate() throws JavetException {
         removeReferences();
-        if (isLocked()) {
-            try {
-                unlock();
-            } catch (JavetV8RuntimeLockConflictException e) {
-            }
+        boolean locked = isLocked();
+        if (locked) {
+            unlock();
         }
         V8Native.resetV8Isolate(handle, globalName);
+        if (locked) {
+            lock();
+        }
     }
 
     public boolean set(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         checkLock();
         decorateV8Values(key, value);
         return V8Native.set(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key, value);
-    }
-
-    public void setGlobalName(String globalName) {
-        this.globalName = globalName;
-    }
-
-    public void setLogger(IJavetLogger logger) {
-        this.logger = logger;
     }
 
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {

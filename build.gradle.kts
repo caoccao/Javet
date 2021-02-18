@@ -61,5 +61,13 @@ task<Exec>("buildJNIHeaders") {
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags("performance")
+    }
+}
+
+tasks.register<Test>("performanceTest") {
+    useJUnitPlatform {
+        includeTags("performance")
+    }
 }
