@@ -82,7 +82,7 @@ public final class V8Runtime implements
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), receiver, returnResult, v8Values));
     }
 
-    public void checkLock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+    public V8Runtime checkLock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         if (handle == INVALID_HANDLE) {
             throw new JavetV8RuntimeAlreadyClosedException();
         }
@@ -90,6 +90,7 @@ public final class V8Runtime implements
         if (threadId != currentThreadId) {
             throw new JavetV8RuntimeLockConflictException(threadId, currentThreadId);
         }
+        return this;
     }
 
     public void clearWeak(IV8ValueReference iV8ValueReference) throws JavetException {
@@ -310,7 +311,7 @@ public final class V8Runtime implements
         return V8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
     }
 
-    public void lock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+    public V8Runtime lock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         if (!isLocked()) {
             if (handle == INVALID_HANDLE) {
                 throw new JavetV8RuntimeAlreadyClosedException();
@@ -320,6 +321,7 @@ public final class V8Runtime implements
         } else {
             checkLock();
         }
+        return this;
     }
 
     public void removeJNIGlobalRef(long handle) {
@@ -436,9 +438,10 @@ public final class V8Runtime implements
         return V8Native.toString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
     }
 
-    public void unlock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
+    public V8Runtime unlock() throws JavetV8RuntimeLockConflictException, JavetV8RuntimeAlreadyClosedException {
         checkLock();
         threadId = INVALID_THREAD_ID;
         V8Native.unlockV8Runtime(handle);
+        return this;
     }
 }
