@@ -20,10 +20,10 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
 import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
-import com.caoccao.javet.interop.IV8CallbackReceiver;
-import com.caoccao.javet.utils.JavetConverterUtils;
+import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
+import com.caoccao.javet.utils.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetResourceUtils;
-import com.caoccao.javet.utils.V8CallbackContext;
+import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
@@ -41,24 +41,24 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     The lifecycle of V8ValueFunction depends on V8CallbackContext which is
     managed by JNI native implementation.
      */
-    protected V8CallbackContext v8CallbackContext;
+    protected JavetCallbackContext javetCallbackContext;
 
     public V8ValueFunction(long handle) {
         super(handle);
-        v8CallbackContext = null;
+        javetCallbackContext = null;
     }
 
-    public V8CallbackContext getV8CallbackContext() {
-        return v8CallbackContext;
+    public JavetCallbackContext getV8CallbackContext() {
+        return javetCallbackContext;
     }
 
-    public void setV8CallbackContext(V8CallbackContext v8CallbackContext)
+    public void setV8CallbackContext(JavetCallbackContext javetCallbackContext)
             throws JavetV8CallbackAlreadyRegisteredException {
-        Objects.requireNonNull(v8CallbackContext);
-        if (this.v8CallbackContext == null) {
-            v8CallbackContext.setCallbackOwnerFunction(this);
-            this.v8CallbackContext = v8CallbackContext;
-        } else if (this.v8CallbackContext != v8CallbackContext) {
+        Objects.requireNonNull(javetCallbackContext);
+        if (this.javetCallbackContext == null) {
+            javetCallbackContext.setCallbackOwnerFunction(this);
+            this.javetCallbackContext = javetCallbackContext;
+        } else if (this.javetCallbackContext != javetCallbackContext) {
             throw new JavetV8CallbackAlreadyRegisteredException();
         }
     }
@@ -74,9 +74,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     public void close(boolean forceClose) throws JavetException {
         // V8 lock free
         if (forceClose || !isWeak()) {
-            if (v8CallbackContext != null) {
-                v8Runtime.removeJNIGlobalRef(v8CallbackContext.getHandle());
-                v8CallbackContext = null;
+            if (javetCallbackContext != null) {
+                v8Runtime.removeJNIGlobalRef(javetCallbackContext.getHandle());
+                javetCallbackContext = null;
             } else {
                 /*
                  * Function from V8 loses the callback context.
@@ -87,7 +87,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
         }
     }
 
-    protected Object convert(JavetConverterUtils converter, Class expectedClass, V8Value v8Value)
+    protected Object convert(IJavetConverter converter, Class expectedClass, V8Value v8Value)
             throws JavetException {
         if (v8Value == null) {
             // Skip null
@@ -112,16 +112,16 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     public V8Value receiveCallback(V8Value thisObject, V8ValueArray args) throws Throwable {
-        if (v8CallbackContext != null) {
+        if (javetCallbackContext != null) {
             checkV8Runtime();
             List<Object> values = new ArrayList<>();
             try {
                 v8Runtime.decorateV8Values(thisObject, args);
-                JavetConverterUtils converter = v8CallbackContext.getConverter();
-                Method method = v8CallbackContext.getCallbackMethod();
-                IV8CallbackReceiver callbackReceiver = v8CallbackContext.getCallbackReceiver();
+                IJavetConverter converter = javetCallbackContext.getConverter();
+                Method method = javetCallbackContext.getCallbackMethod();
+                IJavetCallbackReceiver callbackReceiver = javetCallbackContext.getCallbackReceiver();
                 Object resultObject = null;
-                if (v8CallbackContext.isThisObjectRequired()) {
+                if (javetCallbackContext.isThisObjectRequired()) {
                     values.add(thisObject);
                 }
                 if (args != null) {
@@ -164,7 +164,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                     }
                     resultObject = method.invoke(callbackReceiver, objectValues.toArray());
                 }
-                if (v8CallbackContext.isReturnResult()) {
+                if (javetCallbackContext.isReturnResult()) {
                     if (resultObject != null) {
                         if (resultObject instanceof V8Value) {
                             v8Runtime.decorateV8Value((V8Value) resultObject);
@@ -187,7 +187,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                     throw t;
                 }
             } finally {
-                if (!v8CallbackContext.isThisObjectRequired()) {
+                if (!javetCallbackContext.isThisObjectRequired()) {
                     JavetResourceUtils.safeClose(thisObject);
                 }
                 JavetResourceUtils.safeClose(args);

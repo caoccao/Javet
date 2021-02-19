@@ -55,11 +55,9 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
     }
 
     protected JavetEngine createEngine() {
-        JavetEngine engine = new JavetEngine(this);
         V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime(true, config.getGlobalName());
         v8Runtime.setLogger(config.getJavetLogger());
-        engine.setV8Runtime(v8Runtime);
-        return engine;
+        return new JavetEngine(this, v8Runtime);
     }
 
     @Override

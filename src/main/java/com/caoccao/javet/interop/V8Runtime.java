@@ -27,7 +27,7 @@ import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
 import com.caoccao.javet.utils.JavetDefaultLogger;
-import com.caoccao.javet.utils.V8CallbackContext;
+import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.reference.*;
@@ -143,11 +143,11 @@ public final class V8Runtime implements
     }
 
     @Override
-    public V8ValueFunction createV8ValueFunction(V8CallbackContext v8CallbackContext) throws JavetException {
+    public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
         checkLock();
         V8ValueFunction v8ValueFunction = decorateV8Value(
-                (V8ValueFunction) V8Native.createV8Value(handle, V8ValueReferenceType.Function, v8CallbackContext));
-        v8ValueFunction.setV8CallbackContext(v8CallbackContext);
+                (V8ValueFunction) V8Native.createV8Value(handle, V8ValueReferenceType.Function, javetCallbackContext));
+        v8ValueFunction.setV8CallbackContext(javetCallbackContext);
         return v8ValueFunction;
     }
 

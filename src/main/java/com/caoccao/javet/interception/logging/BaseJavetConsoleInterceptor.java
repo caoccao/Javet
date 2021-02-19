@@ -21,16 +21,15 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
 import com.caoccao.javet.interception.BaseJavetInterceptor;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.utils.V8CallbackContext;
+import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
+    protected static final String SPACE = " ";
     protected static final String JS_FUNCTION_DEBUG = "debug";
     protected static final String JS_FUNCTION_ERROR = "error";
     protected static final String JS_FUNCTION_INFO = "info";
@@ -43,21 +42,14 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     protected static final String JAVA_CONSOLE_LOG = "consoleLog";
     protected static final String JAVA_CONSOLE_TRACE = "consoleTrace";
     protected static final String JAVA_CONSOLE_WARN = "consoleWarn";
-    protected static final String EMPTY = "";
-    protected static final String SPACE = " ";
     protected static final String PROPERTY_CONSOLE = "console";
 
     public BaseJavetConsoleInterceptor(V8Runtime v8Runtime) {
         super(v8Runtime);
     }
 
-    protected String concat(V8Value... v8Values) {
-        if (v8Values == null || v8Values.length == 0) {
-            return EMPTY;
-        }
-        return String.join(
-                SPACE,
-                Arrays.stream(v8Values).map(v8Value -> v8Value.toString()).collect(Collectors.toList()));
+    public String concat(V8Value... v8Values) {
+        return V8ValueUtils.concat(SPACE, v8Values);
     }
 
     public abstract void consoleDebug(V8Value... v8Values);
@@ -90,7 +82,7 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
 
     protected void register(IV8ValueObject iV8ValueObject, String jsFunctionName, String javaFunctionName)
             throws JavetException, NoSuchMethodException {
-        V8CallbackContext callbackContext = new V8CallbackContext(
+        JavetCallbackContext callbackContext = new JavetCallbackContext(
                 this, getClass().getMethod(javaFunctionName, V8Value[].class));
         V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(callbackContext);
         iV8ValueObject.set(jsFunctionName, v8ValueFunction);

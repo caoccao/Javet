@@ -18,31 +18,33 @@
 package com.caoccao.javet.utils;
 
 import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
-import com.caoccao.javet.interop.IV8CallbackReceiver;
+import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
+import com.caoccao.javet.utils.converters.IJavetConverter;
+import com.caoccao.javet.utils.converters.JavetPrimitiveConverter;
 import com.caoccao.javet.values.reference.IV8ValueFunction;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-public final class V8CallbackContext {
-    protected static final String ERROR_V8_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
-            "V8 callback context handle is invalid";
+public final class JavetCallbackContext {
+    protected static final String ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
+            "Javet callback context handle is invalid";
     protected Method callbackMethod;
     protected IV8ValueFunction callbackOwnerFunction;
-    protected IV8CallbackReceiver callbackReceiver;
-    protected JavetConverterUtils converter;
+    protected IJavetCallbackReceiver callbackReceiver;
+    protected IJavetConverter converter;
     protected long handle;
     protected boolean returnResult;
     protected boolean thisObjectRequired;
 
-    public V8CallbackContext(
-            IV8CallbackReceiver callbackReceiver,
+    public JavetCallbackContext(
+            IJavetCallbackReceiver callbackReceiver,
             Method callbackMethod) {
         this(callbackReceiver, callbackMethod, false);
     }
 
-    public V8CallbackContext(
-            IV8CallbackReceiver callbackReceiver,
+    public JavetCallbackContext(
+            IJavetCallbackReceiver callbackReceiver,
             Method callbackMethod,
             boolean thisObjectRequired) {
         Objects.requireNonNull(callbackReceiver);
@@ -50,7 +52,7 @@ public final class V8CallbackContext {
         callbackOwnerFunction = null;
         this.callbackMethod = callbackMethod;
         this.callbackReceiver = callbackReceiver;
-        converter = new JavetConverterUtils();
+        converter = new JavetPrimitiveConverter();
         handle = 0L;
         this.returnResult = !callbackMethod.getReturnType().equals(Void.TYPE);
         this.thisObjectRequired = thisObjectRequired;
@@ -74,7 +76,7 @@ public final class V8CallbackContext {
         }
     }
 
-    public IV8CallbackReceiver getCallbackReceiver() {
+    public IJavetCallbackReceiver getCallbackReceiver() {
         return callbackReceiver;
     }
 
@@ -82,7 +84,7 @@ public final class V8CallbackContext {
         return callbackMethod;
     }
 
-    public JavetConverterUtils getConverter() {
+    public IJavetConverter getConverter() {
         return converter;
     }
 
@@ -91,7 +93,7 @@ public final class V8CallbackContext {
     }
 
     public void setHandle(long handle) {
-        assert handle > 0L : ERROR_V8_CALLBACK_CONTEXT_HANDLE_IS_INVALID;
+        assert handle > 0L : ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID;
         this.handle = handle;
     }
 

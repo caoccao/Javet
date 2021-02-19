@@ -25,4 +25,6 @@ public interface IJavetEngine extends IJavetClosable {
     V8Runtime getV8Runtime() throws JavetException;
 
     boolean isActive();
+
+    void resetContext() throws JavetException;
 }

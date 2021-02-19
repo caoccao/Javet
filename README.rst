@@ -1,9 +1,9 @@
 Javet
 =====
 
-Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in Java. It was inspired by J2V8. I'll try to keep up with latest V8 in a slow pace. If you like my work, please **Star** this project. And, you may visit http://caoccao.blogspot.com/.
+[![Maven Central](https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg)](https://search.maven.org/search?q=g:com.caoccao.javet)
 
-Latest version is **0.7.1**.
+Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in Java. It was inspired by J2V8. I'll try to keep up with latest V8 in a slow pace. If you like my work, please **Star** this project. And, you may visit http://caoccao.blogspot.com/.
 
 Major Features
 ==============
@@ -17,8 +17,11 @@ Major Features
 Quick Start
 ===========
 
+Dependency
+----------
+
 Maven
------
+^^^^^
 
 .. code-block:: xml
 
@@ -28,29 +31,26 @@ Maven
         <version>0.7.1</version>
     </dependency>
 
-Gradle Kotlin
--------------
+Gradle Kotlin DSL
+^^^^^^^^^^^^^^^^^
 
 .. code-block:: kotlin
 
-    dependencies {
-        implementation("com.caoccao.javet:javet:0.7.1")
-    }
+    implementation("com.caoccao.javet:javet:0.7.1")
 
-Gradle Groovy
--------------
+Gradle Groovy DSL
+^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    compile group: 'com.caoccao.javet', name: 'javet', version: '0.7.1'
+    implementation 'com.caoccao.javet:javet:0.7.1'
 
 Hello Javet
-===========
+-----------
 
 .. code-block:: java
 
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
-        v8Runtime.lock();
+    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime().lock()) {
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
     }
 

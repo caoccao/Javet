@@ -15,40 +15,18 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils;
+package com.caoccao.javet.utils.receivers;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.IV8CallbackReceiver;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.V8ValueArray;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 /**
- * The type V8 callback receiver.
- * <p>
- * It is supposed to provide a common ground for customized V8 callback receiver.
+ * The interface Javet callback receiver.
  */
-public class V8CallbackReceiver implements IV8CallbackReceiver {
-    /**
-     * The V8 runtime.
-     */
-    protected V8Runtime v8Runtime;
-
-    /**
-     * Instantiates a new V8 callback receiver.
-     *
-     * @param v8Runtime the V8 runtime
-     */
-    public V8CallbackReceiver(V8Runtime v8Runtime) {
-        Objects.requireNonNull(v8Runtime);
-        this.v8Runtime = v8Runtime;
-    }
+public interface IJavetCallbackReceiver {
 
     /**
      * Gets method that does not take any arguments by method name.
@@ -57,8 +35,20 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      * @return the method
      * @throws NoSuchMethodException the no such method exception
      */
-    public final Method getMethod(String methodName) throws NoSuchMethodException {
+    default Method getMethod(String methodName) throws NoSuchMethodException {
         return getMethod(methodName, false, 0);
+    }
+
+    /**
+     * Gets method.
+     *
+     * @param methodName the method name
+     * @param argCount   the arg count
+     * @return the method
+     * @throws NoSuchMethodException the no such method exception
+     */
+    default Method getMethod(String methodName, int argCount) throws NoSuchMethodException {
+        return getMethod(methodName, false, argCount);
     }
 
     /**
@@ -69,7 +59,7 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      * @return the method
      * @throws NoSuchMethodException the no such method exception
      */
-    public final Method getMethod(String methodName, boolean thisObjectRequired) throws NoSuchMethodException {
+    default Method getMethod(String methodName, boolean thisObjectRequired) throws NoSuchMethodException {
         return getMethod(methodName, thisObjectRequired, 0);
     }
 
@@ -82,7 +72,7 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      * @return the method
      * @throws NoSuchMethodException the no such method exception
      */
-    public final Method getMethod(String methodName, boolean thisObjectRequired, int argCount)
+    default Method getMethod(String methodName, boolean thisObjectRequired, int argCount)
             throws NoSuchMethodException {
         if (argCount < 0) {
             if (thisObjectRequired) {
@@ -111,7 +101,7 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      * @return the method
      * @throws NoSuchMethodException the no such method exception
      */
-    public final Method getMethod(String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+    default Method getMethod(String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
         return getClass().getMethod(methodName, parameterTypes);
     }
 
@@ -122,7 +112,7 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      * @return the method varargs
      * @throws NoSuchMethodException the no such method exception
      */
-    public final Method getMethodVarargs(String methodName) throws NoSuchMethodException {
+    default Method getMethodVarargs(String methodName) throws NoSuchMethodException {
         return getMethod(methodName, false, -1);
     }
 
@@ -134,78 +124,14 @@ public class V8CallbackReceiver implements IV8CallbackReceiver {
      * @return the method varargs
      * @throws NoSuchMethodException the no such method exception
      */
-    public final Method getMethodVarargs(String methodName, boolean thisObjectRequired) throws NoSuchMethodException {
+    default Method getMethodVarargs(String methodName, boolean thisObjectRequired) throws NoSuchMethodException {
         return getMethod(methodName, thisObjectRequired, -1);
     }
 
-    @Override
-    public V8Runtime getV8Runtime() {
-        return v8Runtime;
-    }
-
     /**
-     * Echo the given V8 value.
+     * Gets v 8 runtime.
      *
-     * @param arg the arg
-     * @return the V8 value
-     * @throws JavetException the javet exception
+     * @return the v 8 runtime
      */
-    public V8Value echo(V8Value arg) throws JavetException {
-        return arg.toClone();
-    }
-
-    /**
-     * Echo the given V8 value array.
-     * <p>
-     * Note: Lifecycle of the input and return arrays is managed by the caller.
-     *
-     * @param args the args
-     * @return the V8 value array
-     * @throws JavetException the javet exception
-     */
-    public V8ValueArray echo(V8Value... args) throws JavetException {
-        V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-        for (V8Value arg : args) {
-            try (V8Value clonedArg = arg.toClone()) {
-                v8ValueArray.push(clonedArg);
-            }
-        }
-        return v8ValueArray;
-    }
-
-    /**
-     * Echo string from input string.
-     *
-     * @param str the str
-     * @return the string
-     */
-    public String echoString(String str) {
-        return str;
-    }
-
-    /**
-     * Echo string from input V8 value.
-     *
-     * @param arg the arg
-     * @return the string
-     */
-    public String echoString(V8Value arg) {
-        return arg == null ? null : arg.toString();
-    }
-
-    /**
-     * Echo string from the given V8 value array.
-     * <p>
-     * Note: Lifecycle of the input and return arrays is managed by the caller.
-     *
-     * @param args the args
-     * @return the string
-     */
-    public String echoString(V8Value... args) {
-        List<String> stringList = new ArrayList<>(args.length);
-        for (V8Value arg : args) {
-            stringList.add(arg == null ? null : arg.toString());
-        }
-        return String.join(JavetOSUtils.LINE_SEPARATOR, stringList);
-    }
+    V8Runtime getV8Runtime();
 }

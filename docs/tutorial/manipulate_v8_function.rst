@@ -20,7 +20,7 @@ Option 1: The Common Way
 .. code-block:: java
 
     // Create a function and wrap it with try resource.
-    try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext)) {
+    try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
         // Do whatever you want to do with this function
     }
     // Outside the code block, this function is no longer valid. Calling this function in V8 will result in memory corruption.
@@ -30,7 +30,7 @@ Option 2: The Recommended Way
 
 .. code-block:: java
 
-    V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(v8CallbackContext);
+    V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
     // Set this function to the certain V8 value objects.
     v8ValueFunction.setWeak();
     // Once this function is set to weak, its lifecycle is automatically managed by Javet + V8.

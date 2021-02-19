@@ -19,7 +19,7 @@ package com.caoccao.javet.mock;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.utils.V8CallbackReceiver;
+import com.caoccao.javet.utils.receivers.JavetCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -30,7 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockCallbackReceiver extends V8CallbackReceiver {
+public class MockCallbackReceiver extends JavetCallbackReceiver {
     protected boolean called;
 
     public MockCallbackReceiver(V8Runtime v8Runtime) {

@@ -63,7 +63,7 @@ public class TestPerformance extends BaseTestJavet {
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
             IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
             for (int i = 0; i < iterations; i++) {
-                v8Runtime.resetContext();
+                javetEngine.resetContext();
                 assertEquals(2, v8Executor.executeInteger());
             }
         }
@@ -105,7 +105,7 @@ public class TestPerformance extends BaseTestJavet {
                     V8Runtime v8Runtime = javetEngine.getV8Runtime();
                     IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
                     for (int j = 0; j < iterations; j++) {
-                        v8Runtime.resetContext();
+                        javetEngine.resetContext();
                         assertEquals(2, v8Executor.executeInteger());
                     }
                 } catch (Exception e) {
