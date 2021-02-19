@@ -25,7 +25,6 @@ import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
@@ -82,11 +81,10 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
 
     protected void register(IV8ValueObject iV8ValueObject, String jsFunctionName, String javaFunctionName)
             throws JavetException, NoSuchMethodException {
-        JavetCallbackContext callbackContext = new JavetCallbackContext(
-                this, getClass().getMethod(javaFunctionName, V8Value[].class));
-        V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(callbackContext);
-        iV8ValueObject.set(jsFunctionName, v8ValueFunction);
-        v8ValueFunction.setWeak();
+        iV8ValueObject.setFunction(
+                jsFunctionName,
+                new JavetCallbackContext(this,
+                        getClass().getMethod(javaFunctionName, V8Value[].class)));
     }
 
     @Override

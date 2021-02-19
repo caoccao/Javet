@@ -1,7 +1,10 @@
 Javet
 =====
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg)](https://search.maven.org/search?q=g:com.caoccao.javet)
+|Maven Central|
+
+.. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg
+    :target: https://search.maven.org/search?q=g:com.caoccao.javet
 
 Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in Java. It was inspired by J2V8. I'll try to keep up with latest V8 in a slow pace. If you like my work, please **Star** this project. And, you may visit http://caoccao.blogspot.com/.
 

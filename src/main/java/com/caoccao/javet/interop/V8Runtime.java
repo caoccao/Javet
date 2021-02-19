@@ -26,13 +26,14 @@ import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
-import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.reference.*;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -355,13 +356,17 @@ public final class V8Runtime implements
             }
             final int referenceCount = referenceMap.size();
             int weakReferenceCount = 0;
-            for (IV8ValueReference iV8ValueReference : referenceMap.values()) {
+            for (IV8ValueReference iV8ValueReference : new ArrayList<>(referenceMap.values())) {
                 if (iV8ValueReference.isWeak()) {
                     ++weakReferenceCount;
                 }
                 removeReference(iV8ValueReference);
             }
-            logger.logWarn("{0} V8 object(s) not recycled, {1} weak.", referenceCount, weakReferenceCount);
+            if (weakReferenceCount < referenceCount) {
+                logger.logWarn("{0} V8 object(s) not recycled, {1} weak.", referenceCount, weakReferenceCount);
+            } else {
+                logger.logDebug("{0} V8 object(s) not recycled, {1} weak.", referenceCount, weakReferenceCount);
+            }
             referenceMap.clear();
         }
     }
@@ -372,7 +377,9 @@ public final class V8Runtime implements
      *
      * @param fullGC true = Full GC, false = Minor GC
      */
-    public void requestGarbageCollectionForTesting(boolean fullGC) {
+    public void requestGarbageCollectionForTesting(boolean fullGC)
+            throws JavetV8RuntimeAlreadyClosedException, JavetV8RuntimeLockConflictException {
+        checkLock();
         V8Native.requestGarbageCollectionForTesting(handle, fullGC);
     }
 
