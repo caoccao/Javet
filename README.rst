@@ -11,11 +11,13 @@ Javet is Java + V8 (JAVa + V + EighT). It is yet another way of embedding V8 in 
 Major Features
 ==============
 
-* It supports both Windows and Linux with V8 ``v8.9.255``.
-* It exposes the majority of V8 API in JVM.
-* It allows injecting JS functions into V8.
-* It supports ``BigInt <-> Long``, ``Date <-> ZonedDateTime``.
-* It supports Javet engine pool like DB connection pool with a huge performance improvement.
+* Linux + Windows
+* V8 ``v8.9.255``
+* Exposure of the majority of V8 API in JVM
+* JS functions interception
+* Native BigInt and Date
+* Javet engine pool
+* Easy spring integration
 
 Quick Start
 ===========
@@ -64,6 +66,7 @@ Documents
 * `Development <docs/development.rst>`_
 * `Tutorial <docs/tutorial/index.rst>`_
 * `Performance <docs/performance.rst>`_
+* `Release Notes <docs/release_nots.rst>`_
 * `FAQ <docs/faq/index.rst>`_
 * `TODO List <docs/todo_list.rst>`_
 
