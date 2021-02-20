@@ -36,6 +36,10 @@ Option 2: The Recommended Way
     // Once this function is set to weak, its lifecycle is automatically managed by Javet + V8.
     // There is no need to call close() any more.
 
+    // Alternatively, setFunction() makes that easy with only one line.
+    v8ValueObject.setFunction("test", javetCallbackContext);
+    // An instance of V8ValueFunction is created and set to weak internally.
+
 Automatic Type Conversion
 =========================
 
@@ -67,5 +71,7 @@ Javet is capable of automatically converting its internal ``V8Value`` to other t
     echo("123");
 
 Note: Primitive types must be in their object form in the method signature. E.g. ``boolean`` must be set to ``Boolean``, ``int`` must be set to ``Integer``, etc. Why? Because the converted value could be ``null`` which would cause JDK to complain with an exception.
+
+Please review `test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>`_ for more detail.
 
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
