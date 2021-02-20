@@ -64,6 +64,7 @@ Documents
 
 * `Build <docs/build.rst>`_
 * `Development <docs/development.rst>`_
+* `Design <docs/design.rst>`_
 * `Tutorial <docs/tutorial/index.rst>`_
 * `Performance <docs/performance.rst>`_
 * `Release Notes <docs/release_notes.rst>`_

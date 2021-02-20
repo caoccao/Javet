@@ -68,7 +68,8 @@ class ChangeJavetVersion(object):
     file_path = (self._root_path / relative_file_path).resolve().absolute()
     logging.info('Updating %s.', str(file_path))
     lines, line_number = [], 1
-    for line in file_path.read_bytes().decode('utf-8').split(line_separator):
+    original_buffer = file_path.read_bytes()
+    for line in original_buffer.decode('utf-8').split(line_separator):
       for pattern in patterns:
         match_object = pattern.search(line)
         if match_object is not None:
@@ -87,7 +88,12 @@ class ChangeJavetVersion(object):
           break
       lines.append(line)
       line_number += 1
-    file_path.write_bytes(line_separator.join(lines).encode('utf-8'))
+    new_buffer = line_separator.join(lines).encode('utf-8')
+    if original_buffer == new_buffer:
+      logging.warn('  Skipped.')
+    else:
+      file_path.write_bytes(new_buffer)
+      logging.info('  Updated.')
 
 def main():
   change_javet_version = ChangeJavetVersion('0.7.2')
