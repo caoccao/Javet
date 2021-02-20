@@ -43,6 +43,7 @@ class ChangeJavetVersion(object):
       'docs/tutorial/hello_javet.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
       re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)"'),
+      re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)\''),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'pom.xml', '\n',

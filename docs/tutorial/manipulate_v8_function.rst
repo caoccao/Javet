@@ -43,7 +43,7 @@ Option 2: The Recommended Way
 Automatic Type Conversion
 =========================
 
-Javet is capable of automatically converting its internal ``V8Value`` to other types and that capability can be manipulated by ``JavetConverterUtils`` which also supports custom type conversion. So, the following 4 functions are all the same and valid.
+Javet is capable of automatically converting its internal ``V8Value`` to primitive types by inspecting the function signature. So, the following 4 functions are all the same and valid.
 
 .. code-block:: java
 
