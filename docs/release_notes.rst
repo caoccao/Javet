@@ -16,7 +16,7 @@ Release Notes
 * Linux + Windows
 * V8 ``v8.9.255``
 * Exposure of the majority of V8 API in JVM
-* JS functions interception
+* JS function interception
 * Native BigInt and Date
 * Javet engine pool
 
