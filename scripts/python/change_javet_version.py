@@ -49,7 +49,7 @@ class ChangeJavetVersion(object):
       re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
       re.compile(r'^        <tag>javet-(?P<version>\d+\.\d+\.\d+)</tag>$'))
     self._update(
-      'cpp/build.cmd', '\n',
+      'cpp/build.cmd', '\r\n',
       re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'cpp/build.sh', '\n',
@@ -58,7 +58,7 @@ class ChangeJavetVersion(object):
       'src/main/java/com/caoccao/javet/interop/JavetLibLoader.java', '\n',
       re.compile(r'LIB_VERSION = "(?P<version>\d+\.\d+\.\d+)";$'))
     self._update(
-      'cpp/jni/javet.rc', '\n',
+      'cpp/jni/javet.rc', '\r\n',
       re.compile(r'"(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'v\.(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'(?P<version>\d+,\d+,\d+)'))
@@ -67,7 +67,7 @@ class ChangeJavetVersion(object):
     file_path = (self._root_path / relative_file_path).resolve().absolute()
     logging.info('Updating %s.', str(file_path))
     lines, line_number = [], 1
-    for line in file_path.read_text('utf-8').split(line_separator):
+    for line in file_path.read_bytes().decode('utf-8').split(line_separator):
       for pattern in patterns:
         match_object = pattern.search(line)
         if match_object is not None:
@@ -86,7 +86,7 @@ class ChangeJavetVersion(object):
           break
       lines.append(line)
       line_number += 1
-    file_path.write_text(line_separator.join(lines), 'utf-8')
+    file_path.write_bytes(line_separator.join(lines).encode('utf-8'))
 
 def main():
   change_javet_version = ChangeJavetVersion('0.7.2')
