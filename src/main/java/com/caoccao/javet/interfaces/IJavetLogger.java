@@ -7,7 +7,7 @@ public interface IJavetLogger {
 
     void error(String message);
 
-    void error(Throwable cause, String message);
+    void error(String message, Throwable cause);
 
     void info(String message);
 
@@ -16,7 +16,7 @@ public interface IJavetLogger {
     }
 
     default void logError(Throwable cause, String format, Object... objects) {
-        error(cause, MessageFormat.format(format, objects));
+        error(MessageFormat.format(format, objects), cause);
     }
 
     default void logError(String format, Object... objects) {

@@ -42,7 +42,7 @@ public class DecimalJavet implements IJavetClosable {
             decimalJavet.loadJS();
             decimalJavet.test();
         } catch (Throwable t) {
-            decimalJavet.getLogger().error(t, t.getMessage());
+            decimalJavet.getLogger().error(t.getMessage(), t);
         } finally {
             decimalJavet.close();
         }

@@ -108,8 +108,8 @@ namespace Javet {
 			FETCH_JNI_ENV;
 			auto v8LocalContextHandle = args.Data().As<v8::BigInt>();
 			auto umContext = reinterpret_cast<jobject>(v8LocalContextHandle->Int64Value());
-			Javet::Callback::V8CallbackContextReference v8CallbackContextReference(jniEnv, umContext);
-			v8CallbackContextReference.Invoke(args);
+			Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
+			javetCallbackContextReference.Invoke(args);
 		}
 
 		void GlobalAccessorGetterCallback(
@@ -261,8 +261,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 	}
 	else if (IS_V8_FUNCTION(v8ValueType)) {
 		jobject umContext = jniEnv->NewGlobalRef(mContext);
-		Javet::Callback::V8CallbackContextReference v8CallbackContextReference(jniEnv, umContext);
-		v8CallbackContextReference.SetHandle();
+		Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
+		javetCallbackContextReference.SetHandle();
 		auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), reinterpret_cast<int64_t>(umContext));
 		v8ValueValue = v8::Function::New(v8Context, Javet::Main::FunctionCallback, v8LocalContextHandle).ToLocalChecked();
 	}

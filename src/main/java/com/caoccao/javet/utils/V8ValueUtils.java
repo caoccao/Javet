@@ -22,13 +22,29 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.virtual.V8VirtualList;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @SuppressWarnings("unchecked")
-public final class V8ValueIteratorUtils {
+public final class V8ValueUtils {
     public static final String FUNCTION_NEXT = "next";
     public static final String PROPERTY_DONE = "done";
     public static final String PROPERTY_VALUE = "value";
+    public static final String EMPTY = "";
 
-    private V8ValueIteratorUtils() {
+    private V8ValueUtils() {
+    }
+
+    public static String concat(String delimiter, V8Value... v8Values) {
+        if (v8Values == null || v8Values.length == 0) {
+            return EMPTY;
+        }
+        if (delimiter == null) {
+            delimiter = EMPTY;
+        }
+        return String.join(
+                delimiter,
+                Arrays.stream(v8Values).map(v8Value -> v8Value.toString()).collect(Collectors.toList()));
     }
 
     public static V8VirtualList<Integer> convertIteratorToIntegerList(V8ValueObject iterator) throws JavetException {

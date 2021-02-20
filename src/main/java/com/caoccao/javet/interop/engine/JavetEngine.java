@@ -22,15 +22,18 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
-class JavetEngine implements IJavetEngine {
+public class JavetEngine implements IJavetEngine {
     protected boolean active;
     protected IJavetEnginePool iJavetEnginePool;
     protected JavetEngineUsage usage;
     protected V8Runtime v8Runtime;
 
-    public JavetEngine(IJavetEnginePool iJavetEnginePool) {
+    public JavetEngine(IJavetEnginePool iJavetEnginePool, V8Runtime v8Runtime) {
+        Objects.requireNonNull(v8Runtime);
         this.iJavetEnginePool = iJavetEnginePool;
+        this.v8Runtime = v8Runtime;
         usage = new JavetEngineUsage();
         setActive(false);
     }
@@ -65,10 +68,6 @@ class JavetEngine implements IJavetEngine {
         return v8Runtime;
     }
 
-    protected void setV8Runtime(V8Runtime v8Runtime) {
-        this.v8Runtime = v8Runtime;
-    }
-
     /**
      * Gets utc now. It's designed for mocking the time in test scenario.
      *
@@ -78,20 +77,15 @@ class JavetEngine implements IJavetEngine {
         return JavetDateTimeUtils.getUTCNow();
     }
 
-    protected void resetContext() throws JavetException {
+    @Override
+    public void resetContext() throws JavetException {
         v8Runtime.resetContext();
         usage.reset();
-        if (active) {
-            v8Runtime.lock();
-        }
     }
 
     protected void resetIsolate() throws JavetException {
         v8Runtime.resetIsolate();
         usage.reset();
-        if (active) {
-            v8Runtime.lock();
-        }
     }
 
     protected void touchLastActiveZonedDateTime() {

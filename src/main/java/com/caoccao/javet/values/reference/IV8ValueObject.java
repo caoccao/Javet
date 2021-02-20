@@ -18,6 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 
@@ -283,6 +284,13 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     boolean set(V8Value key, V8Value value) throws JavetException;
+
+    default boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
+        V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(javetCallbackContext);
+        boolean success = set(functionName, v8ValueFunction);
+        v8ValueFunction.setWeak();
+        return success;
+    }
 
     default boolean setNull(int key) throws JavetException {
         return set(new V8ValueInteger(key), new V8ValueNull());

@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Host;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 
 import java.time.ZonedDateTime;
@@ -54,9 +55,9 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
     }
 
     protected JavetEngine createEngine() {
-        JavetEngine engine = new JavetEngine(this);
-        engine.setV8Runtime(V8Host.getInstance().createV8Runtime(true, config.getGlobalName()));
-        return engine;
+        V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime(true, config.getGlobalName());
+        v8Runtime.setLogger(config.getJavetLogger());
+        return new JavetEngine(this, v8Runtime);
     }
 
     @Override

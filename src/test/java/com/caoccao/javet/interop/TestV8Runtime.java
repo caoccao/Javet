@@ -80,9 +80,7 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
-            v8Runtime.unlock();
             v8Runtime.resetContext();
-            v8Runtime.lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a") instanceof V8ValueUndefined);
             v8Runtime.unlock();

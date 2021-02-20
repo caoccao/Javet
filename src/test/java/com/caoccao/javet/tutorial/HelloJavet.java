@@ -47,9 +47,8 @@ public class HelloJavet {
 
     public void printOnePlusOne() throws JavetException {
         // Step 1: Create a V8 runtime from V8 host in try resource.
-        try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
-            // Step 2: Request a lock.
-            v8Runtime.lock();
+        // Step 2: Request a lock.
+        try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime().lock()) {
             // Step 3: Execute a string as JavaScript code and print the result to console.
             System.out.println("1 + 1 = " + v8Runtime.getExecutor("1 + 1").executeInteger()); // 2
             // Step 4: Resource including the lock is recycled automatically at the end of the try resource block.
