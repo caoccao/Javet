@@ -32,9 +32,9 @@ class ChangeJavetVersion(object):
   def update(self):
     self._update(
       'README.rst', '\n',
-      re.compile(r'\*(?P<version>\d+\.\d+\.\d+)\*'),
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
       re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)"'),
+      re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)\''),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'build.gradle.kts', '\n',
@@ -89,7 +89,7 @@ class ChangeJavetVersion(object):
     file_path.write_text(line_separator.join(lines), 'utf-8')
 
 def main():
-  change_javet_version = ChangeJavetVersion('0.7.1')
+  change_javet_version = ChangeJavetVersion('0.7.2')
   change_javet_version.update()
   return 0
 

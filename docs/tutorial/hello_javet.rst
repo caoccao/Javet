@@ -13,7 +13,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.1</version>
+        <version>0.7.2</version>
     </dependency>
 
 Gradle Kotlin
@@ -22,7 +22,7 @@ Gradle Kotlin
 .. code-block:: kotlin
 
     dependencies {
-        implementation("com.caoccao.javet:javet:0.7.1")
+        implementation("com.caoccao.javet:javet:0.7.2")
     }
 
 Gradle Groovy
@@ -30,7 +30,7 @@ Gradle Groovy
 
 .. code-block:: groovy
 
-    compile group: 'com.caoccao.javet', name: 'javet', version: '0.7.1'
+    compile group: 'com.caoccao.javet', name: 'javet', version: '0.7.2'
 
 Print **Hello Javet**
 =====================

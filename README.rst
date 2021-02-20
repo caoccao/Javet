@@ -33,7 +33,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.1</version>
+        <version>0.7.2</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -41,14 +41,14 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.7.1")
+    implementation("com.caoccao.javet:javet:0.7.2")
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.7.1'
+    implementation 'com.caoccao.javet:javet:0.7.2'
 
 Hello Javet
 -----------

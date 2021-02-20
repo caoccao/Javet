@@ -29,7 +29,7 @@ import java.text.MessageFormat;
 final class JavetLibLoader {
     private static final String CHMOD = "chmod";
     private static final String XRR = "755";
-    static final String LIB_VERSION = "0.7.1";
+    static final String LIB_VERSION = "0.7.2";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-x86_64.v.{1}.{2}";
     private static final String RESOURCE_NAME_FORMAT = "/{0}";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";

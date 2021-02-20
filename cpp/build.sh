@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Usage sample: build -DV8_DIR=~/v8
-JAVET_VERSION=0.7.1
+JAVET_VERSION=0.7.2
 rm -rf build
 mkdir build
 cd build
