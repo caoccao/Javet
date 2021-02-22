@@ -35,6 +35,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @Test
+    public void testAnonymousFunction() throws JavetException {
+        String codeString = "() => '123測試'";
+        try (V8Value v8Value = v8Runtime.getExecutor(codeString).execute()) {
+            assertNotNull(v8Value);
+            assertTrue(v8Value instanceof V8ValueFunction);
+            V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
+            assertEquals(codeString, v8ValueFunction.toString());
+            assertEquals("123測試", v8ValueFunction.callString(null));
+        }
+        v8Runtime.getGlobalObject().setFunction("a", codeString);
+        assertEquals("123測試", v8Runtime.getExecutor("a();").executeString());
+        v8Runtime.getGlobalObject().setFunction("b", "(x) => x + 1;");
+        assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
+        v8Runtime.getGlobalObject().delete("a");
+        v8Runtime.getGlobalObject().delete("b");
+        v8Runtime.requestGarbageCollectionForTesting(true);
+    }
+
+    @Test
     public void testArrayPush() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = []; a;").execute()) {
             assertNotNull(v8ValueArray);

@@ -21,8 +21,6 @@
 #include <jni.h>
 #include <v8.h>
 
-#define JAVET_CONVERTER_BIGINT_STANDARD
-
 namespace Javet {
 	namespace Converter {
 		// Primitive

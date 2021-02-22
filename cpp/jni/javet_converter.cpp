@@ -252,18 +252,8 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueInteger, jmethodIDV8ValueIntegerConstructor, v8Value->Int32Value(v8Context).FromMaybe(0));
 			}
 			if (v8Value->IsBigInt() || v8Value->IsBigIntObject()) {
-#ifdef JAVET_CONVERTER_BIGINT_STANDARD
-				// This is the standard way of getting int64.
 				return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromLong,
 					v8Value->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
-#else
-				// There is another way of getting int64. This branch is disabled by default.
-				v8::String::Value stringValue(v8Context->GetIsolate(), v8Value);
-				jstring mStringValue = jniEnv->NewString(*stringValue, stringValue.length());
-				jobject mV8Value = jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromString, mStringValue);
-				jniEnv->DeleteLocalRef(mStringValue);
-				return mV8Value;
-#endif // JAVET_CONVERTER_BIGINT_STANDARD
 			}
 			if (v8Value->IsDate()) {
 				auto v8Date = v8Value->ToObject(v8Context).ToLocalChecked().As<v8::Date>();

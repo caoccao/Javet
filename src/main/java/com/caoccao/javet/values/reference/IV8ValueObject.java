@@ -285,8 +285,38 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     boolean set(V8Value key, V8Value value) throws JavetException;
 
+    /**
+     * Sets function by name and callback context.
+     *
+     * It is for creating a Java code based function in V8.
+     *
+     * @param functionName         the function name
+     * @param javetCallbackContext the javet callback context
+     * @return true: function is set, false: function is not set
+     * @throws JavetException the javet exception
+     */
     default boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
         V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(javetCallbackContext);
+        boolean success = set(functionName, v8ValueFunction);
+        v8ValueFunction.setWeak();
+        return success;
+    }
+
+    /**
+     * Sets function by name and string.
+     *
+     * It is for creating a string based function in V8.
+     *
+     * JS equivalent:
+     * obj.func = (arg1, arg2) => { ... };
+     *
+     * @param functionName the function name
+     * @param codeString   the code string
+     * @return true: function is set, false: function is not set
+     * @throws JavetException the javet exception
+     */
+    default boolean setFunction(String functionName, String codeString) throws JavetException {
+        V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute();
         boolean success = set(functionName, v8ValueFunction);
         v8ValueFunction.setWeak();
         return success;
@@ -334,5 +364,13 @@ public interface IV8ValueObject extends IV8ValueReference {
         return set(new V8ValueString(key), new V8ValueUndefined());
     }
 
+    /**
+     * To json string.
+     *
+     * JS equivalent:
+     * JSON.stringify(obj);
+     *
+     * @return the string
+     */
     String toJsonString();
 }
