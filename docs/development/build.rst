@@ -89,4 +89,4 @@ Also, please make sure ``args.gn`` file looks like the following.
 
 ``v8_monolith`` is the build target.
 
-[`Home <../README.rst>`_]
+[`Home <../../README.rst>`_] [`Development <index.rst>`_]

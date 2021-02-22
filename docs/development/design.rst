@@ -5,7 +5,7 @@ Javet Design
 Architecture
 ============
 
-.. image:: ./resources/images/javet_architecture.png?raw=true
+.. image:: ../resources/images/javet_architecture.png?raw=true
     :alt: Javet Architecture
 
 Primitive and Reference Types in Javet
@@ -24,10 +24,12 @@ Set to Weak                 No                      Yes
 
 Reference typed objects keep memory footprint in V8 + JNI + JVM. All resource will be recycled when ``close()`` is called. That is quite an old school way of managing resource. Javet tries to hide that kind of tedious work from Java applications via try-with-resource.
 
+Please refer to `Best Practices <best_practices.rst>`_ for detail.
+
 Engine Pool
 ===========
 
-.. image:: ./resources/images/javet_engine_pool.png?raw=true
+.. image:: ../resources/images/javet_engine_pool.png?raw=true
     :alt: Javet Engine Pool
 
 V8 Isolate and Context in Javet
@@ -51,21 +53,6 @@ Multiple Javet engines are managed by Javet Engine Pool which works almost the s
 * V8 isolate and V8 context are single-threaded. Thread context violation results in V8 core dump immediately.
 * Javet Engine performs better without locks. Actually, Javet engine only validates current thread ID to minimize the performance overhead.
 
-Best Practices
---------------
+Please refer to `Best Practices <best_practices.rst>`_ for detail.
 
-* Always get 1 Javet engine from the pool in 1 thread.
-* If multiple context is required in 1 thread, there are 2 options.
-    * Call ``resetContext()`` between context switch.
-    * Obtain multiple V8Runtime instances.
-* Do not pass Javet engine to other threads.
-* Always return Javet engine to pool in the end via try-with-resource or calling ``close()`` explicitly.
-* Subclass Javet engine pool and Javet engine to complete your customization. Indeed, they are open to full customization.
-* Dangling V8 objects will be forced to be recycled by Javet under the following scenarios and corresponding log will reflect that. Keeping an eye on the log helps address memory leak issues in the early stage.
-    *  Engine is closed.
-    *  Pool is closed.
-    *  Context is reset.
-    *  Isolate is reset.
-* Always apply try-with-resource to Javet objects regardless of primitive or reference if they are not returned to Javet.
-* Always prohibit calling ``close()`` of Javet objects if they will be returned to Javet. 
-* If the lifecycle of V8 objects is uncertain, calling ``setWeak()`` is the only way so that calling ``close()`` is no longer required. Be careful, calling ``close()`` after calling ``setWeak()`` may lead to V8 core dump immediately.
+[`Home <../../README.rst>`_] [`Development <index.rst>`_]

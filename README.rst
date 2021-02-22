@@ -62,11 +62,11 @@ Hello Javet
 Documents
 =========
 
-* `Build <docs/build.rst>`_
-* `Development <docs/development.rst>`_
-* `Design <docs/design.rst>`_
+* `Development <docs/development/index.rst>`_
+    * `Build <docs/build.rst>`_
+    * `Design <docs/design.rst>`_
+    * `Performance <docs/performance.rst>`_
 * `Tutorial <docs/tutorial/index.rst>`_
-* `Performance <docs/performance.rst>`_
 * `Release Notes <docs/release_notes.rst>`_
 * `FAQ <docs/faq/index.rst>`_
 * `TODO List <docs/todo_list.rst>`_
