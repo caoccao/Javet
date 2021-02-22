@@ -88,6 +88,10 @@ final class V8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             String functionName, boolean returnResult, Object[] values);
 
+    native static boolean isDead(long v8RuntimeHandle);
+
+    native static boolean isInUse(long v8RuntimeHandle);
+
     native static boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static void lockV8Runtime(long v8RuntimeHandle);
@@ -121,6 +125,8 @@ final class V8Native {
     native static boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     native static boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+
+    native static void terminateExecution(long v8RuntimeHandle);
 
     native static String toProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

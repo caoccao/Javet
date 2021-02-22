@@ -193,6 +193,22 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isDead
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isInUse
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    isWeak
  * Signature: (JJI)Z
  */
@@ -294,6 +310,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals
   (JNIEnv *, jclass, jlong, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    terminateExecution
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_terminateExecution
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

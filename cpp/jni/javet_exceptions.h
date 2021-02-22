@@ -27,6 +27,8 @@ namespace Javet {
 		static jclass jclassJavetConverterException;
 		static jclass jclassJavetExecutionException;
 		static jmethodID jmethodIDJavetExecutionExceptionConstructor;
+		static jclass jclassJavetTerminatedException;
+		static jmethodID jmethodIDJavetTerminatedExceptionConstructor;
 		static jclass jclassJavetUnknownCompilationException;
 		static jmethodID jmethodIDJavetUnknownCompilationExceptionConstructor;
 		static jclass jclassJavetUnknownExecutionException;

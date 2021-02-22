@@ -536,6 +536,18 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
 	return nullptr;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	return v8Runtime->v8Isolate->IsDead();
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	return v8Runtime->v8Isolate->IsInUse();
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -703,6 +715,12 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
 	RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
 	return v8LocalObject1->StrictEquals(v8LocalObject2);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_terminateExecution
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	v8Runtime->v8Isolate->TerminateExecution();
 }
 
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toProtoString

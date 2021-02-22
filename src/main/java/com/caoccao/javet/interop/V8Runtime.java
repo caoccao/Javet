@@ -319,6 +319,14 @@ public final class V8Runtime implements
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), functionName, returnResult, v8Values));
     }
 
+    public boolean isDead() {
+        return V8Native.isDead(handle);
+    }
+
+    public boolean isInUse() {
+        return V8Native.isInUse(handle);
+    }
+
     public boolean isLocked() {
         return threadId != INVALID_THREAD_ID;
     }
@@ -460,6 +468,19 @@ public final class V8Runtime implements
         checkLock();
         decorateV8Values(v8ValueReference1, v8ValueReference2);
         return V8Native.strictEquals(handle, v8ValueReference1.getHandle(), v8ValueReference2.getHandle());
+    }
+
+    /**
+     * Terminate execution.
+     *
+     * Forcefully terminate the current thread of JavaScript execution
+     * in the given isolate.
+     *
+     * This method can be used by any thread even if that thread has not
+     * acquired the V8 lock with a Locker object.
+     */
+    public void terminateExecution() {
+        V8Native.terminateExecution(handle);
     }
 
     public String toProtoString(IV8ValueReference iV8ValueReference)

@@ -19,6 +19,7 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -99,6 +100,33 @@ public class TestV8Runtime extends BaseTestJavet {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
             v8Runtime.unlock();
+        }
+    }
+
+    @Test
+    public void testTerminateExecution() throws JavetException {
+        V8Host v8Host = V8Host.getInstance();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            Thread daemonThread = new Thread(() -> {
+                while (!v8Runtime.isInUse()) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                v8Runtime.terminateExecution();
+            });
+            daemonThread.start();
+            v8Runtime.lock();
+            try {
+                v8Runtime.getExecutor(
+                        "let count = 0; while (true) { console.debug('  ' + count); ++count; }")
+                        .executeVoid();
+                fail("Failed to throw exception when execution is terminated.");
+            } catch (JavetTerminatedException e) {
+                assertFalse(e.isContinuable());
+            }
         }
     }
 }

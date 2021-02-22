@@ -2,6 +2,15 @@
 Release Notes
 =============
 
+0.7.2
+-----
+
+* Added string function to ``setFunction()``
+* Added ``equals()`` and ``strictEquals()``
+* Added ``sameValue()``
+* Added ``getIdentityHash()``
+* Added ``isDead()``, ``isInUse()`` and ``terminateExecution()``
+
 0.7.1
 -----
 
