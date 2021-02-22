@@ -88,7 +88,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
     @Override
     public V8Value toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
         V8Value v8Value = super.toV8Value(v8Runtime, object);
-        if (v8Value != null && !(v8Value instanceof V8ValueUndefined)) {
+        if (v8Value != null && !(v8Value.isUndefined())) {
             return v8Value;
         }
         if (object instanceof Map) {

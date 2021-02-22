@@ -116,6 +116,8 @@ final class V8Native {
 
     native static void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
+    native static boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+
     native static boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     native static String toProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

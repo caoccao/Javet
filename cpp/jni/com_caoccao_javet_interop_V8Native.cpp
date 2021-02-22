@@ -71,6 +71,17 @@
 	v8::Context::Scope v8ContextScope(v8Context); \
 	auto v8LocalObject = v8PersistentObjectPointer->Get(v8Context->GetIsolate());
 
+#define RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2) \
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
+	auto v8PersistentObjectPointer1 = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle1); \
+	auto v8PersistentObjectPointer2 = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle2); \
+	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate); \
+	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+	auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context); \
+	v8::Context::Scope v8ContextScope(v8Context); \
+	auto v8LocalObject1 = v8PersistentObjectPointer1->Get(v8Context->GetIsolate()); \
+	auto v8LocalObject2 = v8PersistentObjectPointer2->Get(v8Context->GetIsolate());
+
 #define SAFE_CONVERT_AND_RETURN_JAVE_V8_VALUE(jniEnv, v8Context, v8Value) \
 	try { \
 		return Javet::Converter::ToExternalV8Value(jniEnv, v8Context, v8Value); \
@@ -311,10 +322,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_delete
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
-	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1);
-	auto v8PersistentObjectPointer2 = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle2);
-	auto v8LocalObject2 = v8PersistentObjectPointer2->Get(v8Context->GetIsolate());
-	return v8LocalObject->Equals(v8Context, v8LocalObject2).FromMaybe(false);
+	RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
+	return v8LocalObject1->Equals(v8Context, v8LocalObject2).FromMaybe(false);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
@@ -678,12 +687,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 	}
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
+	RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
+	return v8LocalObject1->SameValue(v8LocalObject2);
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
-	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1);
-	auto v8PersistentObjectPointer2 = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle2);
-	auto v8LocalObject2 = v8PersistentObjectPointer2->Get(v8Context->GetIsolate());
-	return v8LocalObject->StrictEquals(v8LocalObject2);
+	RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
+	return v8LocalObject1->StrictEquals(v8LocalObject2);
 }
 
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toProtoString

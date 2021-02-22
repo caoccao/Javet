@@ -273,6 +273,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    sameValue
+ * Signature: (JJJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
+  (JNIEnv *, jclass, jlong, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    strictEquals
  * Signature: (JJJ)Z
  */

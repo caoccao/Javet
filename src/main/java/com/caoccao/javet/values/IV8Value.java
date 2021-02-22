@@ -21,6 +21,9 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.IV8Cloneable;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.primitive.V8ValueDouble;
+import com.caoccao.javet.values.primitive.V8ValueNull;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 /**
  * The interface V8 value.
@@ -35,7 +38,7 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
 
     /**
      * Equals.
-     *
+     * <p>
      * The behavior is different from JS behavior but is the same as Java behavior.
      *
      * @param v8Value the V8 value
@@ -44,9 +47,35 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      */
     boolean equals(V8Value v8Value) throws JavetException;
 
+    default boolean isNaN() {
+        if (this instanceof V8ValueDouble) {
+            return Double.isNaN(((V8ValueDouble) this).getValue());
+        }
+        return false;
+    }
+
+    default boolean isNull() {
+        return this instanceof V8ValueNull;
+    }
+
+    default boolean isUndefined() {
+        return this instanceof V8ValueUndefined;
+    }
+
+    /**
+     * Same value.
+     * <p>
+     * The behavior is different from JS behavior but is the same as Java behavior.
+     *
+     * @param v8Value the v 8 value
+     * @return the boolean
+     * @throws JavetException the javet exception
+     */
+    boolean sameValue(V8Value v8Value) throws JavetException;
+
     /**
      * Strict equals boolean.
-     *
+     * <p>
      * The behavior is different from JS behavior but is the same as Java behavior.
      *
      * @param v8Value the V8 value

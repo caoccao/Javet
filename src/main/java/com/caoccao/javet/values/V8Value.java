@@ -65,6 +65,9 @@ public abstract class V8Value implements IV8Value {
     }
 
     @Override
+    public abstract boolean sameValue(V8Value v8Value) throws JavetException;
+
+    @Override
     public abstract boolean strictEquals(V8Value v8Value) throws JavetException;
 
     protected abstract void removeReference() throws JavetException;

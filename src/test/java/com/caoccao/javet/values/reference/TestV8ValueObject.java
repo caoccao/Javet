@@ -56,14 +56,18 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject1 = v8Runtime.getExecutor(
                 "const a = {'x': '1'}; a;").execute()) {
             assertFalse(v8ValueObject1.equals(null));
+            assertFalse(v8ValueObject1.sameValue(null));
             assertFalse(v8ValueObject1.strictEquals(null));
             assertFalse(v8ValueObject1.equals(new V8ValueNull()));
+            assertFalse(v8ValueObject1.sameValue(new V8ValueNull()));
             assertFalse(v8ValueObject1.strictEquals(new V8ValueNull()));
             assertTrue(v8ValueObject1.equals(v8ValueObject1));
+            assertTrue(v8ValueObject1.sameValue(v8ValueObject1));
             assertTrue(v8ValueObject1.strictEquals(v8ValueObject1));
             try (V8ValueObject v8ValueObject2 = v8Runtime.getExecutor(
                     "const b = {'x': '1'}; b;").execute()) {
                 assertFalse(v8ValueObject1.equals(v8ValueObject2));
+                assertFalse(v8ValueObject1.sameValue(v8ValueObject2));
                 assertFalse(v8ValueObject1.strictEquals(v8ValueObject2));
             }
         }
@@ -136,9 +140,9 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(3L, ((V8ValueLong) v8ValueObject.getProperty("c")).getValue());
             assertEquals(3L, v8ValueObject.getPropertyLong("c"));
             assertEquals(1, v8ValueObject.getPropertyInteger("d"));
-            assertTrue(v8ValueObject.getProperty("e") instanceof V8ValueNull);
+            assertTrue(v8ValueObject.getProperty("e").isNull());
             assertEquals("測試", v8ValueObject.getPropertyString("中文"));
-            assertTrue(v8ValueObject.getProperty("$") instanceof V8ValueUndefined);
+            assertTrue(v8ValueObject.getProperty("$").isUndefined());
             assertEquals(1, v8Runtime.getReferenceCount());
             try (V8ValueObject childV8ValueObject = v8ValueObject.getProperty("g")) {
                 assertNotNull(childV8ValueObject);
@@ -262,7 +266,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         v8Runtime.requestGarbageCollectionForTesting(true);
         assertEquals(0, v8Runtime.getReferenceCount());
         assertEquals(0L, a.getHandle());
-        assertTrue(globalObject.get("a") instanceof V8ValueUndefined);
+        assertTrue(globalObject.get("a").isUndefined());
     }
 
     @Test

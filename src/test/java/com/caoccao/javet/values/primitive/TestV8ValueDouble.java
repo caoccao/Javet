@@ -37,6 +37,15 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testNaN() throws JavetException {
+        V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("NaN").execute();
+        assertNotNull(v8ValueDouble);
+        assertEquals(v8Runtime, v8ValueDouble.getV8Runtime());
+        assertEquals(Double.NaN, v8ValueDouble.getValue());
+        assertTrue(v8ValueDouble.isNaN());
+    }
+
+    @Test
     public void testNumber() throws JavetException {
         try (V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("1.23").execute()) {
             assertNotNull(v8ValueDouble);

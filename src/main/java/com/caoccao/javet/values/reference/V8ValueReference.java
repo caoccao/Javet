@@ -131,6 +131,21 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
+    public boolean sameValue(V8Value v8Value) throws JavetException {
+        if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
+            return false;
+        }
+        if (v8Value.getClass() != this.getClass()) {
+            return false;
+        }
+        V8ValueReference v8ValueReference = (V8ValueReference) v8Value;
+        if (getHandle() == v8ValueReference.getHandle()) {
+            return true;
+        }
+        return v8Runtime.sameValue(this, v8ValueReference);
+    }
+
+    @Override
     public boolean strictEquals(V8Value v8Value) throws JavetException {
         if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
             return false;

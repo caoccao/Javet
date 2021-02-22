@@ -72,8 +72,8 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertTrue(v8ValueArray.getBoolean(3));
             assertEquals(1.23, ((V8ValueDouble) v8ValueArray.get(4)).getValue(), 0.001);
             assertEquals(1.23, v8ValueArray.getDouble(4), 0.001);
-            assertTrue(v8ValueArray.get(-1) instanceof V8ValueUndefined);
-            assertTrue(v8ValueArray.get(100) instanceof V8ValueUndefined);
+            assertTrue(v8ValueArray.get(-1).isUndefined());
+            assertTrue(v8ValueArray.get(100).isUndefined());
             assertEquals(1, v8Runtime.getReferenceCount());
             try (V8ValueArray childV8ValueArray = v8ValueArray.get(5)) {
                 assertNotNull(childV8ValueArray);
@@ -81,7 +81,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                 assertEquals(4, childV8ValueArray.getLength());
                 assertEquals(4, childV8ValueArray.getInteger(0));
                 assertEquals(5, childV8ValueArray.getInteger(1));
-                assertTrue(childV8ValueArray.get(2) instanceof V8ValueNull);
+                assertTrue(childV8ValueArray.get(2).isNull());
                 assertEquals(
                         "2021-01-27T01:17:03.719Z[UTC]",
                         childV8ValueArray.getZonedDateTime(3).withZoneSameInstant(ZoneId.of("UTC")).toString());

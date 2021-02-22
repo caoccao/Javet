@@ -443,6 +443,13 @@ public final class V8Runtime implements
         V8Native.setWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType(), iV8ValueReference);
     }
 
+    public boolean sameValue(V8ValueReference v8ValueReference1, V8ValueReference v8ValueReference2)
+            throws JavetException {
+        checkLock();
+        decorateV8Values(v8ValueReference1, v8ValueReference2);
+        return V8Native.sameValue(handle, v8ValueReference1.getHandle(), v8ValueReference2.getHandle());
+    }
+
     public boolean strictEquals(V8ValueReference v8ValueReference1, V8ValueReference v8ValueReference2)
             throws JavetException {
         checkLock();

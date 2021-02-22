@@ -26,7 +26,6 @@ import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
@@ -223,7 +222,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("echo");
         }
         assertTrue(mockCallbackReceiver.isCalled());
-        assertTrue(globalObject.get("a") instanceof V8ValueUndefined);
+        assertTrue(globalObject.get("a").isUndefined());
     }
 
     @Test

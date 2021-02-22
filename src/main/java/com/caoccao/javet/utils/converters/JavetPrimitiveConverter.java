@@ -30,7 +30,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
 
     @Override
     public Object toObject(V8Value v8Value) throws JavetException {
-        if (v8Value == null || v8Value instanceof V8ValueNull || v8Value instanceof V8ValueUndefined) {
+        if (v8Value == null || v8Value.isNull() || v8Value.isUndefined()) {
             return null;
         } else if (v8Value instanceof V8ValuePrimitive) {
             return ((V8ValuePrimitive) v8Value).getValue();

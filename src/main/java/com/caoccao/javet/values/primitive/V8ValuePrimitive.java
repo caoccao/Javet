@@ -68,6 +68,11 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
     }
 
     @Override
+    public boolean sameValue(V8Value v8Value) {
+        return equals(v8Value);
+    }
+
+    @Override
     public boolean strictEquals(V8Value v8Value) {
         return equals(v8Value);
     }
