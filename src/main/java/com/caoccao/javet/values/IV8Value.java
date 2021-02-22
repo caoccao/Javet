@@ -22,8 +22,36 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.IV8Cloneable;
 import com.caoccao.javet.interop.V8Runtime;
 
+/**
+ * The interface V8 value.
+ */
 public interface IV8Value extends IJavetClosable, IV8Cloneable {
+    /**
+     * Gets V8 runtime.
+     *
+     * @return the V8 runtime
+     */
     V8Runtime getV8Runtime();
 
-    <T extends V8Value> T toClone() throws JavetException;
+    /**
+     * Equals.
+     *
+     * The behavior is different from JS behavior but is the same as Java behavior.
+     *
+     * @param v8Value the V8 value
+     * @return the boolean
+     * @throws JavetException the javet exception
+     */
+    boolean equals(V8Value v8Value) throws JavetException;
+
+    /**
+     * Strict equals boolean.
+     *
+     * The behavior is different from JS behavior but is the same as Java behavior.
+     *
+     * @param v8Value the V8 value
+     * @return the boolean
+     * @throws JavetException the javet exception
+     */
+    boolean strictEquals(V8Value v8Value) throws JavetException;
 }

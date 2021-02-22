@@ -197,6 +197,13 @@ public final class V8Runtime implements
         return V8Native.delete(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
     }
 
+    public boolean equals(V8ValueReference v8ValueReference1, V8ValueReference v8ValueReference2)
+            throws JavetException {
+        checkLock();
+        decorateV8Values(v8ValueReference1, v8ValueReference2);
+        return V8Native.equals(handle, v8ValueReference1.getHandle(), v8ValueReference2.getHandle());
+    }
+
     @Override
     public <T extends V8Value> T execute(
             String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
@@ -434,6 +441,13 @@ public final class V8Runtime implements
     public void setWeak(IV8ValueReference iV8ValueReference) throws JavetException {
         checkLock();
         V8Native.setWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType(), iV8ValueReference);
+    }
+
+    public boolean strictEquals(V8ValueReference v8ValueReference1, V8ValueReference v8ValueReference2)
+            throws JavetException {
+        checkLock();
+        decorateV8Values(v8ValueReference1, v8ValueReference2);
+        return V8Native.strictEquals(handle, v8ValueReference1.getHandle(), v8ValueReference2.getHandle());
     }
 
     public String toProtoString(IV8ValueReference iV8ValueReference)

@@ -17,12 +17,11 @@
 
 package com.caoccao.javet.values.primitive;
 
-import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueLong extends BaseTestJavetRuntime {
     @Test
@@ -39,6 +38,15 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
     @Test
     public void testBigIntObject() throws JavetException {
         assertEquals(123L, v8Runtime.getExecutor("BigInt(123n)").executeLong());
+    }
+
+    @Test
+    public void testEquals() throws JavetException {
+        V8ValueLong v8ValueLong = v8Runtime.getExecutor("1n").execute();
+        assertTrue(v8ValueLong.equals(new V8ValueLong(1L)));
+        assertFalse(v8ValueLong.equals(null));
+        assertFalse(v8ValueLong.equals(new V8ValueLong(2L)));
+        assertFalse(v8ValueLong.equals(new V8ValueInteger(1)));
     }
 
     @Test

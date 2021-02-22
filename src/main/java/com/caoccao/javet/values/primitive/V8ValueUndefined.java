@@ -34,7 +34,17 @@ public final class V8ValueUndefined extends V8Value {
     }
 
     @Override
+    public boolean equals(V8Value v8Value) {
+        return v8Value instanceof V8ValueUndefined;
+    }
+
+    @Override
     protected void removeReference() {
+    }
+
+    @Override
+    public boolean strictEquals(V8Value v8Value) {
+        return equals(v8Value);
     }
 
     @Override

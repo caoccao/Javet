@@ -36,6 +36,17 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
     protected void addReference() {
     }
 
+    @Override
+    public boolean equals(V8Value v8Value) {
+        if (v8Value == null || !(v8Value instanceof V8ValuePrimitive)) {
+            return false;
+        }
+        if (v8Value.getClass() != this.getClass()) {
+            return false;
+        }
+        return getValue().equals(((V8ValuePrimitive<?>) v8Value).getValue());
+    }
+
     public T getValue() {
         return value;
     }
@@ -54,6 +65,11 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
 
     @Override
     protected void removeReference() {
+    }
+
+    @Override
+    public boolean strictEquals(V8Value v8Value) {
+        return equals(v8Value);
     }
 
     @Override

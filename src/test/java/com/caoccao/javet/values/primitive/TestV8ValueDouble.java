@@ -21,11 +21,20 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestV8ValueDouble extends BaseTestJavetRuntime {
     public static final double DELTA = 0.001;
+
+    @Test
+    public void testEquals() throws JavetException {
+        V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("1.23").execute();
+        assertTrue(v8ValueDouble.equals(new V8ValueDouble(1.23D)));
+        assertFalse(v8ValueDouble.equals(null));
+        assertFalse(v8ValueDouble.equals(new V8ValueDouble(1.24D)));
+        assertFalse(v8ValueDouble.equals(new V8ValueUndefined()));
+    }
 
     @Test
     public void testNumber() throws JavetException {

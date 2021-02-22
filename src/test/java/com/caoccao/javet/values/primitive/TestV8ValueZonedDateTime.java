@@ -19,6 +19,7 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -29,6 +30,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
 
     public static final int DELTA = 2000;
+
+    @Test
+    public void testEquals() throws JavetException {
+        V8ValueZonedDateTime v8ValueZonedDateTime = v8Runtime.getExecutor("new Date(123)").execute();
+        assertTrue(v8ValueZonedDateTime.equals(
+                new V8ValueZonedDateTime(JavetDateTimeUtils.toZonedDateTime(123L))));
+        assertFalse(v8ValueZonedDateTime.equals(null));
+        assertFalse(v8ValueZonedDateTime.equals(
+                new V8ValueZonedDateTime(JavetDateTimeUtils.toZonedDateTime(234L))));
+        assertFalse(v8ValueZonedDateTime.equals(new V8ValueLong(1)));
+    }
 
     @Test
     public void testZonedDateTime() throws JavetException {

@@ -52,6 +52,24 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testEquals() throws JavetException {
+        try (V8ValueObject v8ValueObject1 = v8Runtime.getExecutor(
+                "const a = {'x': '1'}; a;").execute()) {
+            assertFalse(v8ValueObject1.equals(null));
+            assertFalse(v8ValueObject1.strictEquals(null));
+            assertFalse(v8ValueObject1.equals(new V8ValueNull()));
+            assertFalse(v8ValueObject1.strictEquals(new V8ValueNull()));
+            assertTrue(v8ValueObject1.equals(v8ValueObject1));
+            assertTrue(v8ValueObject1.strictEquals(v8ValueObject1));
+            try (V8ValueObject v8ValueObject2 = v8Runtime.getExecutor(
+                    "const b = {'x': '1'}; b;").execute()) {
+                assertFalse(v8ValueObject1.equals(v8ValueObject2));
+                assertFalse(v8ValueObject1.strictEquals(v8ValueObject2));
+            }
+        }
+    }
+
+    @Test
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {

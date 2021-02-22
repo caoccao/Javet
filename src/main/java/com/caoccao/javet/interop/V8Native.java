@@ -55,6 +55,8 @@ final class V8Native {
 
     native static boolean delete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
+    native static boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+
     native static Object execute(
             long v8RuntimeHandle, String script, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
@@ -113,6 +115,8 @@ final class V8Native {
     native static boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     native static void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
+
+    native static boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     native static String toProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

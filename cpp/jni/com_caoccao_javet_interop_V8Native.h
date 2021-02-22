@@ -81,6 +81,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_delete
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    equals
+ * Signature: (JJJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
+  (JNIEnv *, jclass, jlong, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    execute
  * Signature: (JLjava/lang/String;ZLjava/lang/String;IIIZZ)Ljava/lang/Object;
  */
@@ -262,6 +270,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
   (JNIEnv *, jclass, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    strictEquals
+ * Signature: (JJJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals
+  (JNIEnv *, jclass, jlong, jlong, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
