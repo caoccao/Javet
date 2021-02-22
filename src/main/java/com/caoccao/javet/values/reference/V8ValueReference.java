@@ -97,6 +97,9 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
+    public abstract int getIdentityHash() throws JavetException;
+
+    @Override
     public boolean isWeak() throws JavetException {
         // V8 lock free
         return weak;

@@ -66,6 +66,8 @@ final class V8Native {
 
     native static Object getGlobalObject(long v8RuntimeHandle);
 
+    native static int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     native static int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

@@ -165,6 +165,13 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testIdentityHash() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
+            assertTrue(v8ValueObject.getIdentityHash() > 0);
+        }
+    }
+
+    @Test
     public void testInvoke() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = [1, 2, 3]; a;").execute()) {
             assertEquals(3, v8ValueArray.getLength());

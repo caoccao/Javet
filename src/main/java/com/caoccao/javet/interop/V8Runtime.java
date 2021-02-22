@@ -239,6 +239,11 @@ public final class V8Runtime implements
         this.globalName = globalName;
     }
 
+    public int getIdentityHash(IV8ValueObject iV8ValueObject) throws JavetException {
+        checkLock();
+        return V8Native.getIdentityHash(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType());
+    }
+
     public IJavetLogger getLogger() {
         return logger;
     }

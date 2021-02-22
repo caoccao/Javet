@@ -47,17 +47,20 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      */
     boolean equals(V8Value v8Value) throws JavetException;
 
-    default boolean isNaN() {
-        if (this instanceof V8ValueDouble) {
-            return Double.isNaN(((V8ValueDouble) this).getValue());
-        }
-        return false;
-    }
-
+    /**
+     * Is null.
+     *
+     * @return the boolean
+     */
     default boolean isNull() {
         return this instanceof V8ValueNull;
     }
 
+    /**
+     * Is undefined.
+     *
+     * @return the boolean
+     */
     default boolean isUndefined() {
         return this instanceof V8ValueUndefined;
     }

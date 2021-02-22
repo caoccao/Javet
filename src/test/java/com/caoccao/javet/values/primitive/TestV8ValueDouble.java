@@ -37,12 +37,16 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testNaN() throws JavetException {
+    public void testNaNAndInfiniteAndFinite() throws JavetException {
         V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("NaN").execute();
         assertNotNull(v8ValueDouble);
         assertEquals(v8Runtime, v8ValueDouble.getV8Runtime());
         assertEquals(Double.NaN, v8ValueDouble.getValue());
         assertTrue(v8ValueDouble.isNaN());
+        v8ValueDouble = v8Runtime.getExecutor("1/0").execute();
+        assertTrue(v8ValueDouble.isInfinite());
+        v8ValueDouble = v8Runtime.getExecutor("1/2").execute();
+        assertTrue(v8ValueDouble.isFinite());
     }
 
     @Test
