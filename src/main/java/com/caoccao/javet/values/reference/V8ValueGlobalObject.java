@@ -19,9 +19,21 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 
+/**
+ * The type V8 value global object is a special object.
+ * 1. It lives as long as V8 runtime lives.
+ * 2. It does not have reference count.
+ * 3. It cannot be set to weak.
+ * 4. Its clone is itself.
+ */
 @SuppressWarnings("unchecked")
 public final class V8ValueGlobalObject extends V8ValueObject {
-    public V8ValueGlobalObject(long handle) {
+    /**
+     * Instantiates a new V8 value global object.
+     *
+     * @param handle the handle
+     */
+    V8ValueGlobalObject(long handle) {
         super(handle);
     }
 

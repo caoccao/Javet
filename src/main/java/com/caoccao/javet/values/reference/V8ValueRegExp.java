@@ -21,7 +21,7 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 
 public class V8ValueRegExp extends V8ValueObject {
 
-    public V8ValueRegExp(long handle) {
+    V8ValueRegExp(long handle) {
         super(handle);
     }
 

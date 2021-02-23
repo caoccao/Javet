@@ -28,6 +28,11 @@ import java.util.*;
 
 public class JavetObjectConverter extends JavetPrimitiveConverter {
 
+    public static final String PROPERTY_CONSTRUCTOR = "constructor";
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_KEY = "key";
+    public static final String PROPERTY_VALUE = "value";
+
     public JavetObjectConverter() {
         super();
     }
@@ -62,20 +67,48 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             V8ValueSet v8ValueSet = (V8ValueSet) v8Value;
             HashSet<Object> set = new HashSet<>();
             try (V8VirtualList<V8Value> items = v8ValueSet.getKeys()) {
-                for (V8Value item : items) {
-                    set.add(toObject(item));
+                final int length = items.size();
+                for (int i = 0; i < length; ++i) {
+                    try (V8Value item = items.get(i)) {
+                        set.add(toObject(item));
+                    }
                 }
             }
             return set;
-        } else if (v8Value instanceof V8ValueMap || v8Value instanceof V8ValueObject) {
+        } else if (v8Value instanceof V8ValueMap) {
+            V8ValueMap v8ValueMap = (V8ValueMap) v8Value;
+            Map<String, Object> map = new HashMap<>();
+            try (V8VirtualList<V8Value> entries = v8ValueMap.getEntries()) {
+                final int length = entries.size();
+                for (int i = 0; i < length; ++i) {
+                    try (V8ValueObject entry = (V8ValueObject) entries.get(i)) {
+                        try (V8Value key = entry.get(PROPERTY_KEY); V8Value value = entry.get(PROPERTY_VALUE);) {
+                            map.put(key.toString(), toObject(value));
+                        }
+                    }
+                }
+            }
+            return map;
+        } else if (v8Value instanceof V8ValueObject) {
             V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
             Map<String, Object> map = new HashMap<>();
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
                 final int length = iV8ValueArray.getLength();
                 for (int i = 0; i < length; ++i) {
                     try (V8Value key = iV8ValueArray.get(i)) {
-                        try (V8Value value = v8ValueObject.get(key)) {
-                            map.put(toObject(key).toString(), toObject(value));
+                        String keyString = key.toString();
+                        /*
+                            Constructor is treated differently because it references to itself.
+                            Otherwise stack overflow will take place.
+                         */
+                        if (PROPERTY_CONSTRUCTOR.equals(keyString)) {
+                            try (V8ValueObject v8ValueObjectValue = v8ValueObject.get(keyString)) {
+                                map.put(keyString, v8ValueObjectValue.getString(PROPERTY_NAME));
+                            }
+                        } else {
+                            try (V8Value value = v8ValueObject.get(key)) {
+                                map.put(keyString, toObject(value));
+                            }
                         }
                     }
                 }

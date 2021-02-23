@@ -28,26 +28,4 @@ public interface IV8ValueKeyContainer extends IV8ValueObject {
     List<V8Value> getKeys() throws JavetException;
 
     int getSize() throws JavetException;
-
-    default boolean has(int value) throws JavetException {
-        return has(new V8ValueInteger(value));
-    }
-
-    default boolean has(long value) throws JavetException {
-        return has(new V8ValueLong(value));
-    }
-
-    default boolean has(String value) throws JavetException {
-        return has(new V8ValueString(value));
-    }
-
-    boolean has(V8Value value) throws JavetException;
-
-    default boolean hasNull() throws JavetException {
-        return has(new V8ValueNull());
-    }
-
-    default boolean hasUndefined() throws JavetException {
-        return has(new V8ValueUndefined());
-    }
 }

@@ -14,21 +14,36 @@ decimal.js
                 JavetOSUtils.WORKING_DIRECTORY,
                 "scripts/node/node_modules/decimal.js/decimal.js");
         if (decimalJSFile.exists() && decimalJSFile.canRead()) {
-            logger.logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
-            v8Runtime = V8Host.getInstance().createV8Runtime();
-            v8Runtime.lock();
+            getLogger().logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
+            V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
             v8Runtime.getExecutor(decimalJSFile).executeVoid();
         } else {
-            logger.logError("{0} is not found.", decimalJSFile.getAbsolutePath());
-            logger.logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
+            getLogger().logError("{0} is not found.", decimalJSFile.getAbsolutePath());
+            getLogger().logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
         }
     }
 
     public void test() throws JavetException {
-        logger.logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
+        V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+        getLogger().logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
                 "const a = new Decimal(1.23);" +
                         "const b = new Decimal(2.34);" +
                         "a.add(b).toString();").executeString());
+        try (V8ValueFunction v8ValueFunctionDecimal = v8Runtime.getGlobalObject().get("Decimal")) {
+            try (V8ValueObject v8ValueObjectDecimal = v8ValueFunctionDecimal.call(
+                    null, new V8ValueString("123.45"))) {
+                getLogger().logInfo(v8ValueObjectDecimal.toString());
+                if (v8ValueObjectDecimal.hasOwnProperty("constructor")) {
+                    try (V8ValueFunction v8ValueFunction = v8ValueObjectDecimal.get("constructor")) {
+                        String name = v8ValueFunction.getString("name");
+                        if ("Decimal".equals(name)) {
+                            BigDecimal bigDecimal = new BigDecimal(v8ValueObjectDecimal.toString());
+                            getLogger().logInfo("BigDecimal: {0}", bigDecimal.toString());
+                        }
+                    }
+                }
+            }
+        }
     }
 
 Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/DecimalJavet.java>`_ for more detail.

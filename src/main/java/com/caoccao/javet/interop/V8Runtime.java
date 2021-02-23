@@ -298,16 +298,16 @@ public final class V8Runtime implements
         return V8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType());
     }
 
+    public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
+        checkLock();
+        decorateV8Value(value);
+        return V8Native.has(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), value);
+    }
+
     public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         checkLock();
         decorateV8Value(key);
         return V8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
-    }
-
-    public boolean has(IV8ValueKeyContainer iV8ValueKeyContainer, V8Value value) throws JavetException {
-        checkLock();
-        decorateV8Value(value);
-        return V8Native.has(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType(), value);
     }
 
     public <T extends V8Value> T invoke(

@@ -24,7 +24,7 @@ import com.caoccao.javet.interop.V8Runtime;
 public abstract class V8Value implements IV8Value {
     protected V8Runtime v8Runtime;
 
-    public V8Value() {
+    protected V8Value() {
         v8Runtime = null;
     }
 

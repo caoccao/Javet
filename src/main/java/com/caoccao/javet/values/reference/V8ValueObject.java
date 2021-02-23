@@ -74,6 +74,12 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public boolean has(V8Value value) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.has(this, value);
+    }
+
+    @Override
     public boolean hasOwnProperty(V8Value key) throws JavetException {
         checkV8Runtime();
         return v8Runtime.hasOwnProperty(this, key);

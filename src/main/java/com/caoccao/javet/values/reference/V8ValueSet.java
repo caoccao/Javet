@@ -56,10 +56,4 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
         checkV8Runtime();
         return v8Runtime.getSize(this);
     }
-
-    @Override
-    public boolean has(V8Value value) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.has(this, value);
-    }
 }

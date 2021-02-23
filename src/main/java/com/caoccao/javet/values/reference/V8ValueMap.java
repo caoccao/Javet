@@ -70,10 +70,4 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
             return V8ValueUtils.convertIteratorToV8ValueList(mapIterator);
         }
     }
-
-    @Override
-    public boolean has(V8Value value) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.has(this, value);
-    }
 }

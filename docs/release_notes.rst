@@ -5,11 +5,11 @@ Release Notes
 0.7.2
 -----
 
-* Added string function to ``setFunction()``
-* Added ``equals()`` and ``strictEquals()``
-* Added ``sameValue()``
-* Added ``getIdentityHash()``
-* Added ``isDead()``, ``isInUse()`` and ``terminateExecution()``
+* Added ``setFunction(String functionName, String codeString)`` to ``IV8ValueObject``
+* Added ``equals()`` and ``strictEquals()`` and ``sameValue()`` to ``IV8Value``
+* Added ``getIdentityHash()`` to ``IV8ValueReference``
+* Added ``isDead()``, ``isInUse()`` and ``terminateExecution()`` to ``V8Runtime``
+* Added ``IJavetEngineGuard``
 
 0.7.1
 -----

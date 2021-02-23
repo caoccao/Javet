@@ -26,6 +26,28 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    default boolean has(int value) throws JavetException {
+        return has(new V8ValueInteger(value));
+    }
+
+    default boolean has(long value) throws JavetException {
+        return has(new V8ValueLong(value));
+    }
+
+    default boolean has(String value) throws JavetException {
+        return has(new V8ValueString(value));
+    }
+
+    boolean has(V8Value value) throws JavetException;
+
+    default boolean hasNull() throws JavetException {
+        return has(new V8ValueNull());
+    }
+
+    default boolean hasUndefined() throws JavetException {
+        return has(new V8ValueUndefined());
+    }
+
     <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
 
     default <T extends V8Value> T invoke(String functionName, V8Value... v8Values) throws JavetException {

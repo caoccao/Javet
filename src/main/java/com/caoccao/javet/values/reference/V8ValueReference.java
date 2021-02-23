@@ -26,7 +26,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     protected long handle;
     protected boolean weak;
 
-    public V8ValueReference(long handle) {
+    V8ValueReference(long handle) {
         super();
         this.handle = handle;
         weak = false;

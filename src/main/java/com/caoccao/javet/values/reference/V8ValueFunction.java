@@ -43,7 +43,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
      */
     protected JavetCallbackContext javetCallbackContext;
 
-    public V8ValueFunction(long handle) {
+    V8ValueFunction(long handle) {
         super(handle);
         javetCallbackContext = null;
     }

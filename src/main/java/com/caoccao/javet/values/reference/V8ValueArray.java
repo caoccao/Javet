@@ -31,7 +31,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     public static final String FUNCTION_POP = "pop";
     public static final String FUNCTION_PUSH = "push";
 
-    public V8ValueArray(long handle) {
+    V8ValueArray(long handle) {
         super(handle);
     }
 
