@@ -55,6 +55,21 @@ public class JavetEngine implements IJavetEngine {
         }
     }
 
+    @Override
+    public JavetEngineConfig getConfig() {
+        return iJavetEnginePool.getConfig();
+    }
+
+    @Override
+    public IJavetEngineGuard getGuard() {
+        return getGuard(iJavetEnginePool.getConfig().getDefaultEngineGuardTimeoutMillis());
+    }
+
+    @Override
+    public IJavetEngineGuard getGuard(long timeoutMillis) {
+        return new JavetEngineGuard(this, v8Runtime, timeoutMillis);
+    }
+
     protected JavetEngineUsage getUsage() {
         return usage;
     }

@@ -22,7 +22,13 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 
 public interface IJavetEngine extends IJavetClosable {
+    JavetEngineConfig getConfig();
+
     V8Runtime getV8Runtime() throws JavetException;
+
+    IJavetEngineGuard getGuard();
+
+    IJavetEngineGuard getGuard(long timeoutMillis);
 
     boolean isActive();
 

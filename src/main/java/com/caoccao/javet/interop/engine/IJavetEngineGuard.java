@@ -19,18 +19,35 @@ package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.interfaces.IJavetClosable;
 
-public interface IJavetEnginePool extends IJavetClosable {
-    int getActiveEngineCount();
+/**
+ * The interface Javet engine guard is the one guarding the script execution with a timeout.
+ * <p>
+ * Usage:
+ *
+ * @code <code>
+ * try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(5000)) {
+ * v8Runtime.getExecutor("while (true) {}").executeVoid();
+ * // That infinite loop will be terminated in 5 seconds by the guard.
+ * }
+ * </code>
+ */
+public interface IJavetEngineGuard extends IJavetClosable, Runnable {
+    /**
+     * Cancel.
+     */
+    void cancel();
 
-    JavetEngineConfig getConfig();
+    /**
+     * Gets timeout millis.
+     *
+     * @return the timeout millis
+     */
+    long getTimeoutMillis();
 
-    IJavetEngine getEngine();
-
-    int getIdleEngineCount();
-
-    boolean isActive();
-
-    boolean isQuitting();
-
-    void releaseEngine(IJavetEngine engine);
+    /**
+     * Sets timeout millis.
+     *
+     * @param timeoutMillis the timeout millis
+     */
+    void setTimeoutMillis(long timeoutMillis);
 }

@@ -2,6 +2,10 @@ package com.caoccao.javet.utils;
 
 import com.caoccao.javet.interfaces.IJavetLogger;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +39,13 @@ public class JavetDefaultLogger implements IJavetLogger {
     @Override
     public void error(String message, Throwable cause) {
         logger.severe(message);
-        logger.severe(cause.getMessage());
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            try (PrintStream printStream = new PrintStream(byteArrayOutputStream)) {
+                cause.printStackTrace(printStream);
+                logger.severe(byteArrayOutputStream.toString(StandardCharsets.UTF_8.name()));
+            }
+        } catch (IOException e) {
+        }
     }
 
     @Override

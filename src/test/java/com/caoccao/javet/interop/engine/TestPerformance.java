@@ -15,17 +15,12 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.interop;
+package com.caoccao.javet.interop.engine;
 
-import com.caoccao.javet.BaseTestJavet;
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.engine.IJavetEngine;
-import com.caoccao.javet.interop.engine.IJavetEnginePool;
-import com.caoccao.javet.interop.engine.JavetEnginePool;
+import com.caoccao.javet.BaseTestJavetPool;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.utils.JavetOSUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -40,19 +35,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestPerformance extends BaseTestJavet {
-    protected IJavetEnginePool javetEnginePool;
-
-    @BeforeEach
-    public void beforeEach() {
-        javetEnginePool = new JavetEnginePool();
-    }
-
-    @AfterEach
-    public void afterEach() throws JavetException {
-        javetEnginePool.close();
-    }
-
+public class TestPerformance extends BaseTestJavetPool {
     @Test
     @Tag("performance")
     public void testAdHocContextAnd1Thread() throws Exception {
@@ -121,7 +104,7 @@ public class TestPerformance extends BaseTestJavet {
             thread.join();
         }
         final long stopTime = System.currentTimeMillis();
-        final long tps = iterations * (long) threadCount * 1000 / (stopTime-startTime);
+        final long tps = iterations * (long) threadCount * 1000 / (stopTime - startTime);
         logger.logInfo("Ad-hoc Context with 8 Threads: {0}", tps);
         updateDoc("Ad-hoc Context with 8 Threads", tps);
     }
@@ -154,7 +137,7 @@ public class TestPerformance extends BaseTestJavet {
             thread.join();
         }
         final long stopTime = System.currentTimeMillis();
-        final long tps = iterations * (long) threadCount * 1000 / (stopTime-startTime);
+        final long tps = iterations * (long) threadCount * 1000 / (stopTime - startTime);
         logger.logInfo("Single Context with 8 Threads: {0}", tps);
         updateDoc("Single Context with 8 Threads", tps);
     }
@@ -163,7 +146,7 @@ public class TestPerformance extends BaseTestJavet {
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
         File docFile = new File(
                 JavetOSUtils.WORKING_DIRECTORY,
-                "docs/performance.rst");
+                "docs/development/performance.rst");
         List<String> lines = new ArrayList<>();
         for (String line : Files.readAllLines(docFile.toPath(), StandardCharsets.UTF_8)) {
             if (line.startsWith(prefix)) {

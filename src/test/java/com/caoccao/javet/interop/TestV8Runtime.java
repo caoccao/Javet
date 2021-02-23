@@ -107,7 +107,9 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testTerminateExecution() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            // Create a daemon thread monitoring the V8 runtime status.
             Thread daemonThread = new Thread(() -> {
+                // V8 runtime isInUse() does not require lock.
                 while (!v8Runtime.isInUse()) {
                     try {
                         Thread.sleep(1);
@@ -115,18 +117,23 @@ public class TestV8Runtime extends BaseTestJavet {
                         e.printStackTrace();
                     }
                 }
+                // V8 runtime terminateExecution() does not require lock.
                 v8Runtime.terminateExecution();
             });
             daemonThread.start();
             v8Runtime.lock();
             try {
                 v8Runtime.getExecutor(
-                        "let count = 0; while (true) { console.debug('  ' + count); ++count; }")
+                        "var count = 0; while (true) { ++count; }")
                         .executeVoid();
                 fail("Failed to throw exception when execution is terminated.");
             } catch (JavetTerminatedException e) {
                 assertFalse(e.isContinuable());
             }
+            final int count = v8Runtime.getGlobalObject().getInteger("count");
+            assertTrue(count > 0, "Count should be greater than 0.");
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
+                    "V8 runtime should still be able to execute script after being terminated.");
         }
     }
 }
