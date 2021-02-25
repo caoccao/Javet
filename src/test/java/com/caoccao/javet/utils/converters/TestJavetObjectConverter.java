@@ -18,8 +18,9 @@
 package com.caoccao.javet.utils.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.utils.JavetNativeMap;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -28,6 +29,7 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueSet;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -86,6 +88,36 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals(1, v8ValueArray.getInteger(0));
             assertEquals(2, v8ValueArray.getInteger(1));
         }
+        // long[]
+        try (V8ValueArray v8ValueArray = converter.toV8Value(
+                v8Runtime, new long[]{1L, 2L})) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals(1L, v8ValueArray.getLong(0));
+            assertEquals(2L, v8ValueArray.getLong(1));
+        }
+        // String[]
+        try (V8ValueArray v8ValueArray = converter.toV8Value(
+                v8Runtime, new String[]{"abc", "def"})) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals("abc", v8ValueArray.getString(0));
+            assertEquals("def", v8ValueArray.getString(1));
+        }
+        // ZonedDateTime[]
+        try (V8ValueArray v8ValueArray = converter.toV8Value(
+                v8Runtime, new ZonedDateTime[]{
+                        JavetDateTimeUtils.toZonedDateTime(123L),
+                        JavetDateTimeUtils.toZonedDateTime(456L)})) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals(123L, v8ValueArray.getZonedDateTime(0).toInstant().toEpochMilli());
+            assertEquals(456L, v8ValueArray.getZonedDateTime(1).toInstant().toEpochMilli());
+        }
+        // Object[]
+        try (V8ValueArray v8ValueArray = converter.toV8Value(
+                v8Runtime, new Object[]{1, "abc"})) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals(1, v8ValueArray.getInteger(0));
+            assertEquals("abc", v8ValueArray.getString(1));
+        }
     }
 
     @Test
@@ -93,12 +125,12 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
             v8ValueMap.set("x", new V8ValueString("abc"));
             assertEquals("abc", v8ValueMap.getString("x"));
-            JavetNativeMap map = (JavetNativeMap) converter.toObject(v8ValueMap);
+            JavetEntityMap map = (JavetEntityMap) converter.toObject(v8ValueMap);
             assertEquals(1, map.size());
             assertEquals("abc", map.get("x"));
         }
         try (V8ValueMap v8ValueMap = converter.toV8Value(
-                v8Runtime, new JavetNativeMap() {{put("x", "abc");}})) {
+                v8Runtime, new JavetEntityMap() {{put("x", "abc");}})) {
             assertEquals(1, v8ValueMap.getSize());
             assertEquals("abc", v8ValueMap.getString("x"));
         }

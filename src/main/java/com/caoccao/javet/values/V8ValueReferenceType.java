@@ -30,4 +30,6 @@ public final class V8ValueReferenceType {
     public static final int Array = 10;
     public static final int Function = 11;
     public static final int Iterator = 12;
+    public static final int ArrayBuffer = 31;
+    public static final int Int8Array = 32;
 }

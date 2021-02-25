@@ -25,6 +25,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    callAsConstructor
+ * Signature: (JJI[Ljava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callAsConstructor
+  (JNIEnv *, jclass, jlong, jlong, jint, jobjectArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    clearWeak
  * Signature: (JJI)V
  */

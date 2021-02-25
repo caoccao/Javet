@@ -15,29 +15,29 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils;
+package com.caoccao.javet.entities;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class JavetNativeMap extends HashMap<String, Object> {
-    public JavetNativeMap(int initialCapacity, float loadFactor) {
+public class JavetEntityMap extends HashMap<String, Object> {
+    public JavetEntityMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
     }
 
-    public JavetNativeMap(int initialCapacity) {
+    public JavetEntityMap(int initialCapacity) {
         super(initialCapacity);
     }
 
-    public JavetNativeMap() {
+    public JavetEntityMap() {
     }
 
-    public JavetNativeMap(Map<? extends String, ?> m) {
+    public JavetEntityMap(Map<? extends String, ?> m) {
         super(m);
     }
 
     @Override
     public Object clone() {
-        return new JavetNativeMap(this);
+        return new JavetEntityMap(this);
     }
 }

@@ -63,8 +63,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public int getLength()
-            throws JavetException {
+    public int getLength() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getLength(this);
     }

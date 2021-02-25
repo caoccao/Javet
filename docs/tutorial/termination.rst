@@ -44,7 +44,7 @@ Manual termination gives applications complete control. In return, the coding ef
             // V8 runtime isInUse() does not require lock.
             while (!v8Runtime.isInUse()) {
                 try {
-                    Thread.sleep(1);
+                    TimeUnit.MILLISECONDS.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

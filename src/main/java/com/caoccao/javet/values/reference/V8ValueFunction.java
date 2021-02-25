@@ -71,6 +71,12 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.callAsConstructor(this, v8Values);
+    }
+
+    @Override
     public void close(boolean forceClose) throws JavetException {
         // V8 lock free
         if (forceClose || !isWeak()) {

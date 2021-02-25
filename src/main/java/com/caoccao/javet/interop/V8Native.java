@@ -37,6 +37,9 @@ final class V8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);
 
+    native static Object callAsConstructor(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
+
     native static void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static Object cloneV8Value(

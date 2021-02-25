@@ -18,20 +18,22 @@
 #pragma once
 
 namespace Javet {
-    namespace Enums {
-        enum V8ValueReferenceType {
-            Object = 1,
-            Error = 2,
-            RegExp = 3,
-            Promise = 4,
-            Proxy = 5,
-            Symbol = 6,
-            Arguments = 7,
-            Map = 8,
-            Set = 9,
-            Array = 10,
-            Function = 11,
-            Iterator = 12,
-        };
-    }
+	namespace Enums {
+		enum V8ValueReferenceType {
+			Object = 1,
+			Error = 2,
+			RegExp = 3,
+			Promise = 4,
+			Proxy = 5,
+			Symbol = 6,
+			Arguments = 7,
+			Map = 8,
+			Set = 9,
+			Array = 10,
+			Function = 11,
+			Iterator = 12,
+			ArrayBuffer = 31,
+			Int8Array = 32,
+		};
+	}
 }

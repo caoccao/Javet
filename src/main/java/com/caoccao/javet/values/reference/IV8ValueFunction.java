@@ -30,6 +30,8 @@ public interface IV8ValueFunction extends IV8ValueObject {
         return call(receiver, true, v8Values);
     }
 
+    <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException;
+
     default Boolean callBoolean(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
         return callObject(receiver, v8Values);
     }

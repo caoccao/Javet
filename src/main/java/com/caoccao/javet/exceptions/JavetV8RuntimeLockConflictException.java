@@ -20,16 +20,16 @@ package com.caoccao.javet.exceptions;
 import java.text.MessageFormat;
 
 public class JavetV8RuntimeLockConflictException extends JavetException {
-    public JavetV8RuntimeLockConflictException(String message) {
+    protected JavetV8RuntimeLockConflictException(String message) {
         super(message);
     }
 
-    public JavetV8RuntimeLockConflictException() {
-        this("V8 runtime lock conflict is detected");
+    public static JavetV8RuntimeLockConflictException lockNotRequired() {
+        return new JavetV8RuntimeLockConflictException("V8 runtime lock is not required");
     }
 
-    public JavetV8RuntimeLockConflictException(long lockedThreadId, long currentThreadId) {
-        this(MessageFormat.format(
+    public static JavetV8RuntimeLockConflictException threadIdMismatch(long lockedThreadId, long currentThreadId) {
+        return new JavetV8RuntimeLockConflictException(MessageFormat.format(
                 "V8 runtime lock conflict is detected with locked thread ID {0} and current thread ID {1}",
                 Long.toString(lockedThreadId), Long.toString(currentThreadId)));
     }

@@ -22,11 +22,16 @@ import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.*;
+import com.caoccao.javet.values.reference.typed.V8ValueInt8Array;
 
 public interface IV8Creatable {
     V8ValueArray createV8ValueArray() throws JavetException;
 
+    V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException;
+
     V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException;
+
+    V8ValueInt8Array createV8ValueInt8Array(int length) throws JavetException;
 
     V8ValueMap createV8ValueMap() throws JavetException;
 

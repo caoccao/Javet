@@ -25,6 +25,8 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Runtime extends BaseTestJavet {
@@ -80,7 +82,7 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
-            v8Runtime.resetContext();
+            v8Runtime.unlock().resetContext().lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
             v8Runtime.unlock();
@@ -112,7 +114,7 @@ public class TestV8Runtime extends BaseTestJavet {
                 // V8 runtime isInUse() does not require lock.
                 while (!v8Runtime.isInUse()) {
                     try {
-                        Thread.sleep(1);
+                        TimeUnit.MILLISECONDS.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

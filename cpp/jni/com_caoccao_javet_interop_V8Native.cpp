@@ -44,6 +44,7 @@
 #define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::Main::jmethodIDV8ValueIntegerToPrimitive)
 #define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::Main::jmethodIDV8ValueStringToPrimitive)
 #define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
+#define IS_V8_ARRAY_BUFFER(type) (type == Javet::Enums::V8ValueReferenceType::ArrayBuffer)
 #define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
 #define IS_V8_FUNCTION(type) (type == Javet::Enums::V8ValueReferenceType::Function)
 #define IS_V8_MAP(type) (type == Javet::Enums::V8ValueReferenceType::Map)
@@ -193,6 +194,30 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
 	return nullptr;
 }
 
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callAsConstructor
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobjectArray mValues) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (v8LocalObject->IsFunction()) {
+		v8::TryCatch v8TryCatch(v8Runtime->v8Isolate);
+		v8::MaybeLocal<v8::Value> maybeLocalValueResult;
+		uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
+		if (valueCount > 0) {
+			auto umValuesPointer = Javet::Converter::ToV8Values(jniEnv, v8Context, mValues);
+			maybeLocalValueResult = v8LocalObject.As<v8::Function>()->CallAsConstructor(v8Context, valueCount, umValuesPointer.get());
+		}
+		else {
+			maybeLocalValueResult = v8LocalObject.As<v8::Function>()->CallAsConstructor(v8Context, 0, nullptr);
+		}
+		if (v8TryCatch.HasCaught()) {
+			Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+		}
+		else {
+			SAFE_CONVERT_AND_RETURN_JAVE_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
+		}
+	}
+	return nullptr;
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearWeak
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -269,6 +294,11 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 	}
 	else if (IS_V8_ARRAY(v8ValueType)) {
 		v8ValueValue = v8::Array::New(v8Context->GetIsolate());
+	}
+	else if (IS_V8_ARRAY_BUFFER(v8ValueType)) {
+		if (IS_JAVA_INTEGER(jniEnv, mContext)) {
+			v8ValueValue = v8::ArrayBuffer::New(v8Context->GetIsolate(), TO_JAVA_INTEGER(jniEnv, mContext));
+		}
 	}
 	else if (IS_V8_FUNCTION(v8ValueType)) {
 		jobject umContext = jniEnv->NewGlobalRef(mContext);
@@ -359,7 +389,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	auto v8ValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, key);
 	v8::Local<v8::Value> v8ValueValue;
-	if (IS_V8_ARRAY(v8ValueType) || IS_V8_ARGUMENTS(v8ValueType)) {
+	if (IS_V8_ARGUMENTS(v8ValueType) || IS_V8_ARRAY(v8ValueType) || v8LocalObject->IsTypedArray()) {
 		if (IS_JAVA_INTEGER(jniEnv, key)) {
 			jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
 			if (integerKey >= 0) {
@@ -410,6 +440,9 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (IS_V8_ARRAY(v8ValueType)) {
 		return v8LocalObject.As<v8::Array>()->Length();
+	}
+	if (v8LocalObject->IsTypedArray()) {
+		return v8LocalObject.As<v8::TypedArray>()->Length();
 	}
 	return 0;
 }

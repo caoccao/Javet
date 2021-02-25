@@ -17,9 +17,9 @@
 
 package com.caoccao.javet.utils.converters;
 
+import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.utils.JavetNativeMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
@@ -36,12 +36,12 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         super();
     }
 
-    protected Map<String, Object> createNativeMap() {
-        return new JavetNativeMap();
+    protected Map<String, Object> createEntityMap() {
+        return new JavetEntityMap();
     }
 
-    protected boolean isNativeMap(Object object) {
-        return object instanceof JavetNativeMap;
+    protected boolean isEntityMap(Object object) {
+        return object instanceof JavetEntityMap;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             return set;
         } else if (v8Value instanceof V8ValueMap) {
             V8ValueMap v8ValueMap = (V8ValueMap) v8Value;
-            Map<String, Object> map = createNativeMap();
+            Map<String, Object> map = createEntityMap();
             try (IV8ValueIterator<V8ValueArray> iterator = v8ValueMap.getEntries()) {
                 while (true) {
                     try (V8ValueArray entry = iterator.getNext()) {
@@ -135,7 +135,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         if (v8Value != null && !(v8Value.isUndefined())) {
             return (T) v8Value;
         }
-        if (isNativeMap(object)) {
+        if (isEntityMap(object)) {
             V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap();
             Map mapObject = (Map) object;
             for (Object key : mapObject.keySet()) {
