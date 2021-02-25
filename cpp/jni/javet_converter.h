@@ -85,6 +85,10 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueMapConstructor;
 		static jmethodID jmethodIDV8ValueMapGetHandle;
 
+		static jclass jclassV8ValueIterator;
+		static jmethodID jmethodIDV8ValueIteratorConstructor;
+		static jmethodID jmethodIDV8ValueIteratorGetHandle;
+
 		static jclass jclassV8ValueObject;
 		static jmethodID jmethodIDV8ValueObjectConstructor;
 		static jmethodID jmethodIDV8ValueObjectGetHandle;

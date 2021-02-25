@@ -27,9 +27,9 @@ public class TestV8ValueUndefined extends BaseTestJavetRuntime {
     @Test
     public void testEquals() throws JavetException {
         V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor("undefined").execute();
-        assertTrue(v8ValueUndefined.equals(new V8ValueUndefined()));
+        assertTrue(v8ValueUndefined.equals(v8Runtime.createV8ValueUndefined()));
         assertFalse(v8ValueUndefined.equals(null));
-        assertFalse(v8ValueUndefined.equals(new V8ValueNull()));
+        assertFalse(v8ValueUndefined.equals(v8Runtime.createV8ValueNull()));
     }
 
     @Test

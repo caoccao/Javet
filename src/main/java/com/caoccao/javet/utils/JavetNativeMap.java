@@ -15,15 +15,29 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils.converters;
+package com.caoccao.javet.utils;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.values.V8Value;
+import java.util.HashMap;
+import java.util.Map;
 
-@SuppressWarnings("unchecked")
-public interface IJavetConverter {
-    Object toObject(V8Value v8Value) throws JavetException;
+public class JavetNativeMap extends HashMap<String, Object> {
+    public JavetNativeMap(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
 
-    <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException;
+    public JavetNativeMap(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public JavetNativeMap() {
+    }
+
+    public JavetNativeMap(Map<? extends String, ?> m) {
+        super(m);
+    }
+
+    @Override
+    public Object clone() {
+        return new JavetNativeMap(this);
+    }
 }

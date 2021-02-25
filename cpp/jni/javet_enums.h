@@ -31,6 +31,7 @@ namespace Javet {
             Set = 9,
             Array = 10,
             Function = 11,
+            Iterator = 12,
         };
     }
 }

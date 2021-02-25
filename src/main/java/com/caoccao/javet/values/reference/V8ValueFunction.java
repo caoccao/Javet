@@ -194,6 +194,6 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                 JavetResourceUtils.safeClose(values);
             }
         }
-        return v8Runtime.decorateV8Value(new V8ValueUndefined());
+        return v8Runtime.createV8ValueUndefined();
     }
 }

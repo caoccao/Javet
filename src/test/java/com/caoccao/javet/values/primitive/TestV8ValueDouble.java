@@ -33,7 +33,7 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
         assertTrue(v8ValueDouble.equals(new V8ValueDouble(1.23D)));
         assertFalse(v8ValueDouble.equals(null));
         assertFalse(v8ValueDouble.equals(new V8ValueDouble(1.24D)));
-        assertFalse(v8ValueDouble.equals(new V8ValueUndefined()));
+        assertFalse(v8ValueDouble.equals(v8Runtime.createV8ValueUndefined()));
     }
 
     @Test

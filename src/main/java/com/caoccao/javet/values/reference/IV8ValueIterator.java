@@ -17,15 +17,20 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.*;
 
-import java.util.List;
-
+/**
+ * The interface V8 value iterator.
+ *
+ * @param <T> the type parameter
+ */
 @SuppressWarnings("unchecked")
-public interface IV8ValueKeyContainer extends IV8ValueObject {
-    IV8ValueIterator<? extends V8Value> getKeys() throws JavetException;
-
-    int getSize() throws JavetException;
+public interface IV8ValueIterator<T extends V8Value> extends IJavetClosable {
+    /**
+     * Gets next.
+     *
+     * @return the next
+     */
+    T getNext();
 }

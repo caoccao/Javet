@@ -30,6 +30,8 @@ import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.values.primitive.V8ValueNull;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.*;
 
 import java.nio.file.Path;
@@ -159,6 +161,16 @@ public final class V8Runtime implements
     }
 
     @Override
+    public V8ValueNull createV8ValueNull() {
+        V8ValueNull v8ValueNull = new V8ValueNull();
+        try {
+            v8ValueNull.setV8Runtime(this);
+        } catch (JavetException javetException) {
+        }
+        return v8ValueNull;
+    }
+
+    @Override
     public V8ValueObject createV8ValueObject() throws JavetException {
         checkLock();
         return decorateV8Value((V8ValueObject) V8Native.createV8Value(handle, V8ValueReferenceType.Object, null));
@@ -168,6 +180,16 @@ public final class V8Runtime implements
     public V8ValueSet createV8ValueSet() throws JavetException {
         checkLock();
         return decorateV8Value((V8ValueSet) V8Native.createV8Value(handle, V8ValueReferenceType.Set, null));
+    }
+
+    @Override
+    public V8ValueUndefined createV8ValueUndefined() {
+        V8ValueUndefined v8ValueUndefined = new V8ValueUndefined();
+        try {
+            v8ValueUndefined.setV8Runtime(this);
+        } catch (JavetException javetException) {
+        }
+        return v8ValueUndefined;
     }
 
     public <T extends V8Value> T decorateV8Value(T v8Value) throws JavetException {

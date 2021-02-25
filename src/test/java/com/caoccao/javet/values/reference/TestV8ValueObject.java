@@ -58,9 +58,9 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertFalse(v8ValueObject1.equals(null));
             assertFalse(v8ValueObject1.sameValue(null));
             assertFalse(v8ValueObject1.strictEquals(null));
-            assertFalse(v8ValueObject1.equals(new V8ValueNull()));
-            assertFalse(v8ValueObject1.sameValue(new V8ValueNull()));
-            assertFalse(v8ValueObject1.strictEquals(new V8ValueNull()));
+            assertFalse(v8ValueObject1.equals(v8Runtime.createV8ValueNull()));
+            assertFalse(v8ValueObject1.sameValue(v8Runtime.createV8ValueNull()));
+            assertFalse(v8ValueObject1.strictEquals(v8Runtime.createV8ValueNull()));
             assertTrue(v8ValueObject1.equals(v8ValueObject1));
             assertTrue(v8ValueObject1.sameValue(v8ValueObject1));
             assertTrue(v8ValueObject1.strictEquals(v8ValueObject1));

@@ -56,6 +56,6 @@ public class TestV8ValueBoolean extends BaseTestJavetRuntime {
         assertTrue(v8ValueBoolean.equals(new V8ValueBoolean(true)));
         assertFalse(v8ValueBoolean.equals(null));
         assertFalse(v8ValueBoolean.equals(new V8ValueBoolean(false)));
-        assertFalse(v8ValueBoolean.equals(new V8ValueUndefined()));
+        assertFalse(v8ValueBoolean.equals(v8Runtime.createV8ValueUndefined()));
     }
 }

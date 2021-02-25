@@ -19,22 +19,29 @@ package com.caoccao.javet.utils.converters;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetNativeMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
-import com.caoccao.javet.values.virtual.V8VirtualList;
 
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class JavetObjectConverter extends JavetPrimitiveConverter {
 
     public static final String PROPERTY_CONSTRUCTOR = "constructor";
     public static final String PROPERTY_NAME = "name";
-    public static final String PROPERTY_KEY = "key";
-    public static final String PROPERTY_VALUE = "value";
 
     public JavetObjectConverter() {
         super();
+    }
+
+    protected Map<String, Object> createNativeMap() {
+        return new JavetNativeMap();
+    }
+
+    protected boolean isNativeMap(Object object) {
+        return object instanceof JavetNativeMap;
     }
 
     @Override
@@ -66,23 +73,27 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (v8Value instanceof V8ValueSet) {
             V8ValueSet v8ValueSet = (V8ValueSet) v8Value;
             HashSet<Object> set = new HashSet<>();
-            try (V8VirtualList<V8Value> items = v8ValueSet.getKeys()) {
-                final int length = items.size();
-                for (int i = 0; i < length; ++i) {
-                    try (V8Value item = items.get(i)) {
-                        set.add(toObject(item));
+            try (IV8ValueIterator<V8Value> iterator = v8ValueSet.getKeys()) {
+                while (true) {
+                    try (V8Value key = iterator.getNext()) {
+                        if (key == null) {
+                            break;
+                        }
+                        set.add(toObject(key));
                     }
                 }
             }
             return set;
         } else if (v8Value instanceof V8ValueMap) {
             V8ValueMap v8ValueMap = (V8ValueMap) v8Value;
-            Map<String, Object> map = new HashMap<>();
-            try (V8VirtualList<V8Value> entries = v8ValueMap.getEntries()) {
-                final int length = entries.size();
-                for (int i = 0; i < length; ++i) {
-                    try (V8ValueObject entry = (V8ValueObject) entries.get(i)) {
-                        try (V8Value key = entry.get(PROPERTY_KEY); V8Value value = entry.get(PROPERTY_VALUE);) {
+            Map<String, Object> map = createNativeMap();
+            try (IV8ValueIterator<V8ValueArray> iterator = v8ValueMap.getEntries()) {
+                while (true) {
+                    try (V8ValueArray entry = iterator.getNext()) {
+                        if (entry == null) {
+                            break;
+                        }
+                        try (V8Value key = entry.get(0); V8Value value = entry.get(1);) {
                             map.put(key.toString(), toObject(value));
                         }
                     }
@@ -119,12 +130,22 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
     }
 
     @Override
-    public V8Value toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
+    public <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
         V8Value v8Value = super.toV8Value(v8Runtime, object);
         if (v8Value != null && !(v8Value.isUndefined())) {
-            return v8Value;
+            return (T) v8Value;
         }
-        if (object instanceof Map) {
+        if (isNativeMap(object)) {
+            V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap();
+            Map mapObject = (Map) object;
+            for (Object key : mapObject.keySet()) {
+                try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key))) {
+                    String childStringKey = key instanceof String ? (String) key : key.toString();
+                    v8ValueMap.set(childStringKey, childV8Value);
+                }
+            }
+            v8Value = v8ValueMap;
+        } else if (object instanceof Map) {
             V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
             Map mapObject = (Map) object;
             for (Object key : mapObject.keySet()) {
@@ -198,6 +219,6 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
             v8Value = v8ValueArray;
         }
-        return v8Runtime.decorateV8Value(v8Value);
+        return (T) v8Runtime.decorateV8Value(v8Value);
     }
 }

@@ -38,6 +38,11 @@ public interface IV8ValueFunction extends IV8ValueObject {
         return callObject(receiver, v8Values);
     }
 
+    default Float callFloat(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
+        Double result = callDouble(receiver, v8Values);
+        return result == null ? null : result.floatValue();
+    }
+
     default Integer callInteger(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
         return callObject(receiver, v8Values);
     }

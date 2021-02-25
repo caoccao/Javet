@@ -54,7 +54,7 @@ public final class V8ValueUndefined extends V8Value {
 
     @Override
     public V8ValueUndefined toClone() throws JavetException {
-        return v8Runtime.decorateV8Value(new V8ValueUndefined());
+        return v8Runtime.createV8ValueUndefined();
     }
 
     @Override

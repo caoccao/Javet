@@ -29,4 +29,5 @@ public final class V8ValueReferenceType {
     public static final int Set = 9;
     public static final int Array = 10;
     public static final int Function = 11;
+    public static final int Iterator = 12;
 }

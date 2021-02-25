@@ -21,12 +21,16 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.utils.V8ValueUtils;
-import com.caoccao.javet.values.virtual.V8VirtualList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
+    public static final String FUNCTION_NEXT = "next";
+    public static final String PROPERTY_DONE = "done";
+    public static final String PROPERTY_VALUE = "value";
     public static final String FUNCTION_KEYS = "keys";
     public static final String FUNCTION_POP = "pop";
     public static final String FUNCTION_PUSH = "push";
@@ -42,10 +46,19 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public V8VirtualList<Integer> getKeys() throws JavetException {
+    public List<Integer> getKeys() throws JavetException {
         checkV8Runtime();
-        try (V8ValueObject arrayIterator = invoke(FUNCTION_KEYS)) {
-            return V8ValueUtils.convertIteratorToIntegerList(arrayIterator);
+        try (V8ValueObject iterator = invoke(FUNCTION_KEYS)) {
+            List<Integer> keys = new ArrayList<>();
+            while (true) {
+                try (V8ValueObject next = iterator.invoke(FUNCTION_NEXT)) {
+                    if (next.getBoolean(PROPERTY_DONE)) {
+                        break;
+                    }
+                    keys.add(next.getInteger(PROPERTY_VALUE));
+                }
+            }
+            return keys;
         }
     }
 

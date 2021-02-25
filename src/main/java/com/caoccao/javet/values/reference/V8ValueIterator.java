@@ -19,13 +19,31 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.*;
-
-import java.util.List;
+import com.caoccao.javet.values.V8ValueReferenceType;
 
 @SuppressWarnings("unchecked")
-public interface IV8ValueKeyContainer extends IV8ValueObject {
-    IV8ValueIterator<? extends V8Value> getKeys() throws JavetException;
+public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements IV8ValueIterator<T> {
+    public static final String FUNCTION_NEXT = "next";
+    public static final String PROPERTY_DONE = "done";
+    public static final String PROPERTY_VALUE = "value";
 
-    int getSize() throws JavetException;
+    public V8ValueIterator(long handle) {
+        super(handle);
+    }
+
+    @Override
+    public int getType() {
+        return V8ValueReferenceType.Iterator;
+    }
+
+    @Override
+    public T getNext() {
+        try (V8ValueObject next = invoke(FUNCTION_NEXT)) {
+            if (!next.getBoolean(PROPERTY_DONE)) {
+                return next.get(PROPERTY_VALUE);
+            }
+        } catch (JavetException javetException) {
+        }
+        return null;
+    }
 }

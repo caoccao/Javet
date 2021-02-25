@@ -20,10 +20,10 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.primitive.*;
-import com.caoccao.javet.values.virtual.V8VirtualList;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,12 +46,11 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals("x,y,z", v8ValueArray.toString());
             assertEquals("[object Array]", v8ValueArray.toProtoString());
             assertEquals("[\"x\",\"y\",\"z\"]", v8ValueArray.toJsonString());
-            try (V8VirtualList<Integer> keys = v8ValueArray.getKeys()) {
-                assertEquals(3, keys.size());
-                assertEquals(0, keys.get(0));
-                assertEquals(1, keys.get(1));
-                assertEquals(2, keys.get(2));
-            }
+            List<Integer> keys = v8ValueArray.getKeys();
+            assertEquals(3, keys.size());
+            assertEquals(0, keys.get(0));
+            assertEquals(1, keys.get(1));
+            assertEquals(2, keys.get(2));
         }
     }
 
