@@ -155,17 +155,19 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                         if (engine.isActive()) {
                             activeEngineList.push(engine);
                         } else {
-                            JavetEngineUsage usage = engine.getUsage();
-                            ZonedDateTime resetEngineZonedDateTime = usage.getLastActiveZonedDatetime()
-                                    .plus(config.getResetEngineTimeoutSeconds(), ChronoUnit.SECONDS);
-                            if (usage.getEngineUsedCount() >= config.getMaxEngineUsedCount() ||
-                                    resetEngineZonedDateTime.isBefore(getUTCNow())) {
-                                try {
-                                    logger.debug("JavetEnginePool reset engine begins.");
-                                    engine.resetIsolate();
-                                    logger.debug("JavetEnginePool reset engine ends.");
-                                } catch (Exception e) {
-                                    logger.logError(e, "Failed to reset idle engine.");
+                            if (config.getMaxEngineUsedCount() > 0) {
+                                JavetEngineUsage usage = engine.getUsage();
+                                ZonedDateTime resetEngineZonedDateTime = usage.getLastActiveZonedDatetime()
+                                        .plus(config.getResetEngineTimeoutSeconds(), ChronoUnit.SECONDS);
+                                if (usage.getEngineUsedCount() >= config.getMaxEngineUsedCount() ||
+                                        resetEngineZonedDateTime.isBefore(getUTCNow())) {
+                                    try {
+                                        logger.debug("JavetEnginePool reset engine begins.");
+                                        engine.resetContext();
+                                        logger.debug("JavetEnginePool reset engine ends.");
+                                    } catch (Exception e) {
+                                        logger.logError(e, "Failed to reset idle engine.");
+                                    }
                                 }
                             }
                             idleEngineList.push(engine);

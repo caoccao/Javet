@@ -16,6 +16,7 @@
  */
 
 #include "javet_converter.h"
+#include "javet_enums.h"
 
  // Primitive
 #define IS_JAVA_BOOLEAN(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueBoolean)
@@ -114,10 +115,6 @@ namespace Javet {
 			jmethodIDV8ValueGlobalObjectConstructor = jniEnv->GetMethodID(jclassV8ValueGlobalObject, "<init>", "(J)V");
 			jmethodIDV8ValueGlobalObjectGetHandle = jniEnv->GetMethodID(jclassV8ValueGlobalObject, "getHandle", "()J");
 
-			jclassV8ValueInt8Array = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/typed/V8ValueInt8Array"));
-			jmethodIDV8ValueInt8ArrayConstructor = jniEnv->GetMethodID(jclassV8ValueInt8Array, "<init>", "(J)V");
-			jmethodIDV8ValueInt8ArrayGetHandle = jniEnv->GetMethodID(jclassV8ValueInt8Array, "getHandle", "()J");
-
 			jclassV8ValueMap = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueMap"));
 			jmethodIDV8ValueMapConstructor = jniEnv->GetMethodID(jclassV8ValueMap, "<init>", "(J)V");
 			jmethodIDV8ValueMapGetHandle = jniEnv->GetMethodID(jclassV8ValueMap, "getHandle", "()J");
@@ -151,6 +148,10 @@ namespace Javet {
 			jclassV8ValueSymbol = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueSymbol"));
 			jmethodIDV8ValueSymbolConstructor = jniEnv->GetMethodID(jclassV8ValueSymbol, "<init>", "(J)V");
 			jmethodIDV8ValueSymbolGetHandle = jniEnv->GetMethodID(jclassV8ValueSymbol, "getHandle", "()J");
+
+			jclassV8ValueTypedArray = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueTypedArray"));
+			jmethodIDV8ValueTypedArrayConstructor = jniEnv->GetMethodID(jclassV8ValueTypedArray, "<init>", "(JI)V");
+			jmethodIDV8ValueTypedArrayGetHandle = jniEnv->GetMethodID(jclassV8ValueTypedArray, "getHandle", "()J");
 		}
 
 		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -179,31 +180,45 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueArray, jmethodIDV8ValueArrayConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsTypedArray()) {
-				// TODO
-				if (v8Value->IsBigInt64Array()) {
-				}
-				if (v8Value->IsBigUint64Array()) {
-				}
-				if (v8Value->IsFloat32Array()) {
-				}
-				if (v8Value->IsFloat64Array()) {
-				}
-				if (v8Value->IsInt16Array()) {
-				}
-				if (v8Value->IsInt32Array()) {
-				}
-				if (v8Value->IsInt8Array()) {
-					return jniEnv->NewObject(jclassV8ValueInt8Array, jmethodIDV8ValueInt8ArrayConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
-				}
-				if (v8Value->IsUint16Array()) {
-				}
-				if (v8Value->IsUint32Array()) {
-				}
-				if (v8Value->IsUint8Array()) {
-				}
-				if (v8Value->IsUint8ClampedArray()) {
-				}
 				if (v8Value->IsDataView()) {
+					// TODO
+				}
+				int type = Javet::Enums::V8ValueReferenceType::Invalid;
+				if (v8Value->IsBigInt64Array()) {
+					type = Javet::Enums::V8ValueReferenceType::BigInt64Array;
+				}
+				else if (v8Value->IsBigUint64Array()) {
+					type = Javet::Enums::V8ValueReferenceType::BigUint64Array;
+				}
+				else if (v8Value->IsFloat32Array()) {
+					type = Javet::Enums::V8ValueReferenceType::Float32Array;
+				}
+				else if (v8Value->IsFloat64Array()) {
+					type = Javet::Enums::V8ValueReferenceType::Float64Array;
+				}
+				else if (v8Value->IsInt16Array()) {
+					type = Javet::Enums::V8ValueReferenceType::Int16Array;
+				}
+				else if (v8Value->IsInt32Array()) {
+					type = Javet::Enums::V8ValueReferenceType::Int32Array;
+				}
+				else if (v8Value->IsInt8Array()) {
+					type = Javet::Enums::V8ValueReferenceType::Int8Array;
+				}
+				else if (v8Value->IsUint16Array()) {
+					type = Javet::Enums::V8ValueReferenceType::Uint16Array;
+				}
+				else if (v8Value->IsUint32Array()) {
+					type = Javet::Enums::V8ValueReferenceType::Uint32Array;
+				}
+				else if (v8Value->IsUint8Array()) {
+					type = Javet::Enums::V8ValueReferenceType::Uint8Array;
+				}
+				else if (v8Value->IsUint8ClampedArray()) {
+					type = Javet::Enums::V8ValueReferenceType::Uint8ClampedArray;
+				}
+				if (type != Javet::Enums::V8ValueReferenceType::Invalid) {
+					return jniEnv->NewObject(jclassV8ValueTypedArray, jmethodIDV8ValueTypedArrayConstructor, ToV8PersistentObjectReference(v8Context, v8Value), type);
 				}
 			}
 			if (v8Value->IsArrayBuffer()) {

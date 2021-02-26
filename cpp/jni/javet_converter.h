@@ -85,10 +85,6 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueGlobalObjectConstructor;
 		static jmethodID jmethodIDV8ValueGlobalObjectGetHandle;
 
-		static jclass jclassV8ValueInt8Array;
-		static jmethodID jmethodIDV8ValueInt8ArrayConstructor;
-		static jmethodID jmethodIDV8ValueInt8ArrayGetHandle;
-
 		static jclass jclassV8ValueMap;
 		static jmethodID jmethodIDV8ValueMapConstructor;
 		static jmethodID jmethodIDV8ValueMapGetHandle;
@@ -122,6 +118,10 @@ namespace Javet {
 		static jclass jclassV8ValueSymbol;
 		static jmethodID jmethodIDV8ValueSymbolConstructor;
 		static jmethodID jmethodIDV8ValueSymbolGetHandle;
+
+		static jclass jclassV8ValueTypedArray;
+		static jmethodID jmethodIDV8ValueTypedArrayConstructor;
+		static jmethodID jmethodIDV8ValueTypedArrayGetHandle;
 
 		void Initialize(JNIEnv* jniEnv);
 

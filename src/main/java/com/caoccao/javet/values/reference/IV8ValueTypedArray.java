@@ -15,18 +15,20 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.reference.typed;
+package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.reference.IV8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueArrayBuffer;
 
 public interface IV8ValueTypedArray extends IV8ValueObject {
     V8ValueArrayBuffer getArrayBuffer() throws JavetException;
 
     int getByteLength() throws JavetException;
 
+    int getByteOffset() throws JavetException;
+
     int getLength() throws JavetException;
 
     int getSizeInBytes();
+
+    boolean isValid();
 }

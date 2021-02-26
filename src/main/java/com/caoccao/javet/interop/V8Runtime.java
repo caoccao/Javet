@@ -34,8 +34,6 @@ import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.*;
-import com.caoccao.javet.values.reference.typed.IV8ValueTypedArray;
-import com.caoccao.javet.values.reference.typed.V8ValueInt8Array;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -89,7 +87,7 @@ public final class V8Runtime implements
     }
 
     public <T extends V8Value> T callAsConstructor(
-            IV8ValueObject iV8ValueObject,  V8Value... v8Values) throws JavetException {
+            IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
         checkLock();
         decorateV8Values(v8Values);
         return decorateV8Value((T) V8Native.callAsConstructor(
@@ -174,13 +172,6 @@ public final class V8Runtime implements
     }
 
     @Override
-    public V8ValueInt8Array createV8ValueInt8Array(int length) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = getGlobalObject().get(V8ValueInt8Array.NAME)) {
-            return v8ValueFunction.callAsConstructor(new V8ValueInteger(length));
-        }
-    }
-
-    @Override
     public V8ValueMap createV8ValueMap() throws JavetException {
         checkLock();
         return decorateV8Value((V8ValueMap) V8Native.createV8Value(handle, V8ValueReferenceType.Map, null));
@@ -206,6 +197,13 @@ public final class V8Runtime implements
     public V8ValueSet createV8ValueSet() throws JavetException {
         checkLock();
         return decorateV8Value((V8ValueSet) V8Native.createV8Value(handle, V8ValueReferenceType.Set, null));
+    }
+
+    @Override
+    public V8ValueTypedArray createV8ValueTypedArray(int type, int length) throws JavetException {
+        try (V8ValueFunction v8ValueFunction = getGlobalObject().get(V8ValueTypedArray.getName(type))) {
+            return v8ValueFunction.callAsConstructor(new V8ValueInteger(length));
+        }
     }
 
     @Override
