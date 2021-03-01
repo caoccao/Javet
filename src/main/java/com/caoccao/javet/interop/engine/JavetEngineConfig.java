@@ -40,11 +40,11 @@ public final class JavetEngineConfig {
     private int defaultEngineGuardTimeoutMillis;
     private int engineGuardCheckIntervalMillis;
     private int maxEngineUsedCount;
+    private int poolDaemonCheckIntervalMillis;
     private int poolMaxSize;
     private int poolMinSize;
     private int poolIdleTimeoutSeconds;
     private int poolShutdownTimeoutSeconds;
-    private int poolDaemonCheckIntervalMillis;
     private int resetEngineTimeoutSeconds;
     private ExecutorService executorService;
 

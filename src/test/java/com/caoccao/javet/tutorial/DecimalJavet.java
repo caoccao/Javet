@@ -25,7 +25,6 @@ import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
 import com.caoccao.javet.utils.JavetOSUtils;
-import com.caoccao.javet.utils.converters.JavetObjectConverter;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
