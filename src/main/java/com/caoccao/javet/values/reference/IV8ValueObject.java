@@ -355,7 +355,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * It is for creating a string based function in V8.
      * <p>
      * JS equivalent:
-     * obj.func = (arg1, arg2) => { ... };
+     * <code>
+     * obj.func = function(arg1, arg2) { ... };
+     * </code>
      *
      * @param functionName the function name
      * @param codeString   the code string

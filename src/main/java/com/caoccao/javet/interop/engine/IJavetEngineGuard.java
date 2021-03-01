@@ -24,7 +24,7 @@ import com.caoccao.javet.interfaces.IJavetClosable;
  * <p>
  * Usage:
  *
- * @code <code>
+ * <code>
  * try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(5000)) {
  * v8Runtime.getExecutor("while (true) {}").executeVoid();
  * // That infinite loop will be terminated in 5 seconds by the guard.
