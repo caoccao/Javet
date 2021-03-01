@@ -21,6 +21,7 @@ import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
@@ -100,6 +101,29 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 }
             }
             return map;
+        } else if (v8Value instanceof V8ValueTypedArray) {
+            V8ValueTypedArray v8ValueTypedArray = (V8ValueTypedArray) v8Value;
+            switch (v8ValueTypedArray.getType()) {
+                case V8ValueReferenceType.Int8Array:
+                case V8ValueReferenceType.Uint8Array:
+                case V8ValueReferenceType.Uint8ClampedArray:
+                    return v8ValueTypedArray.toBytes();
+                case V8ValueReferenceType.Int16Array:
+                case V8ValueReferenceType.Uint16Array:
+                    return v8ValueTypedArray.toShorts();
+                case V8ValueReferenceType.Int32Array:
+                case V8ValueReferenceType.Uint32Array:
+                    return v8ValueTypedArray.toIntegers();
+                case V8ValueReferenceType.Float32Array:
+                    return v8ValueTypedArray.toFloats();
+                case V8ValueReferenceType.Float64Array:
+                    return v8ValueTypedArray.toDoubles();
+                case V8ValueReferenceType.BigInt64Array:
+                case V8ValueReferenceType.BigUint64Array:
+                    return v8ValueTypedArray.toLongs();
+                default:
+                    break;
+            }
         } else if (v8Value instanceof V8ValueObject) {
             V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
             Map<String, Object> map = new HashMap<>();
@@ -179,31 +203,41 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
             v8Value = v8ValueArray;
         } else if (object instanceof byte[]) {
-            // TODO To support byte[]
+            byte[] bytes = (byte[]) object;
+            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                    V8ValueReferenceType.Int8Array, bytes.length);
+            v8ValueTypedArray.fromBytes(bytes);
+            v8Value = v8ValueTypedArray;
         } else if (object instanceof double[]) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (double item : (double[]) object) {
-                v8ValueArray.push(new V8ValueDouble(item));
-            }
-            v8Value = v8ValueArray;
+            double[] doubles = (double[]) object;
+            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                    V8ValueReferenceType.Float64Array, doubles.length);
+            v8ValueTypedArray.fromDoubles(doubles);
+            v8Value = v8ValueTypedArray;
         } else if (object instanceof float[]) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (float item : (float[]) object) {
-                v8ValueArray.push(new V8ValueDouble(item));
-            }
-            v8Value = v8ValueArray;
+            float[] floats = (float[]) object;
+            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                    V8ValueReferenceType.Float32Array, floats.length);
+            v8ValueTypedArray.fromFloats(floats);
+            v8Value = v8ValueTypedArray;
         } else if (object instanceof int[]) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (int item : (int[]) object) {
-                v8ValueArray.push(new V8ValueInteger(item));
-            }
-            v8Value = v8ValueArray;
+            int[] integers = (int[]) object;
+            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                    V8ValueReferenceType.Int32Array, integers.length);
+            v8ValueTypedArray.fromIntegers(integers);
+            v8Value = v8ValueTypedArray;
         } else if (object instanceof long[]) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (long item : (long[]) object) {
-                v8ValueArray.push(new V8ValueLong(item));
-            }
-            v8Value = v8ValueArray;
+            long[] longs = (long[]) object;
+            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                    V8ValueReferenceType.BigInt64Array, longs.length);
+            v8ValueTypedArray.fromLongs(longs);
+            v8Value = v8ValueTypedArray;
+        } else if (object instanceof short[]) {
+            short[] shorts = (short[]) object;
+            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                    V8ValueReferenceType.Int16Array, shorts.length);
+            v8ValueTypedArray.fromShorts(shorts);
+            v8Value = v8ValueTypedArray;
         } else if (object instanceof String[]) {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
             for (String item : (String[]) object) {

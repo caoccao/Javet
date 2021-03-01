@@ -439,10 +439,10 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (IS_V8_ARRAY(v8ValueType)) {
-		return v8LocalObject.As<v8::Array>()->Length();
+		return (jint)v8LocalObject.As<v8::Array>()->Length();
 	}
 	if (v8LocalObject->IsTypedArray()) {
-		return v8LocalObject.As<v8::TypedArray>()->Length();
+		return (jint)v8LocalObject.As<v8::TypedArray>()->Length();
 	}
 	return 0;
 }

@@ -21,19 +21,16 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueMap;
-import com.caoccao.javet.values.reference.V8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueSet;
+import com.caoccao.javet.values.reference.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unchecked")
 public class TestJavetObjectConverter extends BaseTestJavetRuntime {
@@ -66,34 +63,6 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals(2, v8ValueArray.getLength());
             assertEquals(true, v8ValueArray.getBoolean(0));
             assertEquals(false, v8ValueArray.getBoolean(1));
-        }
-        // double[]
-        try (V8ValueArray v8ValueArray = converter.toV8Value(
-                v8Runtime, new double[]{1.23D, 2.34D})) {
-            assertEquals(2, v8ValueArray.getLength());
-            assertEquals(1.23D, v8ValueArray.getDouble(0), 0.001D);
-            assertEquals(2.34D, v8ValueArray.getDouble(1), 0.001D);
-        }
-        // float[]
-        try (V8ValueArray v8ValueArray = converter.toV8Value(
-                v8Runtime, new float[]{1.23F, 2.34F})) {
-            assertEquals(2, v8ValueArray.getLength());
-            assertEquals(1.23F, v8ValueArray.getFloat(0), 0.001F);
-            assertEquals(2.34F, v8ValueArray.getFloat(1), 0.001F);
-        }
-        // int[]
-        try (V8ValueArray v8ValueArray = converter.toV8Value(
-                v8Runtime, new int[]{1, 2})) {
-            assertEquals(2, v8ValueArray.getLength());
-            assertEquals(1, v8ValueArray.getInteger(0));
-            assertEquals(2, v8ValueArray.getInteger(1));
-        }
-        // long[]
-        try (V8ValueArray v8ValueArray = converter.toV8Value(
-                v8Runtime, new long[]{1L, 2L})) {
-            assertEquals(2, v8ValueArray.getLength());
-            assertEquals(1L, v8ValueArray.getLong(0));
-            assertEquals(2L, v8ValueArray.getLong(1));
         }
         // String[]
         try (V8ValueArray v8ValueArray = converter.toV8Value(
@@ -130,7 +99,9 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals("abc", map.get("x"));
         }
         try (V8ValueMap v8ValueMap = converter.toV8Value(
-                v8Runtime, new JavetEntityMap() {{put("x", "abc");}})) {
+                v8Runtime, new JavetEntityMap() {{
+                    put("x", "abc");
+                }})) {
             assertEquals(1, v8ValueMap.getSize());
             assertEquals("abc", v8ValueMap.getString("x"));
         }
@@ -147,7 +118,9 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals("abc", map.get("x"));
         }
         try (V8ValueObject v8ValueObject = converter.toV8Value(
-                v8Runtime, new HashMap<String, Object>() {{put("x", "abc");}})) {
+                v8Runtime, new HashMap<String, Object>() {{
+                    put("x", "abc");
+                }})) {
             assertEquals("abc", v8ValueObject.getString("x"));
         }
     }
@@ -167,6 +140,108 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertTrue(v8ValueSet.has("a"));
             assertTrue(v8ValueSet.has("b"));
             assertTrue(v8ValueSet.has("c"));
+        }
+    }
+
+    @Test
+    public void testTypedArrayByteArray() throws JavetException {
+        byte[] bytes = new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0x03};
+        try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, bytes)) {
+            assertEquals(bytes.length, v8ValueTypedArray.getLength());
+            assertEquals(bytes.length, v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertArrayEquals(bytes, v8ValueTypedArray.toBytes());
+        }
+        try (V8ValueTypedArray v8ValueTypedArray =
+                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Int8Array, bytes.length)) {
+            assertTrue(v8ValueTypedArray.fromBytes(bytes));
+            byte[] newBytes = (byte[]) converter.toObject(v8ValueTypedArray);
+            assertArrayEquals(bytes, newBytes);
+        }
+    }
+
+    @Test
+    public void testTypedArrayDoubleArray() throws JavetException {
+        double[] doubles = new double[]{1.23D, 2.34D, 3.45D};
+        try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, doubles)) {
+            assertEquals(doubles.length, v8ValueTypedArray.getLength());
+            assertEquals(doubles.length * v8ValueTypedArray.getSizeInBytes(), v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertArrayEquals(doubles, v8ValueTypedArray.toDoubles());
+        }
+        try (V8ValueTypedArray v8ValueTypedArray =
+                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Float64Array, doubles.length)) {
+            assertTrue(v8ValueTypedArray.fromDoubles(doubles));
+            double[] newDoubles = (double[]) converter.toObject(v8ValueTypedArray);
+            assertArrayEquals(doubles, newDoubles, 0.001D);
+        }
+    }
+
+    @Test
+    public void testTypedArrayFloatArray() throws JavetException {
+        float[] floats = new float[]{1.23F, 2.34F, 3.45F};
+        try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, floats)) {
+            assertEquals(floats.length, v8ValueTypedArray.getLength());
+            assertEquals(floats.length * v8ValueTypedArray.getSizeInBytes(), v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertArrayEquals(floats, v8ValueTypedArray.toFloats());
+        }
+        try (V8ValueTypedArray v8ValueTypedArray =
+                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Float32Array, floats.length)) {
+            assertTrue(v8ValueTypedArray.fromFloats(floats));
+            float[] newFloats = (float[]) converter.toObject(v8ValueTypedArray);
+            assertArrayEquals(floats, newFloats, 0.001F);
+        }
+    }
+
+    @Test
+    public void testTypedArrayLongArray() throws JavetException {
+        long[] longs = new long[]{1L, 2L, 3L};
+        try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, longs)) {
+            assertEquals(longs.length, v8ValueTypedArray.getLength());
+            assertEquals(longs.length * v8ValueTypedArray.getSizeInBytes(), v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertArrayEquals(longs, v8ValueTypedArray.toLongs());
+        }
+        try (V8ValueTypedArray v8ValueTypedArray =
+                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.BigInt64Array, longs.length)) {
+            assertTrue(v8ValueTypedArray.fromLongs(longs));
+            long[] newLongs = (long[]) converter.toObject(v8ValueTypedArray);
+            assertArrayEquals(longs, newLongs);
+        }
+    }
+
+    @Test
+    public void testTypedArrayIntegerArray() throws JavetException {
+        int[] integers = new int[]{1, 2, 3};
+        try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, integers)) {
+            assertEquals(integers.length, v8ValueTypedArray.getLength());
+            assertEquals(integers.length * v8ValueTypedArray.getSizeInBytes(), v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertArrayEquals(integers, v8ValueTypedArray.toIntegers());
+        }
+        try (V8ValueTypedArray v8ValueTypedArray =
+                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Int32Array, integers.length)) {
+            assertTrue(v8ValueTypedArray.fromIntegers(integers));
+            int[] newIntegers = (int[]) converter.toObject(v8ValueTypedArray);
+            assertArrayEquals(integers, newIntegers);
+        }
+    }
+
+    @Test
+    public void testTypedArrayShortArray() throws JavetException {
+        short[] shorts = new short[]{(short) 0x01, (short) 0x02, (short) 0x03};
+        try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, shorts)) {
+            assertEquals(shorts.length, v8ValueTypedArray.getLength());
+            assertEquals(shorts.length * v8ValueTypedArray.getSizeInBytes(), v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertArrayEquals(shorts, v8ValueTypedArray.toShorts());
+        }
+        try (V8ValueTypedArray v8ValueTypedArray =
+                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Int16Array, shorts.length)) {
+            assertTrue(v8ValueTypedArray.fromShorts(shorts));
+            short[] newShorts = (short[]) converter.toObject(v8ValueTypedArray);
+            assertArrayEquals(shorts, newShorts);
         }
     }
 }

@@ -56,6 +56,8 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             v8Value = new V8ValueInteger((Integer) object);
         } else if (object instanceof Long) {
             v8Value = new V8ValueLong((Long) object);
+        } else if (object instanceof Short) {
+            v8Value = new V8ValueInteger((Short) object);
         } else if (object instanceof String) {
             v8Value = new V8ValueString((String) object);
         } else if (object instanceof ZonedDateTime) {
