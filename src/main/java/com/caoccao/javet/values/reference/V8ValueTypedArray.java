@@ -24,14 +24,26 @@ import com.caoccao.javet.values.V8ValueReferenceType;
  * The type V8 value typed array.
  * The typical way of manipulating the typed array is as following.
  * 1. Get array buffer and apply try-with-resource.
+ * 2. Create the value array by length.
+ * 3. Fill the value array.
+ * E.g.:
+ * <code>
+ * try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getArrayBuffer()) {
+ * long[] longs = new long[v8ValueArrayBuffer.getLength()];
+ * v8ValueArrayBuffer.toLongs(longs);
+ * // ...
+ * }
+ * </code>
+ * Or, play with ByteBuffer directly.
+ * 1. Get array buffer and apply try-with-resource.
  * 2. Get native ByteBuffer.
- * 3. Set order of the native ByteBuffer to little endian.
+ * 3. Set order of the native ByteBuffer to native order.
  * 4. Get typed buffer by type.
  * 5. Read from or write to the typed buffer.
  * E.g:
  * <code>
  * try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getArrayBuffer()) {
- * LongBuffer longBuffer = v8ValueArrayBuffer.getByteBuffer().order(ByteOrder.LITTLE_ENDIAN).asLongBuffer();
+ * LongBuffer longBuffer = v8ValueArrayBuffer.getByteBuffer().order(ByteOrder.nativeOrder()).asLongBuffer();
  * // ...
  * }
  * </code>

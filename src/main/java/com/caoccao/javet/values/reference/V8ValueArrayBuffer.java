@@ -22,6 +22,7 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueArrayBuffer extends V8ValueObject {
@@ -32,10 +33,21 @@ public class V8ValueArrayBuffer extends V8ValueObject {
     public static final int BYTE_LENGTH_3 = 3;
 
     protected ByteBuffer byteBuffer;
+    protected ByteOrder byteOrder;
 
     protected V8ValueArrayBuffer(long handle, ByteBuffer byteBuffer) {
         super(handle);
         this.byteBuffer = byteBuffer;
+        byteOrder = ByteOrder.nativeOrder();
+    }
+
+    public ByteOrder getByteOrder() {
+        return byteOrder;
+    }
+
+    public void setByteOrder(ByteOrder byteOrder) {
+        Objects.requireNonNull(byteOrder);
+        this.byteOrder = byteOrder;
     }
 
     public ByteBuffer getByteBuffer() {
@@ -61,7 +73,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
 
     public boolean fromDoubles(double[] doubles) {
         if (doubles != null && doubles.length > 0 && doubles.length == byteBuffer.capacity() >> BYTE_LENGTH_3) {
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asDoubleBuffer().put(doubles);
+            byteBuffer.order(byteOrder).asDoubleBuffer().put(doubles);
             return true;
         }
         return false;
@@ -69,7 +81,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
 
     public boolean fromFloats(float[] floats) {
         if (floats != null && floats.length > 0 && floats.length == byteBuffer.capacity() >> BYTE_LENGTH_2) {
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer().put(floats);
+            byteBuffer.order(byteOrder).asFloatBuffer().put(floats);
             return true;
         }
         return false;
@@ -77,7 +89,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
 
     public boolean fromIntegers(int[] integers) {
         if (integers != null && integers.length > 0 && integers.length == byteBuffer.capacity() >> BYTE_LENGTH_2) {
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(integers);
+            byteBuffer.order(byteOrder).asIntBuffer().put(integers);
             return true;
         }
         return false;
@@ -85,7 +97,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
 
     public boolean fromLongs(long[] longs) {
         if (longs != null && longs.length > 0 && longs.length == byteBuffer.capacity() >> BYTE_LENGTH_3) {
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(longs);
+            byteBuffer.order(byteOrder).asLongBuffer().put(longs);
             return true;
         }
         return false;
@@ -93,7 +105,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
 
     public boolean fromShorts(short[] shorts) {
         if (shorts != null && shorts.length > 0 && shorts.length == byteBuffer.capacity() >> BYTE_LENGTH_1) {
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put(shorts);
+            byteBuffer.order(byteOrder).asShortBuffer().put(shorts);
             return true;
         }
         return false;
@@ -107,31 +119,31 @@ public class V8ValueArrayBuffer extends V8ValueObject {
 
     public double[] toDoubles() {
         double[] doubles = new double[byteBuffer.capacity() >> BYTE_LENGTH_3];
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asDoubleBuffer().get(doubles);
+        byteBuffer.order(byteOrder).asDoubleBuffer().get(doubles);
         return doubles;
     }
 
     public float[] toFloats() {
         float[] floats = new float[byteBuffer.capacity() >> BYTE_LENGTH_2];
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer().get(floats);
+        byteBuffer.order(byteOrder).asFloatBuffer().get(floats);
         return floats;
     }
 
     public int[] toIntegers() {
         int[] integers = new int[byteBuffer.capacity() >> BYTE_LENGTH_2];
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(integers);
+        byteBuffer.order(byteOrder).asIntBuffer().get(integers);
         return integers;
     }
 
     public long[] toLongs() {
         long[] longs = new long[byteBuffer.capacity() >> BYTE_LENGTH_3];
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().get(longs);
+        byteBuffer.order(byteOrder).asLongBuffer().get(longs);
         return longs;
     }
 
     public short[] toShorts() {
         short[] shorts = new short[byteBuffer.capacity() >> BYTE_LENGTH_1];
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+        byteBuffer.order(byteOrder).asShortBuffer().get(shorts);
         return shorts;
     }
 }
