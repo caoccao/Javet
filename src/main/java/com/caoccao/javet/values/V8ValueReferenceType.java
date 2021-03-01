@@ -31,6 +31,7 @@ public final class V8ValueReferenceType {
     public static final int Array = 10;
     public static final int Function = 11;
     public static final int Iterator = 12;
+    public static final int DataView = 30;
     public static final int ArrayBuffer = 31;
     public static final int Int8Array = 32; // -128 to 127 	1 	8-bit two's complement signed integer 	byte 	int8_t
     public static final int Uint8Array = 33; // 0 to 255 	1 	8-bit unsigned integer 	octet 	uint8_t

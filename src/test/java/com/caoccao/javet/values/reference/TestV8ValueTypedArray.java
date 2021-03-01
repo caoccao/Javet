@@ -47,7 +47,7 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
                 assertEquals(length, v8ValueTypedArray.getByteLength());
                 assertEquals(0, v8ValueTypedArray.getByteOffset());
                 assertEquals(type, v8ValueTypedArray.getType());
-                try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getArrayBuffer()) {
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getBuffer()) {
                     v8ValueArrayBuffer.fromBytes(bytes);
                 }
                 for (int j = 0; j < length; j++) {
@@ -60,7 +60,7 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
                 assertEquals(length, v8ValueTypedArray.getByteLength());
                 assertEquals(0, v8ValueTypedArray.getByteOffset());
                 assertEquals(type, v8ValueTypedArray.getType());
-                try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getArrayBuffer()) {
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getBuffer()) {
                     v8ValueArrayBuffer.fromBytes(bytes);
                 }
                 v8Runtime.getGlobalObject().set("b", v8ValueTypedArray);

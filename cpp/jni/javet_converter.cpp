@@ -32,6 +32,7 @@
 #define IS_JAVA_ARGUMENTS(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueArguments)
 #define IS_JAVA_ARRAY(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueArray)
 #define IS_JAVA_ARRAY_BUFFER(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueArrayBuffer)
+#define IS_JAVA_DATA_VIEW(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueDataView)
 #define IS_JAVA_FUNCTION(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueFunction)
 #define IS_JAVA_ERROR(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueError)
 #define IS_JAVA_GLOBAL_OBJECT(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueGlobalObject)
@@ -102,6 +103,10 @@ namespace Javet {
 			jclassV8ValueArrayBuffer = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueArrayBuffer"));
 			jmethodIDV8ValueArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueArrayBuffer, "<init>", "(JLjava/nio/ByteBuffer;)V");
 			jmethodIDV8ValueArrayBufferGetHandle = jniEnv->GetMethodID(jclassV8ValueArrayBuffer, "getHandle", "()J");
+
+			jclassV8ValueDataView = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueDataView"));
+			jmethodIDV8ValueDataViewConstructor = jniEnv->GetMethodID(jclassV8ValueDataView, "<init>", "(J)V");
+			jmethodIDV8ValueDataViewGetHandle = jniEnv->GetMethodID(jclassV8ValueDataView, "getHandle", "()J");
 
 			jclassV8ValueFunction = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueFunction"));
 			jmethodIDV8ValueFunctionConstructor = jniEnv->GetMethodID(jclassV8ValueFunction, "<init>", "(J)V");
@@ -180,9 +185,6 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueArray, jmethodIDV8ValueArrayConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsTypedArray()) {
-				if (v8Value->IsDataView()) {
-					// TODO
-				}
 				int type = Javet::Enums::V8ValueReferenceType::Invalid;
 				if (v8Value->IsBigInt64Array()) {
 					type = Javet::Enums::V8ValueReferenceType::BigInt64Array;
@@ -221,13 +223,19 @@ namespace Javet {
 					return jniEnv->NewObject(jclassV8ValueTypedArray, jmethodIDV8ValueTypedArrayConstructor, ToV8PersistentObjectReference(v8Context, v8Value), type);
 				}
 			}
+			if (v8Value->IsDataView()) {
+				return jniEnv->NewObject(jclassV8ValueDataView, jmethodIDV8ValueDataViewConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
+			}
 			if (v8Value->IsArrayBuffer()) {
 				auto v8ArrayBuffer = v8Value.As<v8::ArrayBuffer>();
 				return jniEnv->NewObject(jclassV8ValueArrayBuffer, jmethodIDV8ValueArrayBufferConstructor, ToV8PersistentObjectReference(v8Context, v8Value),
 					jniEnv->NewDirectByteBuffer(v8ArrayBuffer->GetBackingStore()->Data(), v8ArrayBuffer->ByteLength()));
 			}
 			if (v8Value->IsArrayBufferView()) {
-				// TODO
+				/*
+				ArrayBufferView is a helper type representing any of typed array or DataView.
+				This block shouldn't be entered.
+				 */
 			}
 			if (v8Value->IsMap()) {
 				return jniEnv->NewObject(jclassV8ValueMap, jmethodIDV8ValueMapConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
@@ -449,10 +457,6 @@ namespace Javet {
 					return v8::Local<v8::Object>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Object>*>(
 						jniEnv->CallLongMethod(obj, jmethodIDV8ValueIteratorGetHandle)));
 				}
-				else if (IS_JAVA_OBJECT(jniEnv, obj)) {
-					return v8::Local<v8::Object>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Object>*>(
-						jniEnv->CallLongMethod(obj, jmethodIDV8ValueObjectGetHandle)));
-				}
 				else if (IS_JAVA_PROMISE(jniEnv, obj)) {
 					return v8::Local<v8::Promise>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Promise>*>(
 						jniEnv->CallLongMethod(obj, jmethodIDV8ValuePromiseGetHandle)));
@@ -472,6 +476,10 @@ namespace Javet {
 				else if (IS_JAVA_SYMBOL(jniEnv, obj)) {
 					return v8::Local<v8::Symbol>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Symbol>*>(
 						jniEnv->CallLongMethod(obj, jmethodIDV8ValueSymbolGetHandle)));
+				}
+				else if (IS_JAVA_OBJECT(jniEnv, obj)) {
+					return v8::Local<v8::Object>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Object>*>(
+						jniEnv->CallLongMethod(obj, jmethodIDV8ValueObjectGetHandle)));
 				}
 			}
 			return ToV8Undefined(v8Context);

@@ -45,6 +45,7 @@ public final class V8Runtime implements
         IJavetClosable, IV8Executable, IV8Creatable {
     private static final long INVALID_THREAD_ID = -1L;
     private static final long INVALID_HANDLE = 0L;
+    private static final String PROPERTY_DATA_VIEW = "DataView";
 
     private String globalName;
     private long handle;
@@ -160,6 +161,14 @@ public final class V8Runtime implements
         checkLock();
         return decorateV8Value((V8ValueArrayBuffer) V8Native.createV8Value(
                 handle, V8ValueReferenceType.ArrayBuffer, new V8ValueInteger(length)));
+    }
+
+    @Override
+    public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
+        checkLock();
+        try (V8ValueFunction v8ValueFunction = getGlobalObject().get(PROPERTY_DATA_VIEW)) {
+            return v8ValueFunction.callAsConstructor(v8ValueArrayBuffer);
+        }
     }
 
     @Override

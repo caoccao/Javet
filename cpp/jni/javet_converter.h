@@ -73,6 +73,10 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueArrayBufferConstructor;
 		static jmethodID jmethodIDV8ValueArrayBufferGetHandle;
 
+		static jclass jclassV8ValueDataView;
+		static jmethodID jmethodIDV8ValueDataViewConstructor;
+		static jmethodID jmethodIDV8ValueDataViewGetHandle;
+
 		static jclass jclassV8ValueFunction;
 		static jmethodID jmethodIDV8ValueFunctionConstructor;
 		static jmethodID jmethodIDV8ValueFunctionGetHandle;

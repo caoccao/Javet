@@ -28,6 +28,8 @@ public interface IV8Creatable {
 
     V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException;
 
+    V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException;
+
     V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException;
 
     V8ValueMap createV8ValueMap() throws JavetException;

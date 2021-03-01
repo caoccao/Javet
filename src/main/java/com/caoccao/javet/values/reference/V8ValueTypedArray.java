@@ -176,20 +176,17 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     }
 
     @Override
-    public V8ValueArrayBuffer getArrayBuffer() throws JavetException {
-        checkV8Runtime();
+    public V8ValueArrayBuffer getBuffer() throws JavetException {
         return get(PROPERTY_BUFFER);
     }
 
     @Override
     public int getByteLength() throws JavetException {
-        checkV8Runtime();
         return getInteger(PROPERTY_BYTE_LENGTH);
     }
 
     @Override
     public int getByteOffset() throws JavetException {
-        checkV8Runtime();
         return getInteger(PROPERTY_BYTE_OFFSET);
     }
 
@@ -259,7 +256,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
         if (getType() == V8ValueReferenceType.Int8Array ||
                 getType() == V8ValueReferenceType.Uint8Array ||
                 getType() == V8ValueReferenceType.Uint8ClampedArray) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromBytes(bytes);
             }
         }
@@ -275,7 +272,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public boolean fromDoubles(double[] doubles) throws JavetException {
         if (getType() == V8ValueReferenceType.Float64Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromDoubles(doubles);
             }
         }
@@ -291,7 +288,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public boolean fromFloats(float[] floats) throws JavetException {
         if (getType() == V8ValueReferenceType.Float32Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromFloats(floats);
             }
         }
@@ -308,7 +305,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     public boolean fromIntegers(int[] integers) throws JavetException {
         if (getType() == V8ValueReferenceType.Int32Array ||
                 getType() == V8ValueReferenceType.Uint32Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromIntegers(integers);
             }
         }
@@ -325,7 +322,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     public boolean fromLongs(long[] longs) throws JavetException {
         if (getType() == V8ValueReferenceType.BigInt64Array ||
                 getType() == V8ValueReferenceType.BigUint64Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromLongs(longs);
             }
         }
@@ -342,7 +339,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     public boolean fromShorts(short[] shorts) throws JavetException {
         if (getType() == V8ValueReferenceType.Int16Array ||
                 getType() == V8ValueReferenceType.Uint16Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromShorts(shorts);
             }
         }
@@ -359,7 +356,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
         if (getType() == V8ValueReferenceType.Int8Array ||
                 getType() == V8ValueReferenceType.Uint8Array ||
                 getType() == V8ValueReferenceType.Uint8ClampedArray) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toBytes();
             }
         }
@@ -374,7 +371,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public float[] toFloats() throws JavetException {
         if (getType() == V8ValueReferenceType.Float32Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toFloats();
             }
         }
@@ -389,7 +386,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public double[] toDoubles() throws JavetException {
         if (getType() == V8ValueReferenceType.Float64Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toDoubles();
             }
         }
@@ -405,7 +402,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     public int[] toIntegers() throws JavetException {
         if (getType() == V8ValueReferenceType.Int32Array ||
                 getType() == V8ValueReferenceType.Uint32Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toIntegers();
             }
         }
@@ -421,7 +418,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     public long[] toLongs() throws JavetException {
         if (getType() == V8ValueReferenceType.BigInt64Array ||
                 getType() == V8ValueReferenceType.BigUint64Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toLongs();
             }
         }
@@ -437,7 +434,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     public short[] toShorts() throws JavetException {
         if (getType() == V8ValueReferenceType.Int16Array ||
                 getType() == V8ValueReferenceType.Uint16Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getArrayBuffer()) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toShorts();
             }
         }

@@ -20,7 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.exceptions.JavetException;
 
 public interface IV8ValueTypedArray extends IV8ValueObject {
-    V8ValueArrayBuffer getArrayBuffer() throws JavetException;
+    V8ValueArrayBuffer getBuffer() throws JavetException;
 
     int getByteLength() throws JavetException;
 

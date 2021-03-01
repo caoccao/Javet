@@ -33,6 +33,7 @@ namespace Javet {
 			Array = 10,
 			Function = 11,
 			Iterator = 12,
+			DataView = 30,
 			ArrayBuffer = 31,
 			Int8Array = 32, // -128 to 127 	1 	8-bit two's complement signed integer 	byte 	int8_t
 			Uint8Array = 33, // 0 to 255 	1 	8-bit unsigned integer 	octet 	uint8_t
