@@ -23,25 +23,17 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 
 @SuppressWarnings("unchecked")
 public class V8ValueWeakSet extends V8ValueObject {
-    public static final String FUNCTION_ADD = "add";
-    public static final String FUNCTION_DELETE = "delete";
-    public static final String FUNCTION_HAS = "has";
-
     V8ValueWeakSet(long handle) {
         super(handle);
     }
 
     public void add(V8Value key) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = get(FUNCTION_ADD)) {
-            v8ValueFunction.call(this, false, key);
-        }
+        invokeVoid(FUNCTION_ADD, key);
     }
 
     @Override
     public boolean delete(V8Value key) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = get(FUNCTION_DELETE)) {
-            v8ValueFunction.call(this, false, key);
-        }
+        invokeVoid(FUNCTION_DELETE, key);
         return true;
     }
 
@@ -52,9 +44,7 @@ public class V8ValueWeakSet extends V8ValueObject {
 
     @Override
     public boolean has(V8Value key) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = get(FUNCTION_HAS)) {
-            return v8ValueFunction.callBoolean(this, key);
-        }
+        return invokeBoolean(FUNCTION_HAS, key);
     }
 
     @Override

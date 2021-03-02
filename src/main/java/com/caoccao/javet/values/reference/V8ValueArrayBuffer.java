@@ -26,16 +26,15 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueArrayBuffer extends V8ValueObject {
-
-    public static final String PROPERTY_BYTE_LENGTH = "byteLength";
-    public static final int BYTE_LENGTH_1 = 1;
-    public static final int BYTE_LENGTH_2 = 2;
-    public static final int BYTE_LENGTH_3 = 3;
+    protected static final String PROPERTY_BYTE_LENGTH = "byteLength";
+    protected static final int BYTE_LENGTH_1 = 1;
+    protected static final int BYTE_LENGTH_2 = 2;
+    protected static final int BYTE_LENGTH_3 = 3;
 
     protected ByteBuffer byteBuffer;
     protected ByteOrder byteOrder;
 
-    protected V8ValueArrayBuffer(long handle, ByteBuffer byteBuffer) {
+    V8ValueArrayBuffer(long handle, ByteBuffer byteBuffer) {
         super(handle);
         this.byteBuffer = byteBuffer;
         byteOrder = ByteOrder.nativeOrder();

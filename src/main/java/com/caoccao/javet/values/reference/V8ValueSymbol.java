@@ -24,8 +24,8 @@ import java.text.MessageFormat;
 
 public class V8ValueSymbol extends V8ValueObject {
 
-    public static final String DESCRIPTION = "description";
-    public static final String SYMBOL_0 = "Symbol({0})";
+    protected static final String PROPERTY_DESCRIPTION = "description";
+    protected static final String SYMBOL_0 = "Symbol({0})";
 
     V8ValueSymbol(long handle) {
         super(handle);
@@ -37,7 +37,7 @@ public class V8ValueSymbol extends V8ValueObject {
     }
 
     public String getDescription() throws JavetException {
-        return getPropertyString(DESCRIPTION);
+        return getPropertyString(PROPERTY_DESCRIPTION);
     }
 
     @Override

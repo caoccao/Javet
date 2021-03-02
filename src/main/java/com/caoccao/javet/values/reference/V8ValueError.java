@@ -21,9 +21,8 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
 public class V8ValueError extends V8ValueObject {
-
-    public static final String STACK = "stack";
-    public static final String MESSAGE = "message";
+    protected static final String STACK = "stack";
+    protected static final String MESSAGE = "message";
 
     V8ValueError(long handle) {
         super(handle);

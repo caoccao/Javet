@@ -27,13 +27,12 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
-
-    public static final String FUNCTION_NEXT = "next";
-    public static final String PROPERTY_DONE = "done";
-    public static final String PROPERTY_VALUE = "value";
-    public static final String FUNCTION_KEYS = "keys";
-    public static final String FUNCTION_POP = "pop";
-    public static final String FUNCTION_PUSH = "push";
+    protected static final String FUNCTION_NEXT = "next";
+    protected static final String FUNCTION_KEYS = "keys";
+    protected static final String FUNCTION_POP = "pop";
+    protected static final String FUNCTION_PUSH = "push";
+    protected static final String PROPERTY_DONE = "done";
+    protected static final String PROPERTY_VALUE = "value";
 
     V8ValueArray(long handle) {
         super(handle);

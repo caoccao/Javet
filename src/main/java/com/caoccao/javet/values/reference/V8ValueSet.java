@@ -23,9 +23,8 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 
 @SuppressWarnings("unchecked")
 public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
-
-    public static final String FUNCTION_ENTRIES = "entries";
-    public static final String FUNCTION_KEYS = "keys";
+    protected static final String FUNCTION_ENTRIES = "entries";
+    protected static final String FUNCTION_KEYS = "keys";
 
     V8ValueSet(long handle) {
         super(handle);

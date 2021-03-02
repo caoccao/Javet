@@ -24,20 +24,13 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 
 @SuppressWarnings("unchecked")
 public class V8ValueWeakMap extends V8ValueObject {
-    public static final String FUNCTION_DELETE = "delete";
-    public static final String FUNCTION_GET = "get";
-    public static final String FUNCTION_HAS = "has";
-    public static final String FUNCTION_SET = "set";
-
     V8ValueWeakMap(long handle) {
         super(handle);
     }
 
     @Override
     public boolean delete(V8Value key) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = get(FUNCTION_DELETE)) {
-            v8ValueFunction.call(this, false, key);
-        }
+        invokeVoid(FUNCTION_DELETE, key);
         return true;
     }
 
@@ -49,9 +42,7 @@ public class V8ValueWeakMap extends V8ValueObject {
 
     @Override
     public <T extends V8Value> T get(V8Value key) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = get(FUNCTION_GET)) {
-            return v8ValueFunction.call(this, key);
-        }
+        return invoke(FUNCTION_GET, key);
     }
 
     @Override
@@ -61,16 +52,12 @@ public class V8ValueWeakMap extends V8ValueObject {
 
     @Override
     public boolean has(V8Value key) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = get(FUNCTION_HAS)) {
-            return v8ValueFunction.callBoolean(this, key);
-        }
+        return invokeBoolean(FUNCTION_HAS, key);
     }
 
     @Override
     public boolean set(V8Value key, V8Value value) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = get(FUNCTION_SET)) {
-            v8ValueFunction.call(this, false, key, value);
-        }
+        invokeVoid(FUNCTION_SET, key, value);
         return true;
     }
 

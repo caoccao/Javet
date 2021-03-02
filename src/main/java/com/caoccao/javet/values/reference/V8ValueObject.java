@@ -23,11 +23,15 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 
 @SuppressWarnings("unchecked")
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
+    protected static final String FUNCTION_ADD = "add";
+    protected static final String FUNCTION_DELETE = "delete";
+    protected static final String FUNCTION_GET = "get";
+    protected static final String FUNCTION_HAS = "has";
+    protected static final String FUNCTION_SET = "set";
+    protected static final String FUNCTION_STRINGIFY = "stringify";
+    protected static final String PROPERTY_JSON = "JSON";
 
-    public static final String FUNCTION_STRINGIFY = "stringify";
-    public static final String PROPERTY_JSON = "JSON";
-
-    public V8ValueObject(long handle) {
+    V8ValueObject(long handle) {
         super(handle);
     }
 

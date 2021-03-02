@@ -23,11 +23,11 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 
 @SuppressWarnings("unchecked")
 public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements IV8ValueIterator<T> {
-    public static final String FUNCTION_NEXT = "next";
-    public static final String PROPERTY_DONE = "done";
-    public static final String PROPERTY_VALUE = "value";
+    protected static final String FUNCTION_NEXT = "next";
+    protected static final String PROPERTY_DONE = "done";
+    protected static final String PROPERTY_VALUE = "value";
 
-    public V8ValueIterator(long handle) {
+    V8ValueIterator(long handle) {
         super(handle);
     }
 
