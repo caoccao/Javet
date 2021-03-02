@@ -252,11 +252,10 @@ public final class V8Runtime implements
         return V8Native.delete(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
     }
 
-    public boolean equals(V8ValueReference v8ValueReference1, V8ValueReference v8ValueReference2)
+    public boolean equals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
             throws JavetException {
         checkLock();
-        decorateV8Values(v8ValueReference1, v8ValueReference2);
-        return V8Native.equals(handle, v8ValueReference1.getHandle(), v8ValueReference2.getHandle());
+        return V8Native.equals(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
     @Override
@@ -512,18 +511,16 @@ public final class V8Runtime implements
         V8Native.setWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType(), iV8ValueReference);
     }
 
-    public boolean sameValue(V8ValueReference v8ValueReference1, V8ValueReference v8ValueReference2)
+    public boolean sameValue(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
             throws JavetException {
         checkLock();
-        decorateV8Values(v8ValueReference1, v8ValueReference2);
-        return V8Native.sameValue(handle, v8ValueReference1.getHandle(), v8ValueReference2.getHandle());
+        return V8Native.sameValue(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
-    public boolean strictEquals(V8ValueReference v8ValueReference1, V8ValueReference v8ValueReference2)
+    public boolean strictEquals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
             throws JavetException {
         checkLock();
-        decorateV8Values(v8ValueReference1, v8ValueReference2);
-        return V8Native.strictEquals(handle, v8ValueReference1.getHandle(), v8ValueReference2.getHandle());
+        return V8Native.strictEquals(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
     /**
