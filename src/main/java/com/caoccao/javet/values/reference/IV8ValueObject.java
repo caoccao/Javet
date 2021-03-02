@@ -26,74 +26,6 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
-    default boolean has(int value) throws JavetException {
-        return has(new V8ValueInteger(value));
-    }
-
-    default boolean has(long value) throws JavetException {
-        return has(new V8ValueLong(value));
-    }
-
-    default boolean has(String value) throws JavetException {
-        return has(new V8ValueString(value));
-    }
-
-    boolean has(V8Value value) throws JavetException;
-
-    default boolean hasNull() throws JavetException {
-        return has(getV8Runtime().createV8ValueNull());
-    }
-
-    default boolean hasUndefined() throws JavetException {
-        return has(getV8Runtime().createV8ValueUndefined());
-    }
-
-    <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
-
-    default <T extends V8Value> T invoke(String functionName, V8Value... v8Values) throws JavetException {
-        return invoke(functionName, true, v8Values);
-    }
-
-    default Boolean invokeBoolean(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
-    }
-
-    default Double invokeDouble(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
-    }
-
-    default Float invokeFloat(String functionName, V8Value... v8Values) throws JavetException {
-        Double result = invokeDouble(functionName, v8Values);
-        return result == null ? null : result.floatValue();
-    }
-
-    default Integer invokeInteger(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
-    }
-
-    default Long invokeLong(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
-    }
-
-    default <R extends Object, T extends V8ValuePrimitive<R>> R invokeObject(
-            String functionName, V8Value... v8Values) throws JavetException {
-        try (V8Value v8Value = invoke(functionName, v8Values)) {
-            try {
-                return ((T) v8Value).getValue();
-            } catch (Throwable t) {
-            }
-        }
-        return null;
-    }
-
-    default String invokeString(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
-    }
-
-    default void invokeVoid(String functionName, V8Value... v8Values) throws JavetException {
-        invoke(functionName, false, v8Values);
-    }
-
     default boolean delete(int key) throws JavetException {
         return delete(new V8ValueInteger(key));
     }
@@ -102,11 +34,11 @@ public interface IV8ValueObject extends IV8ValueReference {
         return delete(new V8ValueLong(key));
     }
 
+    boolean delete(V8Value key) throws JavetException;
+
     default boolean delete(String key) throws JavetException {
         return delete(new V8ValueString(key));
     }
-
-    boolean delete(V8Value key) throws JavetException;
 
     default boolean deleteNull() throws JavetException {
         return delete(getV8Runtime().createV8ValueNull());
@@ -312,6 +244,24 @@ public interface IV8ValueObject extends IV8ValueReference {
         return getObject(key);
     }
 
+    default boolean has(int value) throws JavetException {
+        return has(new V8ValueInteger(value));
+    }
+
+    default boolean has(long value) throws JavetException {
+        return has(new V8ValueLong(value));
+    }
+
+    default boolean has(String value) throws JavetException {
+        return has(new V8ValueString(value));
+    }
+
+    boolean has(V8Value value) throws JavetException;
+
+    default boolean hasNull() throws JavetException {
+        return has(getV8Runtime().createV8ValueNull());
+    }
+
     default boolean hasOwnProperty(int key) throws JavetException {
         return hasOwnProperty(new V8ValueInteger(key));
     }
@@ -321,6 +271,56 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     boolean hasOwnProperty(V8Value key) throws JavetException;
+
+    default boolean hasUndefined() throws JavetException {
+        return has(getV8Runtime().createV8ValueUndefined());
+    }
+
+    <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
+
+    default <T extends V8Value> T invoke(String functionName, V8Value... v8Values) throws JavetException {
+        return invoke(functionName, true, v8Values);
+    }
+
+    default Boolean invokeBoolean(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
+    }
+
+    default Double invokeDouble(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
+    }
+
+    default Float invokeFloat(String functionName, V8Value... v8Values) throws JavetException {
+        Double result = invokeDouble(functionName, v8Values);
+        return result == null ? null : result.floatValue();
+    }
+
+    default Integer invokeInteger(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
+    }
+
+    default Long invokeLong(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R invokeObject(
+            String functionName, V8Value... v8Values) throws JavetException {
+        try (V8Value v8Value = invoke(functionName, v8Values)) {
+            try {
+                return ((T) v8Value).getValue();
+            } catch (Throwable t) {
+            }
+        }
+        return null;
+    }
+
+    default String invokeString(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeObject(functionName, v8Values);
+    }
+
+    default void invokeVoid(String functionName, V8Value... v8Values) throws JavetException {
+        invoke(functionName, false, v8Values);
+    }
 
     default boolean set(int key, V8Value value) throws JavetException {
         return set(new V8ValueInteger(key), value);

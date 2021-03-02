@@ -404,9 +404,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
 		if (IS_V8_MAP(v8ValueType)) {
 			v8ValueValue = v8LocalObject.As<v8::Map>()->Get(v8Context, v8ValueKey).ToLocalChecked();
 		}
-		else if (IS_V8_SET(v8ValueType)) {
-			v8ValueValue = v8LocalObject.As<v8::Set>()->Get(v8Context, v8ValueKey).ToLocalChecked();
-		}
 		else if (v8LocalObject->IsObject()) {
 			if (IS_JAVA_INTEGER(jniEnv, key)) {
 				jint integerKey = TO_JAVA_INTEGER(jniEnv, key);

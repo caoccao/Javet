@@ -50,11 +50,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public int getType() {
-        return V8ValueReferenceType.Object;
-    }
-
-    @Override
     public IV8ValueArray getOwnPropertyNames() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getOwnPropertyNames(this);
@@ -71,6 +66,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
             throws JavetException {
         checkV8Runtime();
         return v8Runtime.getProperty(this, key);
+    }
+
+    @Override
+    public int getType() {
+        return V8ValueReferenceType.Object;
     }
 
     @Override
@@ -106,6 +106,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public <T extends V8Value> T toClone() throws JavetException{
+        checkV8Runtime();
         return v8Runtime.cloneV8Value(this);
     }
 

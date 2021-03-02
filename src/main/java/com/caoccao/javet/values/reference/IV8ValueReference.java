@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.IV8Value;
+import com.caoccao.javet.values.V8Value;
 
 public interface IV8ValueReference extends IV8Value {
 

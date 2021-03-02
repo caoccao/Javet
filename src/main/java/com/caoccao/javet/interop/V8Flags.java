@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 public final class V8Flags {
     private boolean allowNativesSyntax;
     private boolean exposeGC;
+    private boolean exposeInspectorScripts;
     private boolean sealed;
     private boolean trackRetainingPath;
     private boolean useStrict;
@@ -27,9 +28,20 @@ public final class V8Flags {
     V8Flags() {
         allowNativesSyntax = false;
         exposeGC = false;
+        exposeInspectorScripts = false;
         sealed = false;
         trackRetainingPath = false;
         useStrict = true;
+    }
+
+    public boolean isExposeInspectorScripts() {
+        return exposeInspectorScripts;
+    }
+
+    public void setExposeInspectorScripts(boolean exposeInspectorScripts) {
+        if (!sealed) {
+            this.exposeInspectorScripts = exposeInspectorScripts;
+        }
     }
 
     public boolean isTrackRetainingPath() {
