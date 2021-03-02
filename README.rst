@@ -33,7 +33,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.2</version>
+        <version>0.7.3</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -41,14 +41,14 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.7.2")
+    implementation("com.caoccao.javet:javet:0.7.3")
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.7.2'
+    implementation 'com.caoccao.javet:javet:0.7.3'
 
 Hello Javet
 -----------
@@ -63,9 +63,9 @@ Documents
 =========
 
 * `Development <docs/development/index.rst>`_
-    * `Build <docs/build.rst>`_
-    * `Design <docs/design.rst>`_
-    * `Performance <docs/performance.rst>`_
+    * `Build <docs/development/build.rst>`_
+    * `Design <docs/development/design.rst>`_
+    * `Performance <docs/development/performance.rst>`_
 * `Tutorial <docs/tutorial/index.rst>`_
 * `Release Notes <docs/release_notes.rst>`_
 * `FAQ <docs/faq/index.rst>`_
