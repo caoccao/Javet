@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class V8Host implements AutoCloseable {
+    public static final String GLOBAL_THIS = "globalThis";
     private static final long INVALID_HANDLE = 0L;
     private static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
     private static final String FLAG_EXPOSE_GC = "--expose_gc";
@@ -66,16 +67,16 @@ public final class V8Host implements AutoCloseable {
         return instance;
     }
 
-    public V8Runtime createV8Runtime() {
-        return createV8Runtime(null);
-    }
-
     public V8Flags getFlags() {
         return flags;
     }
 
     public String getJavetVersion() {
         return JavetLibLoader.LIB_VERSION;
+    }
+
+    public V8Runtime createV8Runtime() {
+        return createV8Runtime(GLOBAL_THIS);
     }
 
     public V8Runtime createV8Runtime(String globalName) {

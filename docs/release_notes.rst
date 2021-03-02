@@ -2,6 +2,16 @@
 Release Notes
 =============
 
+0.7.2
+-----
+
+* Added ``setFunction(String functionName, String codeString)`` to ``IV8ValueObject``
+* Added ``equals()`` and ``strictEquals()`` and ``sameValue()`` to ``IV8Value``
+* Added ``getIdentityHash()`` to ``IV8ValueReference``
+* Added ``isDead()``, ``isInUse()``, ``callAsConstructor()`` and ``terminateExecution()`` to ``V8Runtime``
+* Added V8 typed array and data view
+* Added ``IJavetEngineGuard``
+
 0.7.1
 -----
 

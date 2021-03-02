@@ -26,6 +26,28 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    default boolean has(int value) throws JavetException {
+        return has(new V8ValueInteger(value));
+    }
+
+    default boolean has(long value) throws JavetException {
+        return has(new V8ValueLong(value));
+    }
+
+    default boolean has(String value) throws JavetException {
+        return has(new V8ValueString(value));
+    }
+
+    boolean has(V8Value value) throws JavetException;
+
+    default boolean hasNull() throws JavetException {
+        return has(getV8Runtime().createV8ValueNull());
+    }
+
+    default boolean hasUndefined() throws JavetException {
+        return has(getV8Runtime().createV8ValueUndefined());
+    }
+
     <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
 
     default <T extends V8Value> T invoke(String functionName, V8Value... v8Values) throws JavetException {
@@ -38,6 +60,11 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default Double invokeDouble(String functionName, V8Value... v8Values) throws JavetException {
         return invokeObject(functionName, v8Values);
+    }
+
+    default Float invokeFloat(String functionName, V8Value... v8Values) throws JavetException {
+        Double result = invokeDouble(functionName, v8Values);
+        return result == null ? null : result.floatValue();
     }
 
     default Integer invokeInteger(String functionName, V8Value... v8Values) throws JavetException {
@@ -82,11 +109,11 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean delete(V8Value key) throws JavetException;
 
     default boolean deleteNull() throws JavetException {
-        return delete(new V8ValueNull());
+        return delete(getV8Runtime().createV8ValueNull());
     }
 
     default boolean deleteUndefined() throws JavetException {
-        return delete(new V8ValueUndefined());
+        return delete(getV8Runtime().createV8ValueUndefined());
     }
 
     default <T extends V8Value> T get(int key) throws JavetException {
@@ -113,6 +140,16 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default Double getDouble(String key) throws JavetException {
         return getObject(key);
+    }
+
+    default Float getFloat(int key) throws JavetException {
+        Double result = getDouble(key);
+        return result == null ? null : result.floatValue();
+    }
+
+    default Float getFloat(String key) throws JavetException {
+        Double result = getDouble(key);
+        return result == null ? null : result.floatValue();
     }
 
     default Integer getInteger(int key) throws JavetException {
@@ -187,6 +224,16 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default Double getPropertyDouble(String key) throws JavetException {
         return getPropertyObject(key);
+    }
+
+    default Float getPropertyFloat(int index) throws JavetException {
+        Double result = getPropertyDouble(index);
+        return result == null ? null : result.floatValue();
+    }
+
+    default Float getPropertyFloat(String key) throws JavetException {
+        Double result = getPropertyDouble(key);
+        return result == null ? null : result.floatValue();
     }
 
     default Integer getPropertyInteger(int index) throws JavetException {
@@ -285,6 +332,16 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     boolean set(V8Value key, V8Value value) throws JavetException;
 
+    /**
+     * Sets function by name and callback context.
+     * <p>
+     * It is for creating a Java code based function in V8.
+     *
+     * @param functionName         the function name
+     * @param javetCallbackContext the javet callback context
+     * @return true: function is set, false: function is not set
+     * @throws JavetException the javet exception
+     */
     default boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
         V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(javetCallbackContext);
         boolean success = set(functionName, v8ValueFunction);
@@ -292,12 +349,34 @@ public interface IV8ValueObject extends IV8ValueReference {
         return success;
     }
 
+    /**
+     * Sets function by name and string.
+     * <p>
+     * It is for creating a string based function in V8.
+     * <p>
+     * JS equivalent:
+     * <code>
+     * obj.func = function(arg1, arg2) { ... };
+     * </code>
+     *
+     * @param functionName the function name
+     * @param codeString   the code string
+     * @return true: function is set, false: function is not set
+     * @throws JavetException the javet exception
+     */
+    default boolean setFunction(String functionName, String codeString) throws JavetException {
+        V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute();
+        boolean success = set(functionName, v8ValueFunction);
+        v8ValueFunction.setWeak();
+        return success;
+    }
+
     default boolean setNull(int key) throws JavetException {
-        return set(new V8ValueInteger(key), new V8ValueNull());
+        return set(new V8ValueInteger(key), getV8Runtime().createV8ValueNull());
     }
 
     default boolean setNull(String key) throws JavetException {
-        return set(new V8ValueString(key), new V8ValueNull());
+        return set(new V8ValueString(key), getV8Runtime().createV8ValueNull());
     }
 
     default boolean setProperty(int key, V8Value value) throws JavetException {
@@ -311,28 +390,36 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean setProperty(V8Value key, V8Value value) throws JavetException;
 
     default boolean setPropertyNull(int key) throws JavetException {
-        return setProperty(new V8ValueInteger(key), new V8ValueNull());
+        return setProperty(new V8ValueInteger(key), getV8Runtime().createV8ValueNull());
     }
 
     default boolean setPropertyNull(String key) throws JavetException {
-        return setProperty(new V8ValueString(key), new V8ValueNull());
+        return setProperty(new V8ValueString(key), getV8Runtime().createV8ValueNull());
     }
 
     default boolean setPropertyUndefined(int key) throws JavetException {
-        return setProperty(new V8ValueInteger(key), new V8ValueUndefined());
+        return setProperty(new V8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
     }
 
     default boolean setPropertyUndefined(String key) throws JavetException {
-        return setProperty(new V8ValueString(key), new V8ValueUndefined());
+        return setProperty(new V8ValueString(key), getV8Runtime().createV8ValueUndefined());
     }
 
     default boolean setUndefined(int key) throws JavetException {
-        return set(new V8ValueInteger(key), new V8ValueUndefined());
+        return set(new V8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
     }
 
     default boolean setUndefined(String key) throws JavetException {
-        return set(new V8ValueString(key), new V8ValueUndefined());
+        return set(new V8ValueString(key), getV8Runtime().createV8ValueUndefined());
     }
 
+    /**
+     * To json string.
+     * <p>
+     * JS equivalent:
+     * JSON.stringify(obj);
+     *
+     * @return the string
+     */
     String toJsonString();
 }

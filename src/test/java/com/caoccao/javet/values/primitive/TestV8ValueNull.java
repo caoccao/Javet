@@ -19,13 +19,19 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.primitive.V8ValueNull;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueNull extends BaseTestJavetRuntime {
+    @Test
+    public void testEquals() throws JavetException {
+        V8ValueNull v8ValueNull = v8Runtime.getExecutor("null").execute();
+        assertTrue(v8ValueNull.equals(v8Runtime.createV8ValueNull()));
+        assertFalse(v8ValueNull.equals(null));
+        assertFalse(v8ValueNull.equals(v8Runtime.createV8ValueUndefined()));
+    }
+
     @Test
     public void testNull() throws JavetException {
         V8ValueNull v8ValueNull = v8Runtime.getExecutor("null").execute();

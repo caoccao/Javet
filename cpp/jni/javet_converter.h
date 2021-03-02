@@ -21,8 +21,6 @@
 #include <jni.h>
 #include <v8.h>
 
-#define JAVET_CONVERTER_BIGINT_STANDARD
-
 namespace Javet {
 	namespace Converter {
 		// Primitive
@@ -71,6 +69,14 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueArrayConstructor;
 		static jmethodID jmethodIDV8ValueArrayGetHandle;
 
+		static jclass jclassV8ValueArrayBuffer;
+		static jmethodID jmethodIDV8ValueArrayBufferConstructor;
+		static jmethodID jmethodIDV8ValueArrayBufferGetHandle;
+
+		static jclass jclassV8ValueDataView;
+		static jmethodID jmethodIDV8ValueDataViewConstructor;
+		static jmethodID jmethodIDV8ValueDataViewGetHandle;
+
 		static jclass jclassV8ValueFunction;
 		static jmethodID jmethodIDV8ValueFunctionConstructor;
 		static jmethodID jmethodIDV8ValueFunctionGetHandle;
@@ -86,6 +92,10 @@ namespace Javet {
 		static jclass jclassV8ValueMap;
 		static jmethodID jmethodIDV8ValueMapConstructor;
 		static jmethodID jmethodIDV8ValueMapGetHandle;
+
+		static jclass jclassV8ValueIterator;
+		static jmethodID jmethodIDV8ValueIteratorConstructor;
+		static jmethodID jmethodIDV8ValueIteratorGetHandle;
 
 		static jclass jclassV8ValueObject;
 		static jmethodID jmethodIDV8ValueObjectConstructor;
@@ -112,6 +122,10 @@ namespace Javet {
 		static jclass jclassV8ValueSymbol;
 		static jmethodID jmethodIDV8ValueSymbolConstructor;
 		static jmethodID jmethodIDV8ValueSymbolGetHandle;
+
+		static jclass jclassV8ValueTypedArray;
+		static jmethodID jmethodIDV8ValueTypedArrayConstructor;
+		static jmethodID jmethodIDV8ValueTypedArrayGetHandle;
 
 		void Initialize(JNIEnv* jniEnv);
 

@@ -22,23 +22,31 @@ import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 
 public final class JavetEngineConfig {
+    public static final int DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS = 30000;
+    public static final int DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS = 1000;
     public static final int DEFAULT_MAX_ENGINE_USED_COUNT = 100;
     public static final int DEFAULT_POOL_MIN_SIZE = 1;
     public static final int DEFAULT_POOL_IDLE_TIMEOUT_SECONDS = 60;
     public static final int DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1000;
     public static final int DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS = 3600;
     public static final String DEFAULT_GLOBAL_NAME = "window";
+    public static final int DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS = 5;
     public static IJavetLogger DEFAULT_JAVET_LOGGER = new JavetDefaultLogger(JavetEnginePool.class.getName());
     private IJavetLogger javetLogger;
     private String globalName;
+    private int defaultEngineGuardTimeoutMillis;
+    private int engineGuardCheckIntervalMillis;
     private int maxEngineUsedCount;
+    private int poolDaemonCheckIntervalMillis;
     private int poolMaxSize;
     private int poolMinSize;
     private int poolIdleTimeoutSeconds;
-    private int poolDaemonCheckIntervalMillis;
+    private int poolShutdownTimeoutSeconds;
     private int resetEngineTimeoutSeconds;
+    private ExecutorService executorService;
 
     public JavetEngineConfig() {
         reset();
@@ -47,13 +55,40 @@ public final class JavetEngineConfig {
     public void reset() {
         javetLogger = DEFAULT_JAVET_LOGGER;
         globalName = DEFAULT_GLOBAL_NAME;
+        defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;
+        engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
         maxEngineUsedCount = DEFAULT_MAX_ENGINE_USED_COUNT;
         final int cpuCount = JavetOSUtils.getCPUCount();
         poolMinSize = Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount >> 1);
         poolMaxSize = Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount);
         poolIdleTimeoutSeconds = DEFAULT_POOL_IDLE_TIMEOUT_SECONDS;
+        poolShutdownTimeoutSeconds = DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS;
         poolDaemonCheckIntervalMillis = DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS;
         resetEngineTimeoutSeconds = DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public int getPoolShutdownTimeoutSeconds() {
+        return poolShutdownTimeoutSeconds;
+    }
+
+    public void setPoolShutdownTimeoutSeconds(int poolShutdownTimeoutSeconds) {
+        this.poolShutdownTimeoutSeconds = poolShutdownTimeoutSeconds;
+    }
+
+    public int getEngineGuardCheckIntervalMillis() {
+        return engineGuardCheckIntervalMillis;
+    }
+
+    public void setEngineGuardCheckIntervalMillis(int engineGuardCheckIntervalMillis) {
+        this.engineGuardCheckIntervalMillis = engineGuardCheckIntervalMillis;
     }
 
     public String getGlobalName() {
@@ -62,6 +97,14 @@ public final class JavetEngineConfig {
 
     public void setGlobalName(String globalName) {
         this.globalName = globalName;
+    }
+
+    public int getDefaultEngineGuardTimeoutMillis() {
+        return defaultEngineGuardTimeoutMillis;
+    }
+
+    public void setDefaultEngineGuardTimeoutMillis(int defaultEngineGuardTimeoutMillis) {
+        this.defaultEngineGuardTimeoutMillis = defaultEngineGuardTimeoutMillis;
     }
 
     public int getResetEngineTimeoutSeconds() {

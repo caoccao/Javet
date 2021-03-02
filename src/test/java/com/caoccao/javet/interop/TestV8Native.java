@@ -47,7 +47,6 @@ public class TestV8Native extends BaseTestJavet {
     @Test
     public void testGetVersion() {
         String versionString = V8Native.getVersion();
-        assertNotNull(versionString);
-        assertTrue(versionString.startsWith("8."));
+        assertEquals(JavetLibLoader.V8_VERSION, versionString);
     }
 }

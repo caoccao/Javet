@@ -22,9 +22,11 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.virtual.V8VirtualList;
 
+import java.util.List;
+
 @SuppressWarnings("unchecked")
 public interface IV8ValueArray extends IV8ValueObject {
-    V8VirtualList<Integer> getKeys() throws JavetException;
+    List<Integer> getKeys() throws JavetException;
 
     int getLength() throws JavetException;
 
@@ -91,10 +93,10 @@ public interface IV8ValueArray extends IV8ValueObject {
     }
 
     default int pushNull() throws JavetException {
-        return push(new V8ValueNull());
+        return push(getV8Runtime().createV8ValueNull());
     }
 
     default int pushUndefined() throws JavetException {
-        return push(new V8ValueUndefined());
+        return push(getV8Runtime().createV8ValueUndefined());
     }
 }

@@ -20,20 +20,25 @@ package com.caoccao.javet.tutorial;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.utils.JavetDefaultLogger;
+import com.caoccao.javet.interop.engine.IJavetEngine;
+import com.caoccao.javet.interop.engine.IJavetEnginePool;
+import com.caoccao.javet.interop.engine.JavetEnginePool;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.io.File;
+import java.math.BigDecimal;
 
 public class DecimalJavet implements IJavetClosable {
-    private IJavetLogger logger;
-    private V8Runtime v8Runtime;
+    private IJavetEnginePool iJavetEnginePool;
+    private IJavetEngine iJavetEngine;
 
     public DecimalJavet() {
-        logger = new JavetDefaultLogger(getClass().getName());
-        v8Runtime = null;
+        iJavetEnginePool = new JavetEnginePool();
+        iJavetEngine = iJavetEnginePool.getEngine();
     }
 
     public static void main(String[] args) throws JavetException {
@@ -53,31 +58,49 @@ public class DecimalJavet implements IJavetClosable {
                 JavetOSUtils.WORKING_DIRECTORY,
                 "scripts/node/node_modules/decimal.js/decimal.js");
         if (decimalJSFile.exists() && decimalJSFile.canRead()) {
-            logger.logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
-            v8Runtime = V8Host.getInstance().createV8Runtime();
-            v8Runtime.lock();
+            getLogger().logInfo("Loading {0}.", decimalJSFile.getAbsolutePath());
+            V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
             v8Runtime.getExecutor(decimalJSFile).executeVoid();
         } else {
-            logger.logError("{0} is not found.", decimalJSFile.getAbsolutePath());
-            logger.logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
+            getLogger().logError("{0} is not found.", decimalJSFile.getAbsolutePath());
+            getLogger().logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
         }
     }
 
     public void test() throws JavetException {
-        logger.logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
+        V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+        getLogger().logInfo("1.23 + 2.34 = {0}", v8Runtime.getExecutor(
                 "const a = new Decimal(1.23);" +
                         "const b = new Decimal(2.34);" +
                         "a.add(b).toString();").executeString());
+        try (V8ValueFunction v8ValueFunctionDecimal = v8Runtime.getGlobalObject().get("Decimal")) {
+            try (V8ValueObject v8ValueObjectDecimal = v8ValueFunctionDecimal.call(
+                    null, new V8ValueString("123.45"))) {
+                getLogger().logInfo(v8ValueObjectDecimal.toString());
+                if (v8ValueObjectDecimal.has("constructor")) {
+                    try (V8ValueFunction v8ValueFunction = v8ValueObjectDecimal.get("constructor")) {
+                        String name = v8ValueFunction.getString("name");
+                        if ("Decimal".equals(name)) {
+                            BigDecimal bigDecimal = new BigDecimal(v8ValueObjectDecimal.toString());
+                            getLogger().logInfo("BigDecimal: {0}", bigDecimal.toString());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public IJavetLogger getLogger() {
-        return logger;
+        return iJavetEnginePool.getConfig().getJavetLogger();
     }
 
     @Override
     public void close() throws JavetException {
-        if (v8Runtime != null) {
-            v8Runtime.close();
+        if (iJavetEngine != null) {
+            iJavetEngine.close();
+        }
+        if (iJavetEnginePool != null) {
+            iJavetEnginePool.close();
         }
     }
 }

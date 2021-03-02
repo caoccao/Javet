@@ -24,7 +24,7 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueMap extends IV8ValueKeyContainer {
-    List<V8Value> getEntries() throws JavetException;
+    IV8ValueIterator<V8ValueArray> getEntries() throws JavetException;
 
-    List<V8Value> getValues() throws JavetException;
+    IV8ValueIterator<? extends V8Value> getValues() throws JavetException;
 }

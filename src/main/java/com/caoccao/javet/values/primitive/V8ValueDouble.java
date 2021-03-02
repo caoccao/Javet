@@ -29,6 +29,18 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
         super(value);
     }
 
+    public boolean isFinite() {
+        return Double.isFinite(value);
+    }
+
+    public boolean isInfinite() {
+        return Double.isInfinite(value);
+    }
+
+    public boolean isNaN() {
+        return Double.isNaN(value);
+    }
+
     @Override
     public V8ValueDouble toClone() throws JavetException {
         return v8Runtime.decorateV8Value(new V8ValueDouble(value));

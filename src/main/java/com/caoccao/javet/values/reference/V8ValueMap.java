@@ -18,12 +18,8 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
-import com.caoccao.javet.values.virtual.V8VirtualList;
-
-import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
@@ -32,24 +28,20 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     public static final String FUNCTION_VALUES = "values";
     public static final String FUNCTION_ENTRIES = "entries";
 
-    public V8ValueMap(long handle) {
+    V8ValueMap(long handle) {
         super(handle);
     }
 
     @Override
-    public V8VirtualList<V8Value> getEntries() throws JavetException {
+    public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
         checkV8Runtime();
-        try (V8ValueObject mapIterator = invoke(FUNCTION_ENTRIES)) {
-            return V8ValueUtils.convertIteratorToV8ValueList(mapIterator);
-        }
+        return invoke(FUNCTION_ENTRIES);
     }
 
     @Override
-    public V8VirtualList<V8Value> getKeys() throws JavetException {
+    public IV8ValueIterator<? extends V8Value> getKeys() throws JavetException {
         checkV8Runtime();
-        try (V8ValueObject mapIterator = invoke(FUNCTION_KEYS)) {
-            return V8ValueUtils.convertIteratorToV8ValueList(mapIterator);
-        }
+        return invoke(FUNCTION_KEYS);
     }
 
     @Override
@@ -64,16 +56,8 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
-    public List<V8Value> getValues() throws JavetException {
+    public IV8ValueIterator<? extends V8Value> getValues() throws JavetException {
         checkV8Runtime();
-        try (V8ValueObject mapIterator = invoke(FUNCTION_VALUES)) {
-            return V8ValueUtils.convertIteratorToV8ValueList(mapIterator);
-        }
-    }
-
-    @Override
-    public boolean has(V8Value value) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.has(this, value);
+        return invoke(FUNCTION_VALUES);
     }
 }

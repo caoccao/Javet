@@ -20,12 +20,13 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 public abstract class V8ValueReference extends V8Value implements IV8ValueReference {
     protected long handle;
     protected boolean weak;
 
-    public V8ValueReference(long handle) {
+    V8ValueReference(long handle) {
         super();
         this.handle = handle;
         weak = false;
@@ -73,12 +74,30 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
+    public boolean equals(V8Value v8Value) throws JavetException {
+        if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
+            return false;
+        }
+        if (v8Value.getClass() != this.getClass()) {
+            return false;
+        }
+        V8ValueReference v8ValueReference = (V8ValueReference) v8Value;
+        if (getHandle() == v8ValueReference.getHandle()) {
+            return true;
+        }
+        return v8Runtime.equals(this, v8ValueReference);
+    }
+
+    @Override
     public abstract int getType();
 
     @Override
     public long getHandle() {
         return handle;
     }
+
+    @Override
+    public abstract int getIdentityHash() throws JavetException;
 
     @Override
     public boolean isWeak() throws JavetException {
@@ -112,6 +131,36 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         checkV8Runtime();
         v8Runtime.setWeak(this);
         weak = true;
+    }
+
+    @Override
+    public boolean sameValue(V8Value v8Value) throws JavetException {
+        if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
+            return false;
+        }
+        if (v8Value.getClass() != this.getClass()) {
+            return false;
+        }
+        V8ValueReference v8ValueReference = (V8ValueReference) v8Value;
+        if (getHandle() == v8ValueReference.getHandle()) {
+            return true;
+        }
+        return v8Runtime.sameValue(this, v8ValueReference);
+    }
+
+    @Override
+    public boolean strictEquals(V8Value v8Value) throws JavetException {
+        if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
+            return false;
+        }
+        if (v8Value.getClass() != this.getClass()) {
+            return false;
+        }
+        V8ValueReference v8ValueReference = (V8ValueReference) v8Value;
+        if (getHandle() == v8ValueReference.getHandle()) {
+            return true;
+        }
+        return v8Runtime.strictEquals(this, v8ValueReference);
     }
 
     @Override

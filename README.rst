@@ -33,7 +33,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.1</version>
+        <version>0.7.2</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -41,14 +41,14 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.7.1")
+    implementation("com.caoccao.javet:javet:0.7.2")
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.7.1'
+    implementation 'com.caoccao.javet:javet:0.7.2'
 
 Hello Javet
 -----------
@@ -62,24 +62,14 @@ Hello Javet
 Documents
 =========
 
-* `Build <docs/build.rst>`_
-* `Development <docs/development.rst>`_
+* `Development <docs/development/index.rst>`_
+    * `Build <docs/build.rst>`_
+    * `Design <docs/design.rst>`_
+    * `Performance <docs/performance.rst>`_
 * `Tutorial <docs/tutorial/index.rst>`_
-* `Performance <docs/performance.rst>`_
 * `Release Notes <docs/release_notes.rst>`_
 * `FAQ <docs/faq/index.rst>`_
 * `TODO List <docs/todo_list.rst>`_
-
-Motivation
-==========
-
-I used to take a try of J2V8 and find it's quite compelling. However, J2V8 is slowly dying, with serious memory leak issues, V8 version issue, etc.
-
-Sometimes starting from scratch implies lower cost than upgrading an existing solution. I think it might be true here in this project. I've learned quite a lot by manually fixing the Windows and Linux build system of J2V8.
-
-Also, I had got many ideas on how the API will look like. At the end of 2020, I thought I would be able to write a new one from scratch and leave J2V8 behind. Indeed, I made it few months later.
-
-Please refer to `History with J2V8 <docs/faq/history_with_j2v8.rst>`_ for detail.
 
 License
 =======

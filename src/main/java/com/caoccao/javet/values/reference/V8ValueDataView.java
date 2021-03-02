@@ -1,0 +1,172 @@
+/*
+ *   Copyright (c) 2021. caoccao.com Sam Cao
+ *   All rights reserved.
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+package com.caoccao.javet.values.reference;
+
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.values.primitive.V8ValueBoolean;
+import com.caoccao.javet.values.primitive.V8ValueDouble;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
+import com.caoccao.javet.values.primitive.V8ValueLong;
+
+public class V8ValueDataView extends V8ValueObject {
+    /**
+     * The constant PROPERTY_BYTE_LENGTH.
+     */
+    public static final String PROPERTY_BYTE_LENGTH = "byteLength";
+    /**
+     * The constant PROPERTY_BUFFER.
+     */
+    public static final String PROPERTY_BUFFER = "buffer";
+    /**
+     * The constant PROPERTY_BYTE_OFFSET.
+     */
+    public static final String PROPERTY_BYTE_OFFSET = "byteOffset";
+    public static final String FUNCTION_GET_BIG_INT_64 = "getBigInt64";
+    public static final String FUNCTION_GET_FLOAT_32 = "getFloat32";
+    public static final String FUNCTION_GET_FLOAT_64 = "getFloat64";
+    public static final String FUNCTION_GET_INT_8 = "getInt8";
+    public static final String FUNCTION_GET_INT_16 = "getInt16";
+    public static final String FUNCTION_GET_INT_32 = "getInt32";
+    public static final String FUNCTION_SET_BIG_INT_64 = "setBigInt64";
+    public static final String FUNCTION_SET_FLOAT_32 = "setFloat32";
+    public static final String FUNCTION_SET_FLOAT_64 = "setFloat64";
+    public static final String FUNCTION_SET_INT_8 = "setInt8";
+    public static final String FUNCTION_SET_INT_16 = "setInt16";
+    public static final String FUNCTION_SET_INT_32 = "setInt32";
+
+    V8ValueDataView(long handle) {
+        super(handle);
+    }
+
+    public long getBigInt64(int byteOffset) throws JavetException {
+        return getBigInt64(byteOffset, true);
+    }
+
+    public long getBigInt64(int byteOffset, boolean littleEndian) throws JavetException {
+        return invokeLong(FUNCTION_GET_BIG_INT_64,
+                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).longValue();
+    }
+
+    public V8ValueArrayBuffer getBuffer() throws JavetException {
+        return get(PROPERTY_BUFFER);
+    }
+
+    public int getByteLength() throws JavetException {
+        return getInteger(PROPERTY_BYTE_LENGTH);
+    }
+
+    public int getByteOffset() throws JavetException {
+        return getInteger(PROPERTY_BYTE_OFFSET);
+    }
+
+    public float getFloat32(int byteOffset) throws JavetException {
+        return getFloat32(byteOffset, true);
+    }
+
+    public float getFloat32(int byteOffset, boolean littleEndian) throws JavetException {
+        return invokeDouble(FUNCTION_GET_FLOAT_32,
+                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).floatValue();
+    }
+
+    public double getFloat64(int byteOffset) throws JavetException {
+        return getFloat64(byteOffset, true);
+    }
+
+    public double getFloat64(int byteOffset, boolean littleEndian) throws JavetException {
+        return invokeDouble(FUNCTION_GET_FLOAT_64,
+                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).doubleValue();
+    }
+
+    public short getInt16(int byteOffset) throws JavetException {
+        return getInt16(byteOffset, true);
+    }
+
+    public short getInt16(int byteOffset, boolean littleEndian) throws JavetException {
+        return invokeInteger(FUNCTION_GET_INT_16,
+                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).shortValue();
+    }
+
+    public int getInt32(int byteOffset) throws JavetException {
+        return getInt32(byteOffset, true);
+    }
+
+    public int getInt32(int byteOffset, boolean littleEndian) throws JavetException {
+        return invokeInteger(FUNCTION_GET_INT_32,
+                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).intValue();
+    }
+
+    public byte getInt8(int byteOffset) throws JavetException {
+        return invokeInteger(FUNCTION_GET_INT_8,
+                new V8ValueInteger(byteOffset)).byteValue();
+    }
+
+    @Override
+    public int getType() {
+        return V8ValueReferenceType.DataView;
+    }
+
+    public void setBigInt64(int byteOffset, long value) throws JavetException {
+        setBigInt64(byteOffset, value, true);
+    }
+
+    public void setBigInt64(int byteOffset, long value, boolean littleEndian) throws JavetException {
+        invokeVoid(FUNCTION_SET_BIG_INT_64,
+                new V8ValueInteger(byteOffset), new V8ValueLong(value), new V8ValueBoolean(littleEndian));
+    }
+
+    public void setFloat32(int byteOffset, float value) throws JavetException {
+        setFloat32(byteOffset, value, true);
+    }
+
+    public void setFloat32(int byteOffset, float value, boolean littleEndian) throws JavetException {
+        invokeVoid(FUNCTION_SET_FLOAT_32,
+                new V8ValueInteger(byteOffset), new V8ValueDouble(value), new V8ValueBoolean(littleEndian));
+    }
+
+    public void setFloat64(int byteOffset, double value) throws JavetException {
+        setFloat64(byteOffset, value, true);
+    }
+
+    public void setFloat64(int byteOffset, double value, boolean littleEndian) throws JavetException {
+        invokeVoid(FUNCTION_SET_FLOAT_64,
+                new V8ValueInteger(byteOffset), new V8ValueDouble(value), new V8ValueBoolean(littleEndian));
+    }
+
+    public void setInt32(int byteOffset, int value) throws JavetException {
+        setInt32(byteOffset, value, true);
+    }
+
+    public void setInt32(int byteOffset, int value, boolean littleEndian) throws JavetException {
+        invokeVoid(FUNCTION_SET_INT_32,
+                new V8ValueInteger(byteOffset), new V8ValueInteger(value), new V8ValueBoolean(littleEndian));
+    }
+
+    public void setInt16(int byteOffset, short value) throws JavetException {
+        setInt16(byteOffset, value, true);
+    }
+
+    public void setInt16(int byteOffset, short value, boolean littleEndian) throws JavetException {
+        invokeVoid(FUNCTION_SET_INT_16,
+                new V8ValueInteger(byteOffset), new V8ValueInteger(value), new V8ValueBoolean(littleEndian));
+    }
+
+    public void setInt8(int byteOffset, byte value) throws JavetException {
+        invokeVoid(FUNCTION_SET_INT_8, new V8ValueInteger(byteOffset), new V8ValueInteger(value));
+    }
+}

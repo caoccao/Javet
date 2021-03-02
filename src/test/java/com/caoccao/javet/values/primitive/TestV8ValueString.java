@@ -21,10 +21,19 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestV8ValueString extends BaseTestJavetRuntime {
+    @Test
+    public void testEquals() throws JavetException {
+        V8ValueString v8ValueString = v8Runtime.getExecutor("'abc'").execute();
+        assertTrue(v8ValueString.equals(new V8ValueString("abc")));
+        assertFalse(v8ValueString.equals(null));
+        assertFalse(v8ValueString.equals(new V8ValueString("def")));
+        assertFalse(v8ValueString.equals(new V8ValueLong(1)));
+    }
+
     @Test
     public void testString() throws JavetException {
         try (V8ValueString v8ValueString = v8Runtime.getExecutor("'abc' + 'def'").execute()) {

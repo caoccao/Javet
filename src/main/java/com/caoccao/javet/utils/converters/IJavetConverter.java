@@ -21,8 +21,9 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
+@SuppressWarnings("unchecked")
 public interface IJavetConverter {
     Object toObject(V8Value v8Value) throws JavetException;
 
-    V8Value toV8Value(V8Runtime v8Runtime, Object object) throws JavetException;
+    <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException;
 }

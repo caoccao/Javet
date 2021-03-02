@@ -24,7 +24,7 @@ import com.caoccao.javet.interop.V8Runtime;
 public abstract class V8Value implements IV8Value {
     protected V8Runtime v8Runtime;
 
-    public V8Value() {
+    protected V8Value() {
         v8Runtime = null;
     }
 
@@ -47,6 +47,9 @@ public abstract class V8Value implements IV8Value {
     }
 
     @Override
+    public abstract boolean equals(V8Value v8Value) throws JavetException;
+
+    @Override
     public abstract <T extends V8Value> T toClone() throws JavetException;
 
     public V8Runtime getV8Runtime() {
@@ -60,6 +63,12 @@ public abstract class V8Value implements IV8Value {
         this.v8Runtime = v8Runtime;
         this.v8Runtime.checkLock();
     }
+
+    @Override
+    public abstract boolean sameValue(V8Value v8Value) throws JavetException;
+
+    @Override
+    public abstract boolean strictEquals(V8Value v8Value) throws JavetException;
 
     protected abstract void removeReference() throws JavetException;
 }

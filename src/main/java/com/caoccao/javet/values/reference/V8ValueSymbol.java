@@ -27,7 +27,7 @@ public class V8ValueSymbol extends V8ValueObject {
     public static final String DESCRIPTION = "description";
     public static final String SYMBOL_0 = "Symbol({0})";
 
-    public V8ValueSymbol(long handle) {
+    V8ValueSymbol(long handle) {
         super(handle);
     }
 

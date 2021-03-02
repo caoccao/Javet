@@ -19,13 +19,19 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueUndefined extends BaseTestJavetRuntime {
+    @Test
+    public void testEquals() throws JavetException {
+        V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor("undefined").execute();
+        assertTrue(v8ValueUndefined.equals(v8Runtime.createV8ValueUndefined()));
+        assertFalse(v8ValueUndefined.equals(null));
+        assertFalse(v8ValueUndefined.equals(v8Runtime.createV8ValueNull()));
+    }
+
     @Test
     public void testUndefined() throws JavetException {
         try (V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor("undefined").execute()) {

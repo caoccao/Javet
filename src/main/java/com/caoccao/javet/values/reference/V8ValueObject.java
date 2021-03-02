@@ -17,7 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
@@ -44,14 +44,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public int getType() {
-        return V8ValueReferenceType.Object;
+    public int getIdentityHash() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getIdentityHash(this);
     }
 
     @Override
-    public boolean hasOwnProperty(V8Value key) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.hasOwnProperty(this, key);
+    public int getType() {
+        return V8ValueReferenceType.Object;
     }
 
     @Override
@@ -71,6 +71,18 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
             throws JavetException {
         checkV8Runtime();
         return v8Runtime.getProperty(this, key);
+    }
+
+    @Override
+    public boolean has(V8Value value) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.has(this, value);
+    }
+
+    @Override
+    public boolean hasOwnProperty(V8Value key) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.hasOwnProperty(this, key);
     }
 
     @Override

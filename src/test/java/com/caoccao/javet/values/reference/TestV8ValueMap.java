@@ -19,16 +19,13 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.virtual.V8VirtualList;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("unchecked")
 public class TestV8ValueMap extends BaseTestJavetRuntime {
     @Test
     public void testGetAndHas() throws JavetException {
@@ -50,28 +47,29 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
                 assertNotNull(iV8ValueArray);
                 assertEquals(0, iV8ValueArray.getLength());
             }
-            List<V8Value> keys = v8ValueMap.getKeys();
-            assertEquals(3, keys.size());
-            assertEquals("x", ((V8ValueString) keys.get(0)).getValue());
-            assertEquals("y", ((V8ValueString) keys.get(1)).getValue());
-            assertEquals(3, ((V8ValueInteger) keys.get(2)).getValue());
-            List<V8Value> values = v8ValueMap.getValues();
-            assertEquals(3, values.size());
-            assertEquals(1, ((V8ValueInteger) values.get(0)).getValue());
-            assertEquals("b", ((V8ValueString) values.get(1)).getValue());
-            assertEquals("c", ((V8ValueString) values.get(2)).getValue());
-            try (V8VirtualList<V8Value> entries = v8ValueMap.getEntries()) {
-                assertEquals(3, values.size());
-                assertEquals(4, v8Runtime.getReferenceCount());
-                V8ValueArray entry = (V8ValueArray) entries.get(0);
-                assertEquals("x", entry.getString(0));
-                assertEquals(1, entry.getInteger(1));
-                entry = (V8ValueArray) entries.get(1);
-                assertEquals("y", entry.getString(0));
-                assertEquals("b", entry.getString(1));
-                entry = (V8ValueArray) entries.get(2);
-                assertEquals(3, entry.getInteger(0));
-                assertEquals("c", entry.getString(1));
+            try (IV8ValueIterator iterator = v8ValueMap.getKeys()) {
+                assertEquals("x", ((V8ValueString) iterator.getNext()).getValue());
+                assertEquals("y", ((V8ValueString) iterator.getNext()).getValue());
+                assertEquals(3, ((V8ValueInteger) iterator.getNext()).getValue());
+            }
+            try (IV8ValueIterator iterator = v8ValueMap.getValues()) {
+                assertEquals(1, ((V8ValueInteger) iterator.getNext()).getValue());
+                assertEquals("b", ((V8ValueString) iterator.getNext()).getValue());
+                assertEquals("c", ((V8ValueString) iterator.getNext()).getValue());
+            }
+            try (IV8ValueIterator<V8ValueArray> iterator = v8ValueMap.getEntries()) {
+                try (V8ValueArray entry = iterator.getNext()) {
+                    assertEquals("x", entry.getString(0));
+                    assertEquals(1, entry.getInteger(1));
+                }
+                try (V8ValueArray entry = iterator.getNext()) {
+                    assertEquals("y", entry.getString(0));
+                    assertEquals("b", entry.getString(1));
+                }
+                try (V8ValueArray entry = iterator.getNext()) {
+                    assertEquals(3, entry.getInteger(0));
+                    assertEquals("c", entry.getString(1));
+                }
             }
             assertEquals(1, v8Runtime.getReferenceCount());
         }

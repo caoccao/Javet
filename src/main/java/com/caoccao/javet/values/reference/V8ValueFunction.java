@@ -43,7 +43,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
      */
     protected JavetCallbackContext javetCallbackContext;
 
-    public V8ValueFunction(long handle) {
+    V8ValueFunction(long handle) {
         super(handle);
         javetCallbackContext = null;
     }
@@ -68,6 +68,12 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             throws JavetException {
         checkV8Runtime();
         return v8Runtime.call(this, receiver, returnResult, v8Values);
+    }
+
+    @Override
+    public <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.callAsConstructor(this, v8Values);
     }
 
     @Override
@@ -194,6 +200,6 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                 JavetResourceUtils.safeClose(values);
             }
         }
-        return v8Runtime.decorateV8Value(new V8ValueUndefined());
+        return v8Runtime.createV8ValueUndefined();
     }
 }

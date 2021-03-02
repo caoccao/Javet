@@ -19,11 +19,13 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -80,9 +82,9 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
-            v8Runtime.resetContext();
+            v8Runtime.unlock().resetContext().lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-            assertTrue(v8Runtime.getGlobalObject().get("a") instanceof V8ValueUndefined);
+            assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
             v8Runtime.unlock();
         }
     }
@@ -98,8 +100,42 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.resetIsolate();
             v8Runtime.lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-            assertTrue(v8Runtime.getGlobalObject().get("a") instanceof V8ValueUndefined);
+            assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
             v8Runtime.unlock();
+        }
+    }
+
+    @Test
+    public void testTerminateExecution() throws JavetException {
+        V8Host v8Host = V8Host.getInstance();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            // Create a daemon thread monitoring the V8 runtime status.
+            Thread daemonThread = new Thread(() -> {
+                // V8 runtime isInUse() does not require lock.
+                while (!v8Runtime.isInUse()) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // V8 runtime terminateExecution() does not require lock.
+                v8Runtime.terminateExecution();
+            });
+            daemonThread.start();
+            v8Runtime.lock();
+            try {
+                v8Runtime.getExecutor(
+                        "var count = 0; while (true) { ++count; }")
+                        .executeVoid();
+                fail("Failed to throw exception when execution is terminated.");
+            } catch (JavetTerminatedException e) {
+                assertFalse(e.isContinuable());
+            }
+            final int count = v8Runtime.getGlobalObject().getInteger("count");
+            assertTrue(count > 0, "Count should be greater than 0.");
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
+                    "V8 runtime should still be able to execute script after being terminated.");
         }
     }
 }

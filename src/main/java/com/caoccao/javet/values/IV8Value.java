@@ -21,9 +21,69 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.IV8Cloneable;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.primitive.V8ValueDouble;
+import com.caoccao.javet.values.primitive.V8ValueNull;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
+/**
+ * The interface V8 value.
+ */
 public interface IV8Value extends IJavetClosable, IV8Cloneable {
+    /**
+     * Gets V8 runtime.
+     *
+     * @return the V8 runtime
+     */
     V8Runtime getV8Runtime();
 
-    <T extends V8Value> T toClone() throws JavetException;
+    /**
+     * Equals.
+     * <p>
+     * The behavior is different from JS behavior but is the same as Java behavior.
+     *
+     * @param v8Value the V8 value
+     * @return the boolean
+     * @throws JavetException the javet exception
+     */
+    boolean equals(V8Value v8Value) throws JavetException;
+
+    /**
+     * Is null.
+     *
+     * @return the boolean
+     */
+    default boolean isNull() {
+        return this instanceof V8ValueNull;
+    }
+
+    /**
+     * Is undefined.
+     *
+     * @return the boolean
+     */
+    default boolean isUndefined() {
+        return this instanceof V8ValueUndefined;
+    }
+
+    /**
+     * Same value.
+     * <p>
+     * The behavior is different from JS behavior but is the same as Java behavior.
+     *
+     * @param v8Value the v 8 value
+     * @return the boolean
+     * @throws JavetException the javet exception
+     */
+    boolean sameValue(V8Value v8Value) throws JavetException;
+
+    /**
+     * Strict equals boolean.
+     * <p>
+     * The behavior is different from JS behavior but is the same as Java behavior.
+     *
+     * @param v8Value the V8 value
+     * @return the boolean
+     * @throws JavetException the javet exception
+     */
+    boolean strictEquals(V8Value v8Value) throws JavetException;
 }

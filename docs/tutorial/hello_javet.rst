@@ -13,24 +13,22 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.1</version>
+        <version>0.7.2</version>
     </dependency>
 
-Gradle Kotlin
--------------
+Gradle Kotlin DSL
+-----------------
 
 .. code-block:: kotlin
 
-    dependencies {
-        implementation("com.caoccao.javet:javet:0.7.1")
-    }
+    implementation("com.caoccao.javet:javet:0.7.2")
 
-Gradle Groovy
--------------
+Gradle Groovy DSL
+-----------------
 
 .. code-block:: groovy
 
-    compile group: 'com.caoccao.javet', name: 'javet', version: '0.7.1'
+    implementation 'com.caoccao.javet:javet:0.7.2'
 
 Print **Hello Javet**
 =====================
@@ -51,9 +49,8 @@ Print **1 + 1**
 .. code-block:: java
 
     // Step 1: Create a V8 runtime from V8 host in try resource.
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
-        // Step 2: Request a lock.
-        v8Runtime.lock();
+    // Step 2: Request a lock.
+    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime().lock()) {
         // Step 3: Execute a string as JavaScript code and print the result to console.
         System.out.println("1 + 1 = " + v8Runtime.getExecutor("1 + 1").executeInteger()); // 2
         // Step 4: Resource including the lock is recycled automatically at the end of the try resource block.

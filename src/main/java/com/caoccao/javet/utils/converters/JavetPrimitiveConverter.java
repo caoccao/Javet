@@ -24,13 +24,14 @@ import com.caoccao.javet.values.primitive.*;
 
 import java.time.ZonedDateTime;
 
+@SuppressWarnings("unchecked")
 public class JavetPrimitiveConverter implements IJavetConverter {
     public JavetPrimitiveConverter() {
     }
 
     @Override
     public Object toObject(V8Value v8Value) throws JavetException {
-        if (v8Value == null || v8Value instanceof V8ValueNull || v8Value instanceof V8ValueUndefined) {
+        if (v8Value == null || v8Value.isNull() || v8Value.isUndefined()) {
             return null;
         } else if (v8Value instanceof V8ValuePrimitive) {
             return ((V8ValuePrimitive) v8Value).getValue();
@@ -39,10 +40,10 @@ public class JavetPrimitiveConverter implements IJavetConverter {
     }
 
     @Override
-    public V8Value toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
+    public <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
         V8Value v8Value = null;
         if (object == null) {
-            v8Value = new V8ValueNull();
+            v8Value = v8Runtime.createV8ValueNull();
         } else if (object instanceof V8Value) {
             v8Value = (V8Value) object;
         } else if (object instanceof Boolean) {
@@ -55,6 +56,8 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             v8Value = new V8ValueInteger((Integer) object);
         } else if (object instanceof Long) {
             v8Value = new V8ValueLong((Long) object);
+        } else if (object instanceof Short) {
+            v8Value = new V8ValueInteger((Short) object);
         } else if (object instanceof String) {
             v8Value = new V8ValueString((String) object);
         } else if (object instanceof ZonedDateTime) {
@@ -62,9 +65,9 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         } else if (object instanceof Byte) {
             v8Value = new V8ValueInteger((Byte) object);
         } else {
-            v8Value = new V8ValueUndefined();
+            v8Value = v8Runtime.createV8ValueUndefined();
         }
-        return v8Runtime.decorateV8Value(v8Value);
+        return (T) v8Runtime.decorateV8Value(v8Value);
     }
 
 }

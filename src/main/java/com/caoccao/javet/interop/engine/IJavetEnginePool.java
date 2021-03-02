@@ -28,5 +28,9 @@ public interface IJavetEnginePool extends IJavetClosable {
 
     int getIdleEngineCount();
 
+    boolean isActive();
+
+    boolean isQuitting();
+
     void releaseEngine(IJavetEngine engine);
 }
