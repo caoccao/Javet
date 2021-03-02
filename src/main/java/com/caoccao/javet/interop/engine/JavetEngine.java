@@ -94,13 +94,34 @@ public class JavetEngine implements IJavetEngine {
 
     @Override
     public void resetContext() throws JavetException {
+        resetContext(false);
+    }
+
+    @Override
+    public void resetContext(boolean skipLock) throws JavetException {
+        if (!skipLock) {
+            v8Runtime.unlock();
+        }
         v8Runtime.resetContext();
         usage.reset();
+        if (!skipLock) {
+            v8Runtime.lock();
+        }
     }
 
     protected void resetIsolate() throws JavetException {
+        resetIsolate(false);
+    }
+
+    protected void resetIsolate(boolean skipLock) throws JavetException {
+        if (!skipLock) {
+            v8Runtime.unlock();
+        }
         v8Runtime.resetIsolate();
         usage.reset();
+        if (!skipLock) {
+            v8Runtime.lock();
+        }
     }
 
     protected void touchLastActiveZonedDateTime() {

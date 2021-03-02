@@ -33,4 +33,6 @@ public interface IJavetEngine extends IJavetClosable {
     boolean isActive();
 
     void resetContext() throws JavetException;
+
+    void resetContext(boolean skipLock) throws JavetException;
 }

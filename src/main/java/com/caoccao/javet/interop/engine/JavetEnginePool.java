@@ -163,7 +163,7 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                                         resetEngineZonedDateTime.isBefore(getUTCNow())) {
                                     try {
                                         logger.debug("JavetEnginePool reset engine begins.");
-                                        engine.resetContext();
+                                        engine.resetContext(true);
                                         logger.debug("JavetEnginePool reset engine ends.");
                                     } catch (Exception e) {
                                         logger.logError(e, "Failed to reset idle engine.");
