@@ -18,6 +18,8 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetBiConsumer;
+import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
@@ -47,6 +49,10 @@ public interface IV8ValueObject extends IV8ValueReference {
     default boolean deleteUndefined() throws JavetException {
         return delete(getV8Runtime().createV8ValueUndefined());
     }
+
+    <Key extends V8Value> int forEach(IJavetConsumer<Key> consumer) throws JavetException;
+
+    <Key extends V8Value, Value extends V8Value> int forEach(IJavetBiConsumer<Key, Value> consumer) throws JavetException;
 
     default <T extends V8Value> T get(int key) throws JavetException {
         return get(new V8ValueInteger(key));

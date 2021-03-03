@@ -18,8 +18,11 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
+
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
@@ -34,6 +37,24 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     public void add(V8Value key) throws JavetException {
         checkV8Runtime();
         v8Runtime.add(this, key);
+    }
+
+    @Override
+    public <Key extends V8Value> int forEach(IJavetConsumer<Key> consumer) throws JavetException {
+        Objects.requireNonNull(consumer);
+        int count = 0;
+        try (IV8ValueIterator<V8Value> iterator = getKeys()) {
+            while (true) {
+                try (Key key = (Key) iterator.getNext()) {
+                    if (key == null) {
+                        break;
+                    }
+                    consumer.accept(key);
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     @Override
@@ -58,4 +79,5 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
         checkV8Runtime();
         return v8Runtime.getSize(this);
     }
+
 }

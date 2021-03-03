@@ -18,6 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
@@ -37,6 +38,17 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     V8ValueArray(long handle) {
         super(handle);
+    }
+
+    @Override
+    public <Value extends V8Value> int forEach(IJavetConsumer<Value> consumer) throws JavetException {
+        final int length = getLength();
+        for (int i = 0; i < length; ++i) {
+            try (Value value = get(i)) {
+                consumer.accept(value);
+            }
+        }
+        return length;
     }
 
     @Override

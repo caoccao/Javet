@@ -17,7 +17,9 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.*;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetBiConsumer;
+import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
@@ -42,6 +44,27 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         Objects.requireNonNull(key);
         checkV8Runtime();
         return v8Runtime.delete(this, key);
+    }
+
+    @Override
+    public <Key extends V8Value> int forEach(IJavetConsumer<Key> consumer) throws JavetException {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach(consumer);
+        }
+    }
+
+    @Override
+    public <Key extends V8Value, Value extends V8Value> int forEach(
+            IJavetBiConsumer<Key, Value> consumer) throws JavetException {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach((Key key) -> {
+                try (Value value = get(key)) {
+                    consumer.accept(key, value);
+                }
+            });
+        }
     }
 
     @Override
@@ -119,7 +142,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T toClone() throws JavetException{
+    public <T extends V8Value> T toClone() throws JavetException {
         checkV8Runtime();
         return v8Runtime.cloneV8Value(this);
     }

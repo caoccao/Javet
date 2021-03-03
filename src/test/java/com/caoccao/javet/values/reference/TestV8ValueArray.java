@@ -24,10 +24,20 @@ import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueArray extends BaseTestJavetRuntime {
+    @Test
+    public void testForEach() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = new Array(0,1,2); a;").execute()) {
+            AtomicInteger count = new AtomicInteger(0);
+            v8ValueArray.forEach((V8ValueInteger value) -> {
+                assertEquals(count.getAndIncrement(), value.getValue());
+            });
+        }
+    }
 
     @Test
     public void testGetAndSet() throws JavetException {

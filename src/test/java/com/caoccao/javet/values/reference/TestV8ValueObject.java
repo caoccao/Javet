@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,6 +49,22 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         assertEquals(0L, a.getHandle());
         try (V8ValueObject b = globalObject.get("a")) {
             assertTrue(b instanceof V8ValueObject);
+        }
+    }
+
+    @Test
+    public void testForEach() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
+                "const a = {'A0': 0, 'A1': 1, 'A2': 2}; a;").execute()) {
+            AtomicInteger count = new AtomicInteger(0);
+            assertEquals(3, v8ValueObject.forEach((V8ValueString key) -> {
+                assertEquals("A" + Integer.toString(count.getAndIncrement()), key.getValue());
+            }));
+            count.set(0);
+            assertEquals(3, v8ValueObject.forEach((V8ValueString key, V8ValueInteger value) -> {
+                assertEquals("A" + Integer.toString(count.get()), key.getValue());
+                assertEquals(count.getAndIncrement(), value.getValue());
+            }));
         }
     }
 
