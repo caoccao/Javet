@@ -21,6 +21,8 @@ import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
+import java.util.Objects;
+
 @SuppressWarnings("unchecked")
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String FUNCTION_ADD = "add";
@@ -37,12 +39,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean delete(V8Value key) throws JavetException {
+        Objects.requireNonNull(key);
         checkV8Runtime();
         return v8Runtime.delete(this, key);
     }
 
     @Override
     public <T extends V8Value> T get(V8Value key) throws JavetException {
+        Objects.requireNonNull(key);
         checkV8Runtime();
         return v8Runtime.get(this, key);
     }
@@ -66,8 +70,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T getProperty(V8Value key)
-            throws JavetException {
+    public <T extends V8Value> T getProperty(V8Value key) throws JavetException {
+        Objects.requireNonNull(key);
         checkV8Runtime();
         return v8Runtime.getProperty(this, key);
     }
@@ -79,12 +83,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean has(V8Value value) throws JavetException {
+        Objects.requireNonNull(value);
         checkV8Runtime();
         return v8Runtime.has(this, value);
     }
 
     @Override
     public boolean hasOwnProperty(V8Value key) throws JavetException {
+        Objects.requireNonNull(key);
         checkV8Runtime();
         return v8Runtime.hasOwnProperty(this, key);
     }
@@ -98,12 +104,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean set(V8Value key, V8Value value) throws JavetException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
         checkV8Runtime();
         return v8Runtime.set(this, key, value);
     }
 
     @Override
     public boolean setProperty(V8Value key, V8Value value) throws JavetException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
         checkV8Runtime();
         return v8Runtime.setProperty(this, key, value);
     }

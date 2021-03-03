@@ -18,8 +18,11 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetNotSupportedException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
+
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueWeakSet extends V8ValueObject {
@@ -28,11 +31,19 @@ public class V8ValueWeakSet extends V8ValueObject {
     }
 
     public void add(V8Value key) throws JavetException {
+        Objects.requireNonNull(key);
+        if (!(key instanceof V8ValueReference)) {
+            throw new JavetNotSupportedException(key.toString());
+        }
         invokeVoid(FUNCTION_ADD, key);
     }
 
     @Override
     public boolean delete(V8Value key) throws JavetException {
+        Objects.requireNonNull(key);
+        if (!(key instanceof V8ValueReference)) {
+            throw new JavetNotSupportedException(key.toString());
+        }
         invokeVoid(FUNCTION_DELETE, key);
         return true;
     }
@@ -44,6 +55,10 @@ public class V8ValueWeakSet extends V8ValueObject {
 
     @Override
     public boolean has(V8Value key) throws JavetException {
+        Objects.requireNonNull(key);
+        if (!(key instanceof V8ValueReference)) {
+            throw new JavetNotSupportedException(key.toString());
+        }
         return invokeBoolean(FUNCTION_HAS, key);
     }
 

@@ -20,6 +20,8 @@ package com.caoccao.javet.values;
 import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interop.V8Runtime;
 
+import java.util.Objects;
+
 @SuppressWarnings("unchecked")
 public abstract class V8Value implements IV8Value {
     protected V8Runtime v8Runtime;
@@ -57,6 +59,7 @@ public abstract class V8Value implements IV8Value {
     }
 
     public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
+        Objects.requireNonNull(v8Runtime);
         if (this.v8Runtime != null) {
             throw new JavetV8RuntimeAlreadyRegisteredException();
         }

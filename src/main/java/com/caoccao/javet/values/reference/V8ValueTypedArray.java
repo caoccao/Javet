@@ -20,6 +20,8 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
+import java.util.Objects;
+
 /**
  * The type V8 value typed array.
  * The typical way of manipulating the typed array is as following.
@@ -265,6 +267,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @throws JavetException the javet exception
      */
     public boolean fromBytes(byte[] bytes) throws JavetException {
+        Objects.requireNonNull(bytes);
         if (getType() == V8ValueReferenceType.Int8Array ||
                 getType() == V8ValueReferenceType.Uint8Array ||
                 getType() == V8ValueReferenceType.Uint8ClampedArray) {
@@ -283,6 +286,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @throws JavetException the javet exception
      */
     public boolean fromDoubles(double[] doubles) throws JavetException {
+        Objects.requireNonNull(doubles);
         if (getType() == V8ValueReferenceType.Float64Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromDoubles(doubles);
@@ -299,6 +303,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @throws JavetException the javet exception
      */
     public boolean fromFloats(float[] floats) throws JavetException {
+        Objects.requireNonNull(floats);
         if (getType() == V8ValueReferenceType.Float32Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromFloats(floats);
@@ -315,6 +320,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @throws JavetException the javet exception
      */
     public boolean fromIntegers(int[] integers) throws JavetException {
+        Objects.requireNonNull(integers);
         if (getType() == V8ValueReferenceType.Int32Array ||
                 getType() == V8ValueReferenceType.Uint32Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
@@ -332,6 +338,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @throws JavetException the javet exception
      */
     public boolean fromLongs(long[] longs) throws JavetException {
+        Objects.requireNonNull(longs);
         if (getType() == V8ValueReferenceType.BigInt64Array ||
                 getType() == V8ValueReferenceType.BigUint64Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
@@ -349,6 +356,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @throws JavetException the javet exception
      */
     public boolean fromShorts(short[] shorts) throws JavetException {
+        Objects.requireNonNull(shorts);
         if (getType() == V8ValueReferenceType.Int16Array ||
                 getType() == V8ValueReferenceType.Uint16Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
