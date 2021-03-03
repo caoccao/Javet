@@ -72,6 +72,48 @@ Javet is capable of automatically converting its internal ``V8Value`` to primiti
 
 Note: Primitive types must be in their object form in the method signature. E.g. ``boolean`` must be set to ``Boolean``, ``int`` must be set to ``Integer``, etc. Why? Because the converted value could be ``null`` which would cause JDK to complain with an exception.
 
+Call vs Invoke
+==============
+
+In one sentence, ``call()`` belongs to function and ``invoke()`` belongs to object.
+
+Call
+----
+
+``call()`` is almost equivalent to ``Function.prototype.call()``. It allows the callee to specify receiver. Besides, Javet combines ``Function.prototype.call()`` and ``Function.prototype.apply()`` because Java is friendly to varargs.
+
+.. code-block:: java
+
+    func.call(object, false, a, b, c) // func.call(object, a, b, c); without result
+    func.call(object, true, a, b, c) // func.call(object, a, b, c); with result
+    func.call(object, a, b, c) // func.call(object, a, b, c); with result
+    func.callVoid(object, a, b, c) // func.call(object, a, b, c); without result
+    func.callAsConstructor(a, b, c) // new func(a, b, c);
+
+Invoke
+------
+
+``invoke()`` takes function name and arguments, but not receiver because the object itself is the receiver. So the API is almost identical to ``call()`` except for the first argument.
+
+.. code-block:: java
+
+    object.invoke("func", false, a, b, c) // object.func(a, b, c); without result
+    object.invoke("func", true, a, b, c) // object.func(a, b, c); with result
+    object.invoke("func", a, b, c) // object.func(a, b, c); with result
+    object.invokeVoid("func", a, b, c) // object.func(a, b, c); without result
+
+How about Bind?
+---------------
+
+``Function.prototype.bind()`` is simply a ``set()`` in Javet.
+
+.. code-block:: java
+
+    object.set("func", func); object.invoke("func", false, a, b, c) // func.bind(); func(a, b, c); without result
+    object.set("func", func); object.invoke("func", true, a, b, c) // func.bind(); func(a, b, c); with result
+    object.set("func", func); object.invoke("func", a, b, c) // func.bind(); func(a, b, c); with result
+    object.set("func", func); object.invokeVoid("func", a, b, c) // func.bind(); func(a, b, c); without result
+
 Please review `test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>`_ for more detail.
 
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
