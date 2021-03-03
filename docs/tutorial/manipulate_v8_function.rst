@@ -80,7 +80,7 @@ In one sentence, ``call()`` belongs to function and ``invoke()`` belongs to obje
 Call
 ----
 
-``call()`` is almost equivalent to ``Function.prototype.call()``. It allows the callee to specify receiver. Besides, Javet combines ``Function.prototype.call()`` and ``Function.prototype.apply()`` because Java is friendly to varargs.
+``call()`` is almost equivalent to ``Function.prototype.call()``. It allows the caller to specify receiver. Besides, Javet combines ``Function.prototype.call()`` and ``Function.prototype.apply()`` because Java is friendly to varargs.
 
 .. code-block:: java
 
@@ -111,10 +111,10 @@ How about Bind?
 
 .. code-block:: java
 
-    object.set("func", func); object.invoke("func", false, a, b, c); // func.bind(); func(a, b, c); without result
-    object.set("func", func); object.invoke("func", true, a, b, c); // func.bind(); func(a, b, c); with result
-    object.set("func", func); object.invoke("func", a, b, c); // func.bind(); func(a, b, c); with result
-    object.set("func", func); object.invokeVoid("func", a, b, c); // func.bind(); func(a, b, c); without result
+    object.set("func", func); object.invoke("func", false, a, b, c); // func.bind(object); func(a, b, c); without result
+    object.set("func", func); object.invoke("func", true, a, b, c); // func.bind(object); func(a, b, c); with result
+    object.set("func", func); object.invoke("func", a, b, c); // func.bind(object); func(a, b, c); with result
+    object.set("func", func); object.invokeVoid("func", a, b, c); // func.bind(object); func(a, b, c); without result
 
 Please review `test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>`_ for more detail.
 
