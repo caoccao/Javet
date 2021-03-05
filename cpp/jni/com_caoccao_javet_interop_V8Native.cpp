@@ -246,7 +246,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
-	v8Runtime->reset(jniEnv);
 	delete v8Runtime;
 }
 
@@ -271,7 +270,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jobject mV8Inspector) {
 	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
 	v8Runtime->v8Inspector.reset(
-		new Javet::Inspector::JavetInspector(jniEnv, v8Context, mV8Inspector));
+		new Javet::Inspector::JavetInspector(v8Runtime, mV8Inspector));
 }
 
 /*
@@ -634,7 +633,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mGlobalName) {
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
-	v8Runtime->reset(jniEnv);
+	v8Runtime->reset();
 	v8::Isolate::CreateParams createParams;
 	createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
 	v8Runtime->v8Isolate = v8::Isolate::New(createParams);

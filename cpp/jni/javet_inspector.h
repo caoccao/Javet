@@ -20,6 +20,7 @@
 #include <v8.h>
 #include <v8-inspector.h>
 #include <jni.h>
+#include "javet_v8_runtime.h"
 
 namespace Javet {
 	namespace Inspector {
@@ -38,18 +39,18 @@ namespace Javet {
 
 		class JavetInspector {
 		public:
-			JavetInspector(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, const jobject& mV8Inspector);
-			void reset(JNIEnv* jniEnv);
+			JavetInspector(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector);
 			void send(const std::string& message);
 			virtual ~JavetInspector();
 		private:
 			jobject mV8Inspector;
+			Javet::V8Runtime* v8Runtime;
 			std::unique_ptr<JavetInspectorClient> client;
 		};
 
 		class JavetInspectorClient final : public v8_inspector::V8InspectorClient {
 		public:
-			JavetInspectorClient(v8::Local<v8::Context> v8Context, const std::string& name, const jobject& mV8Inspector);
+			JavetInspectorClient(Javet::V8Runtime* v8Runtime, const std::string& name, const jobject& mV8Inspector);
 			void dispatchProtocolMessage(const v8_inspector::StringView& message);
 			void quitMessageLoopOnPause() override;
 			void runIfWaitingForDebugger(int contextGroupId) override;
@@ -58,8 +59,7 @@ namespace Javet {
 		private:
 			bool activateMessageLoop;
 			bool runningMessageLoop;
-			v8::Isolate* v8Isolate;
-			v8::Local<v8::Context> v8Context;
+			Javet::V8Runtime* v8Runtime;
 			std::unique_ptr<JavetInspectorChannel> javetInspectorChannel;
 			std::unique_ptr<v8_inspector::V8Inspector> v8Inspector;
 			std::unique_ptr<v8_inspector::V8InspectorSession> v8InspectorSession;
@@ -68,14 +68,14 @@ namespace Javet {
 
 		class JavetInspectorChannel final : public v8_inspector::V8Inspector::Channel {
 		public:
-			JavetInspectorChannel(v8::Isolate* v8Isolate, const jobject& mV8Inspector);
+			JavetInspectorChannel(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector);
 			void flushProtocolNotifications() override;
 			void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) override;
 			void sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) override;
 			virtual ~JavetInspectorChannel();
 		private:
 			jobject mV8Inspector;
-			v8::Isolate* v8Isolate;
+			Javet::V8Runtime* v8Runtime;
 		};
 	}
 }

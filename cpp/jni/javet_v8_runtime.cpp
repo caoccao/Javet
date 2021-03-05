@@ -16,14 +16,14 @@
  */
 
 #include "javet_exceptions.h"
+#include "javet_inspector.h"
 #include "javet_logging.h"
 #include "javet_v8_runtime.h"
 
 namespace Javet {
-	void V8Runtime::reset(JNIEnv* jniEnv) {
+	void V8Runtime::reset() {
 		if (v8Inspector) {
 			v8::Locker v8Locker(v8Isolate);
-			v8Inspector->reset(jniEnv);
 			v8Inspector.reset();
 		}
 		v8Context.Reset();
@@ -33,5 +33,9 @@ namespace Javet {
 			v8Isolate->Dispose();
 			v8Isolate = nullptr;
 		}
+	}
+
+	V8Runtime::~V8Runtime() {
+		reset();
 	}
 }

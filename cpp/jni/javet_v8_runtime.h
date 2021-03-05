@@ -20,9 +20,11 @@
 #include <jni.h>
 #include <v8.h>
 #include <v8-inspector.h>
-#include "javet_inspector.h"
 
 namespace Javet {
+	namespace Inspector {
+		class JavetInspector;
+	}
 
 	class V8Runtime {
 	public:
@@ -31,7 +33,8 @@ namespace Javet {
 		v8::Persistent<v8::Object> v8GlobalObject;
 		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
-		void reset(JNIEnv* jniEnv);
+		void reset();
+		virtual ~V8Runtime();
 	};
 
 }

@@ -51,20 +51,15 @@ namespace Javet {
 			jmethodIDV8InspectorReceiveResponse = jniEnv->GetMethodID(jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)Z");
 		}
 
-		JavetInspector::JavetInspector(JNIEnv* jniEnv, v8::Local<v8::Context> v8Context, const jobject& mV8Inspector) {
+		JavetInspector::JavetInspector(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector) {
+			FETCH_JNI_ENV(GlobalJavaVM);
 			this->mV8Inspector = jniEnv->NewGlobalRef(mV8Inspector);
+			this->v8Runtime = v8Runtime;
 			jstring mName = (jstring)jniEnv->CallObjectMethod(this->mV8Inspector, jmethodIDV8InspectorGetName);
 			char const* umName = jniEnv->GetStringUTFChars(mName, nullptr);
 			std::string name(umName, jniEnv->GetStringUTFLength(mName));
-			client.reset(new JavetInspectorClient(v8Context, name, this->mV8Inspector));
+			client.reset(new JavetInspectorClient(v8Runtime, name, this->mV8Inspector));
 			jniEnv->ReleaseStringUTFChars(mName, umName);
-		}
-
-		void JavetInspector::reset(JNIEnv* jniEnv) {
-			if (mV8Inspector != nullptr) {
-				jniEnv->DeleteGlobalRef(mV8Inspector);
-				mV8Inspector = nullptr;
-			}
 		}
 
 		void JavetInspector::send(const std::string& message) {
@@ -74,15 +69,20 @@ namespace Javet {
 		}
 
 		JavetInspector::~JavetInspector() {
+			if (mV8Inspector != nullptr) {
+				FETCH_JNI_ENV(GlobalJavaVM);
+				jniEnv->DeleteGlobalRef(mV8Inspector);
+				mV8Inspector = nullptr;
+			}
 		}
 
-		JavetInspectorClient::JavetInspectorClient(v8::Local<v8::Context> v8Context, const std::string& name, const jobject& mV8Inspector) {
+		JavetInspectorClient::JavetInspectorClient(Javet::V8Runtime* v8Runtime, const std::string& name, const jobject& mV8Inspector) {
 			activateMessageLoop = false;
 			runningMessageLoop = false;
-			v8Isolate = v8Context->GetIsolate();
-			this->v8Context = v8Context;
-			javetInspectorChannel.reset(new JavetInspectorChannel(v8Isolate, mV8Inspector));
-			v8Inspector = v8_inspector::V8Inspector::create(v8Isolate, this);
+			this->v8Runtime = v8Runtime;
+			auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context);
+			javetInspectorChannel.reset(new JavetInspectorChannel(v8Runtime, mV8Inspector));
+			v8Inspector = v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this);
 			v8InspectorSession = v8Inspector->connect(CONTEXT_GROUP_ID, javetInspectorChannel.get(), v8_inspector::StringView());
 			v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
 			CONVERT_FROM_STD_STRING_TO_STRING_VIEW(name, humanReadableName);
@@ -106,7 +106,7 @@ namespace Javet {
 				activateMessageLoop = true;
 				runningMessageLoop = true;
 				while (activateMessageLoop) {
-					while (v8::platform::PumpMessageLoop(Javet::GlobalV8Platform.get(), v8Isolate)) {
+					while (v8::platform::PumpMessageLoop(Javet::GlobalV8Platform.get(), v8Runtime->v8Isolate)) {
 					}
 				}
 				runningMessageLoop = false;
@@ -115,15 +115,15 @@ namespace Javet {
 		}
 
 		v8::Local<v8::Context> JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
-			return v8Context;
+			return v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context);
 		}
 
 		JavetInspectorClient::~JavetInspectorClient() {
 		}
 
-		JavetInspectorChannel::JavetInspectorChannel(v8::Isolate* v8Isolate, const jobject& mV8Inspector) {
+		JavetInspectorChannel::JavetInspectorChannel(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector) {
 			this->mV8Inspector = mV8Inspector;
-			this->v8Isolate = v8Isolate;
+			this->v8Runtime = v8Runtime;
 		}
 
 		void JavetInspectorChannel::flushProtocolNotifications() {
@@ -131,6 +131,7 @@ namespace Javet {
 		}
 
 		void JavetInspectorChannel::sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) {
+			auto v8Isolate = v8Runtime->v8Isolate;
 			v8::Locker v8Locker(v8Isolate);
 			v8::HandleScope v8HandleScope(v8Isolate);
 			CONVERT_FROM_STRING_VIEW_TO_STD_STRING(message, stdStringMessage);
@@ -142,6 +143,7 @@ namespace Javet {
 		}
 
 		void JavetInspectorChannel::sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) {
+			auto v8Isolate = v8Runtime->v8Isolate;
 			v8::Locker v8Locker(v8Isolate);
 			v8::HandleScope v8HandleScope(v8Isolate);
 			CONVERT_FROM_STRING_VIEW_TO_STD_STRING(message, stdStringMessage);

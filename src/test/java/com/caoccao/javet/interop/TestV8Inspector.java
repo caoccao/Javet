@@ -60,14 +60,15 @@ public class TestV8Inspector extends BaseTestJavet {
                     v8Runtime.getExecutor("const a = 1;").executeVoid();
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Debugger.resume\"}");
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"a\",\"objectGroup\":\"console\",\"includeCommandLineAPI\":true,\"silent\":false,\"returnByValue\":false,\"generatePreview\":true,\"userGesture\":true,\"awaitPromise\":false,\"replMode\":true,\"allowUnsafeEvalBlockedByCSP\":false}}");
-                    v8Runtime.getExecutor("const b = 1;").executeVoid();
                 } catch (Exception e) {
                     e.printStackTrace();
                     fail("V8 inspector should not throw exception.");
                 }
             });
             executorService.shutdown();
+            v8Runtime.getExecutor("const b = 1;").executeVoid();
             executorService.awaitTermination(5, TimeUnit.SECONDS);
+            v8Runtime.getExecutor("const c = 1;").executeVoid();
             assertTrue(future.isDone());
             runAndWait(5000, () -> atomicInteger.get() == v8Inspector.getResponses().size());
         }
