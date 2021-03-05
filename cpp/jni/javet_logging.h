@@ -17,15 +17,29 @@
 
 #pragma once
 
-#include <jni.h>
-#include <libplatform/libplatform.h>
+#include <iostream>
 
-#define FETCH_JNI_ENV(javaVMPointer) \
-	JNIEnv* jniEnv; \
-	javaVMPointer->GetEnv((void**)&jniEnv, JNI_VERSION_1_8); \
-	javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
+#ifndef JAVET_DEBUG
+#define DEBUG(x) 
+#else
+#define DEBUG(x) do { std::cout << "DEBUG: " << x << std::endl; } while (0)
+#endif
 
-namespace Javet {
-	static std::unique_ptr<v8::Platform> GlobalV8Platform = nullptr;
-}
+#ifndef JAVET_ERROR
+#define ERROR(x) 
+#else
+#define ERROR(x) do { std::cout << "ERROR: " << x << std::endl; } while (0)
+#endif
+
+#ifndef JAVET_INFO
+#define INFO(x) 
+#else
+#define INFO(x) do { std::cout << "INFO: " << x << std::endl; } while (0)
+#endif
+
+#ifndef JAVET_TRACE
+#define TRACE(x) 
+#else
+#define TRACE(x) do { std::cout << "TRACE: " << x << std::endl; } while (0)
+#endif
 

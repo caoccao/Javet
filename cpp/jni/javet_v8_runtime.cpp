@@ -15,17 +15,29 @@
  *   limitations under the License.
  */
 
-#pragma once
-
-#include <jni.h>
-#include <libplatform/libplatform.h>
-
-#define FETCH_JNI_ENV(javaVMPointer) \
-	JNIEnv* jniEnv; \
-	javaVMPointer->GetEnv((void**)&jniEnv, JNI_VERSION_1_8); \
-	javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
+#include "javet_exceptions.h"
+#include "javet_logging.h"
+#include "javet_v8_runtime.h"
 
 namespace Javet {
-	static std::unique_ptr<v8::Platform> GlobalV8Platform = nullptr;
+	void V8Runtime::reset(JNIEnv* jniEnv) {
+		if (v8Locker != nullptr) {
+			Javet::Exceptions::ThrowJavetV8RuntimeLockConflictException(jniEnv, "Cannot close V8 runtime because the native lock is not released");
+		}
+		else {
+			if (v8Inspector) {
+				v8::Locker v8Locker(v8Isolate);
+				v8Inspector->reset(jniEnv);
+				v8Inspector.reset();
+			}
+			v8Context.Reset();
+			v8GlobalObject.Reset();
+			// Isolate must be the last one to be disposed.
+			if (v8Isolate != nullptr) {
+				v8Isolate->Dispose();
+				v8Isolate = nullptr;
+			}
+		}
+	}
 }
 

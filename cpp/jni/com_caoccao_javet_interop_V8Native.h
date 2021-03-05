@@ -65,6 +65,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_compileOnly
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    createV8Inspector
+ * Signature: (JLjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    createV8Runtime
  * Signature: (Ljava/lang/String;)J
  */
@@ -350,6 +358,14 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    v8InspectorSend
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
+  (JNIEnv *, jclass, jlong, jstring);
 
 #ifdef __cplusplus
 }

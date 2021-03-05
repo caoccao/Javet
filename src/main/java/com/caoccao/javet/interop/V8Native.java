@@ -52,6 +52,8 @@ final class V8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    native static void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
+
     native static long createV8Runtime(String globalName);
 
     native static Object createV8Value(long v8RuntimeHandle, int v8ValueType, Object context);
@@ -136,4 +138,6 @@ final class V8Native {
     native static String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static void unlockV8Runtime(long v8RuntimeHandle);
+
+    native static void v8InspectorSend(long v8RuntimeHandle, String message);
 }

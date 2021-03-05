@@ -24,7 +24,6 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,6 +74,10 @@ public final class V8Host implements AutoCloseable {
 
     public String getJavetVersion() {
         return JavetLibLoader.LIB_VERSION;
+    }
+
+    public IJavetLogger getLogger() {
+        return logger;
     }
 
     public V8Runtime createV8Runtime() {

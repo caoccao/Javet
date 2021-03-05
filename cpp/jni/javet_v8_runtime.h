@@ -20,6 +20,7 @@
 #include <jni.h>
 #include <v8.h>
 #include <v8-inspector.h>
+#include "javet_inspector.h"
 
 namespace Javet {
 
@@ -29,8 +30,9 @@ namespace Javet {
 		v8::Persistent<v8::Context> v8Context;
 		v8::Persistent<v8::Object> v8GlobalObject;
 		v8::Locker* v8Locker;
-		jthrowable mException;
-		v8_inspector::V8Inspector* v8Inspector;
+		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
+
+		void reset(JNIEnv* jniEnv);
 	};
 
 }

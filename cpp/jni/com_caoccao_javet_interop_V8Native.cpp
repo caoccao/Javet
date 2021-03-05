@@ -17,7 +17,6 @@
 
 #include <jni.h>
 #include <libplatform/libplatform.h>
-#include <iostream>
 #include <v8.h>
 #include <v8-inspector.h>
 #include <functional>
@@ -31,11 +30,13 @@
 #include "javet_enums.h"
 #include "javet_exceptions.h"
 #include "javet_globals.h"
+#include "javet_inspector.h"
+#include "javet_logging.h"
 #include "javet_v8_runtime.h"
 
  /*
   * Development Guide:
-  * 1. Namespace is not recommended in this project.
+  * 1. Omitting namespace is not recommended in this project.
   * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
   */
 
@@ -50,11 +51,6 @@
 #define IS_V8_MAP(type) (type == Javet::Enums::V8ValueReferenceType::Map)
 #define IS_V8_OBJECT(type) (type == Javet::Enums::V8ValueReferenceType::Object)
 #define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
-
-#define FETCH_JNI_ENV \
-	JNIEnv* jniEnv; \
-	Javet::GlobalJavaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8); \
-	Javet::GlobalJavaVM->AttachCurrentThread((void**)&jniEnv, nullptr); \
 
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
@@ -88,11 +84,14 @@
 		return Javet::Converter::ToExternalV8Value(jniEnv, v8Context, v8Value); \
 	} \
 	catch (const std::exception& e) { \
+		ERROR(e.what()); \
 		Javet::Exceptions::ThrowJavetConverterException(jniEnv, e.what()); \
 	}
 
 namespace Javet {
 	namespace Main {
+		static JavaVM* GlobalJavaVM;
+
 		static jclass jclassV8ValueInteger;
 		static jmethodID jmethodIDV8ValueIntegerToPrimitive;
 
@@ -104,7 +103,9 @@ namespace Javet {
 		because the memory address probed changes in another file,
 		or runtime memory corruption will take place.
 		*/
-		void Initialize(JNIEnv* jniEnv) {
+		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM) {
+			GlobalJavaVM = javaVM;
+
 			jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
 			jmethodIDV8ValueIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueInteger, "toPrimitive", "()I");
 
@@ -117,7 +118,7 @@ namespace Javet {
 		so that the memory address doesn't get messed up.
 		*/
 		void FunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-			FETCH_JNI_ENV;
+			FETCH_JNI_ENV(Javet::Main::GlobalJavaVM);
 			auto v8LocalContextHandle = args.Data().As<v8::BigInt>();
 			auto umContext = reinterpret_cast<jobject>(v8LocalContextHandle->Int64Value());
 			Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
@@ -131,7 +132,7 @@ namespace Javet {
 		}
 
 		void CloseWeakObjectReference(const v8::WeakCallbackInfo<Javet::Callback::V8ValueReference>& data) {
-			FETCH_JNI_ENV;
+			FETCH_JNI_ENV(Javet::Main::GlobalJavaVM);
 			auto v8ValueReference = data.GetParameter();
 			v8ValueReference->Close(jniEnv);
 			delete v8ValueReference;
@@ -141,6 +142,7 @@ namespace Javet {
 
 JNIEXPORT jint JNICALL JNI_OnLoad
 (JavaVM* javaVM, void*) {
+	INFO("JNI_Onload() begins.");
 	JNIEnv* jniEnv;
 	if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
 		return ERROR_JNI_ON_LOAD;
@@ -148,15 +150,18 @@ JNIEXPORT jint JNICALL JNI_OnLoad
 	if (jniEnv == nullptr) {
 		return ERROR_JNI_ON_LOAD;
 	}
-	Javet::GlobalJavaVM = javaVM;
+	INFO("V8::Initialize() begins.");
 	v8::V8::InitializeICU();
 	Javet::GlobalV8Platform = v8::platform::NewDefaultPlatform();
 	v8::V8::InitializePlatform(Javet::GlobalV8Platform.get());
 	v8::V8::Initialize();
+	INFO("V8::Initialize() ends.");
 	Javet::Callback::Initialize(jniEnv);
 	Javet::Converter::Initialize(jniEnv);
 	Javet::Exceptions::Initialize(jniEnv);
-	Javet::Main::Initialize(jniEnv);
+	Javet::Inspector::Initialize(jniEnv, javaVM);
+	Javet::Main::Initialize(jniEnv, javaVM);
+	INFO("JNI_Onload() ends.");
 	return JNI_VERSION_1_8;
 }
 
@@ -238,18 +243,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
-	if (v8Runtime->v8Locker != nullptr) {
-		Javet::Exceptions::ThrowJavetV8RuntimeLockConflictException(jniEnv, "Cannot close V8 runtime because the native lock is not released");
-	}
-	else {
-		v8Runtime->v8Context.Reset();
-		v8Runtime->v8GlobalObject.Reset();
-		// Isolate must be the last one to be disposed.
-		if (v8Runtime->v8Isolate != nullptr) {
-			v8Runtime->v8Isolate->Dispose();
-			v8Runtime->v8Isolate = nullptr;
-		}
-	}
+	v8Runtime->reset(jniEnv);
+	delete v8Runtime;
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_compileOnly
@@ -269,13 +264,19 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_compileOnly
 	}
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jobject mV8Inspector) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	v8Runtime->v8Inspector.reset(
+		new Javet::Inspector::JavetInspector(jniEnv, v8Context, mV8Inspector));
+}
+
 /*
 Creating multiple isolates allows running JavaScript code in multiple threads, truly parallel.
 */
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 (JNIEnv* jniEnv, jclass callerClass, jstring mGlobalName) {
 	auto v8Runtime = new Javet::V8Runtime();
-	v8Runtime->mException = nullptr;
 	jlong v8RuntimeHandle = reinterpret_cast<jlong>(v8Runtime);
 	Java_com_caoccao_javet_interop_V8Native_resetV8Isolate(jniEnv, callerClass, v8RuntimeHandle, mGlobalName);
 	return v8RuntimeHandle;
@@ -640,11 +641,11 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mGlobalName) {
-	Java_com_caoccao_javet_interop_V8Native_closeV8Runtime(jniEnv, callerClass, v8RuntimeHandle);
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
-	v8::Isolate::CreateParams create_params;
-	create_params.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-	v8Runtime->v8Isolate = v8::Isolate::New(create_params);
+	v8Runtime->reset(jniEnv);
+	v8::Isolate::CreateParams createParams;
+	createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+	v8Runtime->v8Isolate = v8::Isolate::New(createParams);
 	v8::Locker v8Locker(v8Runtime->v8Isolate);
 	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate);
 	// Create a stack-allocated handle scope.
@@ -794,5 +795,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
 		delete v8Runtime->v8Locker;
 		v8Runtime->v8Locker = nullptr;
 	}
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mMessage) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	char const* umMessage = jniEnv->GetStringUTFChars(mMessage, nullptr);
+	std::string message(umMessage, jniEnv->GetStringUTFLength(mMessage));
+	v8Runtime->v8Inspector->send(message);
+	jniEnv->ReleaseStringUTFChars(mMessage, umMessage);
 }
 

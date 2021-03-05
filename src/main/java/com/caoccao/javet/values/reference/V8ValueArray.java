@@ -42,6 +42,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     @Override
     public <Value extends V8Value> int forEach(IJavetConsumer<Value> consumer) throws JavetException {
+        Objects.requireNonNull(consumer);
         final int length = getLength();
         for (int i = 0; i < length; ++i) {
             try (Value value = get(i)) {

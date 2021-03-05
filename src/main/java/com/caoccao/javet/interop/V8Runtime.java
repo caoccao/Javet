@@ -36,16 +36,17 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.*;
 
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
 @SuppressWarnings("unchecked")
-public final class V8Runtime implements
-        IJavetClosable, IV8Executable, IV8Creatable {
+public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creatable {
     private static final long INVALID_THREAD_ID = -1L;
     private static final long INVALID_HANDLE = 0L;
     private static final String PROPERTY_DATA_VIEW = "DataView";
+    private static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
 
     private String globalName;
     private long handle;
@@ -54,6 +55,7 @@ public final class V8Runtime implements
     private Map<Long, IV8ValueReference> referenceMap;
     private long threadId;
     private V8Host v8Host;
+    private V8Inspector v8Inspector;
 
     V8Runtime(V8Host v8Host, long handle, boolean pooled, String globalName) {
         assert handle != 0;
@@ -64,6 +66,7 @@ public final class V8Runtime implements
         referenceMap = new TreeMap<>();
         threadId = INVALID_THREAD_ID;
         this.v8Host = v8Host;
+        v8Inspector = null;
     }
 
     public void add(IV8ValueSet iV8ValueKeySet, V8Value value) throws JavetException {
@@ -136,6 +139,7 @@ public final class V8Runtime implements
                 }
             }
             v8Host.closeV8Runtime(this);
+            v8Inspector = null;
             handle = INVALID_HANDLE;
         }
     }
@@ -357,6 +361,17 @@ public final class V8Runtime implements
         return V8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType());
     }
 
+    public V8Inspector getV8Inspector() {
+        return getV8Inspector(MessageFormat.format(DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR, Long.toString(handle)));
+    }
+
+    public V8Inspector getV8Inspector(String name) {
+        if (v8Inspector == null) {
+            v8Inspector = new V8Inspector(this, name);
+        }
+        return v8Inspector;
+    }
+
     public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
         checkLock();
         decorateV8Value(value);
@@ -474,6 +489,7 @@ public final class V8Runtime implements
             throw JavetV8RuntimeLockConflictException.lockNotRequired();
         }
         removeReferences();
+        v8Inspector = null;
         V8Native.resetV8Context(handle, globalName);
         return this;
     }
@@ -490,6 +506,7 @@ public final class V8Runtime implements
             throw JavetV8RuntimeLockConflictException.lockNotRequired();
         }
         removeReferences();
+        v8Inspector = null;
         V8Native.resetV8Isolate(handle, globalName);
         return this;
     }
