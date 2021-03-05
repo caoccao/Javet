@@ -39,7 +39,7 @@ public class TestV8Inspector extends BaseTestJavet {
         atomicInteger.set(0);
     }
 
-//    @Test
+    @Test
     public void testEvaluateValue() throws JavetException, TimeoutException, InterruptedException {
         V8Host v8Host = V8Host.getInstance();
         V8Inspector v8Inspector;
@@ -60,6 +60,7 @@ public class TestV8Inspector extends BaseTestJavet {
                     v8Runtime.getExecutor("const a = 1;").executeVoid();
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Debugger.resume\"}");
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"a\",\"objectGroup\":\"console\",\"includeCommandLineAPI\":true,\"silent\":false,\"returnByValue\":false,\"generatePreview\":true,\"userGesture\":true,\"awaitPromise\":false,\"replMode\":true,\"allowUnsafeEvalBlockedByCSP\":false}}");
+                    v8Runtime.getExecutor("const b = 1;").executeVoid();
                 } catch (Exception e) {
                     e.printStackTrace();
                     fail("V8 inspector should not throw exception.");
