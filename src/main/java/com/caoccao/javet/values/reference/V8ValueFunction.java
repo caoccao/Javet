@@ -20,13 +20,12 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
 import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
-import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
-import com.caoccao.javet.utils.converters.IJavetConverter;
-import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.converters.IJavetConverter;
+import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -38,8 +37,8 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     /*
-    The lifecycle of V8ValueFunction depends on V8CallbackContext which is
-    managed by JNI native implementation.
+     * The lifecycle of V8ValueFunction depends on V8CallbackContext which is
+     * managed by JNI native implementation.
      */
     protected JavetCallbackContext javetCallbackContext;
 
@@ -78,7 +77,6 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     public void close(boolean forceClose) throws JavetException {
-        // V8 lock free
         if (forceClose || !isWeak()) {
             if (javetCallbackContext != null) {
                 v8Runtime.removeJNIGlobalRef(javetCallbackContext.getHandle());
@@ -150,13 +148,12 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                                 Class componentType = parameterClass.getComponentType();
                                 Object varObject = Array.newInstance(componentType, length - i);
                                 for (int j = i; j < length; ++j) {
-                                    Array.set(varObject, j - i, convert(
-                                            converter, componentType, (V8Value) values.get(j)));
+                                    Array.set(varObject, j - i,
+                                            convert(converter, componentType, (V8Value) values.get(j)));
                                 }
                                 objectValues.add(varObject);
                             } else {
-                                objectValues.add(convert(
-                                        converter, parameterClass, (V8Value) values.get(i)));
+                                objectValues.add(convert(converter, parameterClass, (V8Value) values.get(i)));
                             }
                         }
                     } else {

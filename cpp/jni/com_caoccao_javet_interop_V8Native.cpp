@@ -54,6 +54,7 @@
 
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
+	v8::Locker v8Locker(v8Runtime->v8Isolate); \
 	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate); \
 	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate); \
 	auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context); \
@@ -62,6 +63,7 @@
 #define RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
 	auto v8PersistentObjectPointer = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle); \
+	v8::Locker v8Locker(v8Runtime->v8Isolate); \
 	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate); \
 	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate); \
 	auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context); \
@@ -72,6 +74,7 @@
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle); \
 	auto v8PersistentObjectPointer1 = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle1); \
 	auto v8PersistentObjectPointer2 = reinterpret_cast<v8::Persistent<v8::Object>*>(v8ValueHandle2); \
+	v8::Locker v8Locker(v8Runtime->v8Isolate); \
 	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate); \
 	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate); \
 	auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context); \
@@ -588,17 +591,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
 	return false;
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
-(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
-	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
-	if (v8Runtime->v8Locker != nullptr) {
-		Javet::Exceptions::ThrowJavetV8RuntimeLockConflictException(jniEnv, "Cannot acquire V8 native lock because it has not been released yet");
-	}
-	else {
-		v8Runtime->v8Locker = new v8::Locker(v8Runtime->v8Isolate);
-	}
-}
-
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRef
 (JNIEnv* jniEnv, jclass callerClass, jlong handle) {
 	jniEnv->DeleteGlobalRef((jobject)handle);
@@ -783,18 +775,6 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
 	}
 	v8::String::Value stringValue(v8Context->GetIsolate(), v8String);
 	return jniEnv->NewString(*stringValue, stringValue.length());
-}
-
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
-(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
-	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
-	if (v8Runtime->v8Locker == nullptr) {
-		Javet::Exceptions::ThrowJavetV8RuntimeLockConflictException(jniEnv, "Cannot release V8 native lock because it has not been acquired yet");
-	}
-	else {
-		delete v8Runtime->v8Locker;
-		v8Runtime->v8Locker = nullptr;
-	}
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend

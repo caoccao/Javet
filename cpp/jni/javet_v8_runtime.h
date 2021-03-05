@@ -29,7 +29,6 @@ namespace Javet {
 		v8::Isolate* v8Isolate;
 		v8::Persistent<v8::Context> v8Context;
 		v8::Persistent<v8::Object> v8GlobalObject;
-		v8::Locker* v8Locker;
 		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
 		void reset(JNIEnv* jniEnv);

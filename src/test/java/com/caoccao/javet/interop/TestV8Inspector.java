@@ -44,14 +44,11 @@ public class TestV8Inspector extends BaseTestJavet {
         V8Host v8Host = V8Host.getInstance();
         V8Inspector v8Inspector;
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            v8Runtime.lock();
             v8Inspector = v8Runtime.getV8Inspector();
-            v8Runtime.unlock();
             assertNotNull(v8Inspector);
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             Future future = executorService.submit(() -> {
                 try {
-                    v8Runtime.lock();
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Profiler.enable\"}");
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.enable\"}");
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Debugger.enable\",\"params\":{\"maxScriptsCacheSize\":10000000}}");
@@ -66,13 +63,6 @@ public class TestV8Inspector extends BaseTestJavet {
                 } catch (Exception e) {
                     e.printStackTrace();
                     fail("V8 inspector should not throw exception.");
-                } finally {
-                    try {
-                        v8Runtime.unlock();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        fail("V8 unlock should not throw exception.");
-                    }
                 }
             });
             executorService.shutdown();

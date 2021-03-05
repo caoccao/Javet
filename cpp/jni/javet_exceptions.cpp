@@ -38,7 +38,6 @@ namespace Javet {
 			jmethodIDJavetUnknownCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetUnknownCompilationException, "<init>", "(Ljava/lang/String;)V");
 			jclassJavetUnknownExecutionException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetUnknownExecutionException"));
 			jmethodIDJavetUnknownExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetUnknownExecutionException, "<init>", "(Ljava/lang/String;)V");
-			jclassJavetV8RuntimeLockConflictException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8RuntimeLockConflictException"));
 		}
 
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
@@ -126,11 +125,6 @@ namespace Javet {
 				}
 				jniEnv->DeleteLocalRef(jStringExceptionMessage);
 			}
-		}
-
-		void ThrowJavetV8RuntimeLockConflictException(JNIEnv* jniEnv, const char* message) {
-			ERROR(*message);
-			jniEnv->ThrowNew(jclassJavetV8RuntimeLockConflictException, message);
 		}
 	}
 }

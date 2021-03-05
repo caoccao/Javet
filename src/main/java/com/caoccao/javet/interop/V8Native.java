@@ -99,8 +99,6 @@ final class V8Native {
 
     native static boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    native static void lockV8Runtime(long v8RuntimeHandle);
-
     native static void removeJNIGlobalRef(long handle);
 
     native static void removeReferenceHandle(long referenceHandle);
@@ -136,8 +134,6 @@ final class V8Native {
     native static String toProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    native static void unlockV8Runtime(long v8RuntimeHandle);
 
     native static void v8InspectorSend(long v8RuntimeHandle, String message);
 }

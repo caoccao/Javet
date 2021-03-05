@@ -33,17 +33,15 @@ public abstract class V8Value implements IV8Value {
     protected abstract void addReference() throws JavetException;
 
     protected void checkV8Runtime() throws
-            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
+            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeAlreadyClosedException,
+            JavetV8ValueAlreadyClosedException {
         if (v8Runtime == null) {
             throw new JavetV8RuntimeNotRegisteredException();
         }
-        this.v8Runtime.checkLock();
     }
 
     @Override
     public void close() throws JavetException {
-        // V8 lock free
         removeReference();
         v8Runtime = null;
     }
@@ -64,7 +62,6 @@ public abstract class V8Value implements IV8Value {
             throw new JavetV8RuntimeAlreadyRegisteredException();
         }
         this.v8Runtime = v8Runtime;
-        this.v8Runtime.checkLock();
     }
 
     @Override

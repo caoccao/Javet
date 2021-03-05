@@ -91,7 +91,6 @@ public final class V8Inspector {
         }
         logger.logDebug("Sending request: {0}", message);
         requests.add(message);
-        v8Runtime.checkLock();
         V8Native.v8InspectorSend(v8Runtime.getHandle(), message);
         return true;
     }

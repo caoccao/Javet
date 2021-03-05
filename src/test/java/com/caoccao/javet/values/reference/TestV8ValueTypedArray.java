@@ -68,7 +68,7 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
                     assertEquals(bytes[j], v8Runtime.getExecutor("b[" + j + "];").executeInteger());
                 }
             }
-            v8Runtime.unlock().resetContext().lock();
+            v8Runtime.resetContext();
         }
     }
 
@@ -181,7 +181,7 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
                     assertEquals(integers[j], v8Runtime.getExecutor("b[" + j + "];").executeInteger());
                 }
             }
-            v8Runtime.unlock().resetContext().lock();
+            v8Runtime.resetContext();
         }
     }
 
@@ -224,7 +224,7 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
                     assertEquals(longs[j], v8Runtime.getExecutor("b[" + j + "];").executeLong());
                 }
             }
-            v8Runtime.unlock().resetContext().lock();
+            v8Runtime.resetContext();
         }
     }
 
@@ -266,7 +266,7 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
                     assertEquals(shorts[j], v8Runtime.getExecutor("b[" + j + "];").executeInteger());
                 }
             }
-            v8Runtime.unlock().resetContext().lock();
+            v8Runtime.resetContext();
         }
     }
 }

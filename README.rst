@@ -55,7 +55,7 @@ Hello Javet
 
 .. code-block:: java
 
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime().lock()) {
+    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
     }
 

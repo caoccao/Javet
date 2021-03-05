@@ -44,9 +44,6 @@ public class JavetEngine implements IJavetEngine {
     }
 
     protected void close(boolean forceClose) throws JavetException {
-        if (v8Runtime.isLocked()) {
-            v8Runtime.unlock();
-        }
         setActive(false);
         if (forceClose) {
             v8Runtime.close(true);
@@ -77,9 +74,6 @@ public class JavetEngine implements IJavetEngine {
     @Override
     public V8Runtime getV8Runtime() throws JavetException {
         setActive(true);
-        if (!v8Runtime.isLocked()) {
-            v8Runtime.lock();
-        }
         return v8Runtime;
     }
 
@@ -94,34 +88,13 @@ public class JavetEngine implements IJavetEngine {
 
     @Override
     public void resetContext() throws JavetException {
-        resetContext(false);
-    }
-
-    @Override
-    public void resetContext(boolean skipLock) throws JavetException {
-        if (!skipLock) {
-            v8Runtime.unlock();
-        }
         v8Runtime.resetContext();
         usage.reset();
-        if (!skipLock) {
-            v8Runtime.lock();
-        }
     }
 
     protected void resetIsolate() throws JavetException {
-        resetIsolate(false);
-    }
-
-    protected void resetIsolate(boolean skipLock) throws JavetException {
-        if (!skipLock) {
-            v8Runtime.unlock();
-        }
         v8Runtime.resetIsolate();
         usage.reset();
-        if (!skipLock) {
-            v8Runtime.lock();
-        }
     }
 
     protected void touchLastActiveZonedDateTime() {

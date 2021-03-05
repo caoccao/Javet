@@ -53,7 +53,6 @@ Manual termination gives applications complete control. In return, the coding ef
             v8Runtime.terminateExecution();
         });
         daemonThread.start();
-        v8Runtime.lock();
         try {
             v8Runtime.getExecutor(
                     "var count = 0; while (true) { ++count; }")
