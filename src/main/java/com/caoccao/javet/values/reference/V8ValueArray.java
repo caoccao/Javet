@@ -18,25 +18,38 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
-
-    public static final String FUNCTION_NEXT = "next";
-    public static final String PROPERTY_DONE = "done";
-    public static final String PROPERTY_VALUE = "value";
-    public static final String FUNCTION_KEYS = "keys";
-    public static final String FUNCTION_POP = "pop";
-    public static final String FUNCTION_PUSH = "push";
+    protected static final String FUNCTION_NEXT = "next";
+    protected static final String FUNCTION_KEYS = "keys";
+    protected static final String FUNCTION_POP = "pop";
+    protected static final String FUNCTION_PUSH = "push";
+    protected static final String PROPERTY_DONE = "done";
+    protected static final String PROPERTY_VALUE = "value";
 
     V8ValueArray(long handle) {
         super(handle);
+    }
+
+    @Override
+    public <Value extends V8Value> int forEach(IJavetConsumer<Value> consumer) throws JavetException {
+        Objects.requireNonNull(consumer);
+        final int length = getLength();
+        for (int i = 0; i < length; ++i) {
+            try (Value value = get(i)) {
+                consumer.accept(value);
+            }
+        }
+        return length;
     }
 
     @Override
@@ -81,6 +94,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     @Override
     public int push(V8Value v8Value) throws JavetException {
+        Objects.requireNonNull(v8Value);
         checkV8Runtime();
         return invokeInteger(FUNCTION_PUSH, v8Value);
     }

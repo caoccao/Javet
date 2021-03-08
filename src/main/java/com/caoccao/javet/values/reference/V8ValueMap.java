@@ -18,18 +18,60 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetBiConsumer;
+import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
+import java.util.Objects;
+
 @SuppressWarnings("unchecked")
 public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
-
-    public static final String FUNCTION_KEYS = "keys";
-    public static final String FUNCTION_VALUES = "values";
-    public static final String FUNCTION_ENTRIES = "entries";
+    protected static final String FUNCTION_KEYS = "keys";
+    protected static final String FUNCTION_VALUES = "values";
+    protected static final String FUNCTION_ENTRIES = "entries";
 
     V8ValueMap(long handle) {
         super(handle);
+    }
+
+    @Override
+    public <Key extends V8Value> int forEach(IJavetConsumer<Key> consumer) throws JavetException {
+        Objects.requireNonNull(consumer);
+        int count = 0;
+        try (IV8ValueIterator<Key> iterator = (IV8ValueIterator<Key>) getKeys()) {
+            while (true) {
+                try (Key key = iterator.getNext()) {
+                    if (key == null){
+                        break;
+                    }
+                    consumer.accept(key);
+                }
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public <Key extends V8Value, Value extends V8Value> int forEach(
+            IJavetBiConsumer<Key, Value> consumer) throws JavetException {
+        Objects.requireNonNull(consumer);
+        int count = 0;
+        try (IV8ValueIterator<V8ValueArray> iterator = getEntries()) {
+            while (true) {
+                try (V8ValueArray entry = iterator.getNext()) {
+                    if (entry == null) {
+                        break;
+                    }
+                    try (Key key = entry.get(0); Value value = entry.get(1);) {
+                        consumer.accept(key, value);
+                    }
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     @Override

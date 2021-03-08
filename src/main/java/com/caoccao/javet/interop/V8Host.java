@@ -32,9 +32,10 @@ public final class V8Host implements AutoCloseable {
     public static final String GLOBAL_THIS = "globalThis";
     private static final long INVALID_HANDLE = 0L;
     private static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
-    private static final String FLAG_EXPOSE_GC = "--expose_gc";
+    private static final String FLAG_EXPOSE_GC = "--expose-gc";
+    private static final String FLAG_EXPOSE_INSPECTOR_SCRIPTS = "--expose-inspector-scripts";
     private static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
-    private static final String FLAG_USE_STRICT = "--use_strict";
+    private static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";
     private static V8Host instance = new V8Host();
 
@@ -73,6 +74,10 @@ public final class V8Host implements AutoCloseable {
 
     public String getJavetVersion() {
         return JavetLibLoader.LIB_VERSION;
+    }
+
+    public IJavetLogger getLogger() {
+        return logger;
     }
 
     public V8Runtime createV8Runtime() {
@@ -136,6 +141,9 @@ public final class V8Host implements AutoCloseable {
             }
             if (this.flags.isExposeGC()) {
                 flags.add(FLAG_EXPOSE_GC);
+            }
+            if (this.flags.isExposeInspectorScripts()) {
+                flags.add(FLAG_EXPOSE_INSPECTOR_SCRIPTS);
             }
             if (this.flags.isUseStrict()) {
                 flags.add(FLAG_USE_STRICT);

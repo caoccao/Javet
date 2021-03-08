@@ -13,7 +13,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.2</version>
+        <version>0.7.3</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -21,14 +21,14 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.7.2")
+    implementation("com.caoccao.javet:javet:0.7.3")
 
 Gradle Groovy DSL
 -----------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.7.2'
+    implementation 'com.caoccao.javet:javet:0.7.3'
 
 Print **Hello Javet**
 =====================
@@ -36,11 +36,10 @@ Print **Hello Javet**
 .. code-block:: java
 
     // Step 1: Create a V8 runtime from V8 host in try resource.
-    // Step 2: Request a lock.
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime().lock()) {
-        // Step 3: Execute a string as JavaScript code and print the result to console.
+    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+        // Step 2: Execute a string as JavaScript code and print the result to console.
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString()); // Hello Javet
-        // Step 4: Resource including the lock is recycled automatically at the end of the try resource block.
+        // Step 3: Resource is recycled automatically at the end of the try resource block.
     }
 
 Print **1 + 1**
@@ -49,11 +48,10 @@ Print **1 + 1**
 .. code-block:: java
 
     // Step 1: Create a V8 runtime from V8 host in try resource.
-    // Step 2: Request a lock.
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime().lock()) {
-        // Step 3: Execute a string as JavaScript code and print the result to console.
+    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+        // Step 2: Execute a string as JavaScript code and print the result to console.
         System.out.println("1 + 1 = " + v8Runtime.getExecutor("1 + 1").executeInteger()); // 2
-        // Step 4: Resource including the lock is recycled automatically at the end of the try resource block.
+        // Step 3: Resource is recycled automatically at the end of the try resource block.
     }
 
 Play with Pool and Console
@@ -66,7 +64,6 @@ Play with Pool and Console
         // Get a Javet engine from the pool.
         try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
             // Get a V8 runtime from the engine.
-            // lock() is not necessary because the Javet engine handles that.
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
             // Create a Javet console interceptor.
             JavetConsoleInterceptor javetConsoleInterceptor = new JavetConsoleInterceptor(v8Runtime);
@@ -76,7 +73,6 @@ Play with Pool and Console
             v8Runtime.getExecutor("console.log('Hello Javet from Pool');").executeVoid();
             // Unregister the Javet console to V8 global object.
             javetConsoleInterceptor.unregister(v8Runtime.getGlobalObject());
-            // unlock() is not necessary because the Javet engine handles that.
             // close() is not necessary because the Javet pool handles that.
         }
     }

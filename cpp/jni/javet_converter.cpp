@@ -45,6 +45,8 @@
 #define IS_JAVA_REG_EXP(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueRegExp)
 #define IS_JAVA_SET(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueSet)
 #define IS_JAVA_SYMBOL(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueSymbol)
+#define IS_JAVA_WEAK_MAP(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueWeakMap)
+#define IS_JAVA_WEAK_SET(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueWeakSet)
 
 namespace Javet {
 	namespace Converter {
@@ -157,6 +159,14 @@ namespace Javet {
 			jclassV8ValueTypedArray = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueTypedArray"));
 			jmethodIDV8ValueTypedArrayConstructor = jniEnv->GetMethodID(jclassV8ValueTypedArray, "<init>", "(JI)V");
 			jmethodIDV8ValueTypedArrayGetHandle = jniEnv->GetMethodID(jclassV8ValueTypedArray, "getHandle", "()J");
+
+			jclassV8ValueWeakMap = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueWeakMap"));
+			jmethodIDV8ValueWeakMapConstructor = jniEnv->GetMethodID(jclassV8ValueWeakMap, "<init>", "(J)V");
+			jmethodIDV8ValueWeakMapGetHandle = jniEnv->GetMethodID(jclassV8ValueWeakMap, "getHandle", "()J");
+
+			jclassV8ValueWeakSet = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueWeakSet"));
+			jmethodIDV8ValueWeakSetConstructor = jniEnv->GetMethodID(jclassV8ValueWeakSet, "<init>", "(J)V");
+			jmethodIDV8ValueWeakSetGetHandle = jniEnv->GetMethodID(jclassV8ValueWeakSet, "getHandle", "()J");
 		}
 
 		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -237,6 +247,12 @@ namespace Javet {
 				This block shouldn't be entered.
 				 */
 			}
+			if (v8Value->IsWeakMap()) {
+				return jniEnv->NewObject(jclassV8ValueWeakMap, jmethodIDV8ValueWeakMapConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
+			}
+			if (v8Value->IsWeakSet()) {
+				return jniEnv->NewObject(jclassV8ValueWeakSet, jmethodIDV8ValueWeakSetConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
+			}
 			if (v8Value->IsMap()) {
 				return jniEnv->NewObject(jclassV8ValueMap, jmethodIDV8ValueMapConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
 			}
@@ -245,12 +261,6 @@ namespace Javet {
 			}
 			if (v8Value->IsMapIterator() || v8Value->IsSetIterator()) {
 				return jniEnv->NewObject(jclassV8ValueIterator, jmethodIDV8ValueIteratorConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
-			}
-			if (v8Value->IsWeakMap()) {
-				// TODO
-			}
-			if (v8Value->IsWeakSet()) {
-				// TODO
 			}
 			if (v8Value->IsArgumentsObject()) {
 				return jniEnv->NewObject(jclassV8ValueArguments, jmethodIDV8ValueArgumentsConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
@@ -432,17 +442,9 @@ namespace Javet {
 				return ToV8Date(v8Context, longObject);
 			}
 			else if (IS_JAVA_REFERENCE(jniEnv, obj)) {
-				if (IS_JAVA_ARGUMENTS(jniEnv, obj)) {
-					return v8::Local<v8::Object>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Object>*>(
-						jniEnv->CallLongMethod(obj, jmethodIDV8ValueArgumentsGetHandle)));
-				}
-				else if (IS_JAVA_ARRAY(jniEnv, obj)) {
+				if (IS_JAVA_ARRAY(jniEnv, obj)) {
 					return v8::Local<v8::Array>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Array>*>(
 						jniEnv->CallLongMethod(obj, jmethodIDV8ValueArrayGetHandle)));
-				}
-				else if (IS_JAVA_ERROR(jniEnv, obj)) {
-					return v8::Local<v8::Object>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Object>*>(
-						jniEnv->CallLongMethod(obj, jmethodIDV8ValueErrorGetHandle)));
 				}
 				else if (IS_JAVA_GLOBAL_OBJECT(jniEnv, obj)) {
 					// Global object is a tricky one. 
@@ -452,10 +454,6 @@ namespace Javet {
 				else if (IS_JAVA_MAP(jniEnv, obj)) {
 					return v8::Local<v8::Map>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Map>*>(
 						jniEnv->CallLongMethod(obj, jmethodIDV8ValueMapGetHandle)));
-				}
-				else if (IS_JAVA_ITERATOR(jniEnv, obj)) {
-					return v8::Local<v8::Object>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Object>*>(
-						jniEnv->CallLongMethod(obj, jmethodIDV8ValueIteratorGetHandle)));
 				}
 				else if (IS_JAVA_PROMISE(jniEnv, obj)) {
 					return v8::Local<v8::Promise>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Promise>*>(
@@ -477,7 +475,13 @@ namespace Javet {
 					return v8::Local<v8::Symbol>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Symbol>*>(
 						jniEnv->CallLongMethod(obj, jmethodIDV8ValueSymbolGetHandle)));
 				}
-				else if (IS_JAVA_OBJECT(jniEnv, obj)) {
+				else if (
+					IS_JAVA_ARGUMENTS(jniEnv, obj) ||
+					IS_JAVA_ERROR(jniEnv, obj) ||
+					IS_JAVA_ITERATOR(jniEnv, obj) ||
+					IS_JAVA_OBJECT(jniEnv, obj) ||
+					IS_JAVA_WEAK_MAP(jniEnv, obj) ||
+					IS_JAVA_WEAK_SET(jniEnv, obj)) {
 					return v8::Local<v8::Object>::New(v8Context->GetIsolate(), *reinterpret_cast<v8::Persistent<v8::Object>*>(
 						jniEnv->CallLongMethod(obj, jmethodIDV8ValueObjectGetHandle)));
 				}

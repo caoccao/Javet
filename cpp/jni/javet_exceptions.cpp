@@ -17,6 +17,7 @@
 
 #include "javet_converter.h"
 #include "javet_exceptions.h"
+#include "javet_logging.h"
 
 namespace Javet {
 	namespace Exceptions {
@@ -37,12 +38,13 @@ namespace Javet {
 			jmethodIDJavetUnknownCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetUnknownCompilationException, "<init>", "(Ljava/lang/String;)V");
 			jclassJavetUnknownExecutionException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetUnknownExecutionException"));
 			jmethodIDJavetUnknownExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetUnknownExecutionException, "<init>", "(Ljava/lang/String;)V");
-			jclassJavetV8RuntimeLockConflictException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8RuntimeLockConflictException"));
+			jclassJavetV8LockConflictException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8LockConflictException"));
 		}
 
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
 			auto isolate = v8Context->GetIsolate();
 			v8::String::Value exceptionMessage(isolate, v8TryCatch.Exception());
+			ERROR(*exceptionMessage);
 			jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
 			auto v8LocalMessage = v8TryCatch.Message();
 			if (v8LocalMessage.IsEmpty()) {
@@ -76,12 +78,14 @@ namespace Javet {
 		}
 
 		void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message) {
+			ERROR(*message);
 			jniEnv->ThrowNew(jclassJavetConverterException, message);
 		}
 
 		void ThrowJavetExecutionException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
 			auto isolate = v8Context->GetIsolate();
 			if (v8TryCatch.HasTerminated()) {
+				ERROR("Execution has been terminated.");
 				jthrowable javetTerminatedException = (jthrowable)jniEnv->NewObject(
 					jclassJavetTerminatedException,
 					jmethodIDJavetTerminatedExceptionConstructor,
@@ -90,6 +94,7 @@ namespace Javet {
 			}
 			else {
 				v8::String::Value exceptionMessage(isolate, v8TryCatch.Exception());
+				ERROR(*exceptionMessage);
 				jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
 				auto v8LocalMessage = v8TryCatch.Message();
 				if (v8LocalMessage.IsEmpty()) {
@@ -123,8 +128,8 @@ namespace Javet {
 			}
 		}
 
-		void ThrowJavetV8RuntimeLockConflictException(JNIEnv* jniEnv, const char* message) {
-			jniEnv->ThrowNew(jclassJavetV8RuntimeLockConflictException, message);
+		void ThrowJavetV8LockConflictException(JNIEnv* jniEnv, const char* message) {
+			jniEnv->ThrowNew(jclassJavetV8LockConflictException, message);
 		}
 	}
 }

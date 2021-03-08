@@ -28,27 +28,27 @@ public class V8ValueDataView extends V8ValueObject {
     /**
      * The constant PROPERTY_BYTE_LENGTH.
      */
-    public static final String PROPERTY_BYTE_LENGTH = "byteLength";
+    protected static final String PROPERTY_BYTE_LENGTH = "byteLength";
     /**
      * The constant PROPERTY_BUFFER.
      */
-    public static final String PROPERTY_BUFFER = "buffer";
+    protected static final String PROPERTY_BUFFER = "buffer";
     /**
      * The constant PROPERTY_BYTE_OFFSET.
      */
-    public static final String PROPERTY_BYTE_OFFSET = "byteOffset";
-    public static final String FUNCTION_GET_BIG_INT_64 = "getBigInt64";
-    public static final String FUNCTION_GET_FLOAT_32 = "getFloat32";
-    public static final String FUNCTION_GET_FLOAT_64 = "getFloat64";
-    public static final String FUNCTION_GET_INT_8 = "getInt8";
-    public static final String FUNCTION_GET_INT_16 = "getInt16";
-    public static final String FUNCTION_GET_INT_32 = "getInt32";
-    public static final String FUNCTION_SET_BIG_INT_64 = "setBigInt64";
-    public static final String FUNCTION_SET_FLOAT_32 = "setFloat32";
-    public static final String FUNCTION_SET_FLOAT_64 = "setFloat64";
-    public static final String FUNCTION_SET_INT_8 = "setInt8";
-    public static final String FUNCTION_SET_INT_16 = "setInt16";
-    public static final String FUNCTION_SET_INT_32 = "setInt32";
+    protected static final String PROPERTY_BYTE_OFFSET = "byteOffset";
+    protected static final String FUNCTION_GET_BIG_INT_64 = "getBigInt64";
+    protected static final String FUNCTION_GET_FLOAT_32 = "getFloat32";
+    protected static final String FUNCTION_GET_FLOAT_64 = "getFloat64";
+    protected static final String FUNCTION_GET_INT_8 = "getInt8";
+    protected static final String FUNCTION_GET_INT_16 = "getInt16";
+    protected static final String FUNCTION_GET_INT_32 = "getInt32";
+    protected static final String FUNCTION_SET_BIG_INT_64 = "setBigInt64";
+    protected static final String FUNCTION_SET_FLOAT_32 = "setFloat32";
+    protected static final String FUNCTION_SET_FLOAT_64 = "setFloat64";
+    protected static final String FUNCTION_SET_INT_8 = "setInt8";
+    protected static final String FUNCTION_SET_INT_16 = "setInt16";
+    protected static final String FUNCTION_SET_INT_32 = "setInt32";
 
     V8ValueDataView(long handle) {
         super(handle);

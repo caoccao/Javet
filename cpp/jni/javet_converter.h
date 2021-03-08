@@ -127,6 +127,14 @@ namespace Javet {
 		static jmethodID jmethodIDV8ValueTypedArrayConstructor;
 		static jmethodID jmethodIDV8ValueTypedArrayGetHandle;
 
+		static jclass jclassV8ValueWeakMap;
+		static jmethodID jmethodIDV8ValueWeakMapConstructor;
+		static jmethodID jmethodIDV8ValueWeakMapGetHandle;
+
+		static jclass jclassV8ValueWeakSet;
+		static jmethodID jmethodIDV8ValueWeakSetConstructor;
+		static jmethodID jmethodIDV8ValueWeakSetGetHandle;
+
 		void Initialize(JNIEnv* jniEnv);
 
 		jobject ToExternalV8Value(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);

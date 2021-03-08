@@ -17,10 +17,12 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.*;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyClosedException;
+import com.caoccao.javet.exceptions.JavetV8RuntimeNotRegisteredException;
+import com.caoccao.javet.exceptions.JavetV8ValueAlreadyClosedException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 public abstract class V8ValueReference extends V8Value implements IV8ValueReference {
     protected long handle;
@@ -40,8 +42,8 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void checkV8Runtime() throws
-            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
+            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeAlreadyClosedException,
+            JavetV8ValueAlreadyClosedException {
         if (handle == 0L) {
             throw new JavetV8ValueAlreadyClosedException();
         }
@@ -62,7 +64,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void close(boolean forceClose) throws JavetException {
-        // V8 lock free
         if (handle == 0L) {
             throw new JavetV8ValueAlreadyClosedException();
         }
@@ -101,7 +102,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public boolean isWeak() throws JavetException {
-        // V8 lock free
         return weak;
     }
 
@@ -116,7 +116,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     protected void removeReference() throws JavetException {
-        // V8 lock free
         v8Runtime.removeReference(this);
     }
 

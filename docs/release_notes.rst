@@ -2,6 +2,13 @@
 Release Notes
 =============
 
+0.7.3
+-----
+
+* Added ``V8ValueWeakMap`` and ``V8ValueWeakSet``
+* Added ``forEach()`` to Collection
+* Added ``V8Locker`` for Performance Sensitive Scenarios
+
 0.7.2
 -----
 

@@ -24,6 +24,9 @@ import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueSet extends BaseTestJavetRuntime {
@@ -54,6 +57,18 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
             assertTrue(v8ValueSet.delete(1));
             assertTrue(v8ValueSet.delete("x"));
             assertEquals(0, v8ValueSet.getSize());
+        }
+    }
+
+    @Test
+    public void testForEach() throws JavetException {
+        try (V8ValueSet v8ValueSet = v8Runtime.getExecutor(
+                "const a = new Set(); a.add('0'); a.add('1'); a.add('2'); a;").execute()) {
+            // V8 feature: Order is preserved.
+            AtomicInteger count = new AtomicInteger(0);
+            assertEquals(3, v8ValueSet.forEach((V8ValueString key) -> {
+                assertEquals(Integer.toString(count.getAndIncrement()), key.getValue());
+            }));
         }
     }
 

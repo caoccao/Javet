@@ -23,10 +23,32 @@ import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unchecked")
 public class TestV8ValueMap extends BaseTestJavetRuntime {
+    @Test
+    public void testForEach() throws JavetException {
+        try (V8ValueMap v8ValueMap = v8Runtime.getExecutor(
+                "const a = new Map(); a.set('0', 0); a.set('1', 1); a.set('2', 2); a;").execute()) {
+            // V8 feature: Order is preserved.
+            AtomicInteger count = new AtomicInteger(0);
+            assertEquals(3, v8ValueMap.forEach((V8ValueString key) -> {
+                assertNotNull(key);
+                assertEquals(Integer.toString(count.getAndIncrement()), key.getValue());
+            }));
+            count.set(0);
+            assertEquals(3, v8ValueMap.forEach((V8ValueString key, V8ValueInteger value) -> {
+                assertNotNull(key);
+                assertNotNull(value);
+                assertEquals(Integer.toString(count.get()), key.getValue());
+                assertEquals(count.getAndIncrement(), value.getValue());
+            }));
+        }
+    }
+
     @Test
     public void testGetAndHas() throws JavetException {
         try (V8ValueMap v8ValueMap = v8Runtime.getExecutor(

@@ -28,21 +28,39 @@ import static org.junit.jupiter.api.Assertions.*;
 public abstract class BaseTestJavetRuntime extends BaseTestJavet {
     protected V8Runtime v8Runtime;
 
-    @BeforeEach
-    public void beforeEach() throws JavetException {
-        v8Runtime = V8Host.getInstance().createV8Runtime();
-        assertFalse(v8Runtime.isPooled());
-        v8Runtime.lock();
-        assertEquals(0, v8Runtime.getReferenceCount(),
-                "Reference count should be 0 before test case is started.");
-    }
-
     @AfterEach
     public void afterEach() throws JavetException {
         assertEquals(0, v8Runtime.getReferenceCount(),
                 "Reference count should be 0 after test case is ended.");
-        v8Runtime.unlock();
         v8Runtime.close();
         assertEquals(0, V8Host.getInstance().getV8RuntimeCount());
+    }
+
+    @BeforeEach
+    public void beforeEach() throws JavetException {
+        v8Runtime = V8Host.getInstance().createV8Runtime();
+        assertFalse(v8Runtime.isPooled());
+        assertEquals(0, v8Runtime.getReferenceCount(),
+                "Reference count should be 0 before test case is started.");
+    }
+
+    /**
+     * Reset context in another thread.
+     * It's designed to address potential race condition issue.
+     */
+    protected void resetContext() {
+        Thread thread = new Thread(()-> {
+            try {
+                v8Runtime.resetContext();
+            } catch (JavetException e) {
+                fail(e.getMessage());
+            }
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
     }
 }

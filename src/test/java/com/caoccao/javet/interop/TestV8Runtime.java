@@ -20,7 +20,6 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeLockConflictException;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
@@ -42,12 +41,10 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testExecute() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            v8Runtime.lock();
             v8Runtime.getExecutor("var a = 1;").executeVoid();
             assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
         }
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
-            v8Runtime.lock();
             v8Runtime.getExecutor("var a = 1;").executeVoid();
             assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
             try (V8ValueObject window = v8Runtime.createV8ValueObject()) {
@@ -59,33 +56,14 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
-    public void testLockAndUnlock() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
-            final int iterations = 3;
-            for (int i = 0; i < iterations; ++i) {
-                assertThrows(JavetV8RuntimeLockConflictException.class, () -> {
-                    v8Runtime.unlock();
-                }, "It should not allow unlock before lock.");
-                v8Runtime.lock();
-                // It should not allow double lock.
-                v8Runtime.lock();
-                v8Runtime.unlock();
-            }
-        }
-    }
-
-    @Test
     public void testResetContext() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
-            v8Runtime.lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
-            v8Runtime.unlock().resetContext().lock();
+            v8Runtime.resetContext();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
-            v8Runtime.unlock();
         }
     }
 
@@ -93,15 +71,11 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testResetIsolate() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
-            v8Runtime.lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
-            v8Runtime.unlock();
             v8Runtime.resetIsolate();
-            v8Runtime.lock();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
-            v8Runtime.unlock();
         }
     }
 
@@ -123,7 +97,6 @@ public class TestV8Runtime extends BaseTestJavet {
                 v8Runtime.terminateExecution();
             });
             daemonThread.start();
-            v8Runtime.lock();
             try {
                 v8Runtime.getExecutor(
                         "var count = 0; while (true) { ++count; }")

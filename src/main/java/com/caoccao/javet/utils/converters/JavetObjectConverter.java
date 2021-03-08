@@ -22,7 +22,8 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.*;
+import com.caoccao.javet.values.primitive.V8ValueBoolean;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 
 import java.util.*;
@@ -54,52 +55,17 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         if (v8Value instanceof V8ValueArray) {
             V8ValueArray v8ValueArray = (V8ValueArray) v8Value;
             List<Object> list = new ArrayList<>();
-            final int length = v8ValueArray.getLength();
-            for (int i = 0; i < length; ++i) {
-                try (V8Value childV8Value = v8ValueArray.get(i)) {
-                    list.add(toObject(childV8Value));
-                }
-            }
-            return list;
-        } else if (v8Value instanceof V8ValueArguments) {
-            V8ValueArguments v8ValueArguments = (V8ValueArguments) v8Value;
-            List<Object> list = new ArrayList<>();
-            final int length = v8ValueArguments.getLength();
-            for (int i = 0; i < length; ++i) {
-                try (V8Value childV8Value = v8ValueArguments.get(i)) {
-                    list.add(toObject(childV8Value));
-                }
-            }
+            v8ValueArray.forEach(value -> list.add(toObject(value)));
             return list;
         } else if (v8Value instanceof V8ValueSet) {
             V8ValueSet v8ValueSet = (V8ValueSet) v8Value;
             HashSet<Object> set = new HashSet<>();
-            try (IV8ValueIterator<V8Value> iterator = v8ValueSet.getKeys()) {
-                while (true) {
-                    try (V8Value key = iterator.getNext()) {
-                        if (key == null) {
-                            break;
-                        }
-                        set.add(toObject(key));
-                    }
-                }
-            }
+            v8ValueSet.forEach(key -> set.add(toObject(key)));
             return set;
         } else if (v8Value instanceof V8ValueMap) {
             V8ValueMap v8ValueMap = (V8ValueMap) v8Value;
             Map<String, Object> map = createEntityMap();
-            try (IV8ValueIterator<V8ValueArray> iterator = v8ValueMap.getEntries()) {
-                while (true) {
-                    try (V8ValueArray entry = iterator.getNext()) {
-                        if (entry == null) {
-                            break;
-                        }
-                        try (V8Value key = entry.get(0); V8Value value = entry.get(1);) {
-                            map.put(key.toString(), toObject(value));
-                        }
-                    }
-                }
-            }
+            v8ValueMap.forEach((key, value) -> map.put(key.toString(), toObject(value)));
             return map;
         } else if (v8Value instanceof V8ValueTypedArray) {
             V8ValueTypedArray v8ValueTypedArray = (V8ValueTypedArray) v8Value;
@@ -127,27 +93,18 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (v8Value instanceof V8ValueObject) {
             V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
             Map<String, Object> map = new HashMap<>();
-            try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
-                final int length = iV8ValueArray.getLength();
-                for (int i = 0; i < length; ++i) {
-                    try (V8Value key = iV8ValueArray.get(i)) {
-                        String keyString = key.toString();
-                        /*
-                            Constructor is treated differently because it references to itself.
-                            Otherwise stack overflow will take place.
-                         */
-                        if (PROPERTY_CONSTRUCTOR.equals(keyString)) {
-                            try (V8ValueObject v8ValueObjectValue = v8ValueObject.get(keyString)) {
-                                map.put(keyString, v8ValueObjectValue.getString(PROPERTY_NAME));
-                            }
-                        } else {
-                            try (V8Value value = v8ValueObject.get(key)) {
-                                map.put(keyString, toObject(value));
-                            }
-                        }
+            v8ValueObject.forEach(key -> {
+                String keyString = key.toString();
+                if (PROPERTY_CONSTRUCTOR.equals(keyString)) {
+                    try (V8ValueObject v8ValueObjectValue = v8ValueObject.get(PROPERTY_CONSTRUCTOR)) {
+                        map.put(PROPERTY_CONSTRUCTOR, v8ValueObjectValue.getString(PROPERTY_NAME));
+                    }
+                } else {
+                    try (V8Value value = v8ValueObject.get(key)) {
+                        map.put(keyString, toObject(value));
                     }
                 }
-            }
+            });
             return map;
         }
         return v8Value;

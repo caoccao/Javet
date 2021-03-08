@@ -42,6 +42,7 @@ public abstract class BaseTestJavet {
         if (!flags.isSealed()) {
             flags.setAllowNativesSyntax(true);
             flags.setExposeGC(true);
+//            flags.setExposeInspectorScripts(true);
             flags.setUseStrict(true);
             flags.setTrackRetainingPath(true);
         }

@@ -19,7 +19,6 @@
 
 #include <v8.h>
 #include <jni.h>
-#include "javet_v8_runtime.h"
 
 namespace Javet {
 	namespace Callback {

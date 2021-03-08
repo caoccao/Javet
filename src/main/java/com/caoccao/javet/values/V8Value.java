@@ -20,6 +20,8 @@ package com.caoccao.javet.values;
 import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interop.V8Runtime;
 
+import java.util.Objects;
+
 @SuppressWarnings("unchecked")
 public abstract class V8Value implements IV8Value {
     protected V8Runtime v8Runtime;
@@ -31,17 +33,15 @@ public abstract class V8Value implements IV8Value {
     protected abstract void addReference() throws JavetException;
 
     protected void checkV8Runtime() throws
-            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeLockConflictException,
-            JavetV8RuntimeAlreadyClosedException, JavetV8ValueAlreadyClosedException {
+            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeAlreadyClosedException,
+            JavetV8ValueAlreadyClosedException {
         if (v8Runtime == null) {
             throw new JavetV8RuntimeNotRegisteredException();
         }
-        this.v8Runtime.checkLock();
     }
 
     @Override
     public void close() throws JavetException {
-        // V8 lock free
         removeReference();
         v8Runtime = null;
     }
@@ -57,11 +57,11 @@ public abstract class V8Value implements IV8Value {
     }
 
     public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
+        Objects.requireNonNull(v8Runtime);
         if (this.v8Runtime != null) {
             throw new JavetV8RuntimeAlreadyRegisteredException();
         }
         this.v8Runtime = v8Runtime;
-        this.v8Runtime.checkLock();
     }
 
     @Override

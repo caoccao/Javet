@@ -26,16 +26,15 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueArrayBuffer extends V8ValueObject {
-
-    public static final String PROPERTY_BYTE_LENGTH = "byteLength";
-    public static final int BYTE_LENGTH_1 = 1;
-    public static final int BYTE_LENGTH_2 = 2;
-    public static final int BYTE_LENGTH_3 = 3;
+    protected static final String PROPERTY_BYTE_LENGTH = "byteLength";
+    protected static final int BYTE_LENGTH_1 = 1;
+    protected static final int BYTE_LENGTH_2 = 2;
+    protected static final int BYTE_LENGTH_3 = 3;
 
     protected ByteBuffer byteBuffer;
     protected ByteOrder byteOrder;
 
-    protected V8ValueArrayBuffer(long handle, ByteBuffer byteBuffer) {
+    V8ValueArrayBuffer(long handle, ByteBuffer byteBuffer) {
         super(handle);
         this.byteBuffer = byteBuffer;
         byteOrder = ByteOrder.nativeOrder();
@@ -64,6 +63,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
     }
 
     public boolean fromBytes(byte[] bytes) {
+        Objects.requireNonNull(bytes);
         if (bytes != null && bytes.length > 0 && bytes.length == byteBuffer.capacity()) {
             byteBuffer.put(bytes);
             return true;
@@ -72,6 +72,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
     }
 
     public boolean fromDoubles(double[] doubles) {
+        Objects.requireNonNull(doubles);
         if (doubles != null && doubles.length > 0 && doubles.length == byteBuffer.capacity() >> BYTE_LENGTH_3) {
             byteBuffer.order(byteOrder).asDoubleBuffer().put(doubles);
             return true;
@@ -80,6 +81,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
     }
 
     public boolean fromFloats(float[] floats) {
+        Objects.requireNonNull(floats);
         if (floats != null && floats.length > 0 && floats.length == byteBuffer.capacity() >> BYTE_LENGTH_2) {
             byteBuffer.order(byteOrder).asFloatBuffer().put(floats);
             return true;
@@ -88,6 +90,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
     }
 
     public boolean fromIntegers(int[] integers) {
+        Objects.requireNonNull(integers);
         if (integers != null && integers.length > 0 && integers.length == byteBuffer.capacity() >> BYTE_LENGTH_2) {
             byteBuffer.order(byteOrder).asIntBuffer().put(integers);
             return true;
@@ -96,6 +99,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
     }
 
     public boolean fromLongs(long[] longs) {
+        Objects.requireNonNull(longs);
         if (longs != null && longs.length > 0 && longs.length == byteBuffer.capacity() >> BYTE_LENGTH_3) {
             byteBuffer.order(byteOrder).asLongBuffer().put(longs);
             return true;
@@ -104,6 +108,7 @@ public class V8ValueArrayBuffer extends V8ValueObject {
     }
 
     public boolean fromShorts(short[] shorts) {
+        Objects.requireNonNull(shorts);
         if (shorts != null && shorts.length > 0 && shorts.length == byteBuffer.capacity() >> BYTE_LENGTH_1) {
             byteBuffer.order(byteOrder).asShortBuffer().put(shorts);
             return true;
