@@ -22,26 +22,30 @@
 #define CONTEXT_GROUP_ID 1
 #define EMBEDDER_DATA_INDEX 1
 
-#define CONVERT_FROM_STD_STRING_TO_STRING_VIEW(stdString, stringView) v8_inspector::StringView stringView(reinterpret_cast<const uint8_t*>(stdString.c_str()), stdString.length())
-#define CONVERT_FROM_STRING_VIEW_TO_STD_STRING(stringView, stdString) \
-	auto stringViewMessage = stringView->string(); \
-	int length = static_cast<int>(stringViewMessage.length()); \
-	v8::Local<v8::String> v8StringMessage; \
-	if (length > 0) { \
-		if (stringViewMessage.is8Bit()) { \
-			v8StringMessage = v8::String::NewFromOneByte(v8Isolate, reinterpret_cast<const uint8_t*>( \
-				stringViewMessage.characters8()), v8::NewStringType::kNormal, length).ToLocalChecked(); \
-		} \
-		else { \
-			v8StringMessage = v8::String::NewFromTwoByte(v8Isolate, reinterpret_cast<const uint16_t*>( \
-				stringViewMessage.characters16()), v8::NewStringType::kNormal, length).ToLocalChecked(); \
-		} \
-	} \
-	v8::String::Utf8Value v8Utf8Value(v8Isolate, v8StringMessage); \
-	std::string stdString(*v8Utf8Value);
-
 namespace Javet {
 	namespace Inspector {
+		static inline std::unique_ptr<v8_inspector::StringView> ConvertFromStdStringToStringViewPointer(const std::string& stdString) {
+			return std::make_unique<v8_inspector::StringView>(reinterpret_cast<const uint8_t*>(stdString.c_str()), stdString.length());
+		}
+
+		static inline std::unique_ptr<std::string> ConvertFromStringBufferToStdStringPointer(v8::Isolate* v8Isolate, v8_inspector::StringBuffer* stringBuffer) {
+			auto stringViewMessage = stringBuffer->string();
+			int length = static_cast<int>(stringViewMessage.length());
+			v8::Local<v8::String> v8StringMessage;
+			if (length > 0) {
+				if (stringViewMessage.is8Bit()) {
+					v8StringMessage = v8::String::NewFromOneByte(v8Isolate, reinterpret_cast<const uint8_t*>(
+						stringViewMessage.characters8()), v8::NewStringType::kNormal, length).ToLocalChecked();
+				}
+				else {
+					v8StringMessage = v8::String::NewFromTwoByte(v8Isolate, reinterpret_cast<const uint16_t*>(
+						stringViewMessage.characters16()), v8::NewStringType::kNormal, length).ToLocalChecked();
+				}
+			}
+			v8::String::Utf8Value v8Utf8Value(v8Isolate, v8StringMessage);
+			return std::make_unique<std::string>(*v8Utf8Value);
+		}
+
 		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM) {
 			GlobalJavaVM = javaVM;
 
@@ -64,8 +68,8 @@ namespace Javet {
 
 		void JavetInspector::send(const std::string& message) {
 			DEBUG("Sending request: " << message);
-			CONVERT_FROM_STD_STRING_TO_STRING_VIEW(message, stringViewMessage);
-			client->dispatchProtocolMessage(stringViewMessage);
+			auto stringViewMessagePointer = ConvertFromStdStringToStringViewPointer(message);
+			client->dispatchProtocolMessage(*stringViewMessagePointer.get());
 		}
 
 		JavetInspector::~JavetInspector() {
@@ -85,8 +89,8 @@ namespace Javet {
 			v8Inspector = v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this);
 			v8InspectorSession = v8Inspector->connect(CONTEXT_GROUP_ID, javetInspectorChannel.get(), v8_inspector::StringView());
 			v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
-			CONVERT_FROM_STD_STRING_TO_STRING_VIEW(name, humanReadableName);
-			v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, humanReadableName));
+			auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
+			v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
 		}
 
 		void JavetInspectorClient::dispatchProtocolMessage(const v8_inspector::StringView& message) {
@@ -131,25 +135,23 @@ namespace Javet {
 		}
 
 		void JavetInspectorChannel::sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) {
-			auto v8Isolate = v8Runtime->v8Isolate;
-			v8::Locker v8Locker(v8Isolate);
-			v8::HandleScope v8HandleScope(v8Isolate);
-			CONVERT_FROM_STRING_VIEW_TO_STD_STRING(message, stdStringMessage);
-			DEBUG("Sending notification: " << stdStringMessage);
+			v8::Locker v8Locker(v8Runtime->v8Isolate);
+			v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
+			auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
+			DEBUG("Sending notification: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
-			jstring jMessage = jniEnv->NewStringUTF(stdStringMessage.c_str());
+			jstring jMessage = jniEnv->NewStringUTF(stdStringMessagePointer->c_str());
 			jniEnv->CallBooleanMethod(mV8Inspector, jmethodIDV8InspectorReceiveNotification, jMessage);
 			jniEnv->DeleteLocalRef(jMessage);
 		}
 
 		void JavetInspectorChannel::sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) {
-			auto v8Isolate = v8Runtime->v8Isolate;
-			v8::Locker v8Locker(v8Isolate);
-			v8::HandleScope v8HandleScope(v8Isolate);
-			CONVERT_FROM_STRING_VIEW_TO_STD_STRING(message, stdStringMessage);
-			DEBUG("Sending response: " << stdStringMessage);
+			v8::Locker v8Locker(v8Runtime->v8Isolate);
+			v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
+			auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
+			DEBUG("Sending response: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
-			jstring jMessage = jniEnv->NewStringUTF(stdStringMessage.c_str());
+			jstring jMessage = jniEnv->NewStringUTF(stdStringMessagePointer->c_str());
 			jboolean booleanObject = jniEnv->CallBooleanMethod(mV8Inspector, jmethodIDV8InspectorReceiveResponse, jMessage);
 			jniEnv->DeleteLocalRef(jMessage);
 		}
