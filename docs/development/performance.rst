@@ -11,10 +11,10 @@ Here is the performance test result from i7 10700K + Windows 10. Test case is ju
 ===============================  ===============
 Case                             TPS
 ===============================  ===============
-Single Context with 1 Thread     752,728
-Ad-hoc Context with 1 Thread     2,895
-Single Context with 8 Threads    4,268,943
-Ad-hoc Context with 8 Threads    15,278
+Single Context with 1 Thread     761,614
+Ad-hoc Context with 1 Thread     2,940
+Single Context with 8 Threads    4,160,166
+Ad-hoc Context with 8 Threads    16,280
 ===============================  ===============
 
 Reference: https://v8.dev/docs/embed#contexts

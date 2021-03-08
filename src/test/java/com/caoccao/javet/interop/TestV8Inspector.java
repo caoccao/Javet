@@ -22,7 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,8 +46,7 @@ public class TestV8Inspector extends BaseTestJavet {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Inspector = v8Runtime.getV8Inspector();
             assertNotNull(v8Inspector);
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            Future future = executorService.submit(() -> {
+            Thread thread = new Thread(() -> {
                 try {
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Profiler.enable\"}");
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.enable\"}");
@@ -65,11 +64,9 @@ public class TestV8Inspector extends BaseTestJavet {
                     fail("V8 inspector should not throw exception.");
                 }
             });
-            executorService.shutdown();
+            thread.start();
+            thread.join();
             v8Runtime.getExecutor("const b = 1;").executeVoid();
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
-            v8Runtime.getExecutor("const c = 1;").executeVoid();
-            assertTrue(future.isDone());
             runAndWait(5000, () -> atomicInteger.get() == v8Inspector.getResponses().size());
         }
         assertEquals(atomicInteger.get(), v8Inspector.getResponses().size());

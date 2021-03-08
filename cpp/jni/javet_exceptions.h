@@ -33,11 +33,13 @@ namespace Javet {
 		static jmethodID jmethodIDJavetUnknownCompilationExceptionConstructor;
 		static jclass jclassJavetUnknownExecutionException;
 		static jmethodID jmethodIDJavetUnknownExecutionExceptionConstructor;
+		static jclass jclassJavetV8LockConflictException;
 
 		void Initialize(JNIEnv* jniEnv);
 
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch);
 		void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
 		void ThrowJavetExecutionException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch);
+		void ThrowJavetV8LockConflictException(JNIEnv* jniEnv, const char* message);
 	}
 }

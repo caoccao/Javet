@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.BaseTestJavetPool;
+import com.caoccao.javet.interop.V8Locker;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.utils.JavetOSUtils;
@@ -44,10 +45,12 @@ public class TestPerformance extends BaseTestJavetPool {
         final long startTime = System.currentTimeMillis();
         try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
-            IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
-            for (int i = 0; i < iterations; i++) {
-                javetEngine.resetContext();
-                assertEquals(2, v8Executor.executeInteger());
+            try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
+                IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
+                for (int i = 0; i < iterations; i++) {
+                    javetEngine.resetContext();
+                    assertEquals(2, v8Executor.executeInteger());
+                }
             }
         }
         final long stopTime = System.currentTimeMillis();
@@ -64,9 +67,11 @@ public class TestPerformance extends BaseTestJavetPool {
         final long startTime = System.currentTimeMillis();
         try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
-            IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
-            for (int i = 0; i < iterations; i++) {
-                assertEquals(2, v8Executor.executeInteger());
+            try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
+                IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
+                for (int i = 0; i < iterations; i++) {
+                    assertEquals(2, v8Executor.executeInteger());
+                }
             }
         }
         final long stopTime = System.currentTimeMillis();
@@ -86,10 +91,12 @@ public class TestPerformance extends BaseTestJavetPool {
             threads[i] = new Thread(() -> {
                 try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
                     V8Runtime v8Runtime = javetEngine.getV8Runtime();
-                    IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
-                    for (int j = 0; j < iterations; j++) {
-                        javetEngine.resetContext();
-                        assertEquals(2, v8Executor.executeInteger());
+                    try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
+                        IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
+                        for (int j = 0; j < iterations; j++) {
+                            javetEngine.resetContext();
+                            assertEquals(2, v8Executor.executeInteger());
+                        }
                     }
                 } catch (Exception e) {
                     logger.logError(e, "Failed to execute.");
@@ -120,9 +127,11 @@ public class TestPerformance extends BaseTestJavetPool {
             threads[i] = new Thread(() -> {
                 try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
                     V8Runtime v8Runtime = javetEngine.getV8Runtime();
-                    IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
-                    for (int j = 0; j < iterations; j++) {
-                        assertEquals(2, v8Executor.executeInteger());
+                    try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
+                        IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
+                        for (int j = 0; j < iterations; j++) {
+                            assertEquals(2, v8Executor.executeInteger());
+                        }
                     }
                 } catch (Exception e) {
                     logger.logError(e, "Failed to execute.");

@@ -23,11 +23,12 @@
 namespace Javet {
 	void V8Runtime::reset() {
 		if (v8Inspector) {
-			v8::Locker v8Locker(v8Isolate);
+			std::shared_ptr<v8::Locker> internalV8Locker = v8Locker ? v8Locker : std::make_shared<v8::Locker>(v8Isolate);
 			v8Inspector.reset();
 		}
 		v8Context.Reset();
 		v8GlobalObject.Reset();
+		v8Locker.reset();
 		// Isolate must be the last one to be disposed.
 		if (v8Isolate != nullptr) {
 			v8Isolate->Dispose();

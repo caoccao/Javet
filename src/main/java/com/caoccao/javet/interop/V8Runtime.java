@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyClosedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyRegisteredException;
 import com.caoccao.javet.interfaces.IJavetClosable;
@@ -321,6 +322,10 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
             v8Inspector = new V8Inspector(this, name);
         }
         return v8Inspector;
+    }
+
+    public V8Locker getV8Locker() throws JavetV8LockConflictException {
+        return new V8Locker(this);
     }
 
     public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {

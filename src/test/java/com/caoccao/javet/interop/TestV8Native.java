@@ -18,14 +18,36 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
+import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestV8Native extends BaseTestJavet {
     @Test
     public void testGetVersion() {
         String versionString = V8Native.getVersion();
         assertEquals(JavetLibLoader.V8_VERSION, versionString);
+    }
+
+    @Test
+    public void testLockAndUnlock() {
+        final long handle = V8Native.createV8Runtime(null);
+        try {
+            final int iterations = 3;
+            for (int i = 0; i < iterations; ++i) {
+                assertThrows(JavetV8LockConflictException.class, () -> {
+                    V8Native.unlockV8Runtime(handle);
+                }, "It should not allow unlock before lock.");
+                V8Native.lockV8Runtime(handle);
+                assertThrows(JavetV8LockConflictException.class, () -> {
+                    V8Native.lockV8Runtime(handle);
+                }, "It should not allow double lock.");
+                V8Native.unlockV8Runtime(handle);
+            }
+        } finally {
+            V8Native.closeV8Runtime(handle);
+        }
     }
 }
