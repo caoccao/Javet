@@ -648,7 +648,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 	v8::Isolate::CreateParams createParams;
 	createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
 	v8Runtime->v8Isolate = v8::Isolate::New(createParams);
-	std::shared_ptr<v8::Locker> v8Locker = v8Runtime->v8Locker ? v8Runtime->v8Locker : std::make_shared<v8::Locker>(v8Runtime->v8Isolate);
+	v8::Locker v8Locker(v8Runtime->v8Isolate);
 	v8::Isolate::Scope v8IsolateScope(v8Runtime->v8Isolate);
 	// Create a stack-allocated handle scope.
 	v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
