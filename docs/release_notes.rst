@@ -2,6 +2,11 @@
 Release Notes
 =============
 
+0.7.4
+-----
+
+* Added websocket test for Chrome Developer Tools
+
 0.7.3
 -----
 

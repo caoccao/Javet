@@ -21,12 +21,14 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public final class V8Inspector {
     private IJavetLogger logger;
     private String name;
+    private List<IV8InspectorListener> listeners;
     private List<String> notifications;
     private List<String> responses;
     private List<String> requests;
@@ -35,11 +37,17 @@ public final class V8Inspector {
     V8Inspector(V8Runtime v8Runtime, String name) {
         logger = v8Runtime.getLogger();
         this.name = name;
+        listeners = new ArrayList<>();
         notifications = new ArrayList<>();
         responses = new ArrayList<>();
         requests = new ArrayList<>();
         this.v8Runtime = v8Runtime;
         V8Native.createV8Inspector(v8Runtime.getHandle(), this);
+    }
+
+    public void addListeners(IV8InspectorListener... listeners) {
+        Objects.requireNonNull(listeners);
+        this.listeners.addAll(Arrays.asList(listeners));
     }
 
     public IJavetLogger getLogger() {
@@ -82,7 +90,19 @@ public final class V8Inspector {
         }
         logger.logDebug("Receiving response: {0}", message);
         responses.add(message);
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.receiveResponse(message);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
         return true;
+    }
+
+    public void removeListeners(IV8InspectorListener... listeners) {
+        Objects.requireNonNull(listeners);
+        this.listeners.removeAll(Arrays.asList(listeners));
     }
 
     public boolean sendRequest(String message) throws JavetException {
@@ -91,6 +111,13 @@ public final class V8Inspector {
         }
         logger.logDebug("Sending request: {0}", message);
         requests.add(message);
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.sendRequest(message);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
         V8Native.v8InspectorSend(v8Runtime.getHandle(), message);
         return true;
     }
