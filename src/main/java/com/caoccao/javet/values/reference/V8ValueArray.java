@@ -21,7 +21,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     public <T extends V8Value> T get(int index) throws JavetException {
         checkV8Runtime();
-        return v8Runtime.get(this, new V8ValueInteger(index));
+        return v8Runtime.get(this, v8Runtime.createV8ValueInteger(index));
     }
 
     @Override

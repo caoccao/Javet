@@ -27,11 +27,11 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 public interface IV8ValueSet extends IV8ValueKeyContainer {
 
     default void add(int value) throws JavetException {
-        add(new V8ValueInteger(value));
+        add(getV8Runtime().createV8ValueInteger(value));
     }
 
     default void add(long value) throws JavetException {
-        add(new V8ValueLong(value));
+        add(getV8Runtime().createV8ValueLong(value));
     }
 
     default void add(String value) throws JavetException {

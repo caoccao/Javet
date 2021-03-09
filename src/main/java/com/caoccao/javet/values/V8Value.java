@@ -30,8 +30,6 @@ public abstract class V8Value implements IV8Value {
         v8Runtime = null;
     }
 
-    protected abstract void addReference() throws JavetException;
-
     protected void checkV8Runtime() throws
             JavetV8RuntimeNotRegisteredException, JavetV8RuntimeAlreadyClosedException,
             JavetV8ValueAlreadyClosedException {
@@ -41,10 +39,7 @@ public abstract class V8Value implements IV8Value {
     }
 
     @Override
-    public void close() throws JavetException {
-        removeReference();
-        v8Runtime = null;
-    }
+    public abstract void close() throws JavetException;
 
     @Override
     public abstract boolean equals(V8Value v8Value) throws JavetException;
@@ -69,6 +64,4 @@ public abstract class V8Value implements IV8Value {
 
     @Override
     public abstract boolean strictEquals(V8Value v8Value) throws JavetException;
-
-    protected abstract void removeReference() throws JavetException;
 }

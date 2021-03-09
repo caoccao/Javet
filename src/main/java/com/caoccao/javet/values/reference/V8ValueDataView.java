@@ -19,10 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueDouble;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueLong;
 
 public class V8ValueDataView extends V8ValueObject {
     /**
@@ -59,8 +56,10 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public long getBigInt64(int byteOffset, boolean littleEndian) throws JavetException {
-        return invokeLong(FUNCTION_GET_BIG_INT_64,
-                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).longValue();
+        return invokeLong(
+                FUNCTION_GET_BIG_INT_64,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueBoolean(littleEndian)).longValue();
     }
 
     public V8ValueArrayBuffer getBuffer() throws JavetException {
@@ -80,8 +79,10 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public float getFloat32(int byteOffset, boolean littleEndian) throws JavetException {
-        return invokeDouble(FUNCTION_GET_FLOAT_32,
-                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).floatValue();
+        return invokeDouble(
+                FUNCTION_GET_FLOAT_32,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueBoolean(littleEndian)).floatValue();
     }
 
     public double getFloat64(int byteOffset) throws JavetException {
@@ -89,8 +90,10 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public double getFloat64(int byteOffset, boolean littleEndian) throws JavetException {
-        return invokeDouble(FUNCTION_GET_FLOAT_64,
-                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).doubleValue();
+        return invokeDouble(
+                FUNCTION_GET_FLOAT_64,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueBoolean(littleEndian)).doubleValue();
     }
 
     public short getInt16(int byteOffset) throws JavetException {
@@ -98,8 +101,10 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public short getInt16(int byteOffset, boolean littleEndian) throws JavetException {
-        return invokeInteger(FUNCTION_GET_INT_16,
-                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).shortValue();
+        return invokeInteger(
+                FUNCTION_GET_INT_16,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueBoolean(littleEndian)).shortValue();
     }
 
     public int getInt32(int byteOffset) throws JavetException {
@@ -107,13 +112,16 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public int getInt32(int byteOffset, boolean littleEndian) throws JavetException {
-        return invokeInteger(FUNCTION_GET_INT_32,
-                new V8ValueInteger(byteOffset), new V8ValueBoolean(littleEndian)).intValue();
+        return invokeInteger(
+                FUNCTION_GET_INT_32,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueBoolean(littleEndian)).intValue();
     }
 
     public byte getInt8(int byteOffset) throws JavetException {
-        return invokeInteger(FUNCTION_GET_INT_8,
-                new V8ValueInteger(byteOffset)).byteValue();
+        return invokeInteger(
+                FUNCTION_GET_INT_8,
+                v8Runtime.createV8ValueInteger(byteOffset)).byteValue();
     }
 
     @Override
@@ -126,8 +134,11 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public void setBigInt64(int byteOffset, long value, boolean littleEndian) throws JavetException {
-        invokeVoid(FUNCTION_SET_BIG_INT_64,
-                new V8ValueInteger(byteOffset), new V8ValueLong(value), new V8ValueBoolean(littleEndian));
+        invokeVoid(
+                FUNCTION_SET_BIG_INT_64,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueLong(value),
+                v8Runtime.createV8ValueBoolean(littleEndian));
     }
 
     public void setFloat32(int byteOffset, float value) throws JavetException {
@@ -135,8 +146,11 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public void setFloat32(int byteOffset, float value, boolean littleEndian) throws JavetException {
-        invokeVoid(FUNCTION_SET_FLOAT_32,
-                new V8ValueInteger(byteOffset), new V8ValueDouble(value), new V8ValueBoolean(littleEndian));
+        invokeVoid(
+                FUNCTION_SET_FLOAT_32,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                new V8ValueDouble(value),
+                v8Runtime.createV8ValueBoolean(littleEndian));
     }
 
     public void setFloat64(int byteOffset, double value) throws JavetException {
@@ -144,8 +158,11 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public void setFloat64(int byteOffset, double value, boolean littleEndian) throws JavetException {
-        invokeVoid(FUNCTION_SET_FLOAT_64,
-                new V8ValueInteger(byteOffset), new V8ValueDouble(value), new V8ValueBoolean(littleEndian));
+        invokeVoid(
+                FUNCTION_SET_FLOAT_64,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                new V8ValueDouble(value),
+                v8Runtime.createV8ValueBoolean(littleEndian));
     }
 
     public void setInt32(int byteOffset, int value) throws JavetException {
@@ -153,8 +170,11 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public void setInt32(int byteOffset, int value, boolean littleEndian) throws JavetException {
-        invokeVoid(FUNCTION_SET_INT_32,
-                new V8ValueInteger(byteOffset), new V8ValueInteger(value), new V8ValueBoolean(littleEndian));
+        invokeVoid(
+                FUNCTION_SET_INT_32,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueInteger(value),
+                v8Runtime.createV8ValueBoolean(littleEndian));
     }
 
     public void setInt16(int byteOffset, short value) throws JavetException {
@@ -162,11 +182,17 @@ public class V8ValueDataView extends V8ValueObject {
     }
 
     public void setInt16(int byteOffset, short value, boolean littleEndian) throws JavetException {
-        invokeVoid(FUNCTION_SET_INT_16,
-                new V8ValueInteger(byteOffset), new V8ValueInteger(value), new V8ValueBoolean(littleEndian));
+        invokeVoid(
+                FUNCTION_SET_INT_16,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueInteger(value),
+                v8Runtime.createV8ValueBoolean(littleEndian));
     }
 
     public void setInt8(int byteOffset, byte value) throws JavetException {
-        invokeVoid(FUNCTION_SET_INT_8, new V8ValueInteger(byteOffset), new V8ValueInteger(value));
+        invokeVoid(
+                FUNCTION_SET_INT_8,
+                v8Runtime.createV8ValueInteger(byteOffset),
+                v8Runtime.createV8ValueInteger(value));
     }
 }

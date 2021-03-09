@@ -44,7 +44,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     public void testArray() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
             v8ValueArray.push(new V8ValueString("abc"));
-            v8ValueArray.push(new V8ValueInteger(123));
+            v8ValueArray.push(v8Runtime.createV8ValueInteger(123));
             List<Object> list = (List<Object>) converter.toObject(v8ValueArray);
             assertEquals(2, list.size());
             assertEquals("abc", list.get(0));

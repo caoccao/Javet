@@ -35,7 +35,7 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
 
     @Override
     public V8ValueLong toClone() throws JavetException {
-        return v8Runtime.decorateV8Value(new V8ValueLong(value));
+        return this;
     }
 
     public long toPrimitive() {

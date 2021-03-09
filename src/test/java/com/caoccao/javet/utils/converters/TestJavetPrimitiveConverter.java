@@ -36,9 +36,9 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testBoolean() throws JavetException {
-        assertTrue((boolean) converter.toObject(new V8ValueBoolean(true)));
+        assertTrue((boolean) converter.toObject(v8Runtime.createV8ValueBoolean(true)));
         assertTrue(((V8ValueBoolean) converter.toV8Value(v8Runtime, true)).getValue());
-        assertFalse((boolean) converter.toObject(new V8ValueBoolean(false)));
+        assertFalse((boolean) converter.toObject(v8Runtime.createV8ValueBoolean(false)));
         assertFalse(((V8ValueBoolean) converter.toV8Value(v8Runtime, false)).getValue());
     }
 
@@ -56,7 +56,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testLong() throws JavetException {
-        assertEquals(123L, (long) converter.toObject(new V8ValueLong(123L)));
+        assertEquals(123L, (long) converter.toObject(v8Runtime.createV8ValueLong(123L)));
         assertEquals(123L, ((V8ValueLong) converter.toV8Value(v8Runtime, Long.valueOf(123L))).getValue());
     }
 

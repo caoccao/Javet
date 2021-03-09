@@ -96,6 +96,7 @@ public final class V8Host implements AutoCloseable {
         isolateCreated = true;
         flags.seal();
         V8Runtime v8Runtime = new V8Runtime(this, handle, pooled, globalName);
+        V8Native.registerV8Runtime(handle, v8Runtime);
         v8RuntimeMap.put(handle, v8Runtime);
         return v8Runtime;
     }

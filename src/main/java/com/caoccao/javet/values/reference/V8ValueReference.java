@@ -34,7 +34,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         weak = false;
     }
 
-    @Override
     protected void addReference() throws JavetException {
         checkV8Runtime();
         v8Runtime.addReference(this);
@@ -68,8 +67,9 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
             throw new JavetV8ValueAlreadyClosedException();
         }
         if (forceClose || !isWeak()) {
-            super.close();
+            removeReference();
             handle = 0L;
+            v8Runtime = null;
             weak = false;
         }
     }
@@ -114,7 +114,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         return weak;
     }
 
-    @Override
     protected void removeReference() throws JavetException {
         v8Runtime.removeReference(this);
     }

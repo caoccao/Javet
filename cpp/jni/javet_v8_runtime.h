@@ -29,6 +29,7 @@ namespace Javet {
 	class V8Runtime {
 	public:
 		v8::Isolate* v8Isolate;
+		jobject externalV8Runtime;
 		v8::Persistent<v8::Context> v8Context;
 		v8::Persistent<v8::Object> v8GlobalObject;
 		std::shared_ptr<v8::Locker> v8Locker;

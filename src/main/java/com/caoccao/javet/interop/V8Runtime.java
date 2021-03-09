@@ -30,9 +30,7 @@ import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueNull;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
+import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
 import java.nio.file.Path;
@@ -40,12 +38,23 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
 public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creatable {
     private static final long INVALID_HANDLE = 0L;
     private static final String PROPERTY_DATA_VIEW = "DataView";
     private static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
+    private static final int V8_VALUE_BOOLEAN_FALSE_INDEX = 0;
+    private static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
+    private static final int V8_VALUE_NUMBER_LOWER_BOUND = -128; // Inclusive
+    private static final int V8_VALUE_NUMBER_UPPER_BOUND = 128; // Exclusive
+
+    private V8ValueBoolean[] cachedV8ValueBooleans;
+    private V8ValueInteger[] cachedV8ValueIntegers;
+    private V8ValueLong[] cachedV8ValueLongs;
+    private V8ValueNull cachedV8ValueNull;
+    private V8ValueUndefined cachedV8ValueUndefined;
 
     private String globalName;
     private long handle;
@@ -64,6 +73,7 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
         referenceMap = new TreeMap<>();
         this.v8Host = v8Host;
         v8Inspector = null;
+        initializeV8ValueCache();
     }
 
     public void add(IV8ValueSet iV8ValueKeySet, V8Value value) throws JavetException {
@@ -134,7 +144,14 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
     @Override
     public V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException {
         return decorateV8Value((V8ValueArrayBuffer) V8Native.createV8Value(
-                handle, V8ValueReferenceType.ArrayBuffer, new V8ValueInteger(length)));
+                handle, V8ValueReferenceType.ArrayBuffer, createV8ValueInteger(length)));
+    }
+
+    @Override
+    public V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException {
+        return booleanValue ?
+                cachedV8ValueBooleans[V8_VALUE_BOOLEAN_TRUE_INDEX] :
+                cachedV8ValueBooleans[V8_VALUE_BOOLEAN_FALSE_INDEX];
     }
 
     @Override
@@ -153,18 +170,29 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
     }
 
     @Override
+    public V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException {
+        if (integerValue >= V8_VALUE_NUMBER_LOWER_BOUND && integerValue < V8_VALUE_NUMBER_UPPER_BOUND) {
+            return cachedV8ValueIntegers[integerValue - V8_VALUE_NUMBER_LOWER_BOUND];
+        }
+        return decorateV8Value(new V8ValueInteger(integerValue));
+    }
+
+    @Override
+    public V8ValueLong createV8ValueLong(long longValue) throws JavetException {
+        if (longValue >= V8_VALUE_NUMBER_LOWER_BOUND && longValue < V8_VALUE_NUMBER_UPPER_BOUND) {
+            return cachedV8ValueLongs[(int) longValue - V8_VALUE_NUMBER_LOWER_BOUND];
+        }
+        return decorateV8Value(new V8ValueLong(longValue));
+    }
+
+    @Override
     public V8ValueMap createV8ValueMap() throws JavetException {
         return decorateV8Value((V8ValueMap) V8Native.createV8Value(handle, V8ValueReferenceType.Map, null));
     }
 
     @Override
     public V8ValueNull createV8ValueNull() {
-        V8ValueNull v8ValueNull = new V8ValueNull();
-        try {
-            v8ValueNull.setV8Runtime(this);
-        } catch (JavetException javetException) {
-        }
-        return v8ValueNull;
+        return cachedV8ValueNull;
     }
 
     @Override
@@ -180,18 +208,13 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
     @Override
     public V8ValueTypedArray createV8ValueTypedArray(int type, int length) throws JavetException {
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(V8ValueTypedArray.getName(type))) {
-            return v8ValueFunction.callAsConstructor(new V8ValueInteger(length));
+            return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
         }
     }
 
     @Override
     public V8ValueUndefined createV8ValueUndefined() {
-        V8ValueUndefined v8ValueUndefined = new V8ValueUndefined();
-        try {
-            v8ValueUndefined.setV8Runtime(this);
-        } catch (JavetException javetException) {
-        }
-        return v8ValueUndefined;
+        return cachedV8ValueUndefined;
     }
 
     public <T extends V8Value> T decorateV8Value(T v8Value) throws JavetException {
@@ -336,6 +359,28 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
     public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         decorateV8Value(key);
         return V8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
+    }
+
+    private void initializeV8ValueCache() {
+        try {
+            cachedV8ValueNull = decorateV8Value(new V8ValueNull());
+            cachedV8ValueUndefined = decorateV8Value(new V8ValueUndefined());
+            cachedV8ValueBooleans = new V8ValueBoolean[]{
+                    decorateV8Value(new V8ValueBoolean(false)),
+                    decorateV8Value(new V8ValueBoolean(true))};
+            cachedV8ValueIntegers = new V8ValueInteger[V8_VALUE_NUMBER_UPPER_BOUND - V8_VALUE_NUMBER_LOWER_BOUND];
+            cachedV8ValueLongs = new V8ValueLong[V8_VALUE_NUMBER_UPPER_BOUND - V8_VALUE_NUMBER_LOWER_BOUND];
+            IntStream.range(V8_VALUE_NUMBER_LOWER_BOUND, V8_VALUE_NUMBER_UPPER_BOUND).forEach(i -> {
+                try {
+                    cachedV8ValueIntegers[i - V8_VALUE_NUMBER_LOWER_BOUND] = decorateV8Value(new V8ValueInteger(i));
+                    cachedV8ValueLongs[i - V8_VALUE_NUMBER_LOWER_BOUND] = decorateV8Value(new V8ValueLong(i));
+                } catch (JavetException e) {
+                    logger.logError(e, e.getMessage());
+                }
+            });
+        } catch (JavetException e) {
+            logger.logError(e, e.getMessage());
+        }
     }
 
     public <T extends V8Value> T invoke(

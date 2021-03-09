@@ -33,6 +33,8 @@ repositories {
 }
 
 dependencies {
+    testImplementation("javax.websocket:javax.websocket-api:1.1")
+    testImplementation("org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.38.v20210224")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.12.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")

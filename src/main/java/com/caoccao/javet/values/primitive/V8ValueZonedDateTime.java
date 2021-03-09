@@ -38,7 +38,7 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
 
     @Override
     public V8ValueZonedDateTime toClone() throws JavetException {
-        return v8Runtime.decorateV8Value(new V8ValueZonedDateTime(value));
+        return this;
     }
 
     public long toPrimitive() {

@@ -19,6 +19,7 @@
 #include "javet_constants.h"
 #include "javet_converter.h"
 #include "javet_globals.h"
+#include "javet_logging.h"
 
 namespace Javet {
 	namespace Callback {
@@ -37,10 +38,11 @@ namespace Javet {
 			v8::HandleScope v8HandleScope(v8Isolate);
 			auto v8Context = v8Isolate->GetCurrentContext();
 			jobject callbackOwnerFunction = GetCallbackOwnerFunction();
+			jobject externalV8Runtime = jniEnv->CallObjectMethod(callbackOwnerFunction, jmethodIDIV8ValueFunctionGetV8Runtime);
 			jboolean isReturnResult = IsReturnResult();
 			jboolean isThisObjectRequired = IsThisObjectRequired();
-			jobject externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Context, args);
-			jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Context, args.This()) : nullptr;
+			jobject externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, externalV8Runtime, v8Context, args);
+			jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, args.This()) : nullptr;
 			jobject mResult = jniEnv->CallObjectMethod(callbackOwnerFunction, jmethodIDIV8ValueFunctionReceiveCallback, thisObject, externalArgs);
 			if (jniEnv->ExceptionCheck()) {
 				jthrowable externalException = jniEnv->ExceptionOccurred();
@@ -114,15 +116,13 @@ namespace Javet {
 			jmethodIDJavetCallbackContextIsThisObjectRequired = jniEnv->GetMethodID(jclassJavetCallbackContext, "isThisObjectRequired", "()Z");
 			jmethodIDJavetCallbackContextSetHandle = jniEnv->GetMethodID(jclassJavetCallbackContext, "setHandle", "(J)V");
 
-			jclassIV8ValueFunction = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass(
-				"com/caoccao/javet/values/reference/IV8ValueFunction"));
-			jmethodIDIV8ValueFunctionReceiveCallback = jniEnv->GetMethodID(
-				jclassIV8ValueFunction,
-				"receiveCallback",
+			jclassIV8ValueFunction = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/IV8ValueFunction"));
+			jmethodIDIV8ValueFunctionReceiveCallback = jniEnv->GetMethodID(jclassIV8ValueFunction, "receiveCallback",
 				"(Lcom/caoccao/javet/values/V8Value;Lcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
+			jmethodIDIV8ValueFunctionGetV8Runtime = jniEnv->GetMethodID(jclassIV8ValueFunction, "getV8Runtime",
+				"()Lcom/caoccao/javet/interop/V8Runtime;");
 
-			jclassIV8ValueReference = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass(
-				"com/caoccao/javet/values/reference/IV8ValueReference"));
+			jclassIV8ValueReference = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/IV8ValueReference"));
 			jmethodIDIV8ValueReferenceClose = jniEnv->GetMethodID(jclassIV8ValueReference, "close", "(Z)V");
 
 			jclassJavetResourceUtils = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/JavetResourceUtils"));

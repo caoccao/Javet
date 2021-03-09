@@ -31,7 +31,7 @@ public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
 
     @Override
     public V8ValueInteger toClone() throws JavetException {
-        return v8Runtime.decorateV8Value(new V8ValueInteger(value));
+        return this;
     }
 
     public int toPrimitive() {

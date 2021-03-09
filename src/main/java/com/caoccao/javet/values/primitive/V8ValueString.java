@@ -31,7 +31,7 @@ public final class V8ValueString extends V8ValuePrimitive<String> {
 
     @Override
     public V8ValueString toClone() throws JavetException {
-        return v8Runtime.decorateV8Value(new V8ValueString(value));
+        return this;
     }
 
     public String toPrimitive() {

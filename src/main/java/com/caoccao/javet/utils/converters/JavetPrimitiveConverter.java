@@ -47,23 +47,23 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         } else if (object instanceof V8Value) {
             v8Value = (V8Value) object;
         } else if (object instanceof Boolean) {
-            v8Value = new V8ValueBoolean((Boolean) object);
+            v8Value = v8Runtime.createV8ValueBoolean((Boolean) object);
         } else if (object instanceof Double) {
             v8Value = new V8ValueDouble((Double) object);
         } else if (object instanceof Float) {
             v8Value = new V8ValueDouble((Float) object);
         } else if (object instanceof Integer) {
-            v8Value = new V8ValueInteger((Integer) object);
+            v8Value = v8Runtime.createV8ValueInteger((Integer) object);
         } else if (object instanceof Long) {
-            v8Value = new V8ValueLong((Long) object);
+            v8Value = v8Runtime.createV8ValueLong((Long) object);
         } else if (object instanceof Short) {
-            v8Value = new V8ValueInteger((Short) object);
+            v8Value = v8Runtime.createV8ValueInteger((Short) object);
         } else if (object instanceof String) {
             v8Value = new V8ValueString((String) object);
         } else if (object instanceof ZonedDateTime) {
             v8Value = new V8ValueZonedDateTime((ZonedDateTime) object);
         } else if (object instanceof Byte) {
-            v8Value = new V8ValueInteger((Byte) object);
+            v8Value = v8Runtime.createV8ValueInteger((Byte) object);
         } else {
             v8Value = v8Runtime.createV8ValueUndefined();
         }

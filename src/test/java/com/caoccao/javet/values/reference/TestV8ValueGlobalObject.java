@@ -32,7 +32,7 @@ public class TestV8ValueGlobalObject extends BaseTestJavetRuntime {
         try (V8ValueGlobalObject v8RuntimeGlobalObject = v8Runtime.getGlobalObject()) {
             assertEquals(0, v8Runtime.getReferenceCount());
             assertNotNull(v8RuntimeGlobalObject);
-            v8RuntimeGlobalObject.setProperty("a", new V8ValueInteger(1));
+            v8RuntimeGlobalObject.setProperty("a", v8Runtime.createV8ValueInteger(1));
             assertEquals(1, v8RuntimeGlobalObject.getPropertyInteger("a"));
         }
         assertEquals(0, v8Runtime.getReferenceCount());

@@ -53,9 +53,9 @@ public class TestV8ValueBoolean extends BaseTestJavetRuntime {
     @Test
     public void testEquals() throws JavetException {
         V8ValueBoolean v8ValueBoolean = v8Runtime.getExecutor("true").execute();
-        assertTrue(v8ValueBoolean.equals(new V8ValueBoolean(true)));
+        assertTrue(v8ValueBoolean.equals(v8Runtime.createV8ValueBoolean(true)));
         assertFalse(v8ValueBoolean.equals(null));
-        assertFalse(v8ValueBoolean.equals(new V8ValueBoolean(false)));
+        assertFalse(v8ValueBoolean.equals(v8Runtime.createV8ValueBoolean(false)));
         assertFalse(v8ValueBoolean.equals(v8Runtime.createV8ValueUndefined()));
     }
 }

@@ -31,7 +31,7 @@ public class TestV8ValueString extends BaseTestJavetRuntime {
         assertTrue(v8ValueString.equals(new V8ValueString("abc")));
         assertFalse(v8ValueString.equals(null));
         assertFalse(v8ValueString.equals(new V8ValueString("def")));
-        assertFalse(v8ValueString.equals(new V8ValueLong(1)));
+        assertFalse(v8ValueString.equals(v8Runtime.createV8ValueLong(1)));
     }
 
     @Test

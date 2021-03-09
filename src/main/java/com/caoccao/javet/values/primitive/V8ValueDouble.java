@@ -43,7 +43,7 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
 
     @Override
     public V8ValueDouble toClone() throws JavetException {
-        return v8Runtime.decorateV8Value(new V8ValueDouble(value));
+        return this;
     }
 
     public double toPrimitive() {
