@@ -1,6 +1,6 @@
 @echo off
 REM Usage sample: build -DV8_DIR=C:\v8 
-SET JAVET_VERSION=0.7.4
+SET JAVET_VERSION=0.8.0
 rd /s/q build
 mkdir build
 cd build
