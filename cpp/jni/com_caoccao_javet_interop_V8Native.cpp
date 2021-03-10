@@ -82,9 +82,9 @@
 	auto v8LocalObject1 = v8PersistentObjectPointer1->Get(v8Context->GetIsolate()); \
 	auto v8LocalObject2 = v8PersistentObjectPointer2->Get(v8Context->GetIsolate());
 
-#define SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, v8Value) \
+#define SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, v8Value) \
 	try { \
-		return Javet::Converter::ToExternalV8Value(jniEnv, v8Context, v8Value); \
+		return Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8Value); \
 	} \
 	catch (const std::exception& e) { \
 		ERROR(e.what()); \
@@ -196,7 +196,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
 			Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
 		}
 		else if (mReturnResult) {
-			SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
+			SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, maybeLocalValueResult.ToLocalChecked());
 		}
 	}
 	return nullptr;
@@ -220,7 +220,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callAsConstruc
 			Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
 		}
 		else {
-			SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
+			SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, maybeLocalValueResult.ToLocalChecked());
 		}
 	}
 	return nullptr;
@@ -240,12 +240,15 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	auto clonedV8LocalObject = v8::Local<v8::Object>::New(v8Context->GetIsolate(), v8LocalObject);
-	return Javet::Converter::ToExternalV8Value(jniEnv, v8Context, clonedV8LocalObject);
+	return Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime->externalV8Runtime, v8Context, clonedV8LocalObject);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
 	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	if (v8Runtime->externalV8Runtime != nullptr) {
+		jniEnv->DeleteGlobalRef(v8Runtime->externalV8Runtime);
+	}
 	delete v8Runtime;
 }
 
@@ -317,7 +320,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 		v8ValueValue = v8::Set::New(v8Context->GetIsolate());
 	}
 	if (!v8ValueValue.IsEmpty()) {
-		SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, v8ValueValue);
+		SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, v8ValueValue);
 	}
 	return nullptr;
 }
@@ -381,7 +384,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 			Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
 		}
 		else if (mReturnResult) {
-			SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
+			SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, maybeLocalValueResult.ToLocalChecked());
 		}
 	}
 	return nullptr;
@@ -418,9 +421,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
 		}
 	}
 	if (!v8ValueValue.IsEmpty()) {
-		SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, v8ValueValue);
+		SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, v8ValueValue);
 	}
-	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv);
+	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getGlobalObject
@@ -462,15 +465,15 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getOwnPropertyNames
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, v8LocalObject->GetOwnPropertyNames(v8Context).ToLocalChecked());
-	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv);
+	SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, v8LocalObject->GetOwnPropertyNames(v8Context).ToLocalChecked());
+	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPropertyNames
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, v8LocalObject->GetPropertyNames(v8Context).ToLocalChecked());
-	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv);
+	SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, v8LocalObject->GetPropertyNames(v8Context).ToLocalChecked());
+	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
@@ -489,10 +492,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
 			}
 		}
 		if (!v8ValueValue.IsEmpty()) {
-			SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, v8ValueValue);
+			SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, v8ValueValue);
 		}
 	}
-	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv);
+	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
 
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
@@ -562,7 +565,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
 				Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
 			}
 			else if (mReturnResult) {
-				SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Context, maybeLocalValueResult.ToLocalChecked());
+				SAFE_CONVERT_AND_RETURN_JAVA_V8_VALUE(jniEnv, v8Runtime, v8Context, maybeLocalValueResult.ToLocalChecked());
 			}
 		}
 	}
@@ -599,6 +602,15 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 	else {
 		v8Runtime->v8Locker.reset(new v8::Locker(v8Runtime->v8Isolate));
 	}
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerV8Runtime
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jobject mV8Runtime) {
+	auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(v8RuntimeHandle);
+	if (v8Runtime->externalV8Runtime != nullptr) {
+		jniEnv->DeleteGlobalRef(v8Runtime->externalV8Runtime);
+	}
+	v8Runtime->externalV8Runtime = jniEnv->NewGlobalRef(mV8Runtime);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRef

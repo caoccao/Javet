@@ -31,9 +31,11 @@ namespace Javet {
 		static JavaVM* GlobalJavaVM;
 
 		static jclass jclassV8Inspector;
+		static jmethodID jmethodIDV8InspectorFlushProtocolNotifications;
 		static jmethodID jmethodIDV8InspectorGetName;
 		static jmethodID jmethodIDV8InspectorReceiveNotification;
 		static jmethodID jmethodIDV8InspectorReceiveResponse;
+		static jmethodID jmethodIDV8InspectorRunIfWaitingForDebugger;
 
 		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
 
@@ -58,6 +60,7 @@ namespace Javet {
 			virtual ~JavetInspectorClient();
 		private:
 			bool activateMessageLoop;
+			jobject mV8Inspector;
 			bool runningMessageLoop;
 			Javet::V8Runtime* v8Runtime;
 			std::unique_ptr<JavetInspectorChannel> javetInspectorChannel;

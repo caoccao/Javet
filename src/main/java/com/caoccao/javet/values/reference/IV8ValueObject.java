@@ -29,11 +29,11 @@ import java.time.ZonedDateTime;
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
     default boolean delete(int key) throws JavetException {
-        return delete(new V8ValueInteger(key));
+        return delete(getV8Runtime().createV8ValueInteger(key));
     }
 
     default boolean delete(long key) throws JavetException {
-        return delete(new V8ValueLong(key));
+        return delete(getV8Runtime().createV8ValueLong(key));
     }
 
     boolean delete(V8Value key) throws JavetException;
@@ -55,7 +55,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     <Key extends V8Value, Value extends V8Value> int forEach(IJavetBiConsumer<Key, Value> consumer) throws JavetException;
 
     default <T extends V8Value> T get(int key) throws JavetException {
-        return get(new V8ValueInteger(key));
+        return get(getV8Runtime().createV8ValueInteger(key));
     }
 
     default <T extends V8Value> T get(String key) throws JavetException {
@@ -139,7 +139,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     IV8ValueArray getPropertyNames() throws JavetException;
 
     default <T extends V8Value> T getProperty(int index) throws JavetException {
-        return getProperty(new V8ValueInteger(index));
+        return getProperty(getV8Runtime().createV8ValueInteger(index));
     }
 
     default <T extends V8Value> T getProperty(String key) throws JavetException {
@@ -251,11 +251,11 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean has(int value) throws JavetException {
-        return has(new V8ValueInteger(value));
+        return has(getV8Runtime().createV8ValueInteger(value));
     }
 
     default boolean has(long value) throws JavetException {
-        return has(new V8ValueLong(value));
+        return has(getV8Runtime().createV8ValueLong(value));
     }
 
     default boolean has(String value) throws JavetException {
@@ -269,7 +269,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean hasOwnProperty(int key) throws JavetException {
-        return hasOwnProperty(new V8ValueInteger(key));
+        return hasOwnProperty(getV8Runtime().createV8ValueInteger(key));
     }
 
     default boolean hasOwnProperty(String key) throws JavetException {
@@ -329,7 +329,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean set(int key, V8Value value) throws JavetException {
-        return set(new V8ValueInteger(key), value);
+        return set(getV8Runtime().createV8ValueInteger(key), value);
     }
 
     default boolean set(String key, V8Value value) throws JavetException {
@@ -378,7 +378,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setNull(int key) throws JavetException {
-        return set(new V8ValueInteger(key), getV8Runtime().createV8ValueNull());
+        return set(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueNull());
     }
 
     default boolean setNull(String key) throws JavetException {
@@ -386,7 +386,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setProperty(int key, V8Value value) throws JavetException {
-        return setProperty(new V8ValueInteger(key), value);
+        return setProperty(getV8Runtime().createV8ValueInteger(key), value);
     }
 
     default boolean setProperty(String key, V8Value value) throws JavetException {
@@ -396,7 +396,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean setProperty(V8Value key, V8Value value) throws JavetException;
 
     default boolean setPropertyNull(int key) throws JavetException {
-        return setProperty(new V8ValueInteger(key), getV8Runtime().createV8ValueNull());
+        return setProperty(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueNull());
     }
 
     default boolean setPropertyNull(String key) throws JavetException {
@@ -404,7 +404,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setPropertyUndefined(int key) throws JavetException {
-        return setProperty(new V8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
+        return setProperty(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
     }
 
     default boolean setPropertyUndefined(String key) throws JavetException {
@@ -412,7 +412,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setUndefined(int key) throws JavetException {
-        return set(new V8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
+        return set(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
     }
 
     default boolean setUndefined(String key) throws JavetException {

@@ -21,25 +21,38 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public final class V8Inspector {
     private IJavetLogger logger;
     private String name;
-    private List<String> notifications;
-    private List<String> responses;
-    private List<String> requests;
+    private List<IV8InspectorListener> listeners;
     private V8Runtime v8Runtime;
 
     V8Inspector(V8Runtime v8Runtime, String name) {
         logger = v8Runtime.getLogger();
         this.name = name;
-        notifications = new ArrayList<>();
-        responses = new ArrayList<>();
-        requests = new ArrayList<>();
+        listeners = new ArrayList<>();
         this.v8Runtime = v8Runtime;
         V8Native.createV8Inspector(v8Runtime.getHandle(), this);
+    }
+
+    public void addListeners(IV8InspectorListener... listeners) {
+        Objects.requireNonNull(listeners);
+        this.listeners.addAll(Arrays.asList(listeners));
+    }
+
+    public void flushProtocolNotifications() {
+        logger.logDebug("Receiving flushProtocolNotifications");
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.flushProtocolNotifications();
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
     }
 
     public IJavetLogger getLogger() {
@@ -51,47 +64,57 @@ public final class V8Inspector {
         this.logger = logger;
     }
 
-    public List<String> getNotifications() {
-        return notifications;
-    }
-
-    public List<String> getResponses() {
-        return responses;
-    }
-
-    public List<String> getRequests() {
-        return requests;
-    }
-
     public String getName() {
         return name;
     }
 
-    public boolean receiveNotification(String message) {
-        if (message == null) {
-            return false;
-        }
+    public void receiveNotification(String message) {
         logger.logDebug("Receiving notification: {0}", message);
-        notifications.add(message);
-        return true;
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.receiveNotification(message);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
     }
 
-    public boolean receiveResponse(String message) {
-        if (message == null) {
-            return false;
-        }
+    public void receiveResponse(String message) {
         logger.logDebug("Receiving response: {0}", message);
-        responses.add(message);
-        return true;
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.receiveResponse(message);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
     }
 
-    public boolean sendRequest(String message) throws JavetException {
-        if (message == null) {
-            return false;
+    public void removeListeners(IV8InspectorListener... listeners) {
+        Objects.requireNonNull(listeners);
+        this.listeners.removeAll(Arrays.asList(listeners));
+    }
+
+    public void runIfWaitingForDebugger(int contextGroupId) {
+        logger.logDebug("Receiving runIfWaitingForDebugger(): {0}", Integer.toString(contextGroupId));
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.runIfWaitingForDebugger(contextGroupId);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
         }
+    }
+
+    public void sendRequest(String message) throws JavetException {
         logger.logDebug("Sending request: {0}", message);
-        requests.add(message);
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.sendRequest(message);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
         V8Native.v8InspectorSend(v8Runtime.getHandle(), message);
-        return true;
     }
 }

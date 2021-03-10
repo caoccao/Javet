@@ -52,6 +52,7 @@ namespace Javet {
 
 		static jclass jclassIV8ValueFunction;
 		static jmethodID jmethodIDIV8ValueFunctionReceiveCallback;
+		static jmethodID jmethodIDIV8ValueFunctionGetV8Runtime;
 
 		static jclass jclassIV8ValueReference;
 		static jmethodID jmethodIDIV8ValueReferenceClose;

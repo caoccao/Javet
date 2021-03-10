@@ -17,6 +17,7 @@
 
 #include "javet_converter.h"
 #include "javet_enums.h"
+#include "javet_logging.h"
 
  // Primitive
 #define IS_JAVA_BOOLEAN(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueBoolean)
@@ -56,6 +57,15 @@ namespace Javet {
 			 @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html
 			*/
 
+			// Runtime
+
+			jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
+			jmethodIDV8RuntimeCreateV8ValueBoolean = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueBoolean", "(Z)Lcom/caoccao/javet/values/primitive/V8ValueBoolean;");
+			jmethodIDV8RuntimeCreateV8ValueInteger = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueInteger", "(I)Lcom/caoccao/javet/values/primitive/V8ValueInteger;");
+			jmethodIDV8RuntimeCreateV8ValueLong = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueLong", "(J)Lcom/caoccao/javet/values/primitive/V8ValueLong;");
+			jmethodIDV8RuntimeCreateV8ValueNull = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueNull", "()Lcom/caoccao/javet/values/primitive/V8ValueNull;");
+			jmethodIDV8RuntimeCreateV8ValueUndefined = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueUndefined", "()Lcom/caoccao/javet/values/primitive/V8ValueUndefined;");
+
 			// Primitive
 
 			jclassV8ValueBoolean = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueBoolean"));
@@ -72,18 +82,15 @@ namespace Javet {
 
 			jclassV8ValueLong = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueLong"));
 			jmethodIDV8ValueLongConstructorFromLong = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(J)V");
-			jmethodIDV8ValueLongConstructorFromString = jniEnv->GetMethodID(jclassV8ValueLong, "<init>", "(Ljava/lang/String;)V");
 			jmethodIDV8ValueLongToPrimitive = jniEnv->GetMethodID(jclassV8ValueLong, "toPrimitive", "()J");
 
 			jclassV8ValueNull = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueNull"));
-			jmethodIDV8ValueNullConstructor = jniEnv->GetMethodID(jclassV8ValueNull, "<init>", "()V");
 
 			jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueString"));
 			jmethodIDV8ValueStringConstructor = jniEnv->GetMethodID(jclassV8ValueString, "<init>", "(Ljava/lang/String;)V");
 			jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, "toPrimitive", "()Ljava/lang/String;");
 
 			jclassV8ValueUndefined = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueUndefined"));
-			jmethodIDV8ValueUndefinedConstructor = jniEnv->GetMethodID(jclassV8ValueUndefined, "<init>", "()V");
 
 			jclassV8ValueUnknown = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueUnknown"));
 			jmethodIDV8ValueUnknownConstructor = jniEnv->GetMethodID(jclassV8ValueUnknown, "<init>", "(Ljava/lang/String;)V");
@@ -169,7 +176,7 @@ namespace Javet {
 			jmethodIDV8ValueWeakSetGetHandle = jniEnv->GetMethodID(jclassV8ValueWeakSet, "getHandle", "()J");
 		}
 
-		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args) {
+		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, jobject externalV8Runtime, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args) {
 			int argLength = args.Length();
 			if (argLength > 0) {
 				auto v8Array = v8::Array::New(v8Context->GetIsolate(), argLength);
@@ -177,17 +184,17 @@ namespace Javet {
 					auto maybeResult = v8Array->Set(v8Context, i, args[i]);
 					maybeResult.Check();
 				}
-				return ToExternalV8Value(jniEnv, v8Context, v8Array);
+				return ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Array);
 			}
 			return nullptr;
 		}
 
-		jobject ToExternalV8Value(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value) {
+		jobject ToExternalV8Value(JNIEnv* jniEnv, jobject externalV8Runtime, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value) {
 			if (v8Value->IsUndefined()) {
-				return ToExternalV8ValueUndefined(jniEnv);
+				return ToExternalV8ValueUndefined(jniEnv, externalV8Runtime);
 			}
 			if (v8Value->IsNull()) {
-				return ToExternalV8ValueNull(jniEnv);
+				return ToExternalV8ValueNull(jniEnv, externalV8Runtime);
 			}
 			// Reference types
 			// Note: Reference types must be checked before primitive types are checked.
@@ -295,14 +302,13 @@ namespace Javet {
 			}
 			// Primitive types
 			if (v8Value->IsBoolean() || v8Value->IsBooleanObject()) {
-				return jniEnv->NewObject(jclassV8ValueBoolean, jmethodIDV8ValueBooleanConstructor, v8Value->IsTrue());
+				return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueBoolean, v8Value->IsTrue());
 			}
 			if (v8Value->IsInt32()) {
-				return jniEnv->NewObject(jclassV8ValueInteger, jmethodIDV8ValueIntegerConstructor, v8Value->Int32Value(v8Context).FromMaybe(0));
+				return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueInteger, v8Value->Int32Value(v8Context).FromMaybe(0));
 			}
 			if (v8Value->IsBigInt() || v8Value->IsBigIntObject()) {
-				return jniEnv->NewObject(jclassV8ValueLong, jmethodIDV8ValueLongConstructorFromLong,
-					v8Value->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
+				return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueLong, v8Value->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
 			}
 			if (v8Value->IsDate()) {
 				auto v8Date = v8Value->ToObject(v8Context).ToLocalChecked().As<v8::Date>();
@@ -325,8 +331,8 @@ namespace Javet {
 			return ToExternalV8ValuePrimitive(jniEnv, jclassV8ValueUnknown, jmethodIDV8ValueUnknownConstructor, v8Context, v8Value);
 		}
 
-		inline jobject ToExternalV8ValueNull(JNIEnv* jniEnv) {
-			return jniEnv->NewObject(jclassV8ValueNull, jmethodIDV8ValueNullConstructor);
+		inline jobject ToExternalV8ValueNull(JNIEnv* jniEnv, jobject externalV8Runtime) {
+			return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueNull);
 		}
 
 		jobject ToExternalV8ValueGlobalObject(JNIEnv* jniEnv, v8::Persistent<v8::Object>& v8PersistentObject) {
@@ -343,8 +349,8 @@ namespace Javet {
 			return mV8ValuePrimitive;
 		}
 
-		jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv) {
-			return jniEnv->NewObject(jclassV8ValueUndefined, jmethodIDV8ValueUndefinedConstructor);
+		jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv, jobject externalV8Runtime) {
+			return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueUndefined);
 		}
 
 		inline v8::Local<v8::Boolean> ToV8Boolean(v8::Local<v8::Context>& v8Context, jboolean& managedBoolean) {

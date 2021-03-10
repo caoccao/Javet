@@ -39,7 +39,7 @@ public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
         assertFalse(v8ValueZonedDateTime.equals(null));
         assertFalse(v8ValueZonedDateTime.equals(
                 new V8ValueZonedDateTime(JavetDateTimeUtils.toZonedDateTime(234L))));
-        assertFalse(v8ValueZonedDateTime.equals(new V8ValueLong(1)));
+        assertFalse(v8ValueZonedDateTime.equals(v8Runtime.createV8ValueLong(1)));
     }
 
     @Test

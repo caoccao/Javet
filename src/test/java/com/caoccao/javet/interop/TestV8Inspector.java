@@ -19,9 +19,14 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -40,25 +45,20 @@ public class TestV8Inspector extends BaseTestJavet {
     }
 
     @Test
-    public void testEvaluateValue() throws JavetException, TimeoutException, InterruptedException {
+    public void testEvaluateValue() throws JavetException, TimeoutException, InterruptedException, JsonProcessingException {
         V8Host v8Host = V8Host.getInstance();
+        MockV8InspectorListener listener = new MockV8InspectorListener();
         V8Inspector v8Inspector;
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Inspector = v8Runtime.getV8Inspector();
             assertNotNull(v8Inspector);
+            v8Inspector.addListeners(listener);
             Thread thread = new Thread(() -> {
                 try {
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Profiler.enable\"}");
+                    v8Runtime.getExecutor("const a = 3;").executeVoid();
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.enable\"}");
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Debugger.enable\",\"params\":{\"maxScriptsCacheSize\":10000000}}");
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Debugger.setPauseOnExceptions\",\"params\":{\"state\":\"uncaught\"}}");
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Debugger.setAsyncCallStackDepth\",\"params\":{\"maxDepth\":32}}");
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.getIsolateId\"}");
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Debugger.setBlackboxPatterns\",\"params\":{\"patterns\":[]}}");
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.runIfWaitingForDebugger\"}");
-                    v8Runtime.getExecutor("const a = 1;").executeVoid();
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Debugger.resume\"}");
-                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"a\",\"objectGroup\":\"console\",\"includeCommandLineAPI\":true,\"silent\":false,\"returnByValue\":false,\"generatePreview\":true,\"userGesture\":true,\"awaitPromise\":false,\"replMode\":true,\"allowUnsafeEvalBlockedByCSP\":false}}");
+                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.runIfWaitingForDebugger\",\"params\":{}}");
+                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"a\",\"includeCommandLineAPI\":true,\"generatePreview\":true,\"userGesture\":false,\"awaitPromise\":false,\"throwOnSideEffect\":true,\"timeout\":500,\"disableBreaks\":true,\"replMode\":true}}");
                 } catch (Exception e) {
                     e.printStackTrace();
                     fail("V8 inspector should not throw exception.");
@@ -67,8 +67,77 @@ public class TestV8Inspector extends BaseTestJavet {
             thread.start();
             thread.join();
             v8Runtime.getExecutor("const b = 1;").executeVoid();
-            runAndWait(5000, () -> atomicInteger.get() == v8Inspector.getResponses().size());
+            runAndWait(1000, () -> atomicInteger.get() == listener.getResponses().size());
+            assertEquals(1, listener.getContextGroupIds().size());
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<String> responses = listener.getResponses();
+            JsonNode jsonNode = objectMapper.readTree(responses.get(atomicInteger.get() - 1));
+            assertTrue(jsonNode.has("id"));
+            assertEquals(atomicInteger.get(), jsonNode.get("id").asInt());
+            assertTrue(jsonNode.has("result"));
+            JsonNode jsonNodeResult = jsonNode.get("result");
+            assertTrue(jsonNodeResult.has("result"));
+            JsonNode jsonNodeResultResult = jsonNodeResult.get("result");
+            assertTrue(jsonNodeResultResult.has("type"));
+            assertEquals("number", jsonNodeResultResult.get("type").asText());
+            assertTrue(jsonNodeResultResult.has("value"));
+            assertEquals(3, jsonNodeResultResult.get("value").asInt());
+
         }
-        assertEquals(atomicInteger.get(), v8Inspector.getResponses().size());
+        assertEquals(atomicInteger.get(), listener.getResponses().size());
+    }
+
+    class MockV8InspectorListener implements IV8InspectorListener {
+        private List<Integer> contextGroupIds;
+        private List<String> notifications;
+        private List<String> requests;
+        private List<String> responses;
+        public MockV8InspectorListener() {
+            contextGroupIds = new ArrayList<>();
+            notifications = new ArrayList<>();
+            requests = new ArrayList<>();
+            responses = new ArrayList<>();
+        }
+
+        @Override
+        public void flushProtocolNotifications() {
+            notifications.clear();
+        }
+
+        public List<Integer> getContextGroupIds() {
+            return contextGroupIds;
+        }
+
+        public List<String> getNotifications() {
+            return notifications;
+        }
+
+        public List<String> getRequests() {
+            return requests;
+        }
+
+        public List<String> getResponses() {
+            return responses;
+        }
+
+        @Override
+        public void receiveNotification(String message) {
+            notifications.add(message);
+        }
+
+        @Override
+        public void receiveResponse(String message) {
+            responses.add(message);
+        }
+
+        @Override
+        public void runIfWaitingForDebugger(int contextGroupId) {
+            contextGroupIds.add(contextGroupId);
+        }
+
+        @Override
+        public void sendRequest(String message) {
+            requests.add(message);
+        }
     }
 }

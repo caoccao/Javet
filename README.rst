@@ -14,10 +14,11 @@ Major Features
 * Linux + Windows
 * V8 ``v8.9.255``
 * Exposure of the majority of V8 API in JVM
-* JS functions interception
+* JS function interception
 * Native BigInt and Date
 * Javet engine pool
 * Easy spring integration
+* Live debug with Chrome DevTools
 
 Quick Start
 ===========
@@ -33,7 +34,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.3</version>
+        <version>0.7.4</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -41,14 +42,14 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.7.3")
+    implementation("com.caoccao.javet:javet:0.7.4")
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.7.3'
+    implementation 'com.caoccao.javet:javet:0.7.4'
 
 Hello Javet
 -----------

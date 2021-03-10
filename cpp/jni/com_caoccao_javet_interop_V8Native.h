@@ -241,6 +241,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    registerV8Runtime
+ * Signature: (JLjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerV8Runtime
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    removeJNIGlobalRef
  * Signature: (J)V
  */

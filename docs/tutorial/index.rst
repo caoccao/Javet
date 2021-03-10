@@ -3,6 +3,7 @@ Tutorial
 ========
 
 * `Hello Javet <hello_javet.rst>`_
+* `Javet Shell <javet_shell.rst>`_
 * `Memory Management <memory_management.rst>`_
 * `Know the Lock <know_the_lock.rst>`_
 * `Manipulate V8 Collection <manipulate_v8_collection.rst>`_

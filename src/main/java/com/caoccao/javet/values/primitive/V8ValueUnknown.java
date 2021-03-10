@@ -32,6 +32,6 @@ public final class V8ValueUnknown extends V8ValuePrimitive<String> {
 
     @Override
     public V8ValueUnknown toClone() throws JavetException {
-        return v8Runtime.decorateV8Value(new V8ValueUnknown(value));
+        return this;
     }
 }

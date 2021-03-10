@@ -31,7 +31,7 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
 
     @Override
     public V8ValueBoolean toClone() throws JavetException {
-        return v8Runtime.decorateV8Value(new V8ValueBoolean(value));
+        return this;
     }
 
     public boolean toPrimitive() {

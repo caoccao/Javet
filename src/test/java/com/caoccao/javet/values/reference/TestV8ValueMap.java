@@ -100,7 +100,7 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
     @Test
     public void testGetSetAndDelete() throws JavetException {
         try (V8ValueMap v8ValueMap = v8Runtime.getExecutor("const a = new Map(); a;").execute()) {
-            v8ValueMap.set("a", new V8ValueInteger(1));
+            v8ValueMap.set("a", v8Runtime.createV8ValueInteger(1));
             v8ValueMap.set("b", new V8ValueString("2"));
             assertEquals(2, v8ValueMap.getSize());
             assertEquals(1, v8ValueMap.getInteger("a"));

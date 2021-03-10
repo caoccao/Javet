@@ -23,6 +23,15 @@
 
 namespace Javet {
 	namespace Converter {
+		// Runtime
+
+		static jclass jclassV8Runtime;
+		static jmethodID jmethodIDV8RuntimeCreateV8ValueBoolean;
+		static jmethodID jmethodIDV8RuntimeCreateV8ValueInteger;
+		static jmethodID jmethodIDV8RuntimeCreateV8ValueLong;
+		static jmethodID jmethodIDV8RuntimeCreateV8ValueNull;
+		static jmethodID jmethodIDV8RuntimeCreateV8ValueUndefined;
+
 		// Primitive
 
 		static jclass jclassV8ValueBoolean;
@@ -39,18 +48,15 @@ namespace Javet {
 
 		static jclass jclassV8ValueLong;
 		static jmethodID jmethodIDV8ValueLongConstructorFromLong;
-		static jmethodID jmethodIDV8ValueLongConstructorFromString;
 		static jmethodID jmethodIDV8ValueLongToPrimitive;
 
 		static jclass jclassV8ValueNull;
-		static jmethodID jmethodIDV8ValueNullConstructor;
 
 		static jclass jclassV8ValueString;
 		static jmethodID jmethodIDV8ValueStringConstructor;
 		static jmethodID jmethodIDV8ValueStringToPrimitive;
 
 		static jclass jclassV8ValueUndefined;
-		static jmethodID jmethodIDV8ValueUndefinedConstructor;
 
 		static jclass jclassV8ValueUnknown;
 		static jmethodID jmethodIDV8ValueUnknownConstructor;
@@ -137,11 +143,11 @@ namespace Javet {
 
 		void Initialize(JNIEnv* jniEnv);
 
-		jobject ToExternalV8Value(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
+		jobject ToExternalV8Value(JNIEnv* jniEnv, jobject externalV8Runtime, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
 
-		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args);
+		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, jobject externalV8Runtime, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args);
 
-		inline jobject ToExternalV8ValueNull(JNIEnv* jniEnv);
+		inline jobject ToExternalV8ValueNull(JNIEnv* jniEnv, jobject externalV8Runtime);
 
 		jobject ToExternalV8ValueGlobalObject(JNIEnv* jniEnv, v8::Persistent<v8::Object>& v8PersistentObject);
 
@@ -149,7 +155,7 @@ namespace Javet {
 			JNIEnv* jniEnv, jclass jclassV8ValuePrimitive, jmethodID jmethodIDV8ValuePrimitiveConstructor,
 			v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
 
-		jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv);
+		jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv, jobject externalV8Runtime);
 
 		inline v8::Local<v8::Boolean> ToV8Boolean(v8::Local<v8::Context>& v8Context, jboolean& managedBoolean);
 

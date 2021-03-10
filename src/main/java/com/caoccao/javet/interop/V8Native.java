@@ -101,6 +101,8 @@ final class V8Native {
 
     native static void lockV8Runtime(long v8RuntimeHandle);
 
+    native static void registerV8Runtime(long v8RuntimeHandle, Object v8Runtime);
+
     native static void removeJNIGlobalRef(long handle);
 
     native static void removeReferenceHandle(long referenceHandle);

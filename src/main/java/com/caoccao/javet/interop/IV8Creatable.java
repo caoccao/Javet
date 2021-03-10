@@ -19,8 +19,7 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetCallbackContext;
-import com.caoccao.javet.values.primitive.V8ValueNull;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
+import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
 public interface IV8Creatable {
@@ -28,9 +27,15 @@ public interface IV8Creatable {
 
     V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException;
 
+    V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException;
+
     V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException;
 
     V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException;
+
+    V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException;
+
+    V8ValueLong createV8ValueLong(long longValue) throws JavetException;
 
     V8ValueMap createV8ValueMap() throws JavetException;
 

@@ -35,7 +35,7 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
             assertEquals(v8Runtime, v8ValueLong.getV8Runtime());
         }
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
-            v8ValueObject.set("a", new V8ValueLong(123L));
+            v8ValueObject.set("a", v8Runtime.createV8ValueLong(123L));
             assertEquals(123L, v8ValueObject.getLong("a"));
             v8Runtime.getGlobalObject().set("x", v8ValueObject);
         }
@@ -52,10 +52,10 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
     @Test
     public void testEquals() throws JavetException {
         V8ValueLong v8ValueLong = v8Runtime.getExecutor("1n").execute();
-        assertTrue(v8ValueLong.equals(new V8ValueLong(1L)));
+        assertTrue(v8ValueLong.equals(v8Runtime.createV8ValueLong(1L)));
         assertFalse(v8ValueLong.equals(null));
-        assertFalse(v8ValueLong.equals(new V8ValueLong(2L)));
-        assertFalse(v8ValueLong.equals(new V8ValueInteger(1)));
+        assertFalse(v8ValueLong.equals(v8Runtime.createV8ValueLong(2L)));
+        assertFalse(v8ValueLong.equals(v8Runtime.createV8ValueInteger(1)));
     }
 
     @Test

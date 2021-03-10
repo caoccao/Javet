@@ -73,7 +73,7 @@ public interface IV8ValueArray extends IV8ValueObject {
     int push(V8Value v8Value) throws JavetException;
 
     default int push(boolean value) throws JavetException {
-        return push(new V8ValueBoolean(value));
+        return push(getV8Runtime().createV8ValueBoolean(value));
     }
 
     default int push(double value) throws JavetException {
@@ -81,11 +81,11 @@ public interface IV8ValueArray extends IV8ValueObject {
     }
 
     default int push(int value) throws JavetException {
-        return push(new V8ValueInteger(value));
+        return push(getV8Runtime().createV8ValueInteger(value));
     }
 
     default int push(long value) throws JavetException {
-        return push(new V8ValueLong(value));
+        return push(getV8Runtime().createV8ValueLong(value));
     }
 
     default int push(String value) throws JavetException {

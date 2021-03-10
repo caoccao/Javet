@@ -30,16 +30,12 @@ public final class V8ValueNull extends V8Value {
     }
 
     @Override
-    protected void addReference() {
+    public void close() throws JavetException {
     }
 
     @Override
     public boolean equals(V8Value v8Value) {
         return v8Value instanceof V8ValueNull;
-    }
-
-    @Override
-    protected void removeReference() {
     }
 
     @Override
@@ -54,7 +50,7 @@ public final class V8ValueNull extends V8Value {
 
     @Override
     public V8ValueNull toClone() {
-        return v8Runtime.createV8ValueNull();
+        return this;
     }
 
     @Override

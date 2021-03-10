@@ -33,7 +33,8 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
     }
 
     @Override
-    protected void addReference() {
+    public void close() throws JavetException {
+        // Primitive V8 value is immutable. So v8Runtime is not reset to null.
     }
 
     @Override
@@ -51,20 +52,12 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
         return value;
     }
 
-    public void setValue(T value) {
-        this.value = value;
-    }
-
     public boolean isEmpty() {
         return value == null;
     }
 
     public boolean isPresent() {
         return value != null;
-    }
-
-    @Override
-    protected void removeReference() {
     }
 
     @Override

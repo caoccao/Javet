@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.7.4
+-----
+
+* Added V8 primitive value cache
+* Added live debug for Chrome Developer Tools
+
 0.7.3
 -----
 
