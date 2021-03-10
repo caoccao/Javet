@@ -14,10 +14,11 @@ Major Features
 * Linux + Windows
 * V8 ``v8.9.255``
 * Exposure of the majority of V8 API in JVM
-* JS functions interception
+* JS function interception
 * Native BigInt and Date
 * Javet engine pool
 * Easy spring integration
+* Live debug with Chrome DevTools
 
 Quick Start
 ===========

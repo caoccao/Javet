@@ -29,18 +29,12 @@ public final class V8Inspector {
     private IJavetLogger logger;
     private String name;
     private List<IV8InspectorListener> listeners;
-    private List<String> notifications;
-    private List<String> responses;
-    private List<String> requests;
     private V8Runtime v8Runtime;
 
     V8Inspector(V8Runtime v8Runtime, String name) {
         logger = v8Runtime.getLogger();
         this.name = name;
         listeners = new ArrayList<>();
-        notifications = new ArrayList<>();
-        responses = new ArrayList<>();
-        requests = new ArrayList<>();
         this.v8Runtime = v8Runtime;
         V8Native.createV8Inspector(v8Runtime.getHandle(), this);
     }
@@ -59,37 +53,23 @@ public final class V8Inspector {
         this.logger = logger;
     }
 
-    public List<String> getNotifications() {
-        return notifications;
-    }
-
-    public List<String> getResponses() {
-        return responses;
-    }
-
-    public List<String> getRequests() {
-        return requests;
-    }
-
     public String getName() {
         return name;
     }
 
-    public boolean receiveNotification(String message) {
-        if (message == null) {
-            return false;
-        }
+    public void receiveNotification(String message) {
         logger.logDebug("Receiving notification: {0}", message);
-        notifications.add(message);
-        return true;
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.receiveNotification(message);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
     }
 
-    public boolean receiveResponse(String message) {
-        if (message == null) {
-            return false;
-        }
+    public void receiveResponse(String message) {
         logger.logDebug("Receiving response: {0}", message);
-        responses.add(message);
         for (IV8InspectorListener listener : listeners) {
             try {
                 listener.receiveResponse(message);
@@ -97,7 +77,6 @@ public final class V8Inspector {
                 logger.logError(t, t.getMessage());
             }
         }
-        return true;
     }
 
     public void removeListeners(IV8InspectorListener... listeners) {
@@ -105,12 +84,8 @@ public final class V8Inspector {
         this.listeners.removeAll(Arrays.asList(listeners));
     }
 
-    public boolean sendRequest(String message) throws JavetException {
-        if (message == null) {
-            return false;
-        }
+    public void sendRequest(String message) throws JavetException {
         logger.logDebug("Sending request: {0}", message);
-        requests.add(message);
         for (IV8InspectorListener listener : listeners) {
             try {
                 listener.sendRequest(message);
@@ -119,6 +94,5 @@ public final class V8Inspector {
             }
         }
         V8Native.v8InspectorSend(v8Runtime.getHandle(), message);
-        return true;
     }
 }

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,10 +47,12 @@ public class TestV8Inspector extends BaseTestJavet {
     @Test
     public void testEvaluateValue() throws JavetException, TimeoutException, InterruptedException, JsonProcessingException {
         V8Host v8Host = V8Host.getInstance();
+        MockV8InspectorListener listener = new MockV8InspectorListener();
         V8Inspector v8Inspector;
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Inspector = v8Runtime.getV8Inspector();
             assertNotNull(v8Inspector);
+            v8Inspector.addListeners(listener);
             Thread thread = new Thread(() -> {
                 try {
                     v8Runtime.getExecutor("const a = 3;").executeVoid();
@@ -63,9 +66,9 @@ public class TestV8Inspector extends BaseTestJavet {
             thread.start();
             thread.join();
             v8Runtime.getExecutor("const b = 1;").executeVoid();
-            runAndWait(1000, () -> atomicInteger.get() == v8Inspector.getResponses().size());
+            runAndWait(1000, () -> atomicInteger.get() == listener.getResponses().size());
             ObjectMapper objectMapper = new ObjectMapper();
-            List<String> responses = v8Inspector.getResponses();
+            List<String> responses = listener.getResponses();
             JsonNode jsonNode = objectMapper.readTree(responses.get(atomicInteger.get() - 1));
             assertTrue(jsonNode.has("id"));
             assertEquals(atomicInteger.get(), jsonNode.get("id").asInt());
@@ -79,6 +82,45 @@ public class TestV8Inspector extends BaseTestJavet {
             assertEquals(3, jsonNodeResultResult.get("value").asInt());
 
         }
-        assertEquals(atomicInteger.get(), v8Inspector.getResponses().size());
+        assertEquals(atomicInteger.get(), listener.getResponses().size());
+    }
+
+    class MockV8InspectorListener implements IV8InspectorListener {
+        private List<String> notifications;
+        private List<String> requests;
+        private List<String> responses;
+
+        public MockV8InspectorListener() {
+            notifications = new ArrayList<>();
+            requests = new ArrayList<>();
+            responses = new ArrayList<>();
+        }
+
+        public List<String> getNotifications() {
+            return notifications;
+        }
+
+        public List<String> getRequests() {
+            return requests;
+        }
+
+        public List<String> getResponses() {
+            return responses;
+        }
+
+        @Override
+        public void receiveNotification(String message) {
+            notifications.add(message);
+        }
+
+        @Override
+        public void receiveResponse(String message) {
+            responses.add(message);
+        }
+
+        @Override
+        public void sendRequest(String message) {
+            requests.add(message);
+        }
     }
 }

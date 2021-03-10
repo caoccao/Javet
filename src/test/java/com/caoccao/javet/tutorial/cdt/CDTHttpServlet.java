@@ -30,14 +30,14 @@ public class CDTHttpServlet extends HttpServlet {
                     "  \"devtoolsFrontendUrlCompat\": \"devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&" + CDTConfig.getWebSocketUrl() + "\",\n" +
                     "  \"id\": \"javet\",\n" +
                     "  \"title\": \"javet\",\n" +
-                    "  \"type\": \"javet\",\n" +
+                    "  \"type\": \"node\",\n" + // Type must be node
                     "  \"url\": \"file://\",\n" +
                     "  \"webSocketDebuggerUrl\": \"" + CDTConfig.getWebSocketUrl() + "\"\n" +
                     "} ]\n");
         } else if (CDTConfig.PATH_JSON_VERSION.equals(requestURI)) {
             response.getWriter().println("{\n" +
                     "  \"Browser\": \"Javet\",\n" +
-                    "  \"Protocol-Version\": \"1.1\"\n" +
+                    "  \"Protocol-Version\": \"1.3\"\n" +
                     "} \n");
         } else {
             response.getWriter().println("{}");

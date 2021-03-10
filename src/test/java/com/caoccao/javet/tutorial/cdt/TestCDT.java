@@ -12,7 +12,7 @@ Usage:
  */
 public class TestCDT {
     public static void main(String[] args) {
-        CDTWebServer cdtWebServer = new CDTWebServer();
-        cdtWebServer.run();
+        CDTShell cdtShell = new CDTShell();
+        cdtShell.run();
     }
 }

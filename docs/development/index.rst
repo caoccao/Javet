@@ -7,5 +7,6 @@ Development
 * `Design <design.rst>`_
 * `Best Practices <best_practices.rst>`_
 * `Performance <performance.rst>`_
+* `Debug with Chrome Developer Tools <debug_with_chrome_developer_tools.rst>`_
 
 [`Home <../../README.rst>`_]

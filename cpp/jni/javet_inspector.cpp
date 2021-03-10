@@ -51,8 +51,8 @@ namespace Javet {
 
 			jclassV8Inspector = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Inspector"));
 			jmethodIDV8InspectorGetName = jniEnv->GetMethodID(jclassV8Inspector, "getName", "()Ljava/lang/String;");
-			jmethodIDV8InspectorReceiveNotification = jniEnv->GetMethodID(jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)Z");
-			jmethodIDV8InspectorReceiveResponse = jniEnv->GetMethodID(jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)Z");
+			jmethodIDV8InspectorReceiveNotification = jniEnv->GetMethodID(jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)V");
+			jmethodIDV8InspectorReceiveResponse = jniEnv->GetMethodID(jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)V");
 		}
 
 		JavetInspector::JavetInspector(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector) {

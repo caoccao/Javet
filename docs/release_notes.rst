@@ -5,7 +5,8 @@ Release Notes
 0.7.4
 -----
 
-* Added websocket test for Chrome Developer Tools
+* Added V8 primitive value cache
+* Added live debug for Chrome Developer Tools
 
 0.7.3
 -----
