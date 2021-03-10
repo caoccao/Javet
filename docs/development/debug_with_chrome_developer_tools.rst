@@ -61,7 +61,7 @@ Handshake
     Javet Notification: {"method":"Runtime.executionContextCreated","params":{"context":{"id":1,"origin":"","name":"Javet Inspector 00000000","uniqueId":"00000000.00000000"}}}
     Javet Response: {"id":1,"result":{}}
     Chrome: {"id":2,"method":"Debugger.enable","params":{"maxScriptsCacheSize":100000000}}
-    Javet Response: {"id":2,"result":{"debuggerId":"8463579284667304850.4095328251256597692"}}
+    Javet Response: {"id":2,"result":{"debuggerId":"00000000.00000000"}}
     Chrome: {"id":3,"method":"Debugger.setPauseOnExceptions","params":{"state":"none"}}
     Javet Response: {"id":3,"result":{}}
     Chrome: {"id":4,"method":"Debugger.setAsyncCallStackDepth","params":{"maxDepth":32}}
@@ -69,7 +69,7 @@ Handshake
     Chrome: {"id":5,"method":"Profiler.enable","params":{}}
     Javet Response: {"id":5,"result":{}}
     Chrome: {"id":6,"method":"Runtime.getIsolateId","params":{}}
-    Javet Response: {"id":6,"result":{"id":"e3d929c29964fda7"}}
+    Javet Response: {"id":6,"result":{"id":"00000000"}}
     Chrome: {"id":7,"method":"Debugger.setBlackboxPatterns","params":{"patterns":[]}}
     Javet Response: {"id":7,"result":{}}
     Chrome: {"id":8,"method":"Runtime.runIfWaitingForDebugger","params":{}}

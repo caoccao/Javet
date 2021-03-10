@@ -29,8 +29,7 @@ public class CDTShell {
             jsonServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_JSON);
             jsonServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_JSON_VERSION);
             NativeWebSocketServletContainerInitializer.configure(jsonServletContextHandler,
-                    (servletContext, nativeWebSocketConfiguration) ->
-                    {
+                    (servletContext, nativeWebSocketConfiguration) -> {
                         nativeWebSocketConfiguration.getPolicy().setMaxTextMessageBufferSize(0xFFFFFF);
                         nativeWebSocketConfiguration.addMapping(CDTConfig.PATH_JAVET, CDTWebSocketAdapter.class);
                     });
