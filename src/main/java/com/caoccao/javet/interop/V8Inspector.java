@@ -44,6 +44,17 @@ public final class V8Inspector {
         this.listeners.addAll(Arrays.asList(listeners));
     }
 
+    public void flushProtocolNotifications() {
+        logger.logDebug("Receiving flushProtocolNotifications");
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.flushProtocolNotifications();
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
+    }
+
     public IJavetLogger getLogger() {
         return logger;
     }
@@ -82,6 +93,17 @@ public final class V8Inspector {
     public void removeListeners(IV8InspectorListener... listeners) {
         Objects.requireNonNull(listeners);
         this.listeners.removeAll(Arrays.asList(listeners));
+    }
+
+    public void runIfWaitingForDebugger(int contextGroupId) {
+        logger.logDebug("Receiving runIfWaitingForDebugger(): {0}", Integer.toString(contextGroupId));
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.runIfWaitingForDebugger(contextGroupId);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
     }
 
     public void sendRequest(String message) throws JavetException {

@@ -17,6 +17,10 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     }
 
     @Override
+    public void flushProtocolNotifications() {
+    }
+
+    @Override
     public void onWebSocketClose(int statusCode, String reason) {
         logger.logInfo("onWebSocketClose(): {0} {1}", Integer.toString(statusCode), reason);
     }
@@ -58,6 +62,16 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
         logger.logInfo("receiveResponse(): {0}", message);
         try {
             session.getRemote().sendString(message);
+        } catch (Exception e) {
+            logger.logError(e, e.getMessage());
+        }
+    }
+
+    @Override
+    public void runIfWaitingForDebugger(int contextGroupId) {
+        try {
+            CDTConfig.getV8Runtime().getExecutor(
+                    "console.log('Welcome to Javet Debugging Environment!');").executeVoid();
         } catch (Exception e) {
             logger.logError(e, e.getMessage());
         }

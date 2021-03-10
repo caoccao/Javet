@@ -75,7 +75,7 @@ Handshake
     Chrome: {"id":8,"method":"Runtime.runIfWaitingForDebugger","params":{}}
     Javet Response: {"id":8,"result":{}}
 
-Note: Method ``Runtime.runIfWaitingForDebugger`` can be regarded as the handshake completion.
+Note: Method ``Runtime.runIfWaitingForDebugger`` can be regarded as the handshake completion and there is no need to parse this message because it is exposed as a callback in ``IV8InspectorListener``.
 
 Actually, inside V8, the first message can enable the debugging without the rest of them. Please visit `TestV8Inspector.java <../../src/test/java/com/caoccao/javet/interop/TestV8Inspector.java>`_ for detail.
 

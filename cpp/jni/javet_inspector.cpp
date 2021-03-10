@@ -50,9 +50,11 @@ namespace Javet {
 			GlobalJavaVM = javaVM;
 
 			jclassV8Inspector = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Inspector"));
+			jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");
 			jmethodIDV8InspectorGetName = jniEnv->GetMethodID(jclassV8Inspector, "getName", "()Ljava/lang/String;");
 			jmethodIDV8InspectorReceiveNotification = jniEnv->GetMethodID(jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)V");
 			jmethodIDV8InspectorReceiveResponse = jniEnv->GetMethodID(jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)V");
+			jmethodIDV8InspectorRunIfWaitingForDebugger = jniEnv->GetMethodID(jclassV8Inspector, "runIfWaitingForDebugger", "(I)V");
 		}
 
 		JavetInspector::JavetInspector(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector) {
@@ -83,6 +85,7 @@ namespace Javet {
 		JavetInspectorClient::JavetInspectorClient(Javet::V8Runtime* v8Runtime, const std::string& name, const jobject& mV8Inspector) {
 			activateMessageLoop = false;
 			runningMessageLoop = false;
+			this->mV8Inspector = mV8Inspector;
 			this->v8Runtime = v8Runtime;
 			auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context);
 			javetInspectorChannel.reset(new JavetInspectorChannel(v8Runtime, mV8Inspector));
@@ -102,7 +105,8 @@ namespace Javet {
 		}
 
 		void JavetInspectorClient::runIfWaitingForDebugger(int contextGroupId) {
-			// TODO
+			FETCH_JNI_ENV(GlobalJavaVM);
+			jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorRunIfWaitingForDebugger, contextGroupId);
 		}
 
 		void JavetInspectorClient::runMessageLoopOnPause(int contextGroupId) {
@@ -131,7 +135,8 @@ namespace Javet {
 		}
 
 		void JavetInspectorChannel::flushProtocolNotifications() {
-			// Do nothing.
+			FETCH_JNI_ENV(GlobalJavaVM);
+			jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorFlushProtocolNotifications);
 		}
 
 		void JavetInspectorChannel::sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) {
@@ -141,7 +146,7 @@ namespace Javet {
 			DEBUG("Sending notification: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
 			jstring jMessage = jniEnv->NewStringUTF(stdStringMessagePointer->c_str());
-			jniEnv->CallBooleanMethod(mV8Inspector, jmethodIDV8InspectorReceiveNotification, jMessage);
+			jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveNotification, jMessage);
 			jniEnv->DeleteLocalRef(jMessage);
 		}
 
@@ -152,7 +157,7 @@ namespace Javet {
 			DEBUG("Sending response: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
 			jstring jMessage = jniEnv->NewStringUTF(stdStringMessagePointer->c_str());
-			jboolean booleanObject = jniEnv->CallBooleanMethod(mV8Inspector, jmethodIDV8InspectorReceiveResponse, jMessage);
+			jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveResponse, jMessage);
 			jniEnv->DeleteLocalRef(jMessage);
 		}
 

@@ -57,6 +57,7 @@ public class TestV8Inspector extends BaseTestJavet {
                 try {
                     v8Runtime.getExecutor("const a = 3;").executeVoid();
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.enable\"}");
+                    v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.runIfWaitingForDebugger\",\"params\":{}}");
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"a\",\"includeCommandLineAPI\":true,\"generatePreview\":true,\"userGesture\":false,\"awaitPromise\":false,\"throwOnSideEffect\":true,\"timeout\":500,\"disableBreaks\":true,\"replMode\":true}}");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -67,6 +68,7 @@ public class TestV8Inspector extends BaseTestJavet {
             thread.join();
             v8Runtime.getExecutor("const b = 1;").executeVoid();
             runAndWait(1000, () -> atomicInteger.get() == listener.getResponses().size());
+            assertEquals(1, listener.getContextGroupIds().size());
             ObjectMapper objectMapper = new ObjectMapper();
             List<String> responses = listener.getResponses();
             JsonNode jsonNode = objectMapper.readTree(responses.get(atomicInteger.get() - 1));
@@ -86,14 +88,24 @@ public class TestV8Inspector extends BaseTestJavet {
     }
 
     class MockV8InspectorListener implements IV8InspectorListener {
+        private List<Integer> contextGroupIds;
         private List<String> notifications;
         private List<String> requests;
         private List<String> responses;
-
         public MockV8InspectorListener() {
+            contextGroupIds = new ArrayList<>();
             notifications = new ArrayList<>();
             requests = new ArrayList<>();
             responses = new ArrayList<>();
+        }
+
+        @Override
+        public void flushProtocolNotifications() {
+            notifications.clear();
+        }
+
+        public List<Integer> getContextGroupIds() {
+            return contextGroupIds;
         }
 
         public List<String> getNotifications() {
@@ -116,6 +128,11 @@ public class TestV8Inspector extends BaseTestJavet {
         @Override
         public void receiveResponse(String message) {
             responses.add(message);
+        }
+
+        @Override
+        public void runIfWaitingForDebugger(int contextGroupId) {
+            contextGroupIds.add(contextGroupId);
         }
 
         @Override
