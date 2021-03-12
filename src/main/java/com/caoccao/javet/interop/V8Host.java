@@ -34,6 +34,7 @@ public final class V8Host implements AutoCloseable {
     private static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
     private static final String FLAG_EXPOSE_GC = "--expose-gc";
     private static final String FLAG_EXPOSE_INSPECTOR_SCRIPTS = "--expose-inspector-scripts";
+    private static final String FLAG_HARMONY_TOP_LEVEL_AWAIT = "--harmony-top-level-await";
     private static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
     private static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";
@@ -145,6 +146,9 @@ public final class V8Host implements AutoCloseable {
             }
             if (this.flags.isExposeInspectorScripts()) {
                 flags.add(FLAG_EXPOSE_INSPECTOR_SCRIPTS);
+            }
+            if (this.flags.isHarmonyTopLevelAwait()) {
+                flags.add(FLAG_HARMONY_TOP_LEVEL_AWAIT);
             }
             if (this.flags.isUseStrict()) {
                 flags.add(FLAG_USE_STRICT);

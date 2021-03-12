@@ -22,6 +22,30 @@
 
 namespace Javet {
 	namespace Callback {
+		static jclass jclassJavetCallbackContext;
+		static jmethodID jmethodIDJavetCallbackContextGetCallbackOwnerFunction;
+		static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
+		static jmethodID jmethodIDJavetCallbackContextIsThisObjectRequired;
+		static jmethodID jmethodIDJavetCallbackContextSetHandle;
+
+		static jclass jclassIV8ValueFunction;
+		static jmethodID jmethodIDIV8ValueFunctionReceiveCallback;
+		static jmethodID jmethodIDIV8ValueFunctionGetV8Runtime;
+
+		static jclass jclassIV8ValueReference;
+		static jmethodID jmethodIDIV8ValueReferenceClose;
+
+		static jclass jclassJavetResourceUtils;
+		static jmethodID jmethodIDJavetResourceUtilsSafeClose;
+
+		static jclass jclassThrowable;
+		static jmethodID jmethodIDThrowableGetMessage;
+
+		void Initialize(JNIEnv* jniEnv);
+
+		v8::MaybeLocal<v8::Module> ModuleResolveCallback(
+			v8::Local<v8::Context> context, v8::Local<v8::String> specifier,
+			v8::Local<v8::FixedArray> import_assertions, v8::Local<v8::Module> referrer);
 
 		class JavetCallbackContextReference {
 		public:
@@ -43,26 +67,5 @@ namespace Javet {
 			void Clear(JNIEnv* jniEnv);
 			void Close(JNIEnv* jniEnv);
 		};
-
-		static jclass jclassJavetCallbackContext;
-		static jmethodID jmethodIDJavetCallbackContextGetCallbackOwnerFunction;
-		static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
-		static jmethodID jmethodIDJavetCallbackContextIsThisObjectRequired;
-		static jmethodID jmethodIDJavetCallbackContextSetHandle;
-
-		static jclass jclassIV8ValueFunction;
-		static jmethodID jmethodIDIV8ValueFunctionReceiveCallback;
-		static jmethodID jmethodIDIV8ValueFunctionGetV8Runtime;
-
-		static jclass jclassIV8ValueReference;
-		static jmethodID jmethodIDIV8ValueReferenceClose;
-
-		static jclass jclassJavetResourceUtils;
-		static jmethodID jmethodIDJavetResourceUtilsSafeClose;
-
-		static jclass jclassThrowable;
-		static jmethodID jmethodIDThrowableGetMessage;
-
-		void Initialize(JNIEnv* jniEnv);
 	}
 }

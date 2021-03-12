@@ -36,6 +36,7 @@ public class TestV8Inspector extends BaseTestJavet {
     protected AtomicInteger atomicInteger;
 
     public TestV8Inspector() {
+        super();
         atomicInteger = new AtomicInteger();
     }
 

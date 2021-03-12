@@ -17,4 +17,5 @@
 
 #pragma once
 
-#define ERROR_JNI_ON_LOAD -1;
+#define ERROR_JNI_ON_LOAD -1
+#define EMBEDDER_DATA_INDEX_V8_RUNTIME 1

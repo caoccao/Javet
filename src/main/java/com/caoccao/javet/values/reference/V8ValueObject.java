@@ -22,6 +22,7 @@ import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.values.reference.global.V8ValueGlobalJson;
 
 import java.util.Objects;
 
@@ -32,11 +33,29 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String FUNCTION_GET = "get";
     protected static final String FUNCTION_HAS = "has";
     protected static final String FUNCTION_SET = "set";
-    protected static final String FUNCTION_STRINGIFY = "stringify";
-    protected static final String PROPERTY_JSON = "JSON";
 
-    V8ValueObject(long handle) {
+    protected V8ValueObject(long handle) {
         super(handle);
+    }
+
+    @Override
+    public void clearWeak() throws JavetException {
+        checkV8Runtime();
+        v8Runtime.clearWeak(this);
+        weak = false;
+    }
+
+    @Override
+    public void close() throws JavetException {
+        close(false);
+    }
+
+    @Override
+    public void close(boolean forceClose) throws JavetException {
+        if (!isWeak()) {
+            forceClose = true;
+        }
+        super.close(forceClose);
     }
 
     @Override
@@ -126,6 +145,20 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public boolean isWeak() throws JavetException {
+        return weak;
+    }
+
+    @Override
+    public boolean isWeak(boolean force) throws JavetException {
+        if (force) {
+            checkV8Runtime();
+            weak = v8Runtime.isWeak(this);
+        }
+        return weak;
+    }
+
+    @Override
     public boolean set(V8Value key, V8Value value) throws JavetException {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
@@ -142,17 +175,28 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T toClone() throws JavetException {
+    public void setWeak() throws JavetException {
         checkV8Runtime();
-        return v8Runtime.cloneV8Value(this);
+        v8Runtime.setWeak(this);
+        weak = true;
+    }
+
+    @Override
+    public String toProtoString() {
+        try {
+            checkV8Runtime();
+            return v8Runtime.toProtoString(this);
+        } catch (JavetException e) {
+            return e.getMessage();
+        }
     }
 
     @Override
     public String toJsonString() {
         try {
             checkV8Runtime();
-            try (V8ValueObject jsonObject = v8Runtime.getGlobalObject().get(PROPERTY_JSON)) {
-                return jsonObject.invokeString(FUNCTION_STRINGIFY, this);
+            try (V8ValueGlobalJson v8ValueGlobalJson = v8Runtime.getGlobalObject().getJson()) {
+                return v8ValueGlobalJson.stringify(this);
             }
         } catch (JavetException e) {
             return e.getMessage();

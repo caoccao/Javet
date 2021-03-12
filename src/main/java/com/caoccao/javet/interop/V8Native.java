@@ -33,6 +33,8 @@ final class V8Native {
 
     native static void add(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
+    native static void allowCodeGenerationFromStrings(long v8RuntimeHandle, boolean allow);
+
     native static Object call(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);
@@ -47,8 +49,8 @@ final class V8Native {
 
     native static void closeV8Runtime(long v8RuntimeHandle);
 
-    native static void compileOnly(
-            long v8RuntimeHandle, String script,
+    native static Object compile(
+            long v8RuntimeHandle, String script, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
@@ -101,11 +103,35 @@ final class V8Native {
 
     native static void lockV8Runtime(long v8RuntimeHandle);
 
+    native static Object moduleEvaluate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
+
+    native static Object moduleGetException(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static int moduleGetScriptId(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static int moduleGetStatus(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static boolean moduleInstantiate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static Object promiseCatch(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueFunctionHandle);
+
+    native static Object promiseGetResult(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static int promiseGetState(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static boolean promiseHasHandler(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static void promiseMarkAsHandled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    native static Object promiseThen(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
+
     native static void registerV8Runtime(long v8RuntimeHandle, Object v8Runtime);
 
     native static void removeJNIGlobalRef(long handle);
 
-    native static void removeReferenceHandle(long referenceHandle);
+    native static void removeReferenceHandle(long referenceHandle, int referenceType);
 
     native static void requestGarbageCollectionForTesting(long v8RuntimeHandle, boolean fullGC);
 

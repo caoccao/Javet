@@ -47,8 +47,7 @@ public class CDTShell {
                         if (CDTConfig.COMMAND_EXIT.equals(command)) {
                             break;
                         }
-                        try {
-                            V8Value v8Value = v8Runtime.getExecutor(command).execute();
+                        try (V8Value v8Value = v8Runtime.getExecutor(command).execute()) {
                             if (v8Value != null) {
                                 System.out.println(v8Value.toString());
                             }

@@ -21,6 +21,8 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8DataModule;
+import com.caoccao.javet.values.reference.V8Script;
 
 public class V8StringExecutor extends BaseV8Executor {
     protected String scriptString;
@@ -35,13 +37,18 @@ public class V8StringExecutor extends BaseV8Executor {
     }
 
     @Override
-    public String getScriptString() throws JavetIOException {
-        return scriptString;
+    public V8DataModule compileModule(boolean resultRequired) throws JavetException {
+        return v8Runtime.compileModule(getScriptString(), v8ScriptOrigin, resultRequired);
     }
 
     @Override
-    public void compileOnly() throws JavetException {
-        v8Runtime.compileOnly(getScriptString(), v8ScriptOrigin);
+    public V8Script compileScript(boolean resultRequired) throws JavetException {
+        return v8Runtime.compileScript(getScriptString(), v8ScriptOrigin, resultRequired);
+    }
+
+    @Override
+    public String getScriptString() throws JavetIOException {
+        return scriptString;
     }
 
     @Override

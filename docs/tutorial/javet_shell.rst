@@ -20,9 +20,8 @@ It is very easy to create a node flavored interactive shell application with a f
                 if (".exit".equals(command)) {
                     break;
                 }
-                try {
-                    // Step 5: Execute the command and capture the result.
-                    V8Value v8Value = v8Runtime.getExecutor(command).execute();
+                // Step 5: Execute the command and capture the result.
+                try (V8Value v8Value = v8Runtime.getExecutor(command).execute()) {
                     if (v8Value != null) {
                         // Step 6: Print the result as string.
                         System.out.println(v8Value.toString());

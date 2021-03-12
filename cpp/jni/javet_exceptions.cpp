@@ -42,9 +42,9 @@ namespace Javet {
 		}
 
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
+			ERROR("Compilation exception.");
 			auto isolate = v8Context->GetIsolate();
 			v8::String::Value exceptionMessage(isolate, v8TryCatch.Exception());
-			ERROR(*exceptionMessage);
 			jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
 			auto v8LocalMessage = v8TryCatch.Message();
 			if (v8LocalMessage.IsEmpty()) {
@@ -93,8 +93,8 @@ namespace Javet {
 				jniEnv->Throw(javetTerminatedException);
 			}
 			else {
+				ERROR("Execution exception.");
 				v8::String::Value exceptionMessage(isolate, v8TryCatch.Exception());
-				ERROR(*exceptionMessage);
 				jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
 				auto v8LocalMessage = v8TryCatch.Message();
 				if (v8LocalMessage.IsEmpty()) {

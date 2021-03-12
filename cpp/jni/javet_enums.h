@@ -35,6 +35,8 @@ namespace Javet {
 			Iterator = 12,
 			WeakMap = 13,
 			WeakSet = 14,
+			Script = 20,
+			Module = 21,
 			DataView = 30,
 			ArrayBuffer = 31,
 			Int8Array = 32, // -128 to 127 	1 	8-bit two's complement signed integer 	byte 	int8_t

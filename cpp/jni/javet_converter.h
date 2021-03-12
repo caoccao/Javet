@@ -67,6 +67,10 @@ namespace Javet {
 
 		// Reference
 
+		static jclass jclassV8DataModule;
+		static jmethodID jmethodIDV8DataModuleConstructor;
+		static jmethodID jmethodIDV8DataModuleGetHandle;
+
 		static jclass jclassV8ValueArguments;
 		static jmethodID jmethodIDV8ValueArgumentsConstructor;
 		static jmethodID jmethodIDV8ValueArgumentsGetHandle;
@@ -143,6 +147,10 @@ namespace Javet {
 
 		void Initialize(JNIEnv* jniEnv);
 
+		jobject ToExternalV8Data(JNIEnv* jniEnv, jobject externalV8Runtime, v8::Local<v8::Context>& v8Context, v8::Local<v8::Data> v8Data);
+
+		jobject ToExternalV8Script(JNIEnv* jniEnv, jobject externalV8Runtime, v8::Local<v8::Context>& v8Context, v8::Local<v8::Script> v8Script);
+
 		jobject ToExternalV8Value(JNIEnv* jniEnv, jobject externalV8Runtime, v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
 
 		jobject ToExternalV8ValueArray(JNIEnv* jniEnv, jobject externalV8Runtime, v8::Local<v8::Context>& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -171,9 +179,13 @@ namespace Javet {
 
 		inline v8::Local<v8::Primitive> ToV8Undefined(v8::Local<v8::Context>& v8Context);
 
+		inline jlong ToV8PersistentDataReference(v8::Local<v8::Context>& v8Context, v8::Local<v8::Data> v8Data);
+
 		inline jlong ToV8PersistentObjectReference(v8::Local<v8::Context>& v8Context, v8::Local<v8::Value> v8Value);
 
-		v8::ScriptOrigin* ToV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context,
+		inline jlong ToV8PersistentScriptReference(v8::Local<v8::Context>& v8Context, v8::Local<v8::Script> v8Script);
+
+		std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context,
 			jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule);
 
 		v8::Local<v8::String> ToV8String(JNIEnv* jniEnv, v8::Local<v8::Context>& v8Context, jstring& managedString);

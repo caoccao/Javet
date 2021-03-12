@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.0
+-----
+
+* Added support to JS module, async, await
+* Enhanced ``V8ValuePromise``
+
 0.7.4
 -----
 

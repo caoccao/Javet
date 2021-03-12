@@ -28,6 +28,8 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    void clearWeak() throws JavetException;
+
     default boolean delete(int key) throws JavetException {
         return delete(getV8Runtime().createV8ValueInteger(key));
     }
@@ -89,6 +91,18 @@ public interface IV8ValueObject extends IV8ValueReference {
         Double result = getDouble(key);
         return result == null ? null : result.floatValue();
     }
+
+    /**
+     * Returns the identity hash for this object. The current implementation
+     * uses an inline property on the object to store the identity hash.
+     * <p>
+     * The return value will never be 0. Also, it is not guaranteed to be
+     * unique.
+     *
+     * @return the identity hash
+     * @throws JavetException the javet exception
+     */
+    int getIdentityHash() throws JavetException;
 
     default Integer getInteger(int key) throws JavetException {
         return getObject(key);
@@ -328,6 +342,10 @@ public interface IV8ValueObject extends IV8ValueReference {
         invoke(functionName, false, v8Values);
     }
 
+    boolean isWeak() throws JavetException;
+
+    boolean isWeak(boolean forceSync) throws JavetException;
+
     default boolean set(int key, V8Value value) throws JavetException {
         return set(getV8Runtime().createV8ValueInteger(key), value);
     }
@@ -411,6 +429,8 @@ public interface IV8ValueObject extends IV8ValueReference {
         return setProperty(new V8ValueString(key), getV8Runtime().createV8ValueUndefined());
     }
 
+    void setWeak() throws JavetException;
+
     default boolean setUndefined(int key) throws JavetException {
         return set(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
     }
@@ -428,4 +448,6 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the string
      */
     String toJsonString();
+
+    String toProtoString();
 }

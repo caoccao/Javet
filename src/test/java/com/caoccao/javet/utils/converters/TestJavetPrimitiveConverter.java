@@ -31,6 +31,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     protected JavetPrimitiveConverter converter;
 
     public TestJavetPrimitiveConverter() {
+        super();
         converter = new JavetPrimitiveConverter();
     }
 

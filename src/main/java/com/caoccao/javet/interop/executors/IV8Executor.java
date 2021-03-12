@@ -23,12 +23,28 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.reference.V8DataModule;
+import com.caoccao.javet.values.reference.V8Script;
 
 import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8Executor {
-    void compileOnly() throws JavetException;
+    default V8DataModule compileModule() throws JavetException {
+        return compileModule(true);
+    }
+
+    V8DataModule compileModule(boolean resultRequired) throws JavetException;
+
+    default void compileModuleVoid() throws JavetException {
+        compileModule(false);
+    }
+
+    default void compileScript() throws JavetException {
+        compileScript(false);
+    }
+
+    V8Script compileScript(boolean resultRequired) throws JavetException;
 
     default <T extends V8Value> T execute() throws JavetException {
         return execute(true);

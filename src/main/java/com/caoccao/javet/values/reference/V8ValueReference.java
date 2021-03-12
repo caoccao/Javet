@@ -50,15 +50,8 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public void clearWeak() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.clearWeak(this);
-        weak = false;
-    }
-
-    @Override
     public void close() throws JavetException {
-        close(false);
+        close(true);
     }
 
     @Override
@@ -66,7 +59,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         if (handle == 0L) {
             throw new JavetV8ValueAlreadyClosedException();
         }
-        if (forceClose || !isWeak()) {
+        if (forceClose) {
             removeReference();
             handle = 0L;
             v8Runtime = null;
@@ -97,23 +90,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         return handle;
     }
 
-    @Override
-    public abstract int getIdentityHash() throws JavetException;
-
-    @Override
-    public boolean isWeak() throws JavetException {
-        return weak;
-    }
-
-    @Override
-    public boolean isWeak(boolean force) throws JavetException {
-        if (force) {
-            checkV8Runtime();
-            weak = v8Runtime.isWeak(this);
-        }
-        return weak;
-    }
-
     protected void removeReference() throws JavetException {
         v8Runtime.removeReference(this);
     }
@@ -122,13 +98,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
         super.setV8Runtime(v8Runtime);
         addReference();
-    }
-
-    @Override
-    public void setWeak() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.setWeak(this);
-        weak = true;
     }
 
     @Override
@@ -162,13 +131,9 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public String toProtoString() {
-        try {
-            checkV8Runtime();
-            return v8Runtime.toProtoString(this);
-        } catch (JavetException e) {
-            return e.getMessage();
-        }
+    public <T extends V8Value> T toClone() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.cloneV8Value(this);
     }
 
     @Override

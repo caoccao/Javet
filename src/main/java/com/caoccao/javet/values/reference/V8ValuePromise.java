@@ -17,16 +17,55 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
-public class V8ValuePromise extends V8ValueObject {
+public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
 
     V8ValuePromise(long handle) {
         super(handle);
     }
 
     @Override
+    public V8ValuePromise except(V8ValueFunction function) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.promiseCatch(this, function);
+    }
+
+    @Override
+    public <Value extends V8Value> Value getResult() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.promiseGetResult(this);
+    }
+
+    @Override
+    public int getState() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.promiseGetState(this);
+    }
+
+    @Override
     public int getType() {
         return V8ValueReferenceType.Promise;
+    }
+
+    @Override
+    public boolean hasHandler() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.promiseHasHandler(this);
+    }
+
+    @Override
+    public void markAsHandled() throws JavetException {
+        checkV8Runtime();
+        v8Runtime.promiseMarkAsHandled(this);
+    }
+
+    @Override
+    public V8ValuePromise then(IV8ValueFunction functionFulfilled, IV8ValueFunction functionRejected)
+            throws JavetException{
+        checkV8Runtime();
+        return v8Runtime.promiseThen(this, functionFulfilled, functionRejected);
     }
 }
