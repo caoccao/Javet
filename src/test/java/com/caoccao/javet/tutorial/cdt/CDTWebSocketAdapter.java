@@ -23,6 +23,8 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
         logger.logInfo("onWebSocketClose(): {0} {1}", Integer.toString(statusCode), reason);
+        session = null;
+        CDTConfig.getV8Runtime().getV8Inspector().removeListeners(this);
     }
 
     @Override
