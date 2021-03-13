@@ -41,10 +41,10 @@ namespace Javet {
 			jclassJavetV8LockConflictException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetV8LockConflictException"));
 		}
 
-		void ThrowJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
+		void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
 			ERROR("Compilation exception.");
 			auto isolate = v8Context->GetIsolate();
-			v8::String::Value exceptionMessage(isolate, v8TryCatch.Exception());
+			V8StringValue exceptionMessage(isolate, v8TryCatch.Exception());
 			jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
 			auto v8LocalMessage = v8TryCatch.Message();
 			if (v8LocalMessage.IsEmpty()) {
@@ -55,9 +55,9 @@ namespace Javet {
 				jniEnv->Throw(javetUnknownCompilationException);
 			}
 			else {
-				v8::String::Utf8Value scriptResourceName(isolate, v8LocalMessage->GetScriptResourceName());
+				V8StringUtf8Value scriptResourceName(isolate, v8LocalMessage->GetScriptResourceName());
 				jstring jStringScriptResourceName = jniEnv->NewStringUTF(*scriptResourceName);
-				v8::String::Value sourceLine(isolate, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
+				V8StringValue sourceLine(isolate, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
 				jstring jStringSourceLine = jniEnv->NewString(*sourceLine, sourceLine.length());
 				jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
 					jclassJavetCompilationException,
@@ -82,7 +82,7 @@ namespace Javet {
 			jniEnv->ThrowNew(jclassJavetConverterException, message);
 		}
 
-		void ThrowJavetExecutionException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch) {
+		void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
 			auto isolate = v8Context->GetIsolate();
 			if (v8TryCatch.HasTerminated()) {
 				ERROR("Execution has been terminated.");
@@ -94,7 +94,7 @@ namespace Javet {
 			}
 			else {
 				ERROR("Execution exception.");
-				v8::String::Value exceptionMessage(isolate, v8TryCatch.Exception());
+				V8StringValue exceptionMessage(isolate, v8TryCatch.Exception());
 				jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
 				auto v8LocalMessage = v8TryCatch.Message();
 				if (v8LocalMessage.IsEmpty()) {
@@ -105,9 +105,9 @@ namespace Javet {
 					jniEnv->Throw(javetUnknownExecutionException);
 				}
 				else {
-					v8::String::Utf8Value scriptResourceName(isolate, v8LocalMessage->GetScriptResourceName());
+					V8StringUtf8Value scriptResourceName(isolate, v8LocalMessage->GetScriptResourceName());
 					jstring jStringScriptResourceName = jniEnv->NewStringUTF(*scriptResourceName);
-					v8::String::Value sourceLine(isolate, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
+					V8StringValue sourceLine(isolate, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
 					jstring jStringSourceLine = jniEnv->NewString(*sourceLine, sourceLine.length());
 					jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
 						jclassJavetExecutionException,

@@ -20,24 +20,88 @@
 #include <jni.h>
 #include <v8.h>
 #include <v8-inspector.h>
+#include "javet_converter.h"
+#include "javet_exceptions.h"
+#include "javet_logging.h"
+#include "javet_types.h"
 
 namespace Javet {
 	namespace Inspector {
 		class JavetInspector;
 	}
 
+	class V8Runtime;
+	class V8Scope;
+
 	class V8Runtime {
 	public:
 		v8::Isolate* v8Isolate;
 		jobject externalV8Runtime;
-		v8::Persistent<v8::Context> v8Context;
-		v8::Persistent<v8::Object> v8GlobalObject;
-		std::shared_ptr<v8::Locker> v8Locker;
+		V8PersistentContext v8Context;
+		V8PersistentObject v8GlobalObject;
 		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
-		void reset();
-		virtual ~V8Runtime();
-	};
+		static inline V8Runtime* FromHandle(jlong handle) {
+			return reinterpret_cast<V8Runtime*>(handle);
+		}
 
+		/*
+		* Shared V8 locker is for implicit mode.
+		* Javet manages the lock automatically.
+		*/
+		inline std::shared_ptr<v8::Locker> GetSharedV8Locker() {
+			return v8Locker ? v8Locker : std::make_shared<v8::Locker>(v8Isolate);
+		}
+
+		/*
+		* Unique V8 locker is for explicit mode.
+		* Application manages the lock.
+		*/
+		inline std::unique_ptr<v8::Locker> GetUniqueV8Locker() {
+			return std::make_unique<v8::Locker>(v8Isolate);
+		}
+
+		inline V8LocalContext GetV8LocalContext() {
+			return V8LocalContext::New(v8Isolate, v8Context);
+		}
+
+		inline void InitializeV8Isolate() {
+			v8::Isolate::CreateParams createParams;
+			createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+			v8Isolate = v8::Isolate::New(createParams);
+		}
+
+		inline bool IsLocked() {
+			return (bool)v8Locker;
+		}
+
+		inline void Lock() {
+			v8Locker.reset(new v8::Locker(v8Isolate));
+		}
+
+		void Reset();
+
+		void ResetV8Context(JNIEnv* jniEnv, jstring mGlobalName);
+
+		inline jobject V8Runtime::SafeToExternalV8Value(JNIEnv* jniEnv, V8LocalContext v8Context, V8LocalValue v8Value) {
+			try {
+				return Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Value);
+			}
+			catch (const std::exception& e) {
+				ERROR(e.what());
+				Javet::Exceptions::ThrowJavetConverterException(jniEnv, e.what());
+			}
+			return nullptr;
+		}
+
+		inline void Unlock() {
+			v8Locker.reset();
+		}
+
+		virtual ~V8Runtime();
+
+	private:
+		std::shared_ptr<v8::Locker> v8Locker;
+	};
 }
 

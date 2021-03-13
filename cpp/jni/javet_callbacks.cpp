@@ -49,14 +49,14 @@ namespace Javet {
 			jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
 		}
 
-		v8::MaybeLocal<v8::Module> ModuleResolveCallback(
-			v8::Local<v8::Context> v8Context, v8::Local<v8::String> specifier,
-			v8::Local<v8::FixedArray> import_assertions, v8::Local<v8::Module> referrer) {
+		V8MaybeLocalModule ModuleResolveCallback(
+			V8LocalContext v8Context, V8LocalString specifier,
+			V8LocalFixedArray import_assertions, V8LocalModule referrer) {
 			DEBUG("ModuleResolveCallback");
 			// TODO
 			auto v8Value = v8Context->GetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME);
 			DEBUG("data: " << v8Value->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
-			return v8::MaybeLocal<v8::Module>();
+			return V8MaybeLocalModule();
 		}
 
 		JavetCallbackContextReference::JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext) {
@@ -70,8 +70,8 @@ namespace Javet {
 
 		void JavetCallbackContextReference::Invoke(const v8::FunctionCallbackInfo<v8::Value>& args) {
 			v8::Isolate* v8Isolate = args.GetIsolate();
-			v8::Isolate::Scope v8IsolateScope(v8Isolate);
-			v8::HandleScope v8HandleScope(v8Isolate);
+			V8IsolateScope v8IsolateScope(v8Isolate);
+			V8HandleScope v8HandleScope(v8Isolate);
 			auto v8Context = v8Isolate->GetCurrentContext();
 			jobject callbackOwnerFunction = GetCallbackOwnerFunction();
 			jobject externalV8Runtime = jniEnv->CallObjectMethod(callbackOwnerFunction, jmethodIDIV8ValueFunctionGetV8Runtime);
@@ -84,7 +84,7 @@ namespace Javet {
 				jthrowable externalException = jniEnv->ExceptionOccurred();
 				jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
 				jniEnv->ExceptionClear();
-				v8::Local<v8::String> v8ErrorMessage;
+				V8LocalString v8ErrorMessage;
 				if (externalErrorMessage == nullptr) {
 					v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, "Uncaught JavaError: unknown").ToLocalChecked();
 				}
@@ -124,7 +124,7 @@ namespace Javet {
 		}
 
 		void JavetCallbackContextReference::SetHandle() {
-			jniEnv->CallVoidMethod(callbackContext, jmethodIDJavetCallbackContextSetHandle, reinterpret_cast<jlong>(callbackContext));
+			jniEnv->CallVoidMethod(callbackContext, jmethodIDJavetCallbackContextSetHandle, TO_JAVA_LONG(callbackContext));
 		}
 
 		void V8ValueReference::Clear(JNIEnv* jniEnv) {
@@ -137,7 +137,7 @@ namespace Javet {
 			if (v8PersistentObjectPointer != nullptr) {
 				v8PersistentObjectPointer->Reset();
 				v8PersistentObjectPointer = nullptr;
-				jniEnv->CallVoidMethod(reinterpret_cast<jobject>(objectReference), jmethodIDIV8ValueReferenceClose, true);
+				jniEnv->CallVoidMethod(TO_JAVA_OBJECT(objectReference), jmethodIDIV8ValueReferenceClose, true);
 				jniEnv->DeleteGlobalRef(objectReference);
 			}
 		}

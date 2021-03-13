@@ -15,15 +15,21 @@
  *   limitations under the License.
  */
 
-#include "javet_exceptions.h"
+#include "javet_constants.h"
 #include "javet_inspector.h"
-#include "javet_logging.h"
+#include "javet_types.h"
 #include "javet_v8_runtime.h"
 
 namespace Javet {
-	void V8Runtime::reset() {
+	void GlobalAccessorGetterCallback(
+		V8LocalString propertyName,
+		const v8::PropertyCallbackInfo<v8::Value>& args) {
+		args.GetReturnValue().Set(args.GetIsolate()->GetCurrentContext()->Global());
+	}
+
+	void V8Runtime::Reset() {
 		if (v8Inspector) {
-			std::shared_ptr<v8::Locker> internalV8Locker = v8Locker ? v8Locker : std::make_shared<v8::Locker>(v8Isolate);
+			auto internalV8Locker = GetSharedV8Locker();
 			v8Inspector.reset();
 		}
 		v8Context.Reset();
@@ -36,7 +42,23 @@ namespace Javet {
 		}
 	}
 
+	void V8Runtime::ResetV8Context(JNIEnv* jniEnv, jstring mGlobalName) {
+		V8IsolateScope v8IsolateScope(v8Isolate);
+		V8HandleScope v8HandleScope(v8Isolate);
+		auto v8IsolateHandle = v8::ObjectTemplate::New(v8Isolate);
+		auto v8LocalContext = v8::Context::New(v8Isolate, nullptr, v8IsolateHandle);
+		v8LocalContext->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
+		if (mGlobalName != nullptr) {
+			auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8LocalContext, mGlobalName);
+			v8IsolateHandle->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
+		}
+		v8Context.Reset(v8Isolate, v8LocalContext);
+		v8GlobalObject.Reset(
+			v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
+	}
+
 	V8Runtime::~V8Runtime() {
-		reset();
+		Reset();
 	}
 }
+

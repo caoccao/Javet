@@ -18,6 +18,7 @@
 #include "javet_globals.h"
 #include "javet_inspector.h"
 #include "javet_logging.h"
+#include "javet_types.h"
 
 #define CONTEXT_GROUP_ID 1
 #define EMBEDDER_DATA_INDEX 1
@@ -31,7 +32,7 @@ namespace Javet {
 		static inline std::unique_ptr<std::string> ConvertFromStringBufferToStdStringPointer(v8::Isolate* v8Isolate, v8_inspector::StringBuffer* stringBuffer) {
 			auto stringViewMessage = stringBuffer->string();
 			int length = static_cast<int>(stringViewMessage.length());
-			v8::Local<v8::String> v8StringMessage;
+			V8LocalString v8StringMessage;
 			if (length > 0) {
 				if (stringViewMessage.is8Bit()) {
 					v8StringMessage = v8::String::NewFromOneByte(v8Isolate, reinterpret_cast<const uint8_t*>(
@@ -42,7 +43,7 @@ namespace Javet {
 						stringViewMessage.characters16()), v8::NewStringType::kNormal, length).ToLocalChecked();
 				}
 			}
-			v8::String::Utf8Value v8Utf8Value(v8Isolate, v8StringMessage);
+			V8StringUtf8Value v8Utf8Value(v8Isolate, v8StringMessage);
 			return std::make_unique<std::string>(*v8Utf8Value);
 		}
 
@@ -87,7 +88,7 @@ namespace Javet {
 			runningMessageLoop = false;
 			this->mV8Inspector = mV8Inspector;
 			this->v8Runtime = v8Runtime;
-			auto v8Context = v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context);
+			auto v8Context = v8Runtime->GetV8LocalContext();
 			javetInspectorChannel.reset(new JavetInspectorChannel(v8Runtime, mV8Inspector));
 			v8Inspector = v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this);
 			v8InspectorSession = v8Inspector->connect(CONTEXT_GROUP_ID, javetInspectorChannel.get(), v8_inspector::StringView());
@@ -122,8 +123,8 @@ namespace Javet {
 			}
 		}
 
-		v8::Local<v8::Context> JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
-			return v8::Local<v8::Context>::New(v8Runtime->v8Isolate, v8Runtime->v8Context);
+		V8LocalContext JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
+			return v8Runtime->GetV8LocalContext();
 		}
 
 		JavetInspectorClient::~JavetInspectorClient() {
@@ -140,8 +141,8 @@ namespace Javet {
 		}
 
 		void JavetInspectorChannel::sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) {
-			v8::Locker v8Locker(v8Runtime->v8Isolate);
-			v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
+			auto v8Locker = v8Runtime->GetUniqueV8Locker();
+			V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
 			auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
 			DEBUG("Sending notification: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
@@ -151,8 +152,8 @@ namespace Javet {
 		}
 
 		void JavetInspectorChannel::sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) {
-			v8::Locker v8Locker(v8Runtime->v8Isolate);
-			v8::HandleScope v8HandleScope(v8Runtime->v8Isolate);
+			auto v8Locker = v8Runtime->GetUniqueV8Locker();
+			V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
 			auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
 			DEBUG("Sending response: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);

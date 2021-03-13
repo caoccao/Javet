@@ -19,6 +19,7 @@
 
 #include <jni.h>
 #include <libplatform/libplatform.h>
+#include "javet_types.h"
 
 #define FETCH_JNI_ENV(javaVMPointer) \
 	JNIEnv* jniEnv; \
@@ -26,6 +27,6 @@
 	javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
 
 namespace Javet {
-	static std::unique_ptr<v8::Platform> GlobalV8Platform = nullptr;
+	static std::unique_ptr<V8Platform> GlobalV8Platform = nullptr;
 }
 

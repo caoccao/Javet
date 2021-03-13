@@ -19,6 +19,7 @@
 
 #include <v8.h>
 #include <jni.h>
+#include "javet_types.h"
 
 namespace Javet {
 	namespace Callback {
@@ -43,9 +44,9 @@ namespace Javet {
 
 		void Initialize(JNIEnv* jniEnv);
 
-		v8::MaybeLocal<v8::Module> ModuleResolveCallback(
-			v8::Local<v8::Context> context, v8::Local<v8::String> specifier,
-			v8::Local<v8::FixedArray> import_assertions, v8::Local<v8::Module> referrer);
+		V8MaybeLocalModule ModuleResolveCallback(
+			V8LocalContext context, V8LocalString specifier,
+			V8LocalFixedArray import_assertions, V8LocalModule referrer);
 
 		class JavetCallbackContextReference {
 		public:
@@ -63,7 +64,7 @@ namespace Javet {
 		public:
 			v8::Isolate* v8Isolate;
 			jobject objectReference;
-			v8::Persistent<v8::Object>* v8PersistentObjectPointer;
+			V8PersistentObject* v8PersistentObjectPointer;
 			void Clear(JNIEnv* jniEnv);
 			void Close(JNIEnv* jniEnv);
 		};

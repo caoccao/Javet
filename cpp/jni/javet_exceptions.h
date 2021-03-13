@@ -19,6 +19,7 @@
 
 #include <jni.h>
 #include <v8.h>
+#include "javet_types.h"
 
 namespace Javet {
 	namespace Exceptions {
@@ -37,9 +38,9 @@ namespace Javet {
 
 		void Initialize(JNIEnv* jniEnv);
 
-		void ThrowJavetCompilationException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch);
+		void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 		void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
-		void ThrowJavetExecutionException(JNIEnv* jniEnv, const v8::Local<v8::Context>& v8Context, const v8::TryCatch& v8TryCatch);
+		void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 		void ThrowJavetV8LockConflictException(JNIEnv* jniEnv, const char* message);
 	}
 }
