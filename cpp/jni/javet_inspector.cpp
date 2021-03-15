@@ -146,7 +146,7 @@ namespace Javet {
 			auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
 			DEBUG("Sending notification: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
-			jstring jMessage = jniEnv->NewStringUTF(stdStringMessagePointer->c_str());
+			jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdStringMessagePointer->c_str());
 			jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveNotification, jMessage);
 			jniEnv->DeleteLocalRef(jMessage);
 		}
@@ -157,7 +157,7 @@ namespace Javet {
 			auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
 			DEBUG("Sending response: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
-			jstring jMessage = jniEnv->NewStringUTF(stdStringMessagePointer->c_str());
+			jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdStringMessagePointer->c_str());
 			jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveResponse, jMessage);
 			jniEnv->DeleteLocalRef(jMessage);
 		}

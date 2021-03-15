@@ -20,7 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.V8DataModule;
+import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
 
 import java.io.File;
@@ -28,7 +28,7 @@ import java.nio.file.Path;
 
 @SuppressWarnings("unchecked")
 public interface IV8Executable {
-    V8DataModule compileModule(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException;
+    V8Module compileModule(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException;
 
     V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException;
 

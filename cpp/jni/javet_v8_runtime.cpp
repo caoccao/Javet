@@ -15,7 +15,6 @@
  *   limitations under the License.
  */
 
-#include "javet_constants.h"
 #include "javet_inspector.h"
 #include "javet_types.h"
 #include "javet_v8_runtime.h"
@@ -27,7 +26,7 @@ namespace Javet {
 		args.GetReturnValue().Set(args.GetIsolate()->GetCurrentContext()->Global());
 	}
 
-	void V8Runtime::Reset() {
+	void V8Runtime::CloseV8Isolate() {
 		if (v8Inspector) {
 			auto internalV8Locker = GetSharedV8Locker();
 			v8Inspector.reset();
@@ -47,7 +46,7 @@ namespace Javet {
 		V8HandleScope v8HandleScope(v8Isolate);
 		auto v8IsolateHandle = v8::ObjectTemplate::New(v8Isolate);
 		auto v8LocalContext = v8::Context::New(v8Isolate, nullptr, v8IsolateHandle);
-		v8LocalContext->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
+		Register(v8LocalContext);
 		if (mGlobalName != nullptr) {
 			auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8LocalContext, mGlobalName);
 			v8IsolateHandle->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
@@ -58,7 +57,7 @@ namespace Javet {
 	}
 
 	V8Runtime::~V8Runtime() {
-		Reset();
+		CloseV8Isolate();
 	}
 }
 

@@ -1,4 +1,4 @@
-package com.caoccao.javet.values.reference.global;
+package com.caoccao.javet.values.reference.builtin;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
@@ -8,7 +8,7 @@ import com.caoccao.javet.values.reference.V8ValuePromise;
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
-public class V8ValueGlobalPromise extends V8ValueObject {
+public class V8ValueBuiltInPromise extends V8ValueObject {
 
     public static final String FUNCTION_ALL = "all";
     public static final String FUNCTION_ALL_SETTLED = "allSettled";
@@ -17,7 +17,7 @@ public class V8ValueGlobalPromise extends V8ValueObject {
     public static final String FUNCTION_REJECT = "reject";
     public static final String FUNCTION_RESOLVE = "resolve";
 
-    V8ValueGlobalPromise(long handle) {
+    public V8ValueBuiltInPromise(long handle) {
         super(handle);
     }
 
@@ -82,7 +82,7 @@ public class V8ValueGlobalPromise extends V8ValueObject {
     }
 
     @Override
-    public V8ValueGlobalPromise toClone() throws JavetException {
+    public V8ValueBuiltInPromise toClone() throws JavetException {
         return this;
     }
 }

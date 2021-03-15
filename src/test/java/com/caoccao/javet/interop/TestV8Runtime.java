@@ -24,10 +24,10 @@ import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.reference.V8DataModule;
+import com.caoccao.javet.values.reference.IV8Module;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValuePromise;
-import com.caoccao.javet.values.reference.global.V8ValueGlobalPromise;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -57,42 +57,6 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testClose() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
-        }
-    }
-
-    @Test
-    public void testExecuteModule() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
-            String codeString = "export default () => { return { a: 1 }; };";
-            IV8Executor iV8Executor = v8Runtime.getExecutor(codeString);
-            iV8Executor.getV8ScriptOrigin().setResourceName("./test.js").setModule(true);
-            try (V8ValuePromise v8ValuePromise = iV8Executor.execute()) {
-                assertNotNull(v8ValuePromise);
-                assertTrue(v8ValuePromise.isFulfilled());
-                try (V8ValuePromise childV8ValuePromise = v8ValuePromise.then(
-                        "() => 1")) {
-                    assertTrue(childV8ValuePromise.isPending());
-                    try (V8Value v8Value = childV8ValuePromise.getResult()) {
-                        assertTrue(v8Value.isUndefined());
-                    }
-                    try (V8ValueGlobalPromise v8ValueGlobalPromise = v8Runtime.getGlobalObject().getPromise()) {
-                        try (V8ValuePromise v8ValuePromiseResolved = v8ValueGlobalPromise.resolve(childV8ValuePromise)) {
-                            assertNotNull(v8ValuePromiseResolved);
-                            assertEquals(1, v8ValuePromiseResolved.getResultInteger());
-                        }
-                    }
-                }
-                try (V8Value v8Value = v8ValuePromise.getResult()) {
-                    assertTrue(v8Value.isUndefined());
-                }
-            }
-            codeString = "import * as X from './test.js';";
-            iV8Executor = v8Runtime.getExecutor(codeString);
-            iV8Executor.getV8ScriptOrigin().setModule(true);
-            try (V8Value v8ValuePromise = iV8Executor.execute()) {
-                assertNotNull(v8ValuePromise);
-            }
         }
     }
 

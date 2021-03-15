@@ -20,6 +20,7 @@
 #include <jni.h>
 #include <v8.h>
 #include <v8-inspector.h>
+#include "javet_constants.h"
 #include "javet_converter.h"
 #include "javet_exceptions.h"
 #include "javet_logging.h"
@@ -41,8 +42,20 @@ namespace Javet {
 		V8PersistentObject v8GlobalObject;
 		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
+		void CloseV8Isolate();
+
+		inline void CreateV8Isolate() {
+			v8::Isolate::CreateParams createParams;
+			createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+			v8Isolate = v8::Isolate::New(createParams);
+		}
+
 		static inline V8Runtime* FromHandle(jlong handle) {
 			return reinterpret_cast<V8Runtime*>(handle);
+		}
+
+		static inline V8Runtime* FromV8Context(V8LocalContext v8Context) {
+			return reinterpret_cast<V8Runtime*>(v8Context->GetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME)->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
 		}
 
 		/*
@@ -62,13 +75,7 @@ namespace Javet {
 		}
 
 		inline V8LocalContext GetV8LocalContext() {
-			return V8LocalContext::New(v8Isolate, v8Context);
-		}
-
-		inline void InitializeV8Isolate() {
-			v8::Isolate::CreateParams createParams;
-			createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-			v8Isolate = v8::Isolate::New(createParams);
+			return v8Context.Get(v8Isolate);
 		}
 
 		inline bool IsLocked() {
@@ -79,11 +86,13 @@ namespace Javet {
 			v8Locker.reset(new v8::Locker(v8Isolate));
 		}
 
-		void Reset();
+		void Register(V8LocalContext v8Context) {
+			v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
+		}
 
 		void ResetV8Context(JNIEnv* jniEnv, jstring mGlobalName);
 
-		inline jobject V8Runtime::SafeToExternalV8Value(JNIEnv* jniEnv, V8LocalContext v8Context, V8LocalValue v8Value) {
+		inline jobject SafeToExternalV8Value(JNIEnv* jniEnv, V8LocalContext v8Context, V8LocalValue v8Value) {
 			try {
 				return Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Value);
 			}

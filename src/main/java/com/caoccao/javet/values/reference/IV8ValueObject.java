@@ -28,8 +28,6 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
-    void clearWeak() throws JavetException;
-
     default boolean delete(int key) throws JavetException {
         return delete(getV8Runtime().createV8ValueInteger(key));
     }
@@ -342,10 +340,6 @@ public interface IV8ValueObject extends IV8ValueReference {
         invoke(functionName, false, v8Values);
     }
 
-    boolean isWeak() throws JavetException;
-
-    boolean isWeak(boolean forceSync) throws JavetException;
-
     default boolean set(int key, V8Value value) throws JavetException {
         return set(getV8Runtime().createV8ValueInteger(key), value);
     }
@@ -428,8 +422,6 @@ public interface IV8ValueObject extends IV8ValueReference {
     default boolean setPropertyUndefined(String key) throws JavetException {
         return setProperty(new V8ValueString(key), getV8Runtime().createV8ValueUndefined());
     }
-
-    void setWeak() throws JavetException;
 
     default boolean setUndefined(int key) throws JavetException {
         return set(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueUndefined());

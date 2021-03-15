@@ -23,15 +23,19 @@
 
 namespace Javet {
 	namespace Callback {
+		static JavaVM* GlobalJavaVM;
+
 		static jclass jclassJavetCallbackContext;
 		static jmethodID jmethodIDJavetCallbackContextGetCallbackOwnerFunction;
 		static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
 		static jmethodID jmethodIDJavetCallbackContextIsThisObjectRequired;
 		static jmethodID jmethodIDJavetCallbackContextSetHandle;
 
+		static jclass jclassIV8Module;
+		static jmethodID jmethodIDIV8ModuleGetHandle;
+
 		static jclass jclassIV8ValueFunction;
 		static jmethodID jmethodIDIV8ValueFunctionReceiveCallback;
-		static jmethodID jmethodIDIV8ValueFunctionGetV8Runtime;
 
 		static jclass jclassIV8ValueReference;
 		static jmethodID jmethodIDIV8ValueReferenceClose;
@@ -42,11 +46,14 @@ namespace Javet {
 		static jclass jclassThrowable;
 		static jmethodID jmethodIDThrowableGetMessage;
 
-		void Initialize(JNIEnv* jniEnv);
+		static jclass jclassV8Runtime;
+		static jmethodID jmethodIDV8RuntimeGetModule;
+
+		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
 
 		V8MaybeLocalModule ModuleResolveCallback(
-			V8LocalContext context, V8LocalString specifier,
-			V8LocalFixedArray import_assertions, V8LocalModule referrer);
+			V8LocalContext v8Context, V8LocalString specifier,
+			V8LocalFixedArray importAssertions, V8LocalModule referrer);
 
 		class JavetCallbackContextReference {
 		public:
@@ -64,7 +71,7 @@ namespace Javet {
 		public:
 			v8::Isolate* v8Isolate;
 			jobject objectReference;
-			V8PersistentObject* v8PersistentObjectPointer;
+			V8PersistentData* v8PersistentDataPointer;
 			void Clear(JNIEnv* jniEnv);
 			void Close(JNIEnv* jniEnv);
 		};

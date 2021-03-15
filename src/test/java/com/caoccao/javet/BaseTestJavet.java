@@ -43,7 +43,7 @@ public abstract class BaseTestJavet {
             flags.setAllowNativesSyntax(true);
             flags.setExposeGC(true);
             flags.setExposeInspectorScripts(true);
-            flags.setHarmonyTopLevelAwait(true);
+            flags.setHarmonyTopLevelAwait(false);
             flags.setUseStrict(true);
             flags.setTrackRetainingPath(true);
         }

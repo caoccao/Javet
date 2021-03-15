@@ -107,6 +107,8 @@ final class V8Native {
 
     native static Object moduleGetException(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    native static Object moduleGetNamespace(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     native static int moduleGetScriptId(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     native static int moduleGetStatus(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

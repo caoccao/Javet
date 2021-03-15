@@ -22,7 +22,7 @@ import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
-import com.caoccao.javet.values.reference.global.V8ValueGlobalJson;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 
 import java.util.Objects;
 
@@ -36,26 +36,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     protected V8ValueObject(long handle) {
         super(handle);
-    }
-
-    @Override
-    public void clearWeak() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.clearWeak(this);
-        weak = false;
-    }
-
-    @Override
-    public void close() throws JavetException {
-        close(false);
-    }
-
-    @Override
-    public void close(boolean forceClose) throws JavetException {
-        if (!isWeak()) {
-            forceClose = true;
-        }
-        super.close(forceClose);
     }
 
     @Override
@@ -145,20 +125,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean isWeak() throws JavetException {
-        return weak;
-    }
-
-    @Override
-    public boolean isWeak(boolean force) throws JavetException {
-        if (force) {
-            checkV8Runtime();
-            weak = v8Runtime.isWeak(this);
-        }
-        return weak;
-    }
-
-    @Override
     public boolean set(V8Value key, V8Value value) throws JavetException {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
@@ -175,13 +141,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public void setWeak() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.setWeak(this);
-        weak = true;
-    }
-
-    @Override
     public String toProtoString() {
         try {
             checkV8Runtime();
@@ -195,8 +154,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public String toJsonString() {
         try {
             checkV8Runtime();
-            try (V8ValueGlobalJson v8ValueGlobalJson = v8Runtime.getGlobalObject().getJson()) {
-                return v8ValueGlobalJson.stringify(this);
+            try (V8ValueBuiltInJson v8ValueBuiltInJson = v8Runtime.getGlobalObject().getJson()) {
+                return v8ValueBuiltInJson.stringify(this);
             }
         } catch (JavetException e) {
             return e.getMessage();

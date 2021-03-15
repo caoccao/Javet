@@ -265,6 +265,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetExcep
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleGetNamespace
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNamespace
+  (JNIEnv *, jclass, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    moduleGetScriptId
  * Signature: (JJI)I
  */

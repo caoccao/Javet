@@ -50,8 +50,15 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
+    public void clearWeak() throws JavetException {
+        checkV8Runtime();
+        v8Runtime.clearWeak(this);
+        weak = false;
+    }
+
+    @Override
     public void close() throws JavetException {
-        close(true);
+        close(false);
     }
 
     @Override
@@ -59,7 +66,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         if (handle == 0L) {
             throw new JavetV8ValueAlreadyClosedException();
         }
-        if (forceClose) {
+        if (forceClose || !isWeak()) {
             removeReference();
             handle = 0L;
             v8Runtime = null;
@@ -90,14 +97,22 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         return handle;
     }
 
-    protected void removeReference() throws JavetException {
-        v8Runtime.removeReference(this);
+    @Override
+    public boolean isWeak() throws JavetException {
+        return weak;
     }
 
     @Override
-    public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
-        super.setV8Runtime(v8Runtime);
-        addReference();
+    public boolean isWeak(boolean force) throws JavetException {
+        if (force) {
+            checkV8Runtime();
+            weak = v8Runtime.isWeak(this);
+        }
+        return weak;
+    }
+
+    protected void removeReference() throws JavetException {
+        v8Runtime.removeReference(this);
     }
 
     @Override
@@ -113,6 +128,19 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
             return true;
         }
         return v8Runtime.sameValue(this, v8ValueReference);
+    }
+
+    @Override
+    public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
+        super.setV8Runtime(v8Runtime);
+        addReference();
+    }
+
+    @Override
+    public void setWeak() throws JavetException {
+        checkV8Runtime();
+        v8Runtime.setWeak(this);
+        weak = true;
     }
 
     @Override

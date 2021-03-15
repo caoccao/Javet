@@ -15,10 +15,11 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.values.reference.global;
+package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 
 /**
  * The type V8 value global object is a special object.
@@ -56,14 +57,14 @@ public final class V8ValueGlobalObject extends V8ValueObject {
         // Global object lives as long as V8 runtime lives.
     }
 
-    public V8ValueGlobalJson getJson() throws JavetException {
+    public V8ValueBuiltInJson getJson() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_JSON);
-        return v8Runtime.decorateV8Value(new V8ValueGlobalJson(v8ValueObject.getHandle()));
+        return v8Runtime.decorateV8Value(new V8ValueBuiltInJson(v8ValueObject.getHandle()));
     }
 
-    public V8ValueGlobalPromise getPromise() throws JavetException {
+    public V8ValueBuiltInPromise getPromise() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_PROMISE);
-        return v8Runtime.decorateV8Value(new V8ValueGlobalPromise(v8ValueObject.getHandle()));
+        return v8Runtime.decorateV8Value(new V8ValueBuiltInPromise(v8ValueObject.getHandle()));
     }
 
     @Override

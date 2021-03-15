@@ -4,7 +4,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
-public interface IV8DataModule extends IV8ValueReference {
+public interface IV8Module extends IV8ValueReference {
     int Uninstantiated = 0;
     int Instantiating = 1;
     int Instantiated = 2;
@@ -33,7 +33,7 @@ public interface IV8DataModule extends IV8ValueReference {
             }
         }
         if (getStatus() == Instantiated) {
-            return (T) evaluate();
+            return (T) evaluate(resultRequired);
         }
         return (T) getV8Runtime().createV8ValueUndefined();
     }

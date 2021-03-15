@@ -7,10 +7,10 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
-public class V8DataModule extends V8Data implements IV8DataModule {
+public class V8Module extends V8ValueReference implements IV8Module {
     protected String resourceName;
 
-    public V8DataModule(long handle) {
+    public V8Module(long handle) {
         super(handle);
         resourceName = null;
     }
@@ -25,6 +25,20 @@ public class V8DataModule extends V8Data implements IV8DataModule {
     public V8ValueError getException() throws JavetException {
         checkV8Runtime();
         return v8Runtime.moduleGetException(this);
+    }
+
+    /**
+     * Gets namespace.
+     * <p>
+     * Note: Please avoid calling this API in production environment
+     * because its underlying V8 object is not persisted and core dump will take place.
+     *
+     * @return the namespace
+     * @throws JavetException the javet exception
+     */
+    public V8ValueObject getNamespace() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.moduleGetNamespace(this);
     }
 
     public String getResourceName() {
@@ -60,7 +74,12 @@ public class V8DataModule extends V8Data implements IV8DataModule {
     }
 
     @Override
-    public V8DataModule toClone() throws JavetException {
+    public V8Module toClone() throws JavetException {
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return resourceName;
     }
 }

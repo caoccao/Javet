@@ -44,8 +44,7 @@ namespace Javet {
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
 			ERROR("Compilation exception.");
 			auto isolate = v8Context->GetIsolate();
-			V8StringValue exceptionMessage(isolate, v8TryCatch.Exception());
-			jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
+			jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
 			auto v8LocalMessage = v8TryCatch.Message();
 			if (v8LocalMessage.IsEmpty()) {
 				jthrowable javetUnknownCompilationException = (jthrowable)jniEnv->NewObject(
@@ -55,10 +54,8 @@ namespace Javet {
 				jniEnv->Throw(javetUnknownCompilationException);
 			}
 			else {
-				V8StringUtf8Value scriptResourceName(isolate, v8LocalMessage->GetScriptResourceName());
-				jstring jStringScriptResourceName = jniEnv->NewStringUTF(*scriptResourceName);
-				V8StringValue sourceLine(isolate, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
-				jstring jStringSourceLine = jniEnv->NewString(*sourceLine, sourceLine.length());
+				jstring jStringScriptResourceName = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
+				jstring jStringSourceLine = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
 				jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
 					jclassJavetCompilationException,
 					jmethodIDJavetCompilationExceptionConstructor,
@@ -94,8 +91,7 @@ namespace Javet {
 			}
 			else {
 				ERROR("Execution exception.");
-				V8StringValue exceptionMessage(isolate, v8TryCatch.Exception());
-				jstring jStringExceptionMessage = jniEnv->NewString(*exceptionMessage, exceptionMessage.length());
+				jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
 				auto v8LocalMessage = v8TryCatch.Message();
 				if (v8LocalMessage.IsEmpty()) {
 					jthrowable javetUnknownExecutionException = (jthrowable)jniEnv->NewObject(
@@ -105,10 +101,8 @@ namespace Javet {
 					jniEnv->Throw(javetUnknownExecutionException);
 				}
 				else {
-					V8StringUtf8Value scriptResourceName(isolate, v8LocalMessage->GetScriptResourceName());
-					jstring jStringScriptResourceName = jniEnv->NewStringUTF(*scriptResourceName);
-					V8StringValue sourceLine(isolate, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
-					jstring jStringSourceLine = jniEnv->NewString(*sourceLine, sourceLine.length());
+					jstring jStringScriptResourceName = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
+					jstring jStringSourceLine = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
 					jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
 						jclassJavetExecutionException,
 						jmethodIDJavetExecutionExceptionConstructor,
