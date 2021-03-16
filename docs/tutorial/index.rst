@@ -8,6 +8,7 @@ Tutorial
 * `Know the Lock <know_the_lock.rst>`_
 * `Manipulate V8 Collection <manipulate_v8_collection.rst>`_
 * `Manipulate V8 Function <manipulate_v8_function.rst>`_
+* `Modularization <modularization.rst>`_
 * `Spring Integration <spring_integration.rst>`_
 * `Logging <logging.rst>`_
 * `Termination <termination.rst>`_

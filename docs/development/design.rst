@@ -26,6 +26,37 @@ Reference typed objects keep memory footprint in V8 + JNI + JVM. All resource wi
 
 Please refer to `Best Practices <best_practices.rst>`_ for detail.
 
+Module
+======
+
+Executing all scripts in global context is not recommended when project size increases. Javet provides complete support to applications so that V8 runtime context is aligned with the way Node or Chrome does. That brings the module system.
+
+Unfortunately, V8 has very limited support to the JS module system. However, that is not bad because V8 leaves all the possibilities to Javet. The typical challenges Javet faces are as following.
+
+* Sync or Async
+* Module Location
+* Module Dependency
+
+require() vs. import()
+----------------------
+
+=============== =========== ======================= ==============================
+Feature         Async       V8 Support              Javet Support
+=============== =========== ======================= ==============================
+``require()``   No          No                      Yes (with an Interceptor)
+``import()``    Yes         Yes (Partial)           Yes (Complete)
+=============== =========== ======================= ==============================
+
+Module Virtualization
+---------------------
+
+Javet doesn't build ``require()`` in but allows applications to set an interceptor because Javet doesn't know how to locate the modules and doesn't want to know for security issues. So it's up to the applications to define their own ways of locating the modules.
+
+Javet provides complete support to ES6 ``import()`` because certain work inside JNI has to be in place as V8 only partially supports ``import()``. So, in Javet the module is kind of virtualized, in other words, the module is represented by an arbitrary string that can be interpreted by applications during runtime. E.g. ``module.js`` may come from a file, a URL, a string in memory or whatever. Javet stores the compiled and evaluated module in a map with that string as key, and feeds V8 that module when V8 looks it up by that string.
+
+.. image:: ../resources/images/javet_module_system.png?raw=true
+    :alt: Javet Module System
+
 Engine Pool
 ===========
 
