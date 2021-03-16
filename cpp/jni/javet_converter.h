@@ -20,7 +20,7 @@
 
 #include <jni.h>
 #include <v8.h>
-#include "javet_converter.h"
+#include "javet_constants.h"
 #include "javet_types.h"
 
 namespace Javet {
@@ -72,6 +72,10 @@ namespace Javet {
 		static jclass jclassV8Module;
 		static jmethodID jmethodIDV8ModuleConstructor;
 		static jmethodID jmethodIDV8ModuleGetHandle;
+
+		static jclass jclassV8Script;
+		static jmethodID jmethodIDV8ScriptConstructor;
+		static jmethodID jmethodIDV8ScriptGetHandle;
 
 		static jclass jclassV8ValueArguments;
 		static jmethodID jmethodIDV8ValueArgumentsConstructor;

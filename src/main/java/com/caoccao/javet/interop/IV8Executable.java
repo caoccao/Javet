@@ -20,26 +20,58 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public interface IV8Executable {
-    V8Module compileModule(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException;
-
-    V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException;
-
-    <T extends V8Value> T execute(
-            String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException;
-
-    default IV8Executor getExecutor(File scriptFile) {
-        return getExecutor(scriptFile.toPath());
+    default <T extends V8Value> T execute() throws JavetException {
+        return execute(true);
     }
 
-    IV8Executor getExecutor(Path scriptPath);
+    <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
 
-    IV8Executor getExecutor(String scriptString);
+    default Boolean executeBoolean() throws JavetException {
+        return executeObject();
+    }
+
+    default Double executeDouble() throws JavetException {
+        return executeObject();
+    }
+
+    default Integer executeInteger() throws JavetException {
+        return executeObject();
+    }
+
+    default Long executeLong() throws JavetException {
+        return executeObject();
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R executeObject() throws JavetException {
+        try (V8Value v8Value = execute()) {
+            try {
+                return ((T) v8Value).getValue();
+            } catch (Throwable t) {
+            }
+        }
+        return null;
+    }
+
+    default String executeString()
+            throws JavetException {
+        return executeObject();
+    }
+
+    default void executeVoid() throws JavetException {
+        execute(false);
+    }
+
+    default ZonedDateTime executeZonedDateTime() throws JavetException {
+        return executeObject();
+    }
 }

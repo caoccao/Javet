@@ -3,34 +3,13 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetCompilationException;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Module extends BaseTestJavetRuntime {
-    protected JavetStandardConsoleInterceptor interceptor;
-
-    @AfterEach
-    @Override
-    public void afterEach() throws JavetException {
-        interceptor.unregister(v8Runtime.getGlobalObject());
-        v8Runtime.requestGarbageCollectionForTesting(true);
-        super.afterEach();
-    }
-
-    @BeforeEach
-    @Override
-    public void beforeEach() throws JavetException {
-        super.beforeEach();
-        interceptor = new JavetStandardConsoleInterceptor(v8Runtime);
-        interceptor.register(v8Runtime.getGlobalObject());
-    }
-
     @Test
     public void testExecute() throws JavetException {
         IV8Executor iV8Executor = v8Runtime.getExecutor(
@@ -174,7 +153,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
     @Test
     public void testUnexpectedIdentifier() throws JavetException {
         try (V8Module v8Module = v8Runtime.getExecutor(
-                "a b c").setResourceName("./test.js").compileModule(true)) {
+                "a b c").setResourceName("./test.js").compileModule()) {
             fail("Failed to report error.");
         } catch (JavetCompilationException e) {
             assertFalse(v8Runtime.containsModule("./test.js"));

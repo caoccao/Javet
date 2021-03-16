@@ -30,6 +30,7 @@ import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
-public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creatable {
+public final class V8Runtime implements IJavetClosable, IV8Creatable {
     private static final long INVALID_HANDLE = 0L;
     private static final String PROPERTY_DATA_VIEW = "DataView";
     private static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
@@ -136,7 +137,6 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
         }
     }
 
-    @Override
     public V8Module compileModule(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
         v8ScriptOrigin.setModule(true);
         if (v8ScriptOrigin.getResourceName() == null) {
@@ -151,7 +151,6 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
         return v8Module;
     }
 
-    @Override
     public V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
         v8ScriptOrigin.setModule(false);
         return decorateV8Value((V8Script) V8Native.compile(
@@ -277,7 +276,6 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
         return V8Native.equals(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
-    @Override
     public <T extends V8Value> T execute(
             String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
         return decorateV8Value((T) V8Native.execute(
@@ -300,18 +298,20 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
         return moduleMap.size();
     }
 
-    @Override
+    public String getGlobalName() {
+        return globalName;
+    }
+
+    public IV8Executor getExecutor(File scriptFile) {
+        return getExecutor(scriptFile.toPath());
+    }
+
     public IV8Executor getExecutor(Path scriptPath) {
         return new V8PathExecutor(this, scriptPath);
     }
 
-    @Override
     public IV8Executor getExecutor(String scriptString) {
         return new V8StringExecutor(this, scriptString);
-    }
-
-    public String getGlobalName() {
-        return globalName;
     }
 
     public void setGlobalName(String globalName) {
@@ -601,6 +601,12 @@ public final class V8Runtime implements IJavetClosable, IV8Executable, IV8Creata
         v8Inspector = null;
         V8Native.resetV8Isolate(handle, globalName);
         return this;
+    }
+
+    public <T extends V8Value> T scriptRun(
+            IV8Script iV8Script, boolean resultRequired) throws JavetException {
+        return decorateV8Value((T) V8Native.scriptRun(
+                handle, iV8Script.getHandle(), iV8Script.getType(), resultRequired));
     }
 
     public boolean set(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {

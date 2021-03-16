@@ -393,6 +393,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    scriptRun
+ * Signature: (JJIZ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptRun
+  (JNIEnv *, jclass, jlong, jlong, jint, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    set
  * Signature: (JJILjava/lang/Object;Ljava/lang/Object;)Z
  */

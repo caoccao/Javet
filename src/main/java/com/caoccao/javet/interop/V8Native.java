@@ -141,6 +141,8 @@ final class V8Native {
 
     native static void resetV8Isolate(long v8RuntimeHandle, String globalName);
 
+    native static Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
+
     native static boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     /**
