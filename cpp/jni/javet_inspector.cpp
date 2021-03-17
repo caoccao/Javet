@@ -70,7 +70,7 @@ namespace Javet {
 		}
 
 		void JavetInspector::send(const std::string& message) {
-			DEBUG("Sending request: " << message);
+			LOG_DEBUG("Sending request: " << message);
 			auto stringViewMessagePointer = ConvertFromStdStringToStringViewPointer(message);
 			client->dispatchProtocolMessage(*stringViewMessagePointer.get());
 		}
@@ -144,7 +144,7 @@ namespace Javet {
 			auto v8Locker = v8Runtime->GetUniqueV8Locker();
 			V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
 			auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
-			DEBUG("Sending notification: " << *stdStringMessagePointer.get());
+			LOG_DEBUG("Sending notification: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
 			jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdStringMessagePointer->c_str());
 			jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveNotification, jMessage);
@@ -155,7 +155,7 @@ namespace Javet {
 			auto v8Locker = v8Runtime->GetUniqueV8Locker();
 			V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
 			auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
-			DEBUG("Sending response: " << *stdStringMessagePointer.get());
+			LOG_DEBUG("Sending response: " << *stdStringMessagePointer.get());
 			FETCH_JNI_ENV(GlobalJavaVM);
 			jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdStringMessagePointer->c_str());
 			jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveResponse, jMessage);

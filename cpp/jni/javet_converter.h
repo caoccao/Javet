@@ -19,9 +19,9 @@
 #pragma once
 
 #include <jni.h>
-#include <v8.h>
 #include "javet_constants.h"
 #include "javet_types.h"
+#include "javet_v8.h"
 
 namespace Javet {
 	namespace Converter {
@@ -169,6 +169,14 @@ namespace Javet {
 		static inline jstring ToJavaString(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue) {
 			V8StringUtf8Value v8StringUtf8Value(v8Context->GetIsolate(), v8LocalValue);
 			return jniEnv->NewStringUTF(*v8StringUtf8Value);
+		}
+
+		static inline std::unique_ptr<std::string> ToStdString(JNIEnv* jniEnv, jstring mString) {
+			jboolean isCopy(false);
+			const char* utfChars = jniEnv->GetStringUTFChars(mString, &isCopy);
+			auto stdStringPointer = std::make_unique<std::string>(utfChars, jniEnv->GetStringUTFLength(mString));
+			jniEnv->ReleaseStringUTFChars(mString, utfChars);
+			return stdStringPointer;
 		}
 
 		static inline std::unique_ptr<std::string> ToStdString(const V8LocalContext& v8Context, const V8LocalString& v8LocalString) {

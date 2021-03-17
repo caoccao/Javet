@@ -16,9 +16,6 @@
  */
 
 #include <jni.h>
-#include <libplatform/libplatform.h>
-#include <v8.h>
-#include <v8-inspector.h>
 #include <functional>
 #include <string.h>
 #include <map>
@@ -31,7 +28,9 @@
 #include "javet_globals.h"
 #include "javet_inspector.h"
 #include "javet_logging.h"
+#include "javet_node.h"
 #include "javet_types.h"
+#include "javet_v8.h"
 #include "javet_v8_runtime.h"
 
  /*
@@ -161,9 +160,8 @@ namespace Javet {
 	}
 }
 
-JNIEXPORT jint JNICALL JNI_OnLoad
-(JavaVM* javaVM, void*) {
-	INFO("JNI_Onload() begins.");
+jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
+	LOG_INFO("JNI_Onload() begins.");
 	JNIEnv* jniEnv;
 	if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
 		return ERROR_JNI_ON_LOAD;
@@ -171,19 +169,35 @@ JNIEXPORT jint JNICALL JNI_OnLoad
 	if (jniEnv == nullptr) {
 		return ERROR_JNI_ON_LOAD;
 	}
-	INFO("V8::Initialize() begins.");
-	v8::V8::InitializeICU();
+	LOG_INFO("V8::Initialize() begins.");
+#ifdef ENABLE_NODE
+	uv_setup_args(0, nullptr);
+	std::vector<std::string> args{ "" };
+	std::vector<std::string> exec_args;
+	std::vector<std::string> errors;
+	int exit_code = node::InitializeNodeWithArgs(&args, &exec_args, &errors);
+	Javet::GlobalV8Platform = node::MultiIsolatePlatform::Create(16);
+#else
+	//v8::V8::InitializeICU();
 	Javet::GlobalV8Platform = v8::platform::NewDefaultPlatform();
+#endif
 	v8::V8::InitializePlatform(Javet::GlobalV8Platform.get());
 	v8::V8::Initialize();
-	INFO("V8::Initialize() ends.");
+	LOG_INFO("V8::Initialize() ends.");
 	Javet::Callback::Initialize(jniEnv, javaVM);
 	Javet::Converter::Initialize(jniEnv);
 	Javet::Exceptions::Initialize(jniEnv);
 	Javet::Inspector::Initialize(jniEnv, javaVM);
 	Javet::Main::Initialize(jniEnv, javaVM);
-	INFO("JNI_Onload() ends.");
+	LOG_INFO("JNI_Onload() ends.");
 	return JNI_VERSION_1_8;
+}
+
+void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
+	LOG_INFO("JNI_OnUnload() begins.");
+	v8::V8::Dispose();
+	v8::V8::ShutdownPlatform();
+	LOG_INFO("JNI_OnUnload() ends.");
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
@@ -295,7 +309,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
 				return Javet::Converter::ToExternalV8Data(jniEnv, v8Runtime->externalV8Runtime, v8Context, maybeLocalCompiledModule.ToLocalChecked());
 			}
 			catch (const std::exception& e) {
-				ERROR(e.what());
+				LOG_ERROR(e.what());
 				Javet::Exceptions::ThrowJavetConverterException(jniEnv, e.what());
 			}
 		}
@@ -310,7 +324,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
 				return Javet::Converter::ToExternalV8Script(jniEnv, v8Runtime->externalV8Runtime, v8Context, maybeLocalCompiledScript.ToLocalChecked());
 			}
 			catch (const std::exception& e) {
-				ERROR(e.what());
+				LOG_ERROR(e.what());
 				Javet::Exceptions::ThrowJavetConverterException(jniEnv, e.what());
 			}
 		}
@@ -412,7 +426,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
 	return v8LocalObject1->Equals(v8Context, v8LocalObject2).FromMaybe(false);
 }
 
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute__JLjava_lang_String_2ZLjava_lang_String_2IIIZZ
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mScript, jboolean mResultRequired,
 	jstring mResourceName, jint mResourceLineOffset, jint mResourceColumnOffset, jint mScriptId, jboolean mIsWASM, jboolean mIsModule) {
 	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
@@ -428,7 +442,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 		}
 		else if (!maybeLocalCompiledModule.IsEmpty()) {
 			auto compliedModule = maybeLocalCompiledModule.ToLocalChecked();
-			if (compliedModule->InstantiateModule(v8Context, Javet::Callback::ModuleResolveCallback).FromMaybe(false)) {
+			auto maybeResult = compliedModule->InstantiateModule(v8Context, Javet::Callback::ModuleResolveCallback);
+			if (maybeResult.FromMaybe(false)) {
 				auto maybeLocalValueResult = compliedModule->Evaluate(v8Context);
 				if (v8TryCatch.HasCaught()) {
 					Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
@@ -455,6 +470,25 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 			}
 		}
 	}
+	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute__JLjava_lang_String_2ZI
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mScript, jboolean mResultRequired,
+	jint mNodeScriptMode) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+#ifdef ENABLE_NODE
+	auto stdStringScript = Javet::Converter::ToStdString(jniEnv, mScript);
+	auto uvLoop = uv_default_loop();
+	auto nodeIsolateData = node::CreateIsolateData(v8Context->GetIsolate(), uvLoop);
+	std::vector<std::string> args;
+	std::vector<std::string> execArgs;
+	auto nodeEnvironment = node::CreateEnvironment(nodeIsolateData, v8Context, args, execArgs);
+	auto maybeLocalValue = node::LoadEnvironment(nodeEnvironment, stdStringScript.get()->c_str());
+	if (!maybeLocalValue.IsEmpty()) {
+		v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, maybeLocalValue.ToLocalChecked());
+	}
+#endif
 	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
 
@@ -822,7 +856,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHa
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCollectionForTesting
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jboolean fullGC) {
 	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-	v8Runtime->v8Isolate->RequestGarbageCollectionForTesting(((bool)fullGC)
+	v8Runtime->v8Isolate->RequestGarbageCollectionForTesting(fullGC
 		? v8::Isolate::GarbageCollectionType::kFullGarbageCollection
 		: v8::Isolate::GarbageCollectionType::kMinorGarbageCollection);
 }

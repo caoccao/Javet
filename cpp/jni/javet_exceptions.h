@@ -18,8 +18,8 @@
 #pragma once
 
 #include <jni.h>
-#include <v8.h>
 #include "javet_types.h"
+#include "javet_v8.h"
 
 namespace Javet {
 	namespace Exceptions {

@@ -21,13 +21,9 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
-import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.reference.IV8Module;
 import com.caoccao.javet.values.reference.V8ValueObject;
-import com.caoccao.javet.values.reference.V8ValuePromise;
-import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -61,7 +57,17 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
-    public void testExecuteScript() throws JavetException {
+    public void testExecuteScriptInNode() throws JavetException {
+//        V8Host v8Host = V8Host.getInstance();
+//        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+//            try (V8Value v8Value = v8Runtime.execute("1+1", new NodeScriptOption(), true)) {
+//                assertNotNull(v8Value);
+//            }
+//        }
+    }
+
+    @Test
+    public void testExecuteScriptInV8() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.getExecutor("var a = 1;").executeVoid();

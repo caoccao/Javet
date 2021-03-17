@@ -20,26 +20,26 @@
 #include <iostream>
 
 #ifndef JAVET_DEBUG
-#define DEBUG(x) 
+#define LOG_DEBUG(x) 
 #else
-#define DEBUG(x) do { std::cout << "DEBUG: " << x << std::endl; } while (0)
+#define LOG_DEBUG(x) do { std::cout << "DEBUG: " << x << std::endl; } while (0)
 #endif
 
 #ifndef JAVET_ERROR
-#define ERROR(x) 
+#define LOG_ERROR(x) 
 #else
-#define ERROR(x) do { std::cout << "ERROR: " << x << std::endl; } while (0)
+#define LOG_ERROR(x) do { std::cout << "ERROR: " << x << std::endl; } while (0)
 #endif
 
 #ifndef JAVET_INFO
-#define INFO(x) 
+#define LOG_INFO(x) 
 #else
-#define INFO(x) do { std::cout << "INFO: " << x << std::endl; } while (0)
+#define LOG_INFO(x) do { std::cout << "INFO: " << x << std::endl; } while (0)
 #endif
 
 #ifndef JAVET_TRACE
-#define TRACE(x) 
+#define LOG_TRACE(x) 
 #else
-#define TRACE(x) do { std::cout << "TRACE: " << x << std::endl; } while (0)
+#define LOG_TRACE(x) do { std::cout << "TRACE: " << x << std::endl; } while (0)
 #endif
 

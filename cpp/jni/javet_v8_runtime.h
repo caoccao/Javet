@@ -18,13 +18,11 @@
 #pragma once
 
 #include <jni.h>
-#include <v8.h>
-#include <v8-inspector.h>
-#include "javet_constants.h"
 #include "javet_converter.h"
 #include "javet_exceptions.h"
 #include "javet_logging.h"
 #include "javet_types.h"
+#include "javet_v8.h"
 
 namespace Javet {
 	namespace Inspector {
@@ -97,7 +95,7 @@ namespace Javet {
 				return Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Value);
 			}
 			catch (const std::exception& e) {
-				ERROR(e.what());
+				LOG_ERROR(e.what());
 				Javet::Exceptions::ThrowJavetConverterException(jniEnv, e.what());
 			}
 			return nullptr;

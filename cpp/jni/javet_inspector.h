@@ -17,10 +17,9 @@
 
 #pragma once
 
-#include <v8.h>
-#include <v8-inspector.h>
 #include <jni.h>
 #include "javet_v8_runtime.h"
+#include "javet_v8.h"
 
 namespace Javet {
 	namespace Inspector {

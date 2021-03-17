@@ -19,6 +19,11 @@
 
 namespace Javet {
 	namespace Enums {
+		enum NodeScriptMode {
+			String = 0,
+			File = 1,
+		};
+
 		enum V8ValueReferenceType {
 			Invalid = 0,
 			Object = 1,

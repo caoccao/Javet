@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include <v8.h>
 #include <jni.h>
 #include "javet_types.h"
+#include "javet_v8.h"
 
 namespace Javet {
 	namespace Callback {
@@ -52,8 +52,12 @@ namespace Javet {
 		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
 
 		V8MaybeLocalModule ModuleResolveCallback(
-			V8LocalContext v8Context, V8LocalString specifier,
-			V8LocalFixedArray importAssertions, V8LocalModule referrer);
+			V8LocalContext v8Context,
+			V8LocalString specifier,
+#ifndef ENABLE_NODE
+			V8LocalFixedArray importAssertions,
+#endif
+			V8LocalModule referrer);
 
 		class JavetCallbackContextReference {
 		public:

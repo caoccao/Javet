@@ -17,21 +17,22 @@
 
 #pragma once
 
-#include <jni.h>
-#include <libplatform/libplatform.h>
-#include "javet_node.h"
-#include "javet_types.h"
-
-#define FETCH_JNI_ENV(javaVMPointer) \
-	JNIEnv* jniEnv; \
-	javaVMPointer->GetEnv((void**)&jniEnv, JNI_VERSION_1_8); \
-	javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
-
-namespace Javet {
 #ifdef ENABLE_NODE
-	static std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform = nullptr;
-#else
-	static std::unique_ptr<V8Platform> GlobalV8Platform = nullptr;
-#endif
-}
 
+#pragma warning(disable: 4275)
+#pragma warning(disable: 4251)
+#include <node.h>
+#include <uv.h>
+#pragma warning(default: 4275)
+#pragma warning(default: 4251)
+
+// These libraries are for UV on Windows
+#pragma comment(lib, "Crypt32.lib")
+#pragma comment(lib, "Dbghelp.lib")
+#pragma comment(lib, "Iphlpapi.lib")
+#pragma comment(lib, "Psapi.lib")
+#pragma comment(lib, "Userenv.lib")
+#pragma comment(lib, "Winmm.lib")
+#pragma comment(lib, "Ws2_32.lib")
+
+#endif

@@ -56,21 +56,25 @@ namespace Javet {
 		}
 
 		V8MaybeLocalModule ModuleResolveCallback(
-			V8LocalContext v8Context, V8LocalString specifier,
-			V8LocalFixedArray importAssertions, V8LocalModule referrer) {
+			V8LocalContext v8Context,
+			V8LocalString specifier,
+#ifndef ENABLE_NODE
+			V8LocalFixedArray importAssertions,
+#endif
+			V8LocalModule referrer) {
 			auto v8Runtime = V8Runtime::FromV8Context(v8Context);
 			FETCH_JNI_ENV(GlobalJavaVM);
 			jobject mIV8Module = jniEnv->CallObjectMethod(
 				v8Runtime->externalV8Runtime, jmethodIDV8RuntimeGetModule,
 				Javet::Converter::ToJavaString(jniEnv, v8Context, specifier));
 			if (mIV8Module == nullptr) {
-				ERROR("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " not found");
+				LOG_ERROR("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " not found");
 				return V8MaybeLocalModule();
 			}
 			else {
 				auto mHandle = jniEnv->CallLongMethod(mIV8Module, jmethodIDIV8ModuleGetHandle);
 				auto v8PersistentModule = TO_V8_PERSISTENT_MODULE_POINTER(mHandle);
-				DEBUG("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " found");
+				LOG_DEBUG("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " found");
 				return v8PersistentModule->Get(v8Context->GetIsolate());
 			}
 		}

@@ -42,7 +42,7 @@ namespace Javet {
 		}
 
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
-			ERROR("Compilation exception.");
+			LOG_ERROR("Compilation exception.");
 			auto isolate = v8Context->GetIsolate();
 			jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
 			auto v8LocalMessage = v8TryCatch.Message();
@@ -75,14 +75,14 @@ namespace Javet {
 		}
 
 		void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message) {
-			ERROR(*message);
+			LOG_ERROR(*message);
 			jniEnv->ThrowNew(jclassJavetConverterException, message);
 		}
 
 		void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
 			auto isolate = v8Context->GetIsolate();
 			if (v8TryCatch.HasTerminated()) {
-				ERROR("Execution has been terminated.");
+				LOG_ERROR("Execution has been terminated.");
 				jthrowable javetTerminatedException = (jthrowable)jniEnv->NewObject(
 					jclassJavetTerminatedException,
 					jmethodIDJavetTerminatedExceptionConstructor,
@@ -90,7 +90,7 @@ namespace Javet {
 				jniEnv->Throw(javetTerminatedException);
 			}
 			else {
-				ERROR("Execution exception.");
+				LOG_ERROR("Execution exception.");
 				jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
 				auto v8LocalMessage = v8TryCatch.Message();
 				if (v8LocalMessage.IsEmpty()) {
