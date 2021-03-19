@@ -115,7 +115,7 @@ namespace Javet {
 				activateMessageLoop = true;
 				runningMessageLoop = true;
 				while (activateMessageLoop) {
-					while (v8::platform::PumpMessageLoop(Javet::GlobalV8Platform.get(), v8Runtime->v8Isolate)) {
+					while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
 					}
 				}
 				runningMessageLoop = false;

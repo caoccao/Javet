@@ -57,17 +57,7 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
-    public void testExecuteScriptInNode() throws JavetException {
-//        V8Host v8Host = V8Host.getInstance();
-//        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-//            try (V8Value v8Value = v8Runtime.execute("1+1", new NodeScriptOption(), true)) {
-//                assertNotNull(v8Value);
-//            }
-//        }
-    }
-
-    @Test
-    public void testExecuteScriptInV8() throws JavetException {
+    public void testExecuteScript() throws JavetException {
         V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.getExecutor("var a = 1;").executeVoid();

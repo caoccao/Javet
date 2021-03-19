@@ -20,7 +20,9 @@
 #include <jni.h>
 #include "javet_converter.h"
 #include "javet_exceptions.h"
+#include "javet_globals.h"
 #include "javet_logging.h"
+#include "javet_node.h"
 #include "javet_types.h"
 #include "javet_v8.h"
 
@@ -34,19 +36,27 @@ namespace Javet {
 
 	class V8Runtime {
 	public:
+#ifdef ENABLE_NODE
+		std::shared_ptr<node::ArrayBufferAllocator> arrayBufferAllocator;
+		uv_loop_t uvLoop;
+		node::MultiIsolatePlatform* v8PlatformPointer;
+		std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> nodeEnvironment;
+#else
+		V8Platform* v8PlatformPointer;
+#endif
 		v8::Isolate* v8Isolate;
 		jobject externalV8Runtime;
 		V8PersistentContext v8Context;
 		V8PersistentObject v8GlobalObject;
 		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
+		V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer);
+
+		void CloseV8Context();
 		void CloseV8Isolate();
 
-		inline void CreateV8Isolate() {
-			v8::Isolate::CreateParams createParams;
-			createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-			v8Isolate = v8::Isolate::New(createParams);
-		}
+		void CreateV8Context(JNIEnv* jniEnv, jstring mGlobalName);
+		void CreateV8Isolate();
 
 		static inline V8Runtime* FromHandle(jlong handle) {
 			return reinterpret_cast<V8Runtime*>(handle);
@@ -84,11 +94,9 @@ namespace Javet {
 			v8Locker.reset(new v8::Locker(v8Isolate));
 		}
 
-		void Register(V8LocalContext v8Context) {
+		inline void Register(V8LocalContext v8Context) {
 			v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
 		}
-
-		void ResetV8Context(JNIEnv* jniEnv, jstring mGlobalName);
 
 		inline jobject SafeToExternalV8Value(JNIEnv* jniEnv, V8LocalContext v8Context, V8LocalValue v8Value) {
 			try {
@@ -103,6 +111,10 @@ namespace Javet {
 
 		inline void Unlock() {
 			v8Locker.reset();
+		}
+
+		inline void Unregister(V8LocalContext v8Context) {
+			v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, 0));
 		}
 
 		virtual ~V8Runtime();

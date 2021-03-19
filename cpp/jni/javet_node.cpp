@@ -15,15 +15,37 @@
  *   limitations under the License.
  */
 
-#pragma once
-
-#include <jni.h>
-#include <libplatform/libplatform.h>
 #include "javet_node.h"
-#include "javet_types.h"
 
-#define FETCH_JNI_ENV(javaVMPointer) \
-	JNIEnv* jniEnv; \
-	javaVMPointer->GetEnv((void**)&jniEnv, JNI_VERSION_1_8); \
-	javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
+#ifdef ENABLE_NODE
 
+/*
+ * This file is a polyfill to NodeJS.
+ * libnode is built with few symbols not properly linked.
+ * Those missing symbols are declared in this file.
+ */
+
+#define NODE_WANT_INTERNALS 1
+
+#include "node_main_instance.h"
+#include "node_native_module_env.h"
+
+namespace node {
+
+	v8::StartupData* NodeMainInstance::GetEmbeddedSnapshotBlob() {
+		return nullptr;
+	}
+
+	const std::vector<size_t>* NodeMainInstance::GetIsolateDataIndexes() {
+		return nullptr;
+	}
+
+	namespace native_module {
+
+		const bool has_code_cache = false;
+
+		void NativeModuleEnv::InitializeCodeCache() {}
+
+	}
+}
+#endif

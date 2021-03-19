@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# Usage sample: build -DV8_DIR=~/v8
+# Usage for V8: build -DV8_DIR=~/v8
+# Usage for Node: build -DV8_DIR=~/node
 JAVET_VERSION=0.8.0
 rm -rf build
 mkdir build

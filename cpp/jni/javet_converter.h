@@ -184,7 +184,7 @@ namespace Javet {
 			return std::make_unique<std::string>(*v8StringUtf8Value, v8StringUtf8Value.length());
 		}
 
-		jobject ToExternalV8Data(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalData& v8Data);
+		jobject ToExternalV8Module(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalModule& v8Module);
 
 		jobject ToExternalV8Script(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalScript& v8Script);
 

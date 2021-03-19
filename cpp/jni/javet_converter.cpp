@@ -200,11 +200,8 @@ namespace Javet {
 			return nullptr;
 		}
 
-		jobject ToExternalV8Data(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalData& v8Data) {
-			if (v8Data->IsModule()) {
-				return jniEnv->NewObject(jclassV8Module, jmethodIDV8ModuleConstructor, ToV8PersistentDataReference(v8Context, v8Data));
-			}
-			return nullptr;
+		jobject ToExternalV8Module(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalModule& v8Module) {
+			return jniEnv->NewObject(jclassV8Module, jmethodIDV8ModuleConstructor, ToV8PersistentDataReference(v8Context, v8Module));
 		}
 
 		jobject ToExternalV8Script(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalScript& v8Script) {
@@ -346,9 +343,11 @@ namespace Javet {
 			if (v8Value->IsName()) {
 				// It defaults to V8ValueObject.
 			}
+#ifndef ENABLE_NODE
 			if (v8Value->IsModule()) {
 				return jniEnv->NewObject(jclassV8Module, jmethodIDV8ModuleConstructor, ToV8PersistentDataReference(v8Context, v8Value));
 			}
+#endif
 			// Object needs to be the last one.
 			if (v8Value->IsObject()) {
 				return jniEnv->NewObject(jclassV8ValueObject, jmethodIDV8ValueObjectConstructor, ToV8PersistentObjectReference(v8Context, v8Value));

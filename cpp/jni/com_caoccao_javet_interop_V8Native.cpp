@@ -117,6 +117,11 @@
 namespace Javet {
 	namespace Main {
 		static JavaVM* GlobalJavaVM;
+#ifdef ENABLE_NODE
+		static std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
+#else
+		static std::unique_ptr<V8Platform> GlobalV8Platform;
+#endif
 
 		static jclass jclassV8ValueInteger;
 		static jmethodID jmethodIDV8ValueIntegerToPrimitive;
@@ -137,6 +142,25 @@ namespace Javet {
 
 			jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueString"));
 			jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
+
+			LOG_INFO("V8::Initialize() begins.");
+			//v8::V8::InitializeICU();
+#ifdef ENABLE_NODE
+			uv_setup_args(0, nullptr);
+			std::vector<std::string> args{ "" };
+			std::vector<std::string> execArgs{ "" };
+			std::vector<std::string> errors;
+			int errorCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
+			if (errorCode != 0) {
+				LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
+			}
+			Javet::Main::GlobalV8Platform = node::MultiIsolatePlatform::Create(16);
+#else
+			Javet::Main::GlobalV8Platform = v8::platform::NewDefaultPlatform();
+#endif
+			v8::V8::InitializePlatform(Javet::Main::GlobalV8Platform.get());
+			v8::V8::Initialize();
+			LOG_INFO("V8::Initialize() ends.");
 		}
 
 		/*
@@ -164,31 +188,18 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
 	LOG_INFO("JNI_Onload() begins.");
 	JNIEnv* jniEnv;
 	if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
+		LOG_ERROR("Failed to call JavaVM.GetEnv().");
 		return ERROR_JNI_ON_LOAD;
 	}
 	if (jniEnv == nullptr) {
+		LOG_ERROR("Failed to get JNIEnv.");
 		return ERROR_JNI_ON_LOAD;
 	}
-	LOG_INFO("V8::Initialize() begins.");
-#ifdef ENABLE_NODE
-	uv_setup_args(0, nullptr);
-	std::vector<std::string> args{ "" };
-	std::vector<std::string> exec_args;
-	std::vector<std::string> errors;
-	int exit_code = node::InitializeNodeWithArgs(&args, &exec_args, &errors);
-	Javet::GlobalV8Platform = node::MultiIsolatePlatform::Create(16);
-#else
-	//v8::V8::InitializeICU();
-	Javet::GlobalV8Platform = v8::platform::NewDefaultPlatform();
-#endif
-	v8::V8::InitializePlatform(Javet::GlobalV8Platform.get());
-	v8::V8::Initialize();
-	LOG_INFO("V8::Initialize() ends.");
+	Javet::Main::Initialize(jniEnv, javaVM);
 	Javet::Callback::Initialize(jniEnv, javaVM);
 	Javet::Converter::Initialize(jniEnv);
 	Javet::Exceptions::Initialize(jniEnv);
 	Javet::Inspector::Initialize(jniEnv, javaVM);
-	Javet::Main::Initialize(jniEnv, javaVM);
 	LOG_INFO("JNI_Onload() ends.");
 	return JNI_VERSION_1_8;
 }
@@ -306,7 +317,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
 		}
 		else if (mResultRequired) {
 			try {
-				return Javet::Converter::ToExternalV8Data(jniEnv, v8Runtime->externalV8Runtime, v8Context, maybeLocalCompiledModule.ToLocalChecked());
+				return Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime->externalV8Runtime, v8Context, maybeLocalCompiledModule.ToLocalChecked());
 			}
 			catch (const std::exception& e) {
 				LOG_ERROR(e.what());
@@ -344,10 +355,10 @@ Creating multiple isolates allows running JavaScript code in multiple threads, t
 */
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 (JNIEnv* jniEnv, jclass callerClass, jstring mGlobalName) {
-	auto v8Runtime = new Javet::V8Runtime();
+	auto v8Runtime = new Javet::V8Runtime(Javet::Main::GlobalV8Platform.get());
 	v8Runtime->CreateV8Isolate();
 	auto v8Locker = v8Runtime->GetUniqueV8Locker();
-	v8Runtime->ResetV8Context(jniEnv, mGlobalName);
+	v8Runtime->CreateV8Context(jniEnv, mGlobalName);
 	return TO_JAVA_LONG(v8Runtime);
 }
 
@@ -478,16 +489,16 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute__JLjav
 	jint mNodeScriptMode) {
 	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
 #ifdef ENABLE_NODE
-	auto stdStringScript = Javet::Converter::ToStdString(jniEnv, mScript);
-	auto uvLoop = uv_default_loop();
-	auto nodeIsolateData = node::CreateIsolateData(v8Context->GetIsolate(), uvLoop);
-	std::vector<std::string> args;
-	std::vector<std::string> execArgs;
-	auto nodeEnvironment = node::CreateEnvironment(nodeIsolateData, v8Context, args, execArgs);
-	auto maybeLocalValue = node::LoadEnvironment(nodeEnvironment, stdStringScript.get()->c_str());
-	if (!maybeLocalValue.IsEmpty()) {
-		v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, maybeLocalValue.ToLocalChecked());
-	}
+	//auto stdStringScript = Javet::Converter::ToStdString(jniEnv, mScript);
+	//auto uvLoop = uv_default_loop();
+	//auto nodeIsolateData = node::CreateIsolateData(v8Context->GetIsolate(), uvLoop);
+	//std::vector<std::string> args;
+	//std::vector<std::string> execArgs;
+	//auto nodeEnvironment = node::CreateEnvironment(nodeIsolateData, v8Context, args, execArgs);
+	//auto maybeLocalValue = node::LoadEnvironment(nodeEnvironment, stdStringScript.get()->c_str());
+	//if (!maybeLocalValue.IsEmpty()) {
+	//	v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, maybeLocalValue.ToLocalChecked());
+	//}
 #endif
 	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
@@ -737,7 +748,11 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNames
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetScriptId
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+#ifdef ENABLE_NODE
+	return 0;
+#else
 	return (jint)v8LocalModule->ScriptId();
+#endif
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetStatus
@@ -864,17 +879,22 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCol
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mGlobalName) {
 	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-	auto v8Locker = v8Runtime->GetSharedV8Locker();
-	v8Runtime->ResetV8Context(jniEnv, mGlobalName);
+	LOG_DEBUG("CloseV8Context begins");
+	v8Runtime->CloseV8Context();
+	LOG_DEBUG("CloseV8Context ends");
+	LOG_DEBUG("CreateV8Context begins");
+	v8Runtime->CreateV8Context(jniEnv, mGlobalName);
+	LOG_DEBUG("CreateV8Context ends");
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jstring mGlobalName) {
 	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+	v8Runtime->CloseV8Context();
 	v8Runtime->CloseV8Isolate();
 	v8Runtime->CreateV8Isolate();
 	auto v8Locker = v8Runtime->GetUniqueV8Locker();
-	v8Runtime->ResetV8Context(jniEnv, mGlobalName);
+	v8Runtime->CreateV8Context(jniEnv, mGlobalName);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptRun
