@@ -29,7 +29,6 @@ namespace Javet {
 #ifdef ENABLE_NODE
 	V8Runtime::V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer)
 		: nodeEnvironment(nullptr, node::FreeEnvironment) {
-		uvLoopPointer = uv_default_loop();
 #else
 	V8Runtime::V8Runtime(V8Platform * v8PlatformPointer) {
 #endif
@@ -50,14 +49,14 @@ namespace Javet {
 			v8::SealHandleScope v8SealHandleScope(v8Isolate);
 			bool hasMoreTasks;
 			do {
-				uv_run(uvLoopPointer, UV_RUN_DEFAULT);
+				uv_run(&uvLoop, UV_RUN_DEFAULT);
 				v8PlatformPointer->DrainTasks(v8Isolate);
-				hasMoreTasks = uv_loop_alive(uvLoopPointer);
+				hasMoreTasks = uv_loop_alive(&uvLoop);
 				if (hasMoreTasks) {
 					continue;
 				}
 				node::EmitBeforeExit(nodeEnvironment.get());
-				hasMoreTasks = uv_loop_alive(uvLoopPointer);
+				hasMoreTasks = uv_loop_alive(&uvLoop);
 			} while (hasMoreTasks == true);
 		}
 		int errorCode = node::EmitExit(nodeEnvironment.get());
@@ -99,9 +98,9 @@ namespace Javet {
 			v8Isolate->Dispose();
 #ifdef ENABLE_NODE
 			while (!isIsolateFinished) {
-				uv_run(uvLoopPointer, UV_RUN_ONCE);
+				uv_run(&uvLoop, UV_RUN_ONCE);
 			}
-			int errorCode = uv_loop_close(uvLoopPointer);
+			int errorCode = uv_loop_close(&uvLoop);
 			if (errorCode != 0) {
 				LOG_ERROR("Failed to close uv loop. Reason: " << uv_err_name(errorCode));
 			}
@@ -116,7 +115,7 @@ namespace Javet {
 		V8HandleScope v8HandleScope(v8Isolate);
 #ifdef ENABLE_NODE
 		std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> isolateData(
-			node::CreateIsolateData(v8Isolate, uvLoopPointer, v8PlatformPointer, arrayBufferAllocator.get()),
+			node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, arrayBufferAllocator.get()),
 			node::FreeIsolateData);
 		auto v8LocalContext = node::NewContext(v8Isolate);
 		V8ContextScope v8ContextScope(v8LocalContext);
@@ -145,12 +144,12 @@ namespace Javet {
 
 	void V8Runtime::CreateV8Isolate() {
 #ifdef ENABLE_NODE
-		int errorCode = uv_loop_init(uvLoopPointer);
+		int errorCode = uv_loop_init(&uvLoop);
 		if (errorCode != 0) {
 			LOG_ERROR("Failed to init uv loop. Reason: " << uv_err_name(errorCode));
 		}
 		arrayBufferAllocator = node::ArrayBufferAllocator::Create();
-		v8Isolate = node::NewIsolate(arrayBufferAllocator, uvLoopPointer, v8PlatformPointer);
+		v8Isolate = node::NewIsolate(arrayBufferAllocator, &uvLoop, v8PlatformPointer);
 #else
 		v8::Isolate::CreateParams createParams;
 		createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
