@@ -26,8 +26,14 @@ namespace Javet {
 		args.GetReturnValue().Set(args.GetIsolate()->GetCurrentContext()->Global());
 	}
 
+#ifdef ENABLE_NODE
 	V8Runtime::V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer)
 		: nodeEnvironment(nullptr, node::FreeEnvironment) {
+#else
+	V8Runtime::V8Runtime(V8Platform* v8PlatformPointer) {
+#endif
+		externalV8Runtime = nullptr;
+		v8Isolate = nullptr;
 		this->v8PlatformPointer = v8PlatformPointer;
 	}
 

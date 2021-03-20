@@ -50,7 +50,11 @@ namespace Javet {
 		V8PersistentObject v8GlobalObject;
 		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
+#ifdef ENABLE_NODE
 		V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer);
+#else
+		V8Runtime(V8Platform* v8PlatformPointer);
+#endif
 
 		void CloseV8Context();
 		void CloseV8Isolate();
