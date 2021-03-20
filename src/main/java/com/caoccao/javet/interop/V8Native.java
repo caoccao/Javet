@@ -69,10 +69,6 @@ final class V8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
-    native static Object execute(
-            long v8RuntimeHandle, String script, boolean returnResult,
-            int nodeScriptMode);
-
     native static Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     native static Object getGlobalObject(long v8RuntimeHandle);

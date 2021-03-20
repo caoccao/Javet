@@ -116,16 +116,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
  * Method:    execute
  * Signature: (JLjava/lang/String;ZLjava/lang/String;IIIZZ)Ljava/lang/Object;
  */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute__JLjava_lang_String_2ZLjava_lang_String_2IIIZZ
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
   (JNIEnv *, jclass, jlong, jstring, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    execute
- * Signature: (JLjava/lang/String;ZI)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute__JLjava_lang_String_2ZI
-  (JNIEnv *, jclass, jlong, jstring, jboolean, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

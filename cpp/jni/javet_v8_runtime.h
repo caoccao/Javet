@@ -38,7 +38,7 @@ namespace Javet {
 	public:
 #ifdef ENABLE_NODE
 		std::shared_ptr<node::ArrayBufferAllocator> arrayBufferAllocator;
-		uv_loop_t uvLoop;
+		uv_loop_t* uvLoopPointer;
 		node::MultiIsolatePlatform* v8PlatformPointer;
 		std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> nodeEnvironment;
 #else

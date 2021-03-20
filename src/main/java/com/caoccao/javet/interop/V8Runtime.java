@@ -284,12 +284,6 @@ public final class V8Runtime implements IJavetClosable, IV8Creatable {
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
-    public <T extends V8Value> T execute(
-            String scriptString, NodeScriptOption nodeScriptOption, boolean resultRequired) throws JavetException {
-        return decorateV8Value((T) V8Native.execute(
-                handle, scriptString, resultRequired, nodeScriptOption.getMode()));
-    }
-
     public <T extends V8Value> T get(
             IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return decorateV8Value((T) V8Native.get(
