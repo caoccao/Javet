@@ -78,9 +78,13 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(codeString).execute()) {
             assertNotNull(v8ValueObject);
         } catch (JavetExecutionException e) {
-            assertEquals(
-                    "ReferenceError: require is not defined",
-                    e.getError().getMessage());
+            if (v8Runtime.getJSRuntimeType().isNode()) {
+                assertTrue(e.getError().getMessage().startsWith("Error: Cannot find module 'decimal.js'"));
+            } else {
+                assertEquals(
+                        "ReferenceError: require is not defined",
+                        e.getError().getMessage());
+            }
         }
     }
 

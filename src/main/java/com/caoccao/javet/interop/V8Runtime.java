@@ -40,29 +40,29 @@ import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
-public final class V8Runtime implements IJavetClosable, IV8Creatable {
-    private static final long INVALID_HANDLE = 0L;
-    private static final String PROPERTY_DATA_VIEW = "DataView";
-    private static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
-    private static final int V8_VALUE_BOOLEAN_FALSE_INDEX = 0;
-    private static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
-    private static final int V8_VALUE_NUMBER_LOWER_BOUND = -128; // Inclusive
-    private static final int V8_VALUE_NUMBER_UPPER_BOUND = 128; // Exclusive
+public class V8Runtime implements IJavetClosable, IV8Creatable {
+    protected static final long INVALID_HANDLE = 0L;
+    protected static final String PROPERTY_DATA_VIEW = "DataView";
+    protected static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
+    protected static final int V8_VALUE_BOOLEAN_FALSE_INDEX = 0;
+    protected static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
+    protected static final int V8_VALUE_NUMBER_LOWER_BOUND = -128; // Inclusive
+    protected static final int V8_VALUE_NUMBER_UPPER_BOUND = 128; // Exclusive
 
-    private V8ValueBoolean[] cachedV8ValueBooleans;
-    private V8ValueInteger[] cachedV8ValueIntegers;
-    private V8ValueLong[] cachedV8ValueLongs;
-    private V8ValueNull cachedV8ValueNull;
-    private V8ValueUndefined cachedV8ValueUndefined;
+    protected V8ValueBoolean[] cachedV8ValueBooleans;
+    protected V8ValueInteger[] cachedV8ValueIntegers;
+    protected V8ValueLong[] cachedV8ValueLongs;
+    protected V8ValueNull cachedV8ValueNull;
+    protected V8ValueUndefined cachedV8ValueUndefined;
 
-    private String globalName;
-    private long handle;
-    private IJavetLogger logger;
-    private Map<String, IV8Module> moduleMap;
-    private boolean pooled;
-    private Map<Long, IV8ValueReference> referenceMap;
-    private V8Host v8Host;
-    private V8Inspector v8Inspector;
+    protected String globalName;
+    protected long handle;
+    protected IJavetLogger logger;
+    protected Map<String, IV8Module> moduleMap;
+    protected boolean pooled;
+    protected Map<Long, IV8ValueReference> referenceMap;
+    protected V8Host v8Host;
+    protected V8Inspector v8Inspector;
 
     V8Runtime(V8Host v8Host, long handle, boolean pooled, String globalName) {
         assert handle != 0;
@@ -369,6 +369,10 @@ public final class V8Runtime implements IJavetClosable, IV8Creatable {
         return referenceMap.size();
     }
 
+    public JSRuntimeType getJSRuntimeType() {
+        return JSRuntimeType.V8;
+    }
+
     public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
         return V8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType());
     }
@@ -398,7 +402,7 @@ public final class V8Runtime implements IJavetClosable, IV8Creatable {
         return V8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key);
     }
 
-    private void initializeV8ValueCache() {
+    protected void initializeV8ValueCache() {
         try {
             cachedV8ValueNull = decorateV8Value(new V8ValueNull());
             cachedV8ValueUndefined = decorateV8Value(new V8ValueUndefined());
@@ -503,7 +507,7 @@ public final class V8Runtime implements IJavetClosable, IV8Creatable {
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
     }
 
-    private void removeModules() {
+    protected void removeModules() {
         if (!moduleMap.isEmpty()) {
             logger.logWarn("{0} module(s) not recycled.", Integer.toString(moduleMap.size()));
             for (IV8Module iV8Module : moduleMap.values()) {
@@ -539,7 +543,7 @@ public final class V8Runtime implements IJavetClosable, IV8Creatable {
         }
     }
 
-    private void removeReferences() throws JavetException {
+    protected void removeReferences() throws JavetException {
         if (!referenceMap.isEmpty()) {
             final int referenceCount = referenceMap.size();
             int weakReferenceCount = 0;

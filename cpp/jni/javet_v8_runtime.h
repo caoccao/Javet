@@ -37,10 +37,7 @@ namespace Javet {
 	class V8Runtime {
 	public:
 #ifdef ENABLE_NODE
-		std::shared_ptr<node::ArrayBufferAllocator> arrayBufferAllocator;
-		uv_loop_t uvLoop;
 		node::MultiIsolatePlatform* v8PlatformPointer;
-		std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> nodeEnvironment;
 #else
 		V8Platform* v8PlatformPointer;
 #endif
@@ -55,6 +52,8 @@ namespace Javet {
 #else
 		V8Runtime(V8Platform* v8PlatformPointer);
 #endif
+
+		void Await();
 
 		void CloseV8Context();
 		void CloseV8Isolate();
@@ -125,6 +124,14 @@ namespace Javet {
 
 	private:
 		std::shared_ptr<v8::Locker> v8Locker;
+#ifdef ENABLE_NODE
+		std::shared_ptr<node::ArrayBufferAllocator> arrayBufferAllocator;
+		uv_loop_t uvLoop;
+		// Node environment must be live as long as V8 context lives.
+		std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> nodeEnvironment;
+		// Node isolate data must be live as long as V8 context lives.
+		std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
+#endif
 	};
 }
 

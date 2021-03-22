@@ -38,6 +38,14 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
 
     void setResourceName(String resourceName);
 
+    /**
+     * Gets script id.
+     *
+     * Note: This API is not supported by Node because the V8 version is too low.
+     *
+     * @return the script id
+     * @throws JavetException the javet exception
+     */
     int getScriptId() throws JavetException;
 
     int getStatus() throws JavetException;

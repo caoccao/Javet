@@ -21,14 +21,23 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.text.MessageFormat;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Native extends BaseTestJavet {
     @Test
     public void testGetVersion() {
         String versionString = V8Native.getVersion();
-        assertEquals(JavetLibLoader.V8_VERSION, versionString);
+        if (JavetLibLoader.getJSRuntimeType().isNode()) {
+            assertEquals(JSRuntimeType.Node.getVersion(), versionString);
+        } else if (JavetLibLoader.getJSRuntimeType().isV8()) {
+            assertEquals(JSRuntimeType.V8.getVersion(), versionString);
+        } else {
+            fail(MessageFormat.format(
+                    "JS runtime type {0} is not supported.",
+                    JavetLibLoader.getJSRuntimeType().getName()));
+        }
     }
 
     @Test

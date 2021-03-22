@@ -751,6 +751,12 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
 	return false;
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_nodeAwait
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	v8Runtime->Await();
+}
+
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_promiseGetState
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

@@ -47,6 +47,10 @@ public class TestV8Inspector extends BaseTestJavet {
 
     @Test
     public void testEvaluateValue() throws JavetException, TimeoutException, InterruptedException, JsonProcessingException {
+        if (JavetLibLoader.getJSRuntimeType().isNode()) {
+            // Node has its own protocol which is much more complicated. Javet doesn't test node inspector.
+            return;
+        }
         V8Host v8Host = V8Host.getInstance();
         MockV8InspectorListener listener = new MockV8InspectorListener();
         V8Inspector v8Inspector;

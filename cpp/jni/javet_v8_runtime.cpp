@@ -28,21 +28,32 @@ namespace Javet {
 
 #ifdef ENABLE_NODE
 	V8Runtime::V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer)
-		: nodeEnvironment(nullptr, node::FreeEnvironment) {
+		: nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), v8Locker(nullptr), uvLoop() {
 #else
-	V8Runtime::V8Runtime(V8Platform * v8PlatformPointer) {
+	V8Runtime::V8Runtime(V8Platform * v8PlatformPointer)
+		: v8Locker(nullptr) {
 #endif
 		externalV8Runtime = nullptr;
 		v8Isolate = nullptr;
 		this->v8PlatformPointer = v8PlatformPointer;
 	}
 
+	void V8Runtime::Await() {
+		bool hasMoreTasks;
+		do {
+			uv_run(&uvLoop, UV_RUN_DEFAULT);
+			v8PlatformPointer->DrainTasks(v8Isolate);
+			hasMoreTasks = uv_loop_alive(&uvLoop);
+		} while (hasMoreTasks == true);
+	}
+
 	void V8Runtime::CloseV8Context() {
-		auto v8Locker = GetSharedV8Locker();
+		auto internalV8Locker = GetSharedV8Locker();
 		V8IsolateScope v8IsolateScope(v8Isolate);
 		V8HandleScope v8HandleScope(v8Isolate);
 		V8LocalContext v8LocalContext = GetV8LocalContext();
 		Unregister(v8LocalContext);
+		v8GlobalObject.Reset();
 #ifdef ENABLE_NODE
 		{
 			V8ContextScope v8ContextScope(v8LocalContext);
@@ -69,10 +80,10 @@ namespace Javet {
 				LOG_ERROR("node::Stop() returns " << errorCode << ".");
 			}
 		}
+		nodeIsolateData.reset();
 		nodeEnvironment.reset();
 #endif
 		v8Context.Reset();
-		v8GlobalObject.Reset();
 	}
 
 	void V8Runtime::CloseV8Isolate() {
@@ -80,8 +91,8 @@ namespace Javet {
 			auto internalV8Locker = GetSharedV8Locker();
 			v8Inspector.reset();
 		}
-		v8Context.Reset();
 		v8GlobalObject.Reset();
+		v8Context.Reset();
 #ifdef ENABLE_NODE
 		arrayBufferAllocator.reset();
 #endif
@@ -110,18 +121,16 @@ namespace Javet {
 	}
 
 	void V8Runtime::CreateV8Context(JNIEnv * jniEnv, jstring mGlobalName) {
-		auto v8Locker = GetSharedV8Locker();
+		auto internalV8Locker = GetSharedV8Locker();
 		V8IsolateScope v8IsolateScope(v8Isolate);
 		V8HandleScope v8HandleScope(v8Isolate);
 #ifdef ENABLE_NODE
-		std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> isolateData(
-			node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, arrayBufferAllocator.get()),
-			node::FreeIsolateData);
+		nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, arrayBufferAllocator.get()));
 		auto v8LocalContext = node::NewContext(v8Isolate);
 		V8ContextScope v8ContextScope(v8LocalContext);
 		std::vector<std::string> args{ "" };
 		std::vector<std::string> execArgs{ "" };
-		nodeEnvironment.reset(node::CreateEnvironment(isolateData.get(), v8LocalContext, args, execArgs));
+		nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
 		V8MaybeLocalValue v8MaybeLocalValue = node::LoadEnvironment(
 			nodeEnvironment.get(),
 			"const publicRequire ="

@@ -18,8 +18,6 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetIOException;
-import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
@@ -58,7 +56,7 @@ public final class V8Host implements AutoCloseable {
         try {
             libLoaded = JavetLibLoader.load();
             closed = false;
-        } catch (JavetOSNotSupportedException | JavetIOException e) {
+        } catch (JavetException e) {
             logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
             lastException = e;
         }
@@ -96,7 +94,12 @@ public final class V8Host implements AutoCloseable {
         final long handle = V8Native.createV8Runtime(globalName);
         isolateCreated = true;
         flags.seal();
-        V8Runtime v8Runtime = new V8Runtime(this, handle, pooled, globalName);
+        V8Runtime v8Runtime = null;
+        if (JavetLibLoader.getJSRuntimeType().isNode()) {
+            v8Runtime = new NodeRuntime(this, handle, pooled);
+        } else if (JavetLibLoader.getJSRuntimeType().isV8()) {
+            v8Runtime = new V8Runtime(this, handle, pooled, globalName);
+        }
         V8Native.registerV8Runtime(handle, v8Runtime);
         v8RuntimeMap.put(handle, v8Runtime);
         return v8Runtime;

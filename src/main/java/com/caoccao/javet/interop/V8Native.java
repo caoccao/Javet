@@ -115,6 +115,8 @@ final class V8Native {
 
     native static boolean moduleInstantiate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    native static void nodeAwait(long v8RuntimeHandle);
+
     native static Object promiseCatch(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueFunctionHandle);
 
     native static Object promiseGetResult(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

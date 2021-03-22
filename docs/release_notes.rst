@@ -5,6 +5,7 @@ Release Notes
 0.8.0
 -----
 
+* Supported Node.js ``v14.16.0``
 * Added ``V8Module`` and ``V8Script``
 * Enhanced ``V8ValuePromise``
 
