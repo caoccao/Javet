@@ -20,8 +20,8 @@
 #include <jni.h>
 #include "javet_converter.h"
 #include "javet_exceptions.h"
-#include "javet_globals.h"
 #include "javet_logging.h"
+#include "javet_native.h"
 #include "javet_node.h"
 #include "javet_types.h"
 #include "javet_v8.h"
@@ -43,7 +43,6 @@ namespace Javet {
 #endif
 		v8::Isolate* v8Isolate;
 		jobject externalV8Runtime;
-		V8PersistentContext v8Context;
 		V8PersistentObject v8GlobalObject;
 		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
@@ -65,7 +64,7 @@ namespace Javet {
 			return reinterpret_cast<V8Runtime*>(handle);
 		}
 
-		static inline V8Runtime* FromV8Context(V8LocalContext v8Context) {
+		static inline V8Runtime* FromV8Context(const V8LocalContext& v8Context) {
 			return reinterpret_cast<V8Runtime*>(v8Context->GetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME)->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
 		}
 
@@ -73,7 +72,7 @@ namespace Javet {
 		* Shared V8 locker is for implicit mode.
 		* Javet manages the lock automatically.
 		*/
-		inline std::shared_ptr<v8::Locker> GetSharedV8Locker() {
+		inline auto GetSharedV8Locker() {
 			return v8Locker ? v8Locker : std::make_shared<v8::Locker>(v8Isolate);
 		}
 
@@ -81,12 +80,20 @@ namespace Javet {
 		* Unique V8 locker is for explicit mode.
 		* Application manages the lock.
 		*/
-		inline std::unique_ptr<v8::Locker> GetUniqueV8Locker() {
+		inline auto GetUniqueV8Locker() {
 			return std::make_unique<v8::Locker>(v8Isolate);
 		}
 
+		inline auto GetV8ContextScope(const V8LocalContext& v8LocalContext) {
+			return std::make_unique<V8ContextScope>(v8LocalContext);
+		}
+
 		inline V8LocalContext GetV8LocalContext() {
-			return v8Context.Get(v8Isolate);
+			return v8PersistentContext.Get(v8Isolate);
+		}
+
+		inline auto GetV8IsolateScope() {
+			return std::make_unique<V8IsolateScope>(v8Isolate);
 		}
 
 		inline bool IsLocked() {
@@ -97,11 +104,11 @@ namespace Javet {
 			v8Locker.reset(new v8::Locker(v8Isolate));
 		}
 
-		inline void Register(V8LocalContext v8Context) {
+		inline void Register(const V8LocalContext& v8Context) {
 			v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
 		}
 
-		inline jobject SafeToExternalV8Value(JNIEnv* jniEnv, V8LocalContext v8Context, V8LocalValue v8Value) {
+		inline jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value) {
 			try {
 				return Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Value);
 			}
@@ -116,7 +123,7 @@ namespace Javet {
 			v8Locker.reset();
 		}
 
-		inline void Unregister(V8LocalContext v8Context) {
+		inline void Unregister(const V8LocalContext& v8Context) {
 			v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, 0));
 		}
 
@@ -124,13 +131,13 @@ namespace Javet {
 
 	private:
 		std::shared_ptr<v8::Locker> v8Locker;
+		V8PersistentContext v8PersistentContext;
 #ifdef ENABLE_NODE
-		std::shared_ptr<node::ArrayBufferAllocator> arrayBufferAllocator;
-		uv_loop_t uvLoop;
-		// Node environment must be live as long as V8 context lives.
+		// The following Node objects must be live as long as V8 context lives.
+		std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator;
 		std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> nodeEnvironment;
-		// Node isolate data must be live as long as V8 context lives.
 		std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
+		uv_loop_t uvLoop;
 #endif
 	};
 }

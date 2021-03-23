@@ -41,9 +41,10 @@ final class JavetLibLoader {
     private static final String OS_LINUX = "linux";
     private static final String OS_WINDOWS = "windows";
     private static final int BUFFER_LENGTH = 4096;
-    private static JSRuntimeType JS_RUNTIME_TYPE;
+    private static JSRuntimeType JS_RUNTIME_TYPE = null;
     private static Object lockObject = new Object();
     private static boolean javetLibLoaded = false;
+
     private JavetLibLoader() {
     }
 

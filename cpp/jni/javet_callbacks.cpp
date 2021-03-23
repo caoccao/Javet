@@ -17,8 +17,8 @@
 
 #include "javet_callbacks.h"
 #include "javet_converter.h"
-#include "javet_globals.h"
 #include "javet_logging.h"
+#include "javet_native.h"
 #include "javet_v8_runtime.h"
 
 namespace Javet {

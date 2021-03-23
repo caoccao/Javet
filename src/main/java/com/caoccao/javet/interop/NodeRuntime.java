@@ -16,7 +16,7 @@ public class NodeRuntime extends V8Runtime {
     }
 
     public void await() {
-        V8Native.nodeAwait(handle);
+        NodeNative.await(handle);
     }
 
     @Override

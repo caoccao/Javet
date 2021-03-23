@@ -297,14 +297,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    nodeAwait
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_nodeAwait
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    promiseCatch
  * Signature: (JJIJ)Ljava/lang/Object;
  */

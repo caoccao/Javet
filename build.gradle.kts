@@ -58,6 +58,7 @@ task<Exec>("buildJNIHeaders") {
             "cpp/jni",
             "-d",
             "$buildDir/generated/tmp/jni",
+            "src/main/java/com/caoccao/javet/interop/NodeNative.java",
             "src/main/java/com/caoccao/javet/interop/V8Native.java"
         )
     }

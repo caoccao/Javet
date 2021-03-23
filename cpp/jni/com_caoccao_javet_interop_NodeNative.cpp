@@ -15,15 +15,22 @@
  *   limitations under the License.
  */
 
-#pragma once
-
-#include <jni.h>
-#include <libplatform/libplatform.h>
+#include "com_caoccao_javet_interop_NodeNative.h"
+#include "javet_callbacks.h"
+#include "javet_converter.h"
+#include "javet_enums.h"
+#include "javet_exceptions.h"
+#include "javet_inspector.h"
+#include "javet_logging.h"
+#include "javet_native.h"
 #include "javet_node.h"
 #include "javet_types.h"
+#include "javet_v8.h"
+#include "javet_v8_runtime.h"
 
-#define FETCH_JNI_ENV(javaVMPointer) \
-	JNIEnv* jniEnv; \
-	javaVMPointer->GetEnv((void**)&jniEnv, JNI_VERSION_1_8); \
-	javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_await
+(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	v8Runtime->Await();
+}
 

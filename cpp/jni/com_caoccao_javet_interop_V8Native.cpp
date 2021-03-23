@@ -15,19 +15,14 @@
  *   limitations under the License.
  */
 
-#include <jni.h>
-#include <functional>
-#include <string.h>
-#include <map>
-#include <cstdlib>
 #include "com_caoccao_javet_interop_V8Native.h"
 #include "javet_callbacks.h"
 #include "javet_converter.h"
 #include "javet_enums.h"
 #include "javet_exceptions.h"
-#include "javet_globals.h"
 #include "javet_inspector.h"
 #include "javet_logging.h"
+#include "javet_native.h"
 #include "javet_node.h"
 #include "javet_types.h"
 #include "javet_v8.h"
@@ -39,10 +34,10 @@
   * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
   */
 
-#define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::Main::jclassV8ValueInteger)
-#define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::Main::jclassV8ValueString)
-#define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::Main::jmethodIDV8ValueIntegerToPrimitive)
-#define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::Main::jmethodIDV8ValueStringToPrimitive)
+#define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueInteger)
+#define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueString)
+#define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::V8Native::jmethodIDV8ValueIntegerToPrimitive)
+#define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::V8Native::jmethodIDV8ValueStringToPrimitive)
 #define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
 #define IS_V8_ARRAY_BUFFER(type) (type == Javet::Enums::V8ValueReferenceType::ArrayBuffer)
 #define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
@@ -54,68 +49,8 @@
 #define IS_V8_SCRIPT(type) (type == Javet::Enums::V8ValueReferenceType::Script)
 #define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
 
-#define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \
-	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
-	auto v8Locker = v8Runtime->GetSharedV8Locker(); \
-	V8IsolateScope v8IsolateScope(v8Runtime->v8Isolate); \
-	V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
-	auto v8Context = v8Runtime->GetV8LocalContext(); \
-	V8ContextScope v8ContextScope(v8Context);
-
-#define RUNTIME_AND_DATA_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8DataHandle) \
-	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
-	auto v8PersistentDataPointer = TO_V8_PERSISTENT_DATA_POINTER(v8DataHandle); \
-	auto v8Locker = v8Runtime->GetSharedV8Locker(); \
-	V8IsolateScope v8IsolateScope(v8Runtime->v8Isolate); \
-	V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
-	auto v8Context = v8Runtime->GetV8LocalContext(); \
-	V8ContextScope v8ContextScope(v8Context); \
-	auto v8LocalData = v8PersistentDataPointer->Get(v8Context->GetIsolate());
-
-#define RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
-	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
-	auto v8PersistentModulePointer = TO_V8_PERSISTENT_MODULE_POINTER(v8ValueHandle); \
-	auto v8Locker = v8Runtime->GetSharedV8Locker(); \
-	V8IsolateScope v8IsolateScope(v8Runtime->v8Isolate); \
-	V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
-	auto v8Context = v8Runtime->GetV8LocalContext(); \
-	V8ContextScope v8ContextScope(v8Context); \
-	auto v8LocalModule = v8PersistentModulePointer->Get(v8Context->GetIsolate());
-
-#define RUNTIME_AND_SCRIPT_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
-	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
-	auto v8PersistentScriptPointer = TO_V8_PERSISTENT_SCRIPT_POINTER(v8ValueHandle); \
-	auto v8Locker = v8Runtime->GetSharedV8Locker(); \
-	V8IsolateScope v8IsolateScope(v8Runtime->v8Isolate); \
-	V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
-	auto v8Context = v8Runtime->GetV8LocalContext(); \
-	V8ContextScope v8ContextScope(v8Context); \
-	auto v8LocalScript = v8PersistentScriptPointer->Get(v8Context->GetIsolate());
-
-#define RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
-	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
-	auto v8PersistentObjectPointer = TO_V8_PERSISTENT_OBJECT_POINTER(v8ValueHandle); \
-	auto v8Locker = v8Runtime->GetSharedV8Locker(); \
-	V8IsolateScope v8IsolateScope(v8Runtime->v8Isolate); \
-	V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
-	auto v8Context = v8Runtime->GetV8LocalContext(); \
-	V8ContextScope v8ContextScope(v8Context); \
-	auto v8LocalObject = v8PersistentObjectPointer->Get(v8Context->GetIsolate());
-
-#define RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2) \
-	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
-	auto v8PersistentObjectPointer1 = TO_V8_PERSISTENT_OBJECT_POINTER(v8ValueHandle1); \
-	auto v8PersistentObjectPointer2 = TO_V8_PERSISTENT_OBJECT_POINTER(v8ValueHandle2); \
-	auto v8Locker = v8Runtime->GetSharedV8Locker(); \
-	V8IsolateScope v8IsolateScope(v8Runtime->v8Isolate); \
-	V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
-	auto v8Context = v8Runtime->GetV8LocalContext(); \
-	V8ContextScope v8ContextScope(v8Context); \
-	auto v8LocalObject1 = v8PersistentObjectPointer1->Get(v8Context->GetIsolate()); \
-	auto v8LocalObject2 = v8PersistentObjectPointer2->Get(v8Context->GetIsolate());
-
 namespace Javet {
-	namespace Main {
+	namespace V8Native {
 		static JavaVM* GlobalJavaVM;
 #ifdef ENABLE_NODE
 		static std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
@@ -128,6 +63,11 @@ namespace Javet {
 
 		static jclass jclassV8ValueString;
 		static jmethodID jmethodIDV8ValueStringToPrimitive;
+
+		void Dispose() {
+			v8::V8::Dispose();
+			v8::V8::ShutdownPlatform();
+		}
 
 		/*
 		These Java classes and methods need to be initialized within this file
@@ -154,11 +94,11 @@ namespace Javet {
 			if (errorCode != 0) {
 				LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
 			}
-			Javet::Main::GlobalV8Platform = node::MultiIsolatePlatform::Create(16);
+			Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(16);
 #else
-			Javet::Main::GlobalV8Platform = v8::platform::NewDefaultPlatform();
+			Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
 #endif
-			v8::V8::InitializePlatform(Javet::Main::GlobalV8Platform.get());
+			v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
 			v8::V8::Initialize();
 			LOG_INFO("V8::Initialize() ends.");
 		}
@@ -168,7 +108,7 @@ namespace Javet {
 		so that the memory address doesn't get messed up.
 		*/
 		void FunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-			FETCH_JNI_ENV(Javet::Main::GlobalJavaVM);
+			FETCH_JNI_ENV(Javet::V8Native::GlobalJavaVM);
 			auto v8LocalContextHandle = args.Data().As<v8::BigInt>();
 			auto umContext = TO_JAVA_OBJECT(v8LocalContextHandle->Int64Value());
 			Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
@@ -176,39 +116,12 @@ namespace Javet {
 		}
 
 		void CloseWeakDataReference(const v8::WeakCallbackInfo<Javet::Callback::V8ValueReference>& data) {
-			FETCH_JNI_ENV(Javet::Main::GlobalJavaVM);
+			FETCH_JNI_ENV(Javet::V8Native::GlobalJavaVM);
 			auto v8ValueReference = data.GetParameter();
 			v8ValueReference->Close(jniEnv);
 			delete v8ValueReference;
 		}
 	}
-}
-
-jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
-	LOG_INFO("JNI_Onload() begins.");
-	JNIEnv* jniEnv;
-	if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
-		LOG_ERROR("Failed to call JavaVM.GetEnv().");
-		return ERROR_JNI_ON_LOAD;
-	}
-	if (jniEnv == nullptr) {
-		LOG_ERROR("Failed to get JNIEnv.");
-		return ERROR_JNI_ON_LOAD;
-	}
-	Javet::Main::Initialize(jniEnv, javaVM);
-	Javet::Callback::Initialize(jniEnv, javaVM);
-	Javet::Converter::Initialize(jniEnv);
-	Javet::Exceptions::Initialize(jniEnv);
-	Javet::Inspector::Initialize(jniEnv, javaVM);
-	LOG_INFO("JNI_Onload() ends.");
-	return JNI_VERSION_1_8;
-}
-
-void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
-	LOG_INFO("JNI_OnUnload() begins.");
-	v8::V8::Dispose();
-	v8::V8::ShutdownPlatform();
-	LOG_INFO("JNI_OnUnload() ends.");
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
@@ -355,7 +268,7 @@ Creating multiple isolates allows running JavaScript code in multiple threads, t
 */
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 (JNIEnv* jniEnv, jclass callerClass, jstring mGlobalName) {
-	auto v8Runtime = new Javet::V8Runtime(Javet::Main::GlobalV8Platform.get());
+	auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get());
 	v8Runtime->CreateV8Isolate();
 	auto v8Locker = v8Runtime->GetUniqueV8Locker();
 	v8Runtime->CreateV8Context(jniEnv, mGlobalName);
@@ -386,7 +299,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 		Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
 		javetCallbackContextReference.SetHandle();
 		auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(umContext));
-		v8ValueValue = v8::Function::New(v8Context, Javet::Main::FunctionCallback, v8LocalContextHandle).ToLocalChecked();
+		v8ValueValue = v8::Function::New(v8Context, Javet::V8Native::FunctionCallback, v8LocalContextHandle).ToLocalChecked();
 	}
 	else if (IS_V8_MAP(v8ValueType)) {
 		v8ValueValue = v8::Map::New(v8Context->GetIsolate());
@@ -751,12 +664,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
 	return false;
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_nodeAwait
-(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
-	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-	v8Runtime->Await();
-}
-
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_promiseGetState
 (JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -964,7 +871,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 		v8ValueReference->v8Isolate = v8Context->GetIsolate();
 		v8ValueReference->objectReference = jniEnv->NewGlobalRef(objectReference);
 		v8ValueReference->v8PersistentDataPointer = v8PersistentDataPointer;
-		v8PersistentDataPointer->SetWeak(v8ValueReference, Javet::Main::CloseWeakDataReference, v8::WeakCallbackType::kParameter);
+		v8PersistentDataPointer->SetWeak(v8ValueReference, Javet::V8Native::CloseWeakDataReference, v8::WeakCallbackType::kParameter);
 	}
 }
 

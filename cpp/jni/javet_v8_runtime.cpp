@@ -39,24 +39,26 @@ namespace Javet {
 	}
 
 	void V8Runtime::Await() {
+#ifdef ENABLE_NODE
 		bool hasMoreTasks;
 		do {
 			uv_run(&uvLoop, UV_RUN_DEFAULT);
 			v8PlatformPointer->DrainTasks(v8Isolate);
 			hasMoreTasks = uv_loop_alive(&uvLoop);
 		} while (hasMoreTasks == true);
+#endif
 	}
 
 	void V8Runtime::CloseV8Context() {
 		auto internalV8Locker = GetSharedV8Locker();
-		V8IsolateScope v8IsolateScope(v8Isolate);
+		auto v8IsolateScope = GetV8IsolateScope();
 		V8HandleScope v8HandleScope(v8Isolate);
-		V8LocalContext v8LocalContext = GetV8LocalContext();
+		auto v8LocalContext = GetV8LocalContext();
 		Unregister(v8LocalContext);
 		v8GlobalObject.Reset();
 #ifdef ENABLE_NODE
 		{
-			V8ContextScope v8ContextScope(v8LocalContext);
+			auto v8ContextScope = GetV8ContextScope(v8LocalContext);
 			v8::SealHandleScope v8SealHandleScope(v8Isolate);
 			bool hasMoreTasks;
 			do {
@@ -83,7 +85,7 @@ namespace Javet {
 		nodeIsolateData.reset();
 		nodeEnvironment.reset();
 #endif
-		v8Context.Reset();
+		v8PersistentContext.Reset();
 	}
 
 	void V8Runtime::CloseV8Isolate() {
@@ -92,9 +94,9 @@ namespace Javet {
 			v8Inspector.reset();
 		}
 		v8GlobalObject.Reset();
-		v8Context.Reset();
+		v8PersistentContext.Reset();
 #ifdef ENABLE_NODE
-		arrayBufferAllocator.reset();
+		nodeArrayBufferAllocator.reset();
 #endif
 		v8Locker.reset();
 		// Isolate must be the last one to be disposed.
@@ -122,12 +124,12 @@ namespace Javet {
 
 	void V8Runtime::CreateV8Context(JNIEnv * jniEnv, jstring mGlobalName) {
 		auto internalV8Locker = GetSharedV8Locker();
-		V8IsolateScope v8IsolateScope(v8Isolate);
+		auto v8IsolateScope = GetV8IsolateScope();
 		V8HandleScope v8HandleScope(v8Isolate);
 #ifdef ENABLE_NODE
-		nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, arrayBufferAllocator.get()));
+		nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, nodeArrayBufferAllocator.get()));
 		auto v8LocalContext = node::NewContext(v8Isolate);
-		V8ContextScope v8ContextScope(v8LocalContext);
+		auto v8ContextScope = GetV8ContextScope(v8LocalContext);
 		std::vector<std::string> args{ "" };
 		std::vector<std::string> execArgs{ "" };
 		nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
@@ -146,7 +148,7 @@ namespace Javet {
 		}
 #endif
 		Register(v8LocalContext);
-		v8Context.Reset(v8Isolate, v8LocalContext);
+		v8PersistentContext.Reset(v8Isolate, v8LocalContext);
 		v8GlobalObject.Reset(
 			v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
 	}
@@ -157,8 +159,8 @@ namespace Javet {
 		if (errorCode != 0) {
 			LOG_ERROR("Failed to init uv loop. Reason: " << uv_err_name(errorCode));
 		}
-		arrayBufferAllocator = node::ArrayBufferAllocator::Create();
-		v8Isolate = node::NewIsolate(arrayBufferAllocator, &uvLoop, v8PlatformPointer);
+		nodeArrayBufferAllocator = node::ArrayBufferAllocator::Create();
+		v8Isolate = node::NewIsolate(nodeArrayBufferAllocator, &uvLoop, v8PlatformPointer);
 #else
 		v8::Isolate::CreateParams createParams;
 		createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();

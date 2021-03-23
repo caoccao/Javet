@@ -19,10 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor;
-import com.caoccao.javet.interop.executors.IV8Executor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.caoccao.javet.interop.NodeRuntime;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,9 +30,15 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
                 "new Promise((resolve, reject)=>{ resolve(1); }).then(x => x)").execute()) {
             assertNotNull(v8ValuePromise);
+            assertFalse(v8ValuePromise.hasHandler());
+            if (v8Runtime.getJSRuntimeType().isNode()) {
+                assertEquals(V8ValuePromise.STATE_PENDING, v8ValuePromise.getState());
+                assertTrue(v8ValuePromise.isPending());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
+                ((NodeRuntime) v8Runtime).await();
+            }
             assertEquals(V8ValuePromise.STATE_FULFILLED, v8ValuePromise.getState());
             assertTrue(v8ValuePromise.isFulfilled());
-            assertFalse(v8ValuePromise.hasHandler());
             assertEquals(1, v8ValuePromise.getResultInteger());
         }
     }

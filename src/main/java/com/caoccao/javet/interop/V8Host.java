@@ -118,16 +118,20 @@ public final class V8Host implements AutoCloseable {
         }
     }
 
+    public JSRuntimeType getJSRuntimeType() {
+        return JavetLibLoader.getJSRuntimeType();
+    }
+
+    public JavetException getLastException() {
+        return lastException;
+    }
+
     public int getV8RuntimeCount() {
         return v8RuntimeMap.size();
     }
 
     public boolean isLibLoaded() {
         return libLoaded;
-    }
-
-    public JavetException getLastException() {
-        return lastException;
     }
 
     public boolean isIsolateCreated() {
