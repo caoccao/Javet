@@ -40,7 +40,8 @@ class JavetClassLoader extends ClassLoader {
     IV8Native getNative() throws JavetLibraryNotLoadedException {
         try {
             Class classNative = loadClass(jsRuntimeType.isNode() ? NODE_NATIVE_CLASS_NAME : V8_NATIVE_CLASS_NAME);
-            return (IV8Native) classNative.newInstance();
+            Constructor constructor = classNative.getConstructor();
+            return (IV8Native) constructor.newInstance();
         } catch (Exception e) {
             throw new JavetLibraryNotLoadedException(e.getMessage(), e);
         }
