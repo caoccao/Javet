@@ -83,7 +83,7 @@ public final class JavetEngineConfig {
         return jsRuntimeType;
     }
 
-    public void setJsRuntimeType(JSRuntimeType jsRuntimeType) {
+    public void setJSRuntimeType(JSRuntimeType jsRuntimeType) {
         Objects.requireNonNull(jsRuntimeType);
         this.jsRuntimeType = jsRuntimeType;
     }

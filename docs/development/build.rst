@@ -26,6 +26,11 @@ Download Pre-built V8
 
 I have prepared pre-built Linux and Windows version of V8 ``v8.9.255``. Please download the headers and binary from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them locally.
 
+Build Node.js
+=============
+
+Please follow `Building Node.js <https://github.com/nodejs/node/blob/master/BUILDING.md>`_ to build the Node.js libraries. Please make sure ``without-intl`` is set so that the library size can be reduced.
+
 Build Javet JNI Library
 =======================
 
