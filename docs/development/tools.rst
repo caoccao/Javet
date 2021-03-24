@@ -17,6 +17,11 @@ Gradle
 
 For now, Gradle v6.7 + Kotlin DSL constructs the build system.
 
+Node.js
+=================
+
+Node.js 14.16.0+ is supported.
+
 Maven (Optional)
 ================
 
@@ -31,10 +36,5 @@ Python 3.8+ (Optional)
 ======================
 
 Python 3.8+ is required if you want to upgrade the version.
-
-NodeJS (Optional)
-=================
-
-NodeJS 14.5+ is required if you want to go over the tutorial because a few examples use some node modules. After installing NodeJS, please visit ``scripts/node`` directory and run ``npm install``.
 
 [`Home <../../README.rst>`_] [`Development <index.rst>`_]

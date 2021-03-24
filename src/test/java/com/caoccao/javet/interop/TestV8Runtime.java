@@ -32,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8Runtime extends BaseTestJavet {
     @Test
     public void testAllowEval() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.allowEval(true);
             assertEquals(1, v8Runtime.getExecutor("const a = eval('1'); a;").executeInteger());
@@ -50,14 +49,12 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testClose() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
         }
     }
 
     @Test
     public void testExecuteScript() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.getExecutor("var a = 1;").executeVoid();
             assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
@@ -75,7 +72,6 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testResetContext() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
@@ -87,7 +83,6 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testResetIsolate() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
@@ -99,7 +94,6 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testTerminateExecution() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             // Create a daemon thread monitoring the V8 runtime status.
             Thread daemonThread = new Thread(() -> {

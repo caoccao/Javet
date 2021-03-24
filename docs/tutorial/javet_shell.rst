@@ -7,7 +7,7 @@ It is very easy to create a node flavored interactive shell application with a f
 .. code-block:: java
 
     // Step 1: Create a V8 runtime from V8 host in try resource.
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+    try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
         System.out.println("Welcome to CDT Shell!");
         System.out.println("Input the script or '.exit' to exit.");
         // Step 2: Create a scanner to take console input line by line.

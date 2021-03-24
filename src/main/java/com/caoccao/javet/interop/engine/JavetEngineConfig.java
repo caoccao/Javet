@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.JSRuntimeType;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
@@ -27,6 +28,7 @@ import java.util.concurrent.ExecutorService;
 public final class JavetEngineConfig {
     public static final int DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS = 30000;
     public static final int DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS = 1000;
+    public static final JSRuntimeType DEFAULT_JS_RUNTIME_TYPE = JSRuntimeType.V8;
     public static final int DEFAULT_MAX_ENGINE_USED_COUNT = 100;
     public static final int DEFAULT_POOL_MIN_SIZE = 1;
     public static final int DEFAULT_POOL_IDLE_TIMEOUT_SECONDS = 60;
@@ -39,6 +41,7 @@ public final class JavetEngineConfig {
     private String globalName;
     private int defaultEngineGuardTimeoutMillis;
     private int engineGuardCheckIntervalMillis;
+    private JSRuntimeType jsRuntimeType;
     private int maxEngineUsedCount;
     private int poolDaemonCheckIntervalMillis;
     private int poolMaxSize;
@@ -57,6 +60,7 @@ public final class JavetEngineConfig {
         globalName = DEFAULT_GLOBAL_NAME;
         defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;
         engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
+        jsRuntimeType = DEFAULT_JS_RUNTIME_TYPE;
         maxEngineUsedCount = DEFAULT_MAX_ENGINE_USED_COUNT;
         final int cpuCount = JavetOSUtils.getCPUCount();
         poolMinSize = Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount >> 1);
@@ -73,6 +77,15 @@ public final class JavetEngineConfig {
 
     void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
+    }
+
+    public JSRuntimeType getJsRuntimeType() {
+        return jsRuntimeType;
+    }
+
+    public void setJsRuntimeType(JSRuntimeType jsRuntimeType) {
+        Objects.requireNonNull(jsRuntimeType);
+        this.jsRuntimeType = jsRuntimeType;
     }
 
     public int getPoolShutdownTimeoutSeconds() {

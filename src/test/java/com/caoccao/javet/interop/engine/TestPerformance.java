@@ -50,7 +50,7 @@ public class TestPerformance extends BaseTestJavetPool {
     @Override
     public void beforeEach() {
         super.beforeEach();
-        jsRuntimeType = V8Host.getInstance().getJSRuntimeType();
+        jsRuntimeType = v8Host.getJSRuntimeType();
         prefix = jsRuntimeType.isNode() ? PREFIX_NODE : PREFIX_V8;
     }
 

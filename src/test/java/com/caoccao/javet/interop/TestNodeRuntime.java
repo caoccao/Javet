@@ -19,7 +19,6 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -32,21 +31,18 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestNodeRuntime extends BaseTestJavet {
     @Test
     public void testAllowEval() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
         }
     }
 
     @Test
     public void testClose() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
         }
     }
 
     @Test
     public void testExecuteScript() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.getExecutor("var a = 1;").executeVoid();
             assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
@@ -64,7 +60,6 @@ public class TestNodeRuntime extends BaseTestJavet {
 
     @Test
     public void testResetContext() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
@@ -76,7 +71,6 @@ public class TestNodeRuntime extends BaseTestJavet {
 
     @Test
     public void testResetIsolate() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
@@ -88,7 +82,6 @@ public class TestNodeRuntime extends BaseTestJavet {
 
     @Test
     public void testTerminateExecution() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             // Create a daemon thread monitoring the V8 runtime status.
             Thread daemonThread = new Thread(() -> {

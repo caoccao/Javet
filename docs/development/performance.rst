@@ -14,18 +14,18 @@ Here is the performance test result from i7 10700K + Windows 10. Test case is ju
 ======== ===============================  ===============
 Type     Case                             TPS
 ======== ===============================  ===============
-Node     Single Context with 1 Thread     744,324
-Node     Ad-hoc Context with 1 Thread     64
-Node     Single Context with 8 Threads    4,548,038
-Node     Ad-hoc Context with 8 Threads    365
+Node     Single Context with 1 Thread     751,032
+Node     Ad-hoc Context with 1 Thread     65
+Node     Single Context with 8 Threads    4,410,143
+Node     Ad-hoc Context with 8 Threads    363
 Node     Ad-hoc Isolate with 1 Thread     51
-Node     Ad-hoc Isolate with 8 Threads    273
-V8       Single Context with 1 Thread     642,673
-V8       Ad-hoc Context with 1 Thread     2,850
-V8       Single Context with 8 Threads    4,004,004
-V8       Ad-hoc Context with 8 Threads    16,501
-V8       Ad-hoc Isolate with 1 Thread     735
-V8       Ad-hoc Isolate with 8 Threads    3,546
+Node     Ad-hoc Isolate with 8 Threads    263
+V8       Single Context with 1 Thread     647,458
+V8       Ad-hoc Context with 1 Thread     2,846
+V8       Single Context with 8 Threads    3,968,253
+V8       Ad-hoc Context with 8 Threads    16,508
+V8       Ad-hoc Isolate with 1 Thread     748
+V8       Ad-hoc Isolate with 8 Threads    3,660
 ======== ===============================  ===============
 
 Highlights

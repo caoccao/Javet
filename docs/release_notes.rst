@@ -8,6 +8,7 @@ Release Notes
 * Supported Node.js ``v14.16.0``
 * Added ``V8Module`` and ``V8Script``
 * Enhanced ``V8ValuePromise``
+* Added dynamic switch between Node.js and V8
 
 0.7.4
 -----

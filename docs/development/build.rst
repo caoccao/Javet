@@ -31,12 +31,23 @@ Build Javet JNI Library
 
 Once V8 is ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
 
-* Linux - ``sh build.sh -DV8_DIR=/where_the_v8_directory_is``.
-* Windows - ``build.cmd -DV8_DIR=\where_the_v8_directory_is``.
+=========== =========================================================== ==========================================================
+Type        Linux                                                       Windows
+=========== =========================================================== ==========================================================
+Node        ``sh build.sh -DNODE_DIR=/where_the_node_directory_is``     ``build.cmd -DNODE_DIR=\where_the_node_directory_is``
+V8          ``sh build.sh -DV8_DIR=/where_the_v8_directory_is``         ``build.cmd -DV8_DIR=\where_the_v8_directory_is``
+=========== =========================================================== ==========================================================
 
 Note: The V8 directory needs to be absolute path.
 
-After a while, ``libjavet-linux-x86_64.v.*.*.*.so`` or ``libjavet-windows-x86_64.v.*.*.*.dll`` will be placed in folder ``src/main/resources``.
+After a while, the following libraries will be placed in folder ``src/main/resources``.
+
+=========== =========================================================== ==========================================================
+Type        Linux                                                       Windows
+=========== =========================================================== ==========================================================
+Node        ``libjavet-node-linux-x86_64.v.*.*.*.so``                   ``libjavet-node-windows-x86_64.v.*.*.*.dll``
+V8          ``libjavet-v8-linux-x86_64.v.*.*.*.so``                     ``libjavet-v8-windows-x86_64.v.*.*.*.dll``
+=========== =========================================================== ==========================================================
 
 Build Javet Jar
 ===============

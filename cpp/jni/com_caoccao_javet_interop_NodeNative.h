@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_await
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

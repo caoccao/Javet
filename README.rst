@@ -12,7 +12,9 @@ Major Features
 ==============
 
 * Linux + Windows
+* Node.js ``14.16.0``
 * V8 ``v8.9.255``
+* Dynamic switch between Node.js and V8
 * Exposure of the majority of V8 API in JVM
 * JS function interception
 * Native BigInt and Date
@@ -56,7 +58,13 @@ Hello Javet
 
 .. code-block:: java
 
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+    // Node Mode
+    try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
+        System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
+    }
+
+    // V8 Mode
+    try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
     }
 

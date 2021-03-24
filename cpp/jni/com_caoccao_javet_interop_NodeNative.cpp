@@ -29,7 +29,7 @@
 #include "javet_v8_runtime.h"
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_await
-(JNIEnv* jniEnv, jclass callerClass, jlong v8RuntimeHandle) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
 	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
 	v8Runtime->Await();
 }

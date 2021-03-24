@@ -33,12 +33,12 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
         assertEquals(0, v8Runtime.getReferenceCount(),
                 "Reference count should be 0 after test case is ended.");
         v8Runtime.close();
-        assertEquals(0, V8Host.getInstance().getV8RuntimeCount());
+        assertEquals(0, v8Host.getV8RuntimeCount());
     }
 
     @BeforeEach
     public void beforeEach() throws JavetException {
-        v8Runtime = V8Host.getInstance().createV8Runtime();
+        v8Runtime = v8Host.createV8Runtime();
         assertFalse(v8Runtime.isPooled());
         assertEquals(0, v8Runtime.getReferenceCount(),
                 "Reference count should be 0 before test case is started.");

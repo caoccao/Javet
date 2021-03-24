@@ -21,42 +21,40 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import org.junit.jupiter.api.Test;
 
-import java.text.MessageFormat;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestV8Native extends BaseTestJavet {
+    protected IV8Native v8Native;
+
+    public TestV8Native() {
+        super();
+        v8Native = v8Host.getV8Native();
+    }
+
     @Test
     public void testGetVersion() {
-        String versionString = V8Native.getVersion();
-        if (JavetLibLoader.getJSRuntimeType().isNode()) {
-            assertEquals(JSRuntimeType.Node.getVersion(), versionString);
-        } else if (JavetLibLoader.getJSRuntimeType().isV8()) {
-            assertEquals(JSRuntimeType.V8.getVersion(), versionString);
-        } else {
-            fail(MessageFormat.format(
-                    "JS runtime type {0} is not supported.",
-                    JavetLibLoader.getJSRuntimeType().getName()));
-        }
+        assertEquals(JSRuntimeType.Node.getVersion(), V8Host.getNodeInstance().getV8Native().getVersion());
+        assertEquals(JSRuntimeType.V8.getVersion(), V8Host.getV8Instance().getV8Native().getVersion());
     }
 
     @Test
     public void testLockAndUnlock() {
-        final long handle = V8Native.createV8Runtime(null);
+        final long handle = v8Native.createV8Runtime(null);
         try {
             final int iterations = 3;
             for (int i = 0; i < iterations; ++i) {
                 assertThrows(JavetV8LockConflictException.class, () -> {
-                    V8Native.unlockV8Runtime(handle);
+                    v8Native.unlockV8Runtime(handle);
                 }, "It should not allow unlock before lock.");
-                V8Native.lockV8Runtime(handle);
+                v8Native.lockV8Runtime(handle);
                 assertThrows(JavetV8LockConflictException.class, () -> {
-                    V8Native.lockV8Runtime(handle);
+                    v8Native.lockV8Runtime(handle);
                 }, "It should not allow double lock.");
-                V8Native.unlockV8Runtime(handle);
+                v8Native.unlockV8Runtime(handle);
             }
         } finally {
-            V8Native.closeV8Runtime(handle);
+            v8Native.closeV8Runtime(handle);
         }
     }
 }

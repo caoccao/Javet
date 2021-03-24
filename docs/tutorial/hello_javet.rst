@@ -35,11 +35,11 @@ Print **Hello Javet**
 
 .. code-block:: java
 
-    // Step 1: Create a V8 runtime from V8 host in try resource.
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+    // Step 1: Create a V8 runtime from V8 host in try-with-resource.
+    try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
         // Step 2: Execute a string as JavaScript code and print the result to console.
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString()); // Hello Javet
-        // Step 3: Resource is recycled automatically at the end of the try resource block.
+        // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
     }
 
 Print **1 + 1**
@@ -47,11 +47,11 @@ Print **1 + 1**
 
 .. code-block:: java
 
-    // Step 1: Create a V8 runtime from V8 host in try resource.
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+    // Step 1: Create a V8 runtime from V8 host in try-with-resource.
+    try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
         // Step 2: Execute a string as JavaScript code and print the result to console.
         System.out.println("1 + 1 = " + v8Runtime.getExecutor("1 + 1").executeInteger()); // 2
-        // Step 3: Resource is recycled automatically at the end of the try resource block.
+        // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
     }
 
 Play with Pool and Console

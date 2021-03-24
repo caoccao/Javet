@@ -17,10 +17,8 @@
 
 package com.caoccao.javet.exceptions;
 
-import java.text.MessageFormat;
-
-public class JavetLibraryNotFoundException extends JavetException {
-    public JavetLibraryNotFoundException(String libFilePath) {
-        super(MessageFormat.format("{0} is not found", libFilePath));
+public class JavetLibraryNotLoadedException extends JavetException {
+    public JavetLibraryNotLoadedException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
