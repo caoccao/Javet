@@ -88,6 +88,14 @@
 	auto v8LocalObject2 = v8PersistentObjectPointer2->Get(v8Context->GetIsolate());
 
 namespace Javet {
+
+#ifdef ENABLE_NODE
+	namespace NodeNative {
+		void Dispose();
+		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
+	}
+#endif
+
 	namespace V8Native {
 		void Dispose();
 		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);

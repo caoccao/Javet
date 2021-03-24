@@ -18,6 +18,7 @@
 #pragma once
 
 #include <jni.h>
+#include <mutex>
 #include "javet_converter.h"
 #include "javet_exceptions.h"
 #include "javet_logging.h"
@@ -47,7 +48,7 @@ namespace Javet {
 		std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
 #ifdef ENABLE_NODE
-		V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer);
+		V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer, std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator);
 #else
 		V8Runtime(V8Platform* v8PlatformPointer);
 #endif

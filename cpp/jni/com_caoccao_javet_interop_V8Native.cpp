@@ -50,6 +50,22 @@
 #define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
 
 namespace Javet {
+#ifdef ENABLE_NODE
+	namespace NodeNative {
+		static JavaVM* GlobalJavaVM;
+		static std::shared_ptr<node::ArrayBufferAllocator> GlobalNodeArrayBufferAllocator;
+
+		void Dispose() {
+			GlobalNodeArrayBufferAllocator.reset();
+		}
+
+		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM) {
+			GlobalJavaVM = javaVM;
+			GlobalNodeArrayBufferAllocator = node::ArrayBufferAllocator::Create();
+		}
+	}
+#endif
+
 	namespace V8Native {
 		static JavaVM* GlobalJavaVM;
 #ifdef ENABLE_NODE
@@ -94,7 +110,7 @@ namespace Javet {
 			if (errorCode != 0) {
 				LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
 			}
-			Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(16);
+			Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(32);
 #else
 			Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
 #endif
@@ -268,7 +284,11 @@ Creating multiple isolates allows running JavaScript code in multiple threads, t
 */
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 (JNIEnv* jniEnv, jclass callerClass, jstring mGlobalName) {
+#ifdef ENABLE_NODE
+	auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get(), Javet::NodeNative::GlobalNodeArrayBufferAllocator);
+#else
 	auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get());
+#endif
 	v8Runtime->CreateV8Isolate();
 	auto v8Locker = v8Runtime->GetUniqueV8Locker();
 	v8Runtime->CreateV8Context(jniEnv, mGlobalName);

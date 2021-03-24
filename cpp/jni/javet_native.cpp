@@ -35,6 +35,9 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
 		return ERROR_JNI_ON_LOAD;
 	}
 	Javet::V8Native::Initialize(jniEnv, javaVM);
+#ifdef ENABLE_NODE
+	Javet::NodeNative::Initialize(jniEnv, javaVM);
+#endif
 	Javet::Callback::Initialize(jniEnv, javaVM);
 	Javet::Converter::Initialize(jniEnv);
 	Javet::Exceptions::Initialize(jniEnv);
@@ -45,6 +48,9 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
 
 void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
 	LOG_INFO("JNI_OnUnload() begins.");
+#ifdef ENABLE_NODE
+	Javet::NodeNative::Dispose();
+#endif
 	Javet::V8Native::Dispose();
 	LOG_INFO("JNI_OnUnload() ends.");
 }

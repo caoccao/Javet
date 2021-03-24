@@ -92,7 +92,8 @@ public class JavetEngine implements IJavetEngine {
         usage.reset();
     }
 
-    protected void resetIsolate() throws JavetException {
+    @Override
+    public void resetIsolate() throws JavetException {
         v8Runtime.resetIsolate();
         usage.reset();
     }
