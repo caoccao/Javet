@@ -33,6 +33,33 @@ Build Node.js
 
 Please follow `Building Node.js <https://github.com/nodejs/node/blob/master/BUILDING.md>`_ to build the static and LTS version of Node.js libraries. Please make sure ``without-intl`` is set so that the library size can be reduced.
 
+Build Node.js on Linux
+------------------------
+
+* Clone the source code.
+* Checkout a proper version.
+* Execute ``python3 script/python/patch_node_build.py -p root_path_to_node_js``.
+* Execute ``cd root_path_to_node_js && ./configure --enable-static --fully-static --without-intl``.
+* Execute ``python3 script/python/patch_node_build.py -p root_path_to_node_js`` again.
+* Execute ``cd root_path_to_node_js && make -j4``.
+
+Why Patching?
+
+* First patch: All static node libraries are ``<thin>`` libraries. The patch is to disable ``<thin>``.
+* Second patch: Many static node libraries are not compiled to `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ and link phase is broken with the following error. The patch is to set ``-fPIC`` to those make files.
+
+.. code-block:: cpp
+
+    /usr/bin/ld: /***/out/Release/libnode.a(node_binding.o): relocation R_X86_64_TPOFF32 against `_ZN4nodeL23thread_local_modpendingE` can not be used when making a shared objeect; recompile with -fPIC
+    ......
+
+Build Node.js on Windows
+------------------------
+
+* Clone the source code.
+* Checkout a proper version.
+* Execute ``vcbuild.bat static without-intl``.
+
 Build Javet JNI Library
 =======================
 
