@@ -11,6 +11,7 @@ Linux Environment
 * CMake 3.10+
 * Ubuntu 18.04
 * JDK 8
+* Gradle 6.7+
 
 Windows Environment
 -------------------
@@ -20,6 +21,7 @@ Windows Environment
 * CMake 3.16+ (comes with Visual Studio)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
+* Gradle 6.7+
 
 Download Pre-built V8
 =====================

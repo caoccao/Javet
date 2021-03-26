@@ -21,14 +21,16 @@ import com.caoccao.javet.exceptions.JavetLibraryNotLoadedException;
 import org.junit.jupiter.api.Test;
 
 public class TestJavetLibLoader {
-//    @Test
-    public void testLoadAndUnload() throws JavetLibraryNotLoadedException {
-        for (JSRuntimeType jsRuntimeType : JSRuntimeType.values()) {
-            JavetClassLoader javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
+    @Test
+    public void testLoadAndUnload() {
+        try {
+            JavetClassLoader javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), JSRuntimeType.Node);
             javetClassLoader.load();
             javetClassLoader = null;
             System.gc();
             System.runFinalization();
+        } catch (JavetLibraryNotLoadedException e) {
+            // This is expected.
         }
     }
 }

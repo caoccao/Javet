@@ -52,6 +52,6 @@ Pool
         }
     }
 
-Note: The default mode in pool is V8 mode.
+Note: The default mode in pool is V8 mode. More technical detail is available at `here <../development/design.rst>`_.
 
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]

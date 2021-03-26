@@ -19,19 +19,32 @@ import argparse
 import coloredlogs
 import logging
 import pathlib
-import os
-import re
 import sys
 
 coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
 
+'''
+This Python script is for patching Node.js on Linux.
+
+1. Clone Node.js.
+2. Checkout to proper version.
+3. Run the script: `python3 patch_node_build.py -p root_path_to_node_js`
+4. Run `./configure --enable-static --fully-static --without-intl` under `root_path_to_node_js`.
+5. Run the script again: `python3 patch_node_build.py -p root_path_to_node_js`
+6. Run `make -j4` under `root_path_to_node_js`.
+
+'''
 class PatchNodeBuild(object):
   def __init__(self) -> None:
+    self._escape = '\\'
+    self._line_separator = '\n'
+
+    # Patch ./common.gypi to generate arch static libraries.
     self._common_file = 'common.gypi'
     self._common_old_key = '_type=="static_library" and OS=="solaris"'
     self._common_new_key = '_type=="static_library"'
-    self._escape = '\\'
-    self._line_separator = '\n'
+
+    # Patch make files to generate position independent code.
     self._make_keys = [
       'CFLAGS_Release :=',
       'CFLAGS_C_Release :=',
@@ -58,6 +71,7 @@ class PatchNodeBuild(object):
     ]
     self._make_property = '    -fPIC \\'
     self._make_property_inline = ' -fPIC '
+
     self._parse_args()
 
   def _parse_args(self):
@@ -73,39 +87,13 @@ class PatchNodeBuild(object):
     self._node_repo_path = pathlib.Path(args.path).resolve().absolute()
 
   def _patch_common(self):
-    file_path = self._node_repo_path.joinpath(self._common_file)
-    original_buffer = file_path.read_bytes()
-    lines = []
-    for line in original_buffer.decode('utf-8').split(self._line_separator):
-      if self._common_old_key in line:
-        line = line.replace(self._common_old_key, self._common_new_key)
-      lines.append(line)
-    new_buffer = self._line_separator.join(lines).encode('utf-8')
-    if original_buffer == new_buffer:
-      logging.warn("Skipped %s.", str(file_path))
-    else:
-      file_path.write_bytes(new_buffer)
-      logging.info("Patched %s.", str(file_path))
-
-  def _patch_make_files(self):
-    for make_file in self._make_files:
-      file_path = self._node_repo_path.joinpath(make_file).resolve().absolute()
+    file_path = self._node_repo_path.joinpath(self._common_file).resolve().absolute()
+    if file_path.exists():
       original_buffer = file_path.read_bytes()
       lines = []
-      patch_required = False
       for line in original_buffer.decode('utf-8').split(self._line_separator):
-        if patch_required:
-          patch_required = False
-          if line != self._make_property:
-            lines.append(self._make_property)
-        for make_key in self._make_keys:
-          if line.startswith(make_key):
-            if not line.endswith(self._escape):
-              if not line.endswith(self._make_property_inline):
-                line += self._make_property_inline
-            else:
-              patch_required = True
-            break
+        if self._common_old_key in line:
+          line = line.replace(self._common_old_key, self._common_new_key)
         lines.append(line)
       new_buffer = self._line_separator.join(lines).encode('utf-8')
       if original_buffer == new_buffer:
@@ -113,6 +101,36 @@ class PatchNodeBuild(object):
       else:
         file_path.write_bytes(new_buffer)
         logging.info("Patched %s.", str(file_path))
+    else:
+      logging.error('Failed to locate %s.', str(file_path))
+
+  def _patch_make_files(self):
+    for make_file in self._make_files:
+      file_path = self._node_repo_path.joinpath(make_file).resolve().absolute()
+      if file_path.exists():
+        original_buffer = file_path.read_bytes()
+        lines = []
+        patch_required = False
+        for line in original_buffer.decode('utf-8').split(self._line_separator):
+          if patch_required:
+            patch_required = False
+            if line != self._make_property:
+              lines.append(self._make_property)
+          for make_key in self._make_keys:
+            if line.startswith(make_key):
+              if not line.endswith(self._escape):
+                if not line.endswith(self._make_property_inline):
+                  line += self._make_property_inline
+              else:
+                patch_required = True
+              break
+          lines.append(line)
+        new_buffer = self._line_separator.join(lines).encode('utf-8')
+        if original_buffer == new_buffer:
+          logging.warn("Skipped %s.", str(file_path))
+        else:
+          file_path.write_bytes(new_buffer)
+          logging.info("Patched %s.", str(file_path))
 
   def patch(self):
     self._patch_common()
@@ -124,4 +142,3 @@ def main():
 
 if __name__ == '__main__':
   sys.exit(int(main() or 0))
-

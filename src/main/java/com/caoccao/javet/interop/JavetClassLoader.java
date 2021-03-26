@@ -32,8 +32,9 @@ class JavetClassLoader extends ClassLoader {
     protected static final String METHOD_LOAD = "load";
     protected JSRuntimeType jsRuntimeType;
 
-    public JavetClassLoader(ClassLoader parent, JSRuntimeType jsRuntimeType) {
+    JavetClassLoader(ClassLoader parent, JSRuntimeType jsRuntimeType) {
         super(parent);
+        assert jsRuntimeType.isNode(); // Prevent V8 from being dynamically loaded.
         this.jsRuntimeType = jsRuntimeType;
     }
 
@@ -43,6 +44,7 @@ class JavetClassLoader extends ClassLoader {
             Constructor constructor = classNative.getConstructor();
             return (IV8Native) constructor.newInstance();
         } catch (Exception e) {
+            e.printStackTrace(System.err);
             throw new JavetLibraryNotLoadedException(e.getMessage(), e);
         }
     }
@@ -54,6 +56,7 @@ class JavetClassLoader extends ClassLoader {
             Object javetLibLoader = constructor.newInstance(jsRuntimeType);
             classJavetLibLoader.getMethod(METHOD_LOAD).invoke(javetLibLoader);
         } catch (Exception e) {
+            e.printStackTrace(System.err);
             throw new JavetLibraryNotLoadedException(e.getMessage(), e);
         }
     }
@@ -74,6 +77,7 @@ class JavetClassLoader extends ClassLoader {
                 }
             } catch (IOException e) {
                 e.printStackTrace(System.err);
+                throw new ClassNotFoundException(name, e);
             }
         }
         return super.loadClass(name);

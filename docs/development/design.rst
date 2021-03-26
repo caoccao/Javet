@@ -26,6 +26,34 @@ Reference typed objects keep memory footprint in V8 + JNI + JVM. All resource wi
 
 Please refer to `Best Practices <best_practices.rst>`_ for detail.
 
+Node.js Mode vs. V8 Mode
+========================
+
+Javet supports both Node.js mode and V8 mode both of which can co-exist in one JVM. In other words, they can run side by side and don't interfere with each other.
+
+.. image:: ../resources/images/javet_modes.png?raw=true
+    :alt: Javet Modes
+
+As the diagram shows, Javet loads V8 v8.9+ in the default classloader as an out-of-box solution. Node.js is lazy loaded in a custom classloader. Detailed comparisons are as following.
+
+=========================== ======================= ==============================
+Feature                     Node.js Mode            V8 Mode
+=========================== ======================= ==============================
+Built-in                    No                      **Yes**
+Customization               **High**                **High**
+Node.js Ecosystem           **Complete**            No
+Security                    Low                     **High**
+Unload                      Potentially Yes         No
+V8 Ecosystem                **Complete**            **Complete**
+V8 Version                  Low                     **High**
+=========================== ======================= ==============================
+
+One of the beauties of Javet is all the features in V8 mode can be applied to Node.js mode. Here are some examples.
+
+* All Node.js modules can be virtualized. E.g. ``console``, ``fs``, ``HTTP``, ``Net``, ``OS``, etc.
+* JVM can share the same byte buffer with Node.js and V8.
+* Multiple Java threads can host multiple Node.js runtime instances with only one copy of V8 objects visible to those instances.
+
 Module
 ======
 
@@ -40,12 +68,12 @@ Unfortunately, V8 has very limited support to the JS module system. However, tha
 require() vs. import()
 ----------------------
 
-=============== =========== ======================= ==============================
-Feature         Async       V8 Support              Javet Support
-=============== =========== ======================= ==============================
-``require()``   No          No                      Yes (with an Interceptor)
-``import()``    Yes         Yes (Partial)           Yes (Complete)
-=============== =========== ======================= ==============================
+=============== =========== ======================= =================== ==============================
+Feature         Async       Original V8             Javet Node.js Mode  Javet V8 Mode
+=============== =========== ======================= =================== ==============================
+``require()``   No          No                      Yes (Complete)      Yes (with an Interceptor)
+``import()``    Yes         Yes (Partial)           Yes (Complete)      Yes (Complete)
+=============== =========== ======================= =================== ==============================
 
 Module Virtualization
 ---------------------

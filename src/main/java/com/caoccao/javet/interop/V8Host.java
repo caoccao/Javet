@@ -24,6 +24,7 @@ import com.caoccao.javet.utils.JavetDefaultLogger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class V8Host implements AutoCloseable {
@@ -37,9 +38,8 @@ public final class V8Host implements AutoCloseable {
     private static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";
     private static final Object nodeLock = new Object();
-    private static final Object v8Lock = new Object();
     private static volatile V8Host nodeInstance;
-    private static volatile V8Host v8Instance;
+    private static volatile V8Host v8Instance = new V8Host(JSRuntimeType.V8);
 
     private V8Flags flags;
     private JavetClassLoader javetClassLoader;
@@ -52,6 +52,7 @@ public final class V8Host implements AutoCloseable {
     private ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
 
     private V8Host(JSRuntimeType jsRuntimeType) {
+        Objects.requireNonNull(jsRuntimeType);
         javetClassLoader = null;
         lastException = null;
         libLoaded = false;
@@ -60,9 +61,17 @@ public final class V8Host implements AutoCloseable {
         v8RuntimeMap = new ConcurrentHashMap<>();
         v8Native = null;
         isolateCreated = false;
-        setJSRuntimeType(jsRuntimeType);
+        this.jsRuntimeType = jsRuntimeType;
+        loadLibrary();
     }
 
+    /**
+     * Gets Node instance.
+     *
+     * Note: Node runtime library is loaded by a custom class loader.
+     *
+     * @return the Node instance
+     */
     public static V8Host getNodeInstance() {
         if (nodeInstance == null) {
             synchronized (nodeLock) {
@@ -74,14 +83,14 @@ public final class V8Host implements AutoCloseable {
         return nodeInstance;
     }
 
+    /**
+     * Gets V8 instance.
+     *
+     * Note: V8 runtime library is loaded by the default class loader.
+     *
+     * @return the V8 instance
+     */
     public static V8Host getV8Instance() {
-        if (v8Instance == null) {
-            synchronized (v8Lock) {
-                if (v8Instance == null) {
-                    v8Instance = new V8Host(JSRuntimeType.V8);
-                }
-            }
-        }
         return v8Instance;
     }
 
@@ -105,7 +114,7 @@ public final class V8Host implements AutoCloseable {
         return logger;
     }
 
-    public IV8Native getV8Native() {
+    IV8Native getV8Native() {
         return v8Native;
     }
 
@@ -152,29 +161,38 @@ public final class V8Host implements AutoCloseable {
         return jsRuntimeType;
     }
 
-    private void setJSRuntimeType(JSRuntimeType jsRuntimeType) {
-        if (this.jsRuntimeType == jsRuntimeType) {
-            return;
+    private void loadLibrary() {
+        if (!libLoaded) {
+            if (jsRuntimeType.isNode()) {
+                try {
+                    javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
+                    javetClassLoader.load();
+                    v8Native = javetClassLoader.getNative();
+                    libLoaded = true;
+                } catch (JavetException e) {
+                    logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
+                    lastException = e;
+                }
+            } else {
+                try {
+                    JavetLibLoader javetLibLoader = new JavetLibLoader(jsRuntimeType);
+                    javetLibLoader.load();
+                    v8Native = new V8Native();
+                    libLoaded = true;
+                } catch (JavetException e) {
+                    logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
+                    lastException = e;
+                }
+            }
         }
-        if (libLoaded) {
+    }
+
+    private void unloadLibrary() {
+        if (jsRuntimeType.isNode() && libLoaded) {
             javetClassLoader = null;
             System.gc();
             System.runFinalization();
             libLoaded = false;
-        }
-        this.jsRuntimeType = jsRuntimeType;
-        if (jsRuntimeType != null) {
-            try {
-                javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
-                 javetClassLoader.load();
-                 v8Native = javetClassLoader.getNative();
-//                JavetLibLoader javetLibLoader = new JavetLibLoader(jsRuntimeType);
-//                javetLibLoader.load();
-                libLoaded = true;
-            } catch (JavetException e) {
-                logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
-                lastException = e;
-            }
         }
     }
 

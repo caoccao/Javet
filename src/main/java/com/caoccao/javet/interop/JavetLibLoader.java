@@ -119,6 +119,7 @@ public final class JavetLibLoader {
                 System.load(tempDirectoryLibFile.getAbsolutePath());
                 loaded = true;
             } catch (Throwable t) {
+                t.printStackTrace(System.err);
                 throw JavetIOException.failedToReadPath(tempDirectoryLibFile.toPath(), t);
             }
         }

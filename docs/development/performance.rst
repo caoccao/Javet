@@ -34,6 +34,7 @@ Highlights
 * Node.js performs slightly better in **Single Context** mode mainly because the V8 embedded in Node.js is much older than the built-in V8.
 * Built-in V8 dramatically outperforms Node.js in **Ad-hoc** mode mainly because Node.js comes with a huge overhead that seriously slows down the context and isolate creation and recycle.
 * It's recommended to use built-in V8 unless Node.js is required in some particular cases.
+* Node.js on Linux is built as `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ which comes with an additional performance overhead.
 
 Reference: https://v8.dev/docs/embed#contexts
 

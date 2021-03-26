@@ -27,8 +27,8 @@ package com.caoccao.javet.interop;
  * 3. Please keep the methods in ascending order so that the generated .h file keeps the same order.
  * 4. Please don't not inject any other non-public native code.
  */
-public class V8Native implements IV8Native {
-    public V8Native() {
+class V8Native implements IV8Native {
+    V8Native() {
     }
 
     @Override
