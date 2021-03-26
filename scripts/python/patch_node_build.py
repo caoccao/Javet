@@ -30,9 +30,11 @@ class PatchNodeBuild(object):
     self._common_file = 'common.gypi'
     self._common_old_key = '_type=="static_library" and OS=="solaris"'
     self._common_new_key = '_type=="static_library"'
+    self._escape = '\\'
     self._line_separator = '\n'
     self._make_keys = [
       'CFLAGS_Release :=',
+      'CFLAGS_C_Release :=',
       'CFLAGS_CC_Release :=',
       'LDFLAGS_Release :=',
     ]
@@ -55,6 +57,7 @@ class PatchNodeBuild(object):
       'out/tools/v8_gypfiles/v8_initializers.target.mk',
     ]
     self._make_property = '    -fPIC \\'
+    self._make_property_inline = ' -fPIC '
     self._parse_args()
 
   def _parse_args(self):
@@ -95,11 +98,15 @@ class PatchNodeBuild(object):
           patch_required = False
           if line != self._make_property:
             lines.append(self._make_property)
-        lines.append(line)
         for make_key in self._make_keys:
           if line.startswith(make_key):
-            patch_required = True
+            if not line.endswith(self._escape):
+              if not line.endswith(self._make_property_inline):
+                line += self._make_property_inline
+            else:
+              patch_required = True
             break
+        lines.append(line)
       new_buffer = self._line_separator.join(lines).encode('utf-8')
       if original_buffer == new_buffer:
         logging.warn("Skipped %s.", str(file_path))

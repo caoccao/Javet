@@ -144,9 +144,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 ")
     if(DEFINED V8_DIR)
         set_target_properties(v8_monolith PROPERTIES IMPORTED_LOCATION ${V8_DIR}/out.gn/x64.release/obj/libv8_monolith.a)
-        target_link_libraries(Javet v8_monolith debug "-lrt" optimized "-lrt" "${libgcc}")
+        target_link_libraries(Javet PUBLIC -Wl,--whole-archive v8_monolith -Wl,--no-whole-archive debug "-lrt" optimized "-lrt" "${libgcc}")
     endif()
     if(DEFINED NODE_DIR)
+        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
         set_target_properties(brotli PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/libbrotli.a)
         set_target_properties(cares PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/libcares.a)
         set_target_properties(histogram PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/libhistogram.a)
@@ -169,7 +170,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         set_target_properties(v8_zlib PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/libv8_zlib.a)
         set_target_properties(zlib PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/libzlib.a)
         set_target_properties(node PROPERTIES LINK_FLAGS "--whole-archive")
-        target_link_libraries(Javet brotli cares histogram llhttp nghttp2 node node_text_start openssl torque_base uv uvwasi v8_base_without_compiler v8_compiler v8_init v8_initializers v8_libbase v8_libplatform v8_libsampler v8_snapshot v8_zlib zlib debug "-lrt" optimized "-lrt" "${libgcc}")
+        target_link_libraries(Javet PUBLIC
+            -Wl,--whole-archive
+            brotli cares histogram llhttp nghttp2 node node_text_start openssl torque_base uv uvwasi v8_base_without_compiler v8_compiler v8_initializers v8_libbase v8_libplatform v8_libsampler v8_snapshot v8_zlib zlib
+            -Wl,--no-whole-archive
+            v8_init
+            debug "-lrt" optimized "-lrt" "${libgcc}")
     endif()
     set_target_properties(Javet PROPERTIES OUTPUT_NAME "javet-${JAVET_TYPE}-linux-x86_64.v.${JAVET_VERSION}")
 else()
