@@ -26,7 +26,7 @@ Windows Environment
 Download Pre-built Node.js and V8
 =================================
 
-I have prepared pre-built Linux and Windows version of Node.js ``v14.16.0`` and V8 ``v8.9.255``. Please download the headers and binary from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them locally.
+I have prepared pre-built Linux and Windows version of Node.js ``v14.16.0`` and V8 ``v8.9.255``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
 
 Build Javet JNI Library
 =======================
@@ -54,7 +54,7 @@ V8          ``libjavet-v8-linux-x86_64.v.*.*.*.so``                     ``libjav
 Build Javet Jar
 ===============
 
-Once both ``libjavet-linux-x86_64.v.*.*.*.so`` and ``libjavet-windows-x86_64.v.*.*.*.dll`` are built, please put them altogether under ``src/main/resources`` then kick off ``gradle build test``.
+Once both ``libjavet-*-linux-x86_64.v.*.*.*.so`` and ``libjavet-*-windows-x86_64.v.*.*.*.dll`` are built, please put them altogether under ``src/main/resources`` then kick off ``gradle build test``.
 
 After a while, ``javet-*.*.*.jar`` will be placed in folder ``build/libs``.
 
