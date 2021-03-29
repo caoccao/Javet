@@ -23,6 +23,8 @@ public interface IV8Native {
 
     void allowCodeGenerationFromStrings(long v8RuntimeHandle, boolean allow);
 
+    void await(long v8RuntimeHandle);
+
     Object call(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);

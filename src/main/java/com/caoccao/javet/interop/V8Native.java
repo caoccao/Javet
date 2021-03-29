@@ -38,6 +38,9 @@ class V8Native implements IV8Native {
     public native void allowCodeGenerationFromStrings(long v8RuntimeHandle, boolean allow);
 
     @Override
+    public native void await(long v8RuntimeHandle);
+
+    @Override
     public native Object call(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);

@@ -17,10 +17,15 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.node.NodeObjectStore;
+
 /**
  * Node runtime is a thin wrapper over V8 runtime.
  */
 public class NodeRuntime extends V8Runtime {
+    protected NodeObjectStore nodeObjectStore;
+
     /**
      * Instantiates a new Node runtime.
      *
@@ -30,14 +35,23 @@ public class NodeRuntime extends V8Runtime {
      */
     NodeRuntime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native) {
         super(v8Host, handle, pooled, v8Native, null);
+        nodeObjectStore = new NodeObjectStore(this);
     }
 
-    public void await() {
-        ((INodeNative) v8Native).await(handle);
+    @Override
+    public void close(boolean forceClose) throws JavetException {
+        if (handle != INVALID_HANDLE && forceClose) {
+            nodeObjectStore.close();
+        }
+        super.close(forceClose);
     }
 
     @Override
     public JSRuntimeType getJSRuntimeType() {
         return JSRuntimeType.Node;
+    }
+
+    public NodeObjectStore getNodeObjectStore() {
+        return nodeObjectStore;
     }
 }

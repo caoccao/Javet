@@ -19,7 +19,6 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.NodeRuntime;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,8 +34,8 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
                 assertEquals(V8ValuePromise.STATE_PENDING, v8ValuePromise.getState());
                 assertTrue(v8ValuePromise.isPending());
                 assertTrue(v8ValuePromise.getResult().isUndefined());
-                ((NodeRuntime) v8Runtime).await();
             }
+            v8Runtime.await();
             assertEquals(V8ValuePromise.STATE_FULFILLED, v8ValuePromise.getState());
             assertTrue(v8ValuePromise.isFulfilled());
             assertEquals(1, v8ValuePromise.getResultInteger());

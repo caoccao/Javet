@@ -32,6 +32,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class BaseTestJavet {
@@ -40,19 +41,31 @@ public abstract class BaseTestJavet {
     protected V8Host v8Host;
 
     public BaseTestJavet() {
-        logger = new JavetDefaultLogger(getClass().getName());
-        JavetLibLoader javetLibLoaderNode = new JavetLibLoader(JSRuntimeType.Node);
-        JavetLibLoader javetLibLoaderV8 = new JavetLibLoader(JSRuntimeType.V8);
+        this(null);
+    }
+
+    public BaseTestJavet(JSRuntimeType jsRuntimeType) {
         try {
-            String resourceDirPath = new File(
-                    JavetOSUtils.WORKING_DIRECTORY, "src/main/resources").getAbsolutePath();
-            File nodeLibFile = javetLibLoaderNode.getLibFile(resourceDirPath);
-            File v8LibFile = javetLibLoaderV8.getLibFile(resourceDirPath);
-            if (nodeLibFile.lastModified() > v8LibFile.lastModified()) {
+            logger = new JavetDefaultLogger(getClass().getName());
+            if (jsRuntimeType == null) {
+                JavetLibLoader javetLibLoaderNode = new JavetLibLoader(JSRuntimeType.Node);
+                JavetLibLoader javetLibLoaderV8 = new JavetLibLoader(JSRuntimeType.V8);
+                String resourceDirPath = new File(
+                        JavetOSUtils.WORKING_DIRECTORY, "src/main/resources").getAbsolutePath();
+                File nodeLibFile = javetLibLoaderNode.getLibFile(resourceDirPath);
+                File v8LibFile = javetLibLoaderV8.getLibFile(resourceDirPath);
+                if (nodeLibFile.lastModified() > v8LibFile.lastModified()) {
+                    jsRuntimeType = JSRuntimeType.Node;
+                } else {
+                    jsRuntimeType = JSRuntimeType.V8;
+                }
+            }
+            if (jsRuntimeType.isNode()) {
                 v8Host = V8Host.getNodeInstance();
             } else {
                 v8Host = V8Host.getV8Instance();
             }
+            assertEquals(jsRuntimeType, v8Host.getJSRuntimeType());
         } catch (Exception e) {
             fail(e.getMessage());
         }

@@ -50,9 +50,10 @@ V8 Version                  Low                     **High**
 
 One of the beauties of Javet is all the features in V8 mode can be applied to Node.js mode. Here are some examples.
 
-* All Node.js modules can be virtualized. E.g. ``console``, ``fs``, ``HTTP``, ``Net``, ``OS``, etc.
-* JVM can share the same byte buffer with Node.js and V8.
-* Multiple Java threads can host multiple Node.js runtime instances with only one copy of V8 objects visible to those instances.
+* Virtualization - All Node.js modules can be virtualized. E.g. ``console``, ``fs``, ``HTTP``, ``Net``, ``OS``, etc.
+* Zero-copy - JVM can share the same byte buffer with Node.js and V8 to achieve zero-copy.
+* Multi-threading - Multiple Java threads can host multiple Node.js runtime instances with only one copy of V8 objects visible to those instances.
+* Beyond Node.js - Javet allows explicit ``await()`` so that applications can take more control over ``async`` execution.
 
 Module
 ======

@@ -52,6 +52,9 @@ namespace Javet {
 			v8PlatformPointer->DrainTasks(v8Isolate);
 			hasMoreTasks = uv_loop_alive(&uvLoop);
 		} while (hasMoreTasks == true);
+#else
+		// It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
+		v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
 #endif
 	}
 

@@ -155,6 +155,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerati
 	v8Context->AllowCodeGenerationFromStrings(allow);
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_await
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	v8Runtime->Await();
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mReceiver, jboolean mResultRequired, jobjectArray mValues) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

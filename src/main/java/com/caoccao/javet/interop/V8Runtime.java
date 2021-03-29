@@ -96,6 +96,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         v8Native.allowCodeGenerationFromStrings(handle, allow);
     }
 
+    public void await() {
+        v8Native.await(handle);
+    }
+
     public <T extends V8Value> T call(
             IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
             throws JavetException {

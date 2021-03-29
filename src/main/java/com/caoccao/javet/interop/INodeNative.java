@@ -18,5 +18,4 @@
 package com.caoccao.javet.interop;
 
 public interface INodeNative extends IV8Native{
-    void await(long v8RuntimeHandle);
 }
