@@ -107,7 +107,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         list(REMOVE_ITEM importLibraries v8_init)
         target_link_libraries(Javet PUBLIC
             -Wl,--whole-archive
-            ${importLibrary}
+            ${importLibraries}
             -Wl,--no-whole-archive
             v8_init
             debug "-lrt" optimized "-lrt" "${libgcc}")
