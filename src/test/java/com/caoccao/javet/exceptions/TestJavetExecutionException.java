@@ -19,10 +19,10 @@ package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetExecutionException extends BaseTestJavetRuntime {
     @Test
@@ -50,6 +50,41 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
                     javetScriptingError.toString());
         } catch (JavetException e) {
             fail("JavetExecutionException should be thrown.");
+        }
+    }
+
+    @Test
+    public void testInvalidExports() throws JavetException {
+        String codeString = "Object.defineProperty(exports, \"__esModule\", { value: true });\n" +
+                "const decimal_js_1 = require(\"decimal.js\");\n" +
+                "const a = new decimal_js_1.Decimal(123.45);\n" +
+                "console.log(a);\n" +
+                "a;";
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(codeString).execute()) {
+            assertNotNull(v8ValueObject);
+        } catch (JavetExecutionException e) {
+            assertEquals(
+                    "ReferenceError: exports is not defined",
+                    e.getError().getMessage());
+        }
+    }
+
+    @Test
+    public void testInvalidRequire() throws JavetException {
+        String codeString = "const decimal_js_1 = require(\"decimal.js\");\n" +
+                "const a = new decimal_js_1.Decimal(123.45);\n" +
+                "console.log(a);\n" +
+                "a;";
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(codeString).execute()) {
+            assertNotNull(v8ValueObject);
+        } catch (JavetExecutionException e) {
+            if (v8Runtime.getJSRuntimeType().isNode()) {
+                assertTrue(e.getError().getMessage().startsWith("Error: Cannot find module 'decimal.js'"));
+            } else {
+                assertEquals(
+                        "ReferenceError: require is not defined",
+                        e.getError().getMessage());
+            }
         }
     }
 

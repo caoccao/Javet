@@ -23,7 +23,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
-public abstract class V8Value implements IV8Value {
+public abstract class V8Value extends V8Data implements IV8Value {
     protected V8Runtime v8Runtime;
 
     protected V8Value() {

@@ -98,9 +98,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public abstract int getIdentityHash() throws JavetException;
-
-    @Override
     public boolean isWeak() throws JavetException {
         return weak;
     }
@@ -119,19 +116,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
-        super.setV8Runtime(v8Runtime);
-        addReference();
-    }
-
-    @Override
-    public void setWeak() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.setWeak(this);
-        weak = true;
-    }
-
-    @Override
     public boolean sameValue(V8Value v8Value) throws JavetException {
         if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
             return false;
@@ -144,6 +128,19 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
             return true;
         }
         return v8Runtime.sameValue(this, v8ValueReference);
+    }
+
+    @Override
+    public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
+        super.setV8Runtime(v8Runtime);
+        addReference();
+    }
+
+    @Override
+    public void setWeak() throws JavetException {
+        checkV8Runtime();
+        v8Runtime.setWeak(this);
+        weak = true;
     }
 
     @Override
@@ -162,13 +159,9 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public String toProtoString() {
-        try {
-            checkV8Runtime();
-            return v8Runtime.toProtoString(this);
-        } catch (JavetException e) {
-            return e.getMessage();
-        }
+    public <T extends V8Value> T toClone() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.cloneV8Value(this);
     }
 
     @Override

@@ -17,10 +17,9 @@
 
 #pragma once
 
-#include <v8.h>
-#include <v8-inspector.h>
 #include <jni.h>
 #include "javet_v8_runtime.h"
+#include "javet_v8.h"
 
 namespace Javet {
 	namespace Inspector {
@@ -66,7 +65,7 @@ namespace Javet {
 			std::unique_ptr<JavetInspectorChannel> javetInspectorChannel;
 			std::unique_ptr<v8_inspector::V8Inspector> v8Inspector;
 			std::unique_ptr<v8_inspector::V8InspectorSession> v8InspectorSession;
-			v8::Local<v8::Context> ensureDefaultContextInGroup(int contextGroupId) override;
+			V8LocalContext ensureDefaultContextInGroup(int contextGroupId) override;
 		};
 
 		class JavetInspectorChannel final : public v8_inspector::V8Inspector::Channel {

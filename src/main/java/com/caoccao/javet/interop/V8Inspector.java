@@ -29,14 +29,16 @@ public final class V8Inspector {
     private IJavetLogger logger;
     private String name;
     private List<IV8InspectorListener> listeners;
+    private IV8Native v8Native;
     private V8Runtime v8Runtime;
 
-    V8Inspector(V8Runtime v8Runtime, String name) {
+    V8Inspector(V8Runtime v8Runtime, String name, IV8Native v8Native) {
         logger = v8Runtime.getLogger();
         this.name = name;
         listeners = new ArrayList<>();
         this.v8Runtime = v8Runtime;
-        V8Native.createV8Inspector(v8Runtime.getHandle(), this);
+        this.v8Native = v8Native;
+        v8Native.createV8Inspector(v8Runtime.getHandle(), this);
     }
 
     public void addListeners(IV8InspectorListener... listeners) {
@@ -115,6 +117,6 @@ public final class V8Inspector {
                 logger.logError(t, t.getMessage());
             }
         }
-        V8Native.v8InspectorSend(v8Runtime.getHandle(), message);
+        v8Native.v8InspectorSend(v8Runtime.getHandle(), message);
     }
 }

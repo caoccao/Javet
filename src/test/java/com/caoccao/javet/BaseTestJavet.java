@@ -18,35 +18,73 @@
 package com.caoccao.javet;
 
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.JSRuntimeType;
+import com.caoccao.javet.interop.JavetLibLoader;
 import com.caoccao.javet.interop.V8Flags;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.utils.JavetDefaultLogger;
+import com.caoccao.javet.utils.JavetOSUtils;
 import org.junit.jupiter.api.BeforeAll;
 
+import java.io.File;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 public abstract class BaseTestJavet {
     public static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 10;
     protected IJavetLogger logger;
+    protected V8Host v8Host;
 
     public BaseTestJavet() {
-        logger = new JavetDefaultLogger(getClass().getName());
+        this(null);
+    }
+
+    public BaseTestJavet(JSRuntimeType jsRuntimeType) {
+        try {
+            logger = new JavetDefaultLogger(getClass().getName());
+            if (jsRuntimeType == null) {
+                JavetLibLoader javetLibLoaderNode = new JavetLibLoader(JSRuntimeType.Node);
+                JavetLibLoader javetLibLoaderV8 = new JavetLibLoader(JSRuntimeType.V8);
+                String resourceDirPath = new File(
+                        JavetOSUtils.WORKING_DIRECTORY, "src/main/resources").getAbsolutePath();
+                File nodeLibFile = javetLibLoaderNode.getLibFile(resourceDirPath);
+                File v8LibFile = javetLibLoaderV8.getLibFile(resourceDirPath);
+                if (nodeLibFile.lastModified() > v8LibFile.lastModified()) {
+                    jsRuntimeType = JSRuntimeType.Node;
+                } else {
+                    jsRuntimeType = JSRuntimeType.V8;
+                }
+            }
+            if (jsRuntimeType.isNode()) {
+                v8Host = V8Host.getNodeInstance();
+            } else {
+                v8Host = V8Host.getV8Instance();
+            }
+            assertEquals(jsRuntimeType, v8Host.getJSRuntimeType());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @BeforeAll
     public static void beforeAll() {
-        V8Flags flags = V8Host.getInstance().getFlags();
-        if (!flags.isSealed()) {
-            flags.setAllowNativesSyntax(true);
-            flags.setExposeGC(true);
-//            flags.setExposeInspectorScripts(true);
-            flags.setUseStrict(true);
-            flags.setTrackRetainingPath(true);
+        for (V8Host v8Host : new V8Host[]{V8Host.getNodeInstance(), V8Host.getV8Instance()}) {
+            V8Flags flags = v8Host.getFlags();
+            if (!flags.isSealed()) {
+                flags.setAllowNativesSyntax(true);
+                flags.setExposeGC(true);
+                flags.setExposeInspectorScripts(true);
+                flags.setHarmonyTopLevelAwait(false);
+                flags.setUseStrict(true);
+                flags.setTrackRetainingPath(true);
+            }
+            v8Host.setFlags();
         }
-        V8Host.getInstance().setFlags();
     }
 
     public void runAndWait(

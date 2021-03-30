@@ -37,7 +37,7 @@ Manual termination gives applications complete control. In return, the coding ef
 
 .. code-block:: java
 
-    V8Host v8Host = V8Host.getInstance();
+    V8Host v8Host = V8Host.getV8Instance();
     try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
         // Create a daemon thread monitoring the V8 runtime status.
         Thread daemonThread = new Thread(() -> {

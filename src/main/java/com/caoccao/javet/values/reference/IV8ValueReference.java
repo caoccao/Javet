@@ -19,27 +19,13 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.IV8Value;
-import com.caoccao.javet.values.V8Value;
 
 public interface IV8ValueReference extends IV8Value {
-
     void clearWeak() throws JavetException;
 
     void close(boolean forceClose) throws JavetException;
 
     long getHandle();
-
-    /**
-     * Returns the identity hash for this object. The current implementation
-     * uses an inline property on the object to store the identity hash.
-     * <p>
-     * The return value will never be 0. Also, it is not guaranteed to be
-     * unique.
-     *
-     * @return the identity hash
-     * @throws JavetException the javet exception
-     */
-    int getIdentityHash() throws JavetException;
 
     int getType();
 
@@ -48,6 +34,4 @@ public interface IV8ValueReference extends IV8Value {
     boolean isWeak(boolean forceSync) throws JavetException;
 
     void setWeak() throws JavetException;
-
-    String toProtoString();
 }

@@ -33,6 +33,8 @@ public final class V8ValueReferenceType {
     public static final int Iterator = 12;
     public static final int WeakMap = 13;
     public static final int WeakSet = 14;
+    public static final int Script = 20;
+    public static final int Module = 21;
     public static final int DataView = 30;
     public static final int ArrayBuffer = 31;
     public static final int Int8Array = 32; // -128 to 127 	1 	8-bit two's complement signed integer 	byte 	int8_t

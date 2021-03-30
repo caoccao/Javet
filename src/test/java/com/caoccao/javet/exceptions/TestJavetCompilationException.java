@@ -19,16 +19,60 @@ package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetCompilationException extends BaseTestJavetRuntime {
     @Test
+    public void testInvalidImport() throws JavetException {
+        String codeString = "import { Decimal } from 'decimal.js'\n" +
+                "\n" +
+                "const a = new Decimal(123.45);\n" +
+                "console.log(a);\n" +
+                "a;";
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(codeString).execute()) {
+            assertNotNull(v8ValueObject);
+        } catch (JavetCompilationException e) {
+            assertEquals(
+                    "SyntaxError: Cannot use import statement outside a module",
+                    e.getError().getMessage());
+        }
+    }
+
+    @Test
+    public void testInvalidOrUnexpectedToken() {
+        try (V8Value v8Value = v8Runtime.getExecutor("1a2b").execute()) {
+            fail("Exception should be thrown.");
+        } catch (JavetCompilationException e) {
+            assertEquals("SyntaxError: Invalid or unexpected token", e.getMessage());
+            JavetScriptingError javetScriptingError = e.getError();
+            assertEquals("SyntaxError: Invalid or unexpected token", javetScriptingError.getMessage());
+            assertEquals("undefined", javetScriptingError.getResourceName());
+            assertEquals("1a2b", javetScriptingError.getSourceLine());
+            assertEquals(1, javetScriptingError.getLineNumber());
+            assertEquals(0, javetScriptingError.getStartColumn());
+            assertEquals(1, javetScriptingError.getEndColumn());
+            assertEquals(0, javetScriptingError.getStartPosition());
+            assertEquals(1, javetScriptingError.getEndPosition());
+            assertEquals(
+                    "Error: SyntaxError: Invalid or unexpected token\n" +
+                            "Resource: undefined\n" +
+                            "Source Code: 1a2b\n" +
+                            "Line Number: 1\n" +
+                            "Column: 0, 1\n" +
+                            "Position: 0, 1",
+                    javetScriptingError.toString());
+        } catch (JavetException e) {
+            fail("JavetCompilationException should be thrown.");
+        }
+    }
+
+    @Test
     public void testUnexpectedIdentifier() {
         try {
-            v8Runtime.getExecutor("const a = 1;\na a a a;").compileOnly();
+            v8Runtime.getExecutor("const a = 1;\na a a a;").compileScript();
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
             assertEquals("SyntaxError: Unexpected identifier", e.getMessage());
@@ -76,34 +120,6 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
                             "Line Number: 2\n" +
                             "Column: 5, 6\n" +
                             "Position: 18, 19",
-                    javetScriptingError.toString());
-        } catch (JavetException e) {
-            fail("JavetCompilationException should be thrown.");
-        }
-    }
-
-    @Test
-    public void testInvalidOrUnexpectedToken() {
-        try (V8Value v8Value = v8Runtime.getExecutor("1a2b").execute()) {
-            fail("Exception should be thrown.");
-        } catch (JavetCompilationException e) {
-            assertEquals("SyntaxError: Invalid or unexpected token", e.getMessage());
-            JavetScriptingError javetScriptingError = e.getError();
-            assertEquals("SyntaxError: Invalid or unexpected token", javetScriptingError.getMessage());
-            assertEquals("undefined", javetScriptingError.getResourceName());
-            assertEquals("1a2b", javetScriptingError.getSourceLine());
-            assertEquals(1, javetScriptingError.getLineNumber());
-            assertEquals(0, javetScriptingError.getStartColumn());
-            assertEquals(1, javetScriptingError.getEndColumn());
-            assertEquals(0, javetScriptingError.getStartPosition());
-            assertEquals(1, javetScriptingError.getEndPosition());
-            assertEquals(
-                    "Error: SyntaxError: Invalid or unexpected token\n" +
-                            "Resource: undefined\n" +
-                            "Source Code: 1a2b\n" +
-                            "Line Number: 1\n" +
-                            "Column: 0, 1\n" +
-                            "Position: 0, 1",
                     javetScriptingError.toString());
         } catch (JavetException e) {
             fail("JavetCompilationException should be thrown.");

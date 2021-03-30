@@ -26,8 +26,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestV8Host extends BaseTestJavet {
     @Test
+    public void testBothNodeAndV8() throws JavetException {
+        try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
+            assertNotNull(v8Runtime);
+            assertTrue(v8Runtime.getJSRuntimeType().isNode());
+        }
+        try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
+            assertNotNull(v8Runtime);
+            assertTrue(v8Runtime.getJSRuntimeType().isV8());
+        }
+    }
+
+    @Test
     public void testCreateV8RuntimeWithoutGlobalName() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertNotNull(v8Runtime);
             assertTrue(v8Host.isIsolateCreated());
@@ -36,10 +47,16 @@ public class TestV8Host extends BaseTestJavet {
 
     @Test
     public void testCreateV8RuntimeWithGlobalName() throws JavetException {
-        V8Host v8Host = V8Host.getInstance();
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertNotNull(v8Runtime);
             assertTrue(v8Host.isIsolateCreated());
         }
+    }
+
+    @Test
+    public void testLogJSRuntimeType() {
+        JSRuntimeType jsRuntimeType = v8Host.getJSRuntimeType();
+        logger.logInfo("JS runtime type is {0}, version is {1}.",
+                jsRuntimeType.getName(), jsRuntimeType.getVersion());
     }
 }

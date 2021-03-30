@@ -22,6 +22,7 @@ import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 
 import java.util.Objects;
 
@@ -32,10 +33,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String FUNCTION_GET = "get";
     protected static final String FUNCTION_HAS = "has";
     protected static final String FUNCTION_SET = "set";
-    protected static final String FUNCTION_STRINGIFY = "stringify";
-    protected static final String PROPERTY_JSON = "JSON";
 
-    V8ValueObject(long handle) {
+    protected V8ValueObject(long handle) {
         super(handle);
     }
 
@@ -142,17 +141,21 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T toClone() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.cloneV8Value(this);
+    public String toProtoString() {
+        try {
+            checkV8Runtime();
+            return v8Runtime.toProtoString(this);
+        } catch (JavetException e) {
+            return e.getMessage();
+        }
     }
 
     @Override
     public String toJsonString() {
         try {
             checkV8Runtime();
-            try (V8ValueObject jsonObject = v8Runtime.getGlobalObject().get(PROPERTY_JSON)) {
-                return jsonObject.invokeString(FUNCTION_STRINGIFY, this);
+            try (V8ValueBuiltInJson v8ValueBuiltInJson = v8Runtime.getGlobalObject().getJson()) {
+                return v8ValueBuiltInJson.stringify(this);
             }
         } catch (JavetException e) {
             return e.getMessage();

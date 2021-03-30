@@ -21,13 +21,48 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValuePromise extends BaseTestJavetRuntime {
     @Test
-    public void testPromise() throws JavetException {
-        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor("new Promise(()=>{})").execute()) {
+    public void testFulfilled() throws JavetException {
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "new Promise((resolve, reject)=>{ resolve(1); }).then(x => x)").execute()) {
             assertNotNull(v8ValuePromise);
+            assertFalse(v8ValuePromise.hasHandler());
+            if (v8Runtime.getJSRuntimeType().isNode()) {
+                assertEquals(V8ValuePromise.STATE_PENDING, v8ValuePromise.getState());
+                assertTrue(v8ValuePromise.isPending());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
+            }
+            v8Runtime.await();
+            assertEquals(V8ValuePromise.STATE_FULFILLED, v8ValuePromise.getState());
+            assertTrue(v8ValuePromise.isFulfilled());
+            assertEquals(1, v8ValuePromise.getResultInteger());
+        }
+    }
+
+    @Test
+    public void testRejected() throws JavetException {
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "new Promise((resolve, reject)=>{ reject('a'); })").execute()) {
+            assertNotNull(v8ValuePromise);
+            assertEquals(V8ValuePromise.STATE_REJECTED, v8ValuePromise.getState());
+            assertTrue(v8ValuePromise.isRejected());
+            assertFalse(v8ValuePromise.hasHandler());
+            assertEquals("a", v8ValuePromise.getResultString());
+        }
+    }
+
+    @Test
+    public void testResolve() throws JavetException {
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "new Promise((resolve, reject)=>{ resolve(1); })").execute()) {
+            assertNotNull(v8ValuePromise);
+            assertEquals(V8ValuePromise.STATE_FULFILLED, v8ValuePromise.getState());
+            assertTrue(v8ValuePromise.isFulfilled());
+            assertFalse(v8ValuePromise.hasHandler());
+            assertEquals(1, v8ValuePromise.getResultInteger());
         }
     }
 }

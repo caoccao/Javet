@@ -19,60 +19,54 @@ package com.caoccao.javet.interop.executors;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetIOException;
+import com.caoccao.javet.interop.IV8Executable;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.reference.V8Module;
+import com.caoccao.javet.values.reference.V8Script;
 
 import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
-public interface IV8Executor {
-    void compileOnly() throws JavetException;
-
-    default <T extends V8Value> T execute() throws JavetException {
-        return execute(true);
+public interface IV8Executor extends IV8Executable {
+    default V8Module compileModule() throws JavetException {
+        return compileModule(true);
     }
 
-    <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
+    V8Module compileModule(boolean resultRequired) throws JavetException;
 
-    default Boolean executeBoolean() throws JavetException {
-        return executeObject();
+    default void compileModuleVoid() throws JavetException {
+        compileModule(false);
     }
 
-    default Double executeDouble() throws JavetException {
-        return executeObject();
+    default V8Script compileScript() throws JavetException {
+        return compileScript(true);
     }
 
-    default Integer executeInteger() throws JavetException {
-        return executeObject();
+    V8Script compileScript(boolean resultRequired) throws JavetException;
+
+    default void compileScriptVoid() throws JavetException {
+        compileScript(false);
     }
 
-    default Long executeLong() throws JavetException {
-        return executeObject();
+    default String getResourceName() {
+        return getV8ScriptOrigin().getResourceName();
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R executeObject() throws JavetException {
-        try (V8Value v8Value = execute()) {
-            try {
-                return ((T) v8Value).getValue();
-            } catch (Throwable t) {
-            }
-        }
-        return null;
+    default IV8Executor setResourceName(String resourceName) {
+        getV8ScriptOrigin().setResourceName(resourceName);
+        return this;
     }
 
-    default String executeString()
-            throws JavetException {
-        return executeObject();
+    default boolean isModule() {
+        return getV8ScriptOrigin().isModule();
     }
 
-    default void executeVoid() throws JavetException {
-        execute(false);
-    }
-
-    default ZonedDateTime executeZonedDateTime() throws JavetException {
-        return executeObject();
+    default IV8Executor setModule(boolean module) {
+        getV8ScriptOrigin().setModule(module);
+        return this;
     }
 
     String getScriptString() throws JavetIOException;

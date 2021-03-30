@@ -17,16 +17,20 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.BaseTestJavet;
-import com.caoccao.javet.exceptions.JavetIOException;
-import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
+import com.caoccao.javet.exceptions.JavetLibraryNotLoadedException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class TestJavetLibLoader extends BaseTestJavet {
+public class TestJavetLibLoader {
     @Test
-    public void testLoad() throws JavetOSNotSupportedException, JavetIOException {
-        assertTrue(JavetLibLoader.load());
+    public void testLoadAndUnload() {
+        try {
+            JavetClassLoader javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), JSRuntimeType.Node);
+            javetClassLoader.load();
+            javetClassLoader = null;
+            System.gc();
+            System.runFinalization();
+        } catch (JavetLibraryNotLoadedException e) {
+            // This is expected.
+        }
     }
 }

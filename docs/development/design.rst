@@ -26,6 +26,66 @@ Reference typed objects keep memory footprint in V8 + JNI + JVM. All resource wi
 
 Please refer to `Best Practices <best_practices.rst>`_ for detail.
 
+Node.js Mode vs. V8 Mode
+========================
+
+Javet supports both Node.js mode and V8 mode both of which can co-exist in one JVM. In other words, they can run side by side and don't interfere with each other.
+
+.. image:: ../resources/images/javet_modes.png?raw=true
+    :alt: Javet Modes
+
+As the diagram shows, Javet loads V8 v8.9+ in the default classloader as an out-of-box solution. Node.js is lazy loaded in a custom classloader. Detailed comparisons are as following.
+
+=========================== ======================= ==============================
+Feature                     Node.js Mode            V8 Mode
+=========================== ======================= ==============================
+Built-in                    No                      **Yes**
+Customization               **High**                **High**
+Node.js Ecosystem           **Complete**            No
+Security                    Low                     **High**
+Unload                      Potentially Yes         No
+V8 Ecosystem                **Complete**            **Complete**
+V8 Version                  Low                     **High**
+=========================== ======================= ==============================
+
+One of the beauties of Javet is all the features in V8 mode can be applied to Node.js mode. Here are some examples.
+
+* Virtualization - All Node.js modules can be virtualized. E.g. ``console``, ``fs``, ``HTTP``, ``Net``, ``OS``, etc.
+* Zero-copy - JVM can share the same byte buffer with Node.js and V8 to achieve zero-copy.
+* Multi-threading - Multiple Java threads can host multiple Node.js runtime instances with only one copy of V8 objects visible to those instances.
+* Beyond Node.js - Javet allows explicit ``await()`` so that applications can take more control over ``async`` execution.
+
+Module
+======
+
+Executing all scripts in global context is not recommended when project size increases. Javet provides complete support to applications so that V8 runtime context is aligned with the way Node or Chrome does. That brings the module system.
+
+Unfortunately, V8 has very limited support to the JS module system. However, that is not bad because V8 leaves all the possibilities to Javet. The typical challenges Javet faces are as following.
+
+* Sync or Async
+* Module Location
+* Module Dependency
+
+require() vs. import()
+----------------------
+
+=============== =========== ======================= =================== ==============================
+Feature         Async       Original V8             Javet Node.js Mode  Javet V8 Mode
+=============== =========== ======================= =================== ==============================
+``require()``   No          No                      Yes (Complete)      Yes (with an Interceptor)
+``import()``    Yes         Yes (Partial)           Yes (Complete)      Yes (Complete)
+=============== =========== ======================= =================== ==============================
+
+Module Virtualization
+---------------------
+
+Javet doesn't build ``require()`` in but allows applications to set an interceptor because Javet doesn't know how to locate the modules and doesn't want to know for security issues. So it's up to the applications to define their own ways of locating the modules.
+
+Javet provides complete support to ES6 ``import()`` because certain work inside JNI has to be in place as V8 only partially supports ``import()``. So, in Javet the module is kind of virtualized, in other words, the module is represented by an arbitrary string that can be interpreted by applications during runtime. E.g. ``module.js`` may come from a file, a URL, a string in memory or whatever. Javet stores the compiled and evaluated module in a map with that string as key, and feeds V8 that module when V8 looks it up by that string.
+
+.. image:: ../resources/images/javet_module_system.png?raw=true
+    :alt: Javet Module System
+
 Engine Pool
 ===========
 

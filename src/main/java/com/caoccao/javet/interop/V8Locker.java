@@ -29,6 +29,7 @@ import java.util.Objects;
  */
 public final class V8Locker implements IJavetClosable {
     private long threadId;
+    private IV8Native v8Native;
     private V8Runtime v8Runtime;
 
     /**
@@ -37,11 +38,12 @@ public final class V8Locker implements IJavetClosable {
      * @param v8Runtime the V8 runtime
      * @throws JavetV8LockConflictException the javet V8 lock conflict exception
      */
-    V8Locker(V8Runtime v8Runtime) throws JavetV8LockConflictException {
+    V8Locker(V8Runtime v8Runtime, IV8Native v8Native) throws JavetV8LockConflictException {
         Objects.requireNonNull(v8Runtime);
         threadId = Thread.currentThread().getId();
+        this.v8Native = v8Native;
         this.v8Runtime = v8Runtime;
-        V8Native.lockV8Runtime(v8Runtime.getHandle());
+        v8Native.lockV8Runtime(v8Runtime.getHandle());
     }
 
     @Override
@@ -50,6 +52,6 @@ public final class V8Locker implements IJavetClosable {
         if (threadId != currentThreadId) {
             throw JavetV8LockConflictException.threadIdMismatch(threadId, currentThreadId);
         }
-        V8Native.unlockV8Runtime(v8Runtime.getHandle());
+        v8Native.unlockV8Runtime(v8Runtime.getHandle());
     }
 }

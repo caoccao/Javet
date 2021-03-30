@@ -55,7 +55,7 @@ public final class V8ScriptOrigin {
             int resourceLineOffset,
             int resourceColumnOffset) {
         this(resourceName, resourceLineOffset, resourceColumnOffset,
-                0, false, false);
+                -1, false, false);
     }
 
     public V8ScriptOrigin(
@@ -69,47 +69,53 @@ public final class V8ScriptOrigin {
         return resourceName;
     }
 
-    public void setResourceName(String resourceName) {
+    public V8ScriptOrigin setResourceName(String resourceName) {
         this.resourceName = resourceName;
+        return this;
     }
 
     public int getResourceLineOffset() {
         return resourceLineOffset;
     }
 
-    public void setResourceLineOffset(int resourceLineOffset) {
+    public V8ScriptOrigin setResourceLineOffset(int resourceLineOffset) {
         this.resourceLineOffset = resourceLineOffset;
+        return this;
     }
 
     public int getResourceColumnOffset() {
         return resourceColumnOffset;
     }
 
-    public void setResourceColumnOffset(int resourceColumnOffset) {
+    public V8ScriptOrigin setResourceColumnOffset(int resourceColumnOffset) {
         this.resourceColumnOffset = resourceColumnOffset;
+        return this;
     }
 
     public int getScriptId() {
         return scriptId;
     }
 
-    public void setScriptId(int scriptId) {
+    public V8ScriptOrigin setScriptId(int scriptId) {
         this.scriptId = scriptId;
+        return this;
     }
 
     public boolean isWasm() {
         return wasm;
     }
 
-    public void setWasm(boolean wasm) {
+    public V8ScriptOrigin setWasm(boolean wasm) {
         this.wasm = wasm;
+        return this;
     }
 
     public boolean isModule() {
         return module;
     }
 
-    public void setModule(boolean module) {
+    public V8ScriptOrigin setModule(boolean module) {
         this.module = module;
+        return this;
     }
 }

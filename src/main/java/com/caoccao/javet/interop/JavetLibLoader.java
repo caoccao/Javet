@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetIOException;
+import com.caoccao.javet.exceptions.JavetLibraryNotFoundException;
 import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
 import com.caoccao.javet.utils.JavetOSUtils;
 
@@ -25,40 +26,37 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.Objects;
 
-final class JavetLibLoader {
+public final class JavetLibLoader {
+    static final String LIB_VERSION = "0.8.0";
     private static final String CHMOD = "chmod";
     private static final String XRR = "755";
-    static final String LIB_VERSION = "0.7.4";
-    static final String V8_VERSION = "8.9.255";
-    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-x86_64.v.{1}.{2}";
+    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
     private static final String RESOURCE_NAME_FORMAT = "/{0}";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
     private static final String OS_LINUX = "linux";
     private static final String OS_WINDOWS = "windows";
-    private static int BUFFER_LENGTH = 4096;
+    private static final int BUFFER_LENGTH = 4096;
+    private JSRuntimeType jsRuntimeType;
+    private boolean loaded;
 
-    private static Object lockObject = new Object();
-    private static boolean javetLibLoaded = false;
-
-    private JavetLibLoader() {
+    public JavetLibLoader(JSRuntimeType jsRuntimeType) {
+        Objects.requireNonNull(jsRuntimeType);
+        this.jsRuntimeType = jsRuntimeType;
+        loaded = false;
     }
 
-    static boolean load() throws JavetOSNotSupportedException, JavetIOException {
-        if (!javetLibLoaded) {
-            synchronized (lockObject) {
-                if (!javetLibLoaded) {
-                    internalLoad();
-                    javetLibLoaded = true;
-                }
-            }
-        }
-        return javetLibLoaded;
+    public boolean isLoaded() {
+        return loaded;
     }
 
-    private static boolean deployLibFile(File libFile) {
-        boolean isDeployed = false;
+    public JSRuntimeType getJSRuntimeType() {
+        return jsRuntimeType;
+    }
+
+    private void deployLibFile(File libFile) {
         boolean isLibFileLocked = false;
         if (libFile.exists()) {
             try {
@@ -79,45 +77,51 @@ final class JavetLibLoader {
                     }
                     outputStream.write(buffer, 0, length);
                 }
-                isDeployed = true;
+                if (JavetOSUtils.IS_LINUX) {
+                    try {
+                        Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
+                    } catch (Throwable e) {
+                    }
+                }
             } catch (Exception e) {
                 // Lib file is locked.
             }
-            if (isDeployed && JavetOSUtils.IS_LINUX) {
-                try {
-                    Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
-                } catch (Throwable e) {
-                }
-            }
         }
-        return isDeployed;
     }
 
-    private static File getLibFile(String rootDirectory) throws JavetOSNotSupportedException {
+    public File getLibFile(String rootDirectory)
+            throws JavetOSNotSupportedException, JavetLibraryNotFoundException {
+        String fileName, resourceFileName, osName, fileExtension;
         if (JavetOSUtils.IS_WINDOWS) {
-            return new File(
-                    rootDirectory,
-                    MessageFormat.format(
-                            LIB_FILE_NAME_FORMAT,
-                            OS_WINDOWS, LIB_VERSION, LIB_FILE_EXTENSION_WINDOWS));
+            fileExtension = LIB_FILE_EXTENSION_WINDOWS;
+            osName = OS_WINDOWS;
         } else if (JavetOSUtils.IS_LINUX) {
-            return new File(
-                    rootDirectory,
-                    MessageFormat.format(
-                            LIB_FILE_NAME_FORMAT,
-                            OS_LINUX, LIB_VERSION, LIB_FILE_EXTENSION_LINUX));
+            fileExtension = LIB_FILE_EXTENSION_LINUX;
+            osName = OS_LINUX;
         } else {
             throw new JavetOSNotSupportedException(JavetOSUtils.OS_NAME);
         }
+        fileName = MessageFormat.format(LIB_FILE_NAME_FORMAT,
+                jsRuntimeType.getName(), osName, LIB_VERSION, fileExtension);
+        resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, fileName);
+        if (JavetLibLoader.class.getResource(resourceFileName) != null) {
+            return new File(rootDirectory, fileName);
+        }
+        throw new JavetLibraryNotFoundException(resourceFileName);
     }
 
-    private static void internalLoad() throws JavetOSNotSupportedException, JavetIOException {
-        File tempDirectoryLibFile = getLibFile(JavetOSUtils.TEMP_DIRECTORY);
-        try {
-            deployLibFile(tempDirectoryLibFile);
-            System.load(tempDirectoryLibFile.getAbsolutePath());
-        } catch (Throwable t) {
-            throw JavetIOException.failedToReadPath(tempDirectoryLibFile.toPath(), t);
+    public void load()
+            throws JavetOSNotSupportedException, JavetIOException, JavetLibraryNotFoundException {
+        if (!loaded) {
+            File tempDirectoryLibFile = getLibFile(JavetOSUtils.TEMP_DIRECTORY);
+            try {
+                deployLibFile(tempDirectoryLibFile);
+                System.load(tempDirectoryLibFile.getAbsolutePath());
+                loaded = true;
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+                throw JavetIOException.failedToReadPath(tempDirectoryLibFile.toPath(), t);
+            }
         }
     }
 }

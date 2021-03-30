@@ -37,6 +37,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     protected JavetObjectConverter converter;
 
     public TestJavetObjectConverter() {
+        super();
         converter = new JavetObjectConverter();
     }
 

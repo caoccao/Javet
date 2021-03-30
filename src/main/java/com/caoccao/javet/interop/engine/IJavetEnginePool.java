@@ -18,13 +18,15 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.interop.V8Runtime;
 
-public interface IJavetEnginePool extends IJavetClosable {
+@SuppressWarnings("unchecked")
+public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     int getActiveEngineCount();
 
     JavetEngineConfig getConfig();
 
-    IJavetEngine getEngine();
+    IJavetEngine<R> getEngine();
 
     int getIdleEngineCount();
 
@@ -32,5 +34,5 @@ public interface IJavetEnginePool extends IJavetClosable {
 
     boolean isQuitting();
 
-    void releaseEngine(IJavetEngine engine);
+    void releaseEngine(IJavetEngine<R> engine);
 }

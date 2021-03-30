@@ -90,6 +90,18 @@ public interface IV8ValueObject extends IV8ValueReference {
         return result == null ? null : result.floatValue();
     }
 
+    /**
+     * Returns the identity hash for this object. The current implementation
+     * uses an inline property on the object to store the identity hash.
+     * <p>
+     * The return value will never be 0. Also, it is not guaranteed to be
+     * unique.
+     *
+     * @return the identity hash
+     * @throws JavetException the javet exception
+     */
+    int getIdentityHash() throws JavetException;
+
     default Integer getInteger(int key) throws JavetException {
         return getObject(key);
     }
@@ -428,4 +440,6 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the string
      */
     String toJsonString();
+
+    String toProtoString();
 }

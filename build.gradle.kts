@@ -26,7 +26,7 @@ repositories {
 }
 
 group = "com.caoccao.javet"
-version = "0.7.4"
+version = "0.8.0"
 
 repositories {
     mavenCentral()
@@ -58,6 +58,9 @@ task<Exec>("buildJNIHeaders") {
             "cpp/jni",
             "-d",
             "$buildDir/generated/tmp/jni",
+            "src/main/java/com/caoccao/javet/interop/INodeNative.java",
+            "src/main/java/com/caoccao/javet/interop/IV8Native.java",
+            "src/main/java/com/caoccao/javet/interop/NodeNative.java",
             "src/main/java/com/caoccao/javet/interop/V8Native.java"
         )
     }

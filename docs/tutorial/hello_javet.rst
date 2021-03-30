@@ -13,7 +13,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -21,37 +21,37 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.7.4")
+    implementation("com.caoccao.javet:javet:0.8.0")
 
 Gradle Groovy DSL
 -----------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.7.4'
+    implementation 'com.caoccao.javet:javet:0.8.0'
 
-Print **Hello Javet**
-=====================
+Print **Hello Javet** in V8 Mode
+================================
 
 .. code-block:: java
 
-    // Step 1: Create a V8 runtime from V8 host in try resource.
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+    // Step 1: Create a V8 runtime from V8 host in try-with-resource.
+    try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
         // Step 2: Execute a string as JavaScript code and print the result to console.
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString()); // Hello Javet
-        // Step 3: Resource is recycled automatically at the end of the try resource block.
+        // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
     }
 
-Print **1 + 1**
-===============
+Print **1 + 1** in Node.js Mode
+===============================
 
 .. code-block:: java
 
-    // Step 1: Create a V8 runtime from V8 host in try resource.
-    try (V8Runtime v8Runtime = V8Host.getInstance().createV8Runtime()) {
+    // Step 1: Create a Node runtime from V8 host in try-with-resource.
+    try (NodeRuntime nodeRuntime = V8Host.getNodeInstance().createV8Runtime()) {
         // Step 2: Execute a string as JavaScript code and print the result to console.
-        System.out.println("1 + 1 = " + v8Runtime.getExecutor("1 + 1").executeInteger()); // 2
-        // Step 3: Resource is recycled automatically at the end of the try resource block.
+        System.out.println("1 + 1 = " + nodeRuntime.getExecutor("1 + 1").executeInteger()); // 2
+        // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
     }
 
 Play with Pool and Console
@@ -60,9 +60,9 @@ Play with Pool and Console
 .. code-block:: java
 
     // Create a Javet engine pool.
-    try (IJavetEnginePool javetEnginePool = new JavetEnginePool()) {
+    try (IJavetEnginePool<V8Runtime> javetEnginePool = new JavetEnginePool<V8Runtime>()) {
         // Get a Javet engine from the pool.
-        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<V8Runtime> javetEngine = javetEnginePool.getEngine()) {
             // Get a V8 runtime from the engine.
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
             // Create a Javet console interceptor.
