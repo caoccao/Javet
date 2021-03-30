@@ -97,7 +97,7 @@ class PatchNodeBuild(object):
         lines.append(line)
       new_buffer = self._line_separator.join(lines).encode('utf-8')
       if original_buffer == new_buffer:
-        logging.warn("Skipped %s.", str(file_path))
+        logging.warning("Skipped %s.", str(file_path))
       else:
         file_path.write_bytes(new_buffer)
         logging.info("Patched %s.", str(file_path))
@@ -127,7 +127,7 @@ class PatchNodeBuild(object):
           lines.append(line)
         new_buffer = self._line_separator.join(lines).encode('utf-8')
         if original_buffer == new_buffer:
-          logging.warn("Skipped %s.", str(file_path))
+          logging.warning("Skipped %s.", str(file_path))
         else:
           file_path.write_bytes(new_buffer)
           logging.info("Patched %s.", str(file_path))

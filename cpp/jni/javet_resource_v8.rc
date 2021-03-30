@@ -80,9 +80,9 @@ BEGIN
             VALUE "CompanyName", "caoccao.com"
             VALUE "FileDescription", "caoccao.com"
             VALUE "FileVersion", "0.8.1.0"
-            VALUE "InternalName", "javet-windows-x86_64.v.0.8.1.dll"
+            VALUE "InternalName", "libjavet-v8-windows-x86_64.v.0.8.1.dll"
             VALUE "LegalCopyright", "Copyright (C) 2021"
-            VALUE "OriginalFilename", "javet-windows-x86_64.v.0.8.1.dll"
+            VALUE "OriginalFilename", "libjavet-v8-windows-x86_64.v.0.8.1.dll"
             VALUE "ProductName", "Javet Windows"
             VALUE "ProductVersion", "0.8.1.0"
         END
