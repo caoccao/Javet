@@ -19,6 +19,7 @@ package com.caoccao.javet.tutorial;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor;
+import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
@@ -44,19 +45,19 @@ public class HelloJavet {
     }
 
     public void printOnePlusOne() throws JavetException {
-        // Step 1: Create a V8 runtime from V8 host in try-with-resource.
-        try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
+        // Step 1: Create a Node runtime from V8 host in try-with-resource.
+        try (NodeRuntime nodeRuntime = V8Host.getNodeInstance().createV8Runtime()) {
             // Step 2: Execute a string as JavaScript code and print the result to console.
-            System.out.println("1 + 1 = " + v8Runtime.getExecutor("1 + 1").executeInteger()); // 2
+            System.out.println("1 + 1 = " + nodeRuntime.getExecutor("1 + 1").executeInteger()); // 2
             // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
         }
     }
 
     public void playWithPoolAndConsole() throws JavetException {
         // Create a Javet engine pool.
-        try (IJavetEnginePool javetEnginePool = new JavetEnginePool()) {
+        try (IJavetEnginePool<V8Runtime> javetEnginePool = new JavetEnginePool<V8Runtime>()) {
             // Get a Javet engine from the pool.
-            try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+            try (IJavetEngine<V8Runtime> javetEngine = javetEnginePool.getEngine()) {
                 // Get a V8 runtime from the engine.
                 V8Runtime v8Runtime = javetEngine.getV8Runtime();
                 // Create a Javet console interceptor.

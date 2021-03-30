@@ -21,10 +21,11 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 
-public interface IJavetEngine extends IJavetClosable {
+@SuppressWarnings("unchecked")
+public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
     JavetEngineConfig getConfig();
 
-    V8Runtime getV8Runtime() throws JavetException;
+    R getV8Runtime() throws JavetException;
 
     IJavetEngineGuard getGuard();
 

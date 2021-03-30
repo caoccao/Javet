@@ -18,6 +18,9 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.node.INodeModule;
+import com.caoccao.javet.interop.node.NodeModuleModule;
+import com.caoccao.javet.interop.node.NodeModuleProcess;
 import com.caoccao.javet.interop.node.NodeObjectStore;
 
 /**
@@ -49,6 +52,14 @@ public class NodeRuntime extends V8Runtime {
     @Override
     public JSRuntimeType getJSRuntimeType() {
         return JSRuntimeType.Node;
+    }
+
+    public NodeModuleModule getNodeModuleModule() throws JavetException {
+        return nodeObjectStore.getModule(INodeModule.MODULE_MODULE, NodeModuleModule.class);
+    }
+
+    public NodeModuleProcess getNodeModuleProcess() throws JavetException {
+        return nodeObjectStore.getModule(INodeModule.MODULE_PROCESS, NodeModuleProcess.class);
     }
 
     public NodeObjectStore getNodeObjectStore() {

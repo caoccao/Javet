@@ -30,11 +30,12 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class JavetEnginePool implements IJavetEnginePool, Runnable {
+@SuppressWarnings("unchecked")
+public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>, Runnable {
     protected JavetEngineConfig config;
-    protected LinkedList<JavetEngine> activeEngineList;
+    protected LinkedList<JavetEngine<R>> activeEngineList;
     protected Thread daemonThread;
-    protected LinkedList<JavetEngine> idleEngineList;
+    protected LinkedList<JavetEngine<R>> idleEngineList;
     protected Object externalLock;
     protected Object internalLock;
     protected boolean active;
@@ -56,11 +57,11 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
         startDaemon();
     }
 
-    protected JavetEngine createEngine() {
+    protected JavetEngine<R> createEngine() {
         V8Host v8Host = config.getJsRuntimeType().isNode() ? V8Host.getNodeInstance() : V8Host.getV8Instance();
-        V8Runtime v8Runtime = v8Host.createV8Runtime(true, config.getGlobalName());
+        R v8Runtime = v8Host.createV8Runtime(true, config.getGlobalName());
         v8Runtime.setLogger(config.getJavetLogger());
-        return new JavetEngine(this, v8Runtime);
+        return new JavetEngine<>(this, v8Runtime);
     }
 
     @Override
@@ -81,10 +82,10 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
     }
 
     @Override
-    public IJavetEngine getEngine() {
+    public IJavetEngine<R> getEngine() {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.getEngine() begins.");
-        JavetEngine engine = null;
+        JavetEngine<R> engine = null;
         while (!quitting) {
             synchronized (internalLock) {
                 if (idleEngineList.isEmpty()) {
@@ -152,7 +153,7 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                 if (!activeEngineList.isEmpty()) {
                     final int activeEngineCount = getActiveEngineCount();
                     for (int i = 0; i < activeEngineCount; ++i) {
-                        JavetEngine engine = activeEngineList.pop();
+                        JavetEngine<R> engine = activeEngineList.pop();
                         if (engine.isActive()) {
                             activeEngineList.push(engine);
                         } else {
@@ -181,7 +182,7 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
                         if (getIdleEngineCount() <= config.getPoolMinSize()) {
                             break;
                         }
-                        JavetEngine engine = idleEngineList.pop();
+                        JavetEngine<R> engine = idleEngineList.pop();
                         JavetEngineUsage usage = engine.getUsage();
                         ZonedDateTime expirationZonedDateTime = usage.getLastActiveZonedDatetime()
                                 .plus(config.getPoolIdleTimeoutSeconds(), ChronoUnit.SECONDS);
@@ -211,7 +212,7 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
             if (!idleEngineList.isEmpty()) {
                 final int idleEngineCount = getIdleEngineCount();
                 for (int i = 0; i < idleEngineCount; ++i) {
-                    JavetEngine engine = idleEngineList.pop();
+                    JavetEngine<R> engine = idleEngineList.pop();
                     try {
                         engine.close(true);
                     } catch (Throwable t) {
@@ -222,7 +223,7 @@ public class JavetEnginePool implements IJavetEnginePool, Runnable {
             while (!activeEngineList.isEmpty()) {
                 final int activeEngineCount = getActiveEngineCount();
                 for (int i = 0; i < activeEngineCount; ++i) {
-                    JavetEngine engine = activeEngineList.pop();
+                    JavetEngine<R> engine = activeEngineList.pop();
                     try {
                         engine.close(true);
                     } catch (Throwable t) {

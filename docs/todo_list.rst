@@ -2,8 +2,7 @@
 TODO List
 =========
 
-* To support more types that are not supported by ECMAScript, e.g. BigDecimal, byte[], etc.
-* To build NodeJS in.
-* To implement runtime debugging capability.
+* To upgrade V8 and Node.js periodically.
+* To expose more Node.js modules in Javet style.
 
 [`Home <../README.rst>`_]

@@ -19,7 +19,6 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.node.INodeModule;
 import com.caoccao.javet.interop.node.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -57,8 +56,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         assertEquals(0, nodeRuntime.getReferenceCount(),
                 "Reference count should be 0 before test case is started.");
         try {
-            nodeModuleProcess = nodeRuntime.getNodeObjectStore().getModule(
-                    INodeModule.MODULE_PROCESS, NodeModuleProcess.class);
+            nodeModuleProcess = nodeRuntime.getNodeModuleProcess();
             nodeModuleProcess.setWorkingDirectory(
                     new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node").toPath());
         } catch (JavetException e) {

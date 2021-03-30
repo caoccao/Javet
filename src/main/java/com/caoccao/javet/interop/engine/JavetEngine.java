@@ -24,13 +24,14 @@ import com.caoccao.javet.utils.JavetDateTimeUtils;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-public class JavetEngine implements IJavetEngine {
+@SuppressWarnings("unchecked")
+public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     protected boolean active;
-    protected IJavetEnginePool iJavetEnginePool;
+    protected IJavetEnginePool<R> iJavetEnginePool;
     protected JavetEngineUsage usage;
-    protected V8Runtime v8Runtime;
+    protected R v8Runtime;
 
-    public JavetEngine(IJavetEnginePool iJavetEnginePool, V8Runtime v8Runtime) {
+    public JavetEngine(IJavetEnginePool<R> iJavetEnginePool, R v8Runtime) {
         Objects.requireNonNull(v8Runtime);
         this.iJavetEnginePool = iJavetEnginePool;
         this.v8Runtime = v8Runtime;
@@ -72,9 +73,9 @@ public class JavetEngine implements IJavetEngine {
     }
 
     @Override
-    public V8Runtime getV8Runtime() throws JavetException {
+    public R getV8Runtime() throws JavetException {
         setActive(true);
-        return v8Runtime;
+        return (R) v8Runtime;
     }
 
     /**

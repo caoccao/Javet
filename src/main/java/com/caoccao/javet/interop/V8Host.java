@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressWarnings("unchecked")
 public final class V8Host implements AutoCloseable {
     public static final String GLOBAL_THIS = "globalThis";
     private static final long INVALID_HANDLE = 0L;
@@ -118,15 +119,15 @@ public final class V8Host implements AutoCloseable {
         return v8Native;
     }
 
-    public V8Runtime createV8Runtime() {
+    public <R extends V8Runtime> R createV8Runtime() {
         return createV8Runtime(GLOBAL_THIS);
     }
 
-    public V8Runtime createV8Runtime(String globalName) {
+    public <R extends V8Runtime> R createV8Runtime(String globalName) {
         return createV8Runtime(false, globalName);
     }
 
-    public V8Runtime createV8Runtime(boolean pooled, String globalName) {
+    public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) {
         if (!isLibLoaded()) {
             return null;
         }
@@ -141,7 +142,7 @@ public final class V8Host implements AutoCloseable {
         }
         v8Native.registerV8Runtime(handle, v8Runtime);
         v8RuntimeMap.put(handle, v8Runtime);
-        return v8Runtime;
+        return (R)v8Runtime;
     }
 
     public void closeV8Runtime(V8Runtime v8Runtime) {

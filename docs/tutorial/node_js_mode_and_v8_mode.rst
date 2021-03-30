@@ -37,17 +37,17 @@ Pool
 .. code-block:: java
 
     // Node.js Mode
-    try (JavetEnginePool javetEnginePool = new JavetEnginePool()) {
+    try (JavetEnginePool<NodeRuntime> javetEnginePool = new JavetEnginePool<NodeRuntime>()) {
         javetEnginePool.getConfig().setJSRuntimeType(JSRuntimeType.Node);
-        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<NodeRuntime> javetEngine = javetEnginePool.getEngine()) {
             // ...
         }
     }
 
     // V8 Mode
-    try (JavetEnginePool javetEnginePool = new JavetEnginePool()) {
-        javetEnginePool.getConfig().setJSRuntimeType(JSRuntimeType.V8);
-        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+    try (JavetEnginePool<V8Runtime> javetEnginePool = new JavetEnginePoo<V8Runtime>l()) {
+        javetEnginePool.getConfig().setJSRuntimeType(JSRuntimeType.V8); // Optional, because it defaults to V8.
+        try (IJavetEngine<V8Runtime> javetEngine = javetEnginePool.getEngine()) {
             // ...
         }
     }

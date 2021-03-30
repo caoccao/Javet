@@ -20,6 +20,7 @@ package com.caoccao.javet.tutorial;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.JSRuntimeType;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
@@ -32,24 +33,25 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import java.io.File;
 import java.math.BigDecimal;
 
-public class DecimalJavet implements IJavetClosable {
-    private IJavetEnginePool iJavetEnginePool;
-    private IJavetEngine iJavetEngine;
+public class DecimalJavetInV8Mode implements IJavetClosable {
+    private IJavetEnginePool<V8Runtime> iJavetEnginePool;
+    private IJavetEngine<V8Runtime> iJavetEngine;
 
-    public DecimalJavet() {
-        iJavetEnginePool = new JavetEnginePool();
+    public DecimalJavetInV8Mode() {
+        iJavetEnginePool = new JavetEnginePool<>();
+        iJavetEnginePool.getConfig().setJSRuntimeType(JSRuntimeType.V8);
         iJavetEngine = iJavetEnginePool.getEngine();
     }
 
     public static void main(String[] args) throws JavetException {
-        DecimalJavet decimalJavet = new DecimalJavet();
+        DecimalJavetInV8Mode decimalJavetInV8Mode = new DecimalJavetInV8Mode();
         try {
-            decimalJavet.loadJS();
-            decimalJavet.test();
+            decimalJavetInV8Mode.loadJS();
+            decimalJavetInV8Mode.test();
         } catch (Throwable t) {
-            decimalJavet.getLogger().error(t.getMessage(), t);
+            decimalJavetInV8Mode.getLogger().error(t.getMessage(), t);
         } finally {
-            decimalJavet.close();
+            decimalJavetInV8Mode.close();
         }
     }
 
@@ -63,7 +65,7 @@ public class DecimalJavet implements IJavetClosable {
             v8Runtime.getExecutor(decimalJSFile).executeVoid();
         } else {
             getLogger().logError("{0} is not found.", decimalJSFile.getAbsolutePath());
-            getLogger().logError("Please make sure NodeJS is installed, then visit script/node directory and run npm install.");
+            getLogger().logError("Please make sure Node.js is installed, then visit script/node directory and run npm install.");
         }
     }
 

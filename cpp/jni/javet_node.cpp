@@ -20,7 +20,7 @@
 #ifdef ENABLE_NODE
 
 /*
- * This file is a polyfill to NodeJS.
+ * This file is a polyfill to Node.js.
  * libnode is built with few symbols not properly linked.
  * Those missing symbols are declared in this file.
  */
