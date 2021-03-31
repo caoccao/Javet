@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +35,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
     public static final int TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1;
     public static final int TEST_MAX_TIMEOUT = 1000;
     private JavetEnginePool javetEnginePool;
-    private JavetEngineConfig javetEngineConfig ;
+    private JavetEngineConfig javetEngineConfig;
 
     @AfterEach
     private void afterEach() throws JavetException {
@@ -64,6 +65,9 @@ public class TestJavetEnginePool extends BaseTestJavet {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.close(); // close() doesn't take effect because the V8 runtime is managed by pool
             assertEquals(4, v8Runtime.getExecutor("2 + 2").executeInteger());
+            assertThrows(JavetExecutionException.class, () -> {
+                v8Runtime.getExecutor("eval('1');").executeVoid();
+            }, "By default, the engine pool should disallow eval().");
         }
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
         assertEquals(1, javetEnginePool.getIdleEngineCount());
