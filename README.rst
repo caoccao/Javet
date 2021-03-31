@@ -72,6 +72,10 @@ Hello Javet
 Documents
 =========
 
+* Presentations
+
+    * `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
+
 * `Development <docs/development/index.rst>`_
 
     * `Build <docs/development/build.rst>`_
