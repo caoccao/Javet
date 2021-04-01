@@ -4,6 +4,7 @@ Tutorial
 
 * `Hello Javet <hello_javet.rst>`_
 * `Node.js Mode and V8 Mode <node_js_mode_and_v8_mode.rst>`_
+* `Object Converter <object_converter.rst>`_
 * `Javet Shell <javet_shell.rst>`_
 * `Memory Management <memory_management.rst>`_
 * `Know the Lock <know_the_lock.rst>`_

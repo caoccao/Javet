@@ -6,9 +6,13 @@ Javet
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
 
+.. |Gitter Chatroom| image:: https://badges.gitter.im/caoccao/Javet.svg
+    :alt: Join the chat at https://gitter.im/caoccao/Javet
+    :target: https://gitter.im/caoccao/Javet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
-If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_ or visit http://caoccao.blogspot.com/.
+If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/.
 
 Major Features
 ==============

@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.1
+-----
+
+* Added ``allowEval`` to ``JavetEngineConfig``
+* Refactored built-in module API for Node.js mode
+
 0.8.0
 -----
 
