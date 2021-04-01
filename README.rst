@@ -1,6 +1,10 @@
 Javet
 =====
 
+.. image:: https://badges.gitter.im/caoccao/Javet.svg
+   :alt: Join the chat at https://gitter.im/caoccao/Javet
+   :target: https://gitter.im/caoccao/Javet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 |Maven Central|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg
