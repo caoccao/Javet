@@ -6,8 +6,8 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.nio.file.Path;
 
+@NodeModuleAnnotation(name = "module")
 public class NodeModuleModule extends BaseNodeModule {
-
     public static final String FUNCTION_CREATE_REQUIRE = "createRequire";
     public static final String PROPERTY_REQUIRE = "require";
 

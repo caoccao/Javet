@@ -19,15 +19,22 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.node.INodeModule;
-import com.caoccao.javet.interop.node.NodeModuleModule;
+import com.caoccao.javet.interop.node.NodeModuleAnnotation;
 import com.caoccao.javet.interop.node.NodeModuleProcess;
-import com.caoccao.javet.interop.node.NodeObjectStore;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.values.reference.V8ValueObject;
+
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Node runtime is a thin wrapper over V8 runtime.
  */
+@SuppressWarnings("unchecked")
 public class NodeRuntime extends V8Runtime {
-    protected NodeObjectStore nodeObjectStore;
+    protected Map<String, INodeModule> nodeModuleMap;
 
     /**
      * Instantiates a new Node runtime.
@@ -38,15 +45,7 @@ public class NodeRuntime extends V8Runtime {
      */
     NodeRuntime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native) {
         super(v8Host, handle, pooled, v8Native, null);
-        nodeObjectStore = new NodeObjectStore(this);
-    }
-
-    @Override
-    public void close(boolean forceClose) throws JavetException {
-        if (handle != INVALID_HANDLE && forceClose) {
-            nodeObjectStore.close();
-        }
-        super.close(forceClose);
+        nodeModuleMap = new HashMap<>();
     }
 
     @Override
@@ -54,15 +53,62 @@ public class NodeRuntime extends V8Runtime {
         return JSRuntimeType.Node;
     }
 
-    public NodeModuleModule getNodeModuleModule() throws JavetException {
-        return nodeObjectStore.getModule(INodeModule.MODULE_MODULE, NodeModuleModule.class);
+    public <NodeModule extends INodeModule> NodeModule getNodeModule(
+            Class<NodeModule> nodeModuleClass) throws JavetException {
+        if (!nodeModuleClass.isAnnotationPresent(NodeModuleAnnotation.class)) {
+            return null;
+        }
+        NodeModuleAnnotation nodeModuleAnnotation = nodeModuleClass.getAnnotation(NodeModuleAnnotation.class);
+        return getNodeModule(nodeModuleAnnotation.name(), nodeModuleClass);
     }
 
-    public NodeModuleProcess getNodeModuleProcess() throws JavetException {
-        return nodeObjectStore.getModule(INodeModule.MODULE_PROCESS, NodeModuleProcess.class);
+    public <NodeModule extends INodeModule> NodeModule getNodeModule(
+            String name, Class<NodeModule> nodeModuleClass) throws JavetException {
+        Objects.requireNonNull(name);
+        INodeModule nodeModule = null;
+        if (nodeModuleMap.containsKey(name)) {
+            nodeModule = nodeModuleMap.get(name);
+        } else {
+            V8ValueObject moduleObject;
+            if (nodeModuleClass == NodeModuleProcess.class) {
+                moduleObject = getGlobalObject().get(name);
+            } else {
+                moduleObject = getExecutor("require('" + name + "')").execute();
+            }
+            try {
+                Constructor<NodeModule> constructor = nodeModuleClass.getConstructor(
+                        V8ValueObject.class, String.class);
+                nodeModule = constructor.newInstance(moduleObject, name);
+                nodeModuleMap.put(name, nodeModule);
+            } catch (Exception e) {
+                getLogger().logError(e, "Failed to create node module {0}.", name);
+            }
+        }
+        return (NodeModule) nodeModule;
     }
 
-    public NodeObjectStore getNodeObjectStore() {
-        return nodeObjectStore;
+    public int getNodeModuleCount() {
+        return nodeModuleMap.size();
+    }
+
+    public void removeNodeModule(INodeModule iNodeModule) throws JavetException {
+        Objects.requireNonNull(iNodeModule);
+        if (nodeModuleMap.containsKey(iNodeModule.getName())) {
+            nodeModuleMap.remove(iNodeModule.getName());
+            iNodeModule.close();
+        }
+    }
+
+    protected void removeNodeModules() {
+        if (!nodeModuleMap.isEmpty()) {
+            nodeModuleMap.values().stream().forEach(nodeModule -> JavetResourceUtils.safeClose(nodeModule));
+            nodeModuleMap.clear();
+        }
+    }
+
+    @Override
+    protected void removeReferences() throws JavetException {
+        removeNodeModules();
+        super.removeReferences();
     }
 }

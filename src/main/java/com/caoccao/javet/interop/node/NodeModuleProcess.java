@@ -7,8 +7,8 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import java.io.File;
 import java.nio.file.Path;
 
+@NodeModuleAnnotation(name = "process")
 public class NodeModuleProcess extends BaseNodeModule {
-
     public static final String FUNCTION_CHDIR = "chdir";
     public static final String FUNCTION_CWD = "cwd";
 

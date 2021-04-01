@@ -8,7 +8,7 @@ public abstract class BaseNodeModule implements INodeModule {
     protected V8ValueObject moduleObject;
     protected String name;
 
-    BaseNodeModule(V8ValueObject moduleObject, String name) {
+    public BaseNodeModule(V8ValueObject moduleObject, String name) {
         this.moduleObject = moduleObject;
         this.name = name;
     }

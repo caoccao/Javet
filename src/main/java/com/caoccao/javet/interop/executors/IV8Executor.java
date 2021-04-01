@@ -22,25 +22,11 @@ import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.interop.IV8Executable;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
-import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
 
-import java.time.ZonedDateTime;
-
 @SuppressWarnings("unchecked")
 public interface IV8Executor extends IV8Executable {
-    default V8Module compileModule() throws JavetException {
-        return compileModule(true);
-    }
-
-    V8Module compileModule(boolean resultRequired) throws JavetException;
-
-    default void compileModuleVoid() throws JavetException {
-        compileModule(false);
-    }
-
     default V8Script compileScript() throws JavetException {
         return compileScript(true);
     }
@@ -49,6 +35,16 @@ public interface IV8Executor extends IV8Executable {
 
     default void compileScriptVoid() throws JavetException {
         compileScript(false);
+    }
+
+    default V8Module compileV8Module() throws JavetException {
+        return compileV8Module(true);
+    }
+
+    V8Module compileV8Module(boolean resultRequired) throws JavetException;
+
+    default void compileV8ModuleVoid() throws JavetException {
+        compileV8Module(false);
     }
 
     default String getResourceName() {

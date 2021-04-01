@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
 
 import java.util.Objects;
@@ -38,6 +39,9 @@ public abstract class BaseV8Executor implements IV8Executor {
 
     @Override
     public abstract V8Script compileScript(boolean resultRequired) throws JavetException;
+
+    @Override
+    public abstract V8Module compileV8Module(boolean resultRequired) throws JavetException;
 
     @Override
     public abstract <T extends V8Value> T execute(boolean resultRequired) throws JavetException;

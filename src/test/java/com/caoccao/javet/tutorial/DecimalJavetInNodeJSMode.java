@@ -25,6 +25,7 @@ import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
+import com.caoccao.javet.interop.node.NodeModuleModule;
 import com.caoccao.javet.interop.node.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
 
@@ -56,7 +57,7 @@ public class DecimalJavetInNodeJSMode implements IJavetClosable {
         NodeRuntime nodeRuntime = iJavetEngine.getV8Runtime();
         Path workingDirectory = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node").toPath();
         // Set the require root directory so that Node.js is able to locate node_modules.
-        nodeRuntime.getNodeModuleModule().setRequireRootDirectory(workingDirectory);
+        nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(workingDirectory);
         getLogger().logInfo("1.23 + 2.34 = {0}", nodeRuntime.getExecutor(
                 "const Decimal = require('decimal.js');" +
                         "const a = new Decimal(1.23);" +

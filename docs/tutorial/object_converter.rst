@@ -8,10 +8,12 @@ Javet has a built-in object converter with the following features.
 * It is completely open to subclass.
 * It minimizes the performance overhead.
 
-So, Javet doesn't not natively support converting POJO objects because a POJO converter has to deal with reflection which is so slow that Javet leaves that to applications.
+So, Javet doesn't natively support converting POJO objects because a POJO converter has to deal with reflection which is so slow that Javet leaves that to applications.
 
 Design a POJO Converter
 =======================
+
+The following sample code runs in JDK 11. It's easy to tweak few API for JDK 8.
 
 Define POJO Object
 ------------------
