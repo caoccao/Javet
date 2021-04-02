@@ -19,8 +19,8 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.node.NodeModuleAny;
-import com.caoccao.javet.interop.node.NodeModuleProcess;
+import com.caoccao.javet.node.modules.NodeModuleAny;
+import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;

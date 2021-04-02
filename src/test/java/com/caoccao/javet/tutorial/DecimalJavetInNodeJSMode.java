@@ -25,8 +25,7 @@ import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
-import com.caoccao.javet.interop.node.NodeModuleModule;
-import com.caoccao.javet.interop.node.NodeModuleProcess;
+import com.caoccao.javet.node.modules.NodeModuleModule;
 import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.io.File;

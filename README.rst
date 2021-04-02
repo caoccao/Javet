@@ -16,7 +16,7 @@ If you like my work, please **Star** this project. And, you may follow me `@sjtu
 Major Features
 ==============
 
-* Linux + Windows
+* 🐧Linux + 🖥️Windows
 * Node.js ``v14.16.0`` + V8 ``v8.9.255``
 * Dynamic switch between Node.js and V8
 * Exposure of the majority of V8 API in JVM
@@ -62,7 +62,7 @@ Hello Javet
 
 .. code-block:: java
 
-    // Node Mode
+    // Node.js Mode
     try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
     }

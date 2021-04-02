@@ -18,9 +18,9 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.node.INodeModule;
-import com.caoccao.javet.interop.node.NodeModuleAnnotation;
-import com.caoccao.javet.interop.node.NodeModuleProcess;
+import com.caoccao.javet.node.modules.INodeModule;
+import com.caoccao.javet.node.modules.NodeModule;
+import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
@@ -53,13 +53,13 @@ public class NodeRuntime extends V8Runtime {
         return JSRuntimeType.Node;
     }
 
-    public <NodeModule extends INodeModule> NodeModule getNodeModule(
-            Class<NodeModule> nodeModuleClass) throws JavetException {
-        if (!nodeModuleClass.isAnnotationPresent(NodeModuleAnnotation.class)) {
+    public <Module extends INodeModule> Module getNodeModule(
+            Class<Module> nodeModuleClass) throws JavetException {
+        if (!nodeModuleClass.isAnnotationPresent(NodeModule.class)) {
             return null;
         }
-        NodeModuleAnnotation nodeModuleAnnotation = nodeModuleClass.getAnnotation(NodeModuleAnnotation.class);
-        return getNodeModule(nodeModuleAnnotation.name(), nodeModuleClass);
+        NodeModule nodeModule = nodeModuleClass.getAnnotation(NodeModule.class);
+        return getNodeModule(nodeModule.name(), nodeModuleClass);
     }
 
     public <NodeModule extends INodeModule> NodeModule getNodeModule(

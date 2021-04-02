@@ -15,7 +15,12 @@
  *
  */
 
-package com.caoccao.javet.values;
+package com.caoccao.javet.node.modules;
 
-public abstract class V8Data {
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NodeModule {
+    String name() default "";
 }

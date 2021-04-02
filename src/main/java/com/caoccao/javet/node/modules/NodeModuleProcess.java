@@ -15,30 +15,29 @@
  *
  */
 
-package com.caoccao.javet.values.reference.builtin;
+package com.caoccao.javet.node.modules;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.util.Objects;
+import java.io.File;
+import java.nio.file.Path;
 
-@SuppressWarnings("unchecked")
-public class V8ValueBuiltInJson extends V8ValueObject {
+@NodeModule(name = "process")
+public class NodeModuleProcess extends BaseNodeModule {
+    public static final String FUNCTION_CHDIR = "chdir";
+    public static final String FUNCTION_CWD = "cwd";
 
-    public static final String FUNCTION_STRINGIFY = "stringify";
-
-    public V8ValueBuiltInJson(long handle) {
-        super(handle);
+    public NodeModuleProcess(V8ValueObject moduleObject, String name) {
+        super(moduleObject, name);
     }
 
-    public String stringify(V8Value v8Value) throws JavetException {
-        Objects.requireNonNull(v8Value);
-        return invokeString(FUNCTION_STRINGIFY, v8Value);
+    public Path getWorkingDirectory() throws JavetException {
+        return new File(moduleObject.invokeString(FUNCTION_CWD)).toPath();
     }
 
-    @Override
-    public V8ValueBuiltInJson toClone() throws JavetException {
-        return this;
+    public void setWorkingDirectory(Path path) throws JavetException {
+        moduleObject.invokeVoid(FUNCTION_CHDIR, new V8ValueString(path.toAbsolutePath().toString()));
     }
 }
