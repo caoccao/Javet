@@ -19,7 +19,7 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.node.modules.INodeModule;
-import com.caoccao.javet.node.modules.NodeModule;
+import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;

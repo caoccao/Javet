@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The type Javet callback receiver.
+ * The type Javet explicit callback receiver.
  * <p>
  * It is supposed to provide a common ground for customized V8 callback receiver.
  */
-public class JavetCallbackReceiver implements IJavetCallbackReceiver {
+public class JavetExplicitCallbackReceiver implements IJavetExplicitCallbackReceiver {
     /**
      * The V8 runtime.
      */
@@ -45,7 +45,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      *
      * @param v8Runtime the V8 runtime
      */
-    public JavetCallbackReceiver(V8Runtime v8Runtime) {
+    public JavetExplicitCallbackReceiver(V8Runtime v8Runtime) {
         Objects.requireNonNull(v8Runtime);
         this.v8Runtime = v8Runtime;
     }

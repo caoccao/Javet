@@ -15,12 +15,12 @@
  *
  */
 
-package com.caoccao.javet.node.modules;
+package com.caoccao.javet.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NodeModule {
+public @interface V8Function {
     String name() default "";
 }

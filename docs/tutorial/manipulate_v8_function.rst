@@ -2,6 +2,109 @@
 Manipulate V8 Function
 ======================
 
+Function Interception
+=====================
+
+
+``com.caoccao.javet.values.reference.IV8ValueObject`` exposes a set of ``setFunction`` and ``setFunctions`` that allow caller to register function interceptors in automatic or manual ways.
+
+Automatic Registration
+----------------------
+
+``<T extends IJavetCallbackReceiver> List<JavetCallbackContext> setFunctions(T functionCallbackReceiver)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method scans the input callback receiver for functions decorated by ``@V8Function`` and the callback receiver must implement ``IJavetCallbackReceiver``. It allows registering many functions in one call.
+
+The first step is to declare callback receiver and callback functions. That is quite easy as the sample code shows.
+
+.. code-block:: java
+
+    public class AnnotationBaseCallbackReceiver implements IJavetCallbackReceiver {
+        private V8Runtime v8Runtime;
+
+        public AnnotationBaseCallbackReceiver(V8Runtime v8Runtime) {
+            this.v8Runtime = v8Runtime;
+        }
+
+        @V8Function(name = "echo")
+        public String echo(String str) {
+            return str;
+        }
+
+        @V8Function(name = "add")
+        public Integer mathAdd(Integer a, Integer b) {
+            return a + b;
+        }
+
+        @Override
+        public V8Runtime getV8Runtime() {
+            return v8Runtime;
+        }
+    }
+
+The second step is to call the functions.
+
+.. code-block:: java
+
+    try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+        v8Runtime.getGlobalObject().set("a", v8ValueObject);
+        AnnotationBaseCallbackReceiver annotationBaseCallbackReceiver = new AnnotationBaseCallbackReceiver(v8Runtime);
+        v8ValueObject.setFunctions(annotationBaseCallbackReceiver);
+        assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
+        assertEquals(3, v8Runtime.getExecutor("a.add(1, 2)").executeInteger());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+Manual Registration
+-------------------
+
+``boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method is for setting up Java code based function. The caller is expected to do the following steps.
+
+* Create a callback receiver.
+* Find certain callback method in the callback receiver.
+* Create ``JavetCallbackContext`` by the callback receiver and callback method.
+* Create ``V8ValueFunction`` by ``JavetCallbackContext``.
+* Bind the function to a V8 object.
+* Call the function to trigger the callback.
+
+.. code-block:: java
+
+    MockExplicitCallbackReceiver mockCallbackReceiver = new MockExplicitCallbackReceiver(v8Runtime);
+    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+            mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
+    V8ValueObject globalObject = v8Runtime.getGlobalObject();
+    V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
+    try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
+        globalObject.set("a", a);
+        a.set("blank", v8ValueFunction);
+        assertFalse(mockCallbackReceiver.isCalled());
+        v8Runtime.getExecutor("a.blank();").executeVoid();
+        assertTrue(mockCallbackReceiver.isCalled());
+        v8ValueFunction.setWeak();
+        a.delete("blank");
+        globalObject.delete("a");
+    }
+
+``boolean setFunction(String functionName, String codeString)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method is for setting up JavaScript code based function.
+
+.. code-block:: java
+
+    v8Runtime.getGlobalObject().setFunction("b", "(x) => x + 1;");
+    assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
+    v8Runtime.getGlobalObject().delete("b");
+
+Summary
+-------
+
+Obviously, the automatic registration is much better than the manual registration. Please use them wisely.
+
 Lifecycle
 =========
 
@@ -72,8 +175,8 @@ Javet is capable of automatically converting its internal ``V8Value`` to primiti
 
 Note: Primitive types must be in their object form in the method signature. E.g. ``boolean`` must be set to ``Boolean``, ``int`` must be set to ``Integer``, etc. Why? Because the converted value could be ``null`` which would cause JDK to complain with an exception.
 
-Call vs Invoke
-==============
+Call vs. Invoke
+===============
 
 In one sentence, ``call()`` belongs to function and ``invoke()`` belongs to object.
 
