@@ -18,12 +18,13 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.annotations.V8RuntimeSetter;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8CallbackNotRegisteredException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetCallbackContext;
-import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
@@ -400,7 +401,7 @@ public interface IV8ValueObject extends IV8ValueReference {
         return success;
     }
 
-    default <T extends IJavetCallbackReceiver> List<JavetCallbackContext> setFunctions(T functionCallbackReceiver)
+    default List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver)
             throws JavetException {
         Map<String, Method> functionMap = new HashMap<>();
         for (Method method : functionCallbackReceiver.getClass().getMethods()) {
@@ -411,6 +412,17 @@ public interface IV8ValueObject extends IV8ValueReference {
                 if (functionName != null && functionName.length() > 0
                         && !functionMap.containsKey(functionName)) {
                     functionMap.put(functionName, method);
+                }
+            } else if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
+                if (method.getParameterCount() == 1
+                        && V8Runtime.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                    try {
+                        method.invoke(functionCallbackReceiver, getV8Runtime());
+                    } catch (Exception e) {
+                        throw new JavetV8CallbackNotRegisteredException();
+                    }
+                } else {
+                    throw new JavetV8CallbackNotRegisteredException();
                 }
             }
         }

@@ -23,9 +23,7 @@ import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +32,7 @@ import java.util.Objects;
  * <p>
  * It is supposed to provide a common ground for customized V8 callback receiver.
  */
-public class JavetExplicitCallbackReceiver implements IJavetExplicitCallbackReceiver {
+public class JavetCallbackReceiver implements IJavetCallbackReceiver {
     /**
      * The V8 runtime.
      */
@@ -45,7 +43,7 @@ public class JavetExplicitCallbackReceiver implements IJavetExplicitCallbackRece
      *
      * @param v8Runtime the V8 runtime
      */
-    public JavetExplicitCallbackReceiver(V8Runtime v8Runtime) {
+    public JavetCallbackReceiver(V8Runtime v8Runtime) {
         Objects.requireNonNull(v8Runtime);
         this.v8Runtime = v8Runtime;
     }

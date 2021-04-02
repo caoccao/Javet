@@ -18,7 +18,6 @@
 package com.caoccao.javet.utils;
 
 import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
-import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
 import com.caoccao.javet.utils.converters.IJavetConverter;
 import com.caoccao.javet.utils.converters.JavetPrimitiveConverter;
 import com.caoccao.javet.values.reference.IV8ValueFunction;
@@ -31,20 +30,20 @@ public final class JavetCallbackContext {
             "Javet callback context handle is invalid";
     protected Method callbackMethod;
     protected IV8ValueFunction callbackOwnerFunction;
-    protected IJavetCallbackReceiver callbackReceiver;
+    protected Object callbackReceiver;
     protected IJavetConverter converter;
     protected long handle;
     protected boolean returnResult;
     protected boolean thisObjectRequired;
 
     public JavetCallbackContext(
-            IJavetCallbackReceiver callbackReceiver,
+            Object callbackReceiver,
             Method callbackMethod) {
         this(callbackReceiver, callbackMethod, false);
     }
 
     public JavetCallbackContext(
-            IJavetCallbackReceiver callbackReceiver,
+            Object callbackReceiver,
             Method callbackMethod,
             boolean thisObjectRequired) {
         Objects.requireNonNull(callbackReceiver);
@@ -76,7 +75,7 @@ public final class JavetCallbackContext {
         }
     }
 
-    public IJavetCallbackReceiver getCallbackReceiver() {
+    public Object getCallbackReceiver() {
         return callbackReceiver;
     }
 

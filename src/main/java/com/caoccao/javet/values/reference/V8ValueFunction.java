@@ -23,7 +23,6 @@ import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.converters.IJavetConverter;
-import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
@@ -123,7 +122,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                 v8Runtime.decorateV8Values(thisObject, args);
                 IJavetConverter converter = javetCallbackContext.getConverter();
                 Method method = javetCallbackContext.getCallbackMethod();
-                IJavetCallbackReceiver callbackReceiver = javetCallbackContext.getCallbackReceiver();
+                Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
                 Object resultObject = null;
                 if (javetCallbackContext.isThisObjectRequired()) {
                     values.add(thisObject);

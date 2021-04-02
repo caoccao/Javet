@@ -11,20 +11,20 @@ Function Interception
 Automatic Registration
 ----------------------
 
-``<T extends IJavetCallbackReceiver> List<JavetCallbackContext> setFunctions(T functionCallbackReceiver)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method scans the input callback receiver for functions decorated by ``@V8Function`` and the callback receiver must implement ``IJavetCallbackReceiver``. It allows registering many functions in one call.
+This method scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call. If the callback receiver is not able to borrow ``V8Runtime`` from input, it may decorate a setter with ``@V8RuntimeSetter`` so that Javet will inject the current ``V8Runtime`` as the sample method ``generateArray()`` shows. ``@V8RuntimeSetter`` is not usually required because most of the time ``V8Runtime`` is available at input arguments. The beauty of this design is Javet doesn't intrude into the receiver.
 
 The first step is to declare callback receiver and callback functions. That is quite easy as the sample code shows.
 
 .. code-block:: java
 
-    public class AnnotationBaseCallbackReceiver implements IJavetCallbackReceiver {
+    public class AnnotationBasedCallbackReceiver {
         private V8Runtime v8Runtime;
 
-        public AnnotationBaseCallbackReceiver(V8Runtime v8Runtime) {
-            this.v8Runtime = v8Runtime;
+        public AnnotationBasedCallbackReceiver() {
+            v8Runtime = null;
         }
 
         @V8Function(name = "echo")
@@ -37,9 +37,17 @@ The first step is to declare callback receiver and callback functions. That is q
             return a + b;
         }
 
-        @Override
-        public V8Runtime getV8Runtime() {
-            return v8Runtime;
+        @V8Function(name = "generateArray")
+        public V8ValueArray generateArray() throws JavetException {
+            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
+            v8ValueArray.push("a");
+            v8ValueArray.push(1);
+            return v8ValueArray;
+        }
+
+        @V8RuntimeSetter
+        public void setV8Runtime(V8Runtime v8Runtime) {
+            this.v8Runtime = v8Runtime;
         }
     }
 
@@ -49,10 +57,13 @@ The second step is to call the functions.
 
     try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
         v8Runtime.getGlobalObject().set("a", v8ValueObject);
-        AnnotationBaseCallbackReceiver annotationBaseCallbackReceiver = new AnnotationBaseCallbackReceiver(v8Runtime);
-        v8ValueObject.setFunctions(annotationBaseCallbackReceiver);
+        AnnotationBasedCallbackReceiver annotationBasedCallbackReceiver = new AnnotationBasedCallbackReceiver(v8Runtime);
+        v8ValueObject.setFunctions(annotationBasedCallbackReceiver);
         assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
         assertEquals(3, v8Runtime.getExecutor("a.add(1, 2)").executeInteger());
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.generateArray()").execute()) {
+            assertEquals("[\"a\",1]", v8ValueArray.toJsonString());
+        }
         v8Runtime.getGlobalObject().delete("a");
     }
 
