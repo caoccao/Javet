@@ -73,7 +73,28 @@ Manual Registration
 ``boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method is for setting up Java code based function. The caller is expected to do the following steps.
+This method is for setting up Java code based function in semi-manual way. The caller is expected to do the following steps.
+
+* Create a callback receiver.
+* Find certain callback method in the callback receiver.
+* Create ``JavetCallbackContext`` by the callback receiver and callback method.
+* Bind the function to a V8 object.
+* Call the function to trigger the callback.
+
+.. code-block:: java
+
+    MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+            mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
+    V8ValueObject globalObject = v8Runtime.getGlobalObject();
+    globalObject.setFunction("blank", javetCallbackContext);
+    v8Runtime.getExecutor("blank();").executeVoid();
+    globalObject.delete("blank");
+
+``set(String key, V8Value value)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method is for setting up Java code based function in complete manual way. The caller is expected to do the following steps.
 
 * Create a callback receiver.
 * Find certain callback method in the callback receiver.
@@ -84,7 +105,7 @@ This method is for setting up Java code based function. The caller is expected t
 
 .. code-block:: java
 
-    MockExplicitCallbackReceiver mockCallbackReceiver = new MockExplicitCallbackReceiver(v8Runtime);
+    MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
             mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
     V8ValueObject globalObject = v8Runtime.getGlobalObject();
