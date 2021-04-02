@@ -57,7 +57,7 @@ The second step is to call the functions.
 
     try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
         v8Runtime.getGlobalObject().set("a", v8ValueObject);
-        AnnotationBasedCallbackReceiver annotationBasedCallbackReceiver = new AnnotationBasedCallbackReceiver(v8Runtime);
+        AnnotationBasedCallbackReceiver annotationBasedCallbackReceiver = new AnnotationBasedCallbackReceiver();
         v8ValueObject.setFunctions(annotationBasedCallbackReceiver);
         assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
         assertEquals(3, v8Runtime.getExecutor("a.add(1, 2)").executeInteger());
@@ -78,7 +78,7 @@ This method is for setting up Java code based function in semi-manual way. The c
 * Create a callback receiver.
 * Find certain callback method in the callback receiver.
 * Create ``JavetCallbackContext`` by the callback receiver and callback method.
-* Bind the function to a V8 object.
+* Bind the callback context to a V8 object via ``setFunction``.
 * Call the function to trigger the callback.
 
 .. code-block:: java
@@ -91,8 +91,8 @@ This method is for setting up Java code based function in semi-manual way. The c
     v8Runtime.getExecutor("blank();").executeVoid();
     globalObject.delete("blank");
 
-``set(String key, V8Value value)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``boolean set(String key, V8Value value)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This method is for setting up Java code based function in complete manual way. The caller is expected to do the following steps.
 
@@ -100,7 +100,7 @@ This method is for setting up Java code based function in complete manual way. T
 * Find certain callback method in the callback receiver.
 * Create ``JavetCallbackContext`` by the callback receiver and callback method.
 * Create ``V8ValueFunction`` by ``JavetCallbackContext``.
-* Bind the function to a V8 object.
+* Bind the function to a V8 object via ``set``.
 * Call the function to trigger the callback.
 
 .. code-block:: java
