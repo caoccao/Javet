@@ -25,6 +25,8 @@ import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.converters.IJavetConverter;
+import com.caoccao.javet.utils.converters.JavetObjectConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
@@ -402,7 +404,23 @@ public interface IV8ValueObject extends IV8ValueReference {
         return success;
     }
 
-    default List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver)
+    default List<JavetCallbackContext> setFunctions(
+            Object functionCallbackReceiver)
+            throws JavetException {
+        return setFunctions(functionCallbackReceiver, false);
+    }
+
+    default List<JavetCallbackContext> setFunctions(
+            Object functionCallbackReceiver,
+            boolean thisObjectRequired)
+            throws JavetException {
+        return setFunctions(functionCallbackReceiver, thisObjectRequired, new JavetObjectConverter());
+    }
+
+    default List<JavetCallbackContext> setFunctions(
+            Object functionCallbackReceiver,
+            boolean thisObjectRequired,
+            IJavetConverter converter)
             throws JavetException {
         Map<String, Method> functionMap = new HashMap<>();
         for (Method method : functionCallbackReceiver.getClass().getMethods()) {
@@ -435,7 +453,7 @@ public interface IV8ValueObject extends IV8ValueReference {
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
                             Modifier.isStatic(method.getModifiers()) ? null : functionCallbackReceiver,
-                            method);
+                            method, thisObjectRequired, converter);
                     setFunction(entry.getKey(), javetCallbackContext);
                     javetCallbackContexts.add(javetCallbackContext);
                 }

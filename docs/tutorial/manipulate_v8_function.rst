@@ -11,10 +11,16 @@ Function Interception
 Automatic Registration
 ----------------------
 
-``List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver, ...)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call.
+This method scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call. Actually, there are 3 overloaded methods.
+
+.. code-block:: java
+
+    List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver);
+    List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver, boolean thisObjectRequired);
+    List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver, boolean thisObjectRequired, IJavetConverter converter);
 
 Creating native V8Value objects is trick in the callback receiver. There are typically 3 options.
 
