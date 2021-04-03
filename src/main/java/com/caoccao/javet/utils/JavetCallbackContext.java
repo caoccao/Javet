@@ -19,22 +19,25 @@ package com.caoccao.javet.utils;
 
 import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
 import com.caoccao.javet.utils.converters.IJavetConverter;
-import com.caoccao.javet.utils.converters.JavetPrimitiveConverter;
+import com.caoccao.javet.utils.converters.JavetObjectConverter;
 import com.caoccao.javet.values.reference.IV8ValueFunction;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 
 public final class JavetCallbackContext {
-    protected static final String ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
+    private static final String ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID =
+            "Callback receiver or callback method is invalid";
+    private static final String ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
             "Javet callback context handle is invalid";
-    protected Method callbackMethod;
-    protected IV8ValueFunction callbackOwnerFunction;
-    protected Object callbackReceiver;
-    protected IJavetConverter converter;
-    protected long handle;
-    protected boolean returnResult;
-    protected boolean thisObjectRequired;
+    private Method callbackMethod;
+    private IV8ValueFunction callbackOwnerFunction;
+    private Object callbackReceiver;
+    private IJavetConverter converter;
+    private long handle;
+    private boolean returnResult;
+    private boolean thisObjectRequired;
 
     public JavetCallbackContext(
             Object callbackReceiver,
@@ -46,12 +49,22 @@ public final class JavetCallbackContext {
             Object callbackReceiver,
             Method callbackMethod,
             boolean thisObjectRequired) {
-        Objects.requireNonNull(callbackReceiver);
+        this(callbackReceiver, callbackMethod, thisObjectRequired, new JavetObjectConverter());
+    }
+
+    public JavetCallbackContext(
+            Object callbackReceiver,
+            Method callbackMethod,
+            boolean thisObjectRequired,
+            IJavetConverter converter) {
         Objects.requireNonNull(callbackMethod);
+        assert (callbackReceiver != null && !Modifier.isStatic(callbackMethod.getModifiers()))
+                || (callbackReceiver == null && Modifier.isStatic(callbackMethod.getModifiers()))
+                : ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID;
         callbackOwnerFunction = null;
         this.callbackMethod = callbackMethod;
         this.callbackReceiver = callbackReceiver;
-        converter = new JavetPrimitiveConverter();
+        this.converter = converter;
         handle = 0L;
         this.returnResult = !callbackMethod.getReturnType().equals(Void.TYPE);
         this.thisObjectRequired = thisObjectRequired;

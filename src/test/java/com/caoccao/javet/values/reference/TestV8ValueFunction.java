@@ -41,16 +41,24 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
             MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver = new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts = v8ValueObject.setFunctions(mockAnnotationBasedCallbackReceiver);
-            assertEquals(3, javetCallbackContexts.size());
+            assertEquals(5, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(3, v8Runtime.getExecutor("a.add(1, 2)").executeInteger());
             assertEquals(2, mockAnnotationBasedCallbackReceiver.getCount());
-            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.generateArray()").execute()) {
+            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
+                    "a.generateArrayWithConverter()").execute()) {
                 assertEquals("[\"a\",1]", v8ValueArray.toJsonString());
             }
             assertEquals(3, mockAnnotationBasedCallbackReceiver.getCount());
+            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
+                    "a.generateArrayWithoutConverter()").execute()) {
+                assertEquals("[\"a\",1]", v8ValueArray.toJsonString());
+            }
+            assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals("static", v8Runtime.getExecutor("a.staticEcho('static')").executeString());
+            assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
             v8Runtime.getGlobalObject().delete("a");
         }
         v8Runtime.requestGarbageCollectionForTesting(true);

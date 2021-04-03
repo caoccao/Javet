@@ -14,7 +14,17 @@ Automatic Registration
 ``List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call. If the callback receiver is not able to borrow ``V8Runtime`` from input, it may decorate a setter with ``@V8RuntimeSetter`` so that Javet will inject the current ``V8Runtime`` as the sample method ``generateArray()`` shows. ``@V8RuntimeSetter`` is not usually required because most of the time ``V8Runtime`` is available at input arguments. The beauty of this design is Javet doesn't intrude into the receiver.
+This method scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call.
+
+Creating native V8Value objects is trick in the callback receiver. There are typically 3 options.
+
+1. Enhance the `Object Converter <object_converter.rst>`_ and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
+
+The beauty of this option is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.
+
+2. If application doesn't want to create custom object converter, it may borrow ``V8Runtime`` from the input arguments.
+
+3. Sometimes the callback receiver is not able to borrow ``V8Runtime`` from input arguments, it may decorate a setter with ``@V8RuntimeSetter`` so that Javet will inject the current ``V8Runtime``. Please refer to ``generateArrayWithoutConverter()``.
 
 The first step is to declare callback receiver and callback functions. That is quite easy as the sample code shows.
 
@@ -27,24 +37,41 @@ The first step is to declare callback receiver and callback functions. That is q
             v8Runtime = null;
         }
 
+        // Instance method with same name and same signature.
         @V8Function(name = "echo")
         public String echo(String str) {
             return str;
         }
 
+        // Instance method with different name and same signature.
         @V8Function(name = "add")
         public Integer mathAdd(Integer a, Integer b) {
             return a + b;
         }
 
-        @V8Function(name = "generateArray")
-        public V8ValueArray generateArray() throws JavetException {
+        // Instance method with converter for non-primitive objects.
+        @V8Function(name = "generateArrayWithConverter")
+        public Object[] generateArrayWithConverter() throws JavetException {
+            // Converter is able to recognize non-primitive types.
+            return new Object[]{"a", 1};
+        }
+
+        // Instance method requiring V8Runtime without converter.
+        @V8Function(name = "generateArrayWithoutConverter")
+        public V8ValueArray generateArrayWithoutConverter() throws JavetException {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
             v8ValueArray.push("a");
             v8ValueArray.push(1);
             return v8ValueArray;
         }
 
+        // Static method requiring V8Runtime.
+        @V8Function(name = "staticEcho")
+        public static String staticEcho(String str) {
+            return str;
+        }
+
+        // Declare the V8RuntimeSetter for dependency injection.
         @V8RuntimeSetter
         public void setV8Runtime(V8Runtime v8Runtime) {
             this.v8Runtime = v8Runtime;
@@ -61,14 +88,22 @@ The second step is to call the functions.
         v8ValueObject.setFunctions(annotationBasedCallbackReceiver);
         assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
         assertEquals(3, v8Runtime.getExecutor("a.add(1, 2)").executeInteger());
-        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.generateArray()").execute()) {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
+                "a.generateArrayWithConverter()").execute()) {
             assertEquals("[\"a\",1]", v8ValueArray.toJsonString());
         }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
+                "a.generateArrayWithoutConverter()").execute()) {
+            assertEquals("[\"a\",1]", v8ValueArray.toJsonString());
+        }
+        assertEquals("static", v8Runtime.getExecutor("a.staticEcho('static')").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 
 Manual Registration
 -------------------
+
+Manual registration allows the applications to have full control over every step of the function interception.
 
 ``boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

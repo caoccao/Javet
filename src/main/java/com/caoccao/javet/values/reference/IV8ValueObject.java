@@ -32,6 +32,7 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -430,7 +431,11 @@ public interface IV8ValueObject extends IV8ValueReference {
         if (!functionMap.isEmpty()) {
             try {
                 for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
-                    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(functionCallbackReceiver, entry.getValue());
+                    final Method method = entry.getValue();
+                    // Static method needs to be identified.
+                    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                            Modifier.isStatic(method.getModifiers()) ? null : functionCallbackReceiver,
+                            method);
                     setFunction(entry.getKey(), javetCallbackContext);
                     javetCallbackContexts.add(javetCallbackContext);
                 }
