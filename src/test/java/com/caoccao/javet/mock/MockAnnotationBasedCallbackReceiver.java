@@ -17,7 +17,7 @@ public class MockAnnotationBasedCallbackReceiver {
         v8Runtime = null;
     }
 
-    // Static method requiring V8Runtime.
+    // Static method.
     @V8Function(name = "staticEcho")
     public static String staticEcho(String str) {
         return str;

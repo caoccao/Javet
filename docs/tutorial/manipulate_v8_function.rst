@@ -71,7 +71,7 @@ The first step is to declare callback receiver and callback functions. That is q
             return v8ValueArray;
         }
 
-        // Static method requiring V8Runtime.
+        // Static method.
         @V8Function(name = "staticEcho")
         public static String staticEcho(String str) {
             return str;
