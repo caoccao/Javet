@@ -128,10 +128,5 @@ public interface IJavetCallbackReceiver {
         return getMethod(methodName, thisObjectRequired, -1);
     }
 
-    /**
-     * Gets v 8 runtime.
-     *
-     * @return the v 8 runtime
-     */
     V8Runtime getV8Runtime();
 }

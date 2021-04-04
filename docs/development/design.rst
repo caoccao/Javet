@@ -115,4 +115,26 @@ Multiple Javet engines are managed by Javet Engine Pool which works almost the s
 
 Please refer to `Best Practices <best_practices.rst>`_ for detail.
 
+Interception
+============
+
+Javet allows intercepting almost all V8 API so that JS code actually interacts with Java code behind the scene.
+
+.. image:: ../resources/images/javet_interception.png?raw=true
+    :alt: Javet Interception
+
+Sample code is available at `here <../turorial/manipulate_v8_function.rst>`_.
+
+Cross-platform
+==============
+
+Javet packages all the libraries in a single jar file and automatically loads corresponding library per OS and JS runtime.
+
+.. image:: ../resources/images/javet_cross_platform.png?raw=true
+    :alt: Javet Cross-platform
+
+* Javet calculates the library file name from OS and JS runtime.
+* Javet unpacks the library file from resource directory to system temporary directory.
+* Javet loads the library using either default classloader or custom classloader.
+
 [`Home <../../README.rst>`_] [`Development <index.rst>`_]

@@ -59,7 +59,12 @@ class ChangeJavetVersion(object):
       'src/main/java/com/caoccao/javet/interop/JavetLibLoader.java', '\n',
       re.compile(r'LIB_VERSION = "(?P<version>\d+\.\d+\.\d+)";$'))
     self._update(
-      'cpp/jni/javet.rc', '\r\n',
+      'cpp/jni/javet_resource_node.rc', '\r\n',
+      re.compile(r'"(?P<version>\d+\.\d+\.\d+)'),
+      re.compile(r'v\.(?P<version>\d+\.\d+\.\d+)'),
+      re.compile(r'(?P<version>\d+,\d+,\d+)'))
+    self._update(
+      'cpp/jni/javet_resource_v8.rc', '\r\n',
       re.compile(r'"(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'v\.(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'(?P<version>\d+,\d+,\d+)'))
@@ -90,13 +95,13 @@ class ChangeJavetVersion(object):
       line_number += 1
     new_buffer = line_separator.join(lines).encode('utf-8')
     if original_buffer == new_buffer:
-      logging.warn('  Skipped.')
+      logging.warning('  Skipped.')
     else:
       file_path.write_bytes(new_buffer)
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('0.8.0')
+  change_javet_version = ChangeJavetVersion('0.8.1')
   change_javet_version.update()
   return 0
 

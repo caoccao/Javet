@@ -23,14 +23,12 @@ import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * The type Javet callback receiver.
+ * The type Javet explicit callback receiver.
  * <p>
  * It is supposed to provide a common ground for customized V8 callback receiver.
  */

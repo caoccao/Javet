@@ -19,8 +19,10 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.node.NodeModuleProcess;
+import com.caoccao.javet.node.modules.NodeModuleAny;
+import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +44,8 @@ public class TestNodeRuntime extends BaseTestJavet {
     @AfterEach
     public void afterEach() throws JavetException {
         nodeModuleProcess.setWorkingDirectory(new File(JavetOSUtils.WORKING_DIRECTORY).toPath());
-        nodeRuntime.getNodeObjectStore().close();
-        assertEquals(0, nodeRuntime.getReferenceCount(),
-                "Reference count should be 0 after test case is ended.");
+        assertEquals(nodeRuntime.getNodeModuleCount(), nodeRuntime.getReferenceCount(),
+                "Reference count should be equal to node module count after test case is ended.");
         nodeRuntime.close();
         assertEquals(0, v8Host.getV8RuntimeCount());
     }
@@ -56,7 +57,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         assertEquals(0, nodeRuntime.getReferenceCount(),
                 "Reference count should be 0 before test case is started.");
         try {
-            nodeModuleProcess = nodeRuntime.getNodeModuleProcess();
+            nodeModuleProcess = nodeRuntime.getNodeModule(NodeModuleProcess.class);
             nodeModuleProcess.setWorkingDirectory(
                     new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node").toPath());
         } catch (JavetException e) {
@@ -73,6 +74,14 @@ public class TestNodeRuntime extends BaseTestJavet {
                 fileName)).execute()) {
             assertEquals(expectedJsonString, v8ValueArray.toJsonString());
         }
+    }
+
+    @Test
+    public void testModuleAny() throws JavetException {
+        NodeModuleAny nodeModuleFS = nodeRuntime.getNodeModule("fs", NodeModuleAny.class);
+        assertTrue(nodeModuleFS.getModuleObject().invokeBoolean(
+                "existsSync",
+                new V8ValueString(getScriptFile("test-node-module-fs.js").getAbsolutePath())));
     }
 
     @Test

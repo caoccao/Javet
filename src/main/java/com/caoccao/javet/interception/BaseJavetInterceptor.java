@@ -19,11 +19,10 @@ package com.caoccao.javet.interception;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetInterceptor;
-import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 
-public abstract class BaseJavetInterceptor implements IJavetInterceptor, IJavetCallbackReceiver {
+public abstract class BaseJavetInterceptor implements IJavetInterceptor {
     protected V8Runtime v8Runtime;
 
     public BaseJavetInterceptor(V8Runtime v8Runtime) {
@@ -36,7 +35,6 @@ public abstract class BaseJavetInterceptor implements IJavetInterceptor, IJavetC
     @Override
     public abstract boolean unregister(IV8ValueObject iV8ValueObject) throws JavetException;
 
-    @Override
     public V8Runtime getV8Runtime() {
         return v8Runtime;
     }

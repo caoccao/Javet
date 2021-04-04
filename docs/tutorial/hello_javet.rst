@@ -13,7 +13,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.8.0</version>
+        <version>0.8.1</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -21,14 +21,14 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.8.0")
+    implementation("com.caoccao.javet:javet:0.8.1")
 
 Gradle Groovy DSL
 -----------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.8.0'
+    implementation 'com.caoccao.javet:javet:0.8.1'
 
 Print **Hello Javet** in V8 Mode
 ================================

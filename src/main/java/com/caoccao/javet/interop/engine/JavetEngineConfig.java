@@ -39,6 +39,7 @@ public final class JavetEngineConfig {
     public static IJavetLogger DEFAULT_JAVET_LOGGER = new JavetDefaultLogger(JavetEnginePool.class.getName());
     private IJavetLogger javetLogger;
     private String globalName;
+    private boolean allowEval;
     private int defaultEngineGuardTimeoutMillis;
     private int engineGuardCheckIntervalMillis;
     private JSRuntimeType jsRuntimeType;
@@ -58,6 +59,7 @@ public final class JavetEngineConfig {
     public void reset() {
         javetLogger = DEFAULT_JAVET_LOGGER;
         globalName = DEFAULT_GLOBAL_NAME;
+        allowEval = false;
         defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;
         engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
         jsRuntimeType = DEFAULT_JS_RUNTIME_TYPE;
@@ -69,6 +71,14 @@ public final class JavetEngineConfig {
         poolShutdownTimeoutSeconds = DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS;
         poolDaemonCheckIntervalMillis = DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS;
         resetEngineTimeoutSeconds = DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS;
+    }
+
+    public boolean isAllowEval() {
+        return allowEval;
+    }
+
+    public void setAllowEval(boolean allowEval) {
+        this.allowEval = allowEval;
     }
 
     public ExecutorService getExecutorService() {

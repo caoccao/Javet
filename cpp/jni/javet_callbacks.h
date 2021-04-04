@@ -47,7 +47,7 @@ namespace Javet {
 		static jmethodID jmethodIDThrowableGetMessage;
 
 		static jclass jclassV8Runtime;
-		static jmethodID jmethodIDV8RuntimeGetModule;
+		static jmethodID jmethodIDV8RuntimeGetV8Module;
 
 		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
 

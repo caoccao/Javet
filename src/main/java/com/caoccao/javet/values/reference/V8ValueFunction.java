@@ -23,7 +23,6 @@ import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.converters.IJavetConverter;
-import com.caoccao.javet.utils.receivers.IJavetCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 
@@ -121,9 +120,19 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             List<Object> values = new ArrayList<>();
             try {
                 v8Runtime.decorateV8Values(thisObject, args);
+                /*
+                 * Converter is the key to automatic type conversion.
+                 * If the call doesn't want automatic type conversion,
+                 * it's better to inject V8Runtime via @V8RuntimeSetter
+                 * to the receiver so that the receiver can create reference V8Value.
+                 */
                 IJavetConverter converter = javetCallbackContext.getConverter();
+                /*
+                 * Javet doesn't check whether callback method is static or not.
+                 * If the callback receiver is null, that's a static method.
+                 */
                 Method method = javetCallbackContext.getCallbackMethod();
-                IJavetCallbackReceiver callbackReceiver = javetCallbackContext.getCallbackReceiver();
+                Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
                 Object resultObject = null;
                 if (javetCallbackContext.isThisObjectRequired()) {
                     values.add(thisObject);

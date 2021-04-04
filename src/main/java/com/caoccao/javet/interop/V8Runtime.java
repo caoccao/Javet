@@ -58,7 +58,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     protected String globalName;
     protected long handle;
     protected IJavetLogger logger;
-    protected Map<String, IV8Module> moduleMap;
+    protected Map<String, IV8Module> v8ModuleMap;
     protected boolean pooled;
     protected Map<Long, IV8ValueReference> referenceMap;
     protected V8Host v8Host;
@@ -70,7 +70,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         this.globalName = globalName;
         this.handle = handle;
         logger = new JavetDefaultLogger(getClass().getName());
-        moduleMap = new HashMap<>();
+        v8ModuleMap = new HashMap<>();
         this.pooled = pooled;
         referenceMap = new TreeMap<>();
         this.v8Host = v8Host;
@@ -84,8 +84,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         v8Native.add(handle, iV8ValueKeySet.getHandle(), iV8ValueKeySet.getType(), value);
     }
 
-    public void addModule(IV8Module iV8Module) {
-        moduleMap.put(iV8Module.getResourceName(), iV8Module);
+    public void addV8Module(IV8Module iV8Module) {
+        v8ModuleMap.put(iV8Module.getResourceName(), iV8Module);
     }
 
     public void addReference(IV8ValueReference iV8ValueReference) {
@@ -136,25 +136,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     public void close(boolean forceClose) throws JavetException {
         if (handle != INVALID_HANDLE && forceClose) {
             removeReferences();
-            removeModules();
             v8Host.closeV8Runtime(this);
-            v8Inspector = null;
             handle = INVALID_HANDLE;
         }
-    }
-
-    public V8Module compileModule(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
-        v8ScriptOrigin.setModule(true);
-        if (v8ScriptOrigin.getResourceName() == null) {
-            throw new JavetV8DataModuleNameEmptyException();
-        }
-        V8Module v8Module = decorateV8Value((V8Module) v8Native.compile(
-                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
-                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
-                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
-        v8Module.setResourceName(v8ScriptOrigin.getResourceName());
-        moduleMap.put(v8Module.getResourceName(), v8Module);
-        return v8Module;
     }
 
     public V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
@@ -165,8 +149,22 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
-    public boolean containsModule(String resourceName) {
-        return moduleMap.containsKey(resourceName);
+    public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
+        v8ScriptOrigin.setModule(true);
+        if (v8ScriptOrigin.getResourceName() == null) {
+            throw new JavetV8DataModuleNameEmptyException();
+        }
+        V8Module v8Module = decorateV8Value((V8Module) v8Native.compile(
+                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
+                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
+        v8Module.setResourceName(v8ScriptOrigin.getResourceName());
+        v8ModuleMap.put(v8Module.getResourceName(), v8Module);
+        return v8Module;
+    }
+
+    public boolean containsV8Module(String resourceName) {
+        return v8ModuleMap.containsKey(resourceName);
     }
 
     @Override
@@ -296,14 +294,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key));
     }
 
-    public IV8Module getModule(String resourceName) {
-        return moduleMap.get(resourceName);
-    }
-
-    public int getModuleCount() {
-        return moduleMap.size();
-    }
-
     public String getGlobalName() {
         return globalName;
     }
@@ -396,6 +386,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public V8Locker getV8Locker() throws JavetV8LockConflictException {
         return new V8Locker(this, v8Native);
+    }
+
+    public IV8Module getV8Module(String resourceName) {
+        return v8ModuleMap.get(resourceName);
+    }
+
+    public int getV8ModuleCount() {
+        return v8ModuleMap.size();
     }
 
     public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
@@ -513,22 +511,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
     }
 
-    protected void removeModules() {
-        if (!moduleMap.isEmpty()) {
-            logger.logWarn("{0} module(s) not recycled.", Integer.toString(moduleMap.size()));
-            for (IV8Module iV8Module : moduleMap.values()) {
-                logger.logWarn("  Module: {0}", iV8Module.getResourceName());
+    protected void removeV8Modules() {
+        if (!v8ModuleMap.isEmpty()) {
+            logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
+            for (IV8Module iV8Module : v8ModuleMap.values()) {
+                logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
             }
         }
-        moduleMap.clear();
-    }
-
-    public void removeModule(String resourceName) {
-        moduleMap.remove(resourceName);
-    }
-
-    public void removeModule(IV8Module iV8Module) {
-        moduleMap.remove(iV8Module.getResourceName());
+        v8ModuleMap.clear();
     }
 
     public void removeJNIGlobalRef(long handle) {
@@ -542,7 +532,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         if (referenceMap.containsKey(referenceHandle)) {
             final int referenceType = iV8ValueReference.getType();
             if (referenceType == V8ValueReferenceType.Module) {
-                removeModule((IV8Module) iV8ValueReference);
+                removeV8Module((IV8Module) iV8ValueReference);
             }
             v8Native.removeReferenceHandle(referenceHandle, referenceType);
             referenceMap.remove(referenceHandle);
@@ -571,6 +561,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             }
             referenceMap.clear();
         }
+        removeV8Modules();
+        v8Inspector = null;
+    }
+
+    public void removeV8Module(String resourceName) {
+        v8ModuleMap.remove(resourceName);
+    }
+
+    public void removeV8Module(IV8Module iV8Module) {
+        v8ModuleMap.remove(iV8Module.getResourceName());
     }
 
     /**
@@ -592,8 +592,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
      */
     public V8Runtime resetContext() throws JavetException {
         removeReferences();
-        removeModules();
-        v8Inspector = null;
         v8Native.resetV8Context(handle, globalName);
         return this;
     }
@@ -607,8 +605,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
      */
     public V8Runtime resetIsolate() throws JavetException {
         removeReferences();
-        removeModules();
-        v8Inspector = null;
         v8Native.resetV8Isolate(handle, globalName);
         return this;
     }

@@ -17,14 +17,29 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.annotations.V8RuntimeSetter;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetV8CallbackNotRegisteredException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.converters.IJavetConverter;
+import com.caoccao.javet.utils.converters.JavetObjectConverter;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.*;
+import com.caoccao.javet.values.primitive.V8ValueNull;
+import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
@@ -387,6 +402,66 @@ public interface IV8ValueObject extends IV8ValueReference {
         boolean success = set(functionName, v8ValueFunction);
         v8ValueFunction.setWeak();
         return success;
+    }
+
+    default List<JavetCallbackContext> setFunctions(
+            Object functionCallbackReceiver)
+            throws JavetException {
+        return setFunctions(functionCallbackReceiver, false);
+    }
+
+    default List<JavetCallbackContext> setFunctions(
+            Object functionCallbackReceiver,
+            boolean thisObjectRequired)
+            throws JavetException {
+        return setFunctions(functionCallbackReceiver, thisObjectRequired, new JavetObjectConverter());
+    }
+
+    default List<JavetCallbackContext> setFunctions(
+            Object functionCallbackReceiver,
+            boolean thisObjectRequired,
+            IJavetConverter converter)
+            throws JavetException {
+        Map<String, Method> functionMap = new HashMap<>();
+        for (Method method : functionCallbackReceiver.getClass().getMethods()) {
+            if (method.isAnnotationPresent(V8Function.class)) {
+                V8Function v8Function = method.getAnnotation(V8Function.class);
+                String functionName = v8Function.name();
+                // Duplicated functions will be dropped.
+                if (functionName != null && functionName.length() > 0
+                        && !functionMap.containsKey(functionName)) {
+                    functionMap.put(functionName, method);
+                }
+            } else if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
+                if (method.getParameterCount() == 1
+                        && V8Runtime.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                    try {
+                        method.invoke(functionCallbackReceiver, getV8Runtime());
+                    } catch (Exception e) {
+                        throw new JavetV8CallbackNotRegisteredException();
+                    }
+                } else {
+                    throw new JavetV8CallbackNotRegisteredException();
+                }
+            }
+        }
+        List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
+        if (!functionMap.isEmpty()) {
+            try {
+                for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
+                    final Method method = entry.getValue();
+                    // Static method needs to be identified.
+                    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                            Modifier.isStatic(method.getModifiers()) ? null : functionCallbackReceiver,
+                            method, thisObjectRequired, converter);
+                    setFunction(entry.getKey(), javetCallbackContext);
+                    javetCallbackContexts.add(javetCallbackContext);
+                }
+            } catch (Exception e) {
+                throw new JavetV8CallbackNotRegisteredException();
+            }
+        }
+        return javetCallbackContexts;
     }
 
     default boolean setNull(int key) throws JavetException {

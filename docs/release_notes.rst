@@ -2,6 +2,14 @@
 Release Notes
 =============
 
+0.8.1
+-----
+
+* Enabled declarative function interception
+* Enabled custom object converter in function callback
+* Added ``allowEval`` to ``JavetEngineConfig``
+* Refactored built-in module API for Node.js mode
+
 0.8.0
 -----
 

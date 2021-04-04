@@ -1,20 +1,23 @@
 Javet
 =====
 
-|Maven Central|
+|Maven Central| |Gitter Chatroom|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
 
+.. |Gitter Chatroom| image:: https://badges.gitter.im/caoccao/Javet.svg
+    :target: https://gitter.im/caoccao/Javet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
-If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_ or visit http://caoccao.blogspot.com/.
+If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/.
 
 Major Features
 ==============
 
-* Linux + Windows
-* Node.js ``14.16.0`` + V8 ``v8.9.255``
+* 🐧Linux + 🖥️Windows
+* Node.js ``v14.16.0`` + V8 ``v8.9.255``
 * Dynamic switch between Node.js and V8
 * Exposure of the majority of V8 API in JVM
 * JS function interception
@@ -37,7 +40,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.8.0</version>
+        <version>0.8.1</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -45,21 +48,21 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.8.0")
+    implementation("com.caoccao.javet:javet:0.8.1")
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.8.0'
+    implementation 'com.caoccao.javet:javet:0.8.1'
 
 Hello Javet
 -----------
 
 .. code-block:: java
 
-    // Node Mode
+    // Node.js Mode
     try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
     }
@@ -71,6 +74,10 @@ Hello Javet
 
 Documents
 =========
+
+* Presentations
+
+    * `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
 
 * `Development <docs/development/index.rst>`_
 

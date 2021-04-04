@@ -52,7 +52,7 @@ namespace Javet {
 			jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
 
 			jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
-			jmethodIDV8RuntimeGetModule = jniEnv->GetMethodID(jclassV8Runtime, "getModule", "(Ljava/lang/String;)Lcom/caoccao/javet/values/reference/IV8Module;");
+			jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;)Lcom/caoccao/javet/values/reference/IV8Module;");
 		}
 
 		V8MaybeLocalModule ModuleResolveCallback(
@@ -65,7 +65,7 @@ namespace Javet {
 			auto v8Runtime = V8Runtime::FromV8Context(v8Context);
 			FETCH_JNI_ENV(GlobalJavaVM);
 			jobject mIV8Module = jniEnv->CallObjectMethod(
-				v8Runtime->externalV8Runtime, jmethodIDV8RuntimeGetModule,
+				v8Runtime->externalV8Runtime, jmethodIDV8RuntimeGetV8Module,
 				Javet::Converter::ToJavaString(jniEnv, v8Context, specifier));
 			if (mIV8Module == nullptr) {
 				LOG_ERROR("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " not found");
