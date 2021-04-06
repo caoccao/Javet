@@ -93,17 +93,127 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     protected Object convert(IJavetConverter converter, Class expectedClass, V8Value v8Value)
             throws JavetException {
         if (v8Value == null) {
-            // Skip null
+            // This check is for null safety.
+            if (expectedClass.isPrimitive()) {
+                /*
+                 * The following test is based on statistical analysis
+                 * so that the performance can be maximized.
+                 */
+                if (expectedClass == int.class) {
+                    return converter.getDefaultInt();
+                } else if (expectedClass == boolean.class) {
+                    return converter.getDefaultBoolean();
+                } else if (expectedClass == double.class) {
+                    return converter.getDefaultDouble();
+                } else if (expectedClass == float.class) {
+                    return converter.getDefaultFloat();
+                } else if (expectedClass == long.class) {
+                    return converter.getDefaultLong();
+                } else if (expectedClass == short.class) {
+                    return converter.getDefaultShort();
+                } else if (expectedClass == byte.class) {
+                    return converter.getDefaultByte();
+                } else if (expectedClass == char.class) {
+                    return converter.getDefaultChar();
+                }
+            }
         } else if (expectedClass.isAssignableFrom(v8Value.getClass())) {
             // Skip assignable
         } else {
             Object convertedObject = converter.toObject(v8Value);
-            if (expectedClass.isAssignableFrom(convertedObject.getClass())) {
-                return convertedObject;
+            if (convertedObject == null) {
+                return convert(converter, expectedClass, null);
             } else {
-                throw JavetV8CallbackSignatureMismatchException.parameterTypeMismatch(
-                        expectedClass, convertedObject.getClass());
+                Class convertedObjectClass = convertedObject.getClass();
+                if (expectedClass.isAssignableFrom(convertedObjectClass)) {
+                    return convertedObject;
+                } else if (expectedClass.isPrimitive()) {
+                    /*
+                     * The following test is based on statistical analysis
+                     * so that the performance can be maximized.
+                     */
+                    if (expectedClass == int.class) {
+                        if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).intValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).intValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).intValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).intValue();
+                        }
+                    } else if (expectedClass == boolean.class && convertedObjectClass == Boolean.class) {
+                        return ((Boolean) convertedObject).booleanValue();
+                    } else if (expectedClass == double.class) {
+                        if (convertedObjectClass == Double.class) {
+                            return ((Double) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Float.class) {
+                            return ((Float) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).doubleValue();
+                        }
+                    } else if (expectedClass == float.class) {
+                        if (convertedObjectClass == Double.class) {
+                            return ((Double) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Float.class) {
+                            return ((Float) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).floatValue();
+                        }
+                    } else if (expectedClass == long.class) {
+                        if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).longValue();
+                        } else if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).longValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).longValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).longValue();
+                        }
+                    } else if (expectedClass == short.class) {
+                        if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).shortValue();
+                        } else if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).shortValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).shortValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).shortValue();
+                        }
+                    } else if (expectedClass == byte.class) {
+                        if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).byteValue();
+                        } else if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).byteValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).byteValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).byteValue();
+                        }
+                    } else if (expectedClass == char.class) {
+                        if (convertedObjectClass == Character.class) {
+                            return ((Character) convertedObject).charValue();
+                        } else if (convertedObjectClass == String.class) {
+                            String convertedString = (String) convertedObject;
+                            return convertedString.length() > 0 ? convertedString.charAt(0) : converter.getDefaultChar();
+                        }
+                    }
+                }
             }
+            throw JavetV8CallbackSignatureMismatchException.parameterTypeMismatch(
+                    expectedClass, convertedObject.getClass());
         }
         return v8Value;
     }

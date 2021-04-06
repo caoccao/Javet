@@ -55,6 +55,62 @@ public class MockAnnotationBasedCallbackReceiver {
         return v8ValueArray;
     }
 
+    // Instance method with primitive type byte
+    @V8Function(name = "primitiveAddByte")
+    public byte primitiveAddByte(byte a, byte b) {
+        count.incrementAndGet();
+        return (byte) (a + b);
+    }
+
+    // Instance method with primitive type double
+    @V8Function(name = "primitiveAddDouble")
+    public double primitiveAddDouble(double a, double b) {
+        count.incrementAndGet();
+        return a + b;
+    }
+
+    // Instance method with primitive type float
+    @V8Function(name = "primitiveAddFloat")
+    public float primitiveAddFloat(float a, float b) {
+        count.incrementAndGet();
+        return a + b;
+    }
+
+    // Instance method with primitive type int
+    @V8Function(name = "primitiveAddInt")
+    public int primitiveAddInt(int a, int b) {
+        count.incrementAndGet();
+        return a + b;
+    }
+
+    // Instance method with primitive type long
+    @V8Function(name = "primitiveAddLong")
+    public long primitiveAddLong(long a, long b) {
+        count.incrementAndGet();
+        return a + b;
+    }
+
+    // Instance method with primitive type short
+    @V8Function(name = "primitiveAddShort")
+    public short primitiveAddShort(short a, short b) {
+        count.incrementAndGet();
+        return Integer.valueOf(a + b).shortValue();
+    }
+
+    // Instance method with primitive type boolean
+    @V8Function(name = "primitiveRevertBoolean")
+    public boolean primitiveRevertBoolean(boolean b) {
+        count.incrementAndGet();
+        return !b;
+    }
+
+    // Instance method with primitive type char
+    @V8Function(name = "primitiveIncreaseChar")
+    public char primitiveIncreaseChar(char c) {
+        count.incrementAndGet();
+        return (char) ((int) c + 1);
+    }
+
     public int getCount() {
         return count.get();
     }

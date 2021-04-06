@@ -143,6 +143,11 @@ The console output is:
 
     [ { name: 'Tom', value: 'CEO' }, { name: 'Jerry', value: 'CFO' } ]
 
+Null Safety
+===========
+
+What if the object converter meets ``null`` or ``undefined`` when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in ``java.lang.NullPointerException``. Luckily, Javet object converter is null safe by injecting default primitive values and the default primitive values can be overridden. Please check out ``com.caoccao.javet.utils.converters.IJavetConverter#getDefault*`` for detail.
+
 Final Note
 ==========
 

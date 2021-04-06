@@ -41,7 +41,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
             MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver = new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts = v8ValueObject.setFunctions(mockAnnotationBasedCallbackReceiver);
-            assertEquals(5, javetCallbackContexts.size());
+            assertEquals(13, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -59,6 +59,48 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("static", v8Runtime.getExecutor("a.staticEcho('static')").executeString());
             assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
+            // Primitive test
+            assertTrue(v8Runtime.getExecutor("a.primitiveRevertBoolean(false)").executeBoolean());
+            assertEquals(5, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3, v8Runtime.getExecutor("a.primitiveAddByte(1, 2)").executeInteger());
+            assertEquals(6, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3.57, v8Runtime.getExecutor("a.primitiveAddDouble(1.23, 2.34)").executeDouble(), 0.01);
+            assertEquals(7, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3.57, v8Runtime.getExecutor("a.primitiveAddFloat(1.23, 2.34)").executeDouble(), 0.01);
+            assertEquals(8, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3, v8Runtime.getExecutor("a.primitiveAddInt(1, 2)").executeInteger());
+            assertEquals(9, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3, v8Runtime.getExecutor("a.primitiveAddInt(1n, 2n)").executeInteger());
+            assertEquals(10, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3, v8Runtime.getExecutor("a.primitiveAddLong(1n, 2n)").executeLong());
+            assertEquals(11, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3, v8Runtime.getExecutor("a.primitiveAddLong(1, 2)").executeLong());
+            assertEquals(12, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3, v8Runtime.getExecutor("a.primitiveAddShort(1, 2)").executeInteger());
+            assertEquals(13, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(3, v8Runtime.getExecutor("a.primitiveAddShort(1n, 2n)").executeInteger());
+            assertEquals(14, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals("b", v8Runtime.getExecutor("a.primitiveIncreaseChar('a')").executeString());
+            assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals("c", v8Runtime.getExecutor("a.primitiveIncreaseChar('bye')").executeString());
+            assertEquals(16, mockAnnotationBasedCallbackReceiver.getCount());
+            // Null safety test
+            assertTrue(v8Runtime.getExecutor("a.primitiveRevertBoolean(null)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("a.primitiveRevertBoolean(undefined)").executeBoolean());
+            assertEquals(1, v8Runtime.getExecutor("a.primitiveAddByte(1, null)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("a.primitiveAddByte(1, undefined)").executeInteger());
+            assertEquals(1.23, v8Runtime.getExecutor("a.primitiveAddDouble(1.23, null)").executeDouble(), 0.01);
+            assertEquals(1.23, v8Runtime.getExecutor("a.primitiveAddDouble(1.23, undefined)").executeDouble(), 0.01);
+            assertEquals(1.23, v8Runtime.getExecutor("a.primitiveAddFloat(1.23, null)").executeDouble(), 0.01);
+            assertEquals(1.23, v8Runtime.getExecutor("a.primitiveAddFloat(1.23, undefined)").executeDouble(), 0.01);
+            assertEquals(1, v8Runtime.getExecutor("a.primitiveAddInt(1, null)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("a.primitiveAddInt(1, undefined)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("a.primitiveAddLong(1n, null)").executeLong());
+            assertEquals(1, v8Runtime.getExecutor("a.primitiveAddLong(1n, undefined)").executeLong());
+            assertEquals(1, v8Runtime.getExecutor("a.primitiveAddShort(1, null)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("a.primitiveAddShort(1, undefined)").executeInteger());
+            assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(null)").executeString());
+            assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(undefined)").executeString());
             v8Runtime.getGlobalObject().delete("a");
         }
         v8Runtime.requestGarbageCollectionForTesting(true);

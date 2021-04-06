@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.2
+-----
+
+* Enabled auto type conversion in primitive types
+* Fixed a memory leak issue during V8Runtime ``resetContext()``, ``resetIsolate()``, ``close()``.
+
 0.8.1
 -----
 

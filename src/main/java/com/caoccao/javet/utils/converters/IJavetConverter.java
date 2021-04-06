@@ -23,6 +23,38 @@ import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
 public interface IJavetConverter {
+    default boolean getDefaultBoolean() {
+        return false;
+    }
+
+    default byte getDefaultByte() {
+        return (byte) 0;
+    }
+
+    default char getDefaultChar() {
+        return '\0';
+    }
+
+    default double getDefaultDouble() {
+        return 0D;
+    }
+
+    default float getDefaultFloat() {
+        return 0F;
+    }
+
+    default int getDefaultInt() {
+        return 0;
+    }
+
+    default long getDefaultLong() {
+        return 0L;
+    }
+
+    default short getDefaultShort() {
+        return (short) 0;
+    }
+
     Object toObject(V8Value v8Value) throws JavetException;
 
     <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException;
