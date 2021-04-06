@@ -5,8 +5,7 @@ Release Notes
 0.8.2
 -----
 
-* TODO Fix memory leak in function callback
-* TODO Enable auto type conversion in primitive types
+* Enabled auto type conversion in primitive types
 
 0.8.1
 -----

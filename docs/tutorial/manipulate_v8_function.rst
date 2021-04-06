@@ -246,7 +246,38 @@ Javet is capable of automatically converting its internal ``V8Value`` to primiti
     // All 4 functions above can be handled in Javet as the following function
     echo("123");
 
-Note: Primitive types must be in their object form in the method signature. E.g. ``boolean`` must be set to ``Boolean``, ``int`` must be set to ``Integer``, etc. Why? Because the converted value could be ``null`` which would cause JDK to complain with an exception.
+Primitive types can be in either primitive or object form in the method signature. Javet just automatically handles the type conversion and it is null safe.
+
+* ``boolean``: ``boolean``, ``Boolean``, ``null`` ➡️ ``false``, ``undefined`` ➡️ ``false``.
+* ``byte``, ``integer``, ``long``, ``Short``: ``int``, ``Integer``, ``long``, ``Long``, ``short``, ``Short``, ``byte``, ``Byte``, ``null`` ➡️ ``0``, ``undefined`` ➡️ ``0``.
+* ``char``: ``char``, ``Char``, ``null`` ➡️ ``\0``, ``undefined`` ➡️ ``\0``.
+* ``float``, ``double``: ``float``, ``Float``, ``double``, ``Double``, ``int``, ``Integer``, ``long``, ``Long``, ``short``, ``Short``, ``byte``, ``Byte``, ``null`` ➡️ ``0``, ``undefined`` ➡️ ``0``.
+
+For instance: The following 4 functions are all the same and valid.
+
+.. code-block:: java
+
+    // Option 1
+    public int echo(Integer i) {
+        return i == null? 0: i.intValue();
+    }
+
+    // Option 2
+    public Integer echo(int arg) {
+        return Integer.valueOf(int);
+    }
+
+    // Option 3
+    public V8ValueInteger echo(int i) {
+        return new V8ValueInteger(i);
+    }
+
+    // Option 4
+    public Integer echo(V8ValueInteger i) {
+        return i == null? 0: i.getValue();
+    }
+
+Can the default values be changed in terms of null safety? Yes, `Object Converter <object_converter.rst>`_ allows overriding the default values.
 
 Call vs. Invoke
 ===============
