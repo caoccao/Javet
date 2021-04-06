@@ -396,6 +396,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return v8ModuleMap.size();
     }
 
+    public String getVersion() {
+        return v8Native.getVersion();
+    }
+
     public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
         decorateV8Value(value);
         return v8Native.has(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), value);
