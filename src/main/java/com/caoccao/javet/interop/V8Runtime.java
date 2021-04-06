@@ -554,7 +554,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
                         ++weakReferenceCount;
                     }
                 }
-                removeReference(iV8ValueReference);
+                iV8ValueReference.close(true);
             }
             if (weakReferenceCount < referenceCount) {
                 logger.logWarn("{0} V8 object(s) not recycled, {1} weak.",
