@@ -93,6 +93,8 @@ public interface IV8Native {
 
     void lockV8Runtime(long v8RuntimeHandle);
 
+    void lowMemoryNotification(long v8RuntimeHandle);
+
     Object moduleEvaluate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     Object moduleGetException(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

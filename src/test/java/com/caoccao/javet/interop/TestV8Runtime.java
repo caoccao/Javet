@@ -72,6 +72,13 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
+    public void testLowMemoryNotification() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
     public void testResetContext() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());

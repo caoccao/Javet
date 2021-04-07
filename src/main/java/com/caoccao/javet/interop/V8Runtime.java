@@ -55,6 +55,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     protected V8ValueNull cachedV8ValueNull;
     protected V8ValueUndefined cachedV8ValueUndefined;
 
+    protected boolean gcScheduled;
     protected String globalName;
     protected long handle;
     protected IJavetLogger logger;
@@ -67,6 +68,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
+        gcScheduled = false;
         this.globalName = globalName;
         this.handle = handle;
         logger = new JavetDefaultLogger(getClass().getName());
@@ -298,6 +300,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return globalName;
     }
 
+    public void setGlobalName(String globalName) {
+        this.globalName = globalName;
+    }
+
     public IV8Executor getExecutor(File scriptFile) {
         return getExecutor(scriptFile.toPath());
     }
@@ -308,10 +314,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public IV8Executor getExecutor(String scriptString) {
         return new V8StringExecutor(this, scriptString);
-    }
-
-    public void setGlobalName(String globalName) {
-        this.globalName = globalName;
     }
 
     public int getIdentityHash(IV8ValueReference iV8ValueReference) throws JavetException {
@@ -444,6 +446,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return v8Native.isDead(handle);
     }
 
+    public boolean isGCScheduled() {
+        return gcScheduled;
+    }
+
+    public void setGCScheduled(boolean gcScheduled) {
+        this.gcScheduled = gcScheduled;
+    }
+
     public boolean isInUse() {
         return v8Native.isInUse(handle);
     }
@@ -454,6 +464,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public boolean isWeak(IV8ValueReference iV8ValueReference) {
         return v8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
+    }
+
+    public void lowMemoryNotification() {
+        v8Native.lowMemoryNotification(handle);
     }
 
     public <T extends V8Value> T moduleEvaluate(
@@ -541,6 +555,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             v8Native.removeReferenceHandle(referenceHandle, referenceType);
             referenceMap.remove(referenceHandle);
         }
+        if (gcScheduled) {
+            lowMemoryNotification();
+            gcScheduled = false;
+        }
     }
 
     protected void removeReferences() throws JavetException {
@@ -613,6 +631,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return this;
     }
 
+    public boolean sameValue(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2) {
+        return v8Native.sameValue(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
+    }
+
     public <T extends V8Value> T scriptRun(
             IV8Script iV8Script, boolean resultRequired) throws JavetException {
         return decorateV8Value((T) v8Native.scriptRun(
@@ -631,10 +653,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public void setWeak(IV8ValueReference iV8ValueReference) {
         v8Native.setWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType(), iV8ValueReference);
-    }
-
-    public boolean sameValue(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2) {
-        return v8Native.sameValue(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
     public boolean strictEquals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2) {

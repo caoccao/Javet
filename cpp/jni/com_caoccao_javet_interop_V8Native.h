@@ -257,6 +257,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    lowMemoryNotification
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotification
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    moduleEvaluate
  * Signature: (JJIZ)Ljava/lang/Object;
  */

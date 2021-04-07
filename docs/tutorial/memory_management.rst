@@ -96,4 +96,21 @@ Javet offers complete support to all the typed arrays as well as ``DataView`` as
 
 Please refer to `TestV8ValueTypedArray <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java>`_ and `TestV8ValueDataView <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueDataView.java>`_ for sample code snippets.
 
+Built-in Notification for GC
+============================
+
+In high frequency API calling area, V8 may not keep up with the GC pace that JVM performs. Sometimes, JVM is running out of heap memory whereas V8 holds many zombie objects that are referenced by Javet in JVM. In this case, JVM ignores those objects unless V8 releases them in V8 GC cycle.
+
+So, how to notify V8 GC that Java heap memory pool is running out of space? Javet automates this via ``V8Host`` and ``V8Notifier``. By default, this feature is disabled. Here is the step-by-step on how to enable this feature.
+
+1. (Optional) Call ``V8Host.setMemoryUsageThresholdRatio(double)`` to set memory usage threshold ratio. This is optional because the default value is 0.7.
+2. Call ``V8Host.getNodeInstance().enableGCNotification()`` or ``V8Host.getV8Instance().enableGCNotification()`` to enable the notification.
+
+What happens internally is as following.
+
+1. ``V8Notifier`` listens to the heap memory notification from JVM per ``V8Host`` instance.
+2. JVM notifies ``V8Notifier`` that memory threshold exceeds.
+3. ``V8Notifier`` broadcasts GC scheduled flag to all ``V8Runtime`` managed by the ``V8Host`` instance.
+4. Each ``V8Runtime`` performs GC in its own isolate.
+
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
