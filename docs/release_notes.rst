@@ -7,6 +7,7 @@ Release Notes
 
 * Added ``V8Runtime.lowMemoryNotification()`` to schedule ``gc()`` in V8 automatically
 * Added ``V8Host.setMemoryUsageThresholdRatio()``, ``V8Host.enableGCNotification()``, and ``V8Host.disableGCNotification()``
+* Updated JavetEnginePool to be lock free
 
 0.8.2
 -----

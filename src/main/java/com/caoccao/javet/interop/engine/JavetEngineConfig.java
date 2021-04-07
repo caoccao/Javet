@@ -89,7 +89,7 @@ public final class JavetEngineConfig {
         this.executorService = executorService;
     }
 
-    public JSRuntimeType getJsRuntimeType() {
+    public JSRuntimeType getJSRuntimeType() {
         return jsRuntimeType;
     }
 

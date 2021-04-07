@@ -23,6 +23,8 @@ import com.caoccao.javet.interop.V8Runtime;
 
 @SuppressWarnings("unchecked")
 public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
+    void gc();
+
     JavetEngineConfig getConfig();
 
     R getV8Runtime() throws JavetException;

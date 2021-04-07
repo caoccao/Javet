@@ -54,6 +54,11 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     }
 
     @Override
+    public void gc() {
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Override
     public JavetEngineConfig getConfig() {
         return iJavetEnginePool.getConfig();
     }
