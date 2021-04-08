@@ -9,6 +9,7 @@ Release Notes
 * Added ``V8Host.setMemoryUsageThresholdRatio()``, ``V8Host.enableGCNotification()``, and ``V8Host.disableGCNotification()``
 * Updated JavetEnginePool to be lock free
 * Added ``autoSendGCNotification`` to ``JavetEngineConfig``
+* Moved ``JavetCallbackContext`` management from ``V8ValueFunction`` to V8
 
 0.8.2
 -----

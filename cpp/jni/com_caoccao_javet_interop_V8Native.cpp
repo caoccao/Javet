@@ -124,18 +124,24 @@ namespace Javet {
 		so that the memory address doesn't get messed up.
 		*/
 		void FunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-			FETCH_JNI_ENV(Javet::V8Native::GlobalJavaVM);
 			auto v8LocalContextHandle = args.Data().As<v8::BigInt>();
-			auto umContext = TO_JAVA_OBJECT(v8LocalContextHandle->Int64Value());
-			Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
-			javetCallbackContextReference.Invoke(args);
+			auto javetCallbackContextReferencePointer = reinterpret_cast<Javet::Callback::JavetCallbackContextReference*>(v8LocalContextHandle->Int64Value());
+			javetCallbackContextReferencePointer->Invoke(args);
 		}
 
 		void CloseWeakDataReference(const v8::WeakCallbackInfo<Javet::Callback::V8ValueReference>& data) {
-			FETCH_JNI_ENV(Javet::V8Native::GlobalJavaVM);
 			auto v8ValueReference = data.GetParameter();
-			v8ValueReference->Close(jniEnv);
+			v8ValueReference->Close();
 			delete v8ValueReference;
+		}
+
+		void CloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<Javet::Callback::JavetCallbackContextReference>& data) {
+			FETCH_JNI_ENV(GlobalJavaVM);
+			auto javetCallbackContextReferencePointer = data.GetParameter();
+			auto v8Context = data.GetIsolate()->GetCurrentContext();
+			jobject externalV8Runtime = Javet::V8Runtime::FromV8Context(v8Context)->externalV8Runtime;
+			javetCallbackContextReferencePointer->RemoveCallbackContext(externalV8Runtime);
+			delete javetCallbackContextReferencePointer;
 		}
 	}
 }
@@ -215,7 +221,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearWeak
 	RUNTIME_AND_DATA_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (!v8PersistentDataPointer->IsEmpty() && v8PersistentDataPointer->IsWeak()) {
 		auto v8ValueReference = v8PersistentDataPointer->ClearWeak<Javet::Callback::V8ValueReference>();
-		v8ValueReference->Clear(jniEnv);
+		v8ValueReference->Clear();
 		delete v8ValueReference;
 	}
 }
@@ -321,11 +327,12 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 		}
 	}
 	else if (IS_V8_FUNCTION(v8ValueType)) {
-		jobject umContext = jniEnv->NewGlobalRef(mContext);
-		Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
-		javetCallbackContextReference.SetHandle();
-		auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(umContext));
+		auto javetCallbackContextReferencePointer = new Javet::Callback::JavetCallbackContextReference(jniEnv, mContext);
+		auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
+		javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer = new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextHandle);
 		v8ValueValue = v8::Function::New(v8Context, Javet::V8Native::FunctionCallback, v8LocalContextHandle).ToLocalChecked();
+		javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer->SetWeak(
+			javetCallbackContextReferencePointer, Javet::V8Native::CloseWeakCallbackContextHandle, v8::WeakCallbackType::kParameter);
 	}
 	else if (IS_V8_MAP(v8ValueType)) {
 		v8ValueValue = v8::Map::New(v8Context->GetIsolate());
@@ -899,9 +906,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject objectReference) {
 	RUNTIME_AND_DATA_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (!v8PersistentDataPointer->IsEmpty() && !v8PersistentDataPointer->IsWeak()) {
-		auto v8ValueReference = new Javet::Callback::V8ValueReference;
-		v8ValueReference->v8Isolate = v8Context->GetIsolate();
-		v8ValueReference->objectReference = jniEnv->NewGlobalRef(objectReference);
+		auto v8ValueReference = new Javet::Callback::V8ValueReference(jniEnv, objectReference);
 		v8ValueReference->v8PersistentDataPointer = v8PersistentDataPointer;
 		v8PersistentDataPointer->SetWeak(v8ValueReference, Javet::V8Native::CloseWeakDataReference, v8::WeakCallbackType::kParameter);
 	}

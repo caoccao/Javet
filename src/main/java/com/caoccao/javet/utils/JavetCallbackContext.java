@@ -17,10 +17,8 @@
 
 package com.caoccao.javet.utils;
 
-import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
 import com.caoccao.javet.utils.converters.IJavetConverter;
 import com.caoccao.javet.utils.converters.JavetObjectConverter;
-import com.caoccao.javet.values.reference.IV8ValueFunction;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

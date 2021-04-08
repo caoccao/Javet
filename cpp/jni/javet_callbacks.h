@@ -26,7 +26,6 @@ namespace Javet {
 		static JavaVM* GlobalJavaVM;
 
 		static jclass jclassJavetCallbackContext;
-		static jmethodID jmethodIDJavetCallbackContextGetHandle;
 		static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
 		static jmethodID jmethodIDJavetCallbackContextIsThisObjectRequired;
 		static jmethodID jmethodIDJavetCallbackContextSetHandle;
@@ -48,6 +47,7 @@ namespace Javet {
 
 		static jclass jclassV8Runtime;
 		static jmethodID jmethodIDV8RuntimeGetV8Module;
+		static jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
 
 		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
 
@@ -63,21 +63,24 @@ namespace Javet {
 		public:
 			jobject callbackContext;
 			JNIEnv* jniEnv;
+			V8PersistentBigInt* v8PersistentCallbackContextHandlePointer;
 			JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext);
-			jlong GetHandle();
 			void Invoke(const v8::FunctionCallbackInfo<v8::Value>& args);
 			jboolean IsReturnResult();
 			jboolean IsThisObjectRequired();
 			void SetHandle();
+			void RemoveCallbackContext(const jobject& externalV8Runtime);
+			virtual ~JavetCallbackContextReference();
 		};
 
 		class V8ValueReference {
 		public:
-			v8::Isolate* v8Isolate;
+			JNIEnv* jniEnv;
 			jobject objectReference;
 			V8PersistentData* v8PersistentDataPointer;
-			void Clear(JNIEnv* jniEnv);
-			void Close(JNIEnv* jniEnv);
+			V8ValueReference(JNIEnv* jniEnv, jobject objectReference);
+			void Clear();
+			void Close();
 		};
 	}
 }

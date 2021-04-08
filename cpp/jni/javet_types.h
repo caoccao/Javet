@@ -60,6 +60,7 @@ using V8MaybeLocalValue = v8::MaybeLocal<v8::Value>;
 // Persistent
 
 using V8PersistentArray = v8::Persistent<v8::Array>;
+using V8PersistentBigInt = v8::Persistent<v8::BigInt>;
 using V8PersistentContext = v8::Persistent<v8::Context>;
 using V8PersistentData = v8::Persistent<v8::Data>;
 using V8PersistentFunction = v8::Persistent<v8::Function>;

@@ -33,10 +33,7 @@ import com.caoccao.javet.values.reference.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
@@ -55,6 +52,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     protected V8ValueNull cachedV8ValueNull;
     protected V8ValueUndefined cachedV8ValueUndefined;
 
+    /*
+     * V8 may not make final callback when V8 context is being recycled.
+     * That may results in memory leak.
+     * Callback context map is designed for closing that memory leak issue.
+     */
+    protected Map<Long, JavetCallbackContext> callbackContextMap;
     protected boolean gcScheduled;
     protected String globalName;
     protected long handle;
@@ -68,6 +71,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
+        callbackContextMap = new TreeMap<>();
         gcScheduled = false;
         this.globalName = globalName;
         this.handle = handle;
@@ -137,7 +141,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public void close(boolean forceClose) throws JavetException {
         if (handle != INVALID_HANDLE && forceClose) {
-            removeReferences();
+            removeAllReferences();
             v8Host.closeV8Runtime(this);
             handle = INVALID_HANDLE;
         }
@@ -190,6 +194,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     @Override
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
+        Objects.requireNonNull(v8ValueArrayBuffer);
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(PROPERTY_DATA_VIEW)) {
             return v8ValueFunction.callAsConstructor(v8ValueArrayBuffer);
         }
@@ -197,9 +202,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     @Override
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
+        Objects.requireNonNull(javetCallbackContext);
         V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Function, javetCallbackContext));
-        v8ValueFunction.setV8CallbackContext(javetCallbackContext);
+        callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
         return v8ValueFunction;
     }
 
@@ -294,6 +300,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return decorateV8Value((T) v8Native.get(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key));
+    }
+
+    public int getCallbackContextCount() {
+        return callbackContextMap.size();
     }
 
     public String getGlobalName() {
@@ -529,14 +539,27 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
     }
 
-    protected void removeV8Modules() {
-        if (!v8ModuleMap.isEmpty()) {
-            logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
-            for (IV8Module iV8Module : v8ModuleMap.values()) {
-                logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
+    protected void removeAllReferences() throws JavetException {
+        removeReferences();
+        removeCallbackContexts();
+        removeV8Modules();
+        v8Inspector = null;
+    }
+
+    public void removeCallbackContext(long handle) {
+        callbackContextMap.remove(handle);
+    }
+
+    protected void removeCallbackContexts() {
+        if (!callbackContextMap.isEmpty()) {
+            final int callbackContextCount = callbackContextMap.size();
+            for (long handle : callbackContextMap.keySet()) {
+                removeJNIGlobalRef(handle);
             }
+            logger.logWarn("{0} V8 callback context object(s) not recycled.",
+                    Integer.toString(callbackContextCount));
+            callbackContextMap.clear();
         }
-        v8ModuleMap.clear();
     }
 
     public void removeJNIGlobalRef(long handle) {
@@ -583,8 +606,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             }
             referenceMap.clear();
         }
-        removeV8Modules();
-        v8Inspector = null;
     }
 
     public void removeV8Module(String resourceName) {
@@ -593,6 +614,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public void removeV8Module(IV8Module iV8Module) {
         v8ModuleMap.remove(iV8Module.getResourceName());
+    }
+
+    protected void removeV8Modules() {
+        if (!v8ModuleMap.isEmpty()) {
+            logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
+            for (IV8Module iV8Module : v8ModuleMap.values()) {
+                logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
+            }
+        }
+        v8ModuleMap.clear();
     }
 
     /**
@@ -613,7 +644,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
      * @throws JavetException the javet exception
      */
     public V8Runtime resetContext() throws JavetException {
-        removeReferences();
+        removeAllReferences();
         v8Native.resetV8Context(handle, globalName);
         return this;
     }
@@ -626,7 +657,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
      * @throws JavetException the javet exception
      */
     public V8Runtime resetIsolate() throws JavetException {
-        removeReferences();
+        removeAllReferences();
         v8Native.resetV8Isolate(handle, globalName);
         return this;
     }

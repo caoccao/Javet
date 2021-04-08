@@ -101,13 +101,18 @@ Built-in Notification for GC
 
 In high frequency API calling area, V8 may not keep up with the GC pace that JVM performs. Sometimes, JVM is running out of heap memory whereas V8 holds many zombie objects that are referenced by Javet in JVM. In this case, JVM ignores those objects unless V8 releases them in V8 GC cycle.
 
-Passive Approach
-----------------
+Passive GC
+----------
 
 So, how to notify V8 GC that Java heap memory pool is running out of space? Javet automates this via ``V8Host`` and ``V8Notifier``. By default, this feature is disabled. Here is the step-by-step on how to enable this feature.
 
 1. (Optional) Call ``V8Host.setMemoryUsageThresholdRatio(double)`` to set memory usage threshold ratio. This is optional because the default value is 0.7.
 2. Call ``V8Host.getNodeInstance().enableGCNotification()`` or ``V8Host.getV8Instance().enableGCNotification()`` to enable the notification.
+
+Here is a sample heap memory usage with default memory usage threshold ration and ``-Xms=64m -Xmx=64m``. Please note that in this sample, application is under high pressure of creating and destroying V8 objects. In normal cases, the curve is much smoother.
+
+.. image:: ../resources/images/javet_memory_management_passive_gc.png?raw=true
+    :alt: Javet Memory Management Passive GC
 
 What happens internally is as following.
 
@@ -116,13 +121,13 @@ What happens internally is as following.
 3. ``V8Notifier`` broadcasts GC scheduled flag to all ``V8Runtime`` managed by the ``V8Host`` instance.
 4. Each ``V8Runtime`` performs GC in its own isolate.
 
-Aggressive Approach
--------------------
+Aggressive GC
+-------------
 
-Just get ``V8Runtime`` from Javet engine pool that is aggressively send GC notification to idle engine in daemon thread. There is no performance overhead because:
+Just get ``V8Runtime`` from Javet engine pool that aggressively sends GC notification to idle engine in daemon thread. There is no performance overhead because:
 
-* The engine is idle.
-* Javet engine pool is lock free.
+* The engine performs GC when it is idle in a dedicated thread.
+* Javet engine pool is lock free so that the GC doesn't affect other worker threads.
 
 Of course, this behavior can be turned off by calling ``JavetEngineConfig.setAutoSendGCNotification(false)``.
 

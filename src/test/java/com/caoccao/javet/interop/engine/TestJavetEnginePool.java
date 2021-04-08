@@ -103,8 +103,8 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 threads[j] = thread;
             });
             runAndWait(TEST_MAX_TIMEOUT, () -> runningCount.get() == threadCount);
-            assertEquals(0, javetEnginePool.getIdleEngineCount());
-            assertEquals(threadCount, javetEnginePool.getActiveEngineCount());
+            runAndWait(TEST_MAX_TIMEOUT, () -> 0 == javetEnginePool.getIdleEngineCount());
+            runAndWait(TEST_MAX_TIMEOUT, () -> threadCount == javetEnginePool.getActiveEngineCount());
         }
         for (Thread thread : threads) {
             try {
@@ -148,10 +148,10 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 threads[j] = thread;
             });
             runAndWait(TEST_MAX_TIMEOUT, () -> runningCount.get() == threadCount);
-            assertEquals(0, javetEnginePool.getIdleEngineCount(),
-                    "There shouldn't be any idle engines.");
-            assertTrue(javetEngineConfig.getPoolMaxSize() <= javetEnginePool.getActiveEngineCount(),
-                    "Due to concurrent issue, actual engine count may be greater than max pool size.");
+            // There shouldn't be any idle engines.
+            runAndWait(TEST_MAX_TIMEOUT, () -> 0 == javetEnginePool.getIdleEngineCount());
+            // Due to concurrent issue, actual engine count may be greater than max pool size.
+            runAndWait(TEST_MAX_TIMEOUT, () -> javetEngineConfig.getPoolMaxSize() <= javetEnginePool.getActiveEngineCount());
         }
         for (Thread thread : threads) {
             try {
@@ -163,7 +163,6 @@ public class TestJavetEnginePool extends BaseTestJavet {
         javetEnginePool.releaseEngine(null);
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEngineConfig.getPoolMaxSize() == javetEnginePool.getIdleEngineCount());
         assertEquals(0, failureCount.get());
-        assertEquals(javetEngineConfig.getPoolMaxSize(), javetEnginePool.getIdleEngineCount());
-        assertEquals(0, javetEnginePool.getActiveEngineCount());
+        runAndWait(TEST_MAX_TIMEOUT, () -> 0 == javetEnginePool.getActiveEngineCount());
     }
 }

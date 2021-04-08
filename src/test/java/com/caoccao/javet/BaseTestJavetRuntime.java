@@ -30,6 +30,8 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
 
     @AfterEach
     public void afterEach() throws JavetException {
+        assertEquals(0, v8Runtime.getCallbackContextCount(),
+                "Callback context count should be 0 after test case is ended.");
         assertEquals(0, v8Runtime.getReferenceCount(),
                 "Reference count should be 0 after test case is ended.");
         v8Runtime.close();
@@ -40,6 +42,8 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
     public void beforeEach() throws JavetException {
         v8Runtime = v8Host.createV8Runtime();
         assertFalse(v8Runtime.isPooled());
+        assertEquals(0, v8Runtime.getCallbackContextCount(),
+                "Callback context count should be 0 after test case is ended.");
         assertEquals(0, v8Runtime.getReferenceCount(),
                 "Reference count should be 0 before test case is started.");
     }

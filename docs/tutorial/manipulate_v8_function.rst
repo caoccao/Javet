@@ -150,14 +150,13 @@ This method is for setting up Java code based function in complete manual way. T
     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
             mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
     V8ValueObject globalObject = v8Runtime.getGlobalObject();
-    V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
-    try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
+    try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
+            V8ValueObject a = v8Runtime.createV8ValueObject()) {
         globalObject.set("a", a);
         a.set("blank", v8ValueFunction);
         assertFalse(mockCallbackReceiver.isCalled());
         v8Runtime.getExecutor("a.blank();").executeVoid();
         assertTrue(mockCallbackReceiver.isCalled());
-        v8ValueFunction.setWeak();
         a.delete("blank");
         globalObject.delete("a");
     }
@@ -177,44 +176,6 @@ Summary
 -------
 
 Obviously, the automatic registration is much better than the manual registration. Please use them wisely.
-
-Lifecycle
-=========
-
-Know the Implication
---------------------
-
-Lifecycle of a function is recommended to be managed by V8. This is a bit different from the common usage of other V8 value objects.
-
-Why? Because in order to keep track of the callback capability, Javet needs to persist few tiny objects in JVM as well as in V8. Those persisted objects get released immediately when ``close()`` is explicitly called and ``isWeak()`` is ``false``. However, once a function is set to a certain object, it is typically no longer needed. If closing that function explicitly really recycles it, the following callback will cause memory corruption.
-
-The solution is to set the function to weak by ``setWeak()`` so that the lifecycle management is handed over to V8. V8 decides when to recycle the function and notifies Javet to recycle those persisted objects.
-
-Option 1: The Common Way
-------------------------
-
-.. code-block:: java
-
-    // Create a function and wrap it with try resource.
-    try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
-        // Do whatever you want to do with this function
-    }
-    // Outside the code block, this function is no longer valid. Calling this function in V8 will result in memory corruption.
-
-Option 2: The Recommended Way
------------------------------
-
-.. code-block:: java
-
-    V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
-    // Set this function to the certain V8 value objects.
-    v8ValueFunction.setWeak();
-    // Once this function is set to weak, its lifecycle is automatically managed by Javet + V8.
-    // There is no need to call close() any more.
-
-    // Alternatively, setFunction() makes that easy with only one line.
-    v8ValueObject.setFunction("test", javetCallbackContext);
-    // An instance of V8ValueFunction is created and set to weak internally.
 
 Automatic Type Conversion
 =========================

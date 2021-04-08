@@ -36,29 +36,9 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
-    /*
-     * The lifecycle of V8ValueFunction depends on V8CallbackContext which is
-     * managed by JNI native implementation.
-     */
-    protected JavetCallbackContext javetCallbackContext;
 
     V8ValueFunction(long handle) {
         super(handle);
-        javetCallbackContext = null;
-    }
-
-    public JavetCallbackContext getV8CallbackContext() {
-        return javetCallbackContext;
-    }
-
-    public void setV8CallbackContext(JavetCallbackContext javetCallbackContext)
-            throws JavetV8CallbackAlreadyRegisteredException {
-        Objects.requireNonNull(javetCallbackContext);
-        if (this.javetCallbackContext == null) {
-            this.javetCallbackContext = javetCallbackContext;
-        } else if (this.javetCallbackContext != javetCallbackContext) {
-            throw new JavetV8CallbackAlreadyRegisteredException();
-        }
     }
 
     @Override
@@ -72,22 +52,6 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     public <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException {
         checkV8Runtime();
         return v8Runtime.callAsConstructor(this, v8Values);
-    }
-
-    @Override
-    public void close(boolean forceClose) throws JavetException {
-        if (forceClose || !isWeak()) {
-            if (javetCallbackContext != null) {
-                v8Runtime.removeJNIGlobalRef(javetCallbackContext.getHandle());
-                javetCallbackContext = null;
-            } else {
-                /*
-                 * Function from V8 loses the callback context.
-                 * So there is no need to recycle anything.
-                 */
-            }
-            super.close(forceClose);
-        }
     }
 
     @Override

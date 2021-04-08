@@ -27,7 +27,6 @@ namespace Javet {
 			GlobalJavaVM = javaVM;
 
 			jclassJavetCallbackContext = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/JavetCallbackContext"));
-			jmethodIDJavetCallbackContextGetHandle = jniEnv->GetMethodID(jclassJavetCallbackContext, "getHandle", "()J");
 			jmethodIDJavetCallbackContextIsReturnResult = jniEnv->GetMethodID(jclassJavetCallbackContext, "isReturnResult", "()Z");
 			jmethodIDJavetCallbackContextIsThisObjectRequired = jniEnv->GetMethodID(jclassJavetCallbackContext, "isThisObjectRequired", "()Z");
 			jmethodIDJavetCallbackContextSetHandle = jniEnv->GetMethodID(jclassJavetCallbackContext, "setHandle", "(J)V");
@@ -50,6 +49,7 @@ namespace Javet {
 
 			jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
 			jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;)Lcom/caoccao/javet/values/reference/IV8Module;");
+			jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
 		}
 
 		V8MaybeLocalModule ModuleResolveCallback(
@@ -78,11 +78,9 @@ namespace Javet {
 
 		JavetCallbackContextReference::JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext) {
 			this->jniEnv = jniEnv;
-			this->callbackContext = callbackContext;
-		}
-
-		jlong JavetCallbackContextReference::GetHandle() {
-			return jniEnv->CallLongMethod(callbackContext, jmethodIDJavetCallbackContextGetHandle);
+			this->callbackContext = jniEnv->NewGlobalRef(callbackContext);
+			v8PersistentCallbackContextHandlePointer = nullptr;
+			SetHandle();
 		}
 
 		void JavetCallbackContextReference::Invoke(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -149,15 +147,35 @@ namespace Javet {
 			jniEnv->CallVoidMethod(callbackContext, jmethodIDJavetCallbackContextSetHandle, TO_JAVA_LONG(callbackContext));
 		}
 
-		void V8ValueReference::Clear(JNIEnv* jniEnv) {
+		void JavetCallbackContextReference::RemoveCallbackContext(const jobject& externalV8Runtime) {
+			jniEnv->CallVoidMethod(externalV8Runtime, jmethodIDV8RuntimeRemoveCallbackContext, TO_JAVA_LONG(callbackContext));
+			jniEnv->DeleteGlobalRef(callbackContext);
+		}
+
+		JavetCallbackContextReference::~JavetCallbackContextReference() {
+			if (v8PersistentCallbackContextHandlePointer != nullptr) {
+				v8PersistentCallbackContextHandlePointer->Reset();
+				delete v8PersistentCallbackContextHandlePointer;
+				v8PersistentCallbackContextHandlePointer = nullptr;
+			}
+		}
+
+		V8ValueReference::V8ValueReference(JNIEnv* jniEnv, jobject objectReference) {
+			this->jniEnv = jniEnv;
+			this->objectReference = jniEnv->NewGlobalRef(objectReference);
+			v8PersistentDataPointer = nullptr;
+		}
+
+		void V8ValueReference::Clear() {
 			if (v8PersistentDataPointer != nullptr) {
 				jniEnv->DeleteGlobalRef(objectReference);
 			}
 		}
 
-		void V8ValueReference::Close(JNIEnv* jniEnv) {
+		void V8ValueReference::Close() {
 			if (v8PersistentDataPointer != nullptr) {
 				v8PersistentDataPointer->Reset();
+				// v8PersistentDataPointer is borrowed. So it cannot be deleted.
 				v8PersistentDataPointer = nullptr;
 				jniEnv->CallVoidMethod(TO_JAVA_OBJECT(objectReference), jmethodIDIV8ValueReferenceClose, true);
 				jniEnv->DeleteGlobalRef(objectReference);

@@ -137,6 +137,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8ValueArray.getLength());
             assertEquals("x", v8ValueArray.toString());
         }
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -146,7 +147,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
-        assertTrue(javetCallbackContext.getHandle() > 0L);
         try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
             globalObject.set("a", a);
             a.set("blank", v8ValueFunction);
@@ -170,7 +170,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 mockCallbackReceiver, mockCallbackReceiver.getMethod("echoThis", true), true);
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
-        assertTrue(javetCallbackContext.getHandle() > 0L);
         try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
             globalObject.set("a", a);
             a.set("x", new V8ValueString("1"));
@@ -209,6 +208,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("echo");
         }
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -237,6 +237,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("echoThis");
         }
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -252,7 +253,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertFalse(mockCallbackReceiver.isCalled());
             assertEquals("abc", v8Runtime.getExecutor("const a = echoString('abc'); a;").executeString());
         }
+        globalObject.delete("echoString");
         assertTrue(mockCallbackReceiver.isCalled());
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -274,8 +277,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     "const x = a.echoThisString('123'); x;").execute()) {
                 assertEquals("[{\"x\":\"1\"},\"123\"]", v8ValueString.getValue());
             }
+            globalObject.delete("a");
         }
         assertTrue(mockCallbackReceiver.isCalled());
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -296,6 +301,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
         assertTrue(mockCallbackReceiver.isCalled());
         assertTrue(globalObject.get("a").isUndefined());
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -316,8 +322,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             try (V8ValueString v8ValueString = v8Runtime.getExecutor("const x = a.echoThis('123'); x;").execute()) {
                 assertEquals("[{\"x\":\"1\"},\"123\"]", v8ValueString.getValue());
             }
+            globalObject.delete("a");
         }
         assertTrue(mockCallbackReceiver.isCalled());
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -327,7 +335,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 mockCallbackReceiver, mockCallbackReceiver.getMethod("error"));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         globalObject.setFunction("testError", javetCallbackContext);
-        assertEquals(1, v8Runtime.getReferenceCount());
+        assertEquals(0, v8Runtime.getReferenceCount());
         assertFalse(mockCallbackReceiver.isCalled());
         try {
             v8Runtime.getExecutor("testError();").executeVoid();
@@ -368,8 +376,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             String resultString = v8Runtime.getExecutor(
                     "const a = x.joinWithThis(true, 1.23, 2, 3n, '4', new Date(1611710223719), '6'); a;").executeString();
             assertEquals("{\"p\":\"q\"},true,1.23,2,3,4,2021-01-27T01:17:03.719Z[UTC],6", resultString);
+            globalObject.delete("x");
         }
         assertTrue(mockCallbackReceiver.isCalled());
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -393,8 +403,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             String resultString = v8Runtime.getExecutor(
                     "const a = x.joinIntegerArrayWithThis('x', 1, 2, 3); a;").executeString();
             assertEquals("{\"p\":\"q\"},x,1,2,3", resultString);
+            globalObject.delete("x");
         }
         assertTrue(mockCallbackReceiver.isCalled());
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
     @Test
@@ -413,8 +425,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             String resultString = v8Runtime.getExecutor(
                     "const a = joinWithoutThis(true, 1.23, 2, 3n, '4', new Date(1611710223719), '6'); a;").executeString();
             assertEquals("true,1.23,2,3,4,2021-01-27T01:17:03.719Z[UTC],6", resultString);
+            globalObject.delete("joinWithoutThis");
         }
         assertTrue(mockCallbackReceiver.isCalled());
+        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
 }
