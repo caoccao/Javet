@@ -40,6 +40,7 @@ public final class JavetEngineConfig {
     private IJavetLogger javetLogger;
     private String globalName;
     private boolean allowEval;
+    private boolean autoSendGCNotification;
     private int defaultEngineGuardTimeoutMillis;
     private int engineGuardCheckIntervalMillis;
     private JSRuntimeType jsRuntimeType;
@@ -60,6 +61,7 @@ public final class JavetEngineConfig {
         javetLogger = DEFAULT_JAVET_LOGGER;
         globalName = DEFAULT_GLOBAL_NAME;
         allowEval = false;
+        autoSendGCNotification = false;
         defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;
         engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
         jsRuntimeType = DEFAULT_JS_RUNTIME_TYPE;
@@ -79,6 +81,14 @@ public final class JavetEngineConfig {
 
     public void setAllowEval(boolean allowEval) {
         this.allowEval = allowEval;
+    }
+
+    public boolean isAutoSendGCNotification() {
+        return autoSendGCNotification;
+    }
+
+    public void setAutoSendGCNotification(boolean autoSendGCNotification) {
+        this.autoSendGCNotification = autoSendGCNotification;
     }
 
     public ExecutorService getExecutorService() {
