@@ -26,16 +26,13 @@ namespace Javet {
 		static JavaVM* GlobalJavaVM;
 
 		static jclass jclassJavetCallbackContext;
-		static jmethodID jmethodIDJavetCallbackContextGetCallbackOwnerFunction;
+		static jmethodID jmethodIDJavetCallbackContextGetHandle;
 		static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
 		static jmethodID jmethodIDJavetCallbackContextIsThisObjectRequired;
 		static jmethodID jmethodIDJavetCallbackContextSetHandle;
 
 		static jclass jclassIV8Module;
 		static jmethodID jmethodIDIV8ModuleGetHandle;
-
-		static jclass jclassIV8ValueFunction;
-		static jmethodID jmethodIDIV8ValueFunctionReceiveCallback;
 
 		static jclass jclassIV8ValueReference;
 		static jmethodID jmethodIDIV8ValueReferenceClose;
@@ -45,6 +42,9 @@ namespace Javet {
 
 		static jclass jclassThrowable;
 		static jmethodID jmethodIDThrowableGetMessage;
+
+		static jclass jclassV8FunctionCallback;
+		static jmethodID jmethodIDV8FunctionCallbackReceiveCallback;
 
 		static jclass jclassV8Runtime;
 		static jmethodID jmethodIDV8RuntimeGetV8Module;
@@ -64,7 +64,7 @@ namespace Javet {
 			jobject callbackContext;
 			JNIEnv* jniEnv;
 			JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext);
-			jobject GetCallbackOwnerFunction();
+			jlong GetHandle();
 			void Invoke(const v8::FunctionCallbackInfo<v8::Value>& args);
 			jboolean IsReturnResult();
 			jboolean IsThisObjectRequired();
