@@ -126,11 +126,8 @@ What happens internally is as following.
 Aggressive GC
 -------------
 
-Just get ``V8Runtime`` from Javet engine pool that aggressively sends GC notification to idle engine in daemon thread. There is no performance overhead because:
+Just get ``V8Runtime`` from Javet engine pool that aggressively sends GC notification when an engine is being released back to engine pool.
 
-* The engine performs GC when it is idle in a dedicated thread.
-* Javet engine pool is lock free so that the GC doesn't affect other worker threads.
-
-Of course, this behavior can be turned off by calling ``JavetEngineConfig.setAutoSendGCNotification(false)``.
+This behavior can be turned off by calling ``JavetEngineConfig.setAutoSendGCNotification(false)``.
 
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]

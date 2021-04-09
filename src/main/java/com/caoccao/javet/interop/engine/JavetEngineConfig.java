@@ -61,7 +61,7 @@ public final class JavetEngineConfig {
         javetLogger = DEFAULT_JAVET_LOGGER;
         globalName = DEFAULT_GLOBAL_NAME;
         allowEval = false;
-        autoSendGCNotification = false;
+        autoSendGCNotification = true;
         defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;
         engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
         jsRuntimeType = DEFAULT_JS_RUNTIME_TYPE;
