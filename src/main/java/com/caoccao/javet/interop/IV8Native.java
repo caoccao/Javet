@@ -32,6 +32,8 @@ public interface IV8Native {
     Object callAsConstructor(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
 
+    void clearInternalStatistic();
+
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object cloneV8Value(
@@ -64,6 +66,8 @@ public interface IV8Native {
     Object getGlobalObject(long v8RuntimeHandle);
 
     int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    long[] getInternalStatistic();
 
     int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

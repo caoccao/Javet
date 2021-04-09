@@ -47,8 +47,7 @@ namespace Javet {
 			return std::make_unique<std::string>(*v8Utf8Value);
 		}
 
-		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM) {
-			GlobalJavaVM = javaVM;
+		void Initialize(JNIEnv* jniEnv) {
 
 			jclassV8Inspector = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Inspector"));
 			jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");

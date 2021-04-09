@@ -23,6 +23,8 @@
 #include "javet_logging.h"
 #include "javet_native.h"
 
+JavaVM* GlobalJavaVM;
+
 jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
 	LOG_INFO("JNI_Onload() begins.");
 	JNIEnv* jniEnv;
@@ -34,14 +36,15 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
 		LOG_ERROR("Failed to get JNIEnv.");
 		return ERROR_JNI_ON_LOAD;
 	}
-	Javet::V8Native::Initialize(jniEnv, javaVM);
+	GlobalJavaVM = javaVM;
+	Javet::V8Native::Initialize(jniEnv);
 #ifdef ENABLE_NODE
-	Javet::NodeNative::Initialize(jniEnv, javaVM);
+	Javet::NodeNative::Initialize(jniEnv);
 #endif
-	Javet::Callback::Initialize(jniEnv, javaVM);
+	Javet::Callback::Initialize(jniEnv);
 	Javet::Converter::Initialize(jniEnv);
 	Javet::Exceptions::Initialize(jniEnv);
-	Javet::Inspector::Initialize(jniEnv, javaVM);
+	Javet::Inspector::Initialize(jniEnv);
 	LOG_INFO("JNI_Onload() ends.");
 	return JNI_VERSION_1_8;
 }

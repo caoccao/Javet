@@ -18,10 +18,11 @@
 package com.caoccao.javet;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,10 +37,23 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
                 "Reference count should be 0 after test case is ended.");
         v8Runtime.close();
         assertEquals(0, v8Host.getV8RuntimeCount());
+        // Memory leak detection
+        long[] monitorDataArray = v8Host.getInternalStatistic();
+        if (monitorDataArray != null) {
+            assertArrayEquals(
+                    Arrays.copyOfRange(monitorDataArray, 1, 6),
+                    Arrays.copyOfRange(monitorDataArray, 6, 11));
+        }
+        v8Host.clearInternalStatistic();
     }
 
     @BeforeEach
     public void beforeEach() throws JavetException {
+        // Memory leak detection
+        long[] monitorDataArray = v8Host.getInternalStatistic();
+        if (monitorDataArray != null) {
+            assertEquals(0, Arrays.stream(monitorDataArray).sum());
+        }
         v8Runtime = v8Host.createV8Runtime();
         assertFalse(v8Runtime.isPooled());
         assertEquals(0, v8Runtime.getCallbackContextCount(),
@@ -53,7 +67,7 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
      * It's designed to address potential race condition issue.
      */
     protected void resetContext() {
-        Thread thread = new Thread(()-> {
+        Thread thread = new Thread(() -> {
             try {
                 v8Runtime.resetContext();
             } catch (JavetException e) {

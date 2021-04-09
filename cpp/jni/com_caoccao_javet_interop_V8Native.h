@@ -49,6 +49,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callAsConstruc
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    clearInternalStatistic
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearInternalStatistic
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    clearWeak
  * Signature: (JJI)V
  */
@@ -150,6 +158,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getGlobalObjec
  */
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getIdentityHash
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getInternalStatistic
+ * Signature: ()[J
+ */
+JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternalStatistic
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

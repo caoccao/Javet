@@ -23,8 +23,7 @@
 
 namespace Javet {
 	namespace Callback {
-		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM) {
-			GlobalJavaVM = javaVM;
+		void Initialize(JNIEnv* jniEnv) {
 
 			jclassJavetCallbackContext = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/JavetCallbackContext"));
 			jmethodIDJavetCallbackContextIsReturnResult = jniEnv->GetMethodID(jclassJavetCallbackContext, "isReturnResult", "()Z");
@@ -156,6 +155,7 @@ namespace Javet {
 			if (v8PersistentCallbackContextHandlePointer != nullptr) {
 				v8PersistentCallbackContextHandlePointer->Reset();
 				delete v8PersistentCallbackContextHandlePointer;
+				INCREASE_MONITOR(Javet::Monitor::TypeID::DeletePersistentCallbackContextReference);
 				v8PersistentCallbackContextHandlePointer = nullptr;
 			}
 		}

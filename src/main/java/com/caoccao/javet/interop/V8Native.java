@@ -50,6 +50,9 @@ class V8Native implements IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
 
     @Override
+    public native void clearInternalStatistic();
+
+    @Override
     public native void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
@@ -94,6 +97,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native long[] getInternalStatistic();
 
     @Override
     public native int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

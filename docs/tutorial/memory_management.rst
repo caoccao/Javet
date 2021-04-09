@@ -24,6 +24,8 @@ V8 generally categorizes objects in memory to 3 types.
 2. ``v8::Persistent`` - Its lifecycle is managed by V8 GC.
 3. ``v8::External`` - V8 GC treats it as root object so that it lives as long as the V8 isolate lives.
 
+The awful thing in V8 GC is V8 does not make final callback when a context is being closed. From V8 perspective, that's a performance improvement. But from Javet perspective, Javet cannot completely rely on V8 to do the resource management. So, Javet keeps track of all unmanaged resource and makes sure there is no memory leak in all cases.
+
 Solution 1: Weak Reference
 ==========================
 

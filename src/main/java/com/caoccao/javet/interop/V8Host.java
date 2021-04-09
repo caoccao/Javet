@@ -135,6 +135,10 @@ public final class V8Host implements AutoCloseable {
         }
     }
 
+    public void clearInternalStatistic() {
+        v8Native.clearInternalStatistic();
+    }
+
     @Override
     public void close() throws JavetException {
         final int v8RuntimeCount = getV8RuntimeCount();
@@ -158,6 +162,10 @@ public final class V8Host implements AutoCloseable {
 
     public V8Flags getFlags() {
         return flags;
+    }
+
+    public long[] getInternalStatistic() {
+       return v8Native.getInternalStatistic();
     }
 
     public String getJavetVersion() {

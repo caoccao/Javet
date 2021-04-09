@@ -23,7 +23,6 @@
 
 namespace Javet {
 	namespace Callback {
-		static JavaVM* GlobalJavaVM;
 
 		static jclass jclassJavetCallbackContext;
 		static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
@@ -49,7 +48,7 @@ namespace Javet {
 		static jmethodID jmethodIDV8RuntimeGetV8Module;
 		static jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
 
-		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
+		void Initialize(JNIEnv* jniEnv);
 
 		V8MaybeLocalModule ModuleResolveCallback(
 			V8LocalContext v8Context,

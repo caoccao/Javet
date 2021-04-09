@@ -18,6 +18,7 @@
 package com.caoccao.javet;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
 import org.junit.jupiter.api.AfterEach;
@@ -36,6 +37,8 @@ public abstract class BaseTestJavetPool extends BaseTestJavet {
     @AfterEach
     public void afterEach() throws JavetException {
         javetEnginePool.close();
+        V8Host.getNodeInstance().clearInternalStatistic();
+        V8Host.getV8Instance().clearInternalStatistic();
     }
 
 }
