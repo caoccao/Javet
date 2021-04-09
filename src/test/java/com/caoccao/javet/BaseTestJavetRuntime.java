@@ -38,11 +38,11 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
         v8Runtime.close();
         assertEquals(0, v8Host.getV8RuntimeCount());
         // Memory leak detection
-        long[] monitorDataArray = v8Host.getInternalStatistic();
-        if (monitorDataArray != null) {
+        long[] counters = v8Host.getInternalStatistic();
+        if (counters != null) {
             assertArrayEquals(
-                    Arrays.copyOfRange(monitorDataArray, 1, 6),
-                    Arrays.copyOfRange(monitorDataArray, 6, 11));
+                    Arrays.copyOfRange(counters, 1, 6),
+                    Arrays.copyOfRange(counters, 6, 11));
         }
         v8Host.clearInternalStatistic();
     }
@@ -50,9 +50,10 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
     @BeforeEach
     public void beforeEach() throws JavetException {
         // Memory leak detection
-        long[] monitorDataArray = v8Host.getInternalStatistic();
-        if (monitorDataArray != null) {
-            assertEquals(0, Arrays.stream(monitorDataArray).sum());
+        v8Host.clearInternalStatistic();
+        long[] counters = v8Host.getInternalStatistic();
+        if (counters != null) {
+            assertEquals(0, Arrays.stream(counters).sum());
         }
         v8Runtime = v8Host.createV8Runtime();
         assertFalse(v8Runtime.isPooled());

@@ -28,9 +28,9 @@ namespace Javet {
 			Clear();
 		}
 
-		jlongArray JavetNativeMonitor::GetDataArray(JNIEnv* jniEnv) {
-			jlongArray returnDataArray = jniEnv->NewLongArray(TypeID::MaxID);
-			jniEnv->SetLongArrayRegion(returnDataArray, 0, TypeID::MaxID, dataArray);
+		jlongArray JavetNativeMonitor::GetCounters(JNIEnv* jniEnv) {
+			jlongArray returnDataArray = jniEnv->NewLongArray(CounterType::Max);
+			jniEnv->SetLongArrayRegion(returnDataArray, 0, CounterType::Max, counters);
 			return returnDataArray;
 		}
 	}

@@ -155,7 +155,7 @@ namespace Javet {
 			if (v8PersistentCallbackContextHandlePointer != nullptr) {
 				v8PersistentCallbackContextHandlePointer->Reset();
 				delete v8PersistentCallbackContextHandlePointer;
-				INCREASE_MONITOR(Javet::Monitor::TypeID::DeletePersistentCallbackContextReference);
+				INCREASE_COUNTER(Javet::Monitor::CounterType::DeletePersistentCallbackContextReference);
 				v8PersistentCallbackContextHandlePointer = nullptr;
 			}
 		}

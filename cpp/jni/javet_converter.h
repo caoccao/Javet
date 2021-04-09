@@ -241,20 +241,20 @@ namespace Javet {
 
 		static inline jlong ToV8PersistentDataReference(const V8LocalContext& v8Context, const V8LocalData v8Data) {
 			V8PersistentData* v8PersistentDataPointer = new V8PersistentData(v8Context->GetIsolate(), v8Data);
-			INCREASE_MONITOR(Javet::Monitor::TypeID::NewPersistentReference);
+			INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
 			return TO_JAVA_LONG(v8PersistentDataPointer);
 		}
 
 		static inline jlong ToV8PersistentObjectReference(const V8LocalContext& v8Context, const V8LocalValue v8Value) {
 			V8PersistentObject* v8PersistentObjectPointer = new V8PersistentObject(
 				v8Context->GetIsolate(), v8Value->ToObject(v8Context).ToLocalChecked());
-			INCREASE_MONITOR(Javet::Monitor::TypeID::NewPersistentReference);
+			INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
 			return TO_JAVA_LONG(v8PersistentObjectPointer);
 		}
 
 		static inline jlong ToV8PersistentScriptReference(const V8LocalContext& v8Context, const V8LocalScript v8Script) {
 			V8PersistentScript* v8PersistentScriptPointer = new V8PersistentScript(v8Context->GetIsolate(), v8Script);
-			INCREASE_MONITOR(Javet::Monitor::TypeID::NewPersistentReference);
+			INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
 			return TO_JAVA_LONG(v8PersistentScriptPointer);
 		}
 

@@ -20,15 +20,15 @@
 #include <jni.h>
 
 #ifdef ENABLE_MONITOR
-#define INCREASE_MONITOR(typeID) GlobalJavetNativeMonitor.IncreaseMonitor(typeID)
+#define INCREASE_COUNTER(counterType) GlobalJavetNativeMonitor.IncreaseCounter(counterType)
 #else
-#define INCREASE_MONITOR(typeID)
+#define INCREASE_COUNTER(counterType)
 #endif
 
 #ifdef ENABLE_MONITOR
 namespace Javet {
 	namespace Monitor {
-		enum TypeID {
+		enum CounterType {
 			Reserved = 0,
 			NewWeakCallbackReference = 1,
 			NewJavetCallbackContextReference = 2,
@@ -40,7 +40,7 @@ namespace Javet {
 			DeletePersistentReference = 8,
 			DeletePersistentCallbackContextReference = 9,
 			DeleteV8Runtime = 10,
-			MaxID = 11,
+			Max = 11,
 		};
 
 		class JavetNativeMonitor {
@@ -49,18 +49,18 @@ namespace Javet {
 			JavetNativeMonitor();
 
 			inline void Clear() {
-				for (int i = 0; i < TypeID::MaxID; ++i) {
-					dataArray[i] = 0;
+				for (int i = 0; i < CounterType::Max; ++i) {
+					counters[i] = 0;
 				}
 			}
 
-			jlongArray GetDataArray(JNIEnv* jniEnv);
+			jlongArray GetCounters(JNIEnv* jniEnv);
 
-			inline void IncreaseMonitor(int typeID) {
-				dataArray[typeID]++;
+			inline void IncreaseCounter(int counterType) {
+				counters[counterType]++;
 			}
 		private:
-			jlong dataArray[TypeID::MaxID];
+			jlong counters[CounterType::Max];
 		};
 
 	}

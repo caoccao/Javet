@@ -2,8 +2,8 @@
 Memory Management
 =================
 
-3 Challenges
-============
+3 Challenges in Memory Management
+=================================
 
 JVM GC
 ------
@@ -26,13 +26,13 @@ V8 generally categorizes objects in memory to 3 types.
 
 The awful thing in V8 GC is V8 does not make final callback when a context is being closed. From V8 perspective, that's a performance improvement. But from Javet perspective, Javet cannot completely rely on V8 to do the resource management. So, Javet keeps track of all unmanaged resource and makes sure there is no memory leak in all cases.
 
-Solution 1: Weak Reference
-==========================
+Recommended Options
+===================
 
-Javet directly borrows the way V8 manages objects in JVM. The rule is simple in the following 2 patterns.
+Javet directly borrows the way V8 manages objects in JVM. The rule is simple in the following 2 Options.
 
-Manually Manage V8 Objects
---------------------------
+Automatic Management with ``try-with-resource``
+-----------------------------------------------
 
 .. code-block:: java
 
@@ -43,8 +43,8 @@ Manually Manage V8 Objects
     }
     // Outside the code block, this object is no longer valid.
 
-Automatically Manage V8 Objects
--------------------------------
+Automatically Manage with Weak Reference
+----------------------------------------
 
 .. code-block:: java
 
@@ -61,8 +61,8 @@ Automatically Manage V8 Objects
 
 Note: V8 does not recycle objects that are referenced by other objects. Please make sure the object chain is broken so that GC can work as expected. ``com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor`` is a good sample showing how to deal with that.
 
-Solution 2: ArrayBuffer
-=======================
+Alternative Option: ArrayBuffer
+===============================
 
 The ArrayBuffer object is used to represent a generic, fixed-length raw binary data buffer.
 
@@ -111,7 +111,7 @@ So, how to notify V8 GC that Java heap memory pool is running out of space? Jave
 1. (Optional) Call ``V8Host.setMemoryUsageThresholdRatio(double)`` to set memory usage threshold ratio. This is optional because the default value is 0.7.
 2. Call ``V8Host.getNodeInstance().enableGCNotification()`` or ``V8Host.getV8Instance().enableGCNotification()`` to enable the notification.
 
-Here is a sample heap memory usage with default memory usage threshold ration and ``-Xms=64m -Xmx=64m``. Please note that in this sample, application is under high pressure of creating and destroying V8 objects. In normal cases, the curve is much smoother.
+Here is a sample heap memory usage with default memory usage threshold ration and ``-Xms64m -Xmx64m``. Please note that in this sample, application is under high pressure of creating and destroying V8 objects. In normal cases, the curve is much smoother.
 
 .. image:: ../resources/images/javet_memory_management_passive_gc.png?raw=true
     :alt: Javet Memory Management Passive GC
