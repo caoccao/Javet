@@ -48,6 +48,7 @@ if(DEFINED NODE_DIR)
         ${NODE_DIR}/deps/v8/include)
     list(APPEND importLibraries
         brotli cares histogram llhttp nghttp2 openssl torque_base uvwasi
+        icudata icui18n icutools icuucx
         v8_base_without_compiler v8_compiler v8_init v8_initializers
         v8_libbase v8_libplatform v8_libsampler v8_snapshot v8_zlib zlib)
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
