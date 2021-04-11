@@ -128,6 +128,8 @@ Aggressive GC
 
 Just get ``V8Runtime`` from Javet engine pool that aggressively sends GC notification when an engine is being released back to engine pool.
 
-This behavior can be turned off by calling ``JavetEngineConfig.setAutoSendGCNotification(false)``.
+Behind the scene, the engine and notifies V8 to perform GC in ``JavetEngineConfig.getSendGCNotificationInMillis()``. Application may change the deadline by calling ``JavetEngineConfig.setSendGCNotificationInMillis(...)``.
+
+This behavior can be turned off by calling ``JavetEngineConfig.setSendGCNotificationInMillis(0)``.
 
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]

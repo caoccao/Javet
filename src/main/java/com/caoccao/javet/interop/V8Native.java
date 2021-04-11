@@ -126,6 +126,9 @@ class V8Native implements IV8Native {
     public native boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
     @Override
+    public native void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
+
+    @Override
     public native Object invoke(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             String functionName, boolean returnResult, Object[] values);

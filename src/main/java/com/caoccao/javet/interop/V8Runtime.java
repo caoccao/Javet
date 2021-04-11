@@ -464,6 +464,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         this.gcScheduled = gcScheduled;
     }
 
+    /**
+     * Idle notification deadline.
+     *
+     * Note: This API is the recommended one that notifies V8 to perform GC.
+     *
+     * @param deadlineInMillis the deadline in millis
+     */
+    public void idleNotificationDeadline(long deadlineInMillis) {
+        if (handle != INVALID_HANDLE && deadlineInMillis > 0) {
+            v8Native.idleNotificationDeadline(handle, deadlineInMillis);
+        }
+    }
+
     public boolean isInUse() {
         return v8Native.isInUse(handle);
     }
@@ -476,8 +489,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return v8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
     }
 
+    /**
+     * Send low memory notification to current V8 isolate.
+     * <p>
+     * Note: This API has serious issue in multi-threaded environment.
+     * Misuse of this API among multiple threads may result in core dump.
+     */
     public void lowMemoryNotification() {
-        v8Native.lowMemoryNotification(handle);
+        if (handle != INVALID_HANDLE) {
+            v8Native.lowMemoryNotification(handle);
+        }
     }
 
     public <T extends V8Value> T moduleEvaluate(
@@ -579,7 +600,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             referenceMap.remove(referenceHandle);
         }
         if (gcScheduled) {
-            lowMemoryNotification();
+            // await() can also trigger GC.
+            await();
             gcScheduled = false;
         }
     }

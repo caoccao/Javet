@@ -128,8 +128,8 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     public void releaseEngine(IJavetEngine engine) {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.releaseEngine() begins.");
-        if (engine != null && config.isAutoSendGCNotification()) {
-            engine.sendGCNotification();
+        if (engine != null) {
+            engine.sendGCNotification(config.getSendGCNotificationInMillis());
         }
         synchronized (externalLock) {
             externalLock.notify();

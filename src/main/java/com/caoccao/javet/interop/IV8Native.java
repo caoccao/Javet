@@ -85,6 +85,8 @@ public interface IV8Native {
 
     boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
+    void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
+
     Object invoke(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             String functionName, boolean returnResult, Object[] values);
