@@ -19,6 +19,7 @@ import argparse
 import coloredlogs
 import logging
 import pathlib
+import platform
 import sys
 
 coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
@@ -77,7 +78,7 @@ class PatchNodeBuild(object):
 
   def _parse_args(self):
     parser = argparse.ArgumentParser(
-      description='arguments for patching libnod',
+      description='arguments for patching Node.js',
     )
     parser.add_argument('-p', '--path',
       type=str,
@@ -98,10 +99,10 @@ class PatchNodeBuild(object):
         lines.append(line)
       new_buffer = self._line_separator.join(lines).encode('utf-8')
       if original_buffer == new_buffer:
-        logging.warning("Skipped %s.", str(file_path))
+        logging.warning('Skipped %s.', str(file_path))
       else:
         file_path.write_bytes(new_buffer)
-        logging.info("Patched %s.", str(file_path))
+        logging.info('Patched %s.', str(file_path))
     else:
       logging.error('Failed to locate %s.', str(file_path))
 
@@ -128,10 +129,10 @@ class PatchNodeBuild(object):
           lines.append(line)
         new_buffer = self._line_separator.join(lines).encode('utf-8')
         if original_buffer == new_buffer:
-          logging.warning("Skipped %s.", str(file_path))
+          logging.warning('Skipped %s.', str(file_path))
         else:
           file_path.write_bytes(new_buffer)
-          logging.info("Patched %s.", str(file_path))
+          logging.info('Patched %s.', str(file_path))
 
   def patch(self):
     self._patch_common()
@@ -139,7 +140,11 @@ class PatchNodeBuild(object):
     return 0
 
 def main():
-  return PatchNodeBuild().patch()
+  if platform.system().startswith('Linux'):
+    return PatchNodeBuild().patch()
+  else:
+    logging.error('This script is for Linux only.')
+    return 1
 
 if __name__ == '__main__':
   sys.exit(int(main() or 0))
