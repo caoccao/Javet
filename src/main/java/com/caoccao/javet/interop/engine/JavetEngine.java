@@ -54,8 +54,8 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     }
 
     @Override
-    public void sendGCNotification(long deadlineInMillis) {
-        v8Runtime.idleNotificationDeadline(deadlineInMillis);
+    public void sendGCNotification() {
+        v8Runtime.lowMemoryNotification();
     }
 
     @Override

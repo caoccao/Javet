@@ -76,13 +76,13 @@ namespace Javet {
 		}
 
 		JavetCallbackContextReference::JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext) {
-			this->jniEnv = jniEnv;
 			this->callbackContext = jniEnv->NewGlobalRef(callbackContext);
 			v8PersistentCallbackContextHandlePointer = nullptr;
 			SetHandle();
 		}
 
 		void JavetCallbackContextReference::Invoke(const v8::FunctionCallbackInfo<v8::Value>& args) {
+			FETCH_JNI_ENV(GlobalJavaVM);
 			v8::Isolate* v8Isolate = args.GetIsolate();
 			V8IsolateScope v8IsolateScope(v8Isolate);
 			V8HandleScope v8HandleScope(v8Isolate);
@@ -135,18 +135,22 @@ namespace Javet {
 		}
 
 		jboolean JavetCallbackContextReference::IsReturnResult() {
+			FETCH_JNI_ENV(GlobalJavaVM);
 			return jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsReturnResult);
 		}
 
 		jboolean JavetCallbackContextReference::IsThisObjectRequired() {
+			FETCH_JNI_ENV(GlobalJavaVM);
 			return jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
 		}
 
 		void JavetCallbackContextReference::SetHandle() {
+			FETCH_JNI_ENV(GlobalJavaVM);
 			jniEnv->CallVoidMethod(callbackContext, jmethodIDJavetCallbackContextSetHandle, TO_JAVA_LONG(callbackContext));
 		}
 
 		void JavetCallbackContextReference::RemoveCallbackContext(const jobject& externalV8Runtime) {
+			FETCH_JNI_ENV(GlobalJavaVM);
 			jniEnv->CallVoidMethod(externalV8Runtime, jmethodIDV8RuntimeRemoveCallbackContext, TO_JAVA_LONG(callbackContext));
 			jniEnv->DeleteGlobalRef(callbackContext);
 		}
@@ -161,13 +165,13 @@ namespace Javet {
 		}
 
 		V8ValueReference::V8ValueReference(JNIEnv* jniEnv, jobject objectReference) {
-			this->jniEnv = jniEnv;
 			this->objectReference = jniEnv->NewGlobalRef(objectReference);
 			v8PersistentDataPointer = nullptr;
 		}
 
 		void V8ValueReference::Clear() {
 			if (v8PersistentDataPointer != nullptr) {
+				FETCH_JNI_ENV(GlobalJavaVM);
 				jniEnv->DeleteGlobalRef(objectReference);
 			}
 		}
@@ -177,6 +181,7 @@ namespace Javet {
 				v8PersistentDataPointer->Reset();
 				// v8PersistentDataPointer is borrowed. So it cannot be deleted.
 				v8PersistentDataPointer = nullptr;
+				FETCH_JNI_ENV(GlobalJavaVM);
 				jniEnv->CallVoidMethod(TO_JAVA_OBJECT(objectReference), jmethodIDIV8ValueReferenceClose, true);
 				jniEnv->DeleteGlobalRef(objectReference);
 			}

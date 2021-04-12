@@ -34,13 +34,13 @@ public final class JavetEngineConfig {
     public static final int DEFAULT_POOL_IDLE_TIMEOUT_SECONDS = 60;
     public static final int DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1000;
     public static final int DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS = 3600;
-    public static final long DEFAULT_SEND_GC_NOTIFICATION_IN_MILLIS = 1000;
     public static final String DEFAULT_GLOBAL_NAME = "window";
     public static final int DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS = 5;
     public static IJavetLogger DEFAULT_JAVET_LOGGER = new JavetDefaultLogger(JavetEnginePool.class.getName());
     private IJavetLogger javetLogger;
     private String globalName;
     private boolean allowEval;
+    private boolean autoSendGCNotification;
     private int defaultEngineGuardTimeoutMillis;
     private int engineGuardCheckIntervalMillis;
     private JSRuntimeType jsRuntimeType;
@@ -51,7 +51,6 @@ public final class JavetEngineConfig {
     private int poolIdleTimeoutSeconds;
     private int poolShutdownTimeoutSeconds;
     private int resetEngineTimeoutSeconds;
-    private long sendGCNotificationInMillis;
     private ExecutorService executorService;
 
     public JavetEngineConfig() {
@@ -62,6 +61,7 @@ public final class JavetEngineConfig {
         javetLogger = DEFAULT_JAVET_LOGGER;
         globalName = DEFAULT_GLOBAL_NAME;
         allowEval = false;
+        autoSendGCNotification = true;
         defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;
         engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
         jsRuntimeType = DEFAULT_JS_RUNTIME_TYPE;
@@ -73,7 +73,6 @@ public final class JavetEngineConfig {
         poolShutdownTimeoutSeconds = DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS;
         poolDaemonCheckIntervalMillis = DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS;
         resetEngineTimeoutSeconds = DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS;
-        sendGCNotificationInMillis = DEFAULT_SEND_GC_NOTIFICATION_IN_MILLIS;
     }
 
     public boolean isAllowEval() {
@@ -84,12 +83,12 @@ public final class JavetEngineConfig {
         this.allowEval = allowEval;
     }
 
-    public long getSendGCNotificationInMillis() {
-        return sendGCNotificationInMillis;
+    public boolean isAutoSendGCNotification() {
+        return autoSendGCNotification;
     }
 
-    public void setSendGCNotificationInMillis(long sendGCNotificationInMillis) {
-        this.sendGCNotificationInMillis = sendGCNotificationInMillis;
+    public void setAutoSendGCNotification(boolean autoSendGCNotification) {
+        this.autoSendGCNotification = autoSendGCNotification;
     }
 
     public ExecutorService getExecutorService() {

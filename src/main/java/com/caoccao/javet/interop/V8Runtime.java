@@ -491,9 +491,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     /**
      * Send low memory notification to current V8 isolate.
-     * <p>
-     * Note: This API has serious issue in multi-threaded environment.
-     * Misuse of this API among multiple threads may result in core dump.
      */
     public void lowMemoryNotification() {
         if (handle != INVALID_HANDLE) {
@@ -600,8 +597,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             referenceMap.remove(referenceHandle);
         }
         if (gcScheduled) {
-            // await() can also trigger GC.
-            await();
+            lowMemoryNotification();
             gcScheduled = false;
         }
     }

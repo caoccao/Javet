@@ -61,7 +61,6 @@ namespace Javet {
 		class JavetCallbackContextReference {
 		public:
 			jobject callbackContext;
-			JNIEnv* jniEnv;
 			V8PersistentBigInt* v8PersistentCallbackContextHandlePointer;
 			JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext);
 			void Invoke(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -74,7 +73,6 @@ namespace Javet {
 
 		class V8ValueReference {
 		public:
-			JNIEnv* jniEnv;
 			jobject objectReference;
 			V8PersistentData* v8PersistentDataPointer;
 			V8ValueReference(JNIEnv* jniEnv, jobject objectReference);

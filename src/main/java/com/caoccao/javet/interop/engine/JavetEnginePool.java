@@ -128,9 +128,6 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     public void releaseEngine(IJavetEngine engine) {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.releaseEngine() begins.");
-        if (engine != null) {
-            engine.sendGCNotification(config.getSendGCNotificationInMillis());
-        }
         synchronized (externalLock) {
             externalLock.notify();
         }
@@ -151,6 +148,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 if (engine.isActive()) {
                     activeEngineList.add(engine);
                 } else {
+                    boolean autoSendGCNotification = config.isAutoSendGCNotification();
                     if (config.getMaxEngineUsedCount() > 0) {
                         JavetEngineUsage usage = engine.getUsage();
                         ZonedDateTime resetEngineZonedDateTime = usage.getLastActiveZonedDatetime()
@@ -160,11 +158,15 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                             try {
                                 logger.debug("JavetEnginePool reset engine begins.");
                                 engine.resetContext();
+                                autoSendGCNotification = false;
                                 logger.debug("JavetEnginePool reset engine ends.");
                             } catch (Exception e) {
                                 logger.logError(e, "Failed to reset idle engine.");
                             }
                         }
+                    }
+                    if (autoSendGCNotification) {
+                        engine.sendGCNotification();
                     }
                     idleEngineList.add(engine);
                 }
