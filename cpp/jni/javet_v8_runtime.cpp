@@ -166,13 +166,13 @@ namespace Javet {
 		if (mGlobalName != nullptr) {
 			auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8LocalContext, mGlobalName);
 			v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
-	}
+		}
 #endif
 		Register(v8LocalContext);
 		v8PersistentContext.Reset(v8Isolate, v8LocalContext);
 		v8GlobalObject.Reset(
 			v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
-}
+	}
 
 	void V8Runtime::CreateV8Isolate() {
 #ifdef ENABLE_NODE
@@ -194,11 +194,12 @@ namespace Javet {
 		createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
 		v8Isolate = v8::Isolate::New(createParams);
 #endif
-		}
+		v8Isolate->SetPromiseRejectCallback(nullptr);
+	}
 
 	V8Runtime::~V8Runtime() {
 		CloseV8Context();
 		CloseV8Isolate();
 	}
-	}
+}
 

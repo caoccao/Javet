@@ -30,17 +30,19 @@ namespace Javet {
 	namespace Monitor {
 		enum CounterType {
 			Reserved = 0,
-			NewWeakCallbackReference = 1,
-			NewJavetCallbackContextReference = 2,
-			NewPersistentReference = 3,
-			NewPersistentCallbackContextReference = 4,
-			NewV8Runtime = 5,
-			DeleteWeakCallbackReference = 6,
-			DeleteJavetCallbackContextReference = 7,
-			DeletePersistentReference = 8,
-			DeletePersistentCallbackContextReference = 9,
-			DeleteV8Runtime = 10,
-			Max = 11,
+			NewGlobalRef = 1,
+			NewWeakCallbackReference = 2,
+			NewJavetCallbackContextReference = 3,
+			NewPersistentReference = 4,
+			NewPersistentCallbackContextReference = 5,
+			NewV8Runtime = 6,
+			DeleteGlobalRef = 7,
+			DeleteWeakCallbackReference = 8,
+			DeleteJavetCallbackContextReference = 9,
+			DeletePersistentReference = 10,
+			DeletePersistentCallbackContextReference = 11,
+			DeleteV8Runtime = 12,
+			Max = 13,
 		};
 
 		class JavetNativeMonitor {

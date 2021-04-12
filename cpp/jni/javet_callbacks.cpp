@@ -77,6 +77,7 @@ namespace Javet {
 
 		JavetCallbackContextReference::JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext) {
 			this->callbackContext = jniEnv->NewGlobalRef(callbackContext);
+			INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
 			v8PersistentCallbackContextHandlePointer = nullptr;
 			SetHandle();
 		}
@@ -153,6 +154,7 @@ namespace Javet {
 			FETCH_JNI_ENV(GlobalJavaVM);
 			jniEnv->CallVoidMethod(externalV8Runtime, jmethodIDV8RuntimeRemoveCallbackContext, TO_JAVA_LONG(callbackContext));
 			jniEnv->DeleteGlobalRef(callbackContext);
+			INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
 		}
 
 		JavetCallbackContextReference::~JavetCallbackContextReference() {
@@ -166,6 +168,7 @@ namespace Javet {
 
 		V8ValueReference::V8ValueReference(JNIEnv* jniEnv, jobject objectReference) {
 			this->objectReference = jniEnv->NewGlobalRef(objectReference);
+			INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
 			v8PersistentDataPointer = nullptr;
 		}
 
@@ -173,6 +176,7 @@ namespace Javet {
 			if (v8PersistentDataPointer != nullptr) {
 				FETCH_JNI_ENV(GlobalJavaVM);
 				jniEnv->DeleteGlobalRef(objectReference);
+				INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
 			}
 		}
 
@@ -184,6 +188,7 @@ namespace Javet {
 				FETCH_JNI_ENV(GlobalJavaVM);
 				jniEnv->CallVoidMethod(TO_JAVA_OBJECT(objectReference), jmethodIDIV8ValueReferenceClose, true);
 				jniEnv->DeleteGlobalRef(objectReference);
+				INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
 			}
 		}
 	}
