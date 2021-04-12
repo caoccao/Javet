@@ -28,8 +28,6 @@ Download Pre-built Node.js and V8
 
 I have prepared pre-built Linux and Windows version of Node.js ``v14.16.0`` and V8 ``v8.9.255``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
 
-Note: Node.js and V8 must be build with i18n enabled. Why i18n? Because some non-ascii characters returned from V8 to JVM may result in JVM core dump.
-
 Build Javet JNI Library
 =======================
 
@@ -98,7 +96,7 @@ Also, please make sure ``args.gn`` file looks like the following.
     v8_monolithic = true
     v8_use_external_startup_data = false
     is_component_build = false
-    v8_enable_i18n_support= true
+    v8_enable_i18n_support= false
     v8_enable_pointer_compression = false
     v8_static_library = true
     symbol_level = 0

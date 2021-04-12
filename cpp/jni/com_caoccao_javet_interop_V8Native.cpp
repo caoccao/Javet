@@ -97,7 +97,9 @@ namespace Javet {
 			jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
 
 			LOG_INFO("V8::Initialize() begins.");
+#ifdef ENABLE_I18N
 			v8::V8::InitializeICU();
+#endif
 #ifdef ENABLE_NODE
 			uv_setup_args(0, nullptr);
 			std::vector<std::string> args{ "" };
