@@ -142,6 +142,6 @@ Memory Leak Detection
 
 Javet native library keeps track of every ``new`` and ``delete`` in ``JavetNativeMonitor``. Javet every unit test case fetches the tracking data, compares the ``new`` and ``delete`` count to verify unmanaged objects are properly allocated and freed.
 
-This feature is only turned on in test version and there is zero performance overhead in release version.
+This feature is only turned on in debug version and there is zero performance overhead in release version.
 
 [`Home <../../README.rst>`_] [`Development <index.rst>`_]
