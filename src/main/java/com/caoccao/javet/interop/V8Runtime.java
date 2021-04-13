@@ -17,14 +17,18 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.JavetPromiseRejectEvent;
 import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetDefaultLogger;
+import com.caoccao.javet.utils.JavetPromiseRejectCallback;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.*;
@@ -33,10 +37,7 @@ import com.caoccao.javet.values.reference.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
@@ -55,11 +56,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     protected V8ValueNull cachedV8ValueNull;
     protected V8ValueUndefined cachedV8ValueUndefined;
 
+    /*
+     * V8 may not make final callback when V8 context is being recycled.
+     * That may results in memory leak.
+     * Callback context map is designed for closing that memory leak issue.
+     */
+    protected Map<Long, JavetCallbackContext> callbackContextMap;
+    protected boolean gcScheduled;
     protected String globalName;
     protected long handle;
     protected IJavetLogger logger;
     protected Map<String, IV8Module> v8ModuleMap;
     protected boolean pooled;
+    protected IJavetPromiseRejectCallback promiseRejectCallback;
     protected Map<Long, IV8ValueReference> referenceMap;
     protected V8Host v8Host;
     protected IV8Native v8Native;
@@ -67,11 +76,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
+        callbackContextMap = new TreeMap<>();
+        gcScheduled = false;
         this.globalName = globalName;
         this.handle = handle;
         logger = new JavetDefaultLogger(getClass().getName());
         v8ModuleMap = new HashMap<>();
         this.pooled = pooled;
+        promiseRejectCallback = new JavetPromiseRejectCallback(logger);
         referenceMap = new TreeMap<>();
         this.v8Host = v8Host;
         this.v8Native = v8Native;
@@ -135,7 +147,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public void close(boolean forceClose) throws JavetException {
         if (handle != INVALID_HANDLE && forceClose) {
-            removeReferences();
+            removeAllReferences();
             v8Host.closeV8Runtime(this);
             handle = INVALID_HANDLE;
         }
@@ -188,6 +200,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     @Override
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
+        Objects.requireNonNull(v8ValueArrayBuffer);
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(PROPERTY_DATA_VIEW)) {
             return v8ValueFunction.callAsConstructor(v8ValueArrayBuffer);
         }
@@ -195,9 +208,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     @Override
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
+        Objects.requireNonNull(javetCallbackContext);
         V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Function, javetCallbackContext));
-        v8ValueFunction.setV8CallbackContext(javetCallbackContext);
+        callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
         return v8ValueFunction;
     }
 
@@ -294,8 +308,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType(), key));
     }
 
+    public int getCallbackContextCount() {
+        return callbackContextMap.size();
+    }
+
     public String getGlobalName() {
         return globalName;
+    }
+
+    public void setGlobalName(String globalName) {
+        this.globalName = globalName;
     }
 
     public IV8Executor getExecutor(File scriptFile) {
@@ -308,10 +330,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public IV8Executor getExecutor(String scriptString) {
         return new V8StringExecutor(this, scriptString);
-    }
-
-    public void setGlobalName(String globalName) {
-        this.globalName = globalName;
     }
 
     public int getIdentityHash(IV8ValueReference iV8ValueReference) throws JavetException {
@@ -334,6 +352,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return handle;
     }
 
+    public JSRuntimeType getJSRuntimeType() {
+        return JSRuntimeType.V8;
+    }
+
     public int getLength(IV8ValueArray iV8ValueArray) throws JavetException {
         return v8Native.getLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType());
     }
@@ -346,6 +368,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             IV8ValueObject iV8ValueObject) throws JavetException {
         return decorateV8Value((V8ValueArray) v8Native.getOwnPropertyNames(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType()));
+    }
+
+    public IJavetPromiseRejectCallback getPromiseRejectCallback() {
+        return promiseRejectCallback;
+    }
+
+    public void setPromiseRejectCallback(IJavetPromiseRejectCallback promiseRejectCallback) {
+        Objects.requireNonNull(promiseRejectCallback);
+        this.promiseRejectCallback = promiseRejectCallback;
     }
 
     public <T extends V8Value> T getProperty(
@@ -363,10 +394,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public int getReferenceCount() {
         return referenceMap.size();
-    }
-
-    public JSRuntimeType getJSRuntimeType() {
-        return JSRuntimeType.V8;
     }
 
     public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
@@ -444,6 +471,27 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return v8Native.isDead(handle);
     }
 
+    public boolean isGCScheduled() {
+        return gcScheduled;
+    }
+
+    public void setGCScheduled(boolean gcScheduled) {
+        this.gcScheduled = gcScheduled;
+    }
+
+    /**
+     * Idle notification deadline.
+     * <p>
+     * Note: This API is the recommended one that notifies V8 to perform GC.
+     *
+     * @param deadlineInMillis the deadline in millis
+     */
+    public void idleNotificationDeadline(long deadlineInMillis) {
+        if (handle != INVALID_HANDLE && deadlineInMillis > 0) {
+            v8Native.idleNotificationDeadline(handle, deadlineInMillis);
+        }
+    }
+
     public boolean isInUse() {
         return v8Native.isInUse(handle);
     }
@@ -454,6 +502,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public boolean isWeak(IV8ValueReference iV8ValueReference) {
         return v8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType());
+    }
+
+    /**
+     * Send low memory notification to current V8 isolate.
+     */
+    public void lowMemoryNotification() {
+        if (handle != INVALID_HANDLE) {
+            v8Native.lowMemoryNotification(handle);
+        }
     }
 
     public <T extends V8Value> T moduleEvaluate(
@@ -515,14 +572,27 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
     }
 
-    protected void removeV8Modules() {
-        if (!v8ModuleMap.isEmpty()) {
-            logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
-            for (IV8Module iV8Module : v8ModuleMap.values()) {
-                logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
+    protected void removeAllReferences() throws JavetException {
+        removeReferences();
+        removeCallbackContexts();
+        removeV8Modules();
+        v8Inspector = null;
+    }
+
+    public void removeCallbackContext(long handle) {
+        callbackContextMap.remove(handle);
+    }
+
+    protected void removeCallbackContexts() {
+        if (!callbackContextMap.isEmpty()) {
+            final int callbackContextCount = callbackContextMap.size();
+            for (long handle : callbackContextMap.keySet()) {
+                removeJNIGlobalRef(handle);
             }
+            logger.logWarn("{0} V8 callback context object(s) not recycled.",
+                    Integer.toString(callbackContextCount));
+            callbackContextMap.clear();
         }
-        v8ModuleMap.clear();
     }
 
     public void removeJNIGlobalRef(long handle) {
@@ -540,6 +610,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             }
             v8Native.removeReferenceHandle(referenceHandle, referenceType);
             referenceMap.remove(referenceHandle);
+        }
+        if (gcScheduled) {
+            lowMemoryNotification();
+            gcScheduled = false;
         }
     }
 
@@ -565,8 +639,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             }
             referenceMap.clear();
         }
-        removeV8Modules();
-        v8Inspector = null;
     }
 
     public void removeV8Module(String resourceName) {
@@ -575,6 +647,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public void removeV8Module(IV8Module iV8Module) {
         v8ModuleMap.remove(iV8Module.getResourceName());
+    }
+
+    protected void removeV8Modules() {
+        if (!v8ModuleMap.isEmpty()) {
+            logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
+            for (IV8Module iV8Module : v8ModuleMap.values()) {
+                logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
+            }
+        }
+        v8ModuleMap.clear();
     }
 
     /**
@@ -595,7 +677,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
      * @throws JavetException the javet exception
      */
     public V8Runtime resetContext() throws JavetException {
-        removeReferences();
+        removeAllReferences();
         v8Native.resetV8Context(handle, globalName);
         return this;
     }
@@ -608,9 +690,24 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
      * @throws JavetException the javet exception
      */
     public V8Runtime resetIsolate() throws JavetException {
-        removeReferences();
+        removeAllReferences();
         v8Native.resetV8Isolate(handle, globalName);
         return this;
+    }
+
+    protected void receivePromiseRejectCallback(int event, V8ValuePromise promise, V8Value value) {
+        try {
+            decorateV8Values(promise, value);
+            promiseRejectCallback.callback(JavetPromiseRejectEvent.parse(event), promise, value);
+        } catch (Throwable t) {
+            logger.logError(t, "Failed to process promise reject callback {0}.", event);
+        } finally {
+            JavetResourceUtils.safeClose(promise, value);
+        }
+    }
+
+    public boolean sameValue(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2) {
+        return v8Native.sameValue(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
     public <T extends V8Value> T scriptRun(
@@ -631,10 +728,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public void setWeak(IV8ValueReference iV8ValueReference) {
         v8Native.setWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType(), iV8ValueReference);
-    }
-
-    public boolean sameValue(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2) {
-        return v8Native.sameValue(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
     public boolean strictEquals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2) {

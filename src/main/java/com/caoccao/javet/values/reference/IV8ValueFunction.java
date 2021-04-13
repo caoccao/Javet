@@ -70,6 +70,4 @@ public interface IV8ValueFunction extends IV8ValueObject {
     default void callVoid(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
         call(receiver, false, v8Values);
     }
-
-    V8Value receiveCallback(V8Value thisObject, V8ValueArray args) throws Throwable;
 }

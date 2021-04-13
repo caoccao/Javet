@@ -23,19 +23,16 @@
 
 namespace Javet {
 	namespace Callback {
-		static JavaVM* GlobalJavaVM;
+		class JavetCallbackContextReference;
+		class V8ValueReference;
 
 		static jclass jclassJavetCallbackContext;
-		static jmethodID jmethodIDJavetCallbackContextGetCallbackOwnerFunction;
 		static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
 		static jmethodID jmethodIDJavetCallbackContextIsThisObjectRequired;
 		static jmethodID jmethodIDJavetCallbackContextSetHandle;
 
 		static jclass jclassIV8Module;
 		static jmethodID jmethodIDIV8ModuleGetHandle;
-
-		static jclass jclassIV8ValueFunction;
-		static jmethodID jmethodIDIV8ValueFunctionReceiveCallback;
 
 		static jclass jclassIV8ValueReference;
 		static jmethodID jmethodIDIV8ValueReferenceClose;
@@ -46,12 +43,22 @@ namespace Javet {
 		static jclass jclassThrowable;
 		static jmethodID jmethodIDThrowableGetMessage;
 
+		static jclass jclassV8FunctionCallback;
+		static jmethodID jmethodIDV8FunctionCallbackReceiveCallback;
+
 		static jclass jclassV8Runtime;
 		static jmethodID jmethodIDV8RuntimeGetV8Module;
+		static jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
+		static jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
 
-		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
+		void Initialize(JNIEnv* jniEnv);
 
-		V8MaybeLocalModule ModuleResolveCallback(
+		void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info);
+		void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info);
+		void JavetFunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& info);
+		void JavetPromiseRejectCallback(v8::PromiseRejectMessage message);
+
+		V8MaybeLocalModule JavetModuleResolveCallback(
 			V8LocalContext v8Context,
 			V8LocalString specifier,
 #ifndef ENABLE_NODE
@@ -62,22 +69,23 @@ namespace Javet {
 		class JavetCallbackContextReference {
 		public:
 			jobject callbackContext;
-			JNIEnv* jniEnv;
+			V8PersistentBigInt* v8PersistentCallbackContextHandlePointer;
 			JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext);
-			jobject GetCallbackOwnerFunction();
 			void Invoke(const v8::FunctionCallbackInfo<v8::Value>& args);
 			jboolean IsReturnResult();
 			jboolean IsThisObjectRequired();
 			void SetHandle();
+			void RemoveCallbackContext(const jobject& externalV8Runtime);
+			virtual ~JavetCallbackContextReference();
 		};
 
 		class V8ValueReference {
 		public:
-			v8::Isolate* v8Isolate;
 			jobject objectReference;
 			V8PersistentData* v8PersistentDataPointer;
-			void Clear(JNIEnv* jniEnv);
-			void Close(JNIEnv* jniEnv);
+			V8ValueReference(JNIEnv* jniEnv, jobject objectReference);
+			void Clear();
+			void Close();
 		};
 	}
 }

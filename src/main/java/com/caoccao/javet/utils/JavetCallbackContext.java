@@ -17,10 +17,8 @@
 
 package com.caoccao.javet.utils;
 
-import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
 import com.caoccao.javet.utils.converters.IJavetConverter;
 import com.caoccao.javet.utils.converters.JavetObjectConverter;
-import com.caoccao.javet.values.reference.IV8ValueFunction;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -32,7 +30,6 @@ public final class JavetCallbackContext {
     private static final String ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
             "Javet callback context handle is invalid";
     private Method callbackMethod;
-    private IV8ValueFunction callbackOwnerFunction;
     private Object callbackReceiver;
     private IJavetConverter converter;
     private long handle;
@@ -61,7 +58,6 @@ public final class JavetCallbackContext {
         assert (callbackReceiver != null && !Modifier.isStatic(callbackMethod.getModifiers()))
                 || (callbackReceiver == null && Modifier.isStatic(callbackMethod.getModifiers()))
                 : ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID;
-        callbackOwnerFunction = null;
         this.callbackMethod = callbackMethod;
         this.callbackReceiver = callbackReceiver;
         this.converter = converter;
@@ -72,20 +68,6 @@ public final class JavetCallbackContext {
 
     public boolean isThisObjectRequired() {
         return thisObjectRequired;
-    }
-
-    public IV8ValueFunction getCallbackOwnerFunction() {
-        return callbackOwnerFunction;
-    }
-
-    public void setCallbackOwnerFunction(IV8ValueFunction callbackOwnerFunction)
-            throws JavetV8CallbackAlreadyRegisteredException {
-        Objects.requireNonNull(callbackOwnerFunction);
-        if (this.callbackOwnerFunction == null) {
-            this.callbackOwnerFunction = callbackOwnerFunction;
-        } else if (this.callbackOwnerFunction != callbackOwnerFunction) {
-            throw new JavetV8CallbackAlreadyRegisteredException();
-        }
     }
 
     public Object getCallbackReceiver() {

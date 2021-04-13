@@ -47,8 +47,7 @@ namespace Javet {
 			return std::make_unique<std::string>(*v8Utf8Value);
 		}
 
-		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM) {
-			GlobalJavaVM = javaVM;
+		void Initialize(JNIEnv* jniEnv) {
 
 			jclassV8Inspector = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Inspector"));
 			jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");
@@ -61,6 +60,7 @@ namespace Javet {
 		JavetInspector::JavetInspector(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector) {
 			FETCH_JNI_ENV(GlobalJavaVM);
 			this->mV8Inspector = jniEnv->NewGlobalRef(mV8Inspector);
+			INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
 			this->v8Runtime = v8Runtime;
 			jstring mName = (jstring)jniEnv->CallObjectMethod(this->mV8Inspector, jmethodIDV8InspectorGetName);
 			char const* umName = jniEnv->GetStringUTFChars(mName, nullptr);
@@ -79,6 +79,7 @@ namespace Javet {
 			if (mV8Inspector != nullptr) {
 				FETCH_JNI_ENV(GlobalJavaVM);
 				jniEnv->DeleteGlobalRef(mV8Inspector);
+				INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
 				mV8Inspector = nullptr;
 			}
 		}

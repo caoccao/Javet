@@ -376,10 +376,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      */
     default boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
-        V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(javetCallbackContext);
-        boolean success = set(functionName, v8ValueFunction);
-        v8ValueFunction.setWeak();
-        return success;
+        try (V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(javetCallbackContext)) {
+            return set(functionName, v8ValueFunction);
+        }
     }
 
     /**
@@ -398,10 +397,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      */
     default boolean setFunction(String functionName, String codeString) throws JavetException {
-        V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute();
-        boolean success = set(functionName, v8ValueFunction);
-        v8ValueFunction.setWeak();
-        return success;
+        try (V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute()) {
+            return set(functionName, v8ValueFunction);
+        }
     }
 
     default List<JavetCallbackContext> setFunctions(

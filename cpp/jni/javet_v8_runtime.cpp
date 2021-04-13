@@ -15,6 +15,7 @@
  *   limitations under the License.
  */
 
+#include "javet_callbacks.h"
 #include "javet_inspector.h"
 #include "javet_types.h"
 #include "javet_v8_runtime.h"
@@ -166,13 +167,13 @@ namespace Javet {
 		if (mGlobalName != nullptr) {
 			auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8LocalContext, mGlobalName);
 			v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
-	}
+		}
 #endif
 		Register(v8LocalContext);
 		v8PersistentContext.Reset(v8Isolate, v8LocalContext);
 		v8GlobalObject.Reset(
 			v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
-}
+	}
 
 	void V8Runtime::CreateV8Isolate() {
 #ifdef ENABLE_NODE
@@ -193,12 +194,13 @@ namespace Javet {
 		v8::Isolate::CreateParams createParams;
 		createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
 		v8Isolate = v8::Isolate::New(createParams);
+		v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
-		}
+	}
 
 	V8Runtime::~V8Runtime() {
 		CloseV8Context();
 		CloseV8Isolate();
 	}
-	}
+}
 

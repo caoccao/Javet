@@ -21,6 +21,7 @@
 #include "javet_enums.h"
 #include "javet_exceptions.h"
 #include "javet_inspector.h"
+#include "javet_monitor.h"
 #include "javet_logging.h"
 #include "javet_native.h"
 #include "javet_node.h"
@@ -52,22 +53,19 @@
 namespace Javet {
 #ifdef ENABLE_NODE
 	namespace NodeNative {
-		static JavaVM* GlobalJavaVM;
 		static std::shared_ptr<node::ArrayBufferAllocator> GlobalNodeArrayBufferAllocator;
 
 		void Dispose() {
 			GlobalNodeArrayBufferAllocator.reset();
 		}
 
-		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM) {
-			GlobalJavaVM = javaVM;
+		void Initialize(JNIEnv* jniEnv) {
 			GlobalNodeArrayBufferAllocator = node::ArrayBufferAllocator::Create();
 		}
 	}
 #endif
 
 	namespace V8Native {
-		static JavaVM* GlobalJavaVM;
 #ifdef ENABLE_NODE
 		static std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
 #else
@@ -90,8 +88,7 @@ namespace Javet {
 		because the memory address probed changes in another file,
 		or runtime memory corruption will take place.
 		*/
-		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM) {
-			GlobalJavaVM = javaVM;
+		void Initialize(JNIEnv* jniEnv) {
 
 			jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
 			jmethodIDV8ValueIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueInteger, JAVA_METHOD_TO_PRIMITIVE, "()I");
@@ -100,7 +97,9 @@ namespace Javet {
 			jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
 
 			LOG_INFO("V8::Initialize() begins.");
-			//v8::V8::InitializeICU();
+#ifdef ENABLE_I18N
+			v8::V8::InitializeICU();
+#endif
 #ifdef ENABLE_NODE
 			uv_setup_args(0, nullptr);
 			std::vector<std::string> args{ "" };
@@ -110,32 +109,13 @@ namespace Javet {
 			if (errorCode != 0) {
 				LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
 			}
-			Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(32);
+			Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
 #else
 			Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
 #endif
 			v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
 			v8::V8::Initialize();
 			LOG_INFO("V8::Initialize() ends.");
-		}
-
-		/*
-		This callback function has to stay within the same file
-		so that the memory address doesn't get messed up.
-		*/
-		void FunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-			FETCH_JNI_ENV(Javet::V8Native::GlobalJavaVM);
-			auto v8LocalContextHandle = args.Data().As<v8::BigInt>();
-			auto umContext = TO_JAVA_OBJECT(v8LocalContextHandle->Int64Value());
-			Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
-			javetCallbackContextReference.Invoke(args);
-		}
-
-		void CloseWeakDataReference(const v8::WeakCallbackInfo<Javet::Callback::V8ValueReference>& data) {
-			FETCH_JNI_ENV(Javet::V8Native::GlobalJavaVM);
-			auto v8ValueReference = data.GetParameter();
-			v8ValueReference->Close(jniEnv);
-			delete v8ValueReference;
 		}
 	}
 }
@@ -210,13 +190,21 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callAsConstruc
 	return nullptr;
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearInternalStatistic
+(JNIEnv* jniEnv, jobject caller) {
+#ifdef ENABLE_MONITOR
+	GlobalJavetNativeMonitor.Clear();
+#endif
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearWeak
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_DATA_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (!v8PersistentDataPointer->IsEmpty() && v8PersistentDataPointer->IsWeak()) {
 		auto v8ValueReference = v8PersistentDataPointer->ClearWeak<Javet::Callback::V8ValueReference>();
-		v8ValueReference->Clear(jniEnv);
+		v8ValueReference->Clear();
 		delete v8ValueReference;
+		INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteWeakCallbackReference);
 	}
 }
 
@@ -232,8 +220,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
 	if (v8Runtime->externalV8Runtime != nullptr) {
 		jniEnv->DeleteGlobalRef(v8Runtime->externalV8Runtime);
+		INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
 	}
 	delete v8Runtime;
+	INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteV8Runtime);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
@@ -281,8 +271,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector) {
 	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-	v8Runtime->v8Inspector.reset(
-		new Javet::Inspector::JavetInspector(v8Runtime, mV8Inspector));
+	v8Runtime->v8Inspector.reset(new Javet::Inspector::JavetInspector(v8Runtime, mV8Inspector));
 }
 
 /*
@@ -295,8 +284,8 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 #else
 	auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get());
 #endif
+	INCREASE_COUNTER(Javet::Monitor::CounterType::NewV8Runtime);
 	v8Runtime->CreateV8Isolate();
-	auto v8Locker = v8Runtime->GetUniqueV8Locker();
 	v8Runtime->CreateV8Context(jniEnv, mGlobalName);
 	return TO_JAVA_LONG(v8Runtime);
 }
@@ -321,11 +310,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 		}
 	}
 	else if (IS_V8_FUNCTION(v8ValueType)) {
-		jobject umContext = jniEnv->NewGlobalRef(mContext);
-		Javet::Callback::JavetCallbackContextReference javetCallbackContextReference(jniEnv, umContext);
-		javetCallbackContextReference.SetHandle();
-		auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(umContext));
-		v8ValueValue = v8::Function::New(v8Context, Javet::V8Native::FunctionCallback, v8LocalContextHandle).ToLocalChecked();
+		auto javetCallbackContextReferencePointer = new Javet::Callback::JavetCallbackContextReference(jniEnv, mContext);
+		INCREASE_COUNTER(Javet::Monitor::CounterType::NewJavetCallbackContextReference);
+		auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
+		javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer = new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextHandle);
+		INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
+		v8ValueValue = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle).ToLocalChecked();
+		javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer->SetWeak(
+			javetCallbackContextReferencePointer, Javet::Callback::JavetCloseWeakCallbackContextHandle, v8::WeakCallbackType::kParameter);
 	}
 	else if (IS_V8_MAP(v8ValueType)) {
 		v8ValueValue = v8::Map::New(v8Context->GetIsolate());
@@ -392,7 +384,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 		}
 		else if (!maybeLocalCompiledModule.IsEmpty()) {
 			auto compliedModule = maybeLocalCompiledModule.ToLocalChecked();
-			auto maybeResult = compliedModule->InstantiateModule(v8Context, Javet::Callback::ModuleResolveCallback);
+			auto maybeResult = compliedModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
 			if (maybeResult.FromMaybe(false)) {
 				auto maybeLocalValueResult = compliedModule->Evaluate(v8Context);
 				if (v8TryCatch.HasCaught()) {
@@ -469,6 +461,15 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getIdentityHash
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	return v8LocalObject->GetIdentityHash();
+}
+
+JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternalStatistic
+(JNIEnv* jniEnv, jobject caller) {
+#ifdef ENABLE_MONITOR
+	return GlobalJavetNativeMonitor.GetCounters(jniEnv);
+#else
+	return nullptr;
+#endif
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
@@ -575,6 +576,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnPropert
 	return false;
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong deadlineInMillis) {
+	if (deadlineInMillis > 0) {
+		RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+		v8Runtime->v8Isolate->IdleNotificationDeadline(((long)deadlineInMillis) / 1000.0);
+	}
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mFunctionName, jboolean mResultRequired, jobjectArray mValues) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -634,6 +643,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 	}
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotification
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+	RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+	v8Runtime->v8Isolate->LowMemoryNotification();
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleEvaluate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jboolean mResultRequired) {
 	RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -685,7 +700,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (v8LocalModule->GetStatus() == v8::Module::Status::kUninstantiated) {
-		return v8LocalModule->InstantiateModule(v8Context, Javet::Callback::ModuleResolveCallback).FromMaybe(false);
+		return v8LocalModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback).FromMaybe(false);
 	}
 	return false;
 }
@@ -772,13 +787,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerV8Runtime
 	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
 	if (v8Runtime->externalV8Runtime != nullptr) {
 		jniEnv->DeleteGlobalRef(v8Runtime->externalV8Runtime);
+		INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
 	}
 	v8Runtime->externalV8Runtime = jniEnv->NewGlobalRef(mV8Runtime);
+	INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRef
 (JNIEnv* jniEnv, jobject caller, jlong handle) {
 	jniEnv->DeleteGlobalRef((jobject)handle);
+	INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHandle
@@ -786,6 +804,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHa
 	auto v8PersistentDataPointer = TO_V8_PERSISTENT_DATA_POINTER(referenceHandle);
 	v8PersistentDataPointer->Reset();
 	delete v8PersistentDataPointer;
+	INCREASE_COUNTER(Javet::Monitor::CounterType::DeletePersistentReference);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCollectionForTesting
@@ -893,11 +912,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject objectReference) {
 	RUNTIME_AND_DATA_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (!v8PersistentDataPointer->IsEmpty() && !v8PersistentDataPointer->IsWeak()) {
-		auto v8ValueReference = new Javet::Callback::V8ValueReference;
-		v8ValueReference->v8Isolate = v8Context->GetIsolate();
-		v8ValueReference->objectReference = jniEnv->NewGlobalRef(objectReference);
+		auto v8ValueReference = new Javet::Callback::V8ValueReference(jniEnv, objectReference);
+		INCREASE_COUNTER(Javet::Monitor::CounterType::NewWeakCallbackReference);
 		v8ValueReference->v8PersistentDataPointer = v8PersistentDataPointer;
-		v8PersistentDataPointer->SetWeak(v8ValueReference, Javet::V8Native::CloseWeakDataReference, v8::WeakCallbackType::kParameter);
+		v8PersistentDataPointer->SetWeak(v8ValueReference, Javet::Callback::JavetCloseWeakDataReference, v8::WeakCallbackType::kParameter);
 	}
 }
 

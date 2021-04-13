@@ -107,8 +107,8 @@ public class NodeRuntime extends V8Runtime {
     }
 
     @Override
-    protected void removeReferences() throws JavetException {
+    protected void removeAllReferences() throws JavetException {
         removeNodeModules();
-        super.removeReferences();
+        super.removeAllReferences();
     }
 }

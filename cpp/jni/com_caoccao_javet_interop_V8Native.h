@@ -49,6 +49,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callAsConstruc
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    clearInternalStatistic
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearInternalStatistic
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    clearWeak
  * Signature: (JJI)V
  */
@@ -153,6 +161,14 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getIdentityHash
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getInternalStatistic
+ * Signature: ()[J
+ */
+JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternalStatistic
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getLength
  * Signature: (JJI)I
  */
@@ -217,6 +233,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnPropert
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    idleNotificationDeadline
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    invoke
  * Signature: (JJILjava/lang/String;Z[Ljava/lang/Object;)Ljava/lang/Object;
  */
@@ -253,6 +277,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    lowMemoryNotification
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotification
   (JNIEnv *, jobject, jlong);
 
 /*

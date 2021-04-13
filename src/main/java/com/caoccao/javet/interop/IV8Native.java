@@ -32,6 +32,8 @@ public interface IV8Native {
     Object callAsConstructor(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
 
+    void clearInternalStatistic();
+
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object cloneV8Value(
@@ -65,6 +67,8 @@ public interface IV8Native {
 
     int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    long[] getInternalStatistic();
+
     int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -81,6 +85,8 @@ public interface IV8Native {
 
     boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
+    void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
+
     Object invoke(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             String functionName, boolean returnResult, Object[] values);
@@ -92,6 +98,8 @@ public interface IV8Native {
     boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     void lockV8Runtime(long v8RuntimeHandle);
+
+    void lowMemoryNotification(long v8RuntimeHandle);
 
     Object moduleEvaluate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 

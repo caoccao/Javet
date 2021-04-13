@@ -79,11 +79,13 @@ Build V8 (Optional)
 
 Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``v8.9.255``. If you face any issues, you may contact `@sjtucaocao <https://twitter.com/sjtucaocao>`_.
 
-Some Tips on Building V8
-------------------------
+Preparation (V8)
+----------------
 
 * Linux requires Python 2.7, CMake 3.10+. Ubuntu 18.04 is the recommended Linux distribution.
 * Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
+* Clone the source code.
+* Checkout a proper version.
 
 Also, please make sure ``args.gn`` file looks like the following.
 
@@ -100,22 +102,62 @@ Also, please make sure ``args.gn`` file looks like the following.
     symbol_level = 0
     use_custom_libcxx = false
 
-``v8_monolith`` is the build target.
+Build V8 on Linux
+-----------------
+
+.. code-block:: shell
+
+    export PATH=path_to_depot_tools:$PATH
+    cd root_path_to_v8
+    ninja -C out.gn/x64.release v8_monolith
+
+Build V8 on Windows
+-------------------
+
+Note: The patch script requires Python 3.
+
+.. code-block:: shell
+
+    set PATH=path_to_depot_tools;%PATH%
+    set DEPOT_TOOLS_WIN_TOOLCHAIN=0
+    cd root_path_to_v8
+    ninja -C out.gn/x64.release v8_wrappers
+    python root_path_to_javet\scripts\python\patch_v8_build.py -p .\
+    ninja -C out.gn/x64.release v8_wrappers
+    python root_path_to_javet\scripts\python\patch_v8_build.py -p .\
+    ninja -C out.gn/x64.release v8_monolith
+    gn gen --ide=vs out.gn\x64.solution
+
+Why Patching?
+
+* v8_wrappers.lib is a header only library without .cc file. MSVC refuses to generate such libraries. The patch is to create a dummy .cc file so that MSVC feels happy.
+* A few ninja files set certain warnings as errors so that MSVC stops compilation. The patch is to turn off those errors.
 
 Build Node.js (Optional)
 ========================
 
-Please follow `Building Node.js <https://github.com/nodejs/node/blob/master/BUILDING.md>`_ to build the static and LTS version of Node.js libraries. Please make sure ``without-intl`` is set so that the library size can be reduced.
+Please follow `Building Node.js <https://github.com/nodejs/node/blob/master/BUILDING.md>`_ to build the static and LTS version of Node.js libraries.
 
-Build Node.js on Linux
-------------------------
+Preparation (Node.js)
+---------------------
 
+* Linux requires Python 2.7, CMake 3.10+. Ubuntu 18.04 is the recommended Linux distribution.
+* Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
 * Clone the source code.
 * Checkout a proper version.
-* Execute ``python3 script/python/patch_node_build.py -p root_path_to_node_js``.
-* Execute ``cd root_path_to_node_js && ./configure --enable-static --fully-static --without-intl``.
-* Execute ``python3 script/python/patch_node_build.py -p root_path_to_node_js`` again.
-* Execute ``cd root_path_to_node_js && make -j4``.
+
+Build Node.js on Linux
+----------------------
+
+Note: The patch script requires Python 3.
+
+.. code-block:: shell
+
+    cd root_path_to_node_js
+    python3 root_path_to_javet/script/python/patch_node_build.py -p ./
+    ./configure --enable-static
+    python3 root_path_to_javet/script/python/patch_node_build.py -p ./
+    make -j4``.
 
 Why Patching?
 
@@ -132,6 +174,6 @@ Build Node.js on Windows
 
 * Clone the source code.
 * Checkout a proper version.
-* Execute ``vcbuild.bat static without-intl``.
+* Execute ``vcbuild.bat static``.
 
 [`Home <../../README.rst>`_] [`Development <index.rst>`_]

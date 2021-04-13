@@ -36,4 +36,6 @@ public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
     void resetContext() throws JavetException;
 
     void resetIsolate() throws JavetException;
+
+    void sendGCNotification();
 }

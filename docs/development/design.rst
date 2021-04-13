@@ -137,4 +137,11 @@ Javet packages all the libraries in a single jar file and automatically loads co
 * Javet unpacks the library file from resource directory to system temporary directory.
 * Javet loads the library using either default classloader or custom classloader.
 
+Memory Leak Detection
+=====================
+
+Javet native library keeps track of every ``new`` and ``delete`` in ``JavetNativeMonitor``. Javet every unit test case fetches the tracking data, compares the ``new`` and ``delete`` count to verify unmanaged objects are properly allocated and freed.
+
+This feature is only turned on in debug version and there is zero performance overhead in release version.
+
 [`Home <../../README.rst>`_] [`Development <index.rst>`_]

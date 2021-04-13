@@ -22,9 +22,13 @@ import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unchecked")
@@ -39,9 +43,9 @@ public final class V8Host implements AutoCloseable {
     private static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";
     private static final Object nodeLock = new Object();
+    private static volatile double memoryUsageThresholdRatio = 0.7;
     private static volatile V8Host nodeInstance;
-    private static volatile V8Host v8Instance = new V8Host(JSRuntimeType.V8);
-
+    private static V8Host v8Instance = new V8Host(JSRuntimeType.V8);
     private V8Flags flags;
     private JavetClassLoader javetClassLoader;
     private JSRuntimeType jsRuntimeType;
@@ -50,6 +54,7 @@ public final class V8Host implements AutoCloseable {
     private IJavetLogger logger;
     private boolean isolateCreated;
     private IV8Native v8Native;
+    private V8Notifier v8Notifier;
     private ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
 
     private V8Host(JSRuntimeType jsRuntimeType) {
@@ -64,11 +69,12 @@ public final class V8Host implements AutoCloseable {
         isolateCreated = false;
         this.jsRuntimeType = jsRuntimeType;
         loadLibrary();
+        v8Notifier = new V8Notifier(v8RuntimeMap);
     }
 
     /**
      * Gets Node instance.
-     *
+     * <p>
      * Note: Node runtime library is loaded by a custom class loader.
      *
      * @return the Node instance
@@ -86,7 +92,7 @@ public final class V8Host implements AutoCloseable {
 
     /**
      * Gets V8 instance.
-     *
+     * <p>
      * Note: V8 runtime library is loaded by the default class loader.
      *
      * @return the V8 instance
@@ -95,16 +101,71 @@ public final class V8Host implements AutoCloseable {
         return v8Instance;
     }
 
+    public static double getMemoryUsageThresholdRatio() {
+        return memoryUsageThresholdRatio;
+    }
+
+    /**
+     * Sets memory usage threshold ratio.
+     * <p>
+     * This manageable usage threshold attribute is designed for monitoring
+     * the increasing trend of memory usage with low overhead.
+     *
+     * @param memoryUsageThresholdRatio the memory usage threshold ratio
+     */
+    public static void setMemoryUsageThresholdRatio(double memoryUsageThresholdRatio) {
+        assert 0 <= memoryUsageThresholdRatio && memoryUsageThresholdRatio < 1;
+        V8Host.memoryUsageThresholdRatio = memoryUsageThresholdRatio;
+    }
+
+    private static void setMemoryUsageThreshold() {
+        /*
+         * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/management/MemoryPoolMXBean.html">Memory Usage Monitoring</a>
+         */
+        if (memoryUsageThresholdRatio > 0) {
+            Optional<MemoryPoolMXBean> optionalHeapMemoryPoolMXBean = ManagementFactory.getMemoryPoolMXBeans().stream()
+                    .filter(pool -> pool.getType() == MemoryType.HEAP)
+                    .filter(MemoryPoolMXBean::isUsageThresholdSupported)
+                    .findFirst();
+            if (optionalHeapMemoryPoolMXBean.isPresent()) {
+                final long memoryUsageThreshold = (long) Math.floor(
+                        optionalHeapMemoryPoolMXBean.get().getUsage().getMax() * memoryUsageThresholdRatio);
+                optionalHeapMemoryPoolMXBean.get().setUsageThreshold(memoryUsageThreshold);
+            }
+        }
+    }
+
+    public void clearInternalStatistic() {
+        v8Native.clearInternalStatistic();
+    }
+
     @Override
     public void close() throws JavetException {
         final int v8RuntimeCount = getV8RuntimeCount();
         if (v8RuntimeCount != 0) {
             throw new JavetV8RuntimeLeakException(v8RuntimeCount);
         }
+        disableGCNotification();
+    }
+
+    public V8Host disableGCNotification() {
+        v8Notifier.unregisterListener();
+        return this;
+    }
+
+    public V8Host enableGCNotification() {
+        setMemoryUsageThreshold();
+        // Javet {@link V8Notifier} listens to this notification to notify {@link V8Runtime} to perform GC.
+        v8Notifier.registerListeners();
+        return this;
     }
 
     public V8Flags getFlags() {
         return flags;
+    }
+
+    public long[] getInternalStatistic() {
+       return v8Native.getInternalStatistic();
     }
 
     public String getJavetVersion() {
@@ -128,7 +189,7 @@ public final class V8Host implements AutoCloseable {
     }
 
     public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) {
-        if (!isLibLoaded()) {
+        if (!libLoaded) {
             return null;
         }
         final long handle = v8Native.createV8Runtime(globalName);
@@ -142,11 +203,11 @@ public final class V8Host implements AutoCloseable {
         }
         v8Native.registerV8Runtime(handle, v8Runtime);
         v8RuntimeMap.put(handle, v8Runtime);
-        return (R)v8Runtime;
+        return (R) v8Runtime;
     }
 
     public void closeV8Runtime(V8Runtime v8Runtime) {
-        if (!isLibLoaded()) {
+        if (!libLoaded) {
             return;
         }
         if (v8Runtime != null) {

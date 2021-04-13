@@ -18,10 +18,11 @@
 package com.caoccao.javet;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,16 +31,34 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
 
     @AfterEach
     public void afterEach() throws JavetException {
+        assertEquals(0, v8Runtime.getCallbackContextCount(),
+                "Callback context count should be 0 after test case is ended.");
         assertEquals(0, v8Runtime.getReferenceCount(),
                 "Reference count should be 0 after test case is ended.");
         v8Runtime.close();
         assertEquals(0, v8Host.getV8RuntimeCount());
+        // Memory leak detection
+        long[] counters = v8Host.getInternalStatistic();
+        if (counters != null) {
+            assertArrayEquals(
+                    Arrays.copyOfRange(counters, 1, 7),
+                    Arrays.copyOfRange(counters, 7, 13));
+        }
+        v8Host.clearInternalStatistic();
     }
 
     @BeforeEach
     public void beforeEach() throws JavetException {
+        // Memory leak detection
+        v8Host.clearInternalStatistic();
+        long[] counters = v8Host.getInternalStatistic();
+        if (counters != null) {
+            assertEquals(0, Arrays.stream(counters).sum());
+        }
         v8Runtime = v8Host.createV8Runtime();
         assertFalse(v8Runtime.isPooled());
+        assertEquals(0, v8Runtime.getCallbackContextCount(),
+                "Callback context count should be 0 after test case is ended.");
         assertEquals(0, v8Runtime.getReferenceCount(),
                 "Reference count should be 0 before test case is started.");
     }
@@ -49,7 +68,7 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
      * It's designed to address potential race condition issue.
      */
     protected void resetContext() {
-        Thread thread = new Thread(()-> {
+        Thread thread = new Thread(() -> {
             try {
                 v8Runtime.resetContext();
             } catch (JavetException e) {

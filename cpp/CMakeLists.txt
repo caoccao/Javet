@@ -52,7 +52,7 @@ if(DEFINED NODE_DIR)
         v8_libbase v8_libplatform v8_libsampler v8_snapshot v8_zlib zlib)
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND importLibraries
-            icudata icui18n icutools icuucx libnode libuv)
+            libnode libuv)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         list(APPEND importLibraries
             node node_text_start uv)

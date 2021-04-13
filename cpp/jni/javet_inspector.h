@@ -27,8 +27,6 @@ namespace Javet {
 		class JavetInspectorClient;
 		class JavetInspectorChannel;
 
-		static JavaVM* GlobalJavaVM;
-
 		static jclass jclassV8Inspector;
 		static jmethodID jmethodIDV8InspectorFlushProtocolNotifications;
 		static jmethodID jmethodIDV8InspectorGetName;
@@ -36,7 +34,7 @@ namespace Javet {
 		static jmethodID jmethodIDV8InspectorReceiveResponse;
 		static jmethodID jmethodIDV8InspectorRunIfWaitingForDebugger;
 
-		void Initialize(JNIEnv* jniEnv, JavaVM* javaVM);
+		void Initialize(JNIEnv* jniEnv);
 
 		class JavetInspector {
 		public:
