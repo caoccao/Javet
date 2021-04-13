@@ -23,6 +23,8 @@
 
 namespace Javet {
 	namespace Callback {
+		class JavetCallbackContextReference;
+		class V8ValueReference;
 
 		static jclass jclassJavetCallbackContext;
 		static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
@@ -46,11 +48,17 @@ namespace Javet {
 
 		static jclass jclassV8Runtime;
 		static jmethodID jmethodIDV8RuntimeGetV8Module;
+		static jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
 		static jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
 
 		void Initialize(JNIEnv* jniEnv);
 
-		V8MaybeLocalModule ModuleResolveCallback(
+		void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info);
+		void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info);
+		void JavetFunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& info);
+		void JavetPromiseRejectCallback(v8::PromiseRejectMessage message);
+
+		V8MaybeLocalModule JavetModuleResolveCallback(
 			V8LocalContext v8Context,
 			V8LocalString specifier,
 #ifndef ENABLE_NODE

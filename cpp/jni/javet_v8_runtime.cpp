@@ -15,6 +15,7 @@
  *   limitations under the License.
  */
 
+#include "javet_callbacks.h"
 #include "javet_inspector.h"
 #include "javet_types.h"
 #include "javet_v8_runtime.h"
@@ -193,8 +194,8 @@ namespace Javet {
 		v8::Isolate::CreateParams createParams;
 		createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
 		v8Isolate = v8::Isolate::New(createParams);
+		v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
-		v8Isolate->SetPromiseRejectCallback(nullptr);
 	}
 
 	V8Runtime::~V8Runtime() {

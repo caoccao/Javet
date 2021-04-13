@@ -17,14 +17,18 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.JavetPromiseRejectEvent;
 import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetDefaultLogger;
+import com.caoccao.javet.utils.JavetPromiseRejectCallback;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.*;
@@ -64,6 +68,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     protected IJavetLogger logger;
     protected Map<String, IV8Module> v8ModuleMap;
     protected boolean pooled;
+    protected IJavetPromiseRejectCallback promiseRejectCallback;
     protected Map<Long, IV8ValueReference> referenceMap;
     protected V8Host v8Host;
     protected IV8Native v8Native;
@@ -78,6 +83,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         logger = new JavetDefaultLogger(getClass().getName());
         v8ModuleMap = new HashMap<>();
         this.pooled = pooled;
+        promiseRejectCallback = new JavetPromiseRejectCallback(logger);
         referenceMap = new TreeMap<>();
         this.v8Host = v8Host;
         this.v8Native = v8Native;
@@ -346,6 +352,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return handle;
     }
 
+    public JSRuntimeType getJSRuntimeType() {
+        return JSRuntimeType.V8;
+    }
+
     public int getLength(IV8ValueArray iV8ValueArray) throws JavetException {
         return v8Native.getLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType());
     }
@@ -358,6 +368,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             IV8ValueObject iV8ValueObject) throws JavetException {
         return decorateV8Value((V8ValueArray) v8Native.getOwnPropertyNames(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType()));
+    }
+
+    public IJavetPromiseRejectCallback getPromiseRejectCallback() {
+        return promiseRejectCallback;
+    }
+
+    public void setPromiseRejectCallback(IJavetPromiseRejectCallback promiseRejectCallback) {
+        Objects.requireNonNull(promiseRejectCallback);
+        this.promiseRejectCallback = promiseRejectCallback;
     }
 
     public <T extends V8Value> T getProperty(
@@ -375,10 +394,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public int getReferenceCount() {
         return referenceMap.size();
-    }
-
-    public JSRuntimeType getJSRuntimeType() {
-        return JSRuntimeType.V8;
     }
 
     public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
@@ -466,7 +481,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     /**
      * Idle notification deadline.
-     *
+     * <p>
      * Note: This API is the recommended one that notifies V8 to perform GC.
      *
      * @param deadlineInMillis the deadline in millis
@@ -678,6 +693,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         removeAllReferences();
         v8Native.resetV8Isolate(handle, globalName);
         return this;
+    }
+
+    protected void receivePromiseRejectCallback(int event, V8ValuePromise promise, V8Value value) {
+        try {
+            decorateV8Values(promise, value);
+            promiseRejectCallback.callback(JavetPromiseRejectEvent.parse(event), promise, value);
+        } catch (Throwable t) {
+            logger.logError(t, "Failed to process promise reject callback {0}.", event);
+        } finally {
+            JavetResourceUtils.safeClose(promise, value);
+        }
     }
 
     public boolean sameValue(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2) {

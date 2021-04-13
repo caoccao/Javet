@@ -23,6 +23,13 @@
 
 namespace Javet {
 	namespace Callback {
+		const std::string PROMISE_REJECT_EVENTS[] = {
+			"PromiseRejectWithNoHandler",
+			"PromiseHandlerAddedAfterReject",
+			"PromiseResolveAfterResolved",
+			"PromiseRejectAfterResolved",
+		};
+
 		void Initialize(JNIEnv* jniEnv) {
 
 			jclassJavetCallbackContext = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/JavetCallbackContext"));
@@ -48,10 +55,34 @@ namespace Javet {
 
 			jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
 			jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;)Lcom/caoccao/javet/values/reference/IV8Module;");
+			jmethodIDV8RuntimeReceivePromiseRejectCallback = jniEnv->GetMethodID(jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
 			jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
 		}
 
-		V8MaybeLocalModule ModuleResolveCallback(
+		void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info) {
+			FETCH_JNI_ENV(GlobalJavaVM);
+			auto javetCallbackContextReferencePointer = info.GetParameter();
+			auto v8Context = info.GetIsolate()->GetCurrentContext();
+			jobject externalV8Runtime = Javet::V8Runtime::FromV8Context(v8Context)->externalV8Runtime;
+			javetCallbackContextReferencePointer->RemoveCallbackContext(externalV8Runtime);
+			delete javetCallbackContextReferencePointer;
+			INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteJavetCallbackContextReference);
+		}
+
+		void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info) {
+			auto v8ValueReference = info.GetParameter();
+			v8ValueReference->Close();
+			delete v8ValueReference;
+			INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteWeakCallbackReference);
+		}
+
+		void JavetFunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+			auto v8LocalContextHandle = info.Data().As<v8::BigInt>();
+			auto javetCallbackContextReferencePointer = reinterpret_cast<Javet::Callback::JavetCallbackContextReference*>(v8LocalContextHandle->Int64Value());
+			javetCallbackContextReferencePointer->Invoke(info);
+		}
+
+		V8MaybeLocalModule JavetModuleResolveCallback(
 			V8LocalContext v8Context,
 			V8LocalString specifier,
 #ifndef ENABLE_NODE
@@ -73,6 +104,30 @@ namespace Javet {
 				LOG_DEBUG("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " found");
 				return v8PersistentModule->Get(v8Context->GetIsolate());
 			}
+		}
+
+		void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) {
+			auto promiseRejectEvent = message.GetEvent();
+			auto v8LocalPromise = message.GetPromise();
+			LOG_ERROR("Unhandled promise rejection with event " << PROMISE_REJECT_EVENTS[promiseRejectEvent] << ".");
+			FETCH_JNI_ENV(GlobalJavaVM);
+			auto v8Isolate = v8LocalPromise->GetIsolate();
+			auto v8Context = v8Isolate->GetCurrentContext();
+			auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
+			auto externalV8Runtime = v8Runtime->externalV8Runtime;
+			jobject value;
+			if (promiseRejectEvent == v8::PromiseRejectEvent::kPromiseHandlerAddedAfterReject) {
+				value = Javet::Converter::ToExternalV8ValueUndefined(jniEnv, externalV8Runtime);
+			}
+			else {
+				value = Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, message.GetValue());
+			}
+			jniEnv->CallVoidMethod(
+				externalV8Runtime,
+				jmethodIDV8RuntimeReceivePromiseRejectCallback,
+				promiseRejectEvent,
+				Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8LocalPromise),
+				value);
 		}
 
 		JavetCallbackContextReference::JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext) {

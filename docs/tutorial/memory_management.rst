@@ -98,13 +98,16 @@ Javet offers complete support to all the typed arrays as well as ``DataView`` as
 
 Please refer to `TestV8ValueTypedArray <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java>`_ and `TestV8ValueDataView <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueDataView.java>`_ for sample code snippets.
 
-Built-in Notification for GC
-============================
+GC
+==
 
-In high frequency API calling area, V8 may not keep up with the GC pace that JVM performs. Sometimes, JVM is running out of heap memory whereas V8 holds many zombie objects that are referenced by Javet in JVM. In this case, JVM ignores those objects unless V8 releases them in V8 GC cycle.
+Automatic GC
+------------
+
+Javet has built-in automatic GC in both Node.js mode and V8 mode. Why? In high frequency API calling area, V8 may not keep up with the GC pace that JVM performs. Sometimes, JVM is running out of heap memory whereas V8 holds many zombie objects that are referenced by Javet in JVM. In this case, JVM ignores those objects unless V8 releases them in V8 GC cycle.
 
 Passive GC
-----------
+^^^^^^^^^^
 
 So, how to notify V8 GC that Java heap memory pool is running out of space? Javet automates this via ``V8Host`` and ``V8Notifier``. By default, this feature is disabled. Here is the step-by-step on how to enable this feature.
 
@@ -124,7 +127,7 @@ What happens internally is as following.
 4. Each ``V8Runtime`` performs GC in its own isolate.
 
 Aggressive GC
--------------
+^^^^^^^^^^^^^
 
 Just get ``V8Runtime`` from Javet engine pool that aggressively sends GC notification to idle engine in daemon thread. There is no performance overhead because:
 
@@ -132,5 +135,25 @@ Just get ``V8Runtime`` from Javet engine pool that aggressively sends GC notific
 * Javet engine pool is lock free so that the GC doesn't affect other worker threads.
 
 Of course, this behavior can be turned off by calling ``JavetEngineConfig.setAutoSendGCNotification(false)``.
+
+Manual GC
+---------
+
+There are 3 ways of manually triggering GC in both Node.js mode and V8 mode.
+
+``V8Runtime.await()``
+^^^^^^^^^^^^^^^^^^^^^
+
+This API represents a light-weighted way of giving V8 a hint to perform GC. It actually tells Node.js or V8 runtime to drain the message or task queue. As a side effect of the drain, a GC may occur based on the decision of Node.js or V8 runtime.
+
+``V8Runtime.idleNotificationDeadline(long deadlineInMillis)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This API explicitly tells Node.js or V8 runtime that the application expects a GC to happen in the given milliseconds. Be careful, Node.js or V8 runtime may disregard this instruction.
+
+``V8Runtime.lowMemoryNotification()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It is also used in automatic GC aforementioned.
 
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
