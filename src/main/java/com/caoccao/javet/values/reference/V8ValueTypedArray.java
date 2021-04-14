@@ -18,7 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 
 import java.util.Objects;
 
@@ -51,51 +51,6 @@ import java.util.Objects;
  * </code>
  */
 public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArray {
-
-    /**
-     * The constant NAME_INT_8_ARRAY.
-     */
-    public static final String NAME_INT_8_ARRAY = "Int8Array";
-    /**
-     * The constant NAME_UINT_8_ARRAY.
-     */
-    public static final String NAME_UINT_8_ARRAY = "Uint8Array";
-    /**
-     * The constant NAME_UINT_8_CLAMPED_ARRAY.
-     */
-    public static final String NAME_UINT_8_CLAMPED_ARRAY = "Uint8ClampedArray";
-    /**
-     * The constant NAME_INT_16_ARRAY.
-     */
-    public static final String NAME_INT_16_ARRAY = "Int16Array";
-    /**
-     * The constant NAME_UINT_16_ARRAY.
-     */
-    public static final String NAME_UINT_16_ARRAY = "Uint16Array";
-    /**
-     * The constant NAME_INT_32_ARRAY.
-     */
-    public static final String NAME_INT_32_ARRAY = "Int32Array";
-    /**
-     * The constant NAME_UINT_32_ARRAY.
-     */
-    public static final String NAME_UINT_32_ARRAY = "Uint32Array";
-    /**
-     * The constant NAME_FLOAT_32_ARRAY.
-     */
-    public static final String NAME_FLOAT_32_ARRAY = "Float32Array";
-    /**
-     * The constant NAME_FLOAT_64_ARRAY.
-     */
-    public static final String NAME_FLOAT_64_ARRAY = "Float64Array";
-    /**
-     * The constant NAME_BIG_INT_64_ARRAY.
-     */
-    public static final String NAME_BIG_INT_64_ARRAY = "BigInt64Array";
-    /**
-     * The constant NAME_BIG_UINT_64_ARRAY.
-     */
-    public static final String NAME_BIG_UINT_64_ARRAY = "BigUint64Array";
 
     /**
      * The constant PROPERTY_BYTE_LENGTH.
@@ -141,7 +96,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     /**
      * The Type.
      */
-    protected int type;
+    protected V8ValueReferenceType type;
 
     /**
      * Instantiates a new V8 value typed array.
@@ -151,42 +106,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     V8ValueTypedArray(long handle, int type) {
         super(handle);
-        setType(type);
-    }
-
-    /**
-     * Gets JS constructor name by type.
-     *
-     * @param type the type
-     * @return the name
-     */
-    public static String getName(int type) {
-        switch (type) {
-            case V8ValueReferenceType.Int8Array:
-                return NAME_INT_8_ARRAY;
-            case V8ValueReferenceType.Uint8Array:
-                return NAME_UINT_8_ARRAY;
-            case V8ValueReferenceType.Uint8ClampedArray:
-                return NAME_UINT_8_CLAMPED_ARRAY;
-            case V8ValueReferenceType.Int16Array:
-                return NAME_INT_16_ARRAY;
-            case V8ValueReferenceType.Uint16Array:
-                return NAME_UINT_16_ARRAY;
-            case V8ValueReferenceType.Int32Array:
-                return NAME_INT_32_ARRAY;
-            case V8ValueReferenceType.Uint32Array:
-                return NAME_UINT_32_ARRAY;
-            case V8ValueReferenceType.Float32Array:
-                return NAME_FLOAT_32_ARRAY;
-            case V8ValueReferenceType.Float64Array:
-                return NAME_FLOAT_64_ARRAY;
-            case V8ValueReferenceType.BigInt64Array:
-                return NAME_BIG_INT_64_ARRAY;
-            case V8ValueReferenceType.BigUint64Array:
-                return NAME_BIG_UINT_64_ARRAY;
-            default:
-                return null;
-        }
+        setType(V8ValueReferenceType.parse(type));
     }
 
     @Override
@@ -216,7 +136,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return type;
     }
 
@@ -225,25 +145,25 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      *
      * @param type the type
      */
-    protected void setType(int type) {
+    protected void setType(V8ValueReferenceType type) {
         switch (type) {
-            case V8ValueReferenceType.Int8Array:
-            case V8ValueReferenceType.Uint8Array:
-            case V8ValueReferenceType.Uint8ClampedArray:
+            case Int8Array:
+            case Uint8Array:
+            case Uint8ClampedArray:
                 sizeInBytes = ONE_BYTE_PER_VALUE;
                 break;
-            case V8ValueReferenceType.Int16Array:
-            case V8ValueReferenceType.Uint16Array:
+            case Int16Array:
+            case Uint16Array:
                 sizeInBytes = TWO_BYTES_PER_VALUE;
                 break;
-            case V8ValueReferenceType.Int32Array:
-            case V8ValueReferenceType.Uint32Array:
-            case V8ValueReferenceType.Float32Array:
+            case Int32Array:
+            case Uint32Array:
+            case Float32Array:
                 sizeInBytes = FOUR_BYTES_PER_VALUE;
                 break;
-            case V8ValueReferenceType.Float64Array:
-            case V8ValueReferenceType.BigInt64Array:
-            case V8ValueReferenceType.BigUint64Array:
+            case Float64Array:
+            case BigInt64Array:
+            case BigUint64Array:
                 sizeInBytes = EIGHT_BYTES_PER_VALUE;
                 break;
             default:

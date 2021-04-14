@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.IV8Value;
 
@@ -27,7 +28,7 @@ public interface IV8ValueReference extends IV8Value {
 
     long getHandle();
 
-    int getType();
+    V8ValueReferenceType getType();
 
     boolean isWeak() throws JavetException;
 

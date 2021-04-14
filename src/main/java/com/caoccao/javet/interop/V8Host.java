@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
 import com.caoccao.javet.interfaces.IJavetLogger;

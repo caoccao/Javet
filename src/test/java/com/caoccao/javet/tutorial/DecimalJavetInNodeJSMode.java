@@ -20,7 +20,7 @@ package com.caoccao.javet.tutorial;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interop.JSRuntimeType;
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;

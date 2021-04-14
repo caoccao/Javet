@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetLibraryNotLoadedException;
 import org.junit.jupiter.api.Test;
 

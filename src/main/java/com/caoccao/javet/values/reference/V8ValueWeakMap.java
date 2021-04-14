@@ -20,7 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetNotSupportedException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueString;
 
 import java.util.Objects;
@@ -57,7 +57,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return V8ValueReferenceType.WeakMap;
     }
 

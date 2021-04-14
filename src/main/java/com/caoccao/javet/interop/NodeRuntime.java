@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.node.modules.INodeModule;
 import com.caoccao.javet.annotations.NodeModule;

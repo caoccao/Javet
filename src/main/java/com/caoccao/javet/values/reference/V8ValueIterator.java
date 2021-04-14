@@ -19,7 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 
 @SuppressWarnings("unchecked")
 public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements IV8ValueIterator<T> {
@@ -32,7 +32,7 @@ public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Iterator;
     }
 

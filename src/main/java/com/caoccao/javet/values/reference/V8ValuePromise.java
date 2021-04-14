@@ -19,7 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 
 public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
 
@@ -46,7 +46,7 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Promise;
     }
 

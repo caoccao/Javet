@@ -18,7 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 
 public class V8ValueError extends V8ValueObject {
     protected static final String STACK = "stack";
@@ -29,7 +29,7 @@ public class V8ValueError extends V8ValueObject {
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Error;
     }
 

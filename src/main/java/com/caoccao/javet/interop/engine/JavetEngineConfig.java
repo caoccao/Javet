@@ -18,7 +18,7 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interop.JSRuntimeType;
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 

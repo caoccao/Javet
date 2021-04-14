@@ -18,7 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 
 import java.text.MessageFormat;
 
@@ -32,7 +32,7 @@ public class V8ValueSymbol extends V8ValueObject {
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Symbol;
     }
 
