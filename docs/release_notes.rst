@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.4
+-----
+
+* Added ``gcBeforeEngineClose`` to ``JavetEngineConfig``
+* Added ``JavetCallbackException``
+
 0.8.3
 -----
 

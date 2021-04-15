@@ -417,6 +417,13 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default List<JavetCallbackContext> setFunctions(
             Object functionCallbackReceiver,
+            IJavetConverter converter)
+            throws JavetException {
+        return setFunctions(functionCallbackReceiver, false, new JavetObjectConverter());
+    }
+
+    default List<JavetCallbackContext> setFunctions(
+            Object functionCallbackReceiver,
             boolean thisObjectRequired,
             IJavetConverter converter)
             throws JavetException {

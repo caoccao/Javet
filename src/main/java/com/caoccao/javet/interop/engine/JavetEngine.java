@@ -47,6 +47,9 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     protected void close(boolean forceClose) throws JavetException {
         setActive(false);
         if (forceClose) {
+            if (iJavetEnginePool.getConfig().isGcBeforeEngineClose()) {
+                v8Runtime.lowMemoryNotification();
+            }
             v8Runtime.close(true);
         } else {
             iJavetEnginePool.releaseEngine(this);

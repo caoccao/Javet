@@ -17,8 +17,8 @@
 
 package com.caoccao.javet.interop.engine;
 
-import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.enums.JSRuntimeType;
+import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
@@ -43,6 +43,7 @@ public final class JavetEngineConfig {
     private boolean autoSendGCNotification;
     private int defaultEngineGuardTimeoutMillis;
     private int engineGuardCheckIntervalMillis;
+    private boolean gcBeforeEngineClose;
     private JSRuntimeType jsRuntimeType;
     private int maxEngineUsedCount;
     private int poolDaemonCheckIntervalMillis;
@@ -57,13 +58,14 @@ public final class JavetEngineConfig {
         reset();
     }
 
-    public void reset() {
+    public JavetEngineConfig reset() {
         javetLogger = DEFAULT_JAVET_LOGGER;
         globalName = DEFAULT_GLOBAL_NAME;
         allowEval = false;
         autoSendGCNotification = true;
         defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;
         engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
+        gcBeforeEngineClose = false;
         jsRuntimeType = DEFAULT_JS_RUNTIME_TYPE;
         maxEngineUsedCount = DEFAULT_MAX_ENGINE_USED_COUNT;
         final int cpuCount = JavetOSUtils.getCPUCount();
@@ -73,22 +75,34 @@ public final class JavetEngineConfig {
         poolShutdownTimeoutSeconds = DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS;
         poolDaemonCheckIntervalMillis = DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS;
         resetEngineTimeoutSeconds = DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS;
+        return this;
+    }
+
+    public boolean isGcBeforeEngineClose() {
+        return gcBeforeEngineClose;
+    }
+
+    public JavetEngineConfig setGcBeforeEngineClose(boolean gcBeforeEngineClose) {
+        this.gcBeforeEngineClose = gcBeforeEngineClose;
+        return this;
     }
 
     public boolean isAllowEval() {
         return allowEval;
     }
 
-    public void setAllowEval(boolean allowEval) {
+    public JavetEngineConfig setAllowEval(boolean allowEval) {
         this.allowEval = allowEval;
+        return this;
     }
 
     public boolean isAutoSendGCNotification() {
         return autoSendGCNotification;
     }
 
-    public void setAutoSendGCNotification(boolean autoSendGCNotification) {
+    public JavetEngineConfig setAutoSendGCNotification(boolean autoSendGCNotification) {
         this.autoSendGCNotification = autoSendGCNotification;
+        return this;
     }
 
     public ExecutorService getExecutorService() {
@@ -103,97 +117,109 @@ public final class JavetEngineConfig {
         return jsRuntimeType;
     }
 
-    public void setJSRuntimeType(JSRuntimeType jsRuntimeType) {
+    public JavetEngineConfig setJSRuntimeType(JSRuntimeType jsRuntimeType) {
         Objects.requireNonNull(jsRuntimeType);
         this.jsRuntimeType = jsRuntimeType;
+        return this;
     }
 
     public int getPoolShutdownTimeoutSeconds() {
         return poolShutdownTimeoutSeconds;
     }
 
-    public void setPoolShutdownTimeoutSeconds(int poolShutdownTimeoutSeconds) {
+    public JavetEngineConfig setPoolShutdownTimeoutSeconds(int poolShutdownTimeoutSeconds) {
         this.poolShutdownTimeoutSeconds = poolShutdownTimeoutSeconds;
+        return this;
     }
 
     public int getEngineGuardCheckIntervalMillis() {
         return engineGuardCheckIntervalMillis;
     }
 
-    public void setEngineGuardCheckIntervalMillis(int engineGuardCheckIntervalMillis) {
+    public JavetEngineConfig setEngineGuardCheckIntervalMillis(int engineGuardCheckIntervalMillis) {
         this.engineGuardCheckIntervalMillis = engineGuardCheckIntervalMillis;
+        return this;
     }
 
     public String getGlobalName() {
         return globalName;
     }
 
-    public void setGlobalName(String globalName) {
+    public JavetEngineConfig setGlobalName(String globalName) {
         this.globalName = globalName;
+        return this;
     }
 
     public int getDefaultEngineGuardTimeoutMillis() {
         return defaultEngineGuardTimeoutMillis;
     }
 
-    public void setDefaultEngineGuardTimeoutMillis(int defaultEngineGuardTimeoutMillis) {
+    public JavetEngineConfig setDefaultEngineGuardTimeoutMillis(int defaultEngineGuardTimeoutMillis) {
         this.defaultEngineGuardTimeoutMillis = defaultEngineGuardTimeoutMillis;
+        return this;
     }
 
     public int getResetEngineTimeoutSeconds() {
         return resetEngineTimeoutSeconds;
     }
 
-    public void setResetEngineTimeoutSeconds(int resetEngineTimeoutSeconds) {
+    public JavetEngineConfig setResetEngineTimeoutSeconds(int resetEngineTimeoutSeconds) {
         this.resetEngineTimeoutSeconds = resetEngineTimeoutSeconds;
+        return this;
     }
 
     public int getMaxEngineUsedCount() {
         return maxEngineUsedCount;
     }
 
-    public void setMaxEngineUsedCount(int maxEngineUsedCount) {
+    public JavetEngineConfig setMaxEngineUsedCount(int maxEngineUsedCount) {
         this.maxEngineUsedCount = maxEngineUsedCount;
+        return this;
     }
 
     public IJavetLogger getJavetLogger() {
         return javetLogger;
     }
 
-    public void setJavetLogger(IJavetLogger javetLogger) {
+    public JavetEngineConfig setJavetLogger(IJavetLogger javetLogger) {
         Objects.requireNonNull(javetLogger);
         this.javetLogger = javetLogger;
+        return this;
     }
 
     public int getPoolMaxSize() {
         return poolMaxSize;
     }
 
-    public void setPoolMaxSize(int poolMaxSize) {
+    public JavetEngineConfig setPoolMaxSize(int poolMaxSize) {
         this.poolMaxSize = poolMaxSize;
+        return this;
     }
 
     public int getPoolMinSize() {
         return poolMinSize;
     }
 
-    public void setPoolMinSize(int poolMinSize) {
+    public JavetEngineConfig setPoolMinSize(int poolMinSize) {
         this.poolMinSize = poolMinSize;
+        return this;
     }
 
     public int getPoolIdleTimeoutSeconds() {
         return poolIdleTimeoutSeconds;
     }
 
-    public void setPoolIdleTimeoutSeconds(int poolIdleTimeoutSeconds) {
+    public JavetEngineConfig setPoolIdleTimeoutSeconds(int poolIdleTimeoutSeconds) {
         this.poolIdleTimeoutSeconds = poolIdleTimeoutSeconds;
+        return this;
     }
 
     public int getPoolDaemonCheckIntervalMillis() {
         return poolDaemonCheckIntervalMillis;
     }
 
-    public void setPoolDaemonCheckIntervalMillis(int poolDaemonCheckIntervalMillis) {
+    public JavetEngineConfig setPoolDaemonCheckIntervalMillis(int poolDaemonCheckIntervalMillis) {
         this.poolDaemonCheckIntervalMillis = poolDaemonCheckIntervalMillis;
+        return this;
     }
 }
