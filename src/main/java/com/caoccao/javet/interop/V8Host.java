@@ -73,6 +73,16 @@ public final class V8Host implements AutoCloseable {
         v8Notifier = new V8Notifier(v8RuntimeMap);
     }
 
+    public static V8Host getInstance(JSRuntimeType jsRuntimeType) {
+        Objects.requireNonNull(jsRuntimeType);
+        if (jsRuntimeType.isV8()) {
+            return getV8Instance();
+        } else if (jsRuntimeType.isNode()) {
+            return getNodeInstance();
+        }
+        return null;
+    }
+
     /**
      * Gets Node instance.
      * <p>
@@ -166,7 +176,7 @@ public final class V8Host implements AutoCloseable {
     }
 
     public long[] getInternalStatistic() {
-       return v8Native.getInternalStatistic();
+        return v8Native.getInternalStatistic();
     }
 
     public String getJavetVersion() {
