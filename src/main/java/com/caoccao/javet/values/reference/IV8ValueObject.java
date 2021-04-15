@@ -425,9 +425,11 @@ public interface IV8ValueObject extends IV8ValueReference {
             if (method.isAnnotationPresent(V8Function.class)) {
                 V8Function v8Function = method.getAnnotation(V8Function.class);
                 String functionName = v8Function.name();
+                if (functionName == null || functionName.length() == 0) {
+                    functionName = method.getName();
+                }
                 // Duplicated functions will be dropped.
-                if (functionName != null && functionName.length() > 0
-                        && !functionMap.containsKey(functionName)) {
+                if (!functionMap.containsKey(functionName)) {
                     functionMap.put(functionName, method);
                 }
             } else if (method.isAnnotationPresent(V8RuntimeSetter.class)) {

@@ -46,7 +46,7 @@ public class MockAnnotationBasedCallbackReceiver {
     }
 
     // Instance method requiring V8Runtime without converter.
-    @V8Function(name = "generateArrayWithoutConverter")
+    @V8Function
     public V8ValueArray generateArrayWithoutConverter() throws JavetException {
         count.incrementAndGet();
         V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
