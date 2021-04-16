@@ -21,7 +21,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.IV8Cloneable;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.values.primitive.V8ValueDouble;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
@@ -57,6 +56,15 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
     }
 
     /**
+     * Is null or undefined.
+     *
+     * @return the boolean
+     */
+    default boolean isNullOrUndefined() {
+        return isNull() || isUndefined();
+    }
+
+    /**
      * Is undefined.
      *
      * @return the boolean
@@ -70,7 +78,7 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      * <p>
      * The behavior is different from JS behavior but is the same as Java behavior.
      *
-     * @param v8Value the v 8 value
+     * @param v8Value the V8 value
      * @return the boolean
      * @throws JavetException the javet exception
      */

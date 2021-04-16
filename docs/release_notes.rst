@@ -7,6 +7,7 @@ Release Notes
 
 * Added ``gcBeforeEngineClose`` to ``JavetEngineConfig``
 * Added ``JavetCallbackException``
+* Added ``IV8Value#isNullOrUndefined``
 
 0.8.3
 -----
