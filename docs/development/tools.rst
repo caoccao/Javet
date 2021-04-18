@@ -20,7 +20,7 @@ For now, Gradle v6.7 + Kotlin DSL constructs the build system.
 Node.js
 =================
 
-Node.js 14.16.0+ is supported.
+Node.js 14.16.1+ is supported.
 
 Maven (Optional)
 ================
