@@ -109,16 +109,23 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testTerminateExecution() throws JavetException {
+        final int maxCycle = 3;
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.getExecutor("var count = 0;").executeVoid();
             V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
             // Create a daemon thread monitoring the V8 runtime status.
             Thread daemonThread = new Thread(() -> {
                 try {
+                    int cycle = 0;
                     // V8 runtime isInUse() does not require lock.
                     while (true) {
                         if (v8Runtime.isInUse() || globalObject.getInteger("count") > 0) {
-                            break;
+                            ++cycle;
+                            if (cycle >= maxCycle) {
+                                break;
+                            }
+                        } else {
+                            cycle = 0;
                         }
                         try {
                             TimeUnit.MILLISECONDS.sleep(1);

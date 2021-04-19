@@ -174,6 +174,6 @@ Build Node.js on Windows
 
 * Clone the source code.
 * Checkout a proper version.
-* Execute ``vcbuild.bat static``.
+* Execute ``vcbuild.bat static without-intl``.
 
 [`Home <../../README.rst>`_] [`Development <index.rst>`_]
