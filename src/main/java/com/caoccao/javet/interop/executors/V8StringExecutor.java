@@ -47,7 +47,7 @@ public class V8StringExecutor extends BaseV8Executor {
     }
 
     @Override
-    public String getScriptString() throws JavetIOException {
+    public String getScriptString() throws JavetException {
         return scriptString;
     }
 

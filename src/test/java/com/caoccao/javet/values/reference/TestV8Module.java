@@ -43,6 +43,11 @@ public class TestV8Module extends BaseTestJavetRuntime {
         IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
         try (V8Module v8Module = iV8Executor.compileV8Module()) {
             if (v8Runtime.getJSRuntimeType().isNode()) {
+                v8Runtime.getExecutor("const process = require('process');\n" +
+                        "var globalReason = null;\n" +
+                        "process.on('unhandledRejection', (reason, promise) => {\n" +
+                        "  globalReason = reason;\n" +
+                        "});").executeVoid();
                 try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
                     assertTrue(v8ValuePromise.isFulfilled());
                     assertTrue(v8ValuePromise.getResult().isUndefined());

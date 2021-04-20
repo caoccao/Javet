@@ -17,8 +17,13 @@
 
 package com.caoccao.javet.interop.executors;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetIOException;
+import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.node.modules.NodeModuleModule;
+import com.caoccao.javet.node.modules.NodeModuleProcess;
+import com.caoccao.javet.values.primitive.V8ValueString;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +31,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class V8PathExecutor extends V8StringExecutor {
+    public static final String NODE_GLOBAL_DIRNAME = "__dirname";
+    public static final String NODE_GLOBAL_FILENAME = "__filename";
     protected Path scriptPath;
 
     public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) {
@@ -34,9 +41,16 @@ public class V8PathExecutor extends V8StringExecutor {
     }
 
     @Override
-    public String getScriptString() throws JavetIOException {
+    public String getScriptString() throws JavetException {
         if (scriptString == null) {
             try {
+                if (v8Runtime.getJSRuntimeType().isNode()) {
+                    NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
+                    nodeRuntime.getGlobalObject().set(NODE_GLOBAL_DIRNAME, new V8ValueString(scriptPath.getParent().toString()));
+                    nodeRuntime.getGlobalObject().set(NODE_GLOBAL_FILENAME, new V8ValueString(scriptPath.toString()));
+                    nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(scriptPath.getParent());
+                    nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(scriptPath.getParent());
+                }
                 scriptString = new String(Files.readAllBytes(scriptPath), StandardCharsets.UTF_8);
                 v8ScriptOrigin.setResourceName(scriptPath.toFile().getAbsolutePath());
             } catch (IOException e) {

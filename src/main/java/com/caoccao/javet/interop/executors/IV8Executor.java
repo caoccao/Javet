@@ -65,7 +65,7 @@ public interface IV8Executor extends IV8Executable {
         return this;
     }
 
-    String getScriptString() throws JavetIOException;
+    String getScriptString() throws JavetException;
 
     V8Runtime getV8Runtime();
 
