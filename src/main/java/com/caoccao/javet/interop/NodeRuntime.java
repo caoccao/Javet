@@ -38,6 +38,8 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public class NodeRuntime extends V8Runtime {
     public static final String FUNCTION_REQUIRE = "require";
+    public static final String PROPERTY_DIRNAME = "__dirname";
+    public static final String PROPERTY_FILENAME = "__filename";
     protected Map<String, INodeModule> nodeModuleMap;
 
     /**

@@ -321,11 +321,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         this.globalName = globalName;
     }
 
-    public IV8Executor getExecutor(File scriptFile) {
+    public IV8Executor getExecutor(File scriptFile) throws JavetException {
         return getExecutor(scriptFile.toPath());
     }
 
-    public IV8Executor getExecutor(Path scriptPath) {
+    public IV8Executor getExecutor(Path scriptPath) throws JavetException {
         return new V8PathExecutor(this, scriptPath);
     }
 

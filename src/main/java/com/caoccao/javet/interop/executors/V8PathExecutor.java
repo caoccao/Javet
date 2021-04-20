@@ -31,28 +31,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class V8PathExecutor extends V8StringExecutor {
-    public static final String NODE_GLOBAL_DIRNAME = "__dirname";
-    public static final String NODE_GLOBAL_FILENAME = "__filename";
     protected Path scriptPath;
 
-    public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) {
+    public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) throws JavetException {
         super(v8Runtime);
         this.scriptPath = scriptPath;
+        setResourceName(scriptPath.toFile().getAbsolutePath());
     }
 
     @Override
     public String getScriptString() throws JavetException {
         if (scriptString == null) {
             try {
-                if (v8Runtime.getJSRuntimeType().isNode()) {
-                    NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
-                    nodeRuntime.getGlobalObject().set(NODE_GLOBAL_DIRNAME, new V8ValueString(scriptPath.getParent().toString()));
-                    nodeRuntime.getGlobalObject().set(NODE_GLOBAL_FILENAME, new V8ValueString(scriptPath.toString()));
-                    nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(scriptPath.getParent());
-                    nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(scriptPath.getParent());
-                }
                 scriptString = new String(Files.readAllBytes(scriptPath), StandardCharsets.UTF_8);
-                v8ScriptOrigin.setResourceName(scriptPath.toFile().getAbsolutePath());
             } catch (IOException e) {
                 throw JavetIOException.failedToReadPath(scriptPath, e);
             }

@@ -18,12 +18,18 @@
 package com.caoccao.javet.interop.executors;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.interop.IV8Executable;
+import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
+import com.caoccao.javet.node.modules.NodeModuleModule;
+import com.caoccao.javet.node.modules.NodeModuleProcess;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
+
+import java.io.File;
+import java.nio.file.Path;
 
 @SuppressWarnings("unchecked")
 public interface IV8Executor extends IV8Executable {
@@ -51,8 +57,17 @@ public interface IV8Executor extends IV8Executable {
         return getV8ScriptOrigin().getResourceName();
     }
 
-    default IV8Executor setResourceName(String resourceName) {
+    default IV8Executor setResourceName(String resourceName) throws JavetException {
         getV8ScriptOrigin().setResourceName(resourceName);
+        V8Runtime v8Runtime = getV8Runtime();
+        if (v8Runtime.getJSRuntimeType().isNode()) {
+            NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
+            Path resourcePath = new File(resourceName).toPath();
+            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, new V8ValueString(resourcePath.getParent().toString()));
+            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, new V8ValueString(resourcePath.toString()));
+            nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(resourcePath.getParent());
+            nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(resourcePath.getParent());
+        }
         return this;
     }
 
