@@ -22,7 +22,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 group = "com.caoccao.javet"
