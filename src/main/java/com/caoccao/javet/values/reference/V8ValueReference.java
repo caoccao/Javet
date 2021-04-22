@@ -26,6 +26,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 public abstract class V8ValueReference extends V8Value implements IV8ValueReference {
+    public static final long INVALID_HANDLE = 0L;
     protected long handle;
     protected boolean weak;
 
@@ -44,7 +45,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     public void checkV8Runtime() throws
             JavetV8RuntimeNotRegisteredException, JavetV8RuntimeAlreadyClosedException,
             JavetV8ValueAlreadyClosedException {
-        if (handle == 0L) {
+        if (handle == INVALID_HANDLE) {
             throw new JavetV8ValueAlreadyClosedException();
         }
         super.checkV8Runtime();
@@ -64,12 +65,12 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void close(boolean forceClose) throws JavetException {
-        if (handle == 0L) {
+        if (handle == INVALID_HANDLE) {
             throw new JavetV8ValueAlreadyClosedException();
         }
         if (forceClose || !isWeak()) {
             removeReference();
-            handle = 0L;
+            handle = INVALID_HANDLE;
             v8Runtime = null;
             weak = false;
         }
@@ -118,17 +119,10 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public boolean sameValue(V8Value v8Value) throws JavetException {
-        if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
+        if (!(v8Value instanceof V8ValueReference)) {
             return false;
         }
-        if (v8Value.getClass() != this.getClass()) {
-            return false;
-        }
-        V8ValueReference v8ValueReference = (V8ValueReference) v8Value;
-        if (getHandle() == v8ValueReference.getHandle()) {
-            return true;
-        }
-        return v8Runtime.sameValue(this, v8ValueReference);
+        return ((V8ValueReference) v8Value).getHandle() == getHandle();
     }
 
     @Override
@@ -146,17 +140,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public boolean strictEquals(V8Value v8Value) throws JavetException {
-        if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
-            return false;
-        }
-        if (v8Value.getClass() != this.getClass()) {
-            return false;
-        }
-        V8ValueReference v8ValueReference = (V8ValueReference) v8Value;
-        if (getHandle() == v8ValueReference.getHandle()) {
-            return true;
-        }
-        return v8Runtime.strictEquals(this, v8ValueReference);
+        return sameValue(v8Value);
     }
 
     @Override

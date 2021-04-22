@@ -17,9 +17,9 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 
 import java.util.Objects;
 
