@@ -29,10 +29,10 @@ public class JavetV8CallbackSignatureMismatchException extends JavetException {
     }
 
     public static JavetV8CallbackSignatureMismatchException parameterSizeMismatch(
-            int expectedSize, int actualSize) {
+            String methodName, int expectedSize, int actualSize) {
         return new JavetV8CallbackSignatureMismatchException(
-                "expected parameter size is {0}, actual parameter size is {1}",
-                expectedSize, actualSize);
+                "method name is {0}, expected parameter size is {1}, actual parameter size is {2}",
+                methodName, expectedSize, actualSize);
     }
 
     public static JavetV8CallbackSignatureMismatchException parameterTypeMismatch(

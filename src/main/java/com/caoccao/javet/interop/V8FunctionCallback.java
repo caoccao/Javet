@@ -201,7 +201,7 @@ public final class V8FunctionCallback {
                     } else {
                         if (method.getParameterCount() != length) {
                             throw JavetV8CallbackSignatureMismatchException.parameterSizeMismatch(
-                                    length, method.getParameterCount());
+                                    method.getName(), length, method.getParameterCount());
                         }
                         for (int i = 0; i < parameterTypes.length; ++i) {
                             objectValues.add(convert(converter, parameterTypes[i], (V8Value) values.get(i)));
