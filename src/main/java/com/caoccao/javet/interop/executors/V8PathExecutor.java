@@ -17,8 +17,13 @@
 
 package com.caoccao.javet.interop.executors;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetIOException;
+import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.node.modules.NodeModuleModule;
+import com.caoccao.javet.node.modules.NodeModuleProcess;
+import com.caoccao.javet.values.primitive.V8ValueString;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,17 +33,17 @@ import java.nio.file.Path;
 public class V8PathExecutor extends V8StringExecutor {
     protected Path scriptPath;
 
-    public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) {
+    public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) throws JavetException {
         super(v8Runtime);
         this.scriptPath = scriptPath;
+        setResourceName(scriptPath.toFile().getAbsolutePath());
     }
 
     @Override
-    public String getScriptString() throws JavetIOException {
+    public String getScriptString() throws JavetException {
         if (scriptString == null) {
             try {
                 scriptString = new String(Files.readAllBytes(scriptPath), StandardCharsets.UTF_8);
-                v8ScriptOrigin.setResourceName(scriptPath.toFile().getAbsolutePath());
             } catch (IOException e) {
                 throw JavetIOException.failedToReadPath(scriptPath, e);
             }

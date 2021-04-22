@@ -15,11 +15,11 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.interop;
+package com.caoccao.javet.enums;
 
 public enum JSRuntimeType {
     Node("node", "8.4.371.19-node.18"),
-    V8("v8", "8.9.255");
+    V8("v8", "9.0.257");
 
     private String name;
     private String version;

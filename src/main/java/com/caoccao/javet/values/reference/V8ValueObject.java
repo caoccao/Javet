@@ -21,7 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 
 import java.util.Objects;
@@ -99,7 +99,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Object;
     }
 
@@ -125,6 +125,21 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public boolean sameValue(V8Value v8Value) throws JavetException {
+        if (v8Value == null || !(v8Value instanceof V8ValueObject)) {
+            return false;
+        }
+        if (v8Value.getClass() != this.getClass()) {
+            return false;
+        }
+        V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
+        if (getHandle() == v8ValueObject.getHandle()) {
+            return true;
+        }
+        return v8Runtime.sameValue(this, v8ValueObject);
+    }
+
+    @Override
     public boolean set(V8Value key, V8Value value) throws JavetException {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
@@ -138,6 +153,21 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         Objects.requireNonNull(value);
         checkV8Runtime();
         return v8Runtime.setProperty(this, key, value);
+    }
+
+    @Override
+    public boolean strictEquals(V8Value v8Value) throws JavetException {
+        if (!(v8Value instanceof V8ValueObject)) {
+            return false;
+        }
+        if (v8Value.getClass() != this.getClass()) {
+            return false;
+        }
+        V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
+        if (getHandle() == v8ValueObject.getHandle()) {
+            return true;
+        }
+        return v8Runtime.strictEquals(this, v8ValueObject);
     }
 
     @Override

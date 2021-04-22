@@ -17,7 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 
 public class V8ValueRegExp extends V8ValueObject {
 
@@ -26,7 +26,7 @@ public class V8ValueRegExp extends V8ValueObject {
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return V8ValueReferenceType.RegExp;
     }
 }

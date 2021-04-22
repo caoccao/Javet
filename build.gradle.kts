@@ -22,11 +22,10 @@ plugins {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 group = "com.caoccao.javet"
-version = "0.8.3"
+version = "0.8.4"
 
 repositories {
     mavenCentral()

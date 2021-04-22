@@ -18,8 +18,7 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.BaseTestJavetPool;
-import com.caoccao.javet.interop.JSRuntimeType;
-import com.caoccao.javet.interop.V8Host;
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interop.V8Locker;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.executors.IV8Executor;

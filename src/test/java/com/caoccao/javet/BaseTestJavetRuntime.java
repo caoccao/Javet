@@ -18,6 +18,7 @@
 package com.caoccao.javet;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.V8Runtime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +34,14 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
     public void afterEach() throws JavetException {
         assertEquals(0, v8Runtime.getCallbackContextCount(),
                 "Callback context count should be 0 after test case is ended.");
-        assertEquals(0, v8Runtime.getReferenceCount(),
-                "Reference count should be 0 after test case is ended.");
+        if (v8Runtime.getJSRuntimeType().isNode()) {
+            NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
+            assertEquals(nodeRuntime.getNodeModuleCount(), nodeRuntime.getReferenceCount(),
+                    "Reference count should be the node module count after test case is ended.");
+        }else {
+            assertEquals(0, v8Runtime.getReferenceCount(),
+                    "Reference count should be 0 after test case is ended.");
+        }
         v8Runtime.close();
         assertEquals(0, v8Host.getV8RuntimeCount());
         // Memory leak detection

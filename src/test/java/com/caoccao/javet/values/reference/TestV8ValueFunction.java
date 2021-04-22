@@ -21,6 +21,7 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetV8ValueAlreadyClosedException;
+import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.utils.JavetCallbackContext;
@@ -39,9 +40,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testAnnotationBasedFunctions() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver = new MockAnnotationBasedCallbackReceiver();
-            List<JavetCallbackContext> javetCallbackContexts = v8ValueObject.setFunctions(mockAnnotationBasedCallbackReceiver);
-            assertEquals(13, javetCallbackContexts.size());
+            MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
+                    new MockAnnotationBasedCallbackReceiver();
+            List<JavetCallbackContext> javetCallbackContexts =
+                    v8ValueObject.setFunctions(mockAnnotationBasedCallbackReceiver);
+            assertEquals(14, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -428,6 +431,32 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("joinWithoutThis");
         }
         assertTrue(mockCallbackReceiver.isCalled());
+        v8Runtime.requestGarbageCollectionForTesting(true);
+    }
+
+    @Test
+    public void testContextScope() throws JavetException {
+        v8Runtime.getExecutor("var c = {};" +
+                "var x = {\n" +
+                "  contextScope: function(anonymousFunction) {\n" +
+                "    return anonymousFunction.call();\n" +
+                "  }\n" +
+                "}\n" +
+                "\n" +
+                "function outerFunction() {\n" +
+                "  const a = 1;\n" +
+                "  c['d'] = 3;\n" +
+                "  return x.contextScope(() => a);\n" +
+                "};").executeVoid();
+        IV8Executor iV8Executor = v8Runtime.getExecutor("outerFunction()");
+        assertEquals(1, iV8Executor.executeInteger());
+        try (V8ValueObject v8ValueObject = v8Runtime.getGlobalObject().get("x")) {
+            MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
+                    new MockAnnotationBasedCallbackReceiver();
+            v8ValueObject.setFunctions(mockAnnotationBasedCallbackReceiver);
+            assertEquals(3, iV8Executor.executeInteger());
+            v8ValueObject.forEach((key) -> v8ValueObject.delete(key));
+        }
         v8Runtime.requestGarbageCollectionForTesting(true);
     }
 

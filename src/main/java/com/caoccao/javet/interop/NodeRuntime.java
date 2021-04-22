@@ -17,11 +17,14 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.annotations.NodeModule;
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.node.modules.INodeModule;
-import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.lang.reflect.Constructor;
@@ -34,6 +37,9 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public class NodeRuntime extends V8Runtime {
+    public static final String FUNCTION_REQUIRE = "require";
+    public static final String PROPERTY_DIRNAME = "__dirname";
+    public static final String PROPERTY_FILENAME = "__filename";
     protected Map<String, INodeModule> nodeModuleMap;
 
     /**
@@ -73,7 +79,9 @@ public class NodeRuntime extends V8Runtime {
             if (nodeModuleClass == NodeModuleProcess.class) {
                 moduleObject = getGlobalObject().get(name);
             } else {
-                moduleObject = getExecutor("require('" + name + "')").execute();
+                try (V8ValueFunction requireFunction = getGlobalObject().get(FUNCTION_REQUIRE)) {
+                    moduleObject = requireFunction.call(null, new V8ValueString(name));
+                }
             }
             try {
                 Constructor<NodeModule> constructor = nodeModuleClass.getConstructor(

@@ -30,7 +30,7 @@ This Python script is for patching Node.js on Linux.
 1. Clone Node.js.
 2. Checkout to proper version.
 3. Run the script: `python3 patch_node_build.py -p root_path_to_node_js`
-4. Run `./configure --enable-static --fully-static --without-intl` under `root_path_to_node_js`.
+4. Run `./configure --enable-static --without-intl` under `root_path_to_node_js`.
 5. Run the script again: `python3 patch_node_build.py -p root_path_to_node_js`
 6. Run `make -j4` under `root_path_to_node_js`.
 

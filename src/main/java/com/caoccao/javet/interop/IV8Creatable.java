@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.primitive.*;
@@ -45,7 +46,7 @@ public interface IV8Creatable {
 
     V8ValueSet createV8ValueSet() throws JavetException;
 
-    V8ValueTypedArray createV8ValueTypedArray(int type, int length) throws JavetException;
+    V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException;
 
     V8ValueUndefined createV8ValueUndefined();
 }

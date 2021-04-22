@@ -18,21 +18,8 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8CallbackAlreadyRegisteredException;
-import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
-import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.utils.JavetCallbackContext;
-import com.caoccao.javet.utils.JavetResourceUtils;
-import com.caoccao.javet.utils.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.V8ValueReferenceType;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
@@ -55,7 +42,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public int getType() {
+    public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Function;
     }
 }

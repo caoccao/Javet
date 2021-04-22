@@ -47,7 +47,7 @@ public abstract class BaseV8Executor implements IV8Executor {
     public abstract <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
 
     @Override
-    public abstract String getScriptString() throws JavetIOException;
+    public abstract String getScriptString() throws JavetException;
 
     @Override
     public V8Runtime getV8Runtime() {

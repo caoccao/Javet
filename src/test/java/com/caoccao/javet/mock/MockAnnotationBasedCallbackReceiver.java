@@ -5,6 +5,7 @@ import com.caoccao.javet.annotations.V8RuntimeSetter;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,6 +22,13 @@ public class MockAnnotationBasedCallbackReceiver {
     @V8Function(name = "staticEcho")
     public static String staticEcho(String str) {
         return str;
+    }
+
+    @V8Function
+    public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
+        try (V8ValueFunction newV8ValueFunction = v8Runtime.getExecutor("() => c['d']").execute()) {
+            return newV8ValueFunction.callInteger(null);
+        }
     }
 
     // Instance method with same name and same signature.
@@ -46,7 +54,7 @@ public class MockAnnotationBasedCallbackReceiver {
     }
 
     // Instance method requiring V8Runtime without converter.
-    @V8Function(name = "generateArrayWithoutConverter")
+    @V8Function
     public V8ValueArray generateArrayWithoutConverter() throws JavetException {
         count.incrementAndGet();
         V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();

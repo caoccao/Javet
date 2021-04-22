@@ -2,6 +2,15 @@
 Release Notes
 =============
 
+0.8.4
+-----
+
+* Added ``gcBeforeEngineClose`` to ``JavetEngineConfig``
+* Added ``JavetCallbackException``
+* Added ``IV8Value#isNullOrUndefined``
+* Upgraded Node.js to ``v14.16.1`` (2021-04-06)
+* Upgraded V8 to ``v9.0.257`` (2021-02-24)
+
 0.8.3
 -----
 

@@ -143,7 +143,9 @@ namespace Javet {
 			V8IsolateScope v8IsolateScope(v8Isolate);
 			V8HandleScope v8HandleScope(v8Isolate);
 			auto v8Context = v8Isolate->GetCurrentContext();
-			jobject externalV8Runtime = Javet::V8Runtime::FromV8Context(v8Context)->externalV8Runtime;
+			auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
+			jobject externalV8Runtime = v8Runtime->externalV8Runtime;
+			V8ContextScope v8ContextScope(v8Context);
 			jboolean isReturnResult = IsReturnResult();
 			jboolean isThisObjectRequired = IsThisObjectRequired();
 			jobject externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, externalV8Runtime, v8Context, args);

@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;

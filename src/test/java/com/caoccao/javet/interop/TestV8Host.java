@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 

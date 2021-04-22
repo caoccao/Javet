@@ -26,7 +26,7 @@ Windows Environment
 Download Pre-built Node.js and V8
 =================================
 
-I have prepared pre-built Linux and Windows version of Node.js ``v14.16.0`` and V8 ``v8.9.255``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
+I have prepared pre-built Linux and Windows version of Node.js ``v14.16.1`` and V8 ``v9.0.257``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
 
 Build Javet JNI Library
 =======================
@@ -77,7 +77,7 @@ Jar files are built under ``./target``.
 Build V8 (Optional)
 ===================
 
-Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``v8.9.255``. If you face any issues, you may contact `@sjtucaocao <https://twitter.com/sjtucaocao>`_.
+Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``v9.0.257``. If you face any issues, you may contact `@sjtucaocao <https://twitter.com/sjtucaocao>`_.
 
 Preparation (V8)
 ----------------
@@ -155,9 +155,9 @@ Note: The patch script requires Python 3.
 
     cd root_path_to_node_js
     python3 root_path_to_javet/script/python/patch_node_build.py -p ./
-    ./configure --enable-static
+    ./configure --enable-static --without-intl
     python3 root_path_to_javet/script/python/patch_node_build.py -p ./
-    make -j4``.
+    make -j4
 
 Why Patching?
 
@@ -174,6 +174,6 @@ Build Node.js on Windows
 
 * Clone the source code.
 * Checkout a proper version.
-* Execute ``vcbuild.bat static``.
+* Execute ``vcbuild.bat static without-intl``.
 
 [`Home <../../README.rst>`_] [`Development <index.rst>`_]

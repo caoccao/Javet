@@ -5,6 +5,9 @@ Modularization
 Node.js Mode
 ============
 
+Example
+-------
+
 In Node.js mode, Javet leaves Node.js with its own ways of handling modules. The coding experience is identical to the one in Node.js and applications can get all features supported by Javet, like function interception. Here is an example.
 
 .. code-block:: java
@@ -24,7 +27,38 @@ In Node.js mode, Javet leaves Node.js with its own ways of handling modules. The
         }
     }
 
-The only thing to do is to set the ``require()`` root directory so that Node.js is able to locate ``node_modules``. With Javet, applications may have multiple instances of Node.js pointing to different ``node_modules`` and potentially these Node.js instances can share the same piece of data.
+Gaps between Javet Node.js Mode and Native Node.js
+--------------------------------------------------
+
+=================== ======================================= ==============================================
+Feature             Javet Node.js Mode                      Native Node.js
+=================== ======================================= ==============================================
+``require()`` Root  Java Application Working Directory      JavaScript Application Working Directory
+Working Directory   Java Application Working Directory      JavaScript Application Working Directory
+``__dirname``       N/A                                     Yes
+``__filename``      N/A                                     Yes
+Module Mode         default: false                          default: true
+=================== ======================================= ==============================================
+
+Usually the Java application working directory doesn't contain ``node_modules``. That for sure breaks Node.js. No worry, here are the steps on closing the gaps.
+
+1. Set the ``require()`` root directory so that Node.js is able to locate ``node_modules``.
+2. Set working directory to where the script is located.
+3. Set ``__dirname``.
+4. Set ``__filename``.
+
+Luckily, in Javet, when ``getExecutor(File scriptFile)`` or ``getExecutor(Path scriptPath)`` is called, all these 4 steps are automatically performed. If ``getExecutor(String scriptString)`` is called, obviously Javet doesn't know what to do, but application may call ``IV8Executor.setResourceName(String resourceName)`` later to perform these 4 steps. So, Javet Node.js mode doesn't care where the script comes from. Application may feel free to virtualize Node.js.
+
+Can Javet run script in Node.js Module Mode? Yes, just call ``IV8Executor.setModule(true)``.
+
+The exciting thing is: in Javet, applications may have multiple instances of Node.js pointing to different ``node_modules`` and potentially these Node.js instances can share the same piece of data.
+
+Known Issue on Native Modules
+-----------------------------
+
+Node.js native modules usually cannot be dynamically loaded to Javet. E.g. sqlite3. That issue also bothers Electron. Electron folks created project `electron-rebuild <https://github.com/electron/electron-rebuild>`_ which rebuilds the native modules from source code and its own native symbols.
+
+Javet may follow the same approach in the future. For now, there is no development resource planned for that because most of the use cases don't require native modules.
 
 V8 Mode
 =======

@@ -17,7 +17,7 @@ Major Features
 ==============
 
 * 🐧Linux + 🖥️Windows
-* Node.js ``v14.16.0`` + V8 ``v8.9.255``
+* Node.js ``v14.16.1`` + V8 ``v9.0.257``
 * Dynamic switch between Node.js and V8
 * Exposure of the majority of V8 API in JVM
 * JS function interception
@@ -40,7 +40,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.8.3</version>
+        <version>0.8.4</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -48,14 +48,14 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.8.3")
+    implementation("com.caoccao.javet:javet:0.8.4")
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.8.3'
+    implementation 'com.caoccao.javet:javet:0.8.4'
 
 Hello Javet
 -----------

@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
 import com.caoccao.javet.interfaces.IJavetLogger;
@@ -70,6 +71,16 @@ public final class V8Host implements AutoCloseable {
         this.jsRuntimeType = jsRuntimeType;
         loadLibrary();
         v8Notifier = new V8Notifier(v8RuntimeMap);
+    }
+
+    public static V8Host getInstance(JSRuntimeType jsRuntimeType) {
+        Objects.requireNonNull(jsRuntimeType);
+        if (jsRuntimeType.isV8()) {
+            return getV8Instance();
+        } else if (jsRuntimeType.isNode()) {
+            return getNodeInstance();
+        }
+        return null;
     }
 
     /**
@@ -165,7 +176,7 @@ public final class V8Host implements AutoCloseable {
     }
 
     public long[] getInternalStatistic() {
-       return v8Native.getInternalStatistic();
+        return v8Native.getInternalStatistic();
     }
 
     public String getJavetVersion() {

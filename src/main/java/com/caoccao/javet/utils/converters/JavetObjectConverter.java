@@ -21,7 +21,7 @@ import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 
@@ -69,22 +69,22 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (v8Value instanceof V8ValueTypedArray) {
             V8ValueTypedArray v8ValueTypedArray = (V8ValueTypedArray) v8Value;
             switch (v8ValueTypedArray.getType()) {
-                case V8ValueReferenceType.Int8Array:
-                case V8ValueReferenceType.Uint8Array:
-                case V8ValueReferenceType.Uint8ClampedArray:
+                case Int8Array:
+                case Uint8Array:
+                case Uint8ClampedArray:
                     return v8ValueTypedArray.toBytes();
-                case V8ValueReferenceType.Int16Array:
-                case V8ValueReferenceType.Uint16Array:
+                case Int16Array:
+                case Uint16Array:
                     return v8ValueTypedArray.toShorts();
-                case V8ValueReferenceType.Int32Array:
-                case V8ValueReferenceType.Uint32Array:
+                case Int32Array:
+                case Uint32Array:
                     return v8ValueTypedArray.toIntegers();
-                case V8ValueReferenceType.Float32Array:
+                case Float32Array:
                     return v8ValueTypedArray.toFloats();
-                case V8ValueReferenceType.Float64Array:
+                case Float64Array:
                     return v8ValueTypedArray.toDoubles();
-                case V8ValueReferenceType.BigInt64Array:
-                case V8ValueReferenceType.BigUint64Array:
+                case BigInt64Array:
+                case BigUint64Array:
                     return v8ValueTypedArray.toLongs();
                 default:
                     break;
