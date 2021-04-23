@@ -17,10 +17,23 @@
 
 package com.caoccao.javet.exceptions;
 
-import java.text.MessageFormat;
+import com.caoccao.javet.utils.SimpleMap;
 
+/**
+ * The type Javet converter exception is for JNI.
+ */
 public class JavetConverterException extends JavetException {
+    /**
+     * The constant PARAMETER_MESSAGE.
+     */
+    public static final String PARAMETER_MESSAGE = "message";
+
+    /**
+     * Instantiates a new Javet converter exception.
+     *
+     * @param message the message
+     */
     public JavetConverterException(String message) {
-        super(MessageFormat.format("Failed to convert values with error message {0}", message));
+        super(JavetError.ConverterFailure, SimpleMap.of(PARAMETER_MESSAGE, message));
     }
 }

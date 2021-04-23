@@ -1,9 +1,10 @@
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -16,6 +17,13 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public final class V8FunctionCallback {
+
+    public static final String PARAMETER_EXPECTED_PARAMETER_TYPE = "expectedParameterType";
+    public static final String PARAMETER_ACTUAL_PARAMETER_TYPE = "actualParameterType";
+    public static final String PARAMETER_METHOD_NAME = "methodName";
+    public static final String PARAMETER_EXPECTED_PARAMETER_SIZE = "expectedParameterSize";
+    public static final String PARAMETER_ACTUAL_PARAMETER_SIZE = "actualParameterSize";
+
     private static Object convert(IJavetConverter converter, Class expectedClass, V8Value v8Value)
             throws JavetException {
         if (v8Value == null) {
@@ -138,8 +146,11 @@ public final class V8FunctionCallback {
                     }
                 }
             }
-            throw JavetV8CallbackSignatureMismatchException.parameterTypeMismatch(
-                    expectedClass, convertedObject.getClass());
+            throw new JavetException(
+                    JavetError.CallbackSignatureParameterTypeMismatch,
+                    SimpleMap.of(
+                            PARAMETER_EXPECTED_PARAMETER_TYPE, expectedClass,
+                            PARAMETER_ACTUAL_PARAMETER_TYPE, convertedObject.getClass()));
         }
         return v8Value;
     }
@@ -200,8 +211,11 @@ public final class V8FunctionCallback {
                         }
                     } else {
                         if (method.getParameterCount() != length) {
-                            throw JavetV8CallbackSignatureMismatchException.parameterSizeMismatch(
-                                    method.getName(), length, method.getParameterCount());
+                            throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                    SimpleMap.of(
+                                            PARAMETER_METHOD_NAME, method.getName(),
+                                            PARAMETER_EXPECTED_PARAMETER_SIZE, length,
+                                            PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
                         }
                         for (int i = 0; i < parameterTypes.length; ++i) {
                             objectValues.add(convert(converter, parameterTypes[i], (V8Value) values.get(i)));

@@ -18,10 +18,8 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeAlreadyClosedException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeNotRegisteredException;
-import com.caoccao.javet.exceptions.JavetV8ValueAlreadyClosedException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
@@ -42,11 +40,9 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public void checkV8Runtime() throws
-            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeAlreadyClosedException,
-            JavetV8ValueAlreadyClosedException {
+    public void checkV8Runtime() throws JavetException {
         if (handle == INVALID_HANDLE) {
-            throw new JavetV8ValueAlreadyClosedException();
+            throw new JavetException(JavetError.RuntimeAlreadyRegistered);
         }
         super.checkV8Runtime();
     }
@@ -66,7 +62,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     @Override
     public void close(boolean forceClose) throws JavetException {
         if (handle == INVALID_HANDLE) {
-            throw new JavetV8ValueAlreadyClosedException();
+            throw new JavetException(JavetError.RuntimeAlreadyClosed);
         }
         if (forceClose || !isWeak()) {
             removeReference();

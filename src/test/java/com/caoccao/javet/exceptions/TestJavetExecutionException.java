@@ -31,7 +31,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             fail("Exception should be thrown.");
         } catch (JavetExecutionException e) {
             assertEquals("TypeError: Assignment to constant variable.", e.getMessage());
-            JavetScriptingError javetScriptingError = e.getError();
+            JavetScriptingError javetScriptingError = e.getScriptingError();
             assertEquals("TypeError: Assignment to constant variable.", javetScriptingError.getMessage());
             assertEquals("undefined", javetScriptingError.getResourceName());
             assertEquals("const a = 1; a = 2;", javetScriptingError.getSourceLine());
@@ -65,7 +65,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
         } catch (JavetExecutionException e) {
             assertEquals(
                     "ReferenceError: exports is not defined",
-                    e.getError().getMessage());
+                    e.getScriptingError().getMessage());
         }
     }
 
@@ -79,11 +79,11 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             assertNotNull(v8ValueObject);
         } catch (JavetExecutionException e) {
             if (v8Runtime.getJSRuntimeType().isNode()) {
-                assertTrue(e.getError().getMessage().startsWith("Error: Cannot find module 'decimal.js'"));
+                assertTrue(e.getScriptingError().getMessage().startsWith("Error: Cannot find module 'decimal.js'"));
             } else {
                 assertEquals(
                         "ReferenceError: require is not defined",
-                        e.getError().getMessage());
+                        e.getScriptingError().getMessage());
             }
         }
     }
@@ -94,7 +94,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             fail("Exception should be thrown.");
         } catch (JavetExecutionException e) {
             assertEquals("TypeError: Object.getPPP is not a function", e.getMessage());
-            JavetScriptingError javetScriptingError = e.getError();
+            JavetScriptingError javetScriptingError = e.getScriptingError();
             assertEquals("TypeError: Object.getPPP is not a function", javetScriptingError.getMessage());
             assertEquals("undefined", javetScriptingError.getResourceName());
             assertEquals("Object.getPPP(a);", javetScriptingError.getSourceLine());
@@ -122,7 +122,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             fail("Exception should be thrown.");
         } catch (JavetExecutionException e) {
             assertEquals("ReferenceError: abc is not defined", e.getMessage());
-            JavetScriptingError javetScriptingError = e.getError();
+            JavetScriptingError javetScriptingError = e.getScriptingError();
             assertEquals("ReferenceError: abc is not defined", javetScriptingError.getMessage());
             assertEquals("undefined", javetScriptingError.getResourceName());
             assertEquals("Symbol(abc);", javetScriptingError.getSourceLine());

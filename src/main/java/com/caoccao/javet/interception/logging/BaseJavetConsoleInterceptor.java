@@ -17,11 +17,12 @@
 
 package com.caoccao.javet.interception.logging;
 
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
 import com.caoccao.javet.interception.BaseJavetInterceptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueObject;
@@ -42,6 +43,7 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     protected static final String JAVA_CONSOLE_TRACE = "consoleTrace";
     protected static final String JAVA_CONSOLE_WARN = "consoleWarn";
     protected static final String PROPERTY_CONSOLE = "console";
+    public static final String PARAMETER_MESSAGE = "message";
 
     public BaseJavetConsoleInterceptor(V8Runtime v8Runtime) {
         super(v8Runtime);
@@ -75,7 +77,10 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
             register(console, JS_FUNCTION_WARN, JAVA_CONSOLE_WARN);
             return true;
         } catch (NoSuchMethodException e) {
-            throw JavetV8CallbackSignatureMismatchException.unknown(e);
+            throw new JavetException(
+                    JavetError.CallbackMethodNotFound,
+                    SimpleMap.of(PARAMETER_MESSAGE, e.getMessage()),
+                    e);
         }
     }
 

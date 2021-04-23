@@ -18,9 +18,9 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
-import com.caoccao.javet.exceptions.JavetV8ValueAlreadyClosedException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.mock.MockCallbackReceiver;
@@ -163,7 +163,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(1, v8Runtime.getReferenceCount());
         v8Runtime.requestGarbageCollectionForTesting(true);
         assertEquals(0, v8Runtime.getReferenceCount());
-        assertThrows(JavetV8ValueAlreadyClosedException.class, () -> v8ValueFunction.close());
+        try {
+            v8ValueFunction.close();
+        } catch (JavetException e) {
+            assertEquals(JavetError.RuntimeAlreadyClosed, e.getError());
+        }
     }
 
     @Test
@@ -187,7 +191,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(1, v8Runtime.getReferenceCount());
         v8Runtime.requestGarbageCollectionForTesting(true);
         assertEquals(0, v8Runtime.getReferenceCount());
-        assertThrows(JavetV8ValueAlreadyClosedException.class, () -> v8ValueFunction.close());
+        try {
+            v8ValueFunction.close();
+        } catch (JavetException e) {
+            assertEquals(JavetError.RuntimeAlreadyClosed, e.getError());
+        }
     }
 
     @Test

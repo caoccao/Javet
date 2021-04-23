@@ -19,7 +19,10 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.enums.JavetPromiseRejectEvent;
-import com.caoccao.javet.exceptions.*;
+import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetError;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
@@ -31,7 +34,6 @@ import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPromiseRejectCallback;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
@@ -164,8 +166,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
         v8ScriptOrigin.setModule(true);
-        if (v8ScriptOrigin.getResourceName() == null) {
-            throw new JavetV8DataModuleNameEmptyException();
+        if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().length() == 0) {
+            throw new JavetException(JavetError.ModuleNameEmpty);
         }
         V8Module v8Module = decorateV8Value((V8Module) v8Native.compile(
                 handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
@@ -269,7 +271,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
             if (v8Value.getV8Runtime() == null) {
                 v8Value.setV8Runtime(this);
             } else if (v8Value.getV8Runtime() != this) {
-                throw new JavetV8RuntimeAlreadyRegisteredException();
+                throw new JavetException(JavetError.RuntimeAlreadyRegistered);
             }
         }
         return v8Value;
@@ -748,11 +750,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         v8Native.terminateExecution(handle);
     }
 
-    public String toProtoString(IV8ValueReference iV8ValueReference) throws JavetV8RuntimeAlreadyClosedException {
+    public String toProtoString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.toProtoString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
-    public String toString(IV8ValueReference iV8ValueReference) throws JavetV8RuntimeAlreadyClosedException {
+    public String toString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.toString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 }

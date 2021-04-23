@@ -17,13 +17,10 @@
 
 package com.caoccao.javet.interop.executors;
 
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetIOException;
-import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.node.modules.NodeModuleModule;
-import com.caoccao.javet.node.modules.NodeModuleProcess;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.utils.SimpleMap;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class V8PathExecutor extends V8StringExecutor {
+    public static final String PARAMETER_PATH = "path";
     protected Path scriptPath;
 
     public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) throws JavetException {
@@ -45,7 +43,10 @@ public class V8PathExecutor extends V8StringExecutor {
             try {
                 scriptString = new String(Files.readAllBytes(scriptPath), StandardCharsets.UTF_8);
             } catch (IOException e) {
-                throw JavetIOException.failedToReadPath(scriptPath, e);
+                throw new JavetException(
+                        JavetError.FailedToReadPath,
+                        SimpleMap.of(PARAMETER_PATH, scriptPath),
+                        e);
             }
         }
         return scriptString;

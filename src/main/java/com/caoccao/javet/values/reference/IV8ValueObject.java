@@ -19,8 +19,8 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.annotations.V8RuntimeSetter;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8CallbackNotRegisteredException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.interop.V8Runtime;
@@ -445,10 +445,10 @@ public interface IV8ValueObject extends IV8ValueReference {
                     try {
                         method.invoke(functionCallbackReceiver, getV8Runtime());
                     } catch (Exception e) {
-                        throw new JavetV8CallbackNotRegisteredException();
+                        throw new JavetException(JavetError.CallbackNotRegistered);
                     }
                 } else {
-                    throw new JavetV8CallbackNotRegisteredException();
+                    throw new JavetException(JavetError.CallbackNotRegistered);
                 }
             }
         }
@@ -465,7 +465,7 @@ public interface IV8ValueObject extends IV8ValueReference {
                     javetCallbackContexts.add(javetCallbackContext);
                 }
             } catch (Exception e) {
-                throw new JavetV8CallbackNotRegisteredException();
+                throw new JavetException(JavetError.CallbackNotRegistered);
             }
         }
         return javetCallbackContexts;

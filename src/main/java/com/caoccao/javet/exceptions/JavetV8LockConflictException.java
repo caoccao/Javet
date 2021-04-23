@@ -17,16 +17,45 @@
 
 package com.caoccao.javet.exceptions;
 
-import java.text.MessageFormat;
+import com.caoccao.javet.utils.SimpleMap;
 
+/**
+ * The type Javet v 8 lock conflict exception.
+ */
 public class JavetV8LockConflictException extends JavetException {
+
+    /**
+     * The constant PARAMETER_MESSAGE.
+     */
+    public static final String PARAMETER_MESSAGE = "message";
+    /**
+     * The constant PARAMETER_LOCKED_THREAD_ID.
+     */
+    public static final String PARAMETER_LOCKED_THREAD_ID = "lockedThreadId";
+    /**
+     * The constant PARAMETER_CURRENT_THREAD_ID.
+     */
+    public static final String PARAMETER_CURRENT_THREAD_ID = "currentThreadId";
+
+    /**
+     * Instantiates a new Javet V8 lock conflict exception.
+     * It is for JNI.
+     *
+     * @param message the message
+     */
     public JavetV8LockConflictException(String message) {
-        super(message);
+        super(JavetError.LockConflict, SimpleMap.of(PARAMETER_MESSAGE, message));
     }
 
-    public static JavetV8LockConflictException threadIdMismatch(long lockedThreadId, long currentThreadId) {
-        return new JavetV8LockConflictException(MessageFormat.format(
-                "V8 runtime lock conflict is detected with locked thread ID {0} and current thread ID {1}",
-                Long.toString(lockedThreadId), Long.toString(currentThreadId)));
+    /**
+     * Instantiates a new Javet v 8 lock conflict exception.
+     *
+     * @param lockedThreadId  the locked thread id
+     * @param currentThreadId the current thread id
+     */
+    public JavetV8LockConflictException(long lockedThreadId, long currentThreadId) {
+        super(JavetError.ThreadIdMismatch, SimpleMap.of(
+                PARAMETER_LOCKED_THREAD_ID, Long.toString(lockedThreadId),
+                PARAMETER_CURRENT_THREAD_ID, Long.toString(currentThreadId)));
     }
 }

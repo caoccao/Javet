@@ -17,10 +17,24 @@
 
 package com.caoccao.javet.exceptions;
 
-import java.text.MessageFormat;
+import com.caoccao.javet.utils.SimpleMap;
 
+/**
+ * The type Javet unknown compilation exception is for JNI.
+ */
 public class JavetUnknownCompilationException extends JavetException {
+
+    /**
+     * The constant PARAMETER_MESSAGE.
+     */
+    public static final String PARAMETER_MESSAGE = "message";
+
+    /**
+     * Instantiates a new Javet unknown compilation exception.
+     *
+     * @param message the message
+     */
     public JavetUnknownCompilationException(String message) {
-        super(MessageFormat.format("Unknown compilation error {0}", message));
+        super(JavetError.UnknownCompilationFailure, SimpleMap.of(PARAMETER_MESSAGE, message));
     }
 }

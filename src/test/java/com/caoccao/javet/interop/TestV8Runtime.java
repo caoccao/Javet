@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
@@ -43,7 +44,7 @@ public class TestV8Runtime extends BaseTestJavet {
             } catch (JavetExecutionException e) {
                 assertEquals(
                         "EvalError: Code generation from strings disallowed for this context",
-                        e.getError().getMessage());
+                        e.getScriptingError().getMessage());
             }
         }
     }
@@ -144,6 +145,7 @@ public class TestV8Runtime extends BaseTestJavet {
                 v8Runtime.getExecutor("while (true) { ++count; }").executeVoid();
                 fail("Failed to throw exception when execution is terminated.");
             } catch (JavetTerminatedException e) {
+                assertEquals(JavetError.ExecutionTerminated, e.getError());
                 assertFalse(e.isContinuable());
             }
             final int count = globalObject.getInteger("count");

@@ -17,13 +17,14 @@
 
 package com.caoccao.javet.exceptions;
 
-import java.text.MessageFormat;
+import com.caoccao.javet.utils.SimpleMap;
 
 public class JavetTerminatedException extends JavetException {
+    public static final String PARAMETER_CONTINUABLE = "continuable";
     protected boolean continuable;
 
     public JavetTerminatedException(boolean continuable) {
-        super(MessageFormat.format("V8 execution is terminated, continuable: {0}", continuable));
+        super(JavetError.ExecutionTerminated, SimpleMap.of(PARAMETER_CONTINUABLE, continuable));
         this.continuable = continuable;
     }
 

@@ -50,7 +50,7 @@ public final class V8Locker implements IJavetClosable {
     public void close() throws JavetException {
         final long currentThreadId = Thread.currentThread().getId();
         if (threadId != currentThreadId) {
-            throw JavetV8LockConflictException.threadIdMismatch(threadId, currentThreadId);
+            throw new JavetV8LockConflictException(threadId, currentThreadId);
         }
         v8Native.unlockV8Runtime(v8Runtime.getHandle());
     }

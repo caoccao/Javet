@@ -18,7 +18,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.enums.JSRuntimeType;
-import com.caoccao.javet.exceptions.JavetLibraryNotLoadedException;
+import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
 public class TestJavetLibLoader {
@@ -30,7 +30,7 @@ public class TestJavetLibLoader {
             javetClassLoader = null;
             System.gc();
             System.runFinalization();
-        } catch (JavetLibraryNotLoadedException e) {
+        } catch (JavetException e) {
             // This is expected.
         }
     }

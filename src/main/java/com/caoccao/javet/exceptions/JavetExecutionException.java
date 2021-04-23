@@ -21,6 +21,7 @@ public class JavetExecutionException extends BaseJavetScriptingException {
     public JavetExecutionException(
             String message, String resourceName, String sourceLine,
             int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
-        super(message, resourceName, sourceLine, lineNumber, startColumn, endColumn, startPosition, endPosition);
+        super(JavetError.ExecutionFailure, message,
+                resourceName, sourceLine, lineNumber, startColumn, endColumn, startPosition, endPosition);
     }
 }

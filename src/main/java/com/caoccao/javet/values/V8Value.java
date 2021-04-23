@@ -17,7 +17,8 @@
 
 package com.caoccao.javet.values;
 
-import com.caoccao.javet.exceptions.*;
+import com.caoccao.javet.exceptions.JavetError;
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
 import java.util.Objects;
@@ -30,11 +31,9 @@ public abstract class V8Value extends V8Data implements IV8Value {
         v8Runtime = null;
     }
 
-    protected void checkV8Runtime() throws
-            JavetV8RuntimeNotRegisteredException, JavetV8RuntimeAlreadyClosedException,
-            JavetV8ValueAlreadyClosedException {
+    protected void checkV8Runtime() throws JavetException {
         if (v8Runtime == null) {
-            throw new JavetV8RuntimeNotRegisteredException();
+            throw new JavetException(JavetError.RuntimeNotRegistered);
         }
     }
 
@@ -54,7 +53,7 @@ public abstract class V8Value extends V8Data implements IV8Value {
     public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
         Objects.requireNonNull(v8Runtime);
         if (this.v8Runtime != null) {
-            throw new JavetV8RuntimeAlreadyRegisteredException();
+            throw new JavetException(JavetError.RuntimeAlreadyRegistered);
         }
         this.v8Runtime = v8Runtime;
     }

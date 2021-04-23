@@ -18,7 +18,6 @@
 package com.caoccao.javet.interop.executors;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetIOException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
 import com.caoccao.javet.values.V8Value;

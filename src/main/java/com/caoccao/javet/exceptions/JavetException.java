@@ -17,24 +17,35 @@
 
 package com.caoccao.javet.exceptions;
 
+import java.util.Map;
+
 public class JavetException extends Exception {
-    public JavetException() {
-        super();
+    protected JavetError error;
+    protected Map<String, Object> parameters;
+
+    public JavetException(JavetError error) {
+        this(error, null, null);
     }
 
-    public JavetException(String message) {
-        super(message);
+    public JavetException(JavetError error, Map<String, Object> parameters) {
+        this(error, parameters, null);
     }
 
-    public JavetException(String message, Throwable cause) {
-        super(message, cause);
+    public JavetException(JavetError error, Throwable cause) {
+        this(error, null, cause);
     }
 
-    public JavetException(Throwable cause) {
-        super(cause);
+    public JavetException(JavetError error, Map<String, Object> parameters, Throwable cause) {
+        super(error.getMessage(parameters), cause);
+        this.error = error;
+        this.parameters = parameters;
     }
 
-    public JavetException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public JavetError getError() {
+        return error;
+    }
+
+    public Map<String, Object> getParameters() {
+        return parameters;
     }
 }
