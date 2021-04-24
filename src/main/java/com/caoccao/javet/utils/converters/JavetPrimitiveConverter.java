@@ -20,9 +20,7 @@ package com.caoccao.javet.utils.converters;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValueDouble;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
 
 import java.time.ZonedDateTime;
@@ -58,9 +56,9 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             } else if (objectClass == boolean.class) {
                 v8Value = v8Runtime.createV8ValueBoolean((boolean) object);
             } else if (objectClass == double.class) {
-                v8Value = new V8ValueDouble((double) object);
+                v8Value = v8Runtime.createV8ValueDouble((double) object);
             } else if (objectClass == float.class) {
-                v8Value = new V8ValueDouble((double) object);
+                v8Value = v8Runtime.createV8ValueDouble((double) object);
             } else if (objectClass == long.class) {
                 v8Value = v8Runtime.createV8ValueLong((long) object);
             } else if (objectClass == short.class) {
@@ -81,15 +79,15 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         } else if (object instanceof String) {
             v8Value = v8Runtime.createV8ValueString((String) object);
         } else if (object instanceof Double) {
-            v8Value = new V8ValueDouble((Double) object);
+            v8Value = v8Runtime.createV8ValueDouble((Double) object);
         } else if (object instanceof Float) {
-            v8Value = new V8ValueDouble((Float) object);
+            v8Value = v8Runtime.createV8ValueDouble((Float) object);
         } else if (object instanceof Long) {
             v8Value = v8Runtime.createV8ValueLong((Long) object);
         } else if (object instanceof Short) {
             v8Value = v8Runtime.createV8ValueInteger((Short) object);
         } else if (object instanceof ZonedDateTime) {
-            v8Value = new V8ValueZonedDateTime((ZonedDateTime) object);
+            v8Value = v8Runtime.createV8ValueZonedDateTime((ZonedDateTime) object);
         } else if (object instanceof Byte) {
             v8Value = v8Runtime.createV8ValueInteger((Byte) object);
         } else if (object instanceof Character) {

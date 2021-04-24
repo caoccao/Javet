@@ -23,6 +23,8 @@ import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
+import java.time.ZonedDateTime;
+
 public interface IV8Creatable {
     V8ValueArray createV8ValueArray() throws JavetException;
 
@@ -31,6 +33,8 @@ public interface IV8Creatable {
     V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException;
 
     V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException;
+
+    V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException;
 
     V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException;
 
@@ -51,4 +55,8 @@ public interface IV8Creatable {
     V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException;
 
     V8ValueUndefined createV8ValueUndefined();
+
+    V8ValueZonedDateTime createV8ValueZonedDateTime(long jsTimestamp) throws JavetException;
+
+    V8ValueZonedDateTime createV8ValueZonedDateTime(ZonedDateTime zonedDateTime) throws JavetException;
 }

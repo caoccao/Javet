@@ -149,7 +149,7 @@ public class V8ValueDataView extends V8ValueObject {
         invokeVoid(
                 FUNCTION_SET_FLOAT_32,
                 v8Runtime.createV8ValueInteger(byteOffset),
-                new V8ValueDouble(value),
+                v8Runtime.createV8ValueDouble(value),
                 v8Runtime.createV8ValueBoolean(littleEndian));
     }
 
@@ -161,7 +161,7 @@ public class V8ValueDataView extends V8ValueObject {
         invokeVoid(
                 FUNCTION_SET_FLOAT_64,
                 v8Runtime.createV8ValueInteger(byteOffset),
-                new V8ValueDouble(value),
+                v8Runtime.createV8ValueDouble(value),
                 v8Runtime.createV8ValueBoolean(littleEndian));
     }
 

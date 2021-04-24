@@ -28,12 +28,12 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
         this(null);
     }
 
-    public V8ValueZonedDateTime(ZonedDateTime value) {
-        super(value);
-    }
-
     public V8ValueZonedDateTime(long jsTimestamp) {
         super(JavetDateTimeUtils.toZonedDateTime(jsTimestamp));
+    }
+
+    public V8ValueZonedDateTime(ZonedDateTime value) {
+        super(value);
     }
 
     @Override

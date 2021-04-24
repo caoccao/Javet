@@ -40,6 +40,7 @@ import com.caoccao.javet.values.reference.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -202,6 +203,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     }
 
     @Override
+    public V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException {
+        return decorateV8Value(new V8ValueDouble(doubleValue));
+    }
+
+    @Override
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
         Objects.requireNonNull(v8ValueArrayBuffer);
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(PROPERTY_DATA_VIEW)) {
@@ -269,6 +275,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     @Override
     public V8ValueUndefined createV8ValueUndefined() {
         return cachedV8ValueUndefined;
+    }
+
+    @Override
+    public V8ValueZonedDateTime createV8ValueZonedDateTime(long jsTimestamp) throws JavetException {
+        return decorateV8Value(new V8ValueZonedDateTime(jsTimestamp));
+    }
+
+    @Override
+    public V8ValueZonedDateTime createV8ValueZonedDateTime(ZonedDateTime zonedDateTime) throws JavetException {
+        return decorateV8Value(new V8ValueZonedDateTime(zonedDateTime));
     }
 
     public <T extends V8Value> T decorateV8Value(T v8Value) throws JavetException {

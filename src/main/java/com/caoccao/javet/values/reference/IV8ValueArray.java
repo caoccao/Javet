@@ -77,7 +77,7 @@ public interface IV8ValueArray extends IV8ValueObject {
     }
 
     default int push(double value) throws JavetException {
-        return push(new V8ValueDouble(value));
+        return push(getV8Runtime().createV8ValueDouble(value));
     }
 
     default int push(int value) throws JavetException {

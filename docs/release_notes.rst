@@ -5,7 +5,7 @@ Release Notes
 0.8.5
 -----
 
-* Added ``createV8ValueString()`` to ``V8Runtime``
+* Added ``createV8ValueDouble()``,``createV8ValueString()`` and ``createV8ValueZonedDateTime()`` to ``V8Runtime``
 * Added ``JavetError`` with error codes
 * Removed a few exceptions
 

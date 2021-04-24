@@ -20,7 +20,9 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.*;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
+import com.caoccao.javet.values.primitive.V8ValueLong;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -223,8 +225,8 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.setProperty("a", v8Runtime.createV8ValueString("1"));
             v8ValueObject.setProperty(v8Runtime.createV8ValueString("b"), v8Runtime.createV8ValueInteger(2));
             v8ValueObject.setProperty(v8Runtime.createV8ValueString("c"), v8Runtime.createV8ValueLong(3));
-            v8ValueObject.setProperty(v8Runtime.createV8ValueString("d"), new V8ValueZonedDateTime(now));
-            v8ValueObject.setProperty(v8Runtime.createV8ValueString("e"), new V8ValueDouble(1.23));
+            v8ValueObject.setProperty(v8Runtime.createV8ValueString("d"), v8Runtime.createV8ValueZonedDateTime(now));
+            v8ValueObject.setProperty(v8Runtime.createV8ValueString("e"), v8Runtime.createV8ValueDouble(1.23));
             v8ValueObject.setProperty(v8Runtime.createV8ValueString("f"), v8Runtime.createV8ValueBoolean(true));
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
                 assertEquals(6, iV8ValueArray.getLength());
@@ -266,7 +268,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {
             v8ValueObject.setProperty("a", v8Runtime.createV8ValueString("1"));
             v8ValueObject.setProperty("b", v8Runtime.createV8ValueInteger(2));
-            v8ValueObject.setProperty("c", new V8ValueDouble(1.23));
+            v8ValueObject.setProperty("c", v8Runtime.createV8ValueDouble(1.23));
             assertEquals("{\"a\":\"1\",\"b\":2,\"c\":1.23}", v8ValueObject.toJsonString());
         }
     }
