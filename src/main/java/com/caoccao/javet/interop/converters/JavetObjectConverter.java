@@ -15,14 +15,13 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils.converters;
+package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.enums.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 
 import java.util.*;

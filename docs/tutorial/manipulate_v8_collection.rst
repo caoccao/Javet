@@ -73,7 +73,7 @@ V8ValueMap
             assertEquals(Integer.toString(count.get()), key.getValue());
             assertEquals(count.getAndIncrement(), value.getValue());
         }));
-        v8ValueMap.set("a", v8Runtime.createV8ValueInteger(1));
+        v8ValueMap.set("a", 1);
         assertEquals(4, v8ValueMap.getSize());
         assertTrue(v8ValueMap.has("a"));
         assertTrue(v8ValueMap.delete("a"));

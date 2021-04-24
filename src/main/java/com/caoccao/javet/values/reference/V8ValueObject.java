@@ -17,11 +17,12 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 
 import java.util.Objects;
@@ -39,10 +40,10 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean delete(V8Value key) throws JavetException {
+    public boolean delete(Object key) throws JavetException {
         Objects.requireNonNull(key);
         checkV8Runtime();
-        return v8Runtime.delete(this, key);
+        return v8Runtime.delete(this, v8Runtime.getConverter().toV8Value(v8Runtime, key));
     }
 
     @Override
@@ -67,10 +68,10 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T get(V8Value key) throws JavetException {
+    public <T extends V8Value> T get(Object key) throws JavetException {
         Objects.requireNonNull(key);
         checkV8Runtime();
-        return v8Runtime.get(this, key);
+        return v8Runtime.get(this, v8Runtime.getConverter().toV8Value(v8Runtime, key));
     }
 
     @Override
@@ -92,10 +93,10 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T getProperty(V8Value key) throws JavetException {
+    public <T extends V8Value> T getProperty(Object key) throws JavetException {
         Objects.requireNonNull(key);
         checkV8Runtime();
-        return v8Runtime.getProperty(this, key);
+        return v8Runtime.getProperty(this, v8Runtime.getConverter().toV8Value(v8Runtime, key));
     }
 
     @Override
@@ -104,24 +105,25 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean has(V8Value value) throws JavetException {
+    public boolean has(Object value) throws JavetException {
         Objects.requireNonNull(value);
         checkV8Runtime();
-        return v8Runtime.has(this, value);
+        return v8Runtime.has(this, v8Runtime.getConverter().toV8Value(v8Runtime, value));
     }
 
     @Override
-    public boolean hasOwnProperty(V8Value key) throws JavetException {
+    public boolean hasOwnProperty(Object key) throws JavetException {
         Objects.requireNonNull(key);
         checkV8Runtime();
-        return v8Runtime.hasOwnProperty(this, key);
+        return v8Runtime.hasOwnProperty(this, v8Runtime.getConverter().toV8Value(v8Runtime, key));
     }
 
     @Override
-    public <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values)
+    public <T extends V8Value> T invoke(String functionName, boolean returnResult, Object... objects)
             throws JavetException {
         checkV8Runtime();
-        return v8Runtime.invoke(this, functionName, returnResult, v8Values);
+        return v8Runtime.invoke(this, functionName, returnResult,
+                v8Runtime.getConverter().toV8Values(v8Runtime, objects));
     }
 
     @Override
@@ -140,19 +142,25 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean set(V8Value key, V8Value value) throws JavetException {
+    public boolean set(Object key, Object value) throws JavetException {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         checkV8Runtime();
-        return v8Runtime.set(this, key, value);
+        IJavetConverter converter = v8Runtime.getConverter();
+        return v8Runtime.set(this,
+                converter.toV8Value(v8Runtime, key),
+                converter.toV8Value(v8Runtime, value));
     }
 
     @Override
-    public boolean setProperty(V8Value key, V8Value value) throws JavetException {
+    public boolean setProperty(Object key, Object value) throws JavetException {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         checkV8Runtime();
-        return v8Runtime.setProperty(this, key, value);
+        IJavetConverter converter = v8Runtime.getConverter();
+        return v8Runtime.setProperty(this,
+                converter.toV8Value(v8Runtime, key),
+                converter.toV8Value(v8Runtime, value));
     }
 
     @Override

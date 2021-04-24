@@ -42,7 +42,7 @@ public class V8ValueWeakSet extends V8ValueObject {
     }
 
     @Override
-    public boolean delete(V8Value key) throws JavetException {
+    public boolean delete(Object key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof V8ValueReference)) {
             throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));
@@ -57,7 +57,7 @@ public class V8ValueWeakSet extends V8ValueObject {
     }
 
     @Override
-    public boolean has(V8Value key) throws JavetException {
+    public boolean has(Object key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof V8ValueReference)) {
             throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));

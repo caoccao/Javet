@@ -7,6 +7,7 @@ Release Notes
 
 * Added ``createV8ValueDouble()``,``createV8ValueString()`` and ``createV8ValueZonedDateTime()`` to ``V8Runtime``
 * Added ``JavetError`` with error codes
+* Refactored ``invoke()``, ``call()``, ``set()``, ``has()`` to take ``Object`` instead of ``V8Value``
 * Removed a few exceptions
 
 0.8.4

@@ -104,9 +104,9 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
                     "[]",
                     v8Runtime.getExecutor(
                             "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);").executeString());
-            outerObject.add(v8Runtime.createV8ValueString("1"));
+            outerObject.add("1");
             try (V8ValueSet innerObject = v8Runtime.createV8ValueSet()) {
-                innerObject.add(v8Runtime.createV8ValueString("2"));
+                innerObject.add("2");
                 outerObject.add(innerObject);
             }
             assertEquals(

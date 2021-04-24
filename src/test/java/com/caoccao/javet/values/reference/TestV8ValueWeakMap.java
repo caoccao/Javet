@@ -31,8 +31,8 @@ public class TestV8ValueWeakMap extends BaseTestJavetRuntime {
             assertNotNull(v8ValueWeakMap);
             assertEquals("[object WeakMap]", v8ValueWeakMap.toString());
             try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
-                v8ValueObject.set("x", v8Runtime.createV8ValueString("1"));
-                v8ValueWeakMap.set(v8ValueObject, v8Runtime.createV8ValueString("2"));
+                v8ValueObject.set("x", "1");
+                v8ValueWeakMap.set(v8ValueObject, "2");
                 assertTrue(v8ValueWeakMap.has(v8ValueObject));
                 assertEquals("2", ((V8ValueString)v8ValueWeakMap.get(v8ValueObject)).getValue());
                 v8ValueWeakMap.delete(v8ValueObject);

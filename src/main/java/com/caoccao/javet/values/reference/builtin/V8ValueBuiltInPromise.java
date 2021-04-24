@@ -40,7 +40,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
 
     public V8ValuePromise all(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
-        return invoke(FUNCTION_ALL, v8Value);
+        return invokeV8Value(FUNCTION_ALL, v8Value);
     }
 
     public void allVoid(V8Value v8Value) throws JavetException {
@@ -50,7 +50,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
 
     public V8ValuePromise allSettled(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
-        return invoke(FUNCTION_ALL_SETTLED, v8Value);
+        return invokeV8Value(FUNCTION_ALL_SETTLED, v8Value);
     }
 
     public void allSettledVoid(V8Value v8Value) throws JavetException {
@@ -60,7 +60,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
 
     public V8ValuePromise any(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
-        return invoke(FUNCTION_ANY, v8Value);
+        return invokeV8Value(FUNCTION_ANY, v8Value);
     }
 
     public void anyVoid(V8Value v8Value) throws JavetException {
@@ -70,7 +70,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
 
     public V8ValuePromise race(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
-        return invoke(FUNCTION_RACE, v8Value);
+        return invokeV8Value(FUNCTION_RACE, v8Value);
     }
 
     public void raceVoid(V8Value v8Value) throws JavetException {
@@ -85,7 +85,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
 
     public V8ValuePromise reject(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
-        return invoke(FUNCTION_REJECT, v8Value);
+        return invokeV8Value(FUNCTION_REJECT, v8Value);
     }
 
     public void resolveVoid(V8Value v8Value) throws JavetException {
@@ -95,7 +95,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
 
     public V8ValuePromise resolve(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
-        return invoke(FUNCTION_RESOLVE, v8Value);
+        return invokeV8Value(FUNCTION_RESOLVE, v8Value);
     }
 
     @Override

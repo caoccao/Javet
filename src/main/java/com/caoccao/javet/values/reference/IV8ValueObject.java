@@ -24,13 +24,11 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetCallbackContext;
-import com.caoccao.javet.utils.converters.IJavetConverter;
-import com.caoccao.javet.utils.converters.JavetObjectConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.lang.reflect.Method;
@@ -43,19 +41,7 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
-    default boolean delete(int key) throws JavetException {
-        return delete(getV8Runtime().createV8ValueInteger(key));
-    }
-
-    default boolean delete(long key) throws JavetException {
-        return delete(getV8Runtime().createV8ValueLong(key));
-    }
-
-    boolean delete(V8Value key) throws JavetException;
-
-    default boolean delete(String key) throws JavetException {
-        return delete(getV8Runtime().createV8ValueString(key));
-    }
+    boolean delete(Object key) throws JavetException;
 
     default boolean deleteNull() throws JavetException {
         return delete(getV8Runtime().createV8ValueNull());
@@ -69,38 +55,17 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     <Key extends V8Value, Value extends V8Value> int forEach(IJavetBiConsumer<Key, Value> consumer) throws JavetException;
 
-    default <T extends V8Value> T get(int key) throws JavetException {
-        return get(getV8Runtime().createV8ValueInteger(key));
+    <T extends V8Value> T get(Object key) throws JavetException;
+
+    default Boolean getBoolean(Object key) throws JavetException {
+        return getPrimitive(key);
     }
 
-    default <T extends V8Value> T get(String key) throws JavetException {
-        return get(getV8Runtime().createV8ValueString(key));
+    default Double getDouble(Object key) throws JavetException {
+        return getPrimitive(key);
     }
 
-    <T extends V8Value> T get(V8Value key) throws JavetException;
-
-    default Boolean getBoolean(int key) throws JavetException {
-        return getObject(key);
-    }
-
-    default Boolean getBoolean(String key) throws JavetException {
-        return getObject(key);
-    }
-
-    default Double getDouble(int key) throws JavetException {
-        return getObject(key);
-    }
-
-    default Double getDouble(String key) throws JavetException {
-        return getObject(key);
-    }
-
-    default Float getFloat(int key) throws JavetException {
-        Double result = getDouble(key);
-        return result == null ? null : result.floatValue();
-    }
-
-    default Float getFloat(String key) throws JavetException {
+    default Float getFloat(Object key) throws JavetException {
         Double result = getDouble(key);
         return result == null ? null : result.floatValue();
     }
@@ -117,109 +82,35 @@ public interface IV8ValueObject extends IV8ValueReference {
      */
     int getIdentityHash() throws JavetException;
 
-    default Integer getInteger(int key) throws JavetException {
-        return getObject(key);
+    default Integer getInteger(Object key) throws JavetException {
+        return getPrimitive(key);
     }
 
-    default Integer getInteger(String key) throws JavetException {
-        return getObject(key);
+    default Long getLong(Object key) throws JavetException {
+        return getPrimitive(key);
     }
 
-    default Long getLong(int key) throws JavetException {
-        return getObject(key);
-    }
-
-    default Long getLong(String key) throws JavetException {
-        return getObject(key);
-    }
-
-    default V8ValueNull getNull(int key) throws JavetException {
+    default V8ValueNull getNull(Object key) throws JavetException {
         return get(key);
     }
 
-    default V8ValueNull getNull(String key) throws JavetException {
-        return get(key);
-    }
-
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getObject(int key)
-            throws JavetException {
-        V8Value v8Value = get(key);
+    default <T extends Object> T getObject(Object key) throws JavetException {
+        V8Runtime v8Runtime = getV8Runtime();
+        IJavetConverter converter = v8Runtime.getConverter();
         try {
-            return ((T) v8Value).getValue();
+            return (T) converter.toObject(get(key));
+        } catch (JavetException e) {
+            throw e;
         } catch (Throwable t) {
+            return null;
         }
-        return null;
-    }
-
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getObject(String key)
-            throws JavetException {
-        V8Value v8Value = get(key);
-        try {
-            return ((T) v8Value).getValue();
-        } catch (Throwable t) {
-        }
-        return null;
     }
 
     IV8ValueArray getOwnPropertyNames() throws JavetException;
 
-    IV8ValueArray getPropertyNames() throws JavetException;
-
-    default <T extends V8Value> T getProperty(int index) throws JavetException {
-        return getProperty(getV8Runtime().createV8ValueInteger(index));
-    }
-
-    default <T extends V8Value> T getProperty(String key) throws JavetException {
-        return getProperty(getV8Runtime().createV8ValueString(key));
-    }
-
-    <T extends V8Value> T getProperty(V8Value key) throws JavetException;
-
-    default Boolean getPropertyBoolean(int index) throws JavetException {
-        return getPropertyObject(index);
-    }
-
-    default Boolean getPropertyBoolean(String key) throws JavetException {
-        return getPropertyObject(key);
-    }
-
-    default Double getPropertyDouble(int index) throws JavetException {
-        return getPropertyObject(index);
-    }
-
-    default Double getPropertyDouble(String key) throws JavetException {
-        return getPropertyObject(key);
-    }
-
-    default Float getPropertyFloat(int index) throws JavetException {
-        Double result = getPropertyDouble(index);
-        return result == null ? null : result.floatValue();
-    }
-
-    default Float getPropertyFloat(String key) throws JavetException {
-        Double result = getPropertyDouble(key);
-        return result == null ? null : result.floatValue();
-    }
-
-    default Integer getPropertyInteger(int index) throws JavetException {
-        return getPropertyObject(index);
-    }
-
-    default Integer getPropertyInteger(String key) throws JavetException {
-        return getPropertyObject(key);
-    }
-
-    default Long getPropertyLong(int index) throws JavetException {
-        return getPropertyObject(index);
-    }
-
-    default Long getPropertyLong(String key) throws JavetException {
-        return getPropertyObject(key);
-    }
-
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getPropertyObject(int index)
+    default <R extends Object, T extends V8ValuePrimitive<R>> R getPrimitive(Object key)
             throws JavetException {
-        V8Value v8Value = getProperty(index);
+        V8Value v8Value = get(key);
         try {
             return ((T) v8Value).getValue();
         } catch (Throwable t) {
@@ -227,7 +118,44 @@ public interface IV8ValueObject extends IV8ValueReference {
         return null;
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getPropertyObject(String key)
+    <T extends V8Value> T getProperty(Object key) throws JavetException;
+
+    default Boolean getPropertyBoolean(Object key) throws JavetException {
+        return getPropertyPrimitive(key);
+    }
+
+    default Double getPropertyDouble(Object key) throws JavetException {
+        return getPropertyPrimitive(key);
+    }
+
+    default Float getPropertyFloat(Object key) throws JavetException {
+        Double result = getPropertyDouble(key);
+        return result == null ? null : result.floatValue();
+    }
+
+    default Integer getPropertyInteger(Object key) throws JavetException {
+        return getPropertyPrimitive(key);
+    }
+
+    default Long getPropertyLong(Object key) throws JavetException {
+        return getPropertyPrimitive(key);
+    }
+
+    IV8ValueArray getPropertyNames() throws JavetException;
+
+    default <T extends Object> T getPropertyObject(Object key) throws JavetException {
+        V8Runtime v8Runtime = getV8Runtime();
+        IJavetConverter converter = v8Runtime.getConverter();
+        try {
+            return (T) converter.toObject(getProperty(key));
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R getPropertyPrimitive(Object key)
             throws JavetException {
         V8Value v8Value = getProperty(key);
         try {
@@ -237,108 +165,76 @@ public interface IV8ValueObject extends IV8ValueReference {
         return null;
     }
 
-    default String getPropertyString(int index) throws JavetException {
-        return getPropertyObject(index);
+    default String getPropertyString(Object key) throws JavetException {
+        return getPropertyPrimitive(key);
     }
 
-    default String getPropertyString(String key) throws JavetException {
-        return getPropertyObject(key);
+    default ZonedDateTime getPropertyZonedDateTime(Object key) throws JavetException {
+        return getPropertyPrimitive(key);
     }
 
-    default ZonedDateTime getPropertyZonedDateTime(int index) throws JavetException {
-        return getPropertyObject(index);
+    default String getString(Object key) throws JavetException {
+        return getPrimitive(key);
     }
 
-    default ZonedDateTime getPropertyZonedDateTime(String key) throws JavetException {
-        return getPropertyObject(key);
-    }
-
-    default String getString(int key) throws JavetException {
-        return getObject(key);
-    }
-
-    default String getString(String key) throws JavetException {
-        return getObject(key);
-    }
-
-    default V8ValueUndefined getUndefined(int key) throws JavetException {
+    default V8ValueUndefined getUndefined(Object key) throws JavetException {
         return get(key);
     }
 
-    default V8ValueUndefined getUndefined(String key) throws JavetException {
-        return get(key);
+    default ZonedDateTime getZonedDateTime(Object key) throws JavetException {
+        return getPrimitive(key);
     }
 
-    default ZonedDateTime getZonedDateTime(int key) throws JavetException {
-        return getObject(key);
-    }
-
-    default ZonedDateTime getZonedDateTime(String key) throws JavetException {
-        return getObject(key);
-    }
-
-    default boolean has(int value) throws JavetException {
-        return has(getV8Runtime().createV8ValueInteger(value));
-    }
-
-    default boolean has(long value) throws JavetException {
-        return has(getV8Runtime().createV8ValueLong(value));
-    }
-
-    default boolean has(String value) throws JavetException {
-        return has(getV8Runtime().createV8ValueString(value));
-    }
-
-    boolean has(V8Value value) throws JavetException;
+    boolean has(Object value) throws JavetException;
 
     default boolean hasNull() throws JavetException {
         return has(getV8Runtime().createV8ValueNull());
     }
 
-    default boolean hasOwnProperty(int key) throws JavetException {
-        return hasOwnProperty(getV8Runtime().createV8ValueInteger(key));
-    }
-
-    default boolean hasOwnProperty(String key) throws JavetException {
-        return hasOwnProperty(getV8Runtime().createV8ValueString(key));
-    }
-
-    boolean hasOwnProperty(V8Value key) throws JavetException;
+    boolean hasOwnProperty(Object key) throws JavetException;
 
     default boolean hasUndefined() throws JavetException {
         return has(getV8Runtime().createV8ValueUndefined());
     }
 
-    <T extends V8Value> T invoke(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
+    <T extends V8Value> T invoke(String functionName, boolean returnResult, Object... objects) throws JavetException;
 
-    default <T extends V8Value> T invoke(String functionName, V8Value... v8Values) throws JavetException {
-        return invoke(functionName, true, v8Values);
+    default Boolean invokeBoolean(String functionName, Object... objects) throws JavetException {
+        return invokePrimitive(functionName, objects);
     }
 
-    default Boolean invokeBoolean(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
+    default Double invokeDouble(String functionName, Object... objects) throws JavetException {
+        return invokePrimitive(functionName, objects);
     }
 
-    default Double invokeDouble(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
-    }
-
-    default Float invokeFloat(String functionName, V8Value... v8Values) throws JavetException {
-        Double result = invokeDouble(functionName, v8Values);
+    default Float invokeFloat(String functionName, Object... objects) throws JavetException {
+        Double result = invokeDouble(functionName, objects);
         return result == null ? null : result.floatValue();
     }
 
-    default Integer invokeInteger(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
+    default Integer invokeInteger(String functionName, Object... objects) throws JavetException {
+        return invokePrimitive(functionName, objects);
     }
 
-    default Long invokeLong(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
+    default Long invokeLong(String functionName, Object... objects) throws JavetException {
+        return invokePrimitive(functionName, objects);
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R invokeObject(
-            String functionName, V8Value... v8Values) throws JavetException {
-        try (V8Value v8Value = invoke(functionName, v8Values)) {
+    default <T extends Object> T invokeObject(String functionName, Object... objects) throws JavetException {
+        V8Runtime v8Runtime = getV8Runtime();
+        IJavetConverter converter = v8Runtime.getConverter();
+        try {
+            return (T) converter.toObject(invoke(functionName, true, objects));
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R invokePrimitive(
+            String functionName, Object... objects) throws JavetException {
+        try (V8Value v8Value = invokeV8Value(functionName, objects)) {
             try {
                 return ((T) v8Value).getValue();
             } catch (Throwable t) {
@@ -347,23 +243,19 @@ public interface IV8ValueObject extends IV8ValueReference {
         return null;
     }
 
-    default String invokeString(String functionName, V8Value... v8Values) throws JavetException {
-        return invokeObject(functionName, v8Values);
+    default String invokeString(String functionName, Object... objects) throws JavetException {
+        return invokePrimitive(functionName, objects);
     }
 
-    default void invokeVoid(String functionName, V8Value... v8Values) throws JavetException {
-        invoke(functionName, false, v8Values);
+    default <T extends V8Value> T invokeV8Value(String functionName, Object... objects) throws JavetException {
+        return invoke(functionName, true, objects);
     }
 
-    default boolean set(int key, V8Value value) throws JavetException {
-        return set(getV8Runtime().createV8ValueInteger(key), value);
+    default void invokeVoid(String functionName, Object... objects) throws JavetException {
+        invoke(functionName, false, objects);
     }
 
-    default boolean set(String key, V8Value value) throws JavetException {
-        return set(getV8Runtime().createV8ValueString(key), value);
-    }
-
-    boolean set(V8Value key, V8Value value) throws JavetException;
+    boolean set(Object key, Object value) throws JavetException;
 
     /**
      * Sets function by name and callback context.
@@ -412,21 +304,6 @@ public interface IV8ValueObject extends IV8ValueReference {
             Object functionCallbackReceiver,
             boolean thisObjectRequired)
             throws JavetException {
-        return setFunctions(functionCallbackReceiver, thisObjectRequired, new JavetObjectConverter());
-    }
-
-    default List<JavetCallbackContext> setFunctions(
-            Object functionCallbackReceiver,
-            IJavetConverter converter)
-            throws JavetException {
-        return setFunctions(functionCallbackReceiver, false, new JavetObjectConverter());
-    }
-
-    default List<JavetCallbackContext> setFunctions(
-            Object functionCallbackReceiver,
-            boolean thisObjectRequired,
-            IJavetConverter converter)
-            throws JavetException {
         Map<String, Method> functionMap = new HashMap<>();
         for (Method method : functionCallbackReceiver.getClass().getMethods()) {
             if (method.isAnnotationPresent(V8Function.class)) {
@@ -460,7 +337,7 @@ public interface IV8ValueObject extends IV8ValueReference {
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
                             Modifier.isStatic(method.getModifiers()) ? null : functionCallbackReceiver,
-                            method, thisObjectRequired, converter);
+                            method, thisObjectRequired);
                     setFunction(entry.getKey(), javetCallbackContext);
                     javetCallbackContexts.add(javetCallbackContext);
                 }
@@ -471,46 +348,22 @@ public interface IV8ValueObject extends IV8ValueReference {
         return javetCallbackContexts;
     }
 
-    default boolean setNull(int key) throws JavetException {
-        return set(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueNull());
+    default boolean setNull(Object key) throws JavetException {
+        return set(key, getV8Runtime().createV8ValueNull());
     }
 
-    default boolean setNull(String key) throws JavetException {
-        return set(getV8Runtime().createV8ValueString(key), getV8Runtime().createV8ValueNull());
+    boolean setProperty(Object key, Object value) throws JavetException;
+
+    default boolean setPropertyNull(Object key) throws JavetException {
+        return setProperty(key, getV8Runtime().createV8ValueNull());
     }
 
-    default boolean setProperty(int key, V8Value value) throws JavetException {
-        return setProperty(getV8Runtime().createV8ValueInteger(key), value);
+    default boolean setPropertyUndefined(Object key) throws JavetException {
+        return setProperty(key, getV8Runtime().createV8ValueUndefined());
     }
 
-    default boolean setProperty(String key, V8Value value) throws JavetException {
-        return setProperty(getV8Runtime().createV8ValueString(key), value);
-    }
-
-    boolean setProperty(V8Value key, V8Value value) throws JavetException;
-
-    default boolean setPropertyNull(int key) throws JavetException {
-        return setProperty(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueNull());
-    }
-
-    default boolean setPropertyNull(String key) throws JavetException {
-        return setProperty(getV8Runtime().createV8ValueString(key), getV8Runtime().createV8ValueNull());
-    }
-
-    default boolean setPropertyUndefined(int key) throws JavetException {
-        return setProperty(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
-    }
-
-    default boolean setPropertyUndefined(String key) throws JavetException {
-        return setProperty(getV8Runtime().createV8ValueString(key), getV8Runtime().createV8ValueUndefined());
-    }
-
-    default boolean setUndefined(int key) throws JavetException {
-        return set(getV8Runtime().createV8ValueInteger(key), getV8Runtime().createV8ValueUndefined());
-    }
-
-    default boolean setUndefined(String key) throws JavetException {
-        return set(getV8Runtime().createV8ValueString(key), getV8Runtime().createV8ValueUndefined());
+    default boolean setUndefined(Object key) throws JavetException {
+        return set(key, getV8Runtime().createV8ValueUndefined());
     }
 
     /**

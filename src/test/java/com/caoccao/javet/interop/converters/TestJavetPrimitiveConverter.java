@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils.converters;
+package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;

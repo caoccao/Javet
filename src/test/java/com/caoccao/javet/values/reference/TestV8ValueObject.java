@@ -133,8 +133,8 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testGetSetDelete() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
-            assertTrue(v8ValueObject.set("a", v8Runtime.createV8ValueInteger(1)));
-            assertTrue(v8ValueObject.set("b", v8Runtime.createV8ValueString("2")));
+            assertTrue(v8ValueObject.set("a", 1));
+            assertTrue(v8ValueObject.set("b", "2"));
             assertEquals(1, v8ValueObject.getInteger("a"));
             assertEquals("2", v8ValueObject.getString("b"));
             assertTrue(v8ValueObject.delete("x"));
@@ -194,7 +194,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     public void testInvoke() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = [1, 2, 3]; a;").execute()) {
             assertEquals(3, v8ValueArray.getLength());
-            v8ValueArray.invoke("push", v8Runtime.createV8ValueInteger(4));
+            v8ValueArray.invokeVoid("push", 4);
             assertEquals(4, v8ValueArray.getLength());
             assertEquals(4, v8ValueArray.getInteger(3));
             assertEquals("1,2,3,4", v8ValueArray.toString());
@@ -206,7 +206,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         try (V8ValueObject outerObject = v8Runtime.getExecutor("const o = {}; o;").execute()) {
             assertEquals("{}", outerObject.toJsonString());
             try (V8ValueObject innerObject = v8Runtime.createV8ValueObject()) {
-                innerObject.set("a", v8Runtime.createV8ValueString("1"));
+                innerObject.set("a", "1");
                 outerObject.set("x", innerObject);
             }
             assertEquals("{\"x\":{\"a\":\"1\"}}", outerObject.toJsonString());
@@ -222,12 +222,12 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
                 assertEquals(0, iV8ValueArray.getLength());
             }
-            v8ValueObject.setProperty("a", v8Runtime.createV8ValueString("1"));
-            v8ValueObject.setProperty(v8Runtime.createV8ValueString("b"), v8Runtime.createV8ValueInteger(2));
-            v8ValueObject.setProperty(v8Runtime.createV8ValueString("c"), v8Runtime.createV8ValueLong(3));
-            v8ValueObject.setProperty(v8Runtime.createV8ValueString("d"), v8Runtime.createV8ValueZonedDateTime(now));
-            v8ValueObject.setProperty(v8Runtime.createV8ValueString("e"), v8Runtime.createV8ValueDouble(1.23));
-            v8ValueObject.setProperty(v8Runtime.createV8ValueString("f"), v8Runtime.createV8ValueBoolean(true));
+            v8ValueObject.setProperty("a", "1");
+            v8ValueObject.setProperty("b", 2);
+            v8ValueObject.setProperty("c", 3L);
+            v8ValueObject.setProperty("d", now);
+            v8ValueObject.setProperty("e", 1.23D);
+            v8ValueObject.setProperty("f", true);
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
                 assertEquals(6, iV8ValueArray.getLength());
                 assertEquals("a", iV8ValueArray.getString(0));
@@ -253,7 +253,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testToClone() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {
-            v8ValueObject.setProperty("a", v8Runtime.createV8ValueString("1"));
+            v8ValueObject.setProperty("a", "1");
             assertEquals("{\"a\":\"1\"}", v8ValueObject.toJsonString());
             try (V8ValueObject clonedV8ValueObject = v8ValueObject.toClone()) {
                 assertEquals("{\"a\":\"1\"}", clonedV8ValueObject.toJsonString());
@@ -266,9 +266,9 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testToJsonString() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {
-            v8ValueObject.setProperty("a", v8Runtime.createV8ValueString("1"));
-            v8ValueObject.setProperty("b", v8Runtime.createV8ValueInteger(2));
-            v8ValueObject.setProperty("c", v8Runtime.createV8ValueDouble(1.23));
+            v8ValueObject.setProperty("a", "1");
+            v8ValueObject.setProperty("b", 2);
+            v8ValueObject.setProperty("c", 1.23);
             assertEquals("{\"a\":\"1\",\"b\":2,\"c\":1.23}", v8ValueObject.toJsonString());
         }
     }

@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils.converters;
+package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -58,4 +58,13 @@ public interface IJavetConverter {
     Object toObject(V8Value v8Value) throws JavetException;
 
     <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException;
+
+    default V8Value[] toV8Values(V8Runtime v8Runtime, Object[] objects) throws JavetException {
+        final int length = objects.length;
+        V8Value[] v8Values = new V8Value[length];
+        for (int i = 0; i < length; ++i) {
+            v8Values[i] = toV8Value(v8Runtime, objects[i]);
+        }
+        return v8Values;
+    }
 }

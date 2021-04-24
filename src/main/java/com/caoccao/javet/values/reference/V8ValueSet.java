@@ -17,10 +17,10 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 
 import java.util.Objects;
 
@@ -34,9 +34,9 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
-    public void add(V8Value key) throws JavetException {
+    public void add(Object key) throws JavetException {
         checkV8Runtime();
-        v8Runtime.add(this, key);
+        v8Runtime.add(this, v8Runtime.getConverter().toV8Value(v8Runtime, key));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     @Override
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
         checkV8Runtime();
-        return invoke(FUNCTION_ENTRIES);
+        return invokeV8Value(FUNCTION_ENTRIES);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     @Override
     public IV8ValueIterator<V8Value> getKeys() throws JavetException {
         checkV8Runtime();
-        return invoke(FUNCTION_KEYS);
+        return invokeV8Value(FUNCTION_KEYS);
     }
 
     @Override

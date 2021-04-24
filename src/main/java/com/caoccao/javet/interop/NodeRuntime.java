@@ -80,7 +80,7 @@ public class NodeRuntime extends V8Runtime {
                 moduleObject = getGlobalObject().get(name);
             } else {
                 try (V8ValueFunction requireFunction = getGlobalObject().get(FUNCTION_REQUIRE)) {
-                    moduleObject = requireFunction.call(null, createV8ValueString(name));
+                    moduleObject = requireFunction.call(null, name);
                 }
             }
             try {

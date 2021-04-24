@@ -17,9 +17,9 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
@@ -29,16 +29,18 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public <T extends V8Value> T call(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+    public <T extends V8Value> T call(IV8ValueObject receiver, boolean returnResult, Object... objects)
             throws JavetException {
         checkV8Runtime();
-        return v8Runtime.call(this, receiver, returnResult, v8Values);
+        return v8Runtime.call(this, receiver, returnResult,
+                v8Runtime.getConverter().toV8Values(v8Runtime, objects));
     }
 
     @Override
-    public <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException {
+    public <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException {
         checkV8Runtime();
-        return v8Runtime.callAsConstructor(this, v8Values);
+        return v8Runtime.callAsConstructor(this,
+                v8Runtime.getConverter().toV8Values(v8Runtime, objects));
     }
 
     @Override

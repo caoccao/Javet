@@ -26,6 +26,8 @@ import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
+import com.caoccao.javet.interop.converters.IJavetConverter;
+import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
@@ -66,6 +68,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
      * Callback context map is designed for closing that memory leak issue.
      */
     protected Map<Long, JavetCallbackContext> callbackContextMap;
+    protected IJavetConverter converter;
     protected boolean gcScheduled;
     protected String globalName;
     protected long handle;
@@ -81,6 +84,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
         callbackContextMap = new TreeMap<>();
+        converter = new JavetObjectConverter();
         gcScheduled = false;
         this.globalName = globalName;
         this.handle = handle;
@@ -268,7 +272,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     @Override
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(type.getName())) {
-            return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
+            return v8ValueFunction.callAsConstructor(length);
         }
     }
 
@@ -334,6 +338,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public int getCallbackContextCount() {
         return callbackContextMap.size();
+    }
+
+    public IJavetConverter getConverter() {
+        return converter;
+    }
+
+    public void setConverter(IJavetConverter converter) {
+        Objects.requireNonNull(converter);
+        this.converter = converter;
     }
 
     public String getGlobalName() {

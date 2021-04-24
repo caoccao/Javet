@@ -127,12 +127,10 @@ Just write few lines of code to interact with Javet.
             Pojo[] pojoArray = new Pojo[]{
                     new Pojo("Tom", "CEO"),
                     new Pojo("Jerry", "CFO")};
-            PojoConverter converter = new PojoConverter();
             try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
-                try (V8Value pojoContext = converter.toV8Value(v8Runtime, pojoArray)) {
-                    v8Runtime.getGlobalObject().set("pojoContext", pojoContext);
-                }
-                v8Runtime.getExecutor("console.log(pojoContext);").executeVoid();
+                v8Runtime.setConverter(new PojoConverter());
+                v8Runtime.getGlobalObject().set("pojoArray", pojoArray);
+                v8Runtime.getExecutor("console.log(pojoArray);").executeVoid();
             }
         }
     }
@@ -143,10 +141,12 @@ The console output is:
 
     [ { name: 'Tom', value: 'CEO' }, { name: 'Jerry', value: 'CFO' } ]
 
+This process is transparent and fully automated once the converter is set to ``V8Runtime``.
+
 Null Safety
 ===========
 
-What if the object converter meets ``null`` or ``undefined`` when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in ``java.lang.NullPointerException``. Luckily, Javet object converter is null safe by injecting default primitive values and the default primitive values can be overridden. Please check out ``com.caoccao.javet.utils.converters.IJavetConverter#getDefault*`` for detail.
+What if the object converter meets ``null`` or ``undefined`` when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in ``java.lang.NullPointerException``. Luckily, Javet object converter is null safe by injecting default primitive values and the default primitive values can be overridden. Please check out ``com.caoccao.javet.interop.converters.IJavetConverter#getDefault*`` for detail.
 
 Final Note
 ==========

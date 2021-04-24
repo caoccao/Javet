@@ -18,27 +18,10 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueLong;
-import com.caoccao.javet.values.primitive.V8ValueString;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueSet extends IV8ValueKeyContainer {
-
-    default void add(int value) throws JavetException {
-        add(getV8Runtime().createV8ValueInteger(value));
-    }
-
-    default void add(long value) throws JavetException {
-        add(getV8Runtime().createV8ValueLong(value));
-    }
-
-    default void add(String value) throws JavetException {
-        add(getV8Runtime().createV8ValueString(value));
-    }
-
-    void add(V8Value key) throws JavetException;
+    void add(Object key) throws JavetException;
 
     default void addNull() throws JavetException {
         add(getV8Runtime().createV8ValueNull());

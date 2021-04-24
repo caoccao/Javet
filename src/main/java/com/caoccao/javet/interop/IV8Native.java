@@ -29,15 +29,13 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);
 
-    Object callAsConstructor(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
+    Object callAsConstructor(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
 
     void clearInternalStatistic();
 
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    Object cloneV8Value(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     void closeV8Runtime(long v8RuntimeHandle);
 

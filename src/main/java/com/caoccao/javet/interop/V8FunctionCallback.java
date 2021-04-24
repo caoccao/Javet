@@ -5,7 +5,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
-import com.caoccao.javet.utils.converters.IJavetConverter;
+import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
@@ -170,7 +170,7 @@ public final class V8FunctionCallback {
                  * it's better to inject V8Runtime via @V8RuntimeSetter
                  * to the receiver so that the receiver can create reference V8Value.
                  */
-                IJavetConverter converter = javetCallbackContext.getConverter();
+                IJavetConverter converter = v8Runtime.getConverter();
                 /*
                  * Javet doesn't check whether callback method is static or not.
                  * If the callback receiver is null, that's a static method.

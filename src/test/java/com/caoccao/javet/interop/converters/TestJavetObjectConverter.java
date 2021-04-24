@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils.converters;
+package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.entities.JavetEntityMap;
@@ -32,18 +32,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unchecked")
 public class TestJavetObjectConverter extends BaseTestJavetRuntime {
-    protected JavetObjectConverter converter;
-
-    public TestJavetObjectConverter() {
-        super();
-        converter = new JavetObjectConverter();
-    }
-
     @Test
     public void testArray() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
-            v8ValueArray.push(v8Runtime.createV8ValueString("abc"));
-            v8ValueArray.push(v8Runtime.createV8ValueInteger(123));
+            v8ValueArray.push("abc");
+            v8ValueArray.push(123);
             List<Object> list = (List<Object>) converter.toObject(v8ValueArray);
             assertEquals(2, list.size());
             assertEquals("abc", list.get(0));
@@ -90,8 +84,9 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testMap() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
-            v8ValueMap.set("x", v8Runtime.createV8ValueString("abc"));
+            v8ValueMap.set("x", "abc");
             assertEquals("abc", v8ValueMap.getString("x"));
             JavetEntityMap map = (JavetEntityMap) converter.toObject(v8ValueMap);
             assertEquals(1, map.size());
@@ -108,8 +103,9 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testObject() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
-            v8ValueObject.set("x", v8Runtime.createV8ValueString("abc"));
+            v8ValueObject.set("x", "abc");
             assertEquals("abc", v8ValueObject.getString("x"));
             Map<String, Object> map = (Map<String, Object>) converter.toObject(v8ValueObject);
             assertTrue(map instanceof HashMap);
@@ -126,6 +122,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testSet() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         try (V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet()) {
             v8ValueSet.add(v8Runtime.createV8ValueString("abc"));
             assertTrue(v8ValueSet.has("abc"));
@@ -144,6 +141,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testTypedArrayByteArray() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         byte[] bytes = new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0x03};
         try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, bytes)) {
             assertEquals(bytes.length, v8ValueTypedArray.getLength());
@@ -161,6 +159,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testTypedArrayDoubleArray() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         double[] doubles = new double[]{1.23D, 2.34D, 3.45D};
         try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, doubles)) {
             assertEquals(doubles.length, v8ValueTypedArray.getLength());
@@ -178,6 +177,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testTypedArrayFloatArray() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         float[] floats = new float[]{1.23F, 2.34F, 3.45F};
         try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, floats)) {
             assertEquals(floats.length, v8ValueTypedArray.getLength());
@@ -195,6 +195,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testTypedArrayLongArray() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         long[] longs = new long[]{1L, 2L, 3L};
         try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, longs)) {
             assertEquals(longs.length, v8ValueTypedArray.getLength());
@@ -212,6 +213,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testTypedArrayIntegerArray() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         int[] integers = new int[]{1, 2, 3};
         try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, integers)) {
             assertEquals(integers.length, v8ValueTypedArray.getLength());
@@ -229,6 +231,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testTypedArrayShortArray() throws JavetException {
+        IJavetConverter converter = v8Runtime.getConverter();
         short[] shorts = new short[]{(short) 0x01, (short) 0x02, (short) 0x03};
         try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, shorts)) {
             assertEquals(shorts.length, v8ValueTypedArray.getLength());
