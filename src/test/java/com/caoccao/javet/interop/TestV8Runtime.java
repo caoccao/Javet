@@ -66,7 +66,7 @@ public class TestV8Runtime extends BaseTestJavet {
             assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
             try (V8ValueObject window = v8Runtime.createV8ValueObject()) {
                 v8Runtime.getGlobalObject().set("window", window);
-                window.set("x", new V8ValueString("1"));
+                window.set("x", v8Runtime.createV8ValueString("1"));
             }
             assertEquals("1", v8Runtime.getExecutor("window.x;").executeString());
         }
@@ -90,7 +90,7 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testResetContext() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-            v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
+            v8Runtime.getGlobalObject().set("a", v8Runtime.createV8ValueString("1"));
             v8Runtime.resetContext();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
@@ -101,7 +101,7 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testResetIsolate() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-            v8Runtime.getGlobalObject().set("a", new V8ValueString("1"));
+            v8Runtime.getGlobalObject().set("a", v8Runtime.createV8ValueString("1"));
             v8Runtime.resetIsolate();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());

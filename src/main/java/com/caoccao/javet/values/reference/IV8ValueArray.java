@@ -89,7 +89,7 @@ public interface IV8ValueArray extends IV8ValueObject {
     }
 
     default int push(String value) throws JavetException {
-        return push(new V8ValueString(value));
+        return push(getV8Runtime().createV8ValueString(value));
     }
 
     default int pushNull() throws JavetException {

@@ -101,7 +101,7 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
     public void testGetSetAndDelete() throws JavetException {
         try (V8ValueMap v8ValueMap = v8Runtime.getExecutor("const a = new Map(); a;").execute()) {
             v8ValueMap.set("a", v8Runtime.createV8ValueInteger(1));
-            v8ValueMap.set("b", new V8ValueString("2"));
+            v8ValueMap.set("b", v8Runtime.createV8ValueString("2"));
             assertEquals(2, v8ValueMap.getSize());
             assertEquals(1, v8ValueMap.getInteger("a"));
             assertEquals("2", v8ValueMap.getString("b"));
@@ -130,7 +130,7 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
                     v8Runtime.getExecutor(
                             "JSON.stringify(o, (key, value) => value instanceof Map ? [...value] : value);").executeString());
             try (V8ValueMap innerObject = v8Runtime.createV8ValueMap()) {
-                innerObject.set("a", new V8ValueString("1"));
+                innerObject.set("a", v8Runtime.createV8ValueString("1"));
                 outerObject.set("x", innerObject);
             }
             assertEquals(

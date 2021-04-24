@@ -68,7 +68,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             } else if (objectClass == byte.class) {
                 v8Value = v8Runtime.createV8ValueInteger((int) object);
             } else if (objectClass == char.class) {
-                v8Value = new V8ValueString(Character.toString((char) object));
+                v8Value = v8Runtime.createV8ValueString(Character.toString((char) object));
             } else {
                 v8Value = v8Runtime.createV8ValueUndefined();
             }
@@ -79,7 +79,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         } else if (object instanceof Boolean) {
             v8Value = v8Runtime.createV8ValueBoolean((Boolean) object);
         } else if (object instanceof String) {
-            v8Value = new V8ValueString((String) object);
+            v8Value = v8Runtime.createV8ValueString((String) object);
         } else if (object instanceof Double) {
             v8Value = new V8ValueDouble((Double) object);
         } else if (object instanceof Float) {
@@ -93,7 +93,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         } else if (object instanceof Byte) {
             v8Value = v8Runtime.createV8ValueInteger((Byte) object);
         } else if (object instanceof Character) {
-            v8Value = new V8ValueString(((Character) object).toString());
+            v8Value = v8Runtime.createV8ValueString(((Character) object).toString());
         } else {
             v8Value = v8Runtime.createV8ValueUndefined();
         }

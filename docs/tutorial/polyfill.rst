@@ -31,7 +31,7 @@ decimal.js
                         "a.add(b).toString();").executeString());
         try (V8ValueFunction v8ValueFunctionDecimal = v8Runtime.getGlobalObject().get("Decimal")) {
             try (V8ValueObject v8ValueObjectDecimal = v8ValueFunctionDecimal.callAsConstructor(
-                    new V8ValueString("123.45"))) {
+                    v8Runtime.createV8ValueString("123.45"))) {
                 getLogger().logInfo(v8ValueObjectDecimal.toString());
                 if (v8ValueObjectDecimal.hasOwnProperty("constructor")) {
                     try (V8ValueFunction v8ValueFunction = v8ValueObjectDecimal.get("constructor")) {

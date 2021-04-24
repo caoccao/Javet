@@ -19,10 +19,9 @@ package com.caoccao.javet.utils.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.entities.JavetEntityMap;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
-import com.caoccao.javet.enums.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +42,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     @Test
     public void testArray() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
-            v8ValueArray.push(new V8ValueString("abc"));
+            v8ValueArray.push(v8Runtime.createV8ValueString("abc"));
             v8ValueArray.push(v8Runtime.createV8ValueInteger(123));
             List<Object> list = (List<Object>) converter.toObject(v8ValueArray);
             assertEquals(2, list.size());
@@ -92,7 +91,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     @Test
     public void testMap() throws JavetException {
         try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
-            v8ValueMap.set("x", new V8ValueString("abc"));
+            v8ValueMap.set("x", v8Runtime.createV8ValueString("abc"));
             assertEquals("abc", v8ValueMap.getString("x"));
             JavetEntityMap map = (JavetEntityMap) converter.toObject(v8ValueMap);
             assertEquals(1, map.size());
@@ -110,7 +109,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     @Test
     public void testObject() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
-            v8ValueObject.set("x", new V8ValueString("abc"));
+            v8ValueObject.set("x", v8Runtime.createV8ValueString("abc"));
             assertEquals("abc", v8ValueObject.getString("x"));
             Map<String, Object> map = (Map<String, Object>) converter.toObject(v8ValueObject);
             assertTrue(map instanceof HashMap);
@@ -128,7 +127,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     @Test
     public void testSet() throws JavetException {
         try (V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet()) {
-            v8ValueSet.add(new V8ValueString("abc"));
+            v8ValueSet.add(v8Runtime.createV8ValueString("abc"));
             assertTrue(v8ValueSet.has("abc"));
             Set<Object> set = (Set<Object>) converter.toObject(v8ValueSet);
             assertEquals(1, set.size());

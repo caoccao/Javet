@@ -196,7 +196,7 @@ Javet is capable of automatically converting its internal ``V8Value`` to primiti
 
     // Option 3
     public V8Value echo(String str) {
-        return new V8ValueString(str);
+        return v8Runtime.createV8ValueString(str);
     }
 
     // Option 4

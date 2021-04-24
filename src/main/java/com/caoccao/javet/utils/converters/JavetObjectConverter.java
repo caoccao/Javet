@@ -197,7 +197,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (object instanceof String[]) {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
             for (String item : (String[]) object) {
-                v8ValueArray.push(new V8ValueString(item));
+                v8ValueArray.push(v8Runtime.createV8ValueString(item));
             }
             v8Value = v8ValueArray;
         } else if (object.getClass().isArray()) {

@@ -28,9 +28,9 @@ public class TestV8ValueString extends BaseTestJavetRuntime {
     @Test
     public void testEquals() throws JavetException {
         V8ValueString v8ValueString = v8Runtime.getExecutor("'abc'").execute();
-        assertTrue(v8ValueString.equals(new V8ValueString("abc")));
+        assertTrue(v8ValueString.equals(v8Runtime.createV8ValueString("abc")));
         assertFalse(v8ValueString.equals(null));
-        assertFalse(v8ValueString.equals(new V8ValueString("def")));
+        assertFalse(v8ValueString.equals(v8Runtime.createV8ValueString("def")));
         assertFalse(v8ValueString.equals(v8Runtime.createV8ValueLong(1)));
     }
 

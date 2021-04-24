@@ -46,6 +46,8 @@ public interface IV8Creatable {
 
     V8ValueSet createV8ValueSet() throws JavetException;
 
+    V8ValueString createV8ValueString(String str) throws JavetException;
+
     V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException;
 
     V8ValueUndefined createV8ValueUndefined();

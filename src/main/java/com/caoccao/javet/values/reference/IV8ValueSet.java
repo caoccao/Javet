@@ -35,7 +35,7 @@ public interface IV8ValueSet extends IV8ValueKeyContainer {
     }
 
     default void add(String value) throws JavetException {
-        add(new V8ValueString(value));
+        add(getV8Runtime().createV8ValueString(value));
     }
 
     void add(V8Value key) throws JavetException;

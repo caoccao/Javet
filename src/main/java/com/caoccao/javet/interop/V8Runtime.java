@@ -255,6 +255,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     }
 
     @Override
+    public V8ValueString createV8ValueString(String str) throws JavetException {
+        return decorateV8Value(new V8ValueString(str));
+    }
+
+    @Override
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(type.getName())) {
             return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));

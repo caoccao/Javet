@@ -82,7 +82,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         NodeModuleAny nodeModuleFS = nodeRuntime.getNodeModule("fs", NodeModuleAny.class);
         assertTrue(nodeModuleFS.getModuleObject().invokeBoolean(
                 "existsSync",
-                new V8ValueString(getScriptFile("test-node-module-fs.js").getAbsolutePath())));
+                nodeRuntime.createV8ValueString(getScriptFile("test-node-module-fs.js").getAbsolutePath())));
     }
 
     @Test

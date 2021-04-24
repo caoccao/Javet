@@ -54,7 +54,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean delete(V8Value key) throws JavetException;
 
     default boolean delete(String key) throws JavetException {
-        return delete(new V8ValueString(key));
+        return delete(getV8Runtime().createV8ValueString(key));
     }
 
     default boolean deleteNull() throws JavetException {
@@ -74,7 +74,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default <T extends V8Value> T get(String key) throws JavetException {
-        return get(new V8ValueString(key));
+        return get(getV8Runtime().createV8ValueString(key));
     }
 
     <T extends V8Value> T get(V8Value key) throws JavetException;
@@ -170,7 +170,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default <T extends V8Value> T getProperty(String key) throws JavetException {
-        return getProperty(new V8ValueString(key));
+        return getProperty(getV8Runtime().createV8ValueString(key));
     }
 
     <T extends V8Value> T getProperty(V8Value key) throws JavetException;
@@ -286,7 +286,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean has(String value) throws JavetException {
-        return has(new V8ValueString(value));
+        return has(getV8Runtime().createV8ValueString(value));
     }
 
     boolean has(V8Value value) throws JavetException;
@@ -300,7 +300,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean hasOwnProperty(String key) throws JavetException {
-        return hasOwnProperty(new V8ValueString(key));
+        return hasOwnProperty(getV8Runtime().createV8ValueString(key));
     }
 
     boolean hasOwnProperty(V8Value key) throws JavetException;
@@ -360,7 +360,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean set(String key, V8Value value) throws JavetException {
-        return set(new V8ValueString(key), value);
+        return set(getV8Runtime().createV8ValueString(key), value);
     }
 
     boolean set(V8Value key, V8Value value) throws JavetException;
@@ -476,7 +476,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setNull(String key) throws JavetException {
-        return set(new V8ValueString(key), getV8Runtime().createV8ValueNull());
+        return set(getV8Runtime().createV8ValueString(key), getV8Runtime().createV8ValueNull());
     }
 
     default boolean setProperty(int key, V8Value value) throws JavetException {
@@ -484,7 +484,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setProperty(String key, V8Value value) throws JavetException {
-        return setProperty(new V8ValueString(key), value);
+        return setProperty(getV8Runtime().createV8ValueString(key), value);
     }
 
     boolean setProperty(V8Value key, V8Value value) throws JavetException;
@@ -494,7 +494,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setPropertyNull(String key) throws JavetException {
-        return setProperty(new V8ValueString(key), getV8Runtime().createV8ValueNull());
+        return setProperty(getV8Runtime().createV8ValueString(key), getV8Runtime().createV8ValueNull());
     }
 
     default boolean setPropertyUndefined(int key) throws JavetException {
@@ -502,7 +502,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setPropertyUndefined(String key) throws JavetException {
-        return setProperty(new V8ValueString(key), getV8Runtime().createV8ValueUndefined());
+        return setProperty(getV8Runtime().createV8ValueString(key), getV8Runtime().createV8ValueUndefined());
     }
 
     default boolean setUndefined(int key) throws JavetException {
@@ -510,7 +510,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default boolean setUndefined(String key) throws JavetException {
-        return set(new V8ValueString(key), getV8Runtime().createV8ValueUndefined());
+        return set(getV8Runtime().createV8ValueString(key), getV8Runtime().createV8ValueUndefined());
     }
 
     /**

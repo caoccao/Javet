@@ -70,7 +70,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testString() throws JavetException {
-        assertEquals("abc", (String) converter.toObject(new V8ValueString("abc")));
+        assertEquals("abc", (String) converter.toObject(v8Runtime.createV8ValueString("abc")));
         assertEquals("abc", ((V8ValueString) converter.toV8Value(v8Runtime, "abc")).getValue());
     }
 

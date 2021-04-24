@@ -58,7 +58,7 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
 
     public V8Value echoThis(V8Value thisObject) throws JavetException {
         called = true;
-        return new V8ValueString(((V8ValueObject) thisObject).toJsonString());
+        return v8Runtime.createV8ValueString(((V8ValueObject) thisObject).toJsonString());
     }
 
     @Override
@@ -93,7 +93,7 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
             try (V8Value clonedArg = arg.toClone()) {
                 v8ValueArray.push(clonedArg);
             }
-            return new V8ValueString(v8ValueArray.toJsonString());
+            return v8Runtime.createV8ValueString(v8ValueArray.toJsonString());
         }
     }
 
