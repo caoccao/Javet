@@ -52,7 +52,7 @@ public class V8ValueWeakMap extends V8ValueObject {
         if (!(key instanceof V8ValueReference)) {
             throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
-        return invokeV8Value(FUNCTION_GET, key);
+        return invoke(FUNCTION_GET, key);
     }
 
     @Override

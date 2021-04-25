@@ -193,11 +193,21 @@ public interface IV8ValueObject extends IV8ValueReference {
         return has(getV8Runtime().createV8ValueUndefined());
     }
 
-    <T extends V8Value> T invoke(String functionName, boolean returnResult, Object... objects) throws JavetException;
+    default <T extends V8Value> T invoke(String functionName, Object... objects) throws JavetException {
+        return invokeExtended(functionName, true, objects);
+    }
+
+    default <T extends V8Value> T invoke(String functionName, V8Value... v8Values) throws JavetException {
+        return invokeExtended(functionName, true, v8Values);
+    }
 
     default Boolean invokeBoolean(String functionName, Object... objects) throws JavetException {
         return invokePrimitive(functionName, objects);
     }
+
+    <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, Object... objects) throws JavetException;
+
+    <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
 
     default Double invokeDouble(String functionName, Object... objects) throws JavetException {
         return invokePrimitive(functionName, objects);
@@ -217,8 +227,8 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default <T extends Object> T invokeObject(String functionName, Object... objects) throws JavetException {
-        try {
-            return (T) getV8Runtime().getConverter().toObject(invoke(functionName, true, objects));
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            return (T) getV8Runtime().getConverter().toObject(v8Value);
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -228,25 +238,23 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default <R extends Object, T extends V8ValuePrimitive<R>> R invokePrimitive(
             String functionName, Object... objects) throws JavetException {
-        try (V8Value v8Value = invokeV8Value(functionName, objects)) {
-            try {
-                return ((T) v8Value).getValue();
-            } catch (Throwable t) {
-            }
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            return ((T) v8Value).getValue();
+        } catch (Throwable t) {
+            return null;
         }
-        return null;
     }
 
     default String invokeString(String functionName, Object... objects) throws JavetException {
         return invokePrimitive(functionName, objects);
     }
 
-    default <T extends V8Value> T invokeV8Value(String functionName, Object... objects) throws JavetException {
-        return invoke(functionName, true, objects);
+    default void invokeVoid(String functionName, Object... objects) throws JavetException {
+        invokeExtended(functionName, false, objects);
     }
 
-    default void invokeVoid(String functionName, Object... objects) throws JavetException {
-        invoke(functionName, false, objects);
+    default void invokeVoid(String functionName, V8Value... v8Values) throws JavetException {
+        invokeExtended(functionName, false, v8Values);
     }
 
     boolean set(Object key, Object value) throws JavetException;

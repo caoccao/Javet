@@ -38,7 +38,7 @@ public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements
 
     @Override
     public T getNext() {
-        try (V8ValueObject next = invokeV8Value(FUNCTION_NEXT)) {
+        try (V8ValueObject next = invoke(FUNCTION_NEXT)) {
             if (!next.getBoolean(PROPERTY_DONE)) {
                 return next.get(PROPERTY_VALUE);
             }

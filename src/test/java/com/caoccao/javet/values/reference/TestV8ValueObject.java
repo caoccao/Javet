@@ -199,7 +199,17 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testInvoke() throws JavetException {
+    public void testInvokeObject() throws JavetException {
+        v8Runtime.getExecutor("function a(b) { return [1,2,3].concat(b);}").executeVoid();
+        Object result = v8Runtime.getGlobalObject().invokeObject("a", (Object) (new Integer[]{4, 5, 6}));
+        assertArrayEquals(
+                new Integer[]{1, 2, 3, 4, 5, 6},
+                ((List<Integer>) result).toArray(new Integer[0]),
+                "invokeObject() should work transparently without resource leak");
+    }
+
+    @Test
+    public void testInvokeVoid() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = [1, 2, 3]; a;").execute()) {
             assertEquals(3, v8ValueArray.getLength());
             v8ValueArray.invokeVoid("push", 4);

@@ -77,13 +77,13 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     @Override
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
         checkV8Runtime();
-        return invokeV8Value(FUNCTION_ENTRIES);
+        return invoke(FUNCTION_ENTRIES);
     }
 
     @Override
     public IV8ValueIterator<? extends V8Value> getKeys() throws JavetException {
         checkV8Runtime();
-        return invokeV8Value(FUNCTION_KEYS);
+        return invoke(FUNCTION_KEYS);
     }
 
     @Override
@@ -100,6 +100,6 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     @Override
     public IV8ValueIterator<? extends V8Value> getValues() throws JavetException {
         checkV8Runtime();
-        return invokeV8Value(FUNCTION_VALUES);
+        return invoke(FUNCTION_VALUES);
     }
 }

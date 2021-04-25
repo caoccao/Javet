@@ -21,15 +21,11 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
-import com.caoccao.javet.interop.converters.IJavetConverter;
-import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 import com.caoccao.javet.values.virtual.V8VirtualValue;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
@@ -134,12 +130,20 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <T extends V8Value> T invoke(String functionName, boolean returnResult, Object... objects)
+    public <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, Object... objects)
             throws JavetException {
         checkV8Runtime();
         try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
             return v8Runtime.invoke(this, functionName, returnResult, virtualValueList.get());
         }
+    }
+
+    @Override
+    public <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, V8Value... v8Values)
+            throws JavetException {
+        checkV8Runtime();
+        v8Runtime.decorateV8Values(v8Values);
+        return v8Runtime.invoke(this, functionName, returnResult, v8Values);
     }
 
     @Override

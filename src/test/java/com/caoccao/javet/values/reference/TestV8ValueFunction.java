@@ -35,6 +35,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("unchecked")
 public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @Test
     public void testAnnotationBasedFunctions() throws JavetException {
@@ -440,6 +441,18 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
         assertTrue(mockCallbackReceiver.isCalled());
         v8Runtime.requestGarbageCollectionForTesting(true);
+    }
+
+    @Test
+    public void testCallObject() throws JavetException {
+        v8Runtime.getExecutor("function a(b) { return [1,2,3].concat(b);}").executeVoid();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get("a")) {
+            Object result = v8ValueFunction.callObject(null, (Object) (new Integer[]{4, 5, 6}));
+            assertArrayEquals(
+                    new Integer[]{1, 2, 3, 4, 5, 6},
+                    ((List<Integer>) result).toArray(new Integer[0]),
+                    "callObject() should work transparently without resource leak");
+        }
     }
 
     @Test

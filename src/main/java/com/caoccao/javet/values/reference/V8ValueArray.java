@@ -60,10 +60,10 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     public List<Integer> getKeys() throws JavetException {
         checkV8Runtime();
-        try (V8ValueObject iterator = invokeV8Value(FUNCTION_KEYS)) {
+        try (V8ValueObject iterator = invoke(FUNCTION_KEYS)) {
             List<Integer> keys = new ArrayList<>();
             while (true) {
-                try (V8ValueObject next = iterator.invokeV8Value(FUNCTION_NEXT)) {
+                try (V8ValueObject next = iterator.invoke(FUNCTION_NEXT)) {
                     if (next.getBoolean(PROPERTY_DONE)) {
                         break;
                     }
@@ -88,7 +88,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     public <T extends V8Value> T pop() throws JavetException {
         checkV8Runtime();
-        return invokeV8Value(FUNCTION_POP);
+        return invoke(FUNCTION_POP);
     }
 
     @Override

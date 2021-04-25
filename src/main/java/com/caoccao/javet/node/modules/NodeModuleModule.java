@@ -33,7 +33,7 @@ public class NodeModuleModule extends BaseNodeModule {
     }
 
     public void setRequireRootDirectory(Path path) throws JavetException {
-        try (V8ValueObject v8ValueObject = moduleObject.invokeV8Value(
+        try (V8ValueObject v8ValueObject = moduleObject.invoke(
                 FUNCTION_CREATE_REQUIRE, path.toAbsolutePath().toString())) {
             moduleObject.getV8Runtime().getGlobalObject().set(PROPERTY_REQUIRE, v8ValueObject);
         }

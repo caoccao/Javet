@@ -63,7 +63,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     @Override
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
         checkV8Runtime();
-        return invokeV8Value(FUNCTION_ENTRIES);
+        return invoke(FUNCTION_ENTRIES);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     @Override
     public IV8ValueIterator<V8Value> getKeys() throws JavetException {
         checkV8Runtime();
-        return invokeV8Value(FUNCTION_KEYS);
+        return invoke(FUNCTION_KEYS);
     }
 
     @Override

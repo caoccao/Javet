@@ -46,7 +46,7 @@ public final class JavetResourceUtils {
             for (V8Value v8Value : (V8Value[]) object) {
                 safeClose(v8Value);
             }
-        } else if (object instanceof Object[]) {
+        } else if (object.getClass().isArray()) {
             for (Object o : (Object[]) object) {
                 safeClose(o);
             }
