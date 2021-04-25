@@ -22,7 +22,6 @@ import com.caoccao.javet.enums.JavetPromiseRejectEvent;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
@@ -50,6 +49,7 @@ import java.util.stream.IntStream;
 public class V8Runtime implements IJavetClosable, IV8Creatable {
     protected static final long INVALID_HANDLE = 0L;
     protected static final String PROPERTY_DATA_VIEW = "DataView";
+    protected static final IJavetConverter DEFAULT_CONVERTER = new JavetObjectConverter();
     protected static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
     protected static final int V8_VALUE_BOOLEAN_FALSE_INDEX = 0;
     protected static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
@@ -84,7 +84,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
         callbackContextMap = new TreeMap<>();
-        converter = new JavetObjectConverter();
+        converter = DEFAULT_CONVERTER;
         gcScheduled = false;
         this.globalName = globalName;
         this.handle = handle;
@@ -448,7 +448,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return v8Inspector;
     }
 
-    public V8Locker getV8Locker() throws JavetV8LockConflictException {
+    public V8Locker getV8Locker() throws JavetException {
         return new V8Locker(this, v8Native);
     }
 

@@ -18,19 +18,23 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestV8Locker extends BaseTestJavetRuntime {
     @Test
     public void testExceptionInAcquire() throws JavetException {
         try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-            assertThrows(JavetV8LockConflictException.class, () -> v8Runtime.getV8Locker());
+            try {
+                v8Runtime.getV8Locker();
+            } catch (JavetException e) {
+                assertEquals(JavetError.LockAcquisitionFailure, e.getError(),
+                        "Second lock acquisition should fail.");
+            }
         }
     }
 
@@ -39,6 +43,11 @@ public class TestV8Locker extends BaseTestJavetRuntime {
         V8Locker v8Locker = v8Runtime.getV8Locker();
         assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
         v8Locker.close();
-        assertThrows(JavetV8LockConflictException.class, () -> v8Locker.close());
+        try {
+            v8Locker.close();
+        } catch (JavetException e) {
+            assertEquals(JavetError.LockReleaseFailure, e.getError(),
+                    "Second lock release should fail.");
+        }
     }
 }

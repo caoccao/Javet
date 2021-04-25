@@ -632,15 +632,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
 	return false;
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
 	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
 	if (v8Runtime->IsLocked()) {
-		Javet::Exceptions::ThrowJavetV8LockConflictException(jniEnv, "Cannot acquire V8 native lock because it has not been released yet");
+		return false;
 	}
-	else {
-		v8Runtime->Lock();
-	}
+	v8Runtime->Lock();
+	return true;
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotification
@@ -971,15 +970,14 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
 	}
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
 	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
 	if (!v8Runtime->IsLocked()) {
-		Javet::Exceptions::ThrowJavetV8LockConflictException(jniEnv, "Cannot release V8 native lock because it has not been acquired yet");
+		return false;
 	}
-	else {
-		v8Runtime->Unlock();
-	}
+	v8Runtime->Unlock();
+	return true;
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend

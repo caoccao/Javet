@@ -39,10 +39,12 @@ public class JavetError {
     public static final JavetError ModuleNameEmpty = new JavetError(
             61, "Module name is empty");
 
-    public static final JavetError LockConflict = new JavetError(
-            71, "${message}");
-    public static final JavetError ThreadIdMismatch = new JavetError(
-            72, "Runtime lock conflict is detected with locked thread ID ${lockedThreadID} and current thread ID ${currentThreadID}");
+    public static final JavetError LockAcquisitionFailure = new JavetError(
+            71, "Failed to acquire the lock");
+    public static final JavetError LockReleaseFailure = new JavetError(
+            72, "Failed to release the lock");
+    public static final JavetError LockConflictThreadIdMismatch = new JavetError(
+            73, "Runtime lock conflict is detected with locked thread ID ${lockedThreadID} and current thread ID ${currentThreadID}");
 
     public static final JavetError RuntimeAlreadyClosed = new JavetError(
             81, "Runtime is already closed");
