@@ -60,10 +60,8 @@ public interface IV8ValuePromise extends IV8ValueObject {
     }
 
     default <T extends Object> T getResultObject(Object key) throws JavetException {
-        V8Runtime v8Runtime = getV8Runtime();
-        IJavetConverter converter = v8Runtime.getConverter();
         try {
-            return (T) converter.toObject(getResult());
+            return (T) getV8Runtime().getConverter().toObject(getResult());
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {

@@ -20,8 +20,8 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetConsumer;
-import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.virtual.V8VirtualValue;
 
 import java.util.Objects;
 
@@ -37,17 +37,8 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     @Override
     public void add(Object key) throws JavetException {
         checkV8Runtime();
-        V8Value v8Value = null;
-        V8Value toBeClosedV8Value = null;
-        try {
-            if (key instanceof V8Value) {
-                v8Value = (V8Value) key;
-            } else {
-                toBeClosedV8Value = v8Value = v8Runtime.getConverter().toV8Value(v8Runtime, key);
-            }
-            v8Runtime.add(this, v8Value);
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Value);
+        try (V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, key)) {
+            v8Runtime.add(this, virtualValue.get());
         }
     }
 

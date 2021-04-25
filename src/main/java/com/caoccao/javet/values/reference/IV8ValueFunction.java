@@ -19,7 +19,6 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
@@ -57,9 +56,8 @@ public interface IV8ValueFunction extends IV8ValueObject {
 
     default <T extends Object> T callObject(IV8ValueObject receiver, Object... objects) throws JavetException {
         V8Runtime v8Runtime = getV8Runtime();
-        IJavetConverter converter = v8Runtime.getConverter();
         try {
-            return (T) converter.toObject(call(receiver, true, objects));
+            return (T) v8Runtime.getConverter().toObject(call(receiver, true, objects));
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {

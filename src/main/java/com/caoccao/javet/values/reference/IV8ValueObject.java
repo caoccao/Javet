@@ -24,7 +24,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
@@ -96,10 +95,8 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default <T extends Object> T getObject(Object key) throws JavetException {
-        V8Runtime v8Runtime = getV8Runtime();
-        IJavetConverter converter = v8Runtime.getConverter();
         try {
-            return (T) converter.toObject(get(key));
+            return (T) getV8Runtime().getConverter().toObject(get(key));
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -145,10 +142,8 @@ public interface IV8ValueObject extends IV8ValueReference {
     IV8ValueArray getPropertyNames() throws JavetException;
 
     default <T extends Object> T getPropertyObject(Object key) throws JavetException {
-        V8Runtime v8Runtime = getV8Runtime();
-        IJavetConverter converter = v8Runtime.getConverter();
         try {
-            return (T) converter.toObject(getProperty(key));
+            return (T) getV8Runtime().getConverter().toObject(getProperty(key));
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -222,10 +217,8 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default <T extends Object> T invokeObject(String functionName, Object... objects) throws JavetException {
-        V8Runtime v8Runtime = getV8Runtime();
-        IJavetConverter converter = v8Runtime.getConverter();
         try {
-            return (T) converter.toObject(invoke(functionName, true, objects));
+            return (T) getV8Runtime().getConverter().toObject(invoke(functionName, true, objects));
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {

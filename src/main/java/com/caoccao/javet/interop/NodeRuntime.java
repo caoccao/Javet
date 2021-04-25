@@ -109,7 +109,7 @@ public class NodeRuntime extends V8Runtime {
 
     protected void removeNodeModules() {
         if (!nodeModuleMap.isEmpty()) {
-            nodeModuleMap.values().stream().forEach(nodeModule -> JavetResourceUtils.safeClose(nodeModule));
+            JavetResourceUtils.safeClose(nodeModuleMap.values());
             nodeModuleMap.clear();
         }
     }

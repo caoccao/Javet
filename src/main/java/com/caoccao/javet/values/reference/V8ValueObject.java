@@ -25,6 +25,8 @@ import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
+import com.caoccao.javet.values.virtual.V8VirtualValue;
+import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,17 +48,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public boolean delete(Object key) throws JavetException {
         Objects.requireNonNull(key);
         checkV8Runtime();
-        V8Value v8Value = null;
-        V8Value toBeClosedV8Value = null;
-        try {
-            if (key instanceof V8Value) {
-                v8Value = (V8Value) key;
-            } else {
-                toBeClosedV8Value = v8Value = v8Runtime.getConverter().toV8Value(v8Runtime, key);
-            }
-            return v8Runtime.delete(this, v8Value);
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Value);
+        try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
+            return v8Runtime.delete(this, virtualKey.get());
         }
     }
 
@@ -85,17 +78,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public <T extends V8Value> T get(Object key) throws JavetException {
         Objects.requireNonNull(key);
         checkV8Runtime();
-        V8Value v8Value = null;
-        V8Value toBeClosedV8Value = null;
-        try {
-            if (key instanceof V8Value) {
-                v8Value = (V8Value) key;
-            } else {
-                toBeClosedV8Value = v8Value = v8Runtime.getConverter().toV8Value(v8Runtime, key);
-            }
-            return v8Runtime.get(this, v8Value);
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Value);
+        try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
+            return v8Runtime.get(this, virtualKey.get());
         }
     }
 
@@ -121,17 +105,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public <T extends V8Value> T getProperty(Object key) throws JavetException {
         Objects.requireNonNull(key);
         checkV8Runtime();
-        V8Value v8Value = null;
-        V8Value toBeClosedV8Value = null;
-        try {
-            if (key instanceof V8Value) {
-                v8Value = (V8Value) key;
-            } else {
-                toBeClosedV8Value = v8Value = v8Runtime.getConverter().toV8Value(v8Runtime, key);
-            }
-            return v8Runtime.getProperty(this, v8Value);
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Value);
+        try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
+            return v8Runtime.getProperty(this, virtualKey.get());
         }
     }
 
@@ -144,17 +119,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public boolean has(Object value) throws JavetException {
         Objects.requireNonNull(value);
         checkV8Runtime();
-        V8Value v8Value = null;
-        V8Value toBeClosedV8Value = null;
-        try {
-            if (value instanceof V8Value) {
-                v8Value = (V8Value) value;
-            } else {
-                toBeClosedV8Value = v8Value = v8Runtime.getConverter().toV8Value(v8Runtime, value);
-            }
-            return v8Runtime.has(this, v8Value);
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Value);
+        try (V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, value)) {
+            return v8Runtime.has(this, virtualValue.get());
         }
     }
 
@@ -162,17 +128,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public boolean hasOwnProperty(Object key) throws JavetException {
         Objects.requireNonNull(key);
         checkV8Runtime();
-        V8Value v8Value = null;
-        V8Value toBeClosedV8Value = null;
-        try {
-            if (key instanceof V8Value) {
-                v8Value = (V8Value) key;
-            } else {
-                toBeClosedV8Value = v8Value = v8Runtime.getConverter().toV8Value(v8Runtime, key);
-            }
-            return v8Runtime.hasOwnProperty(this, v8Value);
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Value);
+        try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
+            return v8Runtime.hasOwnProperty(this, virtualKey.get());
         }
     }
 
@@ -180,22 +137,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public <T extends V8Value> T invoke(String functionName, boolean returnResult, Object... objects)
             throws JavetException {
         checkV8Runtime();
-        List<V8Value> v8Values = new ArrayList<>();
-        List<V8Value> toBeClosedV8Values = new ArrayList<>();
-        IJavetConverter converter = v8Runtime.getConverter();
-        try {
-            for (Object object : objects) {
-                if (object instanceof V8Value) {
-                    v8Values.add((V8Value) object);
-                } else {
-                    V8Value v8Value = converter.toV8Value(v8Runtime, object);
-                    toBeClosedV8Values.add(v8Value);
-                    v8Values.add(v8Value);
-                }
-            }
-            return v8Runtime.invoke(this, functionName, returnResult, v8Values.toArray(new V8Value[0]));
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Values);
+        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
+            return v8Runtime.invoke(this, functionName, returnResult, virtualValueList.get());
         }
     }
 
@@ -219,26 +162,9 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         checkV8Runtime();
-        V8Value v8ValueKey = null;
-        V8Value v8ValueValue = null;
-        List<V8Value> toBeClosedV8Values = new ArrayList<>();
-        IJavetConverter converter = v8Runtime.getConverter();
-        try {
-            if (key instanceof V8Value) {
-                v8ValueKey = (V8Value) key;
-            } else {
-                v8ValueKey = converter.toV8Value(v8Runtime, key);
-                toBeClosedV8Values.add(v8ValueKey);
-            }
-            if (value instanceof V8Value) {
-                v8ValueValue = (V8Value) value;
-            } else {
-                v8ValueValue = converter.toV8Value(v8Runtime, value);
-                toBeClosedV8Values.add(v8ValueValue);
-            }
-            return v8Runtime.set(this, v8ValueKey, v8ValueValue);
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Values);
+        try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key);
+             V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, value)) {
+            return v8Runtime.set(this, virtualKey.get(), virtualValue.get());
         }
     }
 
@@ -247,26 +173,9 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         checkV8Runtime();
-        V8Value v8ValueKey = null;
-        V8Value v8ValueValue = null;
-        List<V8Value> toBeClosedV8Values = new ArrayList<>();
-        IJavetConverter converter = v8Runtime.getConverter();
-        try {
-            if (key instanceof V8Value) {
-                v8ValueKey = (V8Value) key;
-            } else {
-                v8ValueKey = converter.toV8Value(v8Runtime, key);
-                toBeClosedV8Values.add(v8ValueKey);
-            }
-            if (value instanceof V8Value) {
-                v8ValueValue = (V8Value) value;
-            } else {
-                v8ValueValue = converter.toV8Value(v8Runtime, value);
-                toBeClosedV8Values.add(v8ValueValue);
-            }
-            return v8Runtime.setProperty(this, v8ValueKey, v8ValueValue);
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Values);
+        try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key);
+             V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, value)) {
+            return v8Runtime.setProperty(this, virtualKey.get(), virtualValue.get());
         }
     }
 

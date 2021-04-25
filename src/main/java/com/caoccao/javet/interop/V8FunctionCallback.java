@@ -2,10 +2,10 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
-import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
@@ -218,14 +218,10 @@ public final class V8FunctionCallback {
                     resultObject = method.invoke(callbackReceiver, objectValues.toArray());
                 }
                 if (javetCallbackContext.isReturnResult()) {
-                    if (resultObject != null) {
-                        if (resultObject instanceof V8Value) {
-                            v8Runtime.decorateV8Value((V8Value) resultObject);
-                        } else {
-                            resultObject = converter.toV8Value(v8Runtime, resultObject);
-                        }
+                    if (resultObject instanceof V8Value) {
+                        v8Runtime.decorateV8Value((V8Value) resultObject);
                     } else {
-                        resultObject = converter.toV8Value(v8Runtime, null);
+                        resultObject = converter.toV8Value(v8Runtime, resultObject);
                     }
                     // The lifecycle of the result is handed over to JNI native implementation.
                     // So, close() or setWeak() must not be called.

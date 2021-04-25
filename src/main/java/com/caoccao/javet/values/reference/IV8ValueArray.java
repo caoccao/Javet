@@ -59,9 +59,7 @@ public interface IV8ValueArray extends IV8ValueObject {
 
     default <T extends Object> T popObject() throws JavetException {
         try (V8Value v8Value = pop()) {
-            V8Runtime v8Runtime = getV8Runtime();
-            IJavetConverter converter = v8Runtime.getConverter();
-            return (T) converter.toObject(v8Value);
+            return (T) getV8Runtime().getConverter().toObject(v8Value);
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {

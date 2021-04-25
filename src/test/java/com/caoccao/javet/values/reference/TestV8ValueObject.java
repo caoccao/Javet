@@ -27,10 +27,12 @@ import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("unchecked")
 public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testClearWeak() throws JavetException {
@@ -135,8 +137,14 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
             assertTrue(v8ValueObject.set("a", 1));
             assertTrue(v8ValueObject.set("b", "2"));
+            assertTrue(v8ValueObject.set("c", new String[]{"x", "y"}));
             assertEquals(1, v8ValueObject.getInteger("a"));
             assertEquals("2", v8ValueObject.getString("b"));
+            try (V8Value v8Value = v8ValueObject.get("c")) {
+                assertArrayEquals(
+                        new String[]{"x", "y"},
+                        ((List<String>) v8Runtime.getConverter().toObject(v8Value)).toArray(new String[0]));
+            }
             assertTrue(v8ValueObject.delete("x"));
             assertTrue(v8ValueObject.delete("b"));
             V8Value v8Value = v8ValueObject.getUndefined("b");

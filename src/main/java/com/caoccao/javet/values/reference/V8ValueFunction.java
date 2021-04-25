@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,44 +38,16 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     public <T extends V8Value> T call(IV8ValueObject receiver, boolean returnResult, Object... objects)
             throws JavetException {
         checkV8Runtime();
-        List<V8Value> v8Values = new ArrayList<>();
-        List<V8Value> toBeClosedV8Values = new ArrayList<>();
-        IJavetConverter converter = v8Runtime.getConverter();
-        try {
-            for (Object object : objects) {
-                if (object instanceof V8Value) {
-                    v8Values.add((V8Value) object);
-                } else {
-                    V8Value v8Value = converter.toV8Value(v8Runtime, object);
-                    toBeClosedV8Values.add(v8Value);
-                    v8Values.add(v8Value);
-                }
-            }
-            return v8Runtime.call(this, receiver, returnResult, v8Values.toArray(new V8Value[0]));
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Values);
+        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
+            return v8Runtime.call(this, receiver, returnResult, virtualValueList.get());
         }
     }
 
     @Override
     public <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException {
         checkV8Runtime();
-        List<V8Value> v8Values = new ArrayList<>();
-        List<V8Value> toBeClosedV8Values = new ArrayList<>();
-        IJavetConverter converter = v8Runtime.getConverter();
-        try {
-            for (Object object : objects) {
-                if (object instanceof V8Value) {
-                    v8Values.add((V8Value) object);
-                } else {
-                    V8Value v8Value = converter.toV8Value(v8Runtime, object);
-                    toBeClosedV8Values.add(v8Value);
-                    v8Values.add(v8Value);
-                }
-            }
-            return v8Runtime.callAsConstructor(this, v8Values.toArray(new V8Value[0]));
-        } finally {
-            JavetResourceUtils.safeClose(toBeClosedV8Values);
+        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
+            return v8Runtime.callAsConstructor(this, virtualValueList.get());
         }
     }
 
