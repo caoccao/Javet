@@ -34,40 +34,34 @@ namespace Javet {
 			jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
 			jclassJavetTerminatedException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetTerminatedException"));
 			jmethodIDJavetTerminatedExceptionConstructor = jniEnv->GetMethodID(jclassJavetTerminatedException, "<init>", "(Z)V");
-			jclassJavetUnknownCompilationException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetUnknownCompilationException"));
-			jmethodIDJavetUnknownCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetUnknownCompilationException, "<init>", "(Ljava/lang/String;)V");
-			jclassJavetUnknownExecutionException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetUnknownExecutionException"));
-			jmethodIDJavetUnknownExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetUnknownExecutionException, "<init>", "(Ljava/lang/String;)V");
 		}
 
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
 			LOG_ERROR("Compilation exception.");
 			auto isolate = v8Context->GetIsolate();
 			jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
+			jstring jStringScriptResourceName = nullptr, jStringSourceLine = nullptr;
+			int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
 			auto v8LocalMessage = v8TryCatch.Message();
-			if (v8LocalMessage.IsEmpty()) {
-				jthrowable javetUnknownCompilationException = (jthrowable)jniEnv->NewObject(
-					jclassJavetUnknownCompilationException,
-					jmethodIDJavetUnknownCompilationExceptionConstructor,
-					jStringExceptionMessage);
-				jniEnv->Throw(javetUnknownCompilationException);
+			if (!v8LocalMessage.IsEmpty()) {
+				jStringScriptResourceName = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
+				jStringSourceLine = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
+				lineNumber = v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0);
+				startColumn = v8LocalMessage->GetStartColumn();
+				endColumn = v8LocalMessage->GetEndColumn();
+				startPosition = v8LocalMessage->GetStartPosition();
+				endPosition = v8LocalMessage->GetEndPosition();
 			}
-			else {
-				jstring jStringScriptResourceName = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
-				jstring jStringSourceLine = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
-				jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
-					jclassJavetCompilationException,
-					jmethodIDJavetCompilationExceptionConstructor,
-					jStringExceptionMessage,
-					jStringScriptResourceName,
-					jStringSourceLine,
-					v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0),
-					v8LocalMessage->GetStartColumn(),
-					v8LocalMessage->GetEndColumn(),
-					v8LocalMessage->GetStartPosition(),
-					v8LocalMessage->GetEndPosition());
-				jniEnv->Throw(javetConverterException);
+			jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
+				jclassJavetCompilationException,
+				jmethodIDJavetCompilationExceptionConstructor,
+				jStringExceptionMessage, jStringScriptResourceName, jStringSourceLine,
+				lineNumber, startColumn, endColumn, startPosition, endPosition);
+			jniEnv->Throw(javetConverterException);
+			if (jStringSourceLine != nullptr) {
 				jniEnv->DeleteLocalRef(jStringSourceLine);
+			}
+			if (jStringScriptResourceName != nullptr) {
 				jniEnv->DeleteLocalRef(jStringScriptResourceName);
 			}
 			jniEnv->DeleteLocalRef(jStringExceptionMessage);
@@ -82,43 +76,45 @@ namespace Javet {
 			auto isolate = v8Context->GetIsolate();
 			if (v8TryCatch.HasTerminated()) {
 				LOG_ERROR("Execution has been terminated.");
-				jthrowable javetTerminatedException = (jthrowable)jniEnv->NewObject(
-					jclassJavetTerminatedException,
-					jmethodIDJavetTerminatedExceptionConstructor,
-					v8TryCatch.CanContinue());
-				jniEnv->Throw(javetTerminatedException);
+				ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
 			}
 			else {
 				LOG_ERROR("Execution exception.");
 				jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
+				jstring jStringScriptResourceName = nullptr, jStringSourceLine = nullptr;
+				int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
 				auto v8LocalMessage = v8TryCatch.Message();
-				if (v8LocalMessage.IsEmpty()) {
-					jthrowable javetUnknownExecutionException = (jthrowable)jniEnv->NewObject(
-						jclassJavetUnknownExecutionException,
-						jmethodIDJavetUnknownExecutionExceptionConstructor,
-						jStringExceptionMessage);
-					jniEnv->Throw(javetUnknownExecutionException);
+				if (!v8LocalMessage.IsEmpty()) {
+					jStringScriptResourceName = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
+					jStringSourceLine = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
+					lineNumber = v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0);
+					startColumn = v8LocalMessage->GetStartColumn();
+					endColumn = v8LocalMessage->GetEndColumn();
+					startPosition = v8LocalMessage->GetStartPosition();
+					endPosition = v8LocalMessage->GetEndPosition();
 				}
-				else {
-					jstring jStringScriptResourceName = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
-					jstring jStringSourceLine = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
-					jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
-						jclassJavetExecutionException,
-						jmethodIDJavetExecutionExceptionConstructor,
-						jStringExceptionMessage,
-						jStringScriptResourceName,
-						jStringSourceLine,
-						v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0),
-						v8LocalMessage->GetStartColumn(),
-						v8LocalMessage->GetEndColumn(),
-						v8LocalMessage->GetStartPosition(),
-						v8LocalMessage->GetEndPosition());
-					jniEnv->Throw(javetConverterException);
+				jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
+					jclassJavetExecutionException,
+					jmethodIDJavetExecutionExceptionConstructor,
+					jStringExceptionMessage, jStringScriptResourceName, jStringSourceLine,
+					lineNumber, startColumn, endColumn, startPosition, endPosition);
+				jniEnv->Throw(javetConverterException);
+				if (jStringSourceLine != nullptr) {
 					jniEnv->DeleteLocalRef(jStringSourceLine);
+				}
+				if (jStringScriptResourceName != nullptr) {
 					jniEnv->DeleteLocalRef(jStringScriptResourceName);
 				}
 				jniEnv->DeleteLocalRef(jStringExceptionMessage);
 			}
+		}
+
+		void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue) {
+			jthrowable javetTerminatedException = (jthrowable)jniEnv->NewObject(
+				jclassJavetTerminatedException,
+				jmethodIDJavetTerminatedExceptionConstructor,
+				canContinue);
+			jniEnv->Throw(javetTerminatedException);
 		}
 	}
 }

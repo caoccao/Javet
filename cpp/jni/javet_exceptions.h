@@ -30,15 +30,12 @@ namespace Javet {
 		static jmethodID jmethodIDJavetExecutionExceptionConstructor;
 		static jclass jclassJavetTerminatedException;
 		static jmethodID jmethodIDJavetTerminatedExceptionConstructor;
-		static jclass jclassJavetUnknownCompilationException;
-		static jmethodID jmethodIDJavetUnknownCompilationExceptionConstructor;
-		static jclass jclassJavetUnknownExecutionException;
-		static jmethodID jmethodIDJavetUnknownExecutionExceptionConstructor;
 
 		void Initialize(JNIEnv* jniEnv);
 
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 		void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
 		void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+		void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue);
 	}
 }

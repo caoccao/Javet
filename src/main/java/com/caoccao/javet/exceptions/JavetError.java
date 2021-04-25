@@ -12,17 +12,13 @@ public class JavetError {
 
     public static final JavetError CompilationFailure = new JavetError(
             21, "${message}");
-    public static final JavetError UnknownCompilationFailure = new JavetError(
-            22, "Unknown compilation failure ${message}");
 
     public static final JavetError ExecutionFailure = new JavetError(
             31, "${message}");
-    public static final JavetError UnknownExecutionFailure = new JavetError(
-            32, "Unknown execution failure ${message}");
     public static final JavetError ExecutionTerminated = new JavetError(
-            33, "Execution is terminated and continuable is ${continuable}");
+            32, "Execution is terminated and continuable is ${continuable}");
     public static final JavetError CallbackFailure = new JavetError(
-            34, "${message}");
+            33, "${message}");
 
     public static final JavetError CallbackNotRegistered = new JavetError(
             41, "Callback is not registered");
