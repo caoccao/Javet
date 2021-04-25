@@ -19,34 +19,40 @@ package com.caoccao.javet.utils;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.values.V8Value;
 
-import java.util.List;
+import java.util.Collection;
 
 public final class JavetResourceUtils {
     private JavetResourceUtils() {
     }
 
-    public static void safeClose(List<Object> objects) {
-        if (objects != null && !objects.isEmpty()) {
-            for (Object obj : objects) {
-                safeClose(obj);
-            }
-        }
-    }
-
     public static void safeClose(Object... objects) {
-        if (objects != null && objects.length > 0) {
-            for (Object obj : objects) {
-                safeClose(obj);
-            }
+        for (Object object : objects) {
+            safeClose(object);
         }
     }
 
-    public static void safeClose(Object obj) {
-        if (obj != null && obj instanceof IJavetClosable) {
+    public static void safeClose(Object object) {
+        if (object == null) {
+            return;
+        }
+        if (object instanceof IJavetClosable) {
             try {
-                ((IJavetClosable) obj).close();
+                ((IJavetClosable) object).close();
             } catch (JavetException e) {
+            }
+        } else if (object instanceof V8Value[]) {
+            for (V8Value v8Value : (V8Value[]) object) {
+                safeClose(v8Value);
+            }
+        } else if (object instanceof Object[]) {
+            for (Object o : (Object[]) object) {
+                safeClose(o);
+            }
+        } else if (object instanceof Collection) {
+            for (Object o : (Collection) object) {
+                safeClose(o);
             }
         }
     }
