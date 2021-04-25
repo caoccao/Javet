@@ -57,7 +57,7 @@ public class JavetError {
             102, "Javet library is not loaded because ${reason}");
 
     public static final JavetError FailedToReadPath = new JavetError(
-            1001, "Failed to read ${path}");
+            111, "Failed to read ${path}");
 
     protected int code;
     protected String format;

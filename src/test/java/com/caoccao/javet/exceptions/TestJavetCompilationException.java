@@ -35,6 +35,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(codeString).execute()) {
             assertNotNull(v8ValueObject);
         } catch (JavetCompilationException e) {
+            assertEquals(JavetError.CompilationFailure, e.getError());
             assertEquals(
                     "SyntaxError: Cannot use import statement outside a module",
                     e.getScriptingError().getMessage());
@@ -46,6 +47,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
         try (V8Value v8Value = v8Runtime.getExecutor("1a2b").execute()) {
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
+            assertEquals(JavetError.CompilationFailure, e.getError());
             assertEquals("SyntaxError: Invalid or unexpected token", e.getMessage());
             JavetScriptingError javetScriptingError = e.getScriptingError();
             assertEquals("SyntaxError: Invalid or unexpected token", javetScriptingError.getMessage());
@@ -75,6 +77,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             v8Runtime.getExecutor("const a = 1;\na a a a;").compileScript();
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
+            assertEquals(JavetError.CompilationFailure, e.getError());
             assertEquals("SyntaxError: Unexpected identifier", e.getMessage());
             JavetScriptingError javetScriptingError = e.getScriptingError();
             assertEquals("SyntaxError: Unexpected identifier", javetScriptingError.getMessage());
@@ -103,6 +106,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
         try (V8Value v8Value = v8Runtime.getExecutor("const a = 1;\na ==== 2;").execute()) {
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
+            assertEquals(JavetError.CompilationFailure, e.getError());
             assertEquals("SyntaxError: Unexpected token '='", e.getMessage());
             JavetScriptingError javetScriptingError = e.getScriptingError();
             assertEquals("SyntaxError: Unexpected token '='", javetScriptingError.getMessage());
