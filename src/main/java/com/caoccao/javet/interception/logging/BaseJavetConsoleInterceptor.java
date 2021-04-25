@@ -43,7 +43,6 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     protected static final String JAVA_CONSOLE_TRACE = "consoleTrace";
     protected static final String JAVA_CONSOLE_WARN = "consoleWarn";
     protected static final String PROPERTY_CONSOLE = "console";
-    public static final String PARAMETER_MESSAGE = "message";
 
     public BaseJavetConsoleInterceptor(V8Runtime v8Runtime) {
         super(v8Runtime);
@@ -79,7 +78,7 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
         } catch (NoSuchMethodException e) {
             throw new JavetException(
                     JavetError.CallbackMethodNotFound,
-                    SimpleMap.of(PARAMETER_MESSAGE, e.getMessage()),
+                    SimpleMap.of(JavetError.PARAMETER_MESSAGE, e.getMessage()),
                     e);
         }
     }

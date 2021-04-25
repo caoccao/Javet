@@ -24,16 +24,11 @@ import com.caoccao.javet.utils.SimpleMap;
  */
 public class JavetConverterException extends JavetException {
     /**
-     * The constant PARAMETER_MESSAGE.
-     */
-    public static final String PARAMETER_MESSAGE = "message";
-
-    /**
      * Instantiates a new Javet converter exception.
      *
      * @param message the message
      */
     public JavetConverterException(String message) {
-        super(JavetError.ConverterFailure, SimpleMap.of(PARAMETER_MESSAGE, message));
+        super(JavetError.ConverterFailure, SimpleMap.of(JavetError.PARAMETER_MESSAGE, message));
     }
 }

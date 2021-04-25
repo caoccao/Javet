@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class V8PathExecutor extends V8StringExecutor {
-    public static final String PARAMETER_PATH = "path";
     protected Path scriptPath;
 
     public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) throws JavetException {
@@ -45,7 +44,7 @@ public class V8PathExecutor extends V8StringExecutor {
             } catch (IOException e) {
                 throw new JavetException(
                         JavetError.FailedToReadPath,
-                        SimpleMap.of(PARAMETER_PATH, scriptPath),
+                        SimpleMap.of(JavetError.PARAMETER_PATH, scriptPath),
                         e);
             }
         }

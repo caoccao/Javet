@@ -20,14 +20,6 @@ package com.caoccao.javet.exceptions;
 import com.caoccao.javet.utils.SimpleMap;
 
 public abstract class BaseJavetScriptingException extends JavetException {
-    public static final String PARAMETER_RESOURCE_NAME = "resourceName";
-    public static final String PARAMETER_SOURCE_LINE = "sourceLine";
-    public static final String PARAMETER_LINE_NUMBER = "lineNumber";
-    public static final String PARAMETER_START_COLUMN = "startColumn";
-    public static final String PARAMETER_END_COLUMN = "endColumn";
-    public static final String PARAMETER_START_POSITION = "startPosition";
-    public static final String PARAMETER_END_POSITION = "endPosition";
-    public static final String PARAMETER_MESSAGE = "message";
     protected JavetScriptingError scriptingError;
 
     protected BaseJavetScriptingException(
@@ -35,14 +27,14 @@ public abstract class BaseJavetScriptingException extends JavetException {
             String message, String resourceName, String sourceLine,
             int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
         super(error, SimpleMap.of(
-                PARAMETER_MESSAGE, message,
-                PARAMETER_RESOURCE_NAME, resourceName,
-                PARAMETER_SOURCE_LINE, sourceLine,
-                PARAMETER_LINE_NUMBER, lineNumber,
-                PARAMETER_START_COLUMN, startColumn,
-                PARAMETER_END_COLUMN, endColumn,
-                PARAMETER_START_POSITION, startPosition,
-                PARAMETER_END_POSITION, endPosition));
+                JavetError.PARAMETER_MESSAGE, message,
+                JavetError.PARAMETER_RESOURCE_NAME, resourceName,
+                JavetError.PARAMETER_SOURCE_LINE, sourceLine,
+                JavetError.PARAMETER_LINE_NUMBER, lineNumber,
+                JavetError.PARAMETER_START_COLUMN, startColumn,
+                JavetError.PARAMETER_END_COLUMN, endColumn,
+                JavetError.PARAMETER_START_POSITION, startPosition,
+                JavetError.PARAMETER_END_POSITION, endPosition));
         scriptingError = new JavetScriptingError(message, resourceName, sourceLine,
                 lineNumber, startColumn, endColumn, startPosition, endPosition);
     }

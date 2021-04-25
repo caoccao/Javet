@@ -45,7 +45,6 @@ public final class V8Host implements AutoCloseable {
     private static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";
     private static final Object nodeLock = new Object();
-    public static final String PARAMETER_COUNT = "count";
     private static volatile double memoryUsageThresholdRatio = 0.7;
     private static volatile V8Host nodeInstance;
     private static V8Host v8Instance = new V8Host(JSRuntimeType.V8);
@@ -158,7 +157,7 @@ public final class V8Host implements AutoCloseable {
         if (v8RuntimeCount != 0) {
             throw new JavetException(
                     JavetError.RuntimeLeakageDetected,
-                    SimpleMap.of(PARAMETER_COUNT, v8RuntimeCount));
+                    SimpleMap.of(JavetError.PARAMETER_COUNT, v8RuntimeCount));
         }
         disableGCNotification();
     }

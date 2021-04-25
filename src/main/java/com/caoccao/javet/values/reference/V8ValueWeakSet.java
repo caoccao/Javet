@@ -27,8 +27,6 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueWeakSet extends V8ValueObject {
-    public static final String PARAMETER_FEATURE = "feature";
-
     V8ValueWeakSet(long handle) {
         super(handle);
     }
@@ -36,7 +34,7 @@ public class V8ValueWeakSet extends V8ValueObject {
     public void add(V8Value key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof V8ValueReference)) {
-            throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_ADD, key);
     }
@@ -45,7 +43,7 @@ public class V8ValueWeakSet extends V8ValueObject {
     public boolean delete(Object key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof V8ValueReference)) {
-            throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_DELETE, key);
         return true;
@@ -60,7 +58,7 @@ public class V8ValueWeakSet extends V8ValueObject {
     public boolean has(Object key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof V8ValueReference)) {
-            throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         return invokeBoolean(FUNCTION_HAS, key);
     }

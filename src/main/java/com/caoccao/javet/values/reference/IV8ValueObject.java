@@ -26,6 +26,7 @@ import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
@@ -317,32 +318,49 @@ public interface IV8ValueObject extends IV8ValueReference {
                     functionMap.put(functionName, method);
                 }
             } else if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
-                if (method.getParameterCount() == 1
-                        && V8Runtime.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                    try {
-                        method.invoke(functionCallbackReceiver, getV8Runtime());
-                    } catch (Exception e) {
-                        throw new JavetException(JavetError.CallbackNotRegistered);
-                    }
-                } else {
-                    throw new JavetException(JavetError.CallbackNotRegistered);
+                if (method.getParameterCount() != 1) {
+                    throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                            SimpleMap.of(
+                                    JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                    JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
+                                    JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
+                }
+                if (!V8Runtime.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                    throw new JavetException(
+                            JavetError.CallbackSignatureParameterTypeMismatch,
+                            SimpleMap.of(
+                                    JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, V8Runtime.class,
+                                    JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
+                }
+                try {
+                    method.invoke(functionCallbackReceiver, getV8Runtime());
+                } catch (Exception e) {
+                    throw new JavetException(
+                            JavetError.CallbackInjectionFailure,
+                            SimpleMap.of(JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                            e);
                 }
             }
         }
         List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
         if (!functionMap.isEmpty()) {
-            try {
-                for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
-                    final Method method = entry.getValue();
+            for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
+                final Method method = entry.getValue();
+                try {
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
                             Modifier.isStatic(method.getModifiers()) ? null : functionCallbackReceiver,
                             method, thisObjectRequired);
                     setFunction(entry.getKey(), javetCallbackContext);
                     javetCallbackContexts.add(javetCallbackContext);
+                } catch (Exception e) {
+                    throw new JavetException(
+                            JavetError.CallbackRegistrationFailure,
+                            SimpleMap.of(
+                                    JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                    JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                            e);
                 }
-            } catch (Exception e) {
-                throw new JavetException(JavetError.CallbackNotRegistered);
             }
         }
         return javetCallbackContexts;

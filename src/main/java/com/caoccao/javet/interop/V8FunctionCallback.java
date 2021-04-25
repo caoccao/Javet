@@ -18,12 +18,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public final class V8FunctionCallback {
 
-    public static final String PARAMETER_EXPECTED_PARAMETER_TYPE = "expectedParameterType";
-    public static final String PARAMETER_ACTUAL_PARAMETER_TYPE = "actualParameterType";
-    public static final String PARAMETER_METHOD_NAME = "methodName";
-    public static final String PARAMETER_EXPECTED_PARAMETER_SIZE = "expectedParameterSize";
-    public static final String PARAMETER_ACTUAL_PARAMETER_SIZE = "actualParameterSize";
-
     private static Object convert(IJavetConverter converter, Class expectedClass, V8Value v8Value)
             throws JavetException {
         if (v8Value == null) {
@@ -149,8 +143,8 @@ public final class V8FunctionCallback {
             throw new JavetException(
                     JavetError.CallbackSignatureParameterTypeMismatch,
                     SimpleMap.of(
-                            PARAMETER_EXPECTED_PARAMETER_TYPE, expectedClass,
-                            PARAMETER_ACTUAL_PARAMETER_TYPE, convertedObject.getClass()));
+                            JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, expectedClass,
+                            JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, convertedObject.getClass()));
         }
         return v8Value;
     }
@@ -213,9 +207,9 @@ public final class V8FunctionCallback {
                         if (method.getParameterCount() != length) {
                             throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                     SimpleMap.of(
-                                            PARAMETER_METHOD_NAME, method.getName(),
-                                            PARAMETER_EXPECTED_PARAMETER_SIZE, length,
-                                            PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
+                                            JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                            JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, length,
+                                            JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
                         }
                         for (int i = 0; i < parameterTypes.length; ++i) {
                             objectValues.add(convert(converter, parameterTypes[i], (V8Value) values.get(i)));

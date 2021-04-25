@@ -29,14 +29,6 @@ import java.util.Objects;
  * It's designed for performance sensitive scenarios.
  */
 public final class V8Locker implements IJavetClosable {
-    /**
-     * The constant PARAMETER_LOCKED_THREAD_ID.
-     */
-    public static final String PARAMETER_LOCKED_THREAD_ID = "lockedThreadId";
-    /**
-     * The constant PARAMETER_CURRENT_THREAD_ID.
-     */
-    public static final String PARAMETER_CURRENT_THREAD_ID = "currentThreadId";
     private long threadId;
     private IV8Native v8Native;
     private V8Runtime v8Runtime;
@@ -45,7 +37,8 @@ public final class V8Locker implements IJavetClosable {
      * Instantiates a new V8 locker.
      *
      * @param v8Runtime the V8 runtime
-     * @throws JavetV8LockConflictException the javet V8 lock conflict exception
+     * @param v8Native  the v 8 native
+     * @throws JavetException the javet exception
      */
     V8Locker(V8Runtime v8Runtime, IV8Native v8Native) throws JavetException {
         Objects.requireNonNull(v8Runtime);
@@ -62,8 +55,8 @@ public final class V8Locker implements IJavetClosable {
         final long currentThreadId = Thread.currentThread().getId();
         if (threadId != currentThreadId) {
             throw new JavetException(JavetError.LockConflictThreadIdMismatch, SimpleMap.of(
-                    PARAMETER_LOCKED_THREAD_ID, Long.toString(threadId),
-                    PARAMETER_CURRENT_THREAD_ID, Long.toString(currentThreadId)));
+                    JavetError.PARAMETER_LOCKED_THREAD_ID, Long.toString(threadId),
+                    JavetError.PARAMETER_CURRENT_THREAD_ID, Long.toString(currentThreadId)));
         }
         if (!v8Native.unlockV8Runtime(v8Runtime.getHandle())) {
             throw new JavetException(JavetError.LockReleaseFailure);

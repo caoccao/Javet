@@ -27,9 +27,6 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueWeakMap extends V8ValueObject {
-
-    public static final String PARAMETER_FEATURE = "feature";
-
     V8ValueWeakMap(long handle) {
         super(handle);
     }
@@ -38,7 +35,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     public boolean delete(Object key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof V8ValueReference)) {
-            throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_DELETE, key);
         return true;
@@ -53,7 +50,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     public <T extends V8Value> T get(Object key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof V8ValueReference)) {
-            throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         return invokeV8Value(FUNCTION_GET, key);
     }
@@ -67,7 +64,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     public boolean has(Object key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof V8ValueReference)) {
-            throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         return invokeBoolean(FUNCTION_HAS, key);
     }
@@ -77,7 +74,7 @@ public class V8ValueWeakMap extends V8ValueObject {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         if (!(key instanceof V8ValueReference)) {
-            throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, key.toString()));
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_SET, key, value);
         return true;

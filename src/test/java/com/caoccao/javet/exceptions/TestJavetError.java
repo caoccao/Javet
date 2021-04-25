@@ -34,7 +34,7 @@ public class TestJavetError {
         final int startPosition = fileContent.indexOf(startSign) + startSign.length();
         final int endPosition = fileContent.lastIndexOf(endSign) + 1;
         assertTrue(endPosition >= startPosition && startPosition > 0);
-        String[] headerRow = new String[]{"Code", "Name", "Format"};
+        String[] headerRow = new String[]{"Code", "Type", "Name", "Format"};
         int[] maxLengths = Arrays.stream(headerRow).mapToInt(cell -> cell.length()).toArray();
         Map<Integer, String[]> table = new TreeMap<>();
         Class javetErrorClass = JavetError.class;
@@ -43,7 +43,7 @@ public class TestJavetError {
             if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers) && Modifier.isFinal(modifiers)
                     && field.getType() == javetErrorClass) {
                 JavetError javetError = (JavetError) field.get(null);
-                String[] row = new String[3];
+                String[] row = new String[headerRow.length];
                 int code = javetError.getCode();
                 table.put(code, row);
                 String cell = Integer.toString(code);
@@ -51,16 +51,21 @@ public class TestJavetError {
                     maxLengths[0] = cell.length();
                 }
                 row[0] = cell;
-                cell = field.getName();
+                cell = javetError.getType().name();
                 if (maxLengths[1] < cell.length()) {
                     maxLengths[1] = cell.length();
                 }
                 row[1] = cell;
-                cell = javetError.getFormat();
+                cell = field.getName();
                 if (maxLengths[2] < cell.length()) {
                     maxLengths[2] = cell.length();
                 }
                 row[2] = cell;
+                cell = javetError.getFormat();
+                if (maxLengths[3] < cell.length()) {
+                    maxLengths[3] = cell.length();
+                }
+                row[3] = cell;
             }
         }
         assertTrue(table.size() > 0);

@@ -30,9 +30,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    public static final String PARAMETER_OS = "OS";
     static final String LIB_VERSION = "0.8.5";
-    private static final String PARAMETER_PATH = "path";
     private static final String CHMOD = "chmod";
     private static final String XRR = "755";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
@@ -104,7 +102,7 @@ public final class JavetLibLoader {
         } else {
             throw new JavetException(
                     JavetError.OSNotSupported,
-                    SimpleMap.of(PARAMETER_OS, JavetOSUtils.OS_NAME));
+                    SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_NAME));
         }
         fileName = MessageFormat.format(LIB_FILE_NAME_FORMAT,
                 jsRuntimeType.getName(), osName, LIB_VERSION, fileExtension);
@@ -114,7 +112,7 @@ public final class JavetLibLoader {
         }
         throw new JavetException(
                 JavetError.LibraryNotFound,
-                SimpleMap.of(PARAMETER_PATH, resourceFileName));
+                SimpleMap.of(JavetError.PARAMETER_PATH, resourceFileName));
     }
 
     public void load()
@@ -129,7 +127,7 @@ public final class JavetLibLoader {
                 t.printStackTrace(System.err);
                 throw new JavetException(
                         JavetError.FailedToReadPath,
-                        SimpleMap.of(JavetLibLoader.PARAMETER_PATH, tempDirectoryLibFile.toPath()),
+                        SimpleMap.of(JavetError.PARAMETER_PATH, tempDirectoryLibFile.toPath()),
                         t);
             }
         }
