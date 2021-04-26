@@ -18,8 +18,6 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
@@ -58,8 +56,8 @@ public interface IV8ValueArray extends IV8ValueObject {
     }
 
     default <T extends Object> T popObject() throws JavetException {
-        try (V8Value v8Value = pop()) {
-            return (T) getV8Runtime().getConverter().toObject(v8Value);
+        try {
+            return getV8Runtime().toObject(pop(), true);
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {

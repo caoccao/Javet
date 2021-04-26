@@ -221,7 +221,7 @@ public final class V8FunctionCallback {
                     if (resultObject instanceof V8Value) {
                         v8Runtime.decorateV8Value((V8Value) resultObject);
                     } else {
-                        resultObject = converter.toV8Value(v8Runtime, resultObject);
+                        resultObject = v8Runtime.toV8Value(resultObject);
                     }
                     // The lifecycle of the result is handed over to JNI native implementation.
                     // So, close() or setWeak() must not be called.

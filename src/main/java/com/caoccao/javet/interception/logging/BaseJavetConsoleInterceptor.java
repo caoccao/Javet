@@ -75,20 +75,24 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
             register(console, JS_FUNCTION_TRACE, JAVA_CONSOLE_TRACE);
             register(console, JS_FUNCTION_WARN, JAVA_CONSOLE_WARN);
             return true;
-        } catch (NoSuchMethodException e) {
-            throw new JavetException(
-                    JavetError.CallbackMethodNotFound,
-                    SimpleMap.of(JavetError.PARAMETER_MESSAGE, e.getMessage()),
-                    e);
         }
     }
 
     protected void register(IV8ValueObject iV8ValueObject, String jsFunctionName, String javaFunctionName)
-            throws JavetException, NoSuchMethodException {
-        iV8ValueObject.setFunction(
-                jsFunctionName,
-                new JavetCallbackContext(this,
-                        getClass().getMethod(javaFunctionName, V8Value[].class)));
+            throws JavetException {
+        try {
+            iV8ValueObject.setFunction(
+                    jsFunctionName,
+                    new JavetCallbackContext(this,
+                            getClass().getMethod(javaFunctionName, V8Value[].class)));
+        } catch (NoSuchMethodException e) {
+            throw new JavetException(
+                    JavetError.CallbackRegistrationFailure,
+                    SimpleMap.of(
+                            JavetError.PARAMETER_METHOD_NAME, javaFunctionName,
+                            JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                    e);
+        }
     }
 
     @Override

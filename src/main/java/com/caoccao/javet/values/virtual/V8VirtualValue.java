@@ -20,6 +20,7 @@ package com.caoccao.javet.values.virtual;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
@@ -33,14 +34,14 @@ public class V8VirtualValue implements IJavetClosable {
             value = (V8Value) object;
         } else {
             converted = true;
-            value = v8Runtime.getConverter().toV8Value(v8Runtime, object);
+            value = v8Runtime.toV8Value(object);
         }
     }
 
     @Override
     public void close() throws JavetException {
         if (converted) {
-            value.close();
+            JavetResourceUtils.safeClose(value);
         }
     }
 

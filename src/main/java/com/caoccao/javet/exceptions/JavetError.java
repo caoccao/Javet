@@ -32,57 +32,56 @@ public class JavetError {
     public static final String PARAMETER_CONTINUABLE = "continuable";
     public static final String PARAMETER_PATH = "path";
 
-    public static final JavetError NotSupported = new JavetError(
-            11, JavetErrorType.System, "${feature} is not supported");
     public static final JavetError OSNotSupported = new JavetError(
-            12, JavetErrorType.System, "OS ${OS} is not supported");
+            101, JavetErrorType.System, "OS ${OS} is not supported");
     public static final JavetError LibraryNotFound = new JavetError(
-            13, JavetErrorType.System, "Javet library ${path} is not found");
+            102, JavetErrorType.System, "Javet library ${path} is not found");
     public static final JavetError LibraryNotLoaded = new JavetError(
-            14, JavetErrorType.System, "Javet library is not loaded because ${reason}");
+            103, JavetErrorType.System, "Javet library is not loaded because ${reason}");
+    public static final JavetError NotSupported = new JavetError(
+            104, JavetErrorType.System, "${feature} is not supported");
     public static final JavetError FailedToReadPath = new JavetError(
-            15, JavetErrorType.System, "Failed to read ${path}");
+            105, JavetErrorType.System, "Failed to read ${path}");
 
     public static final JavetError CompilationFailure = new JavetError(
-            21, JavetErrorType.Compilation, "${message}");
+            201, JavetErrorType.Compilation, "${message}");
 
     public static final JavetError ExecutionFailure = new JavetError(
-            31, JavetErrorType.Execution, "${message}");
+            301, JavetErrorType.Execution, "${message}");
     public static final JavetError ExecutionTerminated = new JavetError(
-            32, JavetErrorType.Execution, "Execution is terminated and continuable is ${continuable}");
+            302, JavetErrorType.Execution, "Execution is terminated and continuable is ${continuable}");
 
     public static final JavetError CallbackSignatureParameterSizeMismatch = new JavetError(
-            41, JavetErrorType.Callback, "Callback signature mismatches: method name is ${methodName}, expected parameter size is ${expectedParameterSize}, actual parameter size is ${actualParameterSize}");
+            401, JavetErrorType.Callback, "Callback signature mismatches: method name is ${methodName}, expected parameter size is ${expectedParameterSize}, actual parameter size is ${actualParameterSize}");
     public static final JavetError CallbackSignatureParameterTypeMismatch = new JavetError(
-            42, JavetErrorType.Callback, "Callback signature mismatches: expected parameter type is ${expectedParameterType}, actual parameter type is ${actualParameterType}");
-    public static final JavetError CallbackMethodNotFound = new JavetError(
-            43, JavetErrorType.Callback, "Callback method is not found with error message ${message}");
+            402, JavetErrorType.Callback, "Callback signature mismatches: expected parameter type is ${expectedParameterType}, actual parameter type is ${actualParameterType}");
     public static final JavetError CallbackInjectionFailure = new JavetError(
-            44, JavetErrorType.Callback, "Failed to inject runtime with error message ${message}");
+            403, JavetErrorType.Callback, "Failed to inject runtime with error message ${message}");
     public static final JavetError CallbackRegistrationFailure = new JavetError(
-            45, JavetErrorType.Callback, "Callback ${methodName} registration failed with error message ${message}");
+            404, JavetErrorType.Callback, "Callback ${methodName} registration failed with error message ${message}");
 
     public static final JavetError ConverterFailure = new JavetError(
-            51, JavetErrorType.Converter, "Failed to convert values with error message ${message}");
+            501, JavetErrorType.Converter, "Failed to convert values with error message ${message}");
 
     public static final JavetError ModuleNameEmpty = new JavetError(
-            61, JavetErrorType.Module, "Module name is empty");
+            601, JavetErrorType.Module, "Module name is empty");
 
     public static final JavetError LockAcquisitionFailure = new JavetError(
-            71, JavetErrorType.Lock, "Failed to acquire the lock");
+            701, JavetErrorType.Lock, "Failed to acquire the lock");
     public static final JavetError LockReleaseFailure = new JavetError(
-            72, JavetErrorType.Lock, "Failed to release the lock");
+            702, JavetErrorType.Lock, "Failed to release the lock");
     public static final JavetError LockConflictThreadIdMismatch = new JavetError(
-            73, JavetErrorType.Lock, "Runtime lock conflict is detected with locked thread ID ${lockedThreadID} and current thread ID ${currentThreadID}");
+            703, JavetErrorType.Lock, "Runtime lock conflict is detected with locked thread ID ${lockedThreadID} and current thread ID ${currentThreadID}");
 
     public static final JavetError RuntimeAlreadyClosed = new JavetError(
-            81, JavetErrorType.Runtime, "Runtime is already closed");
+            801, JavetErrorType.Runtime, "Runtime is already closed");
     public static final JavetError RuntimeAlreadyRegistered = new JavetError(
-            82, JavetErrorType.Runtime, "Runtime is already registered");
-    public static final JavetError RuntimeLeakageDetected = new JavetError(
-            83, JavetErrorType.Runtime, "${count} runtime(s) leakage is detected");
+            802, JavetErrorType.Runtime, "Runtime is already registered");
     public static final JavetError RuntimeNotRegistered = new JavetError(
-            84, JavetErrorType.Runtime, "Runtime is not registered");
+            803, JavetErrorType.Runtime, "Runtime is not registered");
+    public static final JavetError RuntimeLeakageDetected = new JavetError(
+            804, JavetErrorType.Runtime, "${count} runtime(s) leakage is detected");
+
     protected int code;
     protected String format;
     protected JavetErrorType type;

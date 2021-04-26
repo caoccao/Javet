@@ -18,18 +18,13 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
-import com.caoccao.javet.values.reference.V8Module;
-import com.caoccao.javet.values.reference.V8Script;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
-public interface IV8Executable {
+public interface IV8Executable extends IV8Convertible {
     default <T extends V8Value> T execute() throws JavetException {
         return execute(true);
     }
@@ -37,22 +32,32 @@ public interface IV8Executable {
     <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
 
     default Boolean executeBoolean() throws JavetException {
-        return executeObject();
+        return executePrimitive();
     }
 
     default Double executeDouble() throws JavetException {
-        return executeObject();
+        return executePrimitive();
     }
 
     default Integer executeInteger() throws JavetException {
-        return executeObject();
+        return executePrimitive();
     }
 
     default Long executeLong() throws JavetException {
-        return executeObject();
+        return executePrimitive();
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R executeObject() throws JavetException {
+    default <T extends Object> T executeObject() throws JavetException {
+        try (V8Value v8Value = execute()) {
+            return toObject(v8Value);
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R executePrimitive() throws JavetException {
         try (V8Value v8Value = execute()) {
             try {
                 return ((T) v8Value).getValue();
@@ -64,7 +69,7 @@ public interface IV8Executable {
 
     default String executeString()
             throws JavetException {
-        return executeObject();
+        return executePrimitive();
     }
 
     default void executeVoid() throws JavetException {
@@ -72,6 +77,6 @@ public interface IV8Executable {
     }
 
     default ZonedDateTime executeZonedDateTime() throws JavetException {
-        return executeObject();
+        return executePrimitive();
     }
 }

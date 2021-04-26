@@ -24,6 +24,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
 import com.caoccao.javet.node.modules.NodeModuleModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
 
@@ -84,4 +85,14 @@ public interface IV8Executor extends IV8Executable {
     V8Runtime getV8Runtime();
 
     V8ScriptOrigin getV8ScriptOrigin();
+
+    @Override
+    default <T extends Object, V extends V8Value> T toObject(V v8Value) throws JavetException {
+        return getV8Runtime().toObject(v8Value);
+    }
+
+    @Override
+    default <T extends Object, V extends V8Value> V toV8Value(T object) throws JavetException {
+        return getV8Runtime().toV8Value(object);
+    }
 }

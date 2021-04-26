@@ -140,11 +140,9 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertTrue(v8ValueObject.set("c", new String[]{"x", "y"}));
             assertEquals(1, v8ValueObject.getInteger("a"));
             assertEquals("2", v8ValueObject.getString("b"));
-            try (V8Value v8Value = v8ValueObject.get("c")) {
-                assertArrayEquals(
-                        new String[]{"x", "y"},
-                        ((List<String>) v8Runtime.getConverter().toObject(v8Value)).toArray(new String[0]));
-            }
+            assertArrayEquals(
+                    new String[]{"x", "y"},
+                    ((List<String>) v8Runtime.toObject(v8ValueObject.get("c"), true)).toArray(new String[0]));
             assertTrue(v8ValueObject.delete("x"));
             assertTrue(v8ValueObject.delete("b"));
             V8Value v8Value = v8ValueObject.getUndefined("b");
@@ -201,10 +199,10 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testInvokeObject() throws JavetException {
         v8Runtime.getExecutor("function a(b) { return [1,2,3].concat(b);}").executeVoid();
-        Object result = v8Runtime.getGlobalObject().invokeObject("a", (Object) (new Integer[]{4, 5, 6}));
+        List<Integer> result = v8Runtime.getGlobalObject().invokeObject("a", (Object) (new Integer[]{4, 5, 6}));
         assertArrayEquals(
                 new Integer[]{1, 2, 3, 4, 5, 6},
-                ((List<Integer>) result).toArray(new Integer[0]),
+                result.toArray(new Integer[0]),
                 "invokeObject() should work transparently without resource leak");
     }
 

@@ -96,7 +96,7 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default <T extends Object> T getObject(Object key) throws JavetException {
         try {
-            return (T) getV8Runtime().getConverter().toObject(get(key));
+            return getV8Runtime().toObject(get(key), true);
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -143,7 +143,7 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default <T extends Object> T getPropertyObject(Object key) throws JavetException {
         try {
-            return (T) getV8Runtime().getConverter().toObject(getProperty(key));
+            return getV8Runtime().toObject(getProperty(key), true);
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -227,8 +227,8 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     default <T extends Object> T invokeObject(String functionName, Object... objects) throws JavetException {
-        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
-            return (T) getV8Runtime().getConverter().toObject(v8Value);
+        try {
+            return getV8Runtime().toObject(invokeExtended(functionName, true, objects), true);
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {

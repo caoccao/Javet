@@ -252,10 +252,10 @@ Call
 
 .. code-block:: java
 
-    func.call(object, false, a, b, c); // func.call(object, a, b, c); without result
-    func.call(object, true, a, b, c); // func.call(object, a, b, c); with result
-    func.call(object, a, b, c); // func.call(object, a, b, c); with result
-    func.callVoid(object, a, b, c); // func.call(object, a, b, c); without result
+    func.call(object, a, b, c); // func.call(object, a, b, c); with V8 object returned
+    func.callVoid(object, a, b, c); // func.call(object, a, b, c); without return
+    func.callObject(object, a, b, c); // func.call(object, a, b, c); with Java object returned
+    func.callPrimitive(object, a, b, c); // func.call(object, a, b, c); with Java primitive returned
     func.callAsConstructor(a, b, c); // new func(a, b, c);
 
 Invoke
@@ -265,10 +265,10 @@ Invoke
 
 .. code-block:: java
 
-    object.invoke("func", false, a, b, c); // object.func(a, b, c); without result
-    object.invoke("func", true, a, b, c); // object.func(a, b, c); with result
-    object.invoke("func", a, b, c); // object.func(a, b, c); with result
-    object.invokeVoid("func", a, b, c); // object.func(a, b, c); without result
+    object.invoke("func", a, b, c); // object.func(a, b, c); with V8 object returned
+    object.invokeVoid("func", a, b, c); // object.func(a, b, c); without return
+    object.invokeObject("func", a, b, c); // object.func(a, b, c); with Java object returned
+    object.invokePrimitive("func", a, b, c); // object.func(a, b, c); with Java primitive returned
 
 ``invoke()`` is heavily used in Javet so that the JNI implementation can be dramatically simplified. In few extreme cases, V8 doesn't expose its C++ API and ``invoke()`` appears to be the only way. So, feel free to invoke all kinds of JS API despite of the deficit of Javet built-in API.
 
@@ -279,10 +279,8 @@ How about Bind?
 
 .. code-block:: java
 
-    object.set("func", func); object.invoke("func", false, a, b, c); // func.bind(object); func(a, b, c); without result
-    object.set("func", func); object.invoke("func", true, a, b, c); // func.bind(object); func(a, b, c); with result
-    object.set("func", func); object.invoke("func", a, b, c); // func.bind(object); func(a, b, c); with result
-    object.set("func", func); object.invokeVoid("func", a, b, c); // func.bind(object); func(a, b, c); without result
+    object.set("func", func); object.invoke("func", a, b, c); // func.bind(object); func(a, b, c); with return
+    object.set("func", func); object.invokeVoid("func", a, b, c); // func.bind(object); func(a, b, c); without return
 
 Please review `test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>`_ for more detail.
 

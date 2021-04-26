@@ -93,7 +93,6 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     @Override
     public int push(Object value) throws JavetException {
-        Objects.requireNonNull(value);
         checkV8Runtime();
         return invokeInteger(FUNCTION_PUSH, value);
     }

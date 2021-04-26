@@ -46,7 +46,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
-public class V8Runtime implements IJavetClosable, IV8Creatable {
+public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected static final long INVALID_HANDLE = 0L;
     protected static final String PROPERTY_DATA_VIEW = "DataView";
     protected static final IJavetConverter DEFAULT_CONVERTER = new JavetObjectConverter();
@@ -784,11 +784,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         v8Native.terminateExecution(handle);
     }
 
+    @Override
+    public <T extends Object, V extends V8Value> T toObject(V v8Value) throws JavetException {
+        return (T) converter.toObject(v8Value);
+    }
+
     public String toProtoString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.toProtoString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
     public String toString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.toString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
+    }
+
+    @Override
+    public <T extends Object, V extends V8Value> V toV8Value(T object) throws JavetException {
+        return converter.toV8Value(this, object);
     }
 }

@@ -29,7 +29,8 @@ public class TestJavetError {
         assertTrue(file.exists());
         assertTrue(file.canRead());
         assertTrue(file.canWrite());
-        String fileContent = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        byte[] originalBuffer = Files.readAllBytes(file.toPath());
+        String fileContent = new String(originalBuffer, StandardCharsets.UTF_8);
         assertNotNull(fileContent);
         final int startPosition = fileContent.indexOf(startSign) + startSign.length();
         final int endPosition = fileContent.lastIndexOf(endSign) + 1;
@@ -89,6 +90,10 @@ public class TestJavetError {
         }
         stringBuilder.append(separator).append("\n\n\n");
         stringBuilder.append(fileContent.substring(endPosition));
-        Files.write(file.toPath(), stringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
+        byte[] newBuffer = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
+        if (!Arrays.equals(originalBuffer, newBuffer)) {
+            // Only generate document when content is changed.
+            Files.write(file.toPath(), newBuffer, StandardOpenOption.WRITE);
+        }
     }
 }

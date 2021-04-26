@@ -64,8 +64,8 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     default <T extends Object> T callObject(IV8ValueObject receiver, Object... objects) throws JavetException {
-        try (V8Value v8Value = callExtended(receiver, true, objects)) {
-            return (T) getV8Runtime().getConverter().toObject(v8Value);
+        try {
+            return getV8Runtime().toObject(callExtended(receiver, true, objects), true);
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {

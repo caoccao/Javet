@@ -447,10 +447,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testCallObject() throws JavetException {
         v8Runtime.getExecutor("function a(b) { return [1,2,3].concat(b);}").executeVoid();
         try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get("a")) {
-            Object result = v8ValueFunction.callObject(null, (Object) (new Integer[]{4, 5, 6}));
+            List<Integer> result = v8ValueFunction.callObject(null, (Object) (new Integer[]{4, 5, 6}));
             assertArrayEquals(
                     new Integer[]{1, 2, 3, 4, 5, 6},
-                    ((List<Integer>) result).toArray(new Integer[0]),
+                    result.toArray(new Integer[0]),
                     "callObject() should work transparently without resource leak");
         }
     }

@@ -36,12 +36,11 @@ public class V8VirtualValueList implements IJavetClosable {
         toBeClosedValues = new ArrayList<>(objects.length);
         values = new ArrayList<>(objects.length);
         if (objects != null && objects.length > 0) {
-            IJavetConverter converter = v8Runtime.getConverter();
             for (Object object : objects) {
                 if (object instanceof V8Value) {
                     values.add((V8Value) object);
                 } else {
-                    V8Value value = converter.toV8Value(v8Runtime, object);
+                    V8Value value = v8Runtime.toV8Value(object);
                     values.add(value);
                     toBeClosedValues.add(value);
                 }

@@ -42,7 +42,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean delete(Object key) throws JavetException {
-        Objects.requireNonNull(key);
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
             return v8Runtime.delete(this, virtualKey.get());
@@ -72,7 +71,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public <T extends V8Value> T get(Object key) throws JavetException {
-        Objects.requireNonNull(key);
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
             return v8Runtime.get(this, virtualKey.get());
@@ -99,7 +97,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public <T extends V8Value> T getProperty(Object key) throws JavetException {
-        Objects.requireNonNull(key);
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
             return v8Runtime.getProperty(this, virtualKey.get());
@@ -113,7 +110,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean has(Object value) throws JavetException {
-        Objects.requireNonNull(value);
         checkV8Runtime();
         try (V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, value)) {
             return v8Runtime.has(this, virtualValue.get());
@@ -122,7 +118,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean hasOwnProperty(Object key) throws JavetException {
-        Objects.requireNonNull(key);
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
             return v8Runtime.hasOwnProperty(this, virtualKey.get());
@@ -163,8 +158,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean set(Object key, Object value) throws JavetException {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(value);
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key);
              V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, value)) {
@@ -174,8 +167,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean setProperty(Object key, Object value) throws JavetException {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(value);
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key);
              V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, value)) {

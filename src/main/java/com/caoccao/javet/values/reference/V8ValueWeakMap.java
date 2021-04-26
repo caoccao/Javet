@@ -34,7 +34,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     @Override
     public boolean delete(Object key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
+        if (!(key instanceof IV8ValueObject)) {
             throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_DELETE, key);
@@ -49,7 +49,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     @Override
     public <T extends V8Value> T get(Object key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
+        if (!(key instanceof IV8ValueObject)) {
             throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         return invoke(FUNCTION_GET, key);
@@ -63,7 +63,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     @Override
     public boolean has(Object key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
+        if (!(key instanceof IV8ValueObject)) {
             throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         return invokeBoolean(FUNCTION_HAS, key);
@@ -72,8 +72,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     @Override
     public boolean set(Object key, Object value) throws JavetException {
         Objects.requireNonNull(key);
-        Objects.requireNonNull(value);
-        if (!(key instanceof V8ValueReference)) {
+        if (!(key instanceof IV8ValueObject)) {
             throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_SET, key, value);
