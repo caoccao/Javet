@@ -93,7 +93,7 @@ public class TestJavetError {
         byte[] newBuffer = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
         if (!Arrays.equals(originalBuffer, newBuffer)) {
             // Only generate document when content is changed.
-            Files.write(file.toPath(), newBuffer, StandardOpenOption.WRITE);
+            Files.write(file.toPath(), newBuffer, StandardOpenOption.CREATE);
         }
     }
 }

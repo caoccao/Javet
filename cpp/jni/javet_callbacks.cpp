@@ -143,52 +143,58 @@ namespace Javet {
 			V8IsolateScope v8IsolateScope(v8Isolate);
 			V8HandleScope v8HandleScope(v8Isolate);
 			auto v8Context = v8Isolate->GetCurrentContext();
-			auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
-			jobject externalV8Runtime = v8Runtime->externalV8Runtime;
-			V8ContextScope v8ContextScope(v8Context);
-			jboolean isReturnResult = IsReturnResult();
-			jboolean isThisObjectRequired = IsThisObjectRequired();
-			jobject externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, externalV8Runtime, v8Context, args);
-			jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, args.This()) : nullptr;
-			jobject mResult = jniEnv->CallStaticObjectMethod(
-				jclassV8FunctionCallback,
-				jmethodIDV8FunctionCallbackReceiveCallback,
-				externalV8Runtime,
-				callbackContext,
-				thisObject,
-				externalArgs);
-			if (jniEnv->ExceptionCheck()) {
-				jthrowable externalException = jniEnv->ExceptionOccurred();
-				jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
-				jniEnv->ExceptionClear();
-				V8LocalString v8ErrorMessage;
-				if (externalErrorMessage == nullptr) {
-					v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, "Uncaught JavaError: unknown").ToLocalChecked();
-				}
-				else {
-					v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, externalErrorMessage);
-					jniEnv->DeleteLocalRef(externalErrorMessage);
-				}
-				v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
-				jniEnv->DeleteLocalRef(externalException);
+			if (v8Context.IsEmpty()) {
+				// The callback may come after V8 context is closed.
+				args.GetReturnValue().SetUndefined();
 			}
-			else if (isReturnResult) {
-				if (mResult == nullptr) {
-					args.GetReturnValue().SetUndefined();
+			else {
+				auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
+				jobject externalV8Runtime = v8Runtime->externalV8Runtime;
+				V8ContextScope v8ContextScope(v8Context);
+				jboolean isReturnResult = IsReturnResult();
+				jboolean isThisObjectRequired = IsThisObjectRequired();
+				jobject externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, externalV8Runtime, v8Context, args);
+				jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, args.This()) : nullptr;
+				jobject mResult = jniEnv->CallStaticObjectMethod(
+					jclassV8FunctionCallback,
+					jmethodIDV8FunctionCallbackReceiveCallback,
+					externalV8Runtime,
+					callbackContext,
+					thisObject,
+					externalArgs);
+				if (jniEnv->ExceptionCheck()) {
+					jthrowable externalException = jniEnv->ExceptionOccurred();
+					jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
+					jniEnv->ExceptionClear();
+					V8LocalString v8ErrorMessage;
+					if (externalErrorMessage == nullptr) {
+						v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, "Uncaught JavaError: unknown").ToLocalChecked();
+					}
+					else {
+						v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, externalErrorMessage);
+						jniEnv->DeleteLocalRef(externalErrorMessage);
+					}
+					v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
+					jniEnv->DeleteLocalRef(externalException);
 				}
-				else {
-					args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Context, mResult));
+				else if (isReturnResult) {
+					if (mResult == nullptr) {
+						args.GetReturnValue().SetUndefined();
+					}
+					else {
+						args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Context, mResult));
+					}
 				}
-			}
-			if (thisObject != nullptr) {
-				jniEnv->DeleteLocalRef(thisObject);
-			}
-			if (externalArgs != nullptr) {
-				jniEnv->DeleteLocalRef(externalArgs);
-			}
-			if (mResult != nullptr) {
-				jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
-				jniEnv->DeleteLocalRef(mResult);
+				if (thisObject != nullptr) {
+					jniEnv->DeleteLocalRef(thisObject);
+				}
+				if (externalArgs != nullptr) {
+					jniEnv->DeleteLocalRef(externalArgs);
+				}
+				if (mResult != nullptr) {
+					jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
+					jniEnv->DeleteLocalRef(mResult);
+				}
 			}
 		}
 
