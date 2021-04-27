@@ -17,16 +17,15 @@
 
 package com.caoccao.javet.tutorial;
 
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
 import com.caoccao.javet.utils.JavetOSUtils;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
@@ -37,7 +36,7 @@ public class DecimalJavetInV8Mode implements IJavetClosable {
     private IJavetEnginePool<V8Runtime> iJavetEnginePool;
     private IJavetEngine<V8Runtime> iJavetEngine;
 
-    public DecimalJavetInV8Mode() {
+    public DecimalJavetInV8Mode() throws JavetException {
         iJavetEnginePool = new JavetEnginePool<>();
         iJavetEnginePool.getConfig().setJSRuntimeType(JSRuntimeType.V8);
         iJavetEngine = iJavetEnginePool.getEngine();
@@ -76,8 +75,7 @@ public class DecimalJavetInV8Mode implements IJavetClosable {
                         "const b = new Decimal(2.34);" +
                         "a.add(b).toString();").executeString());
         try (V8ValueFunction v8ValueFunctionDecimal = v8Runtime.getGlobalObject().get("Decimal")) {
-            try (V8ValueObject v8ValueObjectDecimal = v8ValueFunctionDecimal.callAsConstructor(
-                    new V8ValueString("123.45"))) {
+            try (V8ValueObject v8ValueObjectDecimal = v8ValueFunctionDecimal.callAsConstructor("123.45")) {
                 getLogger().logInfo(v8ValueObjectDecimal.toString());
                 if (v8ValueObjectDecimal.has("constructor")) {
                     try (V8ValueFunction v8ValueFunction = v8ValueObjectDecimal.get("constructor")) {

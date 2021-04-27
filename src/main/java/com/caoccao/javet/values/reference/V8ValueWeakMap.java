@@ -17,11 +17,11 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetNotSupportedException;
-import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.enums.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.exceptions.JavetError;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.values.V8Value;
 
 import java.util.Objects;
 
@@ -32,26 +32,25 @@ public class V8ValueWeakMap extends V8ValueObject {
     }
 
     @Override
-    public boolean delete(V8Value key) throws JavetException {
+    public boolean delete(Object key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
-            throw new JavetNotSupportedException(key.toString());
+        if (!(key instanceof IV8ValueObject)) {
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_DELETE, key);
         return true;
     }
 
-    @Override
     public <T extends V8Value> T get(String key) throws JavetException {
         checkV8Runtime();
-        return v8Runtime.get(this, new V8ValueString(key));
+        return v8Runtime.get(this, v8Runtime.createV8ValueString(key));
     }
 
     @Override
-    public <T extends V8Value> T get(V8Value key) throws JavetException {
+    public <T extends V8Value> T get(Object key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
-            throw new JavetNotSupportedException(key.toString());
+        if (!(key instanceof IV8ValueObject)) {
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         return invoke(FUNCTION_GET, key);
     }
@@ -62,20 +61,19 @@ public class V8ValueWeakMap extends V8ValueObject {
     }
 
     @Override
-    public boolean has(V8Value key) throws JavetException {
+    public boolean has(Object key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
-            throw new JavetNotSupportedException(key.toString());
+        if (!(key instanceof IV8ValueObject)) {
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         return invokeBoolean(FUNCTION_HAS, key);
     }
 
     @Override
-    public boolean set(V8Value key, V8Value value) throws JavetException {
+    public boolean set(Object key, Object value) throws JavetException {
         Objects.requireNonNull(key);
-        Objects.requireNonNull(value);
-        if (!(key instanceof V8ValueReference)) {
-            throw new JavetNotSupportedException(key.toString());
+        if (!(key instanceof IV8ValueObject)) {
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_SET, key, value);
         return true;

@@ -33,7 +33,7 @@ public class TestV8ValueWeakSet extends BaseTestJavetRuntime {
             assertNotNull(v8ValueWeakSet);
             assertEquals("[object WeakSet]", v8ValueWeakSet.toString());
             try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
-                v8ValueObject.set("x", new V8ValueString("1"));
+                v8ValueObject.set("x", "1");
                 v8ValueWeakSet.add(v8ValueObject);
                 assertTrue(v8ValueWeakSet.has(v8ValueObject));
                 v8ValueWeakSet.delete(v8ValueObject);

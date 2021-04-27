@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils.converters;
+package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
@@ -45,13 +45,13 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testDouble() throws JavetException {
-        assertEquals(1.23D, (double) converter.toObject(new V8ValueDouble(1.23D)), 0.001);
+        assertEquals(1.23D, (double) converter.toObject(v8Runtime.createV8ValueDouble(1.23D)), 0.001);
         assertEquals(1.23D, ((V8ValueDouble) converter.toV8Value(v8Runtime, Double.valueOf(1.23D))).getValue(), 0.001);
     }
 
     @Test
     public void testFloat() throws JavetException {
-        assertEquals(1.23F, ((Double) converter.toObject(new V8ValueDouble(1.23F))).floatValue(), 0.001);
+        assertEquals(1.23F, ((Double) converter.toObject(v8Runtime.createV8ValueDouble(1.23F))).floatValue(), 0.001);
         assertEquals(1.23F, ((V8ValueDouble) converter.toV8Value(v8Runtime, Float.valueOf(1.23F))).getValue(), 0.001);
     }
 
@@ -70,7 +70,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testString() throws JavetException {
-        assertEquals("abc", (String) converter.toObject(new V8ValueString("abc")));
+        assertEquals("abc", (String) converter.toObject(v8Runtime.createV8ValueString("abc")));
         assertEquals("abc", ((V8ValueString) converter.toV8Value(v8Runtime, "abc")).getValue());
     }
 
@@ -81,7 +81,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testZonedDateTime() throws JavetException {
-        assertEquals(123L, ((ZonedDateTime) converter.toObject(new V8ValueZonedDateTime(123L))).toInstant().toEpochMilli());
+        assertEquals(123L, ((ZonedDateTime) converter.toObject(v8Runtime.createV8ValueZonedDateTime(123L))).toInstant().toEpochMilli());
         assertEquals(123L, ((V8ValueZonedDateTime) converter.toV8Value(v8Runtime, JavetDateTimeUtils.toZonedDateTime(123L))).getValue().toInstant().toEpochMilli());
     }
 }

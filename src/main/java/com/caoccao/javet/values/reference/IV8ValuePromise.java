@@ -18,12 +18,15 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.*;
+import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+@SuppressWarnings("unchecked")
 public interface IV8ValuePromise extends IV8ValueObject {
     int STATE_PENDING = 0;
     int STATE_FULFILLED = 1;
@@ -41,27 +44,47 @@ public interface IV8ValuePromise extends IV8ValueObject {
     <Value extends V8Value> Value getResult() throws JavetException;
 
     default boolean getResultBoolean() throws JavetException {
-        return ((V8ValueBoolean) getResult()).getValue();
+        return getResultPrimitive();
     }
 
     default double getResultDouble() throws JavetException {
-        return ((V8ValueDouble) getResult()).getValue();
+        return getResultPrimitive();
     }
 
     default int getResultInteger() throws JavetException {
-        return ((V8ValueInteger) getResult()).getValue();
+        return getResultPrimitive();
     }
 
     default long getResultLong() throws JavetException {
-        return ((V8ValueLong) getResult()).getValue();
+        return getResultPrimitive();
+    }
+
+    default <T extends Object> T getResultObject(Object key) throws JavetException {
+        try {
+            return getV8Runtime().toObject(getResult(), true);
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R getResultPrimitive()
+            throws JavetException {
+        V8Value v8Value = getResult();
+        try {
+            return ((T) v8Value).getValue();
+        } catch (Throwable t) {
+        }
+        return null;
     }
 
     default String getResultString() throws JavetException {
-        return ((V8ValueString) getResult()).getValue();
+        return getResultPrimitive();
     }
 
     default ZonedDateTime getResultZonedDateTime() throws JavetException {
-        return ((V8ValueZonedDateTime) getResult()).getValue();
+        return getResultPrimitive();
     }
 
     int getState() throws JavetException;

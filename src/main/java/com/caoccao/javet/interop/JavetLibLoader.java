@@ -18,10 +18,10 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.enums.JSRuntimeType;
-import com.caoccao.javet.exceptions.JavetIOException;
-import com.caoccao.javet.exceptions.JavetLibraryNotFoundException;
-import com.caoccao.javet.exceptions.JavetOSNotSupportedException;
+import com.caoccao.javet.exceptions.JavetError;
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.utils.SimpleMap;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,7 +30,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    static final String LIB_VERSION = "0.8.4";
+    static final String LIB_VERSION = "0.8.5";
     private static final String CHMOD = "chmod";
     private static final String XRR = "755";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
@@ -91,7 +91,7 @@ public final class JavetLibLoader {
     }
 
     public File getLibFile(String rootDirectory)
-            throws JavetOSNotSupportedException, JavetLibraryNotFoundException {
+            throws JavetException {
         String fileName, resourceFileName, osName, fileExtension;
         if (JavetOSUtils.IS_WINDOWS) {
             fileExtension = LIB_FILE_EXTENSION_WINDOWS;
@@ -100,7 +100,9 @@ public final class JavetLibLoader {
             fileExtension = LIB_FILE_EXTENSION_LINUX;
             osName = OS_LINUX;
         } else {
-            throw new JavetOSNotSupportedException(JavetOSUtils.OS_NAME);
+            throw new JavetException(
+                    JavetError.OSNotSupported,
+                    SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_NAME));
         }
         fileName = MessageFormat.format(LIB_FILE_NAME_FORMAT,
                 jsRuntimeType.getName(), osName, LIB_VERSION, fileExtension);
@@ -108,11 +110,13 @@ public final class JavetLibLoader {
         if (JavetLibLoader.class.getResource(resourceFileName) != null) {
             return new File(rootDirectory, fileName);
         }
-        throw new JavetLibraryNotFoundException(resourceFileName);
+        throw new JavetException(
+                JavetError.LibraryNotFound,
+                SimpleMap.of(JavetError.PARAMETER_PATH, resourceFileName));
     }
 
     public void load()
-            throws JavetOSNotSupportedException, JavetIOException, JavetLibraryNotFoundException {
+            throws JavetException {
         if (!loaded) {
             File tempDirectoryLibFile = getLibFile(JavetOSUtils.TEMP_DIRECTORY);
             try {
@@ -121,7 +125,10 @@ public final class JavetLibLoader {
                 loaded = true;
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                throw JavetIOException.failedToReadPath(tempDirectoryLibFile.toPath(), t);
+                throw new JavetException(
+                        JavetError.FailedToReadPath,
+                        SimpleMap.of(JavetError.PARAMETER_PATH, tempDirectoryLibFile.toPath()),
+                        t);
             }
         }
     }

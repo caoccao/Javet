@@ -42,11 +42,11 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
     @Test
     public void testGetAndSet() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = new Array(); a;").execute()) {
-            v8ValueArray.set(0, new V8ValueString("x"));
-            v8ValueArray.set(1, new V8ValueString("y"));
-            v8ValueArray.set(2, new V8ValueString("z"));
-            v8ValueArray.set("a", v8Runtime.createV8ValueInteger(1));
-            v8ValueArray.set("b", new V8ValueString("2"));
+            v8ValueArray.set(0, "x");
+            v8ValueArray.set(1, "y");
+            v8ValueArray.set(2, "z");
+            v8ValueArray.set("a", 1);
+            v8ValueArray.set("b", "2");
             assertEquals(3, v8ValueArray.getLength());
             assertEquals("x", v8ValueArray.getString(0));
             assertEquals("y", v8ValueArray.getString(1));

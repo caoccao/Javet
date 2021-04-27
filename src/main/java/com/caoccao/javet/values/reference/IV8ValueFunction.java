@@ -23,51 +23,74 @@ import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueFunction extends IV8ValueObject {
-    <T extends V8Value> T call(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
-            throws JavetException;
+    default <T extends V8Value> T call(IV8ValueObject receiver, Object... objects) throws JavetException {
+        return callExtended(receiver, true, objects);
+    }
 
     default <T extends V8Value> T call(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return call(receiver, true, v8Values);
+        return callExtended(receiver, true, v8Values);
     }
+
+    <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException;
 
     <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException;
 
-    default Boolean callBoolean(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return callObject(receiver, v8Values);
+    default Boolean callBoolean(IV8ValueObject receiver, Object... objects) throws JavetException {
+        return callPrimitive(receiver, objects);
     }
 
-    default Double callDouble(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return callObject(receiver, v8Values);
+    default Double callDouble(IV8ValueObject receiver, Object... objects) throws JavetException {
+        return callPrimitive(receiver, objects);
     }
 
-    default Float callFloat(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        Double result = callDouble(receiver, v8Values);
+    <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, Object... objects)
+            throws JavetException;
+
+    <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+            throws JavetException;
+
+
+    default Float callFloat(IV8ValueObject receiver, Object... objects) throws JavetException {
+        Double result = callDouble(receiver, objects);
         return result == null ? null : result.floatValue();
     }
 
-    default Integer callInteger(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return callObject(receiver, v8Values);
+    default Integer callInteger(IV8ValueObject receiver, Object... objects) throws JavetException {
+        return callPrimitive(receiver, objects);
     }
 
-    default Long callLong(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return callObject(receiver, v8Values);
+    default Long callLong(IV8ValueObject receiver, Object... objects) throws JavetException {
+        return callPrimitive(receiver, objects);
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R callObject(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        try (V8Value v8Value = call(receiver, v8Values)) {
-            try {
-                return ((T) v8Value).getValue();
-            } catch (Throwable t) {
-            }
+    default <T extends Object> T callObject(IV8ValueObject receiver, Object... objects) throws JavetException {
+        try {
+            return getV8Runtime().toObject(callExtended(receiver, true, objects), true);
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
         }
-        return null;
     }
 
-    default String callString(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        return callObject(receiver, v8Values);
+    default <R extends Object, T extends V8ValuePrimitive<R>> R callPrimitive(
+            IV8ValueObject receiver, Object... objects) throws JavetException {
+        try (V8Value v8Value = callExtended(receiver, true, objects)) {
+            return ((T) v8Value).getValue();
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    default String callString(IV8ValueObject receiver, Object... objects) throws JavetException {
+        return callPrimitive(receiver, objects);
+    }
+
+    default void callVoid(IV8ValueObject receiver, Object... objects) throws JavetException {
+        callExtended(receiver, false, objects);
     }
 
     default void callVoid(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
-        call(receiver, false, v8Values);
+        callExtended(receiver, false, v8Values);
     }
 }

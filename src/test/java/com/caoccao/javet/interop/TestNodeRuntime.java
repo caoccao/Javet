@@ -52,7 +52,7 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @BeforeEach
-    public void beforeEach() {
+    public void beforeEach() throws JavetException {
         nodeRuntime = (NodeRuntime) v8Host.createV8Runtime();
         assertFalse(nodeRuntime.isPooled());
         assertEquals(0, nodeRuntime.getReferenceCount(),
@@ -82,7 +82,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         NodeModuleAny nodeModuleFS = nodeRuntime.getNodeModule("fs", NodeModuleAny.class);
         assertTrue(nodeModuleFS.getModuleObject().invokeBoolean(
                 "existsSync",
-                new V8ValueString(getScriptFile("test-node-module-fs.js").getAbsolutePath())));
+                getScriptFile("test-node-module-fs.js").getAbsolutePath()));
     }
 
     @Test

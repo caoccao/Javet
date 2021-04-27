@@ -17,18 +17,29 @@
 
 package com.caoccao.javet.exceptions;
 
-public abstract class BaseJavetScriptingException extends JavetException {
-    protected JavetScriptingError error;
+import com.caoccao.javet.utils.SimpleMap;
 
-    public BaseJavetScriptingException(
+public abstract class BaseJavetScriptingException extends JavetException {
+    protected JavetScriptingError scriptingError;
+
+    protected BaseJavetScriptingException(
+            JavetError error,
             String message, String resourceName, String sourceLine,
             int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
-        super(message);
-        error = new JavetScriptingError(message, resourceName, sourceLine,
+        super(error, SimpleMap.of(
+                JavetError.PARAMETER_MESSAGE, message,
+                JavetError.PARAMETER_RESOURCE_NAME, resourceName,
+                JavetError.PARAMETER_SOURCE_LINE, sourceLine,
+                JavetError.PARAMETER_LINE_NUMBER, lineNumber,
+                JavetError.PARAMETER_START_COLUMN, startColumn,
+                JavetError.PARAMETER_END_COLUMN, endColumn,
+                JavetError.PARAMETER_START_POSITION, startPosition,
+                JavetError.PARAMETER_END_POSITION, endPosition));
+        scriptingError = new JavetScriptingError(message, resourceName, sourceLine,
                 lineNumber, startColumn, endColumn, startPosition, endPosition);
     }
 
-    public JavetScriptingError getError() {
-        return error;
+    public JavetScriptingError getScriptingError() {
+        return scriptingError;
     }
 }

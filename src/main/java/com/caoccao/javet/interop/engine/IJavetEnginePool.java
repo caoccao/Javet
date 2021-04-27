@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop.engine;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 
@@ -26,7 +27,7 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
 
     JavetEngineConfig getConfig();
 
-    IJavetEngine<R> getEngine();
+    IJavetEngine<R> getEngine() throws JavetException;
 
     int getIdleEngineCount();
 

@@ -15,10 +15,11 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils.converters;
+package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
@@ -56,6 +57,18 @@ public interface IJavetConverter {
     }
 
     Object toObject(V8Value v8Value) throws JavetException;
+
+    default Object toObject(V8Value v8Value, boolean autoClose) throws JavetException {
+        if (autoClose) {
+            try {
+                return toObject(v8Value);
+            } finally {
+                JavetResourceUtils.safeClose(v8Value);
+            }
+        } else {
+            return toObject(v8Value);
+        }
+    }
 
     <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException;
 }

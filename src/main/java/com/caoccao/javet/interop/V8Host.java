@@ -18,10 +18,11 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.enums.JSRuntimeType;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8RuntimeLeakException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
+import com.caoccao.javet.utils.SimpleMap;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
@@ -154,7 +155,9 @@ public final class V8Host implements AutoCloseable {
     public void close() throws JavetException {
         final int v8RuntimeCount = getV8RuntimeCount();
         if (v8RuntimeCount != 0) {
-            throw new JavetV8RuntimeLeakException(v8RuntimeCount);
+            throw new JavetException(
+                    JavetError.RuntimeLeakageDetected,
+                    SimpleMap.of(JavetError.PARAMETER_COUNT, v8RuntimeCount));
         }
         disableGCNotification();
     }
@@ -191,17 +194,21 @@ public final class V8Host implements AutoCloseable {
         return v8Native;
     }
 
-    public <R extends V8Runtime> R createV8Runtime() {
+    public <R extends V8Runtime> R createV8Runtime() throws JavetException {
         return createV8Runtime(GLOBAL_THIS);
     }
 
-    public <R extends V8Runtime> R createV8Runtime(String globalName) {
+    public <R extends V8Runtime> R createV8Runtime(String globalName) throws JavetException {
         return createV8Runtime(false, globalName);
     }
 
-    public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) {
+    public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) throws JavetException {
         if (!libLoaded) {
-            return null;
+            throw new JavetException(
+                    JavetError.LibraryNotLoaded,
+                    SimpleMap.of(
+                            JavetError.PARAMETER_REASON,
+                            "Please make sure the Javet libraries are available under current class path."));
         }
         final long handle = v8Native.createV8Runtime(globalName);
         isolateCreated = true;

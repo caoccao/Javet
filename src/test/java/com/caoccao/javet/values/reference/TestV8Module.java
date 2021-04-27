@@ -225,7 +225,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         } catch (JavetCompilationException e) {
             assertFalse(v8Runtime.containsV8Module("./test.js"));
             assertEquals(0, v8Runtime.getV8ModuleCount());
-            assertEquals("SyntaxError: Unexpected identifier", e.getError().getMessage());
+            assertEquals("SyntaxError: Unexpected identifier", e.getScriptingError().getMessage());
         }
     }
 }

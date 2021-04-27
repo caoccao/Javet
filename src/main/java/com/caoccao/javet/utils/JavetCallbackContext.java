@@ -17,9 +17,6 @@
 
 package com.caoccao.javet.utils;
 
-import com.caoccao.javet.utils.converters.IJavetConverter;
-import com.caoccao.javet.utils.converters.JavetObjectConverter;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
@@ -31,7 +28,6 @@ public final class JavetCallbackContext {
             "Javet callback context handle is invalid";
     private Method callbackMethod;
     private Object callbackReceiver;
-    private IJavetConverter converter;
     private long handle;
     private boolean returnResult;
     private boolean thisObjectRequired;
@@ -46,21 +42,12 @@ public final class JavetCallbackContext {
             Object callbackReceiver,
             Method callbackMethod,
             boolean thisObjectRequired) {
-        this(callbackReceiver, callbackMethod, thisObjectRequired, new JavetObjectConverter());
-    }
-
-    public JavetCallbackContext(
-            Object callbackReceiver,
-            Method callbackMethod,
-            boolean thisObjectRequired,
-            IJavetConverter converter) {
         Objects.requireNonNull(callbackMethod);
         assert (callbackReceiver != null && !Modifier.isStatic(callbackMethod.getModifiers()))
                 || (callbackReceiver == null && Modifier.isStatic(callbackMethod.getModifiers()))
                 : ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID;
         this.callbackMethod = callbackMethod;
         this.callbackReceiver = callbackReceiver;
-        this.converter = converter;
         handle = 0L;
         this.returnResult = !callbackMethod.getReturnType().equals(Void.TYPE);
         this.thisObjectRequired = thisObjectRequired;
@@ -76,10 +63,6 @@ public final class JavetCallbackContext {
 
     public Method getCallbackMethod() {
         return callbackMethod;
-    }
-
-    public IJavetConverter getConverter() {
-        return converter;
     }
 
     public long getHandle() {

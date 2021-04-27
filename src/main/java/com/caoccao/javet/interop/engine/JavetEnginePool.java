@@ -55,7 +55,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         startDaemon();
     }
 
-    protected JavetEngine<R> createEngine() {
+    protected JavetEngine<R> createEngine() throws JavetException {
         V8Host v8Host = config.getJSRuntimeType().isNode() ? V8Host.getNodeInstance() : V8Host.getV8Instance();
         R v8Runtime = v8Host.createV8Runtime(true, config.getGlobalName());
         v8Runtime.allowEval(config.isAllowEval());
@@ -79,7 +79,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     }
 
     @Override
-    public IJavetEngine<R> getEngine() {
+    public IJavetEngine<R> getEngine() throws JavetException {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.getEngine() begins.");
         JavetEngine<R> engine = null;

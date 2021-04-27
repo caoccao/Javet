@@ -17,10 +17,10 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetNotSupportedException;
-import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetError;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.SimpleMap;
 
 import java.util.Objects;
 
@@ -30,19 +30,16 @@ public class V8ValueWeakSet extends V8ValueObject {
         super(handle);
     }
 
-    public void add(V8Value key) throws JavetException {
+    public void add(IV8ValueObject key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
-            throw new JavetNotSupportedException(key.toString());
-        }
         invokeVoid(FUNCTION_ADD, key);
     }
 
     @Override
-    public boolean delete(V8Value key) throws JavetException {
+    public boolean delete(Object key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
-            throw new JavetNotSupportedException(key.toString());
+        if (!(key instanceof IV8ValueObject)) {
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         invokeVoid(FUNCTION_DELETE, key);
         return true;
@@ -54,10 +51,10 @@ public class V8ValueWeakSet extends V8ValueObject {
     }
 
     @Override
-    public boolean has(V8Value key) throws JavetException {
+    public boolean has(Object key) throws JavetException {
         Objects.requireNonNull(key);
-        if (!(key instanceof V8ValueReference)) {
-            throw new JavetNotSupportedException(key.toString());
+        if (!(key instanceof IV8ValueObject)) {
+            throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, key.toString()));
         }
         return invokeBoolean(FUNCTION_HAS, key);
     }

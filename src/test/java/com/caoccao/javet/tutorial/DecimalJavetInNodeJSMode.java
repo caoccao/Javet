@@ -35,7 +35,7 @@ public class DecimalJavetInNodeJSMode implements IJavetClosable {
     private IJavetEnginePool<NodeRuntime> iJavetEnginePool;
     private IJavetEngine<NodeRuntime> iJavetEngine;
 
-    public DecimalJavetInNodeJSMode() {
+    public DecimalJavetInNodeJSMode() throws JavetException {
         iJavetEnginePool = new JavetEnginePool<>();
         iJavetEnginePool.getConfig().setJSRuntimeType(JSRuntimeType.Node);
         iJavetEngine = iJavetEnginePool.getEngine();

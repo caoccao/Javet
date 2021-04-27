@@ -17,11 +17,23 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.IV8Executable;
+import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
 public interface IV8Script extends IV8ValueReference, IV8Executable {
     String getResourceName();
 
     void setResourceName(String resourceName);
+
+    @Override
+    default <T extends Object, V extends V8Value> T toObject(V v8Value) throws JavetException {
+        return getV8Runtime().toObject(v8Value);
+    }
+
+    @Override
+    default <T extends Object, V extends V8Value> V toV8Value(T object) throws JavetException {
+        return getV8Runtime().toV8Value(object);
+    }
 }

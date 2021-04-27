@@ -29,15 +29,13 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);
 
-    Object callAsConstructor(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
+    Object callAsConstructor(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
 
     void clearInternalStatistic();
 
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    Object cloneV8Value(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     void closeV8Runtime(long v8RuntimeHandle);
 
@@ -97,7 +95,7 @@ public interface IV8Native {
 
     boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    void lockV8Runtime(long v8RuntimeHandle);
+    boolean lockV8Runtime(long v8RuntimeHandle);
 
     void lowMemoryNotification(long v8RuntimeHandle);
 
@@ -167,7 +165,7 @@ public interface IV8Native {
 
     String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    void unlockV8Runtime(long v8RuntimeHandle);
+    boolean unlockV8Runtime(long v8RuntimeHandle);
 
     void v8InspectorSend(long v8RuntimeHandle, String message);
 }

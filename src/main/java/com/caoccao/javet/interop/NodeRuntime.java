@@ -80,7 +80,7 @@ public class NodeRuntime extends V8Runtime {
                 moduleObject = getGlobalObject().get(name);
             } else {
                 try (V8ValueFunction requireFunction = getGlobalObject().get(FUNCTION_REQUIRE)) {
-                    moduleObject = requireFunction.call(null, new V8ValueString(name));
+                    moduleObject = requireFunction.call(null, name);
                 }
             }
             try {
@@ -109,7 +109,7 @@ public class NodeRuntime extends V8Runtime {
 
     protected void removeNodeModules() {
         if (!nodeModuleMap.isEmpty()) {
-            nodeModuleMap.values().stream().forEach(nodeModule -> JavetResourceUtils.safeClose(nodeModule));
+            JavetResourceUtils.safeClose(nodeModuleMap.values());
             nodeModuleMap.clear();
         }
     }

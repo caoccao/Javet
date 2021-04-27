@@ -15,14 +15,13 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils.converters;
+package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.enums.V8ValueReferenceType;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 
 import java.util.*;
@@ -197,7 +196,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (object instanceof String[]) {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
             for (String item : (String[]) object) {
-                v8ValueArray.push(new V8ValueString(item));
+                v8ValueArray.push(v8Runtime.createV8ValueString(item));
             }
             v8Value = v8ValueArray;
         } else if (object.getClass().isArray()) {

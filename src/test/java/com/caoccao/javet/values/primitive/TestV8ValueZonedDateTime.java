@@ -35,10 +35,10 @@ public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
     public void testEquals() throws JavetException {
         V8ValueZonedDateTime v8ValueZonedDateTime = v8Runtime.getExecutor("new Date(123)").execute();
         assertTrue(v8ValueZonedDateTime.equals(
-                new V8ValueZonedDateTime(JavetDateTimeUtils.toZonedDateTime(123L))));
+                v8Runtime.createV8ValueZonedDateTime(JavetDateTimeUtils.toZonedDateTime(123L))));
         assertFalse(v8ValueZonedDateTime.equals(null));
         assertFalse(v8ValueZonedDateTime.equals(
-                new V8ValueZonedDateTime(JavetDateTimeUtils.toZonedDateTime(234L))));
+                v8Runtime.createV8ValueZonedDateTime(JavetDateTimeUtils.toZonedDateTime(234L))));
         assertFalse(v8ValueZonedDateTime.equals(v8Runtime.createV8ValueLong(1)));
     }
 

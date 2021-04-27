@@ -18,9 +18,9 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
-import com.caoccao.javet.exceptions.JavetV8ValueAlreadyClosedException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.mock.MockCallbackReceiver;
@@ -35,6 +35,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("unchecked")
 public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @Test
     public void testAnnotationBasedFunctions() throws JavetException {
@@ -135,7 +136,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             try (V8ValueFunction v8ValueFunctionPush = v8ValueArray.get("push")) {
                 assertNotNull(v8ValueFunctionPush);
                 assertEquals("function push() { [native code] }", v8ValueFunctionPush.toString());
-                assertEquals(1, v8ValueFunctionPush.callInteger(v8ValueArray, new V8ValueString("x")));
+                assertEquals(1, v8ValueFunctionPush.callInteger(v8ValueArray, "x"));
             }
             assertEquals(1, v8ValueArray.getLength());
             assertEquals("x", v8ValueArray.toString());
@@ -163,7 +164,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(1, v8Runtime.getReferenceCount());
         v8Runtime.requestGarbageCollectionForTesting(true);
         assertEquals(0, v8Runtime.getReferenceCount());
-        assertThrows(JavetV8ValueAlreadyClosedException.class, () -> v8ValueFunction.close());
+        try {
+            v8ValueFunction.close();
+        } catch (JavetException e) {
+            assertEquals(JavetError.RuntimeAlreadyClosed, e.getError());
+        }
     }
 
     @Test
@@ -175,7 +180,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
         try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
             globalObject.set("a", a);
-            a.set("x", new V8ValueString("1"));
+            a.set("x", "1");
             a.set("echoThis", v8ValueFunction);
             assertFalse(mockCallbackReceiver.isCalled());
             assertEquals("{\"x\":\"1\"}", v8Runtime.getExecutor("a.echoThis();").executeString());
@@ -187,7 +192,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(1, v8Runtime.getReferenceCount());
         v8Runtime.requestGarbageCollectionForTesting(true);
         assertEquals(0, v8Runtime.getReferenceCount());
-        assertThrows(JavetV8ValueAlreadyClosedException.class, () -> v8ValueFunction.close());
+        try {
+            v8ValueFunction.close();
+        } catch (JavetException e) {
+            assertEquals(JavetError.RuntimeAlreadyClosed, e.getError());
+        }
     }
 
     @Test
@@ -223,7 +232,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
-            globalObject.set("x", new V8ValueString("1"));
+            globalObject.set("x", "1");
             globalObject.set("echoThis", v8ValueFunction);
             assertFalse(mockCallbackReceiver.isCalled());
             try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("var a = echoThis(1, '2', 3n); a;").execute()) {
@@ -271,7 +280,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
             try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
-                a.set("x", new V8ValueString("1"));
+                a.set("x", "1");
                 a.set("echoThisString", v8ValueFunction);
                 globalObject.set("a", a);
             }
@@ -317,7 +326,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
             try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
-                a.set("x", new V8ValueString("1"));
+                a.set("x", "1");
                 a.set("echoThis", v8ValueFunction);
                 globalObject.set("a", a);
             }
@@ -372,7 +381,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8Runtime.getReferenceCount());
             try (V8ValueObject x = v8Runtime.createV8ValueObject()) {
                 globalObject.set("x", x);
-                x.set("p", new V8ValueString("q"));
+                x.set("p", "q");
                 x.set("joinWithThis", v8ValueFunction);
             }
             assertFalse(mockCallbackReceiver.isCalled());
@@ -399,7 +408,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8Runtime.getReferenceCount());
             try (V8ValueObject x = v8Runtime.createV8ValueObject()) {
                 globalObject.set("x", x);
-                x.set("p", new V8ValueString("q"));
+                x.set("p", "q");
                 x.set("joinIntegerArrayWithThis", v8ValueFunction);
             }
             assertFalse(mockCallbackReceiver.isCalled());
@@ -432,6 +441,18 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
         assertTrue(mockCallbackReceiver.isCalled());
         v8Runtime.requestGarbageCollectionForTesting(true);
+    }
+
+    @Test
+    public void testCallObject() throws JavetException {
+        v8Runtime.getExecutor("function a(b) { return [1,2,3].concat(b);}").executeVoid();
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get("a")) {
+            List<Integer> result = v8ValueFunction.callObject(null, (Object) (new Integer[]{4, 5, 6}));
+            assertArrayEquals(
+                    new Integer[]{1, 2, 3, 4, 5, 6},
+                    result.toArray(new Integer[0]),
+                    "callObject() should work transparently without resource leak");
+        }
     }
 
     @Test

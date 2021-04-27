@@ -1,10 +1,11 @@
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
+import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
-import com.caoccao.javet.utils.converters.IJavetConverter;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public final class V8FunctionCallback {
+
     private static Object convert(IJavetConverter converter, Class expectedClass, V8Value v8Value)
             throws JavetException {
         if (v8Value == null) {
@@ -138,8 +140,11 @@ public final class V8FunctionCallback {
                     }
                 }
             }
-            throw JavetV8CallbackSignatureMismatchException.parameterTypeMismatch(
-                    expectedClass, convertedObject.getClass());
+            throw new JavetException(
+                    JavetError.CallbackSignatureParameterTypeMismatch,
+                    SimpleMap.of(
+                            JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, expectedClass,
+                            JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, convertedObject.getClass()));
         }
         return v8Value;
     }
@@ -159,7 +164,7 @@ public final class V8FunctionCallback {
                  * it's better to inject V8Runtime via @V8RuntimeSetter
                  * to the receiver so that the receiver can create reference V8Value.
                  */
-                IJavetConverter converter = javetCallbackContext.getConverter();
+                IJavetConverter converter = v8Runtime.getConverter();
                 /*
                  * Javet doesn't check whether callback method is static or not.
                  * If the callback receiver is null, that's a static method.
@@ -200,8 +205,11 @@ public final class V8FunctionCallback {
                         }
                     } else {
                         if (method.getParameterCount() != length) {
-                            throw JavetV8CallbackSignatureMismatchException.parameterSizeMismatch(
-                                    method.getName(), length, method.getParameterCount());
+                            throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                    SimpleMap.of(
+                                            JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                            JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, length,
+                                            JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
                         }
                         for (int i = 0; i < parameterTypes.length; ++i) {
                             objectValues.add(convert(converter, parameterTypes[i], (V8Value) values.get(i)));
@@ -210,14 +218,10 @@ public final class V8FunctionCallback {
                     resultObject = method.invoke(callbackReceiver, objectValues.toArray());
                 }
                 if (javetCallbackContext.isReturnResult()) {
-                    if (resultObject != null) {
-                        if (resultObject instanceof V8Value) {
-                            v8Runtime.decorateV8Value((V8Value) resultObject);
-                        } else {
-                            resultObject = converter.toV8Value(v8Runtime, resultObject);
-                        }
+                    if (resultObject instanceof V8Value) {
+                        v8Runtime.decorateV8Value((V8Value) resultObject);
                     } else {
-                        resultObject = converter.toV8Value(v8Runtime, null);
+                        resultObject = v8Runtime.toV8Value(resultObject);
                     }
                     // The lifecycle of the result is handed over to JNI native implementation.
                     // So, close() or setWeak() must not be called.

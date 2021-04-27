@@ -274,9 +274,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    lockV8Runtime
- * Signature: (J)V
+ * Signature: (J)Z
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -514,9 +514,9 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    unlockV8Runtime
- * Signature: (J)V
+ * Signature: (J)Z
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
   (JNIEnv *, jobject, jlong);
 
 /*

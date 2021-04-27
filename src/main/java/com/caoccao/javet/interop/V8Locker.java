@@ -17,9 +17,10 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.utils.SimpleMap;
 
 import java.util.Objects;
 
@@ -36,22 +37,29 @@ public final class V8Locker implements IJavetClosable {
      * Instantiates a new V8 locker.
      *
      * @param v8Runtime the V8 runtime
-     * @throws JavetV8LockConflictException the javet V8 lock conflict exception
+     * @param v8Native  the v 8 native
+     * @throws JavetException the javet exception
      */
-    V8Locker(V8Runtime v8Runtime, IV8Native v8Native) throws JavetV8LockConflictException {
+    V8Locker(V8Runtime v8Runtime, IV8Native v8Native) throws JavetException {
         Objects.requireNonNull(v8Runtime);
         threadId = Thread.currentThread().getId();
         this.v8Native = v8Native;
         this.v8Runtime = v8Runtime;
-        v8Native.lockV8Runtime(v8Runtime.getHandle());
+        if (!v8Native.lockV8Runtime(v8Runtime.getHandle())) {
+            throw new JavetException(JavetError.LockAcquisitionFailure);
+        }
     }
 
     @Override
     public void close() throws JavetException {
         final long currentThreadId = Thread.currentThread().getId();
         if (threadId != currentThreadId) {
-            throw JavetV8LockConflictException.threadIdMismatch(threadId, currentThreadId);
+            throw new JavetException(JavetError.LockConflictThreadIdMismatch, SimpleMap.of(
+                    JavetError.PARAMETER_LOCKED_THREAD_ID, Long.toString(threadId),
+                    JavetError.PARAMETER_CURRENT_THREAD_ID, Long.toString(currentThreadId)));
         }
-        v8Native.unlockV8Runtime(v8Runtime.getHandle());
+        if (!v8Native.unlockV8Runtime(v8Runtime.getHandle())) {
+            throw new JavetException(JavetError.LockReleaseFailure);
+        }
     }
 }

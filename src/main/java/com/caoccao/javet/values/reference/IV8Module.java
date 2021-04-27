@@ -57,7 +57,7 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
 
     /**
      * Gets script id.
-     *
+     * <p>
      * Note: This API is not supported by Node because the V8 version is too low.
      *
      * @return the script id
@@ -68,4 +68,14 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
     int getStatus() throws JavetException;
 
     boolean instantiate() throws JavetException;
+
+    @Override
+    default <T extends Object, V extends V8Value> T toObject(V v8Value) throws JavetException {
+        return getV8Runtime().toObject(v8Value);
+    }
+
+    @Override
+    default <T extends Object, V extends V8Value> V toV8Value(T object) throws JavetException {
+        return getV8Runtime().toV8Value(object);
+    }
 }

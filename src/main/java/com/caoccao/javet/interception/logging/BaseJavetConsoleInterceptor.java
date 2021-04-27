@@ -17,11 +17,12 @@
 
 package com.caoccao.javet.interception.logging;
 
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetV8CallbackSignatureMismatchException;
 import com.caoccao.javet.interception.BaseJavetInterceptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueObject;
@@ -74,17 +75,24 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
             register(console, JS_FUNCTION_TRACE, JAVA_CONSOLE_TRACE);
             register(console, JS_FUNCTION_WARN, JAVA_CONSOLE_WARN);
             return true;
-        } catch (NoSuchMethodException e) {
-            throw JavetV8CallbackSignatureMismatchException.unknown(e);
         }
     }
 
     protected void register(IV8ValueObject iV8ValueObject, String jsFunctionName, String javaFunctionName)
-            throws JavetException, NoSuchMethodException {
-        iV8ValueObject.setFunction(
-                jsFunctionName,
-                new JavetCallbackContext(this,
-                        getClass().getMethod(javaFunctionName, V8Value[].class)));
+            throws JavetException {
+        try {
+            iV8ValueObject.setFunction(
+                    jsFunctionName,
+                    new JavetCallbackContext(this,
+                            getClass().getMethod(javaFunctionName, V8Value[].class)));
+        } catch (NoSuchMethodException e) {
+            throw new JavetException(
+                    JavetError.CallbackRegistrationFailure,
+                    SimpleMap.of(
+                            JavetError.PARAMETER_METHOD_NAME, javaFunctionName,
+                            JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                    e);
+        }
     }
 
     @Override

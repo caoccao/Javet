@@ -19,13 +19,16 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.*;
-import com.caoccao.javet.values.virtual.V8VirtualList;
+import com.caoccao.javet.values.primitive.V8ValueNull;
+import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.util.List;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueArray extends IV8ValueObject {
+    <T extends V8Value> T get(int index) throws JavetException;
+
     List<Integer> getKeys() throws JavetException;
 
     int getLength() throws JavetException;
@@ -33,26 +36,36 @@ public interface IV8ValueArray extends IV8ValueObject {
     <T extends V8Value> T pop() throws JavetException;
 
     default Boolean popBoolean() throws JavetException {
-        return popObject();
+        return popPrimitive();
     }
 
     default Double popDouble() throws JavetException {
-        return popObject();
+        return popPrimitive();
     }
 
     default Integer popInteger() throws JavetException {
-        return popObject();
+        return popPrimitive();
     }
 
     default Long popLong() throws JavetException {
-        return popObject();
+        return popPrimitive();
     }
 
     default V8ValueNull popNull() throws JavetException {
         return pop();
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R popObject() throws JavetException {
+    default <T extends Object> T popObject() throws JavetException {
+        try {
+            return getV8Runtime().toObject(pop(), true);
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    default <R extends Object, T extends V8ValuePrimitive<R>> R popPrimitive() throws JavetException {
         try (V8Value v8Value = pop()) {
             try {
                 return ((T) v8Value).getValue();
@@ -63,34 +76,14 @@ public interface IV8ValueArray extends IV8ValueObject {
     }
 
     default String popString() throws JavetException {
-        return popObject();
+        return popPrimitive();
     }
 
     default V8ValueUndefined popUndefined() throws JavetException {
         return pop();
     }
 
-    int push(V8Value v8Value) throws JavetException;
-
-    default int push(boolean value) throws JavetException {
-        return push(getV8Runtime().createV8ValueBoolean(value));
-    }
-
-    default int push(double value) throws JavetException {
-        return push(new V8ValueDouble(value));
-    }
-
-    default int push(int value) throws JavetException {
-        return push(getV8Runtime().createV8ValueInteger(value));
-    }
-
-    default int push(long value) throws JavetException {
-        return push(getV8Runtime().createV8ValueLong(value));
-    }
-
-    default int push(String value) throws JavetException {
-        return push(new V8ValueString(value));
-    }
+    int push(Object value) throws JavetException;
 
     default int pushNull() throws JavetException {
         return push(getV8Runtime().createV8ValueNull());

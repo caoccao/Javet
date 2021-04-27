@@ -143,7 +143,7 @@ class V8Native implements IV8Native {
     public native boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native void lockV8Runtime(long v8RuntimeHandle);
+    public native boolean lockV8Runtime(long v8RuntimeHandle);
 
     @Override
     public native void lowMemoryNotification(long v8RuntimeHandle);
@@ -243,7 +243,7 @@ class V8Native implements IV8Native {
     public native String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native void unlockV8Runtime(long v8RuntimeHandle);
+    public native boolean unlockV8Runtime(long v8RuntimeHandle);
 
     @Override
     public native void v8InspectorSend(long v8RuntimeHandle, String message);

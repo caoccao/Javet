@@ -19,10 +19,14 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.enums.JavetPromiseRejectEvent;
-import com.caoccao.javet.exceptions.*;
+import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetError;
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
+import com.caoccao.javet.interop.converters.IJavetConverter;
+import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
@@ -31,20 +35,21 @@ import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPromiseRejectCallback;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
-public class V8Runtime implements IJavetClosable, IV8Creatable {
+public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected static final long INVALID_HANDLE = 0L;
     protected static final String PROPERTY_DATA_VIEW = "DataView";
+    protected static final IJavetConverter DEFAULT_CONVERTER = new JavetObjectConverter();
     protected static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
     protected static final int V8_VALUE_BOOLEAN_FALSE_INDEX = 0;
     protected static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
@@ -63,6 +68,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
      * Callback context map is designed for closing that memory leak issue.
      */
     protected Map<Long, JavetCallbackContext> callbackContextMap;
+    protected IJavetConverter converter;
     protected boolean gcScheduled;
     protected String globalName;
     protected long handle;
@@ -78,6 +84,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
         callbackContextMap = new TreeMap<>();
+        converter = DEFAULT_CONVERTER;
         gcScheduled = false;
         this.globalName = globalName;
         this.handle = handle;
@@ -164,8 +171,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
         v8ScriptOrigin.setModule(true);
-        if (v8ScriptOrigin.getResourceName() == null) {
-            throw new JavetV8DataModuleNameEmptyException();
+        if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().length() == 0) {
+            throw new JavetException(JavetError.ModuleNameEmpty);
         }
         V8Module v8Module = decorateV8Value((V8Module) v8Native.compile(
                 handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
@@ -197,6 +204,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return booleanValue ?
                 cachedV8ValueBooleans[V8_VALUE_BOOLEAN_TRUE_INDEX] :
                 cachedV8ValueBooleans[V8_VALUE_BOOLEAN_FALSE_INDEX];
+    }
+
+    @Override
+    public V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException {
+        return decorateV8Value(new V8ValueDouble(doubleValue));
     }
 
     @Override
@@ -253,9 +265,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
     }
 
     @Override
+    public V8ValueString createV8ValueString(String str) throws JavetException {
+        return decorateV8Value(new V8ValueString(str));
+    }
+
+    @Override
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(type.getName())) {
-            return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
+            return v8ValueFunction.callAsConstructor(length);
         }
     }
 
@@ -264,12 +281,22 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return cachedV8ValueUndefined;
     }
 
+    @Override
+    public V8ValueZonedDateTime createV8ValueZonedDateTime(long jsTimestamp) throws JavetException {
+        return decorateV8Value(new V8ValueZonedDateTime(jsTimestamp));
+    }
+
+    @Override
+    public V8ValueZonedDateTime createV8ValueZonedDateTime(ZonedDateTime zonedDateTime) throws JavetException {
+        return decorateV8Value(new V8ValueZonedDateTime(zonedDateTime));
+    }
+
     public <T extends V8Value> T decorateV8Value(T v8Value) throws JavetException {
         if (v8Value != null) {
             if (v8Value.getV8Runtime() == null) {
                 v8Value.setV8Runtime(this);
             } else if (v8Value.getV8Runtime() != this) {
-                throw new JavetV8RuntimeAlreadyRegisteredException();
+                throw new JavetException(JavetError.RuntimeAlreadyRegistered);
             }
         }
         return v8Value;
@@ -311,6 +338,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
 
     public int getCallbackContextCount() {
         return callbackContextMap.size();
+    }
+
+    public IJavetConverter getConverter() {
+        return converter;
+    }
+
+    public void setConverter(IJavetConverter converter) {
+        Objects.requireNonNull(converter);
+        this.converter = converter;
     }
 
     public String getGlobalName() {
@@ -412,7 +448,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         return v8Inspector;
     }
 
-    public V8Locker getV8Locker() throws JavetV8LockConflictException {
+    public V8Locker getV8Locker() throws JavetException {
         return new V8Locker(this, v8Native);
     }
 
@@ -748,11 +784,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable {
         v8Native.terminateExecution(handle);
     }
 
-    public String toProtoString(IV8ValueReference iV8ValueReference) throws JavetV8RuntimeAlreadyClosedException {
+    @Override
+    public <T extends Object, V extends V8Value> T toObject(V v8Value) throws JavetException {
+        return (T) converter.toObject(v8Value);
+    }
+
+    public String toProtoString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.toProtoString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
-    public String toString(IV8ValueReference iV8ValueReference) throws JavetV8RuntimeAlreadyClosedException {
+    public String toString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.toString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
+    }
+
+    @Override
+    public <T extends Object, V extends V8Value> V toV8Value(T object) throws JavetException {
+        return converter.toV8Value(this, object);
     }
 }

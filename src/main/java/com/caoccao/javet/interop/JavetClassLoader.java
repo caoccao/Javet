@@ -18,7 +18,9 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.enums.JSRuntimeType;
-import com.caoccao.javet.exceptions.JavetLibraryNotLoadedException;
+import com.caoccao.javet.exceptions.JavetError;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.SimpleMap;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -39,18 +41,21 @@ class JavetClassLoader extends ClassLoader {
         this.jsRuntimeType = jsRuntimeType;
     }
 
-    IV8Native getNative() throws JavetLibraryNotLoadedException {
+    IV8Native getNative() throws JavetException {
         try {
             Class classNative = loadClass(jsRuntimeType.isNode() ? NODE_NATIVE_CLASS_NAME : V8_NATIVE_CLASS_NAME);
             Constructor constructor = classNative.getConstructor();
             return (IV8Native) constructor.newInstance();
         } catch (Exception e) {
             e.printStackTrace(System.err);
-            throw new JavetLibraryNotLoadedException(e.getMessage(), e);
+            throw new JavetException(
+                    JavetError.LibraryNotLoaded,
+                    SimpleMap.of(JavetError.PARAMETER_REASON, e.getMessage()),
+                    e);
         }
     }
 
-    void load() throws JavetLibraryNotLoadedException {
+    void load() throws JavetException {
         try {
             Class classJavetLibLoader = loadClass(JAVET_LIB_LOADER_CLASS_NAME);
             Constructor constructor = classJavetLibLoader.getConstructor(JSRuntimeType.class);
@@ -58,7 +63,10 @@ class JavetClassLoader extends ClassLoader {
             classJavetLibLoader.getMethod(METHOD_LOAD).invoke(javetLibLoader);
         } catch (Exception e) {
             e.printStackTrace(System.err);
-            throw new JavetLibraryNotLoadedException(e.getMessage(), e);
+            throw new JavetException(
+                    JavetError.LibraryNotLoaded,
+                    SimpleMap.of(JavetError.PARAMETER_REASON, e.getMessage()),
+                    e);
         }
     }
 

@@ -19,13 +19,12 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
-import com.caoccao.javet.exceptions.JavetV8LockConflictException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestV8Native extends BaseTestJavet {
     protected IV8Native v8Native;
@@ -53,13 +52,9 @@ public class TestV8Native extends BaseTestJavet {
         try {
             final int iterations = 3;
             for (int i = 0; i < iterations; ++i) {
-                assertThrows(JavetV8LockConflictException.class, () -> {
-                    v8Native.unlockV8Runtime(handle);
-                }, "It should not allow unlock before lock.");
+                assertFalse(v8Native.unlockV8Runtime(handle), "It should not allow unlock before lock.");
                 v8Native.lockV8Runtime(handle);
-                assertThrows(JavetV8LockConflictException.class, () -> {
-                    v8Native.lockV8Runtime(handle);
-                }, "It should not allow double lock.");
+                assertFalse(v8Native.lockV8Runtime(handle), "It should not allow double lock.");
                 v8Native.unlockV8Runtime(handle);
             }
         } finally {

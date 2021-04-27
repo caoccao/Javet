@@ -30,9 +30,9 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
     @Test
     public void testEquals() throws JavetException {
         V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("1.23").execute();
-        assertTrue(v8ValueDouble.equals(new V8ValueDouble(1.23D)));
+        assertTrue(v8ValueDouble.equals(v8Runtime.createV8ValueDouble(1.23D)));
         assertFalse(v8ValueDouble.equals(null));
-        assertFalse(v8ValueDouble.equals(new V8ValueDouble(1.24D)));
+        assertFalse(v8ValueDouble.equals(v8Runtime.createV8ValueDouble(1.24D)));
         assertFalse(v8ValueDouble.equals(v8Runtime.createV8ValueUndefined()));
     }
 
