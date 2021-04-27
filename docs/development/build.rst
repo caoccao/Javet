@@ -154,9 +154,9 @@ Note: The patch script requires Python 3.
 .. code-block:: shell
 
     cd root_path_to_node_js
-    python3 root_path_to_javet/script/python/patch_node_build.py -p ./
+    python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
     ./configure --enable-static --without-intl
-    python3 root_path_to_javet/script/python/patch_node_build.py -p ./
+    python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
     make -j4
 
 Why Patching?
