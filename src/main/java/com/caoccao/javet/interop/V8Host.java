@@ -194,17 +194,21 @@ public final class V8Host implements AutoCloseable {
         return v8Native;
     }
 
-    public <R extends V8Runtime> R createV8Runtime() {
+    public <R extends V8Runtime> R createV8Runtime() throws JavetException {
         return createV8Runtime(GLOBAL_THIS);
     }
 
-    public <R extends V8Runtime> R createV8Runtime(String globalName) {
+    public <R extends V8Runtime> R createV8Runtime(String globalName) throws JavetException {
         return createV8Runtime(false, globalName);
     }
 
-    public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) {
+    public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) throws JavetException {
         if (!libLoaded) {
-            return null;
+            throw new JavetException(
+                    JavetError.LibraryNotLoaded,
+                    SimpleMap.of(
+                            JavetClassLoader.REASON,
+                            "Please make sure the Javet libraries are available under current class path."));
         }
         final long handle = v8Native.createV8Runtime(globalName);
         isolateCreated = true;

@@ -36,7 +36,7 @@ public class DecimalJavetInV8Mode implements IJavetClosable {
     private IJavetEnginePool<V8Runtime> iJavetEnginePool;
     private IJavetEngine<V8Runtime> iJavetEngine;
 
-    public DecimalJavetInV8Mode() {
+    public DecimalJavetInV8Mode() throws JavetException {
         iJavetEnginePool = new JavetEnginePool<>();
         iJavetEnginePool.getConfig().setJSRuntimeType(JSRuntimeType.V8);
         iJavetEngine = iJavetEnginePool.getEngine();

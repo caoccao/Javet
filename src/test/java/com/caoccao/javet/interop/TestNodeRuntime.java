@@ -52,7 +52,7 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @BeforeEach
-    public void beforeEach() {
+    public void beforeEach() throws JavetException {
         nodeRuntime = (NodeRuntime) v8Host.createV8Runtime();
         assertFalse(nodeRuntime.isPooled());
         assertEquals(0, nodeRuntime.getReferenceCount(),
