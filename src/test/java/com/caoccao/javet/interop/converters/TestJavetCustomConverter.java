@@ -1,0 +1,116 @@
+package com.caoccao.javet.interop.converters;
+
+import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class TestJavetCustomConverter extends BaseTestJavetRuntime {
+    @Test
+    public void testPojo() throws JavetException, JsonProcessingException {
+        Pojo[] pojoArray = new Pojo[]{
+                new Pojo("Tom", "CEO"),
+                new Pojo("Jerry", "CFO")};
+        PojoConverter converter = new PojoConverter();
+        v8Runtime.setConverter(converter);
+        v8Runtime.getGlobalObject().set("pojoArray", pojoArray);
+        ObjectMapper objectMapper = new ObjectMapper();
+        assertEquals(
+                "[{\"name\":\"Tom\",\"value\":\"CEO\"},{\"name\":\"Jerry\",\"value\":\"CFO\"}]",
+                objectMapper.writeValueAsString(v8Runtime.getExecutor("pojoArray;").executeObject()));
+    }
+
+    @SuppressWarnings("unchecked")
+    static class PojoConverter extends JavetObjectConverter {
+        public static final String METHOD_PREFIX_GET = "get";
+        public static final String METHOD_PREFIX_IS = "is";
+        protected static final Set<String> EXCLUDED_METHODS;
+
+        static {
+            EXCLUDED_METHODS = new HashSet<>();
+            for (Method method : Object.class.getMethods()) {
+                if (method.getParameterCount() == 0) {
+                    String methodName = method.getName();
+                    if (methodName.startsWith(METHOD_PREFIX_IS) || methodName.startsWith(METHOD_PREFIX_GET)) {
+                        EXCLUDED_METHODS.add(methodName);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public V8Value toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
+            V8Value v8Value = super.toV8Value(v8Runtime, object);
+            if (v8Value != null && !(v8Value.isUndefined())) {
+                return v8Value;
+            }
+            Class objectClass = object.getClass();
+            V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
+            for (Method method : objectClass.getMethods()) {
+                if (method.getParameterCount() == 0) {
+                    String methodName = method.getName();
+                    String propertyName = null;
+                    if (methodName.startsWith(METHOD_PREFIX_IS) && !EXCLUDED_METHODS.contains(methodName)
+                            && methodName.length() > METHOD_PREFIX_IS.length()) {
+                        propertyName = methodName.substring(METHOD_PREFIX_IS.length(), METHOD_PREFIX_IS.length() + 1).toLowerCase(Locale.ROOT)
+                                + methodName.substring(METHOD_PREFIX_IS.length() + 1);
+                    } else if (methodName.startsWith(METHOD_PREFIX_GET) && !EXCLUDED_METHODS.contains(methodName)
+                            && methodName.length() > METHOD_PREFIX_GET.length()) {
+                        propertyName = methodName.substring(METHOD_PREFIX_GET.length(), METHOD_PREFIX_GET.length() + 1).toLowerCase(Locale.ROOT)
+                                + methodName.substring(METHOD_PREFIX_GET.length() + 1);
+                    }
+                    if (propertyName != null) {
+                        try (V8Value v8ValueTemp = toV8Value(v8Runtime, method.invoke(object))) {
+                            v8ValueObject.set(propertyName, v8ValueTemp);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            v8Value = v8ValueObject;
+            return v8Runtime.decorateV8Value(v8Value);
+        }
+    }
+
+    class Pojo {
+        private String name;
+        private String value;
+
+        public Pojo() {
+            this(null, null);
+        }
+
+        public Pojo(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+}

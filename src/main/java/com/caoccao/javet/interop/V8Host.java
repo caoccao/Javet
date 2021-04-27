@@ -204,11 +204,13 @@ public final class V8Host implements AutoCloseable {
 
     public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) throws JavetException {
         if (!libLoaded) {
-            throw new JavetException(
-                    JavetError.LibraryNotLoaded,
-                    SimpleMap.of(
-                            JavetError.PARAMETER_REASON,
-                            "Please make sure the Javet libraries are available under current class path."));
+            if (lastException == null) {
+                throw new JavetException(
+                        JavetError.LibraryNotLoaded,
+                        SimpleMap.of(JavetError.PARAMETER_REASON, "there are unknown errors"));
+            } else {
+                throw lastException;
+            }
         }
         final long handle = v8Native.createV8Runtime(globalName);
         isolateCreated = true;
