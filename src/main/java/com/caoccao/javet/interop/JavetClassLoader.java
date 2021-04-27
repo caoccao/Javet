@@ -29,7 +29,6 @@ import java.lang.reflect.Constructor;
 
 @SuppressWarnings("unchecked")
 class JavetClassLoader extends ClassLoader {
-    public static final String REASON = "reason";
     protected static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
     protected static final String NODE_NATIVE_CLASS_NAME = NodeNative.class.getName();
     protected static final String V8_NATIVE_CLASS_NAME = V8Native.class.getName();
@@ -51,7 +50,7 @@ class JavetClassLoader extends ClassLoader {
             e.printStackTrace(System.err);
             throw new JavetException(
                     JavetError.LibraryNotLoaded,
-                    SimpleMap.of(REASON, e.getMessage()),
+                    SimpleMap.of(JavetError.PARAMETER_REASON, e.getMessage()),
                     e);
         }
     }
@@ -66,7 +65,7 @@ class JavetClassLoader extends ClassLoader {
             e.printStackTrace(System.err);
             throw new JavetException(
                     JavetError.LibraryNotLoaded,
-                    SimpleMap.of(REASON, e.getMessage()),
+                    SimpleMap.of(JavetError.PARAMETER_REASON, e.getMessage()),
                     e);
         }
     }

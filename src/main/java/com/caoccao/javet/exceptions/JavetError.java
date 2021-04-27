@@ -31,6 +31,7 @@ public class JavetError {
     public static final String PARAMETER_COUNT = "count";
     public static final String PARAMETER_CONTINUABLE = "continuable";
     public static final String PARAMETER_PATH = "path";
+    public static final String PARAMETER_REASON = "reason";
 
     public static final JavetError OSNotSupported = new JavetError(
             101, JavetErrorType.System, "OS ${OS} is not supported");

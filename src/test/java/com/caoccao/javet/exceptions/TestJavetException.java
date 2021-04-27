@@ -31,11 +31,11 @@ public class TestJavetException extends BaseTestJavetRuntime {
     @Test
     public void testSystem() {
         JavetException[] javetExceptions = new JavetException[]{
-                new JavetException(JavetError.OSNotSupported, SimpleMap.of("OS", "abc")),
-                new JavetException(JavetError.LibraryNotFound, SimpleMap.of("path", "abc")),
-                new JavetException(JavetError.LibraryNotLoaded, SimpleMap.of("reason", "abc")),
-                new JavetException(JavetError.NotSupported, SimpleMap.of("feature", "abc")),
-                new JavetException(JavetError.FailedToReadPath, SimpleMap.of("path", "abc")),
+                new JavetException(JavetError.OSNotSupported, SimpleMap.of(JavetError.PARAMETER_OS, "abc")),
+                new JavetException(JavetError.LibraryNotFound, SimpleMap.of(JavetError.PARAMETER_PATH, "abc")),
+                new JavetException(JavetError.LibraryNotLoaded, SimpleMap.of(JavetError.PARAMETER_REASON, "abc")),
+                new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, "abc")),
+                new JavetException(JavetError.FailedToReadPath, SimpleMap.of(JavetError.PARAMETER_PATH, "abc")),
         };
         Arrays.stream(javetExceptions).forEach(e -> assertEquals(JavetErrorType.System, e.getError().getType()));
         assertEquals("OS abc is not supported", javetExceptions[0].getMessage());

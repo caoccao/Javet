@@ -207,7 +207,7 @@ public final class V8Host implements AutoCloseable {
             throw new JavetException(
                     JavetError.LibraryNotLoaded,
                     SimpleMap.of(
-                            JavetClassLoader.REASON,
+                            JavetError.PARAMETER_REASON,
                             "Please make sure the Javet libraries are available under current class path."));
         }
         final long handle = v8Native.createV8Runtime(globalName);
