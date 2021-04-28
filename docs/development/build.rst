@@ -141,7 +141,7 @@ Please follow `Building Node.js <https://github.com/nodejs/node/blob/master/BUIL
 Preparation (Node.js)
 ---------------------
 
-* Linux requires Python 2.7, CMake 3.10+. Ubuntu 18.04 is the recommended Linux distribution.
+* Linux requires Python 2.7, CMake 3.10+, GCC 9.3+. Ubuntu 20.04 is the recommended Linux distribution (V8 v8.9 is recommended to be built on Ubuntu 18.04, and V8 v9.0 is recommended to be built on Ubuntu 20.04).
 * Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
 * Clone the source code.
 * Checkout a proper version.

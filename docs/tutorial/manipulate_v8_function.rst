@@ -20,15 +20,14 @@ This method scans the input callback receiver for functions decorated by ``@V8Fu
 
     List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver);
     List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver, boolean thisObjectRequired);
-    List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver, boolean thisObjectRequired, IJavetConverter converter);
 
-Creating native V8Value objects is trick in the callback receiver. There are typically 3 options.
+Creating native V8Value objects is trick in the callback receiver. There are typically 2 options.
 
 1. Enhance the `Object Converter <object_converter.rst>`_ and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
 
 The beauty of this option is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.
 
-2. If application doesn't want to create custom object converter, it may borrow ``V8Runtime`` from the input arguments.
+2. If application doesn't want to have ``V8Runtime`` injected, it may borrow ``V8Runtime`` from the input arguments.
 
 3. Sometimes the callback receiver is not able to borrow ``V8Runtime`` from input arguments, it may decorate a setter with ``@V8RuntimeSetter`` so that Javet will inject the current ``V8Runtime``. Please refer to ``generateArrayWithoutConverter()``.
 
