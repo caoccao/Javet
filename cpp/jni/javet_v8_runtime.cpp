@@ -15,6 +15,8 @@
  *   limitations under the License.
  */
 
+#include <chrono>
+#include <thread>
 #include "javet_callbacks.h"
 #include "javet_inspector.h"
 #include "javet_types.h"
@@ -23,6 +25,7 @@
 namespace Javet {
 #ifdef ENABLE_NODE
 	static std::mutex mutexForNodeResetEnvrironment;
+	static auto oneMillisecond = std::chrono::milliseconds(1);
 #endif
 
 	void GlobalAccessorGetterCallback(
@@ -48,10 +51,22 @@ namespace Javet {
 #ifdef ENABLE_NODE
 		bool hasMoreTasks;
 		do {
-			uv_run(&uvLoop, UV_RUN_DEFAULT);
-			// DrainTasks is thread-safe.
-			v8PlatformPointer->DrainTasks(v8Isolate);
+			{
+				// Reduce the locking granularity so that Node.js can respond to requests from other threads.
+				auto v8Locker = GetUniqueV8Locker();
+				auto v8IsolateScope = GetV8IsolateScope();
+				V8HandleScope v8HandleScope(v8Isolate);
+				auto v8Context = GetV8LocalContext();
+				auto v8ContextScope = GetV8ContextScope(v8Context);
+				uv_run(&uvLoop, UV_RUN_NOWAIT);
+				// DrainTasks is thread-safe.
+				v8PlatformPointer->DrainTasks(v8Isolate);
+			}
 			hasMoreTasks = uv_loop_alive(&uvLoop);
+			if (hasMoreTasks) {
+				// Sleep a while to give CPU cycles to other threads.
+				std::this_thread::sleep_for(oneMillisecond);
+			}
 		} while (hasMoreTasks == true);
 #else
 		// It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
