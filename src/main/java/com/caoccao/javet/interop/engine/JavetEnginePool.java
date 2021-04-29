@@ -56,7 +56,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     }
 
     protected JavetEngine<R> createEngine() throws JavetException {
-        V8Host v8Host = config.getJSRuntimeType().isNode() ? V8Host.getNodeInstance() : V8Host.getV8Instance();
+        V8Host v8Host = V8Host.getInstance(config.getJSRuntimeType());
         R v8Runtime = v8Host.createV8Runtime(true, config.getGlobalName());
         v8Runtime.allowEval(config.isAllowEval());
         v8Runtime.setLogger(config.getJavetLogger());
