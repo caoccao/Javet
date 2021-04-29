@@ -29,22 +29,22 @@ Step 1: JavaScript Server
     const express = require("express");
     const app = express();
 
-    // This is the callback function that takes call from JVM.
+    // This is the callback function that takes calls from JVM.
     var test = (count) => {
-    console.log(`Call #${count}`);
+        console.log(`Call #${count}`);
     }
 
     // This is the express handler.
     app.get('/', function (req, res) {
     res.send('Hello');
-    console.log('GET /');
+        console.log('GET /');
     })
 
     // Start the express server.
     const server = app.listen(8991, "0.0.0.0", () => {
-    const host = server.address().address;
-    const port = server.address().port;
-    console.log(`Listening at http://${host}:${port}`);
+        const host = server.address().address;
+        const port = server.address().port;
+        console.log(`Listening at http://${host}:${port}`);
     });
 
 Step 2: Worker Thread for the JavaScript Server
@@ -90,7 +90,7 @@ Step 3: Main Thread for the Interaction
                     TimeUnit.MILLISECONDS.sleep(500);
                 }
                 System.out.println("Server is up.");
-                // Make the call.
+                // Let's call Node.js.
                 for (int i = 0; i < Integer.MAX_VALUE; ++i) {
                     try (V8ValueFunction v8ValueFunction = nodeRuntime.getGlobalObject().get("test")) {
                         v8ValueFunction.callVoid(null, i);
@@ -121,5 +121,20 @@ Voilà! The calls (``Call #``) from JVM work. And in the meanwhile, calls (``GET
     Call #7
     Call #8
     Call #9
+
+How can this work? The ``await()`` in the worker thread actually plays the following trick.
+
+.. code-block:: python
+
+    # This is the pseudo logic.
+    def await():
+        while True:
+            drain_the_task_queue()
+            pause_the_event_loop()
+            if there_are_more_tasks_in_task_queue():
+                sleep_a_while() # This allows calls from other thread to take effect.
+                resume_the_event_loop()
+            else:
+                break
 
 [`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
