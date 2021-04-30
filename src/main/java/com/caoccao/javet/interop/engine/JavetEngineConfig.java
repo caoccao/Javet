@@ -109,8 +109,9 @@ public final class JavetEngineConfig {
         return executorService;
     }
 
-    void setExecutorService(ExecutorService executorService) {
+    JavetEngineConfig setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
+        return this;
     }
 
     public JSRuntimeType getJSRuntimeType() {

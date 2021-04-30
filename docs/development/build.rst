@@ -9,9 +9,9 @@ Linux Environment
 -----------------
 
 * CMake 3.10+
-* Ubuntu 18.04
+* Ubuntu 20.04
 * JDK 8
-* Gradle 6.7+
+* Gradle 7.0+
 
 Windows Environment
 -------------------
@@ -21,7 +21,7 @@ Windows Environment
 * CMake 3.16+ (comes with Visual Studio)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
-* Gradle 6.7+
+* Gradle 7.0+
 
 Download Pre-built Node.js and V8
 =================================
@@ -82,7 +82,7 @@ Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``v9
 Preparation (V8)
 ----------------
 
-* Linux requires Python 2.7, CMake 3.10+. Ubuntu 18.04 is the recommended Linux distribution.
+* Linux requires Python 2.7, CMake 3.10+. Ubuntu 20.04 is the recommended Linux distribution.
 * Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
 * Clone the source code.
 * Checkout a proper version.
@@ -141,7 +141,7 @@ Please follow `Building Node.js <https://github.com/nodejs/node/blob/master/BUIL
 Preparation (Node.js)
 ---------------------
 
-* Linux requires Python 2.7, CMake 3.10+. Ubuntu 18.04 is the recommended Linux distribution.
+* Linux requires Python 2.7, CMake 3.10+, GCC 9.3+. Ubuntu 20.04 is the recommended Linux distribution (V8 v8.9 is recommended to be built on Ubuntu 18.04, and V8 v9.0 is recommended to be built on Ubuntu 20.04).
 * Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
 * Clone the source code.
 * Checkout a proper version.
@@ -154,9 +154,9 @@ Note: The patch script requires Python 3.
 .. code-block:: shell
 
     cd root_path_to_node_js
-    python3 root_path_to_javet/script/python/patch_node_build.py -p ./
+    python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
     ./configure --enable-static --without-intl
-    python3 root_path_to_javet/script/python/patch_node_build.py -p ./
+    python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
     make -j4
 
 Why Patching?

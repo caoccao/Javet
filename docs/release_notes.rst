@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.6
+-----
+
+* Upgraded Linux build environment to Ubuntu 20.04 + GCC 9.3
+* Enhanced ``NodeRuntime.await()`` to allow interaction from other threads
+
 0.8.5
 -----
 
