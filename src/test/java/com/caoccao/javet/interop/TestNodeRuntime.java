@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
@@ -53,7 +54,7 @@ public class TestNodeRuntime extends BaseTestJavet {
 
     @BeforeEach
     public void beforeEach() throws JavetException {
-        nodeRuntime = (NodeRuntime) v8Host.createV8Runtime();
+        nodeRuntime = v8Host.createV8Runtime();
         assertFalse(nodeRuntime.isPooled());
         assertEquals(0, nodeRuntime.getReferenceCount(),
                 "Reference count should be 0 before test case is started.");
@@ -102,6 +103,19 @@ public class TestNodeRuntime extends BaseTestJavet {
         Path path4 = nodeModuleProcess.getWorkingDirectory();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
+    }
+
+//    @Test
+    public void testSqlite3() throws JavetException {
+        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
+        if (sqlite3File.exists()) {
+            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
+            try {
+                nodeRuntime.getExecutor(scriptFile).executeVoid();
+            } catch (JavetExecutionException e) {
+                fail(e);
+            }
+        }
     }
 
     @Test
