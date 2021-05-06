@@ -20,11 +20,9 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -105,16 +103,12 @@ public class TestNodeRuntime extends BaseTestJavet {
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
     }
 
-//    @Test
+    @Test
     public void testSqlite3() throws JavetException {
         File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
         if (sqlite3File.exists()) {
             File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
-            try {
-                nodeRuntime.getExecutor(scriptFile).executeVoid();
-            } catch (JavetExecutionException e) {
-                fail(e);
-            }
+            nodeRuntime.getExecutor(scriptFile).executeVoid();
         }
     }
 
