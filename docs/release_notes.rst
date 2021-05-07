@@ -2,6 +2,11 @@
 Release Notes
 =============
 
+0.8.7
+-----
+
+* Supported native modules with rebuilt scripts
+
 0.8.6
 -----
 

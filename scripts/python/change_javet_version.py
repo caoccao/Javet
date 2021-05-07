@@ -68,6 +68,12 @@ class ChangeJavetVersion(object):
       re.compile(r'"(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'v\.(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'(?P<version>\d+,\d+,\d+)'))
+    self._update(
+      'scripts/node/javet-rebuild/rebuild.cmd', '\r\n',
+      re.compile(r'v\.(?P<version>\d+\.\d+\.\d+)\.lib'))
+    self._update(
+      'scripts/node/javet-rebuild/rebuild.sh', '\n',
+      re.compile(r'v\.(?P<version>\d+\.\d+\.\d+)\.so'))
 
   def _update(self, relative_file_path: str, line_separator: str, *patterns: list):
     file_path = (self._root_path / relative_file_path).resolve().absolute()
