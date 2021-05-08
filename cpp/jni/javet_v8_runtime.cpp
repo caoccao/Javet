@@ -67,6 +67,16 @@ namespace Javet {
 				// Sleep a while to give CPU cycles to other threads.
 				std::this_thread::sleep_for(oneMillisecond);
 			}
+			else {
+				auto v8Locker = GetUniqueV8Locker();
+				auto v8IsolateScope = GetV8IsolateScope();
+				V8HandleScope v8HandleScope(v8Isolate);
+				auto v8Context = GetV8LocalContext();
+				auto v8ContextScope = GetV8ContextScope(v8Context);
+				// node::EmitBeforeExit is thread-safe.
+				node::EmitBeforeExit(nodeEnvironment.get());
+				hasMoreTasks = uv_loop_alive(&uvLoop);
+			}
 		} while (hasMoreTasks == true);
 #else
 		// It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
@@ -91,12 +101,11 @@ namespace Javet {
 				// DrainTasks is thread-safe.
 				v8PlatformPointer->DrainTasks(v8Isolate);
 				hasMoreTasks = uv_loop_alive(&uvLoop);
-				if (hasMoreTasks) {
-					continue;
+				if (!hasMoreTasks) {
+					// node::EmitBeforeExit is thread-safe.
+					node::EmitBeforeExit(nodeEnvironment.get());
+					hasMoreTasks = uv_loop_alive(&uvLoop);
 				}
-				// node::EmitBeforeExit is thread-safe.
-				node::EmitBeforeExit(nodeEnvironment.get());
-				hasMoreTasks = uv_loop_alive(&uvLoop);
 			} while (hasMoreTasks == true);
 		}
 		int errorCode = 0;

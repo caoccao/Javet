@@ -52,8 +52,8 @@ public abstract class BaseTestJavet {
                 JavetLibLoader javetLibLoaderV8 = new JavetLibLoader(JSRuntimeType.V8);
                 String resourceDirPath = new File(
                         JavetOSUtils.WORKING_DIRECTORY, "src/main/resources").getAbsolutePath();
-                File nodeLibFile = javetLibLoaderNode.getLibFile(resourceDirPath);
-                File v8LibFile = javetLibLoaderV8.getLibFile(resourceDirPath);
+                File nodeLibFile = new File(resourceDirPath, javetLibLoaderNode.getResourceFileName());
+                File v8LibFile = new File(resourceDirPath, javetLibLoaderV8.getResourceFileName());
                 if (nodeLibFile.lastModified() > v8LibFile.lastModified()) {
                     jsRuntimeType = JSRuntimeType.Node;
                 } else {

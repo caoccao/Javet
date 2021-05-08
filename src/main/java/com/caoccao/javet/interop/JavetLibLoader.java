@@ -30,7 +30,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    static final String LIB_VERSION = "0.8.6";
+    static final String LIB_VERSION = "0.8.7";
     private static final String CHMOD = "chmod";
     private static final String XRR = "755";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
@@ -57,7 +57,7 @@ public final class JavetLibLoader {
         return jsRuntimeType;
     }
 
-    private void deployLibFile(File libFile) {
+    private void deployLibFile(String resourceFileName, File libFile) {
         boolean isLibFileLocked = false;
         if (libFile.exists()) {
             try {
@@ -68,8 +68,7 @@ public final class JavetLibLoader {
         }
         if (!isLibFileLocked) {
             byte[] buffer = new byte[BUFFER_LENGTH];
-            String resourceName = MessageFormat.format(RESOURCE_NAME_FORMAT, libFile.getName());
-            try (InputStream inputStream = JavetLibLoader.class.getResourceAsStream(resourceName);
+            try (InputStream inputStream = JavetLibLoader.class.getResourceAsStream(resourceFileName);
                  FileOutputStream outputStream = new FileOutputStream(libFile.getAbsolutePath())) {
                 while (true) {
                     int length = inputStream.read(buffer);
@@ -90,7 +89,7 @@ public final class JavetLibLoader {
         }
     }
 
-    public File getLibFile(String rootDirectory)
+    public String getResourceFileName()
             throws JavetException {
         String fileName, resourceFileName, osName, fileExtension;
         if (JavetOSUtils.IS_WINDOWS) {
@@ -107,27 +106,28 @@ public final class JavetLibLoader {
         fileName = MessageFormat.format(LIB_FILE_NAME_FORMAT,
                 jsRuntimeType.getName(), osName, LIB_VERSION, fileExtension);
         resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, fileName);
-        if (JavetLibLoader.class.getResource(resourceFileName) != null) {
-            return new File(rootDirectory, fileName);
+        if (JavetLibLoader.class.getResource(resourceFileName) == null) {
+            throw new JavetException(
+                    JavetError.LibraryNotFound,
+                    SimpleMap.of(JavetError.PARAMETER_PATH, resourceFileName));
         }
-        throw new JavetException(
-                JavetError.LibraryNotFound,
-                SimpleMap.of(JavetError.PARAMETER_PATH, resourceFileName));
+        return resourceFileName;
     }
 
     public void load()
             throws JavetException {
         if (!loaded) {
-            File tempDirectoryLibFile = getLibFile(JavetOSUtils.TEMP_DIRECTORY);
+            String resourceFileName = getResourceFileName();
+            File libFile = new File(JavetOSUtils.TEMP_DIRECTORY, resourceFileName).getAbsoluteFile();
             try {
-                deployLibFile(tempDirectoryLibFile);
-                System.load(tempDirectoryLibFile.getAbsolutePath());
+                deployLibFile(resourceFileName, libFile);
+                System.load(libFile.getAbsolutePath());
                 loaded = true;
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
                 throw new JavetException(
                         JavetError.FailedToReadPath,
-                        SimpleMap.of(JavetError.PARAMETER_PATH, tempDirectoryLibFile.toPath()),
+                        SimpleMap.of(JavetError.PARAMETER_PATH, libFile.toPath()),
                         t);
             }
         }

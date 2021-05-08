@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.7
+-----
+
+* Supported native modules with rebuilt scripts
+* Fixed ``NodeRuntime.await()`` to emit tasks
+
 0.8.6
 -----
 

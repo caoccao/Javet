@@ -53,12 +53,60 @@ Can Javet run script in Node.js Module Mode? Yes, just call ``IV8Executor.setMod
 
 The exciting thing is: in Javet, applications may have multiple instances of Node.js pointing to different ``node_modules`` and potentially these Node.js instances can share the same piece of data.
 
-Known Issue on Native Modules
------------------------------
+Deal with Native Modules
+------------------------
 
 Node.js native modules usually cannot be dynamically loaded to Javet. E.g. sqlite3. That issue also bothers Electron. Electron folks created project `electron-rebuild <https://github.com/electron/electron-rebuild>`_ which rebuilds the native modules from source code and its own native symbols.
 
-Javet may follow the same approach in the future. For now, there is no development resource planned for that because most of the use cases don't require native modules.
+Javet follows the same approach on Windows, and a simpler approach on Linux.
+
+Patch ELF Native Modules on Linux
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The native modules on Linux don't know the existence of Javet. When they look up Node.js symbols which are provided by Javet, they just fail with errors like the following.
+
+    com.caoccao.javet.exceptions.JavetExecutionException: Error: /....../node_modules/sqlite3/lib/binding/napi-v3-linux-x64/node_sqlite3.node: undefined symbol: napi_create_error
+
+The fix is very simple. Here is a sample sqlite3.
+
+.. code-block:: shell
+
+    # Install patchelf on Ubuntu (Optional)
+    sudo apt install patchelf
+    cd scripts/node
+    # Install sqlite3
+    npm install
+    cd javet-rebuild
+    export NODE_MODULE_FILE="../node_modules/sqlite3/lib/binding/napi-v3-linux-x64/node_sqlite3.node"
+    ./rebuild.sh
+
+The `rebuild.sh <../../scripts/node/javet-rebuild/rebuild.sh>`_ actually calls `patchelf <https://github.com/NixOS/patchelf>`_ to add Javet to the node module's dependency.
+
+Rebuild Native Modules on Windows
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The native modules on Windows don't know the existence of Javet. Windows dynamic library loading API ``LoadLibraryExW`` throws the following error.
+
+    A dynamic link library (DLL) initialization routine failed.
+
+The fix is a bit complicated.
+
+* Prepare the Windows build environment by following `Build Javet <../development/build.rst>`_.
+* Install the node modules from source code ``npm install --build-from-source``.
+* Download the corresponding Javet library file from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_.
+* Unzip the Javet library file somewhere.
+* Create a rebuild script pointing to the Javet library file by referencing `rebuild-sqlite3.cmd <../../scripts/node/javet-rebuild/rebuild-sqlite3.cmd>`_ and `rebuild.cmd <../../scripts/node/javet-rebuild/rebuild.cmd>`_.
+* Run the rebuild script.
+
+The rebuild script actually replaces ``node.lib`` with ``libjavet....lib`` during the rebuild so that the new node modules can tell ``LoadLibraryExW`` to look for Javet instead of Node.js.
+
+Javet calls for someone who can voluntarily host the Javet libraries and Javet compatible node modules so that major Javet users don't need to go through these. For now, it has to be a pretty manual work.
+
+Caution!
+^^^^^^^^
+
+* Once the node modules are patched or rebuilt, they can only be loaded by that particular version of Javet and they cannot be loaded by Node.js any more.
+* Make backups.
 
 V8 Mode
 =======

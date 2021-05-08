@@ -67,10 +67,8 @@ public interface IV8ValueArray extends IV8ValueObject {
 
     default <R extends Object, T extends V8ValuePrimitive<R>> R popPrimitive() throws JavetException {
         try (V8Value v8Value = pop()) {
-            try {
-                return ((T) v8Value).getValue();
-            } catch (Throwable t) {
-            }
+            return ((T) v8Value).getValue();
+        } catch (Throwable t) {
         }
         return null;
     }
