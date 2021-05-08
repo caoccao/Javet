@@ -31,16 +31,14 @@ I have prepared pre-built Linux and Windows version of Node.js ``v14.16.1`` and 
 Build Javet JNI Library
 =======================
 
-Once V8 is ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
+Once Node.js and V8 are ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
 
 =========== =========================================================== ==========================================================
 Type        Linux                                                       Windows
 =========== =========================================================== ==========================================================
-Node        ``sh build.sh -DNODE_DIR=/where_the_node_directory_is``     ``build.cmd -DNODE_DIR=\where_the_node_directory_is``
-V8          ``sh build.sh -DV8_DIR=/where_the_v8_directory_is``         ``build.cmd -DV8_DIR=\where_the_v8_directory_is``
+Node        ``sh build.sh -DNODE_DIR=/absolute_path_to_node_js_build``     ``build.cmd -DNODE_DIR=\absolute_path_to_node_js_build``
+V8          ``sh build.sh -DV8_DIR=/absolute_path_to_v8_build``         ``build.cmd -DV8_DIR=\absolute_path_to_v8_build``
 =========== =========================================================== ==========================================================
-
-Note: The V8 directory needs to be absolute path.
 
 After a while, the following libraries will be placed in folder ``src/main/resources``.
 
