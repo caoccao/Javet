@@ -82,7 +82,7 @@ namespace Javet {
 		// It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
 		v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
 #endif
-		}
+	}
 
 	void V8Runtime::CloseV8Context() {
 		auto internalV8Locker = GetSharedV8Locker();
@@ -226,5 +226,5 @@ namespace Javet {
 		CloseV8Context();
 		CloseV8Isolate();
 	}
-	}
+}
 
