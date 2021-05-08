@@ -108,8 +108,7 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default <R extends Object, T extends V8ValuePrimitive<R>> R getPrimitive(Object key)
             throws JavetException {
-        V8Value v8Value = get(key);
-        try {
+        try (V8Value v8Value = get(key)) {
             return ((T) v8Value).getValue();
         } catch (Throwable t) {
         }
@@ -153,8 +152,7 @@ public interface IV8ValueObject extends IV8ValueReference {
 
     default <R extends Object, T extends V8ValuePrimitive<R>> R getPropertyPrimitive(Object key)
             throws JavetException {
-        V8Value v8Value = getProperty(key);
-        try {
+        try (V8Value v8Value = getProperty(key)) {
             return ((T) v8Value).getValue();
         } catch (Throwable t) {
         }

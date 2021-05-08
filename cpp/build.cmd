@@ -6,6 +6,7 @@ rd /s/q build
 mkdir build
 cd build
 mkdir ..\..\src\main\resources
+mkdir ..\..\build\libs
 cmake ..\ -G "Visual Studio 16 2019" -A x64 -DJAVET_VERSION=%JAVET_VERSION% %* ^
   && cmake --build . -- /p:CharacterSet=Unicode /p:Configuration=Release /p:Platform=x64
 IF %ERRORLEVEL% EQU 0 (
