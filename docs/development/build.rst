@@ -162,8 +162,7 @@ Why Patching?
 * First patch: All static node libraries are ``<thin>`` libraries. The patch is to disable ``<thin>``.
 * Second patch: Many static node libraries are not compiled to `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ and link phase is broken with the following error. The patch is to set ``-fPIC`` to those make files.
 
-    /usr/bin/ld: /***/out/Release/libnode.a(node_binding.o): relocation R_X86_64_TPOFF32 against `_ZN4nodeL23thread_local_modpendingE` can not be used when making a shared objeect; recompile with -fPIC
-    ......
+    /usr/bin/ld: /....../out/Release/libnode.a(node_binding.o): relocation R_X86_64_TPOFF32 against ``_ZN4nodeL23thread_local_modpendingE`` can not be used when making a shared objeect; recompile with -fPIC
 
 Build Node.js on Windows
 ------------------------
