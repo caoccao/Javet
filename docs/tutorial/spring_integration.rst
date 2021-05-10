@@ -9,7 +9,6 @@ Configuration
 
 * Create a Spring configuration.
 * Declare ``IJavetEnginePool`` as ``@Bean``.
-* Set the pool implement in ``@PostConstruct``.
 
 .. code-block:: java
 
@@ -17,44 +16,43 @@ Configuration
     @PropertySource("classpath:javet-engine.properties")
     @ConfigurationProperties(prefix = "javet.engine")
     public class MyJavetEngineConfig {
-        @Value("32")
-        private int poolMaxSize;
-        @Value("8")
-        private int poolMinSize;
-        @Value("60")
-        private int poolIdleTimeoutSeconds;
-        @Value("1000")
-        private int poolDaemonCheckIntervalMillis;
-        @Value("3600")
-        private int resetEngineTimeoutSeconds;
-        private IJavetLogger javetLogger;
-        private IJavetEnginePool javetEnginePool;
 
-        @PostConstruct
-        public void postConstruct() {
-            initializeJavet();
+        @Bean(name = "JavetEnginePoolNode")
+        public IJavetEnginePool getJavetEnginePoolNode() {
+            JavetEngineConfig javetEngineConfigNode = new JavetEngineConfig();
+            javetEngineConfigNode.setAllowEval(...);
+            javetEngineConfigNode.setAutoSendGCNotification(...);
+            javetEngineConfigNode.setDefaultEngineGuardTimeoutMillis(...);
+            javetEngineConfigNode.setEngineGuardCheckIntervalMillis(...);
+            javetEngineConfigNode.setMaxEngineUsedCount(...);
+            javetEngineConfigNode.setPoolDaemonCheckIntervalMillis(...);
+            javetEngineConfigNode.setPoolIdleTimeoutSeconds(...);
+            javetEngineConfigNode.setPoolMinSize(...);
+            javetEngineConfigNode.setPoolMaxSize(...);
+            javetEngineConfigNode.setPoolMaxSize(...);
+            javetEngineConfigNode.setResetEngineTimeoutSeconds(...);
+            javetEngineConfigNode.setJavetLogger(new MyJavetLogger(MyJavetLogger.class.getName()));
+            javetEngineConfigNode.setJSRuntimeType(JSRuntimeType.Node);
+            return new JavetEnginePool<>(javetEngineConfigNode);
         }
 
-        @PreDestroy
-        public void preDestroy() throws JavetException {
-            // There is no need to close Javet engine pool explicitly because spring does so.
-        }
-
-        @Bean
-        public IJavetEnginePool getJavetEnginePool() {
-            return javetEnginePool;
-        }
-
-        private void initializeJavet() {
-            javetLogger = new MyJavetLogger("SampleLogger");
-            JavetEngineConfig javetEngineConfig = new JavetEngineConfig();
-            javetEngineConfig.setPoolDaemonCheckIntervalMillis(getPoolDaemonCheckIntervalMillis());
-            javetEngineConfig.setPoolIdleTimeoutSeconds(getPoolIdleTimeoutSeconds());
-            javetEngineConfig.setPoolMinSize(getPoolMinSize());
-            javetEngineConfig.setPoolMaxSize(getPoolMaxSize());
-            javetEngineConfig.setResetEngineTimeoutSeconds(getResetEngineTimeoutSeconds());
-            javetEngineConfig.setJavetLogger(javetLogger);
-            javetEnginePool = new MyJavetEnginePool(javetEngineConfig);
+        @Bean(name = "JavetEnginePoolV8")
+        public IJavetEnginePool getJavetEnginePoolV8() {
+            JavetEngineConfig javetEngineConfigV8 = new JavetEngineConfig();
+            javetEngineConfigV8.setAllowEval(...);
+            javetEngineConfigV8.setAutoSendGCNotification(...);
+            javetEngineConfigV8.setDefaultEngineGuardTimeoutMillis(...);
+            javetEngineConfigV8.setEngineGuardCheckIntervalMillis(...);
+            javetEngineConfigV8.setMaxEngineUsedCount(...);
+            javetEngineConfigV8.setPoolDaemonCheckIntervalMillis(...);
+            javetEngineConfigV8.setPoolIdleTimeoutSeconds(...);
+            javetEngineConfigV8.setPoolMinSize(...);
+            javetEngineConfigV8.setPoolMaxSize(...);
+            javetEngineConfigV8.setPoolMaxSize(...);
+            javetEngineConfigV8.setResetEngineTimeoutSeconds(...);
+            javetEngineConfigV8.setJavetLogger(new MyJavetLogger(MyJavetLogger.class.getName()));
+            javetEngineConfigV8.setJSRuntimeType(JSRuntimeType.V8);
+            return new JavetEnginePool<>(javetEngineConfigV8);
         }
 
 Injection
