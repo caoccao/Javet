@@ -7,5 +7,6 @@ FAQ
 * `How to Think in Javet? <how_to_think_in_javet.rst>`_
 * `Can I Debug Javet in Chrome DevTools? <can_i_debug_javet_in_chrome_dev_tools.rst>`_
 * `What is the Motivation? <what_is_the_motivation.rst>`_
+* `A dynamic link library (DLL) initialization routine failed <a_dynamic_link_library_dll_initialization_routine_failed.rst>`_
 
 [`Home <../../README.rst>`_]
