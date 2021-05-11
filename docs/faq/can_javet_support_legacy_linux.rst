@@ -27,8 +27,13 @@ Please download the private build from this `drive <https://drive.google.com/dri
     Selection    Path            Priority   Status
     ------------------------------------------------------------
     * 0            /usr/bin/gcc-9   90        auto mode
-    1            /usr/bin/gcc-7   70        manual mode
-    2            /usr/bin/gcc-8   80        manual mode
-    3            /usr/bin/gcc-9   90        manual mode
+      1            /usr/bin/gcc-7   70        manual mode
+      2            /usr/bin/gcc-8   80        manual mode
+      3            /usr/bin/gcc-9   90        manual mode
+
+Notes
+=====
+
+Private builds imply considerable additional effort. There is no commitments. Please contact the maintainer for private builds wisely.
 
 [`Home <../../README.rst>`_] [`FAQ <index.rst>`_]
