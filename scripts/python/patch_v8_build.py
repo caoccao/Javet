@@ -16,13 +16,15 @@
 '''
 
 import argparse
-import coloredlogs
+import importlib
 import logging
 import pathlib
 import platform
 import sys
 
-coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
+if importlib.util.find_spec('coloredlogs'):
+  import coloredlogs
+  coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
 
 '''
 This Python script is for patching V8 on Windows.

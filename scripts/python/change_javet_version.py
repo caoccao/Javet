@@ -15,13 +15,15 @@
   limitations under the License.
 '''
 
-import coloredlogs
+import importlib
 import logging
 import pathlib
 import re
 import sys
 
-coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
+if importlib.util.find_spec('coloredlogs'):
+  import coloredlogs
+  coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
 
 class ChangeJavetVersion(object):
 

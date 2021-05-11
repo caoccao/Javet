@@ -2,9 +2,9 @@
 Can Javet Support Legacy Linux?
 ===============================
 
-Yes, Javet can support some legacy linux distributions, eg: Ubuntu 16.04, Ubuntu 18.04, but not with the official build because the official build supports Ubuntu 20.04.
+Yes, Javet can support some legacy linux distributions, eg: Ubuntu 16.04, Ubuntu 18.04, but not with the official builds which rely on more advanced tool chain.
 
-Please download the private build from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and prepare your runtime environment as following.
+Please download the private builds from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and prepare your runtime environment as following.
 
 .. code-block:: shell
 
@@ -34,6 +34,6 @@ Please download the private build from this `drive <https://drive.google.com/dri
 Notes
 =====
 
-Private builds imply considerable additional effort. There is no commitments. Please contact the maintainer for private builds wisely.
+Private builds imply considerable additional effort, so there is no commitments. Please contact the maintainer for private builds wisely.
 
 [`Home <../../README.rst>`_] [`FAQ <index.rst>`_]
