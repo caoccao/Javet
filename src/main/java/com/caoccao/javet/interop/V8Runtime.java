@@ -537,6 +537,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return pooled;
     }
 
+    public boolean isUserJS(IV8ValueFunction iV8ValueFunction) {
+        return v8Native.isUserJS(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
     public boolean isWeak(IV8ValueReference iV8ValueReference) {
         return v8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }

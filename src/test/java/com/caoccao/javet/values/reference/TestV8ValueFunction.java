@@ -117,6 +117,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertNotNull(v8Value);
             assertTrue(v8Value instanceof V8ValueFunction);
             V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
+            assertTrue(v8ValueFunction.isUserJS());
             assertEquals(codeString, v8ValueFunction.toString());
             assertEquals("123測試", v8ValueFunction.callString(null));
         }
@@ -134,6 +135,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = []; a;").execute()) {
             assertNotNull(v8ValueArray);
             try (V8ValueFunction v8ValueFunctionPush = v8ValueArray.get("push")) {
+                assertFalse(v8ValueFunctionPush.isUserJS());
                 assertNotNull(v8ValueFunctionPush);
                 assertEquals("function push() { [native code] }", v8ValueFunctionPush.toString());
                 assertEquals(1, v8ValueFunctionPush.callInteger(v8ValueArray, "x"));
@@ -431,6 +433,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 V8ValueString.class));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
+            assertFalse(v8ValueFunction.isUserJS());
             assertEquals(1, v8Runtime.getReferenceCount());
             globalObject.set("joinWithoutThis", v8ValueFunction);
             assertFalse(mockCallbackReceiver.isCalled());
@@ -477,6 +480,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8ValueObject.setFunctions(mockAnnotationBasedCallbackReceiver);
             assertEquals(3, iV8Executor.executeInteger());
             v8ValueObject.forEach((key) -> v8ValueObject.delete(key));
+        } catch (JavetExecutionException e) {
+            e.printStackTrace();
+            fail(e.getScriptingError().toString());
         }
         v8Runtime.requestGarbageCollectionForTesting(true);
     }

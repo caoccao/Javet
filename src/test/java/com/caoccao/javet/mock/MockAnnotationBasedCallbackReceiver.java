@@ -21,6 +21,7 @@ import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.annotations.V8RuntimeSetter;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 
@@ -44,7 +45,7 @@ public class MockAnnotationBasedCallbackReceiver {
     @V8Function
     public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
         try (V8ValueFunction newV8ValueFunction = v8Runtime.getExecutor("() => c['d']").execute()) {
-            return newV8ValueFunction.callInteger(null);
+            return ((V8ValueInteger)newV8ValueFunction.call(null)).getValue();
         }
     }
 

@@ -28,6 +28,7 @@
 #include "javet_types.h"
 #include "javet_v8.h"
 #include "javet_v8_runtime.h"
+#include "javet_v8_internal.h"
 
  /*
   * Development Guide:
@@ -484,18 +485,6 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 	return 0;
 }
 
-JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
-	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (IS_V8_MAP(v8ValueType)) {
-		return (jint)v8LocalObject.As<v8::Map>()->Size();
-	}
-	if (IS_V8_SET(v8ValueType)) {
-		return (jint)v8LocalObject.As<v8::Set>()->Size();
-	}
-	return 0;
-}
-
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getOwnPropertyNames
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -528,6 +517,18 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
 		}
 	}
 	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
+}
+
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_MAP(v8ValueType)) {
+		return (jint)v8LocalObject.As<v8::Map>()->Size();
+	}
+	if (IS_V8_SET(v8ValueType)) {
+		return (jint)v8LocalObject.As<v8::Set>()->Size();
+	}
+	return 0;
 }
 
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
@@ -621,6 +622,17 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
 	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
 	return v8Runtime->v8Isolate->IsInUse();
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJS
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (v8LocalObject->IsFunction()) {
+		auto v8InternalFunction = v8::internal::JSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
+		auto v8InternalShared = v8InternalFunction.shared();
+		return v8InternalShared.IsUserJavaScript();
+	}
+	return false;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak

@@ -190,6 +190,14 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testHarmonyScoping() throws JavetException {
+        v8Runtime.getExecutor("let a = 1;").executeVoid();
+        v8Runtime.getExecutor("let b = 2;").executeVoid();
+        assertEquals(3, v8Runtime.getExecutor("a + b").executeInteger(),
+                "Variables should be visible in the scope.");
+    }
+
+    @Test
     public void testIdentityHash() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
             assertTrue(v8ValueObject.getIdentityHash() > 0);

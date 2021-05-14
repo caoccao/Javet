@@ -177,14 +177,6 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getSize
- * Signature: (JJI)I
- */
-JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
-  (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getOwnPropertyNames
  * Signature: (JJI)Ljava/lang/Object;
  */
@@ -206,6 +198,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPropertyNam
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
   (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getSize
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -262,6 +262,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isUserJS
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJS
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

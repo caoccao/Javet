@@ -22,11 +22,15 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
+import java.util.Optional;
+
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
+    protected Optional<Boolean> userJS;
 
     V8ValueFunction(long handle) {
         super(handle);
+        userJS = Optional.ofNullable(null);
     }
 
     @Override
@@ -63,5 +67,26 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Function;
+    }
+
+    @Override
+    public String getSourceCode() throws JavetException {
+        checkV8Runtime();
+        return null;
+    }
+
+    @Override
+    public boolean isUserJS() throws JavetException {
+        if (!userJS.isPresent()) {
+            checkV8Runtime();
+            userJS = Optional.of(v8Runtime.isUserJS(this));
+        }
+        return userJS.get();
+    }
+
+    @Override
+    public boolean setSourceCode(String sourceCode) throws JavetException {
+        checkV8Runtime();
+        return false;
     }
 }

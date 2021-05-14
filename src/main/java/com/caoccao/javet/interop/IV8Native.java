@@ -69,13 +69,13 @@ public interface IV8Native {
 
     int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
     Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     String getVersion();
 
@@ -92,6 +92,8 @@ public interface IV8Native {
     boolean isDead(long v8RuntimeHandle);
 
     boolean isInUse(long v8RuntimeHandle);
+
+    boolean isUserJS(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

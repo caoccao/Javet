@@ -299,13 +299,13 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueRegExp, jmethodIDV8ValueRegExpConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsGeneratorObject()) {
-				// TODO
+				// It defaults to V8ValueObject.
 			}
 			if (v8Value->IsAsyncFunction()) {
-				// TODO
+				// It defaults to V8ValueFunction.
 			}
 			if (v8Value->IsGeneratorFunction()) {
-				// TODO
+				// It defaults to V8ValueFunction.
 			}
 			if (v8Value->IsProxy()) {
 				// Proxy is also a function. So, it needs to be tested before IsFunction().
