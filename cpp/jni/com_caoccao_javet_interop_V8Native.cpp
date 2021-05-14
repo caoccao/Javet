@@ -531,6 +531,27 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
 	return 0;
 }
 
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_FUNCTION(v8ValueType)) {
+		auto v8InternalFunction = v8::internal::JSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
+		auto v8InternalShared = v8InternalFunction.shared();
+		if (v8InternalShared.IsUserJavaScript()) {
+			auto v8InternalScript = v8::internal::Script::cast(v8InternalShared.script());
+			auto v8InternalSource = v8::internal::String::cast(v8InternalScript.source());
+			const int startPosition = v8InternalShared.StartPosition();
+			const int endPosition = v8InternalShared.EndPosition();
+			auto sourceCode = v8InternalSource.ToCString(
+				v8::internal::AllowNullsFlag::DISALLOW_NULLS,
+				v8::internal::RobustnessFlag::ROBUST_STRING_TRAVERSAL,
+				startPosition, endPosition - startPosition);
+			return jniEnv->NewStringUTF(sourceCode.get());
+		}
+	}
+	return nullptr;
+}
+
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 (JNIEnv* jniEnv, jobject caller) {
 	return Javet::Converter::ToJavaString(jniEnv, v8::V8::GetVersion());
@@ -627,7 +648,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJS
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (v8LocalObject->IsFunction()) {
+	if (IS_V8_FUNCTION(v8ValueType)) {
 		auto v8InternalFunction = v8::internal::JSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
 		auto v8InternalShared = v8InternalFunction.shared();
 		return v8InternalShared.IsUserJavaScript();

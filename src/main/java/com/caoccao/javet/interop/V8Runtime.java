@@ -437,6 +437,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType().getId());
     }
 
+    public String getSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Native.getSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
     public V8Inspector getV8Inspector() {
         return getV8Inspector(MessageFormat.format(DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR, Long.toString(handle)));
     }

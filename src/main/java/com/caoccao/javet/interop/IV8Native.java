@@ -77,6 +77,8 @@ public interface IV8Native {
 
     int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     String getVersion();
 
     boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);

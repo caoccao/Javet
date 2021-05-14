@@ -30,7 +30,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     V8ValueFunction(long handle) {
         super(handle);
-        userJS = Optional.ofNullable(null);
+        userJS = Optional.empty();
     }
 
     @Override
@@ -72,6 +72,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public String getSourceCode() throws JavetException {
         checkV8Runtime();
+        if (isUserJS()) {
+            return v8Runtime.getSourceCode(this);
+        }
         return null;
     }
 
@@ -87,6 +90,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public boolean setSourceCode(String sourceCode) throws JavetException {
         checkV8Runtime();
+        if (isUserJS()) {
+
+        }
         return false;
     }
 }

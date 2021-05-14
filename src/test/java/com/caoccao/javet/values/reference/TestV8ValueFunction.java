@@ -119,6 +119,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
             assertTrue(v8ValueFunction.isUserJS());
             assertEquals(codeString, v8ValueFunction.toString());
+            assertEquals(codeString, v8ValueFunction.getSourceCode());
             assertEquals("123測試", v8ValueFunction.callString(null));
         }
         v8Runtime.getGlobalObject().setFunction("a", codeString);
@@ -448,8 +449,15 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testCallObject() throws JavetException {
-        v8Runtime.getExecutor("function a(b) { return [1,2,3].concat(b);}").executeVoid();
+        String prefixString = "const x = 1; ";
+        String functionName = "function a";
+        String suffixString = " const y = 2;";
+        String codeString = "(b) { return [1,2,3].concat(b); }";
+        v8Runtime.getExecutor(prefixString + functionName + codeString + suffixString).executeVoid();
         try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get("a")) {
+            assertTrue(v8ValueFunction.isUserJS());
+            assertEquals(functionName + codeString, v8ValueFunction.toString());
+            assertEquals(codeString, v8ValueFunction.getSourceCode());
             List<Integer> result = v8ValueFunction.callObject(null, (Object) (new Integer[]{4, 5, 6}));
             assertArrayEquals(
                     new Integer[]{1, 2, 3, 4, 5, 6},

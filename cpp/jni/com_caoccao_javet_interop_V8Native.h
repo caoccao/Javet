@@ -209,6 +209,14 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getSourceCode
+ * Signature: (JJI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getVersion
  * Signature: ()Ljava/lang/String;
  */
