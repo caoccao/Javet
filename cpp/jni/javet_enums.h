@@ -67,5 +67,12 @@ namespace Javet {
 			BigInt64Array = 41, // -2^63 to 2^63-1 	8 	64-bit two's complement signed integer 	bigint 	int64_t (signed long long)
 			BigUint64Array = 42, // 0 to 2^64-1 	8 	64-bit unsigned integer 	bigint 	uint64_t (unsigned long long)
 		};
+
+		enum JSFunctionType {
+			Native = 0,
+			API = 1,
+			UserDefined = 2,
+			Unknown = 3,
+		};
 	}
 }

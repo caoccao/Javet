@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
@@ -233,20 +234,20 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
+     * Gets JS function type.
+     *
+     * @return the JS function type
+     * @throws JavetException the javet exception
+     */
+    JSFunctionType getJSFunctionType() throws JavetException;
+
+    /**
      * Gets source code.
      *
      * @return the source code
      * @throws JavetException the javet exception
      */
     String getSourceCode() throws JavetException;
-
-    /**
-     * Is user defined JS boolean.
-     *
-     * @return the boolean
-     * @throws JavetException the javet exception
-     */
-    boolean isUserJavaScript() throws JavetException;
 
     /**
      * Sets source code.

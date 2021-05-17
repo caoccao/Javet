@@ -102,6 +102,9 @@ class V8Native implements IV8Native {
     public native long[] getInternalStatistic();
 
     @Override
+    public native int getJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
@@ -141,9 +144,6 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean isInUse(long v8RuntimeHandle);
-
-    @Override
-    public native boolean isUserJavaScript(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

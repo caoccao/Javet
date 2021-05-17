@@ -75,17 +75,14 @@ Hello Javet
 Documents
 =========
 
-* Presentations
-
-    * `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
-
-* `Development <docs/development/index.rst>`_
-* `Javet Tutorial <docs/tutorial/index.rst>`_
-* `Javet Reference <docs/reference/index.rst>`_
+* `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
+* `Tutorial <docs/tutorial/index.rst>`_
+* `Reference <docs/reference/index.rst>`_
 * `Release Notes <docs/release_notes.rst>`_
 * `FAQ <docs/faq/index.rst>`_
+* `Development <docs/development/index.rst>`_
 
 License
 =======
 
-Javet follows `APACHE LICENSE, VERSION 2.0 <LICENSE>`_.
+`APACHE LICENSE, VERSION 2.0 <LICENSE>`_.

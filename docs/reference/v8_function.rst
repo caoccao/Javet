@@ -2,9 +2,32 @@
 V8 Function
 ===========
 
+Function Types
+==============
+
+In general, there are 3 types of function exposed by Javet.
+
+* **Native** functions are V8 built-in functions.
+* **API** functions are C++ backed functions. Node.js defined C++ functions and Javet defined Java functions are all API functions.
+* **User Defined** functions are JavaScript backed functions. Basically, any function generated via JavaScript code execution is user defined function.
+
+Comparisons
+-----------
+
+=============== =========== =========== =========== =============== ==================
+Type            V8 Built-in C++ or Java JavaScript  Interception    Change on the Fly
+=============== =========== =========== =========== =============== ==================
+Native          Yes         Yes         No          Yes             No
+API             No          Yes         No          Yes             No
+User Defined    No          No          Yes         Yes             Yes
+=============== =========== =========== =========== =============== ==================
+
+Call ``getJSFunctionType()`` to determine which function type it is.
+
 Function Interception
 =====================
 
+Functions can be intercepted via Javet API. This is equivalent to the same capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interception. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.
 
 ``com.caoccao.javet.values.reference.IV8ValueObject`` exposes a set of ``setFunction`` and ``setFunctions`` that allow caller to register function interceptors in automatic or manual ways.
 
@@ -175,6 +198,48 @@ Summary
 -------
 
 Obviously, the automatic registration is much better than the manual registration. Please use them wisely.
+
+Change a User Defined JavaScript Function on the Fly
+====================================================
+
+Functions can be changed on the fly at JavaScript code level via Javet API. Why to choose this approach? Because sometimes local scoped context is required which is usually called closure. E.g:
+
+.. code-block:: javascript
+    :linenos:
+    :lineno-start: 1
+
+    const a = function () {
+        const b = 1;
+        return () => b;
+    }
+    const x = a();
+    console.log(x());
+    // Output is: 1
+
+Local const b is visible to the function at line 3, but invisible to the function interception. Javet provides a way of changing the function at JavaScript source code level so that local scoped context is still visible. ``getSourceCode()`` and ``setSourceCode(String sourceCode)`` are designed for getting and setting the source code. ``setSourceCode(String sourceCode)`` actually performs the follow steps.
+
+.. code-block:: python
+
+    def setSourceCode(sourceCode):
+        existingSourceCode = v8Function.getSourceCode()
+        (startPosition, endPosition) = v8Function.getPosition()
+        newSourceCode = existingSourceCode[:startPosition] + sourceCode + existingSourceCode[endPosition:]
+        v8Function.setSourceCode(newSourceCode)
+        v8Function.setPosition(startPosition, startPosition + len(sourceCode))
+
+Be careful, ``setSourceCode(String sourceCode)`` has radical changes that may break the execution because all functions during one execution share the same source code but have their own position. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.
+
+.. image:: ../resources/images/memory_layout_of_v8_function.png?raw=true
+    :alt: Memory Layout of V8 Function
+
+Javet does not scan memory for all impacted function. So, it is caller's responsibility to restore the original source code after invocation. The pseudo logic is as following.
+
+.. code-block:: python
+
+    originalSourceCode = v8ValueFunction.getSourceCode()
+    v8ValueFunction.setSourceCode(sourceCode)
+    v8ValueFunction.call(...)
+    v8ValueFunction.setSourceCode(originalSourceCode)
 
 Automatic Type Conversion
 =========================

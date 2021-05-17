@@ -67,6 +67,8 @@ public interface IV8Native {
 
     long[] getInternalStatistic();
 
+    int getJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -94,8 +96,6 @@ public interface IV8Native {
     boolean isDead(long v8RuntimeHandle);
 
     boolean isInUse(long v8RuntimeHandle);
-
-    boolean isUserJavaScript(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

@@ -462,6 +462,25 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 #endif
 }
 
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSFunctionType
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_FUNCTION(v8ValueType)) {
+		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
+		auto v8InternalShared = v8InternalFunction.shared();
+		if (v8InternalShared.native()) {
+			return Javet::Enums::JSFunctionType::Native;
+		}
+		else if (v8InternalShared.IsApiFunction()) {
+			return Javet::Enums::JSFunctionType::API;
+		}
+		else if (v8InternalShared.IsUserJavaScript()) {
+			return Javet::Enums::JSFunctionType::UserDefined;
+		}
+	}
+	return Javet::Enums::JSFunctionType::Unknown;
+}
+
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -526,7 +545,7 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
 	if (IS_V8_FUNCTION(v8ValueType)) {
 		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
 		auto v8InternalShared = v8InternalFunction.shared();
-		if (IS_USER_JAVASCRIPT(v8InternalShared)) {
+		if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
 			auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
 			auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
 			const int startPosition = v8InternalShared.StartPosition();
@@ -632,17 +651,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
 	auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
 	return v8Runtime->v8Isolate->IsInUse();
-}
-
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJavaScript
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
-	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-	if (IS_V8_FUNCTION(v8ValueType)) {
-		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
-		auto v8InternalShared = v8InternalFunction.shared();
-		return IS_USER_JAVASCRIPT(v8InternalShared);
-	}
-	return false;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
@@ -941,7 +949,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
 	if (IS_V8_FUNCTION(v8ValueType)) {
 		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
 		auto v8InternalShared = v8InternalFunction.shared();
-		if (IS_USER_JAVASCRIPT(v8InternalShared)) {
+		if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
 			auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
 			auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
 			auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());

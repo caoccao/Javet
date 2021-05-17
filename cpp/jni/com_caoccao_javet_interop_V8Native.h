@@ -169,6 +169,14 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getJSFunctionType
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSFunctionType
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getLength
  * Signature: (JJI)I
  */
@@ -270,14 +278,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
   (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    isUserJavaScript
- * Signature: (JJI)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJavaScript
-  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

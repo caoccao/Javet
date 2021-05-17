@@ -45,7 +45,8 @@
 #pragma warning(default: 4819)
 #pragma warning(default: 4996)
 
-#define IS_USER_JAVASCRIPT(v8InternalShared) (!v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript())
+#define IS_API_FUNCTION(v8InternalShared) (!v8InternalShared.native() && v8InternalShared.IsApiFunction())
+#define IS_USER_DEFINED_FUNCTION(v8InternalShared) (!v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript())
 
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
 using V8InternalBuiltins = v8::internal::Builtins;

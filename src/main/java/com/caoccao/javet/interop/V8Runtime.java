@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.enums.JavetPromiseRejectEvent;
 import com.caoccao.javet.enums.V8ValueReferenceType;
@@ -389,6 +390,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return handle;
     }
 
+    public JSFunctionType getJSFunctionType(IV8ValueFunction iV8ValueFunction) {
+        return JSFunctionType.parse(v8Native.getJSFunctionType(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
+    }
+
     public JSRuntimeType getJSRuntimeType() {
         return JSRuntimeType.V8;
     }
@@ -539,10 +545,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public boolean isPooled() {
         return pooled;
-    }
-
-    public boolean isUserJavaScript(IV8ValueFunction iV8ValueFunction) {
-        return v8Native.isUserJavaScript(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
     public boolean isWeak(IV8ValueReference iV8ValueReference) {
