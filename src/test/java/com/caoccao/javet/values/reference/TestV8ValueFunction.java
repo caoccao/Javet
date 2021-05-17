@@ -30,8 +30,11 @@ import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
 
+import java.text.MessageFormat;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -117,7 +120,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertNotNull(v8Value);
             assertTrue(v8Value instanceof V8ValueFunction);
             V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
-            assertTrue(v8ValueFunction.isUserJS());
+            assertTrue(v8ValueFunction.isUserJavaScript());
             assertEquals(codeString, v8ValueFunction.toString());
             assertEquals(codeString, v8ValueFunction.getSourceCode());
             assertEquals("123測試", v8ValueFunction.callString(null));
@@ -136,7 +139,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = []; a;").execute()) {
             assertNotNull(v8ValueArray);
             try (V8ValueFunction v8ValueFunctionPush = v8ValueArray.get("push")) {
-                assertFalse(v8ValueFunctionPush.isUserJS());
+                assertFalse(v8ValueFunctionPush.isUserJavaScript());
                 assertNotNull(v8ValueFunctionPush);
                 assertEquals("function push() { [native code] }", v8ValueFunctionPush.toString());
                 assertEquals(1, v8ValueFunctionPush.callInteger(v8ValueArray, "x"));
@@ -434,7 +437,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 V8ValueString.class));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
-            assertFalse(v8ValueFunction.isUserJS());
+            assertFalse(v8ValueFunction.isUserJavaScript());
             assertEquals(1, v8Runtime.getReferenceCount());
             globalObject.set("joinWithoutThis", v8ValueFunction);
             assertFalse(mockCallbackReceiver.isCalled());
@@ -455,7 +458,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         String codeString = "(b) { return [1,2,3].concat(b); }";
         v8Runtime.getExecutor(prefixString + functionName + codeString + suffixString).executeVoid();
         try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get("a")) {
-            assertTrue(v8ValueFunction.isUserJS());
+            assertTrue(v8ValueFunction.isUserJavaScript());
             assertEquals(functionName + codeString, v8ValueFunction.toString());
             assertEquals(codeString, v8ValueFunction.getSourceCode());
             List<Integer> result = v8ValueFunction.callObject(null, (Object) (new Integer[]{4, 5, 6}));
@@ -495,4 +498,36 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
+    @Test
+    public void testGetAndSetSourceCode() throws JavetException {
+        final int functionCount = 5;
+        String functionStatementTemplate = "var {0} = {1};\n";
+        String functionNameTemplate = "f{0}";
+        String functionBodyTemplate1 = "() => a[{0}]";
+        String functionBodyTemplate2 = "() => a[{0}] + 1";
+        List<String> functionNames = new ArrayList<>(functionCount);
+        List<String> functionBodies = new ArrayList<>(functionCount);
+        final StringBuilder sb = new StringBuilder();
+        sb.append("const a = Array.from(Array(").append(functionCount).append(").keys());\n");
+        IntStream.range(0, functionCount).forEach(i -> {
+            String functionName = MessageFormat.format(functionNameTemplate, i);
+            String functionBody = MessageFormat.format(functionBodyTemplate1, i);
+            functionNames.add(functionName);
+            functionBodies.add(functionBody);
+            String functionStatement = MessageFormat.format(functionStatementTemplate, functionName, functionBody);
+            sb.append(functionStatement);
+        });
+        String codeString = sb.toString();
+        v8Runtime.getExecutor(codeString).executeVoid();
+        for (int i = 0; i < functionCount; ++i) {
+            try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
+                assertEquals(functionBodies.get(i), v8ValueFunction.getSourceCode());
+                assertEquals(i, v8ValueFunction.callInteger(null));
+                v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate2, i));
+                assertEquals(i + 1, v8ValueFunction.callInteger(null));
+                // Restore the original script, otherwise next round will fail.
+                v8ValueFunction.setSourceCode(functionBodies.get(i));
+            }
+        }
+    }
 }

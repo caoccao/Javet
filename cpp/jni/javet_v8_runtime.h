@@ -24,7 +24,6 @@
 #include "javet_logging.h"
 #include "javet_native.h"
 #include "javet_node.h"
-#include "javet_types.h"
 #include "javet_v8.h"
 
 namespace Javet {

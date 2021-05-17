@@ -541,8 +541,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return pooled;
     }
 
-    public boolean isUserJS(IV8ValueFunction iV8ValueFunction) {
-        return v8Native.isUserJS(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    public boolean isUserJavaScript(IV8ValueFunction iV8ValueFunction) {
+        return v8Native.isUserJavaScript(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
     public boolean isWeak(IV8ValueReference iV8ValueReference) {
@@ -769,6 +769,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         decorateV8Values(key, value);
         return v8Native.setProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    public boolean setSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
+        return v8Native.setSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), sourceCode);
     }
 
     public void setWeak(IV8ValueReference iV8ValueReference) {

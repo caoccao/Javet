@@ -17,6 +17,17 @@
 
 #pragma once
 
+#define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
+#define IS_V8_ARRAY_BUFFER(type) (type == Javet::Enums::V8ValueReferenceType::ArrayBuffer)
+#define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
+#define IS_V8_FUNCTION(type) (type == Javet::Enums::V8ValueReferenceType::Function)
+#define IS_V8_MAP(type) (type == Javet::Enums::V8ValueReferenceType::Map)
+#define IS_V8_MODULE(type) (type == Javet::Enums::V8ValueReferenceType::Module)
+#define IS_V8_OBJECT(type) (type == Javet::Enums::V8ValueReferenceType::Object)
+#define IS_V8_PROMISE(type) (type == Javet::Enums::V8ValueReferenceType::Promise)
+#define IS_V8_SCRIPT(type) (type == Javet::Enums::V8ValueReferenceType::Script)
+#define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
+
 namespace Javet {
 	namespace Enums {
 		enum NodeScriptMode {

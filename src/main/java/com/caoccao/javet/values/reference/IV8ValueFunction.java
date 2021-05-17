@@ -246,10 +246,15 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @return the boolean
      * @throws JavetException the javet exception
      */
-    boolean isUserJS() throws JavetException;
+    boolean isUserJavaScript() throws JavetException;
 
     /**
      * Sets source code.
+     * <p>
+     * Note: The source is shared among all function objects.
+     * So the caller is responsible to restore the original source code,
+     * otherwise the next function call will likely fail because the source code
+     * of the next function call is incorrect.
      *
      * @param sourceCode the source code
      * @return the source code

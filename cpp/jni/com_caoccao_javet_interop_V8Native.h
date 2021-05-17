@@ -273,10 +273,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    isUserJS
+ * Method:    isUserJavaScript
  * Signature: (JJI)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJS
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJavaScript
   (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
@@ -449,6 +449,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    sameValue
+ * Signature: (JJJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
+  (JNIEnv *, jobject, jlong, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    scriptRun
  * Signature: (JJIZ)Ljava/lang/Object;
  */
@@ -481,19 +489,19 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setSourceCode
+ * Signature: (JJILjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    setWeak
  * Signature: (JJILjava/lang/Object;)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
   (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    sameValue
- * Signature: (JJJ)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
-  (JNIEnv *, jobject, jlong, jlong, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

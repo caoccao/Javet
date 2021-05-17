@@ -26,11 +26,13 @@ import java.util.Optional;
 
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
-    protected Optional<Boolean> userJS;
+    protected Optional<String> sourceCode;
+    protected Optional<Boolean> userJavaScript;
 
     V8ValueFunction(long handle) {
         super(handle);
-        userJS = Optional.empty();
+        sourceCode = Optional.empty();
+        userJavaScript = Optional.empty();
     }
 
     @Override
@@ -72,26 +74,34 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public String getSourceCode() throws JavetException {
         checkV8Runtime();
-        if (isUserJS()) {
-            return v8Runtime.getSourceCode(this);
+        if (isUserJavaScript()) {
+            if (!sourceCode.isPresent()) {
+                sourceCode = Optional.ofNullable(v8Runtime.getSourceCode(this));
+            }
+            return sourceCode.get();
         }
         return null;
     }
 
     @Override
-    public boolean isUserJS() throws JavetException {
-        if (!userJS.isPresent()) {
+    public boolean isUserJavaScript() throws JavetException {
+        if (!userJavaScript.isPresent()) {
             checkV8Runtime();
-            userJS = Optional.of(v8Runtime.isUserJS(this));
+            userJavaScript = Optional.of(v8Runtime.isUserJavaScript(this));
         }
-        return userJS.get();
+        return userJavaScript.get();
     }
 
     @Override
-    public boolean setSourceCode(String sourceCode) throws JavetException {
+    public boolean setSourceCode(String sourceCodeString) throws JavetException {
         checkV8Runtime();
-        if (isUserJS()) {
-
+        if (isUserJavaScript()) {
+            if (sourceCodeString != null && sourceCodeString.length() > 0) {
+                if (v8Runtime.setSourceCode(this, sourceCodeString)) {
+                    sourceCode = Optional.of(sourceCodeString);
+                    return true;
+                }
+            }
         }
         return false;
     }

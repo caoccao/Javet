@@ -95,7 +95,7 @@ public interface IV8Native {
 
     boolean isInUse(long v8RuntimeHandle);
 
-    boolean isUserJS(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    boolean isUserJavaScript(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -141,6 +141,8 @@ public interface IV8Native {
 
     void resetV8Isolate(long v8RuntimeHandle, String globalName);
 
+    boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+
     Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
@@ -157,9 +159,9 @@ public interface IV8Native {
 
     boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
-    void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
+    boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
 
-    boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+    void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
     boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 

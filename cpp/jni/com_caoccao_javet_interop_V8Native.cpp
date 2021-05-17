@@ -25,7 +25,6 @@
 #include "javet_logging.h"
 #include "javet_native.h"
 #include "javet_node.h"
-#include "javet_types.h"
 #include "javet_v8.h"
 #include "javet_v8_runtime.h"
 #include "javet_v8_internal.h"
@@ -40,16 +39,6 @@
 #define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueString)
 #define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::V8Native::jmethodIDV8ValueIntegerToPrimitive)
 #define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::V8Native::jmethodIDV8ValueStringToPrimitive)
-#define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
-#define IS_V8_ARRAY_BUFFER(type) (type == Javet::Enums::V8ValueReferenceType::ArrayBuffer)
-#define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
-#define IS_V8_FUNCTION(type) (type == Javet::Enums::V8ValueReferenceType::Function)
-#define IS_V8_MAP(type) (type == Javet::Enums::V8ValueReferenceType::Map)
-#define IS_V8_MODULE(type) (type == Javet::Enums::V8ValueReferenceType::Module)
-#define IS_V8_OBJECT(type) (type == Javet::Enums::V8ValueReferenceType::Object)
-#define IS_V8_PROMISE(type) (type == Javet::Enums::V8ValueReferenceType::Promise)
-#define IS_V8_SCRIPT(type) (type == Javet::Enums::V8ValueReferenceType::Script)
-#define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
 
 namespace Javet {
 #ifdef ENABLE_NODE
@@ -535,18 +524,18 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (IS_V8_FUNCTION(v8ValueType)) {
-		auto v8InternalFunction = v8::internal::JSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
+		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
 		auto v8InternalShared = v8InternalFunction.shared();
-		if (v8InternalShared.IsUserJavaScript()) {
-			auto v8InternalScript = v8::internal::Script::cast(v8InternalShared.script());
-			auto v8InternalSource = v8::internal::String::cast(v8InternalScript.source());
+		if (IS_USER_JAVASCRIPT(v8InternalShared)) {
+			auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
+			auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
 			const int startPosition = v8InternalShared.StartPosition();
 			const int endPosition = v8InternalShared.EndPosition();
 			auto sourceCode = v8InternalSource.ToCString(
-				v8::internal::AllowNullsFlag::DISALLOW_NULLS,
-				v8::internal::RobustnessFlag::ROBUST_STRING_TRAVERSAL,
+				V8InternalAllowNullsFlag::DISALLOW_NULLS,
+				V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
 				startPosition, endPosition - startPosition);
-			return jniEnv->NewStringUTF(sourceCode.get());
+			return Javet::Converter::ToJavaString(jniEnv, sourceCode.get());
 		}
 	}
 	return nullptr;
@@ -645,13 +634,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
 	return v8Runtime->v8Isolate->IsInUse();
 }
 
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJS
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isUserJavaScript
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
 	if (IS_V8_FUNCTION(v8ValueType)) {
-		auto v8InternalFunction = v8::internal::JSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
+		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
 		auto v8InternalShared = v8InternalFunction.shared();
-		return v8InternalShared.IsUserJavaScript();
+		return IS_USER_JAVASCRIPT(v8InternalShared);
 	}
 	return false;
 }
@@ -863,6 +852,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 	v8Runtime->CreateV8Context(jniEnv, mGlobalName);
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
+	RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
+	return v8LocalObject1->SameValue(v8LocalObject2);
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptRun
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jboolean mResultRequired) {
 	RUNTIME_AND_SCRIPT_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -940,6 +935,55 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
 	return false;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mSourceCode) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_FUNCTION(v8ValueType)) {
+		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
+		auto v8InternalShared = v8InternalFunction.shared();
+		if (IS_USER_JAVASCRIPT(v8InternalShared)) {
+			auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+			auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
+			auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
+			const int startPosition = v8InternalShared.StartPosition();
+			const int endPosition = v8InternalShared.EndPosition();
+
+			// Build the new source code.
+			auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
+			V8InternalIncrementalStringBuilder stringBuilder(v8InternalIsolate);
+			stringBuilder.AppendCString(v8InternalSource.ToCString(
+				V8InternalAllowNullsFlag::DISALLOW_NULLS,
+				V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
+				0, startPosition).get());
+			stringBuilder.AppendString(v8::Utils::OpenHandle(*umSourceCode));
+			stringBuilder.AppendCString(v8InternalSource.ToCString(
+				V8InternalAllowNullsFlag::DISALLOW_NULLS,
+				V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
+				endPosition, v8InternalSource.length()).get());
+			auto newSourceCode = stringBuilder.Finish().ToHandleChecked();
+
+			// Discard compiled data and set lazy compile.
+			if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
+				V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
+				v8InternalFunction.set_code(v8InternalIsolate->builtins()->builtin(V8InternalBuiltins::kCompileLazy));
+			}
+
+			/*
+			 * Set the source and update the start and end position.
+			 * Note: The source code is shared among all script objects, but position info is not.
+			 * So the caller is responsible to restore the original source code,
+			 * otherwise the next script execution will likely fail because the position info
+			 * of the next script is incorrect.
+			 */
+			v8InternalScript.set_source(*newSourceCode, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+			const int newEndPosition = startPosition + umSourceCode->Length();
+			v8InternalShared.scope_info().SetPositionInfo(startPosition, newEndPosition);
+			return true;
+		}
+	}
+	return false;
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject objectReference) {
 	RUNTIME_AND_DATA_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -949,12 +993,6 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 		v8ValueReference->v8PersistentDataPointer = v8PersistentDataPointer;
 		v8PersistentDataPointer->SetWeak(v8ValueReference, Javet::Callback::JavetCloseWeakDataReference, v8::WeakCallbackType::kParameter);
 	}
-}
-
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
-	RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
-	return v8LocalObject1->SameValue(v8LocalObject2);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals

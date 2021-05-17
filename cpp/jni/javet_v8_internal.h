@@ -45,3 +45,16 @@
 #pragma warning(default: 4819)
 #pragma warning(default: 4996)
 
+#define IS_USER_JAVASCRIPT(v8InternalShared) (!v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript())
+
+using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
+using V8InternalBuiltins = v8::internal::Builtins;
+using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilder;
+using V8InternalIsolate = v8::internal::Isolate;
+using V8InternalJSFunction = v8::internal::JSFunction;
+using V8InternalRobustnessFlag = v8::internal::RobustnessFlag;
+using V8InternalScript = v8::internal::Script;
+using V8InternalSharedFunctionInfo = v8::internal::SharedFunctionInfo;
+using V8InternalString = v8::internal::String;
+using V8InternalWriteBarrierMode = v8::internal::WriteBarrierMode;
+
