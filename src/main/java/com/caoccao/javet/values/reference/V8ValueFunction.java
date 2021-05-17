@@ -73,6 +73,12 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public IV8ValueArray getInternalProperties() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getInternalProperties(this);
+    }
+
+    @Override
     public JSFunctionType getJSFunctionType() throws JavetException {
         if (!jsFunctionType.isPresent()) {
             checkV8Runtime();

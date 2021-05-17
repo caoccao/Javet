@@ -65,6 +65,8 @@ public interface IV8Native {
 
     int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    Object getInternalProperties(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     long[] getInternalStatistic();
 
     int getJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

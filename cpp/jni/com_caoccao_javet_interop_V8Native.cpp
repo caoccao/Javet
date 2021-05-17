@@ -453,6 +453,20 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getIdentityHash
 	return v8LocalObject->GetIdentityHash();
 }
 
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getInternalProperties
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_FUNCTION(v8ValueType)) {
+		// This feature is not enabled yet.
+		v8_inspector::V8InspectorClient v8InspectorClient;
+		v8_inspector::V8InspectorImpl v8InspectorImpl(v8Runtime->v8Isolate, &v8InspectorClient);
+		v8_inspector::V8Debugger v8Debugger(v8Runtime->v8Isolate, &v8InspectorImpl);
+		auto v8InternalProperties = v8Debugger.internalProperties(v8Context, v8LocalObject.As<v8::Function>()).ToLocalChecked();
+		return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8InternalProperties);
+	}
+	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
+}
+
 JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternalStatistic
 (JNIEnv* jniEnv, jobject caller) {
 #ifdef ENABLE_MONITOR
@@ -979,7 +993,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
 			/*
 			 * Set the source and update the start and end position.
 			 * Note: The source code is shared among all script objects, but position info is not.
-			 * So the caller is responsible to restore the original source code,
+			 * So the caller is responsible for restoring the original source code,
 			 * otherwise the next script execution will likely fail because the position info
 			 * of the next script is incorrect.
 			 */

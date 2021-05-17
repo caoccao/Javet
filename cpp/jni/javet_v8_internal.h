@@ -39,6 +39,8 @@
 #include <src/objects/shared-function-info-inl.h>
 #include <src/handles/handles-inl.h>
 #include <src/strings/string-builder-inl.h>
+#include <src/inspector/v8-debugger.h>
+#include <src/inspector/v8-inspector-impl.h>
 #pragma warning(default: 4244)
 #pragma warning(default: 4267)
 #pragma warning(default: 4291)

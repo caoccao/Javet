@@ -43,9 +43,6 @@ public class MockAnnotationBasedCallbackReceiver {
 
     @V8Function
     public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
-//        try (V8ValueFunction newV8ValueFunction = v8Runtime.getExecutor("() => c['d']").execute()) {
-//            return ((V8ValueInteger)newV8ValueFunction.call(null)).getValue();
-//        }
         if (v8ValueFunction.setSourceCode("() => a + 2")) {
             return v8ValueFunction.callInteger(null);
         } else {

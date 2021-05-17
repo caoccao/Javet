@@ -238,7 +238,7 @@ Be careful, ``setSourceCode(String sourceCode)`` has radical impacts that may br
 .. image:: ../resources/images/memory_layout_of_v8_function.png?raw=true
     :alt: Memory Layout of V8 Function
 
-Javet does not scan memory for all impacted function. So, it is caller's responsibility to restore the original source code after invocation. The pseudo logic is as following.
+Javet does not scan memory for all impacted function. So, it is caller's responsibility for restoring the original source code after invocation. The pseudo logic is as following.
 
 .. code-block:: python
 

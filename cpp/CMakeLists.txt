@@ -83,8 +83,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     endif()
     if(DEFINED NODE_DIR)
         list(APPEND includeDirs
-            ${NODE_DIR}/out/Release/obj/global_intermediate/torque-output-root
-            ${NODE_DIR}/out/Release/obj/global_intermediate/generate-bytecode-output-root)
+            ${NODE_DIR}/out/Release/obj/global_intermediate/generate-bytecode-output-root
+            ${NODE_DIR}/out/Release/obj/global_intermediate/inspector-generated-output-root
+            ${NODE_DIR}/out/Release/obj/global_intermediate/torque-output-root)
         foreach(importLibrary ${importLibraries})
             set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/release/lib/${importLibrary}.lib)
         endforeach(importLibrary)
@@ -115,8 +116,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     if(DEFINED NODE_DIR)
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)
         list(APPEND includeDirs
-            ${NODE_DIR}/out/Release/obj/gen/torque-output-root
-            ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root)
+            ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root
+            ${NODE_DIR}/out/Release/obj/gen/inspector-generated-output-root
+            ${NODE_DIR}/out/Release/obj/gen/torque-output-root)
         foreach(importLibrary ${importLibraries})
             set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/lib${importLibrary}.a)
         endforeach(importLibrary)

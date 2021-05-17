@@ -390,6 +390,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return handle;
     }
 
+    public IV8ValueArray getInternalProperties(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return decorateV8Value((V8ValueArray)v8Native.getInternalProperties(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
+    }
+
     public JSFunctionType getJSFunctionType(IV8ValueFunction iV8ValueFunction) {
         return JSFunctionType.parse(v8Native.getJSFunctionType(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));

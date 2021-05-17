@@ -234,6 +234,14 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
+     * Gets internal properties.
+     *
+     * @return the internal properties
+     * @throws JavetException the javet exception
+     */
+    IV8ValueArray getInternalProperties() throws JavetException;
+
+    /**
      * Gets JS function type.
      *
      * @return the JS function type
@@ -253,7 +261,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * Sets source code.
      * <p>
      * Note: The source is shared among all function objects.
-     * So the caller is responsible to restore the original source code,
+     * So the caller is responsible for restoring the original source code,
      * otherwise the next function call will likely fail because the source code
      * of the next function call is incorrect.
      *

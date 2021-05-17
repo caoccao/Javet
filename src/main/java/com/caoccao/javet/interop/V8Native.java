@@ -99,6 +99,9 @@ class V8Native implements IV8Native {
     public native int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native Object getInternalProperties(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native long[] getInternalStatistic();
 
     @Override
