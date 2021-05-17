@@ -27,7 +27,7 @@ Call ``getJSFunctionType()`` to determine which function type it is.
 Function Interception
 =====================
 
-Functions can be intercepted via Javet API. This is equivalent to the same capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interception. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.
+Functions can be intercepted via Javet API. This is equivalent to the capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interceptor. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.
 
 ``com.caoccao.javet.values.reference.IV8ValueObject`` exposes a set of ``setFunction`` and ``setFunctions`` that allow caller to register function interceptors in automatic or manual ways.
 
@@ -202,11 +202,12 @@ Obviously, the automatic registration is much better than the manual registratio
 Change a User Defined JavaScript Function on the Fly
 ====================================================
 
+Why is Changing a User Defined JavaScript Function Important?
+-------------------------------------------------------------
+
 Functions can be changed on the fly at JavaScript code level via Javet API. Why to choose this approach? Because sometimes local scoped context is required which is usually called closure. E.g:
 
 .. code-block:: javascript
-    :linenos:
-    :lineno-start: 1
 
     const a = function () {
         const b = 1;
@@ -216,7 +217,12 @@ Functions can be changed on the fly at JavaScript code level via Javet API. Why 
     console.log(x());
     // Output is: 1
 
-Local const b is visible to the function at line 3, but invisible to the function interception. Javet provides a way of changing the function at JavaScript source code level so that local scoped context is still visible. ``getSourceCode()`` and ``setSourceCode(String sourceCode)`` are designed for getting and setting the source code. ``setSourceCode(String sourceCode)`` actually performs the follow steps.
+Local const b is visible to the anonymous function at line 3, but invisible to the function interceptor. Javet provides a way of changing the function at JavaScript source code level so that local scoped context is still visible.
+
+How to Change a User Defined JavaScript Function on the Fly?
+------------------------------------------------------------
+
+``getSourceCode()`` and ``setSourceCode(String sourceCode)`` are designed for getting and setting the source code. ``setSourceCode(String sourceCode)`` actually performs the follow steps.
 
 .. code-block:: python
 
@@ -227,7 +233,7 @@ Local const b is visible to the function at line 3, but invisible to the functio
         v8Function.setSourceCode(newSourceCode)
         v8Function.setPosition(startPosition, startPosition + len(sourceCode))
 
-Be careful, ``setSourceCode(String sourceCode)`` has radical changes that may break the execution because all functions during one execution share the same source code but have their own position. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.
+Be careful, ``setSourceCode(String sourceCode)`` has radical impacts that may break the execution because all functions during one execution share the same source code but have their own positions. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.
 
 .. image:: ../resources/images/memory_layout_of_v8_function.png?raw=true
     :alt: Memory Layout of V8 Function
@@ -240,6 +246,19 @@ Javet does not scan memory for all impacted function. So, it is caller's respons
     v8ValueFunction.setSourceCode(sourceCode)
     v8ValueFunction.call(...)
     v8ValueFunction.setSourceCode(originalSourceCode)
+
+What is the Source Code of a Function in V8?
+--------------------------------------------
+
+When V8 calculates start position of a function, it does not include the keyword ``function`` and function name. E.g.
+
+.. code-block:: javascript
+
+    function abc(a, b, c) { ... } // Source code is (a, b, c) { ... }
+
+    (a, b, c) => { ... }          // Source code is (a, b, c) => { ... }
+
+So, please always discard the keyword ``function`` and function name when calling ``setSourceCode()``.
 
 Automatic Type Conversion
 =========================
