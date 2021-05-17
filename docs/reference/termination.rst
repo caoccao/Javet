@@ -67,4 +67,4 @@ Manual termination gives applications complete control. In return, the coding ef
                 "V8 runtime should still be able to execute script after being terminated.");
     }
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

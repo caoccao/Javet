@@ -1,6 +1,6 @@
-======================
-Manipulate V8 Function
-======================
+===========
+V8 Function
+===========
 
 Function Interception
 =====================
@@ -283,4 +283,4 @@ How about Bind?
 
 Please review `test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>`_ for more detail.
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

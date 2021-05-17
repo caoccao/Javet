@@ -143,4 +143,4 @@ How Javet and V8 work internally for supporting modules can be found at `here <.
 .. image:: ../resources/images/javet_module_system.png?raw=true
     :alt: Javet Module System
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

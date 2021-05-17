@@ -155,4 +155,4 @@ The built-in converter supports bi-directional conversion. The sample above show
 
 Please refer to `source code <../../src/test/java/com/caoccao/javet/interop/converters/TestJavetCustomConverter.java>`_ for detail.
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

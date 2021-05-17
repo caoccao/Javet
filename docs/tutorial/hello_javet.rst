@@ -2,34 +2,6 @@
 Hello Javet
 ===========
 
-Reference Javet
-===============
-
-Maven
------
-
-.. code-block:: xml
-
-    <dependency>
-        <groupId>com.caoccao.javet</groupId>
-        <artifactId>javet</artifactId>
-        <version>0.8.8</version>
-    </dependency>
-
-Gradle Kotlin DSL
------------------
-
-.. code-block:: kotlin
-
-    implementation("com.caoccao.javet:javet:0.8.8")
-
-Gradle Groovy DSL
------------------
-
-.. code-block:: groovy
-
-    implementation 'com.caoccao.javet:javet:0.8.8'
-
 Print **Hello Javet** in V8 Mode
 ================================
 
@@ -54,29 +26,6 @@ Print **1 + 1** in Node.js Mode
         // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
     }
 
-Play with Pool and Console
-==========================
-
-.. code-block:: java
-
-    // Create a Javet engine pool.
-    try (IJavetEnginePool<V8Runtime> javetEnginePool = new JavetEnginePool<V8Runtime>()) {
-        // Get a Javet engine from the pool.
-        try (IJavetEngine<V8Runtime> javetEngine = javetEnginePool.getEngine()) {
-            // Get a V8 runtime from the engine.
-            V8Runtime v8Runtime = javetEngine.getV8Runtime();
-            // Create a Javet console interceptor.
-            JavetConsoleInterceptor javetConsoleInterceptor = new JavetConsoleInterceptor(v8Runtime);
-            // Register the Javet console to V8 global object.
-            javetConsoleInterceptor.register(v8Runtime.getGlobalObject());
-            // V8 console log is redirected to JVM console log.
-            v8Runtime.getExecutor("console.log('Hello Javet from Pool');").executeVoid();
-            // Unregister the Javet console to V8 global object.
-            javetConsoleInterceptor.unregister(v8Runtime.getGlobalObject());
-            // close() is not necessary because the Javet pool handles that.
-        }
-    }
-
 Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java>`_ for more detail.
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

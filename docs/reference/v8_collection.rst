@@ -1,6 +1,6 @@
-========================
-Manipulate V8 Collection
-========================
+=============
+V8 Collection
+=============
 
 Collection in V8
 ================
@@ -79,4 +79,4 @@ V8ValueMap
         assertTrue(v8ValueMap.delete("a"));
     }
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

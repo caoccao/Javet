@@ -65,4 +65,4 @@ You may easily inject your engine pool in the Spring way.
     @Resource
     protected IJavetEnginePool javetEnginePool;
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

@@ -137,4 +137,4 @@ How can this work? The ``await()`` in the worker thread actually plays the follo
             else:
                 break
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

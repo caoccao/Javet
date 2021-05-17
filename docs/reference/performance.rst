@@ -38,4 +38,4 @@ Highlights
 
 Reference: https://v8.dev/docs/embed#contexts
 
-[`Home <../../README.rst>`_] [`Development <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]
