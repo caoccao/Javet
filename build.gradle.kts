@@ -25,7 +25,7 @@ repositories {
 }
 
 group = "com.caoccao.javet"
-version = "0.8.7"
+version = "0.8.8"
 
 repositories {
     mavenCentral()
@@ -75,4 +75,16 @@ tasks.register<Test>("performanceTest") {
     useJUnitPlatform {
         includeTags("performance")
     }
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    systemProperty("file.encoding", "UTF-8")
+}
+
+tasks.withType<Javadoc>{
+    options.encoding = "UTF-8"
 }

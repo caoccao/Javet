@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.8
+-----
+
+* Re-organized doc.
+* Added ``getJSFunctionType()``, ``getSourceCode()`` and ``setSourceCode()`` to ``IV8ValueFunction``
+
 0.8.7
 -----
 

@@ -156,4 +156,4 @@ This API explicitly tells Node.js or V8 runtime that the application expects a G
 
 This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It is also used in automatic GC aforementioned.
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

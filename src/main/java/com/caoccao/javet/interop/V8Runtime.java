@@ -17,9 +17,7 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.enums.JSRuntimeType;
-import com.caoccao.javet.enums.JavetPromiseRejectEvent;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.*;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
@@ -389,6 +387,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return handle;
     }
 
+    public IV8ValueArray getInternalProperties(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return decorateV8Value((V8ValueArray) v8Native.getInternalProperties(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
+    }
+
+    public JSFunctionType getJSFunctionType(IV8ValueFunction iV8ValueFunction) {
+        return JSFunctionType.parse(v8Native.getJSFunctionType(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
+    }
+
+    public JSScopeType getJSScopeType(IV8ValueFunction iV8ValueFunction) {
+        return JSScopeType.parse(v8Native.getJSScopeType(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
+    }
+
     public JSRuntimeType getJSRuntimeType() {
         return JSRuntimeType.V8;
     }
@@ -435,6 +448,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
         return v8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType().getId());
+    }
+
+    public String getSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Native.getSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
     public V8Inspector getV8Inspector() {
@@ -761,6 +778,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         decorateV8Values(key, value);
         return v8Native.setProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    public boolean setSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
+        return v8Native.setSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), sourceCode);
     }
 
     public void setWeak(IV8ValueReference iV8ValueReference) {

@@ -15,13 +15,15 @@
   limitations under the License.
 '''
 
-import coloredlogs
+import importlib
 import logging
 import pathlib
 import re
 import sys
 
-coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
+if importlib.util.find_spec('coloredlogs'):
+  import coloredlogs
+  coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
 
 class ChangeJavetVersion(object):
 
@@ -40,7 +42,7 @@ class ChangeJavetVersion(object):
       'build.gradle.kts', '\n',
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
-      'docs/tutorial/hello_javet.rst', '\n',
+      'docs/tutorial/installation.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
       re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)"'),
       re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)\''),
@@ -107,7 +109,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('0.8.7')
+  change_javet_version = ChangeJavetVersion('0.8.8')
   change_javet_version.update()
   return 0
 

@@ -19,7 +19,6 @@
 #include <thread>
 #include "javet_callbacks.h"
 #include "javet_inspector.h"
-#include "javet_types.h"
 #include "javet_v8_runtime.h"
 
 namespace Javet {

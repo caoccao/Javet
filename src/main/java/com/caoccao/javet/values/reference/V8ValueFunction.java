@@ -17,16 +17,22 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.enums.JSFunctionType;
+import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
+import java.util.Optional;
+
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
+    protected Optional<JSFunctionType> jsFunctionType;
 
     V8ValueFunction(long handle) {
         super(handle);
+        jsFunctionType = Optional.empty();
     }
 
     @Override
@@ -63,5 +69,46 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Function;
+    }
+
+    @Override
+    public IV8ValueArray getInternalProperties() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getInternalProperties(this);
+    }
+
+    @Override
+    public JSFunctionType getJSFunctionType() throws JavetException {
+        if (!jsFunctionType.isPresent()) {
+            checkV8Runtime();
+            jsFunctionType = Optional.of(v8Runtime.getJSFunctionType(this));
+        }
+        return jsFunctionType.get();
+    }
+
+    @Override
+    public JSScopeType getJSScopeType() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getJSScopeType(this);
+    }
+
+    @Override
+    public String getSourceCode() throws JavetException {
+        checkV8Runtime();
+        if (getJSFunctionType().isUserDefined()) {
+            return v8Runtime.getSourceCode(this);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean setSourceCode(String sourceCodeString) throws JavetException {
+        checkV8Runtime();
+        if (getJSFunctionType().isUserDefined()) {
+            if (sourceCodeString != null && sourceCodeString.length() > 0) {
+                return v8Runtime.setSourceCode(this, sourceCodeString);
+            }
+        }
+        return false;
     }
 }

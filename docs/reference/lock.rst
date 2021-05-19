@@ -42,4 +42,4 @@ Implicit mode is thread-safe because its locking granularity is at API call leve
 
 Explicit mode is **NOT** thread-safe because it's designed to improve performance in single-threaded scenarios. Sharing V8 locker protected V8 runtime among multiple threads will result in Javet crash immediately.
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

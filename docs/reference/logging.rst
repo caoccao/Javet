@@ -76,4 +76,4 @@ Injecting the logger is quite simple.
 
 Now, Javet is integrated into your logging system.
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

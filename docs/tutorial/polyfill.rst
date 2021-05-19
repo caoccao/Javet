@@ -47,4 +47,4 @@ decimal.js
 
 Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/DecimalJavetInV8Mode.java>`_ for more detail.
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

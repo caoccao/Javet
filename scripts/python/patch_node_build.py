@@ -16,13 +16,15 @@
 '''
 
 import argparse
-import coloredlogs
+import importlib
 import logging
 import pathlib
 import platform
 import sys
 
-coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
+if importlib.util.find_spec('coloredlogs'):
+  import coloredlogs
+  coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
 
 '''
 This Python script is for patching Node.js on Linux.
@@ -70,6 +72,9 @@ class PatchNodeBuild(object):
       'out/tools/v8_gypfiles/v8_libsampler.target.mk',
       'out/tools/v8_gypfiles/v8_libplatform.target.mk',
       'out/tools/v8_gypfiles/v8_initializers.target.mk',
+      'out/deps/histogram/histogram.target.mk',
+      'out/deps/uvwasi/uvwasi.target.mk',
+      'out/tools/v8_gypfiles/v8_snapshot.target.mk',
     ]
     self._make_property = '    -fPIC \\'
     self._make_property_inline = ' -fPIC '

@@ -65,17 +65,25 @@ public interface IV8Native {
 
     int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    Object getInternalProperties(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     long[] getInternalStatistic();
 
-    int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    int getJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    int getJSScopeType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     String getVersion();
 
@@ -137,6 +145,8 @@ public interface IV8Native {
 
     void resetV8Isolate(long v8RuntimeHandle, String globalName);
 
+    boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+
     Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
@@ -153,9 +163,9 @@ public interface IV8Native {
 
     boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
-    void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
+    boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
 
-    boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+    void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
     boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 

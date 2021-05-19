@@ -46,4 +46,4 @@ The user experience is very much like the one in node.
 
 Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/cdt/CDTShell.java>`_ for more detail.
 
-[`Home <../../README.rst>`_] [`Tutorial <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

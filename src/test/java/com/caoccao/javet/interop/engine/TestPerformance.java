@@ -221,7 +221,7 @@ public class TestPerformance extends BaseTestJavetPool {
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
         File docFile = new File(
                 JavetOSUtils.WORKING_DIRECTORY,
-                "docs/development/performance.rst");
+                "docs/reference/performance.rst");
         List<String> lines = new ArrayList<>();
         for (String line : Files.readAllLines(docFile.toPath(), StandardCharsets.UTF_8)) {
             if (line.startsWith(prefix)) {

@@ -220,7 +220,7 @@ namespace Javet {
 			if (v8Value->IsArray()) {
 				return jniEnv->NewObject(jclassV8ValueArray, jmethodIDV8ValueArrayConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
 			}
-			using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType;
+			using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType::V8ValueReferenceType;
 			if (v8Value->IsTypedArray()) {
 				int type = V8ValueReferenceType::Invalid;
 				if (v8Value->IsBigInt64Array()) {
@@ -299,13 +299,13 @@ namespace Javet {
 				return jniEnv->NewObject(jclassV8ValueRegExp, jmethodIDV8ValueRegExpConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
 			}
 			if (v8Value->IsGeneratorObject()) {
-				// TODO
+				// It defaults to V8ValueObject.
 			}
 			if (v8Value->IsAsyncFunction()) {
-				// TODO
+				// It defaults to V8ValueFunction.
 			}
 			if (v8Value->IsGeneratorFunction()) {
-				// TODO
+				// It defaults to V8ValueFunction.
 			}
 			if (v8Value->IsProxy()) {
 				// Proxy is also a function. So, it needs to be tested before IsFunction().

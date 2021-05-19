@@ -50,4 +50,4 @@ Code Type        Name                                   Format
 .. Error Codes End
 
 
-[`Home <../../README.rst>`_] [`Development <index.rst>`_]
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

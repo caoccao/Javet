@@ -31,16 +31,14 @@ I have prepared pre-built Linux and Windows version of Node.js ``v14.16.1`` and 
 Build Javet JNI Library
 =======================
 
-Once V8 is ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
+Once Node.js and V8 are ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
 
 =========== =========================================================== ==========================================================
 Type        Linux                                                       Windows
 =========== =========================================================== ==========================================================
-Node        ``sh build.sh -DNODE_DIR=/where_the_node_directory_is``     ``build.cmd -DNODE_DIR=\where_the_node_directory_is``
-V8          ``sh build.sh -DV8_DIR=/where_the_v8_directory_is``         ``build.cmd -DV8_DIR=\where_the_v8_directory_is``
+Node        ``sh build.sh -DNODE_DIR=/absolute_path_to_node_js_build``     ``build.cmd -DNODE_DIR=\absolute_path_to_node_js_build``
+V8          ``sh build.sh -DV8_DIR=/absolute_path_to_v8_build``         ``build.cmd -DV8_DIR=\absolute_path_to_v8_build``
 =========== =========================================================== ==========================================================
-
-Note: The V8 directory needs to be absolute path.
 
 After a while, the following libraries will be placed in folder ``src/main/resources``.
 
@@ -130,8 +128,8 @@ Note: The patch script requires Python 3.
 
 Why Patching?
 
-* v8_wrappers.lib is a header only library without .cc file. MSVC refuses to generate such libraries. The patch is to create a dummy .cc file so that MSVC feels happy.
-* A few ninja files set certain warnings as errors so that MSVC stops compilation. The patch is to turn off those errors.
+* First patch: ``v8_wrappers.lib`` is a header only library without ``.cc`` file. MSVC refuses to generate such libraries. The patch is to create a dummy ``.cc`` file so that MSVC feels happy.
+* Second patch: A few ninja files set certain warnings as errors so that MSVC stops compilation. The patch is to turn off those errors.
 
 Build Node.js (Optional)
 ========================
@@ -164,10 +162,7 @@ Why Patching?
 * First patch: All static node libraries are ``<thin>`` libraries. The patch is to disable ``<thin>``.
 * Second patch: Many static node libraries are not compiled to `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ and link phase is broken with the following error. The patch is to set ``-fPIC`` to those make files.
 
-.. code-block:: cpp
-
-    /usr/bin/ld: /***/out/Release/libnode.a(node_binding.o): relocation R_X86_64_TPOFF32 against `_ZN4nodeL23thread_local_modpendingE` can not be used when making a shared objeect; recompile with -fPIC
-    ......
+    /usr/bin/ld: /....../out/Release/libnode.a(node_binding.o): relocation R_X86_64_TPOFF32 against ``_ZN4nodeL23thread_local_modpendingE`` can not be used when making a shared objeect; recompile with -fPIC
 
 Build Node.js on Windows
 ------------------------

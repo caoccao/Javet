@@ -18,7 +18,6 @@
 #include "javet_inspector.h"
 #include "javet_logging.h"
 #include "javet_native.h"
-#include "javet_types.h"
 
 #define CONTEXT_GROUP_ID 1
 #define EMBEDDER_DATA_INDEX 1

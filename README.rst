@@ -40,7 +40,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.8.7</version>
+        <version>0.8.8</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -48,14 +48,14 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.8.7")
+    implementation("com.caoccao.javet:javet:0.8.8")
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.8.7'
+    implementation 'com.caoccao.javet:javet:0.8.8'
 
 Hello Javet
 -----------
@@ -75,21 +75,14 @@ Hello Javet
 Documents
 =========
 
-* Presentations
-
-    * `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
-
-* `Development <docs/development/index.rst>`_
-
-    * `Build <docs/development/build.rst>`_
-    * `Design <docs/development/design.rst>`_
-    * `Performance <docs/development/performance.rst>`_
-
+* `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
 * `Tutorial <docs/tutorial/index.rst>`_
+* `Reference <docs/reference/index.rst>`_
 * `Release Notes <docs/release_notes.rst>`_
 * `FAQ <docs/faq/index.rst>`_
+* `Development <docs/development/index.rst>`_
 
 License
 =======
 
-Javet follows `APACHE LICENSE, VERSION 2.0 <LICENSE>`_.
+`APACHE LICENSE, VERSION 2.0 <LICENSE>`_.

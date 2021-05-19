@@ -19,7 +19,6 @@
 
 #include <jni.h>
 #include "javet_node.h"
-#include "javet_types.h"
 #include "javet_v8.h"
 
 #define FETCH_JNI_ENV(javaVMPointer) \

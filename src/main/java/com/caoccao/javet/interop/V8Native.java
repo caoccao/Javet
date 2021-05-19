@@ -99,13 +99,19 @@ class V8Native implements IV8Native {
     public native int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native Object getInternalProperties(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native long[] getInternalStatistic();
 
     @Override
-    public native int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    public native int getJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    public native int getJSScopeType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -115,6 +121,12 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    @Override
+    public native int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native String getVersion();
@@ -205,6 +217,9 @@ class V8Native implements IV8Native {
     public native void resetV8Isolate(long v8RuntimeHandle, String globalName);
 
     @Override
+    public native boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+
+    @Override
     public native Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     @Override
@@ -225,10 +240,10 @@ class V8Native implements IV8Native {
     public native boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     @Override
-    public native void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
+    public native boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
 
     @Override
-    public native boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+    public native void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
     @Override
     public native boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
