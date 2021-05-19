@@ -263,6 +263,11 @@ Why does ``setSourceCode()`` sometimes return ``false``? Usually, that means the
     v8ValueFunction.call(...)
     v8ValueFunction.setSourceCode(originalSourceCode)
 
+The rough lifecycle of a V8 function is as following.
+
+.. image:: ../resources/images/lifecycle_of_v8_function.png?raw=true
+    :alt: Lifecycle of V8 Function
+
 What is the Source Code of a Function in V8?
 --------------------------------------------
 
