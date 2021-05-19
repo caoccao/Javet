@@ -18,6 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.JSFunctionType;
+import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
@@ -27,12 +28,10 @@ import java.util.Optional;
 
 @SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
-    protected Optional<String> sourceCode;
     protected Optional<JSFunctionType> jsFunctionType;
 
     V8ValueFunction(long handle) {
         super(handle);
-        sourceCode = Optional.empty();
         jsFunctionType = Optional.empty();
     }
 
@@ -88,13 +87,16 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public JSScopeType getJSScopeType() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getJSScopeType(this);
+    }
+
+    @Override
     public String getSourceCode() throws JavetException {
         checkV8Runtime();
         if (getJSFunctionType().isUserDefined()) {
-            if (!sourceCode.isPresent()) {
-                sourceCode = Optional.ofNullable(v8Runtime.getSourceCode(this));
-            }
-            return sourceCode.get();
+            return v8Runtime.getSourceCode(this);
         }
         return null;
     }
@@ -104,10 +106,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
         checkV8Runtime();
         if (getJSFunctionType().isUserDefined()) {
             if (sourceCodeString != null && sourceCodeString.length() > 0) {
-                if (v8Runtime.setSourceCode(this, sourceCodeString)) {
-                    sourceCode = Optional.of(sourceCodeString);
-                    return true;
-                }
+                return v8Runtime.setSourceCode(this, sourceCodeString);
             }
         }
         return false;

@@ -498,36 +498,58 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
+    /**
+     * V8 stores source code in either one byte or two bytes in internal storage.
+     * This test is to validate both of them.
+     *
+     * @throws JavetException the javet exception
+     */
     @Test
     public void testGetAndSetSourceCode() throws JavetException {
         final int functionCount = 5;
         String functionStatementTemplate = "var {0} = {1};\n";
         String functionNameTemplate = "f{0}";
-        String functionBodyTemplate1 = "() => a[{0}]";
-        String functionBodyTemplate2 = "() => a[{0}] + 1";
-        List<String> functionNames = new ArrayList<>(functionCount);
-        List<String> functionBodies = new ArrayList<>(functionCount);
-        final StringBuilder sb = new StringBuilder();
-        sb.append("const a = Array.from(Array(").append(functionCount).append(").keys());\n");
-        IntStream.range(0, functionCount).forEach(i -> {
-            String functionName = MessageFormat.format(functionNameTemplate, i);
-            String functionBody = MessageFormat.format(functionBodyTemplate1, i);
-            functionNames.add(functionName);
-            functionBodies.add(functionBody);
-            String functionStatement = MessageFormat.format(functionStatementTemplate, functionName, functionBody);
-            sb.append(functionStatement);
-        });
-        String codeString = sb.toString();
-        v8Runtime.getExecutor(codeString).executeVoid();
-        for (int i = 0; i < functionCount; ++i) {
-            try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
-                assertEquals(functionBodies.get(i), v8ValueFunction.getSourceCode());
-                assertEquals(i, v8ValueFunction.callInteger(null));
-                v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate2, i));
-                assertEquals(i + 1, v8ValueFunction.callInteger(null));
-                // Restore the original script, otherwise next round will fail.
-                v8ValueFunction.setSourceCode(functionBodies.get(i));
+        String[][] functionBodyTemplates = new String[][]{
+                new String[]{
+                        "() => /* One Byte */ a[{0}]",
+                        "() => /* One Byte */ a[{0}] + 1",
+                },
+                new String[]{
+                        "() => /* Two Bytes 简体 繁體 にほんご français Español */ a[{0}]",
+                        "() => /* Two Bytes 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                },
+        };
+        for (String[] functionBodyTemplate : functionBodyTemplates) {
+            List<String> functionNames = new ArrayList<>(functionCount);
+            List<String> functionBodies = new ArrayList<>(functionCount);
+            final StringBuilder sb = new StringBuilder();
+            sb.append("const a = Array.from(Array(").append(functionCount).append(").keys());\n");
+            IntStream.range(0, functionCount).forEach(i -> {
+                String functionName = MessageFormat.format(functionNameTemplate, i);
+                String functionBody = MessageFormat.format(functionBodyTemplate[0], i);
+                functionNames.add(functionName);
+                functionBodies.add(functionBody);
+                String functionStatement = MessageFormat.format(functionStatementTemplate, functionName, functionBody);
+                sb.append(functionStatement);
+            });
+            String codeString = sb.toString();
+            v8Runtime.getExecutor(codeString).executeVoid();
+            for (int i = 0; i < functionCount; ++i) {
+                try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
+                    assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
+                    assertTrue(v8ValueFunction.getJSScopeType().isClass());
+                    assertEquals(functionBodies.get(i), v8ValueFunction.getSourceCode());
+                    assertTrue(v8ValueFunction.getJSScopeType().isClass());
+                    assertEquals(i, v8ValueFunction.callInteger(null));
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                    assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i)));
+                    assertEquals(i + 1, v8ValueFunction.callInteger(null));
+                    // Restore the original script, otherwise next round will fail.
+                    assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i)));
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                }
             }
+            v8Runtime.resetContext();
         }
     }
 }

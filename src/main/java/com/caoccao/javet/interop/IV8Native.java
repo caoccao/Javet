@@ -71,6 +71,8 @@ public interface IV8Native {
 
     int getJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    int getJSScopeType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

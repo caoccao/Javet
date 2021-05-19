@@ -26,6 +26,8 @@ import com.caoccao.javet.values.reference.V8ValueFunction;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class MockAnnotationBasedCallbackReceiver {
     private AtomicInteger count;
     private V8Runtime v8Runtime;
@@ -43,7 +45,10 @@ public class MockAnnotationBasedCallbackReceiver {
 
     @V8Function
     public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
+        assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
+        assertTrue(v8ValueFunction.getJSScopeType().isFunction());
         if (v8ValueFunction.setSourceCode("() => a + 2")) {
+            assertTrue(v8ValueFunction.getJSScopeType().isFunction());
             return v8ValueFunction.callInteger(null);
         } else {
             return 0;

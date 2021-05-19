@@ -17,10 +17,7 @@
 
 package com.caoccao.javet.interop;
 
-import com.caoccao.javet.enums.JSFunctionType;
-import com.caoccao.javet.enums.JSRuntimeType;
-import com.caoccao.javet.enums.JavetPromiseRejectEvent;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.*;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
@@ -391,12 +388,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public IV8ValueArray getInternalProperties(IV8ValueFunction iV8ValueFunction) throws JavetException {
-        return decorateV8Value((V8ValueArray)v8Native.getInternalProperties(
+        return decorateV8Value((V8ValueArray) v8Native.getInternalProperties(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
     }
 
     public JSFunctionType getJSFunctionType(IV8ValueFunction iV8ValueFunction) {
         return JSFunctionType.parse(v8Native.getJSFunctionType(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
+    }
+
+    public JSScopeType getJSScopeType(IV8ValueFunction iV8ValueFunction) {
+        return JSScopeType.parse(v8Native.getJSScopeType(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
     }
 

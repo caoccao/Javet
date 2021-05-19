@@ -495,6 +495,18 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSFunctionType
 	return Javet::Enums::JSFunctionType::Unknown;
 }
 
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSScopeType
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_FUNCTION(v8ValueType)) {
+		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
+		auto v8InternalShared = v8InternalFunction.shared();
+		auto v8InternalScopeInfo = v8InternalShared.scope_info();
+		return v8InternalScopeInfo.scope_type();
+	}
+	return Javet::Enums::JSScopeType::Unknown;
+}
+
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
 	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -565,8 +577,7 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
 			const int startPosition = v8InternalShared.StartPosition();
 			const int endPosition = v8InternalShared.EndPosition();
 			auto sourceCode = v8InternalSource.ToCString(
-				V8InternalAllowNullsFlag::DISALLOW_NULLS,
-				V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
+				V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
 				startPosition, endPosition - startPosition);
 			return Javet::Converter::ToJavaString(jniEnv, sourceCode.get());
 		}
@@ -964,43 +975,66 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
 		auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalObject));
 		auto v8InternalShared = v8InternalFunction.shared();
 		if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-			auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
-			auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-			auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
-			const int startPosition = v8InternalShared.StartPosition();
-			const int endPosition = v8InternalShared.EndPosition();
+			auto v8InternalScopeInfo = v8InternalShared.scope_info();
+			if (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE && v8InternalScopeInfo.HasPositionInfo()) {
+				auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+				auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
+				auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
+				const int startPosition = v8InternalShared.StartPosition();
+				const int endPosition = v8InternalShared.EndPosition();
+				const int sourceLength = v8InternalSource.length();
 
-			// Build the new source code.
-			auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
-			V8InternalIncrementalStringBuilder stringBuilder(v8InternalIsolate);
-			stringBuilder.AppendCString(v8InternalSource.ToCString(
-				V8InternalAllowNullsFlag::DISALLOW_NULLS,
-				V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-				0, startPosition).get());
-			stringBuilder.AppendString(v8::Utils::OpenHandle(*umSourceCode));
-			stringBuilder.AppendCString(v8InternalSource.ToCString(
-				V8InternalAllowNullsFlag::DISALLOW_NULLS,
-				V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-				endPosition, v8InternalSource.length()).get());
-			auto newSourceCode = stringBuilder.Finish().ToHandleChecked();
+				// Build the new source code.
+				auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
+				V8LocalString newSourceCode;
+				if (startPosition > 0) {
+					int utf8Length = 0;
+					auto stdStringHeader(v8InternalSource.ToCString(
+						V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
+						0, startPosition, &utf8Length));
+					auto v8LocalStringHeader = v8::String::NewFromUtf8(
+						v8Context->GetIsolate(), stdStringHeader.get(), v8::NewStringType::kNormal, utf8Length).ToLocalChecked();
+					newSourceCode = v8LocalStringHeader;
+				}
+				if (newSourceCode.IsEmpty()) {
+					newSourceCode = umSourceCode;
+				}
+				else {
+					newSourceCode = v8::String::Concat(v8Runtime->v8Isolate, newSourceCode, umSourceCode);
+				}
+				if (endPosition < sourceLength) {
+					int utf8Length = 0;
+					auto stdStringFooter(v8InternalSource.ToCString(
+						V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
+						endPosition, sourceLength, &utf8Length));
+					auto v8LocalStringFooter = v8::String::NewFromUtf8(
+						v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length).ToLocalChecked();
+					if (newSourceCode.IsEmpty()) {
+						newSourceCode = v8LocalStringFooter;
+					}
+					else {
+						newSourceCode = v8::String::Concat(v8Runtime->v8Isolate, newSourceCode, v8LocalStringFooter);
+					}
+				}
 
-			// Discard compiled data and set lazy compile.
-			if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
-				V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-				v8InternalFunction.set_code(v8InternalIsolate->builtins()->builtin(V8InternalBuiltins::kCompileLazy));
+				// Discard compiled data and set lazy compile.
+				if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
+					V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
+					v8InternalFunction.set_code(v8InternalIsolate->builtins()->builtin(V8InternalBuiltins::kCompileLazy));
+				}
+
+				/*
+				 * Set the source and update the start and end position.
+				 * Note: The source code is shared among all script objects, but position info is not.
+				 * So the caller is responsible for restoring the original source code,
+				 * otherwise the next script execution will likely fail because the position info
+				 * of the next script is incorrect.
+				 */
+				v8InternalScript.set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+				const int newEndPosition = startPosition + umSourceCode->Length();
+				v8InternalShared.scope_info().SetPositionInfo(startPosition, newEndPosition);
+				return true;
 			}
-
-			/*
-			 * Set the source and update the start and end position.
-			 * Note: The source code is shared among all script objects, but position info is not.
-			 * So the caller is responsible for restoring the original source code,
-			 * otherwise the next script execution will likely fail because the position info
-			 * of the next script is incorrect.
-			 */
-			v8InternalScript.set_source(*newSourceCode, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-			const int newEndPosition = startPosition + umSourceCode->Length();
-			v8InternalShared.scope_info().SetPositionInfo(startPosition, newEndPosition);
-			return true;
 		}
 	}
 	return false;

@@ -28,21 +28,23 @@
 #ifdef ENABLE_MONITOR
 namespace Javet {
 	namespace Monitor {
-		enum CounterType {
-			Reserved = 0,
-			NewGlobalRef = 1,
-			NewWeakCallbackReference = 2,
-			NewJavetCallbackContextReference = 3,
-			NewPersistentReference = 4,
-			NewPersistentCallbackContextReference = 5,
-			NewV8Runtime = 6,
-			DeleteGlobalRef = 7,
-			DeleteWeakCallbackReference = 8,
-			DeleteJavetCallbackContextReference = 9,
-			DeletePersistentReference = 10,
-			DeletePersistentCallbackContextReference = 11,
-			DeleteV8Runtime = 12,
-			Max = 13,
+		namespace CounterType {
+			enum CounterType {
+				Reserved = 0,
+				NewGlobalRef = 1,
+				NewWeakCallbackReference = 2,
+				NewJavetCallbackContextReference = 3,
+				NewPersistentReference = 4,
+				NewPersistentCallbackContextReference = 5,
+				NewV8Runtime = 6,
+				DeleteGlobalRef = 7,
+				DeleteWeakCallbackReference = 8,
+				DeleteJavetCallbackContextReference = 9,
+				DeletePersistentReference = 10,
+				DeletePersistentCallbackContextReference = 11,
+				DeleteV8Runtime = 12,
+				Max = 13,
+			};
 		};
 
 		class JavetNativeMonitor {

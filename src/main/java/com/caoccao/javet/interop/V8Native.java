@@ -108,6 +108,9 @@ class V8Native implements IV8Native {
     public native int getJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native int getJSScopeType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override

@@ -18,6 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.JSFunctionType;
+import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
@@ -226,7 +227,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * Call function by V8 values without return.
      *
      * @param receiver the receiver
-     * @param v8Values the v 8 values
+     * @param v8Values the V8 values
      * @throws JavetException the javet exception
      */
     default void callVoid(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
@@ -248,6 +249,14 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @throws JavetException the javet exception
      */
     JSFunctionType getJSFunctionType() throws JavetException;
+
+    /**
+     * Gets JS scope type.
+     *
+     * @return the JS scope type
+     * @throws JavetException the javet exception
+     */
+    JSScopeType getJSScopeType() throws JavetException;
 
     /**
      * Gets source code.

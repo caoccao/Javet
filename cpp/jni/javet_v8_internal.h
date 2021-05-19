@@ -56,6 +56,7 @@ using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilde
 using V8InternalIsolate = v8::internal::Isolate;
 using V8InternalJSFunction = v8::internal::JSFunction;
 using V8InternalRobustnessFlag = v8::internal::RobustnessFlag;
+using V8InternalScopeType = v8::internal::ScopeType;
 using V8InternalScript = v8::internal::Script;
 using V8InternalSharedFunctionInfo = v8::internal::SharedFunctionInfo;
 using V8InternalString = v8::internal::String;

@@ -185,6 +185,14 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSFunctionType
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getJSScopeType
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSScopeType
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getLength
  * Signature: (JJI)I
  */

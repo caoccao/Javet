@@ -220,7 +220,7 @@ namespace Javet {
 			if (v8Value->IsArray()) {
 				return jniEnv->NewObject(jclassV8ValueArray, jmethodIDV8ValueArrayConstructor, ToV8PersistentObjectReference(v8Context, v8Value));
 			}
-			using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType;
+			using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType::V8ValueReferenceType;
 			if (v8Value->IsTypedArray()) {
 				int type = V8ValueReferenceType::Invalid;
 				if (v8Value->IsBigInt64Array()) {
