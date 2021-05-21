@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.9
+-----
+
+* Renamed ``setFunction()`` to ``bindFunction()``
+* Renamed ``setFunctions()`` to ``bindFunctions()``
+
 0.8.8
 -----
 
