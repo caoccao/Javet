@@ -49,7 +49,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <Key extends V8Value> int forEach(IJavetConsumer<Key> consumer) throws JavetException {
+    public <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetConsumer<Key, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
             return iV8ValueArray.forEach(consumer);
@@ -57,8 +58,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public <Key extends V8Value, Value extends V8Value> int forEach(
-            IJavetBiConsumer<Key, Value> consumer) throws JavetException {
+    public <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
             return iV8ValueArray.forEach((Key key) -> {

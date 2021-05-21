@@ -200,25 +200,28 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
-     * For each int.
+     * For each.
      *
-     * @param <Key>    the type parameter
+     * @param <Key>    the type of key
+     * @param <E>      the type of exception
      * @param consumer the consumer
-     * @return the int
-     * @throws JavetException the javet exception
+     * @return the item count
+     * @throws E the exception
      */
-    <Key extends V8Value> int forEach(IJavetConsumer<Key> consumer) throws JavetException;
+    <Key extends V8Value, E extends Throwable> int forEach(IJavetConsumer<Key, E> consumer) throws JavetException, E;
 
     /**
-     * For each int.
+     * For each.
      *
-     * @param <Key>    the type parameter
-     * @param <Value>  the type parameter
+     * @param <Key>    the type of key
+     * @param <Value>  the type of value
+     * @param <E>      the type of exception
      * @param consumer the consumer
-     * @return the int
-     * @throws JavetException the javet exception
+     * @return the item count
+     * @throws E the exception
      */
-    <Key extends V8Value, Value extends V8Value> int forEach(IJavetBiConsumer<Key, Value> consumer) throws JavetException;
+    <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E;
 
     /**
      * Get t.

@@ -43,7 +43,8 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
-    public <Key extends V8Value> int forEach(IJavetConsumer<Key> consumer) throws JavetException {
+    public <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetConsumer<Key, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         int count = 0;
         try (IV8ValueIterator<V8Value> iterator = getKeys()) {
