@@ -38,6 +38,16 @@ public interface IJavetEngineGuard extends IJavetClosable, Runnable {
     void cancel();
 
     /**
+     * Disable in debug mode.
+     */
+    void disableInDebugMode();
+
+    /**
+     * Enable in debug mode.
+     */
+    void enableInDebugMode();
+
+    /**
      * Gets timeout millis.
      *
      * @return the timeout millis
