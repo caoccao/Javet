@@ -5,8 +5,9 @@ Release Notes
 0.8.9
 -----
 
-* Renamed ``setFunction()`` to ``bindFunction()``
-* Renamed ``setFunctions()`` to ``bindFunctions()``
+* Renamed ``setFunction()`` to ``bindFunction()`` in ``IV8ValueObject``
+* Renamed ``setFunctions()`` to ``bindFunctions()`` in ``IV8ValueObject``
+* Added ``disableInDebugMode()`` and ``enableInDebugMode()`` to ``JavetEngineGuard``
 
 0.8.8
 -----
