@@ -79,14 +79,12 @@ The first step is to declare callback receiver and callback functions. That is q
         // Javet detects the getter automatically.
         @V8Property(name = "stringValue")
         public String getStringValue() {
-            count.incrementAndGet();
             return stringValue;
         }
 
         // Javet detects the setter and property name automatically.
         @V8Property
         public void setStringValue(String stringValue) {
-            count.incrementAndGet();
             this.stringValue = stringValue;
         }
 
