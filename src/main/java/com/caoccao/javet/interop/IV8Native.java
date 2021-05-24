@@ -151,6 +151,10 @@ public interface IV8Native {
 
     boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
+    boolean setAccessor(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            String propertyName, Object getter, Object setter);
+
     /**
      * Sets flags.
      * <p>

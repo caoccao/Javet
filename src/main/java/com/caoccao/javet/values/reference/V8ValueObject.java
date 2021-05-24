@@ -17,16 +17,25 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.annotations.V8Property;
+import com.caoccao.javet.annotations.V8RuntimeSetter;
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 import com.caoccao.javet.values.virtual.V8VirtualValue;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
-import java.util.Objects;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
@@ -35,9 +44,174 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String FUNCTION_GET = "get";
     protected static final String FUNCTION_HAS = "has";
     protected static final String FUNCTION_SET = "set";
+    protected static final String METHOD_PREFIX_IS = "is";
+    protected static final String METHOD_PREFIX_GET = "get";
+    protected static final String METHOD_PREFIX_SET = "set";
 
     protected V8ValueObject(long handle) {
         super(handle);
+    }
+
+    @Override
+    public List<JavetCallbackContext> bindFunctions(
+            Object functionCallbackReceiver,
+            boolean thisObjectRequired)
+            throws JavetException {
+        Map<String, Method> functionMap = new HashMap<>();
+        for (Method method : functionCallbackReceiver.getClass().getMethods()) {
+            if (method.isAnnotationPresent(V8Function.class)) {
+                V8Function v8Function = method.getAnnotation(V8Function.class);
+                String functionName = v8Function.name();
+                if (functionName == null || functionName.length() == 0) {
+                    functionName = method.getName();
+                }
+                // Duplicated function will be dropped.
+                if (!functionMap.containsKey(functionName)) {
+                    functionMap.put(functionName, method);
+                }
+            } else {
+                bindV8Runtime(functionCallbackReceiver, method);
+            }
+        }
+        List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
+        if (!functionMap.isEmpty()) {
+            for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
+                final Method method = entry.getValue();
+                try {
+                    // Static method needs to be identified.
+                    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                            Modifier.isStatic(method.getModifiers()) ? null : functionCallbackReceiver,
+                            method, thisObjectRequired);
+                    bindFunction(entry.getKey(), javetCallbackContext);
+                    javetCallbackContexts.add(javetCallbackContext);
+                } catch (Exception e) {
+                    throw new JavetException(
+                            JavetError.CallbackRegistrationFailure,
+                            SimpleMap.of(
+                                    JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                    JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                            e);
+                }
+            }
+        }
+        return javetCallbackContexts;
+    }
+
+    @Override
+    public List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver) throws JavetException {
+        Map<String, Method> propertyGetterMap = new HashMap<>();
+        Map<String, Method> propertySetterMap = new HashMap<>();
+        for (Method method : propertyCallbackReceiver.getClass().getMethods()) {
+            if (method.isAnnotationPresent(V8Property.class)) {
+                V8Property v8Property = method.getAnnotation(V8Property.class);
+                String propertyName = v8Property.name();
+                if (propertyName == null || propertyName.length() == 0) {
+                    String methodName = method.getName();
+                    if (methodName.startsWith(METHOD_PREFIX_IS)) {
+                        propertyName = methodName.substring(METHOD_PREFIX_IS.length());
+                    } else if (methodName.startsWith(METHOD_PREFIX_GET)) {
+                        propertyName = methodName.substring(METHOD_PREFIX_GET.length());
+                    } else if (methodName.startsWith(METHOD_PREFIX_SET)) {
+                        propertyName = methodName.substring(METHOD_PREFIX_SET.length());
+                    }
+                    if (propertyName != null && propertyName.length() > 0) {
+                        propertyName = propertyName.substring(0, 1).toLowerCase(Locale.ROOT) + propertyName.substring(1);
+                    }
+                }
+                if (propertyName != null && propertyName.length() > 0) {
+                    if (method.getParameterCount() == 0) {
+                        // Duplicated property name will be dropped.
+                        if (!propertyGetterMap.containsKey(propertyName)) {
+                            propertyGetterMap.put(propertyName, method);
+                        }
+                    } else if (method.getParameterCount() == 1) {
+                        // Duplicated property name will be dropped.
+                        if (!propertySetterMap.containsKey(propertyName)) {
+                            propertySetterMap.put(propertyName, method);
+                        }
+                    } else {
+                        throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                SimpleMap.of(
+                                        JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                        JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 0,
+                                        JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
+                    }
+                }
+            } else {
+                bindV8Runtime(propertyCallbackReceiver, method);
+            }
+        }
+        List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
+        if (!propertyGetterMap.isEmpty()) {
+            for (Map.Entry<String, Method> entry : propertyGetterMap.entrySet()) {
+                String propertyName = entry.getKey();
+                Method methodGetter = entry.getValue();
+                try {
+                    // Static method needs to be identified.
+                    JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
+                            Modifier.isStatic(methodGetter.getModifiers()) ? null : propertyCallbackReceiver,
+                            methodGetter, false);
+                    javetCallbackContexts.add(javetCallbackContextGetter);
+                    JavetCallbackContext javetCallbackContextSetter = null;
+                    if (propertySetterMap.containsKey(propertyName)) {
+                        Method methodSetter = propertySetterMap.get(propertyName);
+                        // Static method needs to be identified.
+                        javetCallbackContextSetter = new JavetCallbackContext(
+                                Modifier.isStatic(methodSetter.getModifiers()) ? null : propertyCallbackReceiver,
+                                methodSetter, false);
+                        javetCallbackContexts.add(javetCallbackContextSetter);
+                    }
+                    bindProperty(propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+                } catch (Exception e) {
+                    throw new JavetException(
+                            JavetError.CallbackRegistrationFailure,
+                            SimpleMap.of(
+                                    JavetError.PARAMETER_METHOD_NAME, methodGetter.getName(),
+                                    JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                            e);
+                }
+            }
+        }
+        return javetCallbackContexts;
+    }
+
+    @Override
+    public boolean bindProperty(
+            String propertyName,
+            JavetCallbackContext javetCallbackContextGetter,
+            JavetCallbackContext javetCallbackContextSetter) throws JavetException {
+        Objects.requireNonNull(javetCallbackContextGetter);
+        checkV8Runtime();
+        return v8Runtime.setAccessor(this, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+    }
+
+    protected boolean bindV8Runtime(Object callbackReceiver, Method method) throws JavetException {
+        if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
+            if (method.getParameterCount() != 1) {
+                throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                        SimpleMap.of(
+                                JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
+                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
+            }
+            if (!V8Runtime.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                throw new JavetException(
+                        JavetError.CallbackSignatureParameterTypeMismatch,
+                        SimpleMap.of(
+                                JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, V8Runtime.class,
+                                JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
+            }
+            try {
+                method.invoke(callbackReceiver, getV8Runtime());
+            } catch (Exception e) {
+                throw new JavetException(
+                        JavetError.CallbackInjectionFailure,
+                        SimpleMap.of(JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                        e);
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

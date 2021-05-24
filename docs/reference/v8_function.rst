@@ -34,17 +34,26 @@ Functions can be intercepted via Javet API. This is equivalent to the capability
 Automatic Registration
 ----------------------
 
-``List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, ...)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bind, bindFunctions, bindProperties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call. Actually, there are 3 overloaded methods.
+``bindFunctions`` scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call.
+
+``bindProperties`` scans the input callback receiver for functions decorated by ``@V8Property``. It allows registering many getters and setters in one call.
+
+``bind`` calls ``bindFunctions`` and ``bindProperties`` internally, in case a complete registration is needed.
 
 .. code-block:: java
 
+    List<JavetCallbackContext> bind(Object functionCallbackReceiver, boolean thisObjectRequired);
     List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver);
     List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired);
+    List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver);
 
-Creating native V8Value objects is trick in the callback receiver. There are typically 2 options.
+How about Object Type Conversion?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As V8 only accepts data represented by its own format, Java objects need to be converted to native ``V8Value`` objects. Creating native ``V8Value`` objects is trick in the callback receiver. There are typically 2 options.
 
 1. Enhance the `Object Converter <object_converter.rst>`_ and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
 
@@ -60,9 +69,25 @@ The first step is to declare callback receiver and callback functions. That is q
 
     public class AnnotationBasedCallbackReceiver {
         private V8Runtime v8Runtime;
+        private String stringValue;
 
         public AnnotationBasedCallbackReceiver() {
+            stringValue = null;
             v8Runtime = null;
+        }
+
+        // Javet detects the getter automatically.
+        @V8Property(name = "stringValue")
+        public String getStringValue() {
+            count.incrementAndGet();
+            return stringValue;
+        }
+
+        // Javet detects the setter and property name automatically.
+        @V8Property
+        public void setStringValue(String stringValue) {
+            count.incrementAndGet();
+            this.stringValue = stringValue;
         }
 
         // Instance method with same name and same signature.
@@ -106,7 +131,7 @@ The first step is to declare callback receiver and callback functions. That is q
         }
     }
 
-The second step is to call the functions.
+The second step is to call the functions or properties.
 
 .. code-block:: java
 
@@ -125,6 +150,8 @@ The second step is to call the functions.
             assertEquals("[\"a\",1]", v8ValueArray.toJsonString());
         }
         assertEquals("static", v8Runtime.getExecutor("a.staticEcho('static')").executeString());
+        v8Runtime.getExecutor("a.stringValue = 'abc';").executeVoid();
+        assertEquals("abc", v8Runtime.getExecutor("a.stringValue").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 

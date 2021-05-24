@@ -18,6 +18,7 @@
 package com.caoccao.javet.mock;
 
 import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.annotations.V8Property;
 import com.caoccao.javet.annotations.V8RuntimeSetter;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -31,9 +32,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MockAnnotationBasedCallbackReceiver {
     private AtomicInteger count;
     private V8Runtime v8Runtime;
+    private String stringValue;
 
     public MockAnnotationBasedCallbackReceiver() {
         count = new AtomicInteger(0);
+        stringValue = null;
         v8Runtime = null;
     }
 
@@ -41,6 +44,24 @@ public class MockAnnotationBasedCallbackReceiver {
     @V8Function(name = "staticEcho")
     public static String staticEcho(String str) {
         return str;
+    }
+
+    @V8Property
+    public Integer getIntegerValue() {
+        count.incrementAndGet();
+        return 123;
+    }
+
+    @V8Property
+    public String getStringValue() {
+        count.incrementAndGet();
+        return stringValue;
+    }
+
+    @V8Property
+    public void setStringValue(String stringValue) {
+        count.incrementAndGet();
+        this.stringValue = stringValue;
     }
 
     @V8Function

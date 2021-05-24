@@ -489,6 +489,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_set
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setAccessor
+ * Signature: (JJILjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring, jobject, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    setFlags
  * Signature: (Ljava/lang/String;)V
  */

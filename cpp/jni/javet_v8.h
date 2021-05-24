@@ -48,6 +48,7 @@ using V8LocalFixedArray = v8::Local<v8::FixedArray>;
 using V8LocalInteger = v8::Local<v8::Integer>;
 using V8LocalMap = v8::Local<v8::Map>;
 using V8LocalModule = v8::Local<v8::Module>;
+using V8LocalName = v8::Local<v8::Name>;
 using V8LocalNumber = v8::Local<v8::Number>;
 using V8LocalObject = v8::Local<v8::Object>;
 using V8LocalPrimitive = v8::Local<v8::Primitive>;

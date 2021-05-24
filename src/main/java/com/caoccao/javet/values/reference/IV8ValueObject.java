@@ -17,33 +17,51 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.annotations.V8Function;
-import com.caoccao.javet.annotations.V8RuntimeSetter;
-import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetConsumer;
-import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetCallbackContext;
-import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The interface V8 value object.
  */
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    /**
+     * Bind both functions and properties.
+     *
+     * @param callbackReceiver the callback receiver
+     * @return the list of callback context
+     * @throws JavetException the javet exception
+     */
+    default List<JavetCallbackContext> bind(Object callbackReceiver)
+            throws JavetException {
+        return bind(callbackReceiver, false);
+    }
+
+    /**
+     * Bind both functions and properties.
+     *
+     * @param callbackReceiver   the callback receiver
+     * @param thisObjectRequired the this object required
+     * @return the list of callback context
+     * @throws JavetException the javet exception
+     */
+    default List<JavetCallbackContext> bind(Object callbackReceiver, boolean thisObjectRequired)
+            throws JavetException {
+        List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
+        javetCallbackContexts.addAll(bindProperties(callbackReceiver));
+        javetCallbackContexts.addAll(bindFunctions(callbackReceiver, thisObjectRequired));
+        return javetCallbackContexts;
+    }
 
     /**
      * Binds function by name and callback context.
@@ -105,70 +123,49 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    default List<JavetCallbackContext> bindFunctions(
-            Object functionCallbackReceiver,
-            boolean thisObjectRequired)
-            throws JavetException {
-        Map<String, Method> functionMap = new HashMap<>();
-        for (Method method : functionCallbackReceiver.getClass().getMethods()) {
-            if (method.isAnnotationPresent(V8Function.class)) {
-                V8Function v8Function = method.getAnnotation(V8Function.class);
-                String functionName = v8Function.name();
-                if (functionName == null || functionName.length() == 0) {
-                    functionName = method.getName();
-                }
-                // Duplicated functions will be dropped.
-                if (!functionMap.containsKey(functionName)) {
-                    functionMap.put(functionName, method);
-                }
-            } else if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
-                if (method.getParameterCount() != 1) {
-                    throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
-                            SimpleMap.of(
-                                    JavetError.PARAMETER_METHOD_NAME, method.getName(),
-                                    JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
-                                    JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
-                }
-                if (!V8Runtime.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                    throw new JavetException(
-                            JavetError.CallbackSignatureParameterTypeMismatch,
-                            SimpleMap.of(
-                                    JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, V8Runtime.class,
-                                    JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
-                }
-                try {
-                    method.invoke(functionCallbackReceiver, getV8Runtime());
-                } catch (Exception e) {
-                    throw new JavetException(
-                            JavetError.CallbackInjectionFailure,
-                            SimpleMap.of(JavetError.PARAMETER_MESSAGE, e.getMessage()),
-                            e);
-                }
-            }
-        }
-        List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
-        if (!functionMap.isEmpty()) {
-            for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
-                final Method method = entry.getValue();
-                try {
-                    // Static method needs to be identified.
-                    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                            Modifier.isStatic(method.getModifiers()) ? null : functionCallbackReceiver,
-                            method, thisObjectRequired);
-                    bindFunction(entry.getKey(), javetCallbackContext);
-                    javetCallbackContexts.add(javetCallbackContext);
-                } catch (Exception e) {
-                    throw new JavetException(
-                            JavetError.CallbackRegistrationFailure,
-                            SimpleMap.of(
-                                    JavetError.PARAMETER_METHOD_NAME, method.getName(),
-                                    JavetError.PARAMETER_MESSAGE, e.getMessage()),
-                            e);
-                }
-            }
-        }
-        return javetCallbackContexts;
+    List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired)
+            throws JavetException;
+
+    /**
+     * Bind properties via annotation @V8Property.
+     * <p>
+     * Note:
+     * 1. Getters and setters are determined by parameter count.
+     * 2. Getter must present, otherwise setter won't be bind.
+     *
+     * @param propertyCallbackReceiver the property callback receiver
+     * @return the list of callback context
+     * @throws JavetException the javet exception
+     */
+    List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver) throws JavetException;
+
+    /**
+     * Bind property.
+     *
+     * @param propertyName               the property name
+     * @param javetCallbackContextGetter the javet callback context getter
+     * @return true if the property is bind, false if the property is not bind
+     * @throws JavetException the javet exception
+     */
+    default boolean bindProperty(
+            String propertyName,
+            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
+        return bindProperty(propertyName, javetCallbackContextGetter, null);
     }
+
+    /**
+     * Bind property.
+     *
+     * @param propertyName               the property name
+     * @param javetCallbackContextGetter the javet callback context getter
+     * @param javetCallbackContextSetter the javet callback context setter
+     * @return true if the property is bind, false if the property is not bind
+     * @throws JavetException the javet exception
+     */
+    boolean bindProperty(
+            String propertyName,
+            JavetCallbackContext javetCallbackContextGetter,
+            JavetCallbackContext javetCallbackContextSetter) throws JavetException;
 
     /**
      * Delete boolean.
@@ -206,7 +203,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param <E>      the type of exception
      * @param consumer the consumer
      * @return the item count
-     * @throws E the exception
+     * @throws JavetException the javet exception
+     * @throws E              the exception
      */
     <Key extends V8Value, E extends Throwable> int forEach(IJavetConsumer<Key, E> consumer) throws JavetException, E;
 
@@ -218,7 +216,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param <E>      the type of exception
      * @param consumer the consumer
      * @return the item count
-     * @throws E the exception
+     * @throws JavetException the javet exception
+     * @throws E              the exception
      */
     <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
             IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E;

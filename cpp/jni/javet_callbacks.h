@@ -55,6 +55,8 @@ namespace Javet {
 		void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info);
 		void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info);
 		void JavetFunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& info);
+		void JavetPropertyGetterCallback(V8LocalName propertyName, const v8::PropertyCallbackInfo<v8::Value>& info);
+		void JavetPropertySetterCallback(V8LocalName propertyName, V8LocalValue propertyValue, const v8::PropertyCallbackInfo<void>& info);
 		void JavetPromiseRejectCallback(v8::PromiseRejectMessage message);
 
 		V8MaybeLocalModule JavetModuleResolveCallback(
@@ -70,7 +72,9 @@ namespace Javet {
 			jobject callbackContext;
 			V8PersistentBigInt* v8PersistentCallbackContextHandlePointer;
 			JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext);
-			void Invoke(const v8::FunctionCallbackInfo<v8::Value>& args);
+			void CallFunction(const v8::FunctionCallbackInfo<v8::Value>& args);
+			void CallPropertyGetter(V8LocalName propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+			void CallPropertySetter(V8LocalName propertyName, V8LocalValue propertyValue, const v8::PropertyCallbackInfo<void>& args);
 			jboolean IsReturnResult();
 			jboolean IsThisObjectRequired();
 			void SetHandle();
