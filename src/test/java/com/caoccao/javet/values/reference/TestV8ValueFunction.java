@@ -592,11 +592,14 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8Runtime.getReferenceCount());
             assertEquals(1, v8Runtime.getCallbackContextCount());
             mockCallbackReceiver.setCalled(false);
-            assertFalse(mockCallbackReceiver.isCalled());
-            String resultString = v8Runtime.getExecutor("a.test").executeString();
+            assertEquals("abc", v8Runtime.getExecutor("a.test").executeString());
             assertTrue(mockCallbackReceiver.isCalled());
-            assertEquals("abc", resultString);
+            mockCallbackReceiver.setCalled(false);
+            assertEquals("abc", v8Runtime.getExecutor("a['test']").executeString());
+            assertTrue(mockCallbackReceiver.isCalled());
+            mockCallbackReceiver.setCalled(false);
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
+            assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
         }
         v8Runtime.requestGarbageCollectionForTesting(true);
@@ -624,10 +627,14 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals("abc", mockCallbackReceiver.getValue());
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
             mockCallbackReceiver.setCalled(false);
-            String resultString = v8Runtime.getExecutor("a.test").executeString();
+            assertEquals("abc", v8Runtime.getExecutor("a.test").executeString());
             assertTrue(mockCallbackReceiver.isCalled());
-            assertEquals("abc", resultString);
+            mockCallbackReceiver.setCalled(false);
+            assertEquals("abc", v8Runtime.getExecutor("a['test']").executeString());
+            assertTrue(mockCallbackReceiver.isCalled());
+            mockCallbackReceiver.setCalled(false);
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
+            assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
         }
         v8Runtime.requestGarbageCollectionForTesting(true);

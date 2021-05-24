@@ -49,10 +49,14 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
-            v8Runtime.getExecutor("a.stringValue = 'abc';").executeVoid();
+            assertEquals(123, v8Runtime.getExecutor("a['integerValue']").executeInteger());
             assertEquals(2, mockAnnotationBasedCallbackReceiver.getCount());
-            assertEquals("abc", v8Runtime.getExecutor("a.stringValue").executeString());
+            v8Runtime.getExecutor("a.stringValue = 'abc';").executeVoid();
             assertEquals(3, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals("abc", v8Runtime.getExecutor("a.stringValue").executeString());
+            assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals("abc", v8Runtime.getExecutor("a['stringValue']").executeString());
+            assertEquals(5, mockAnnotationBasedCallbackReceiver.getCount());
             v8Runtime.getGlobalObject().delete("a");
         }
         v8Runtime.requestGarbageCollectionForTesting(true);
