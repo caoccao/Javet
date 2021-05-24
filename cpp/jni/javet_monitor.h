@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <jni.h>
 
 #ifdef ENABLE_MONITOR
@@ -54,7 +55,7 @@ namespace Javet {
 
 			inline void Clear() {
 				for (int i = 0; i < CounterType::Max; ++i) {
-					counters[i] = 0;
+					counters[i].store(0);
 				}
 			}
 
@@ -64,7 +65,7 @@ namespace Javet {
 				counters[counterType]++;
 			}
 		private:
-			jlong counters[CounterType::Max];
+			std::atomic<jlong> counters[CounterType::Max];
 		};
 
 	}

@@ -17,10 +17,10 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetConsumer;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,8 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public <Value extends V8Value> int forEach(IJavetConsumer<Value> consumer) throws JavetException {
+    public <Value extends V8Value, E extends Throwable> int forEach(
+            IJavetConsumer<Value, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         final int length = getLength();
         for (int i = 0; i < length; ++i) {

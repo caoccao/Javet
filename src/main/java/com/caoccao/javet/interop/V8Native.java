@@ -225,6 +225,10 @@ class V8Native implements IV8Native {
     @Override
     public native boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
+    @Override
+    public native boolean setAccessor(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String propertyName, Object getter, Object setter);
+
     /**
      * Sets flags.
      * <p>

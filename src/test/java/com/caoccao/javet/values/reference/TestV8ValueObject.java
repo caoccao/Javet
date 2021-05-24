@@ -19,6 +19,8 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
+import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueLong;
@@ -34,6 +36,28 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unchecked")
 public class TestV8ValueObject extends BaseTestJavetRuntime {
+
+    @Test
+    public void testAnnotationBasedProperties() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
+                    new MockAnnotationBasedCallbackReceiver();
+            List<JavetCallbackContext> javetCallbackContexts =
+                    v8ValueObject.bindProperties(mockAnnotationBasedCallbackReceiver);
+            assertEquals(3, javetCallbackContexts.size());
+            assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
+            assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
+            v8Runtime.getExecutor("a.stringValue = 'abc';").executeVoid();
+            assertEquals(2, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals("abc", v8Runtime.getExecutor("a.stringValue").executeString());
+            assertEquals(3, mockAnnotationBasedCallbackReceiver.getCount());
+            v8Runtime.getGlobalObject().delete("a");
+        }
+        v8Runtime.requestGarbageCollectionForTesting(true);
+    }
+
     @Test
     public void testClearWeak() throws JavetException {
         V8ValueObject a = v8Runtime.createV8ValueObject();

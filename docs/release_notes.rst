@@ -2,6 +2,15 @@
 Release Notes
 =============
 
+0.8.9
+-----
+
+* Renamed ``setFunction()`` to ``bindFunction()`` in ``IV8ValueObject``
+* Renamed ``setFunctions()`` to ``bindFunctions()`` in ``IV8ValueObject``
+* Added ``disableInDebugMode()`` and ``enableInDebugMode()`` to ``JavetEngineGuard``
+* Added ``bind()``, ``bindProperty()`` and ``bindProperties()`` in ``IV8ValueObject``
+* Added ``@V8Property`` for ``IV8ValueObject.bindProperties()``
+
 0.8.8
 -----
 

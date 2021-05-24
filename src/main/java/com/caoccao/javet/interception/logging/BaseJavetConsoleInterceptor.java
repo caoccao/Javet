@@ -81,7 +81,7 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     protected void register(IV8ValueObject iV8ValueObject, String jsFunctionName, String javaFunctionName)
             throws JavetException {
         try {
-            iV8ValueObject.setFunction(
+            iV8ValueObject.bindFunction(
                     jsFunctionName,
                     new JavetCallbackContext(this,
                             getClass().getMethod(javaFunctionName, V8Value[].class)));

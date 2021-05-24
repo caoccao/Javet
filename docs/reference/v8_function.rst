@@ -29,22 +29,31 @@ Function Interception
 
 Functions can be intercepted via Javet API. This is equivalent to the capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interceptor. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.
 
-``com.caoccao.javet.values.reference.IV8ValueObject`` exposes a set of ``setFunction`` and ``setFunctions`` that allow caller to register function interceptors in automatic or manual ways.
+``com.caoccao.javet.values.reference.IV8ValueObject`` exposes a set of ``bindFunction`` and ``bindFunctions`` that allow caller to register function interceptors in automatic or manual ways.
 
 Automatic Registration
 ----------------------
 
-``List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver, ...)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bind, bindFunctions, bindProperties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call. Actually, there are 3 overloaded methods.
+``bindFunctions`` scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call.
+
+``bindProperties`` scans the input callback receiver for functions decorated by ``@V8Property``. It allows registering many getters and setters in one call.
+
+``bind`` calls ``bindFunctions`` and ``bindProperties`` internally, in case a complete registration is needed.
 
 .. code-block:: java
 
-    List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver);
-    List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver, boolean thisObjectRequired);
+    List<JavetCallbackContext> bind(Object functionCallbackReceiver, boolean thisObjectRequired);
+    List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver);
+    List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired);
+    List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver);
 
-Creating native V8Value objects is trick in the callback receiver. There are typically 2 options.
+How about Object Type Conversion?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As V8 only accepts data represented by its own format, Java objects need to be converted to native ``V8Value`` objects. Creating native ``V8Value`` objects is trick in the callback receiver. There are typically 2 options.
 
 1. Enhance the `Object Converter <object_converter.rst>`_ and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
 
@@ -60,9 +69,23 @@ The first step is to declare callback receiver and callback functions. That is q
 
     public class AnnotationBasedCallbackReceiver {
         private V8Runtime v8Runtime;
+        private String stringValue;
 
         public AnnotationBasedCallbackReceiver() {
+            stringValue = null;
             v8Runtime = null;
+        }
+
+        // Javet detects the getter automatically.
+        @V8Property(name = "stringValue")
+        public String getStringValue() {
+            return stringValue;
+        }
+
+        // Javet detects the setter and property name automatically.
+        @V8Property
+        public void setStringValue(String stringValue) {
+            this.stringValue = stringValue;
         }
 
         // Instance method with same name and same signature.
@@ -106,14 +129,14 @@ The first step is to declare callback receiver and callback functions. That is q
         }
     }
 
-The second step is to call the functions.
+The second step is to call the functions or properties.
 
 .. code-block:: java
 
     try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
         v8Runtime.getGlobalObject().set("a", v8ValueObject);
         AnnotationBasedCallbackReceiver annotationBasedCallbackReceiver = new AnnotationBasedCallbackReceiver();
-        v8ValueObject.setFunctions(annotationBasedCallbackReceiver);
+        v8ValueObject.bindFunctions(annotationBasedCallbackReceiver);
         assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
         assertEquals(3, v8Runtime.getExecutor("a.add(1, 2)").executeInteger());
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
@@ -125,6 +148,8 @@ The second step is to call the functions.
             assertEquals("[\"a\",1]", v8ValueArray.toJsonString());
         }
         assertEquals("static", v8Runtime.getExecutor("a.staticEcho('static')").executeString());
+        v8Runtime.getExecutor("a.stringValue = 'abc';").executeVoid();
+        assertEquals("abc", v8Runtime.getExecutor("a.stringValue").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 
@@ -133,15 +158,15 @@ Manual Registration
 
 Manual registration allows the applications to have full control over every step of the function interception.
 
-``boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext)``
+``boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method is for setting up Java code based function in semi-manual way. The caller is expected to do the following steps.
+This method is for binding a Java code based function in semi-manual way. The caller is expected to do the following steps.
 
 * Create a callback receiver.
 * Find certain callback method in the callback receiver.
 * Create ``JavetCallbackContext`` by the callback receiver and callback method.
-* Bind the callback context to a V8 object via ``setFunction``.
+* Bind the callback context to a V8 object via ``bindFunction``.
 * Call the function to trigger the callback.
 
 .. code-block:: java
@@ -150,14 +175,14 @@ This method is for setting up Java code based function in semi-manual way. The c
     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
             mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
     V8ValueObject globalObject = v8Runtime.getGlobalObject();
-    globalObject.setFunction("blank", javetCallbackContext);
+    globalObject.bindFunction("blank", javetCallbackContext);
     v8Runtime.getExecutor("blank();").executeVoid();
     globalObject.delete("blank");
 
 ``boolean set(String key, V8Value value)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method is for setting up Java code based function in complete manual way. The caller is expected to do the following steps.
+This method is for binding a Java code based function in complete manual way. The caller is expected to do the following steps.
 
 * Create a callback receiver.
 * Find certain callback method in the callback receiver.
@@ -183,14 +208,14 @@ This method is for setting up Java code based function in complete manual way. T
         globalObject.delete("a");
     }
 
-``boolean setFunction(String functionName, String codeString)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``boolean bindFunction(String functionName, String codeString)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This method is for setting up JavaScript code based function.
+This method is for binding a JavaScript code based function.
 
 .. code-block:: java
 
-    v8Runtime.getGlobalObject().setFunction("b", "(x) => x + 1;");
+    v8Runtime.getGlobalObject().bindFunction("b", "(x) => x + 1;");
     assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
     v8Runtime.getGlobalObject().delete("b");
 

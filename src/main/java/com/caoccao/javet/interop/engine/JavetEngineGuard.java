@@ -22,6 +22,7 @@ import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 
+import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -29,17 +30,22 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class JavetEngineGuard implements IJavetEngineGuard {
-    protected long timeoutMillis;
+    protected static final boolean IS_IN_DEBUG_MODE = ManagementFactory.getRuntimeMXBean().
+            getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+
+    protected Future future;
     protected IJavetEngine iJavetEngine;
     protected boolean quitting;
+    protected boolean skipInDebugMode;
+    protected long timeoutMillis;
     protected V8Runtime v8Runtime;
-    protected Future future;
 
     public JavetEngineGuard(IJavetEngine iJavetEngine, V8Runtime v8Runtime, long timeoutMills) {
         Objects.requireNonNull(iJavetEngine);
         this.iJavetEngine = iJavetEngine;
-        this.timeoutMillis = timeoutMills;
         quitting = false;
+        skipInDebugMode = true;
+        this.timeoutMillis = timeoutMills;
         this.v8Runtime = v8Runtime;
         future = this.iJavetEngine.getConfig().getExecutorService().submit(this);
     }
@@ -55,6 +61,16 @@ public class JavetEngineGuard implements IJavetEngineGuard {
         if (!future.isDone() && !future.isCancelled()) {
             future.cancel(true);
         }
+    }
+
+    @Override
+    public void disableInDebugMode() {
+        skipInDebugMode = true;
+    }
+
+    @Override
+    public void enableInDebugMode() {
+        skipInDebugMode = false;
     }
 
     @Override
@@ -81,6 +97,9 @@ public class JavetEngineGuard implements IJavetEngineGuard {
         IJavetLogger logger = config.getJavetLogger();
         ZonedDateTime startZonedDateTime = getUTCNow();
         while (!isQuitting() && iJavetEngine.isActive()) {
+            if (skipInDebugMode && IS_IN_DEBUG_MODE) {
+                break;
+            }
             ZonedDateTime currentZonedDateTime = getUTCNow();
             if (startZonedDateTime.plusNanos(TimeUnit.MILLISECONDS.toNanos(timeoutMillis))
                     .isBefore(currentZonedDateTime)) {

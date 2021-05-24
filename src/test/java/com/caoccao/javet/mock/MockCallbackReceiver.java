@@ -32,10 +32,12 @@ import java.util.List;
 
 public class MockCallbackReceiver extends JavetCallbackReceiver {
     protected boolean called;
+    protected String value;
 
     public MockCallbackReceiver(V8Runtime v8Runtime) {
         super(v8Runtime);
         called = false;
+        value = null;
     }
 
     public boolean isCalled() {
@@ -125,6 +127,16 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
     public void error() throws Exception {
         called = true;
         throw new Exception("Mock error");
+    }
+
+    public String getValue() {
+        called = true;
+        return value;
+    }
+
+    public void setValue(String value) {
+        called = true;
+        this.value = value;
     }
 
     public String joinWithThis(
