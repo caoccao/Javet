@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.8.10
+------
+
+* Renamed ``IJavetConsumer`` to ``IJavetUniConsumer``
+* Added ``IJavetUniIndexedConsumer`` and ``IJavetBiIndexedConsumer``
+
 0.8.9
 -----
 

@@ -46,6 +46,16 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
                 assertEquals(Integer.toString(count.get()), key.getValue());
                 assertEquals(count.getAndIncrement(), value.getValue());
             }));
+            assertEquals(3, v8ValueMap.forEach((int index, V8ValueString key) -> {
+                assertNotNull(key);
+                assertEquals(Integer.toString(index), key.getValue());
+            }));
+            assertEquals(3, v8ValueMap.forEach((int index, V8ValueString key, V8ValueInteger value) -> {
+                assertNotNull(key);
+                assertNotNull(value);
+                assertEquals(Integer.toString(index), key.getValue());
+                assertEquals(index, value.getValue());
+            }));
         }
     }
 

@@ -19,7 +19,8 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interfaces.IJavetUniConsumer;
+import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.ArrayList;
@@ -41,12 +42,24 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     @Override
     public <Value extends V8Value, E extends Throwable> int forEach(
-            IJavetConsumer<Value, E> consumer) throws JavetException, E {
+            IJavetUniConsumer<Value, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         final int length = getLength();
         for (int i = 0; i < length; ++i) {
             try (Value value = get(i)) {
                 consumer.accept(value);
+            }
+        }
+        return length;
+    }
+
+    @Override
+    public <Value extends V8Value, E extends Throwable> int forEach(IJavetUniIndexedConsumer<Value, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        final int length = getLength();
+        for (int i = 0; i < length; ++i) {
+            try (Value value = get(i)) {
+                consumer.accept(i, value);
             }
         }
         return length;

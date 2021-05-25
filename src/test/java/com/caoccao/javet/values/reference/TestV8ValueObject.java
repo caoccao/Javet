@@ -97,6 +97,13 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 assertEquals("A" + Integer.toString(count.get()), key.getValue());
                 assertEquals(count.getAndIncrement(), value.getValue());
             }));
+            assertEquals(3, v8ValueObject.forEach((int index, V8ValueString key) -> {
+                assertEquals("A" + Integer.toString(index), key.getValue());
+            }));
+            assertEquals(3, v8ValueObject.forEach((int index, V8ValueString key, V8ValueInteger value) -> {
+                assertEquals("A" + Integer.toString(index), key.getValue());
+                assertEquals(index, value.getValue());
+            }));
         }
     }
 

@@ -24,7 +24,9 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
-import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
+import com.caoccao.javet.interfaces.IJavetUniConsumer;
+import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
@@ -224,7 +226,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetConsumer<Key, E> consumer) throws JavetException, E {
+            IJavetUniConsumer<Key, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach(consumer);
+        }
+    }
+
+    @Override
+    public <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
             return iV8ValueArray.forEach(consumer);
@@ -239,6 +250,19 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
             return iV8ValueArray.forEach((Key key) -> {
                 try (Value value = get(key)) {
                     consumer.accept(key, value);
+                }
+            });
+        }
+    }
+
+    @Override
+    public <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiIndexedConsumer<Key, Value, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach((int index, Key key) -> {
+                try (Value value = get(key)) {
+                    consumer.accept(index, key, value);
                 }
             });
         }

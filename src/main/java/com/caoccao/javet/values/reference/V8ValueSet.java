@@ -19,7 +19,8 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interfaces.IJavetUniConsumer;
+import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValue;
 
@@ -44,7 +45,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
 
     @Override
     public <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetConsumer<Key, E> consumer) throws JavetException, E {
+            IJavetUniConsumer<Key, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         int count = 0;
         try (IV8ValueIterator<V8Value> iterator = getKeys()) {
@@ -54,6 +55,25 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
                         break;
                     }
                     consumer.accept(key);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        int count = 0;
+        try (IV8ValueIterator<V8Value> iterator = getKeys()) {
+            while (true) {
+                try (Key key = (Key) iterator.getNext()) {
+                    if (key == null) {
+                        break;
+                    }
+                    consumer.accept(count, key);
                     count++;
                 }
             }

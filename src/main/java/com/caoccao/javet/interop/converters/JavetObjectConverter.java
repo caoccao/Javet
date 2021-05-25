@@ -63,7 +63,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (v8Value instanceof V8ValueMap) {
             V8ValueMap v8ValueMap = (V8ValueMap) v8Value;
             Map<String, Object> map = createEntityMap();
-            v8ValueMap.forEach((key, value) -> map.put(key.toString(), toObject(value)));
+            v8ValueMap.forEach((V8Value key, V8Value value) -> map.put(key.toString(), toObject(value)));
             return map;
         } else if (v8Value instanceof V8ValueTypedArray) {
             V8ValueTypedArray v8ValueTypedArray = (V8ValueTypedArray) v8Value;

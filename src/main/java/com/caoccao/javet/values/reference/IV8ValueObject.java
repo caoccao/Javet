@@ -19,7 +19,9 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
-import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
+import com.caoccao.javet.interfaces.IJavetUniConsumer;
+import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
@@ -206,7 +208,21 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @throws E              the exception
      */
-    <Key extends V8Value, E extends Throwable> int forEach(IJavetConsumer<Key, E> consumer) throws JavetException, E;
+    <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniConsumer<Key, E> consumer) throws JavetException, E;
+
+    /**
+     * For each.
+     *
+     * @param <Key>    the type of key
+     * @param <E>      the type of exception
+     * @param consumer the consumer
+     * @return the item count
+     * @throws JavetException the javet exception
+     * @throws E              the exception
+     */
+    <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E;
 
     /**
      * For each.
@@ -221,6 +237,20 @@ public interface IV8ValueObject extends IV8ValueReference {
      */
     <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
             IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E;
+
+    /**
+     * For each.
+     *
+     * @param <Key>    the type of key
+     * @param <Value>  the type of value
+     * @param <E>      the type of exception
+     * @param consumer the consumer
+     * @return the item count
+     * @throws JavetException the javet exception
+     * @throws E              the exception
+     */
+    <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiIndexedConsumer<Key, Value, E> consumer) throws JavetException, E;
 
     /**
      * Get t.

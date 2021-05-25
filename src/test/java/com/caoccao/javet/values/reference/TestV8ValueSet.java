@@ -68,6 +68,9 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
             assertEquals(3, v8ValueSet.forEach((V8ValueString key) -> {
                 assertEquals(Integer.toString(count.getAndIncrement()), key.getValue());
             }));
+            assertEquals(3, v8ValueSet.forEach((int index, V8ValueString key) -> {
+                assertEquals(Integer.toString(index), key.getValue());
+            }));
         }
     }
 

@@ -36,6 +36,9 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             v8ValueArray.forEach((V8ValueInteger value) -> {
                 assertEquals(count.getAndIncrement(), value.getValue());
             });
+            v8ValueArray.forEach((int index, V8ValueInteger value) -> {
+                assertEquals(index, value.getValue());
+            });
         }
     }
 

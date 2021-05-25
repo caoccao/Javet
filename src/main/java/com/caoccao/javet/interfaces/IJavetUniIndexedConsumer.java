@@ -20,6 +20,6 @@ package com.caoccao.javet.interfaces;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
-public interface IJavetConsumer<T extends V8Value, E extends Throwable> {
-    void accept(T value) throws JavetException, E;
+public interface IJavetUniIndexedConsumer<T extends V8Value, E extends Throwable> {
+    void accept(int index, T value) throws JavetException, E;
 }
