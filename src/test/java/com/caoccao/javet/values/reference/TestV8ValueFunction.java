@@ -293,11 +293,18 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
             globalObject.set("echoString", v8ValueFunction);
-            assertFalse(mockCallbackReceiver.isCalled());
-            assertEquals("abc", v8Runtime.getExecutor("const a = echoString('abc'); a;").executeString());
         }
-        globalObject.delete("echoString");
+        assertFalse(mockCallbackReceiver.isCalled());
+        assertEquals("abc", v8Runtime.getExecutor("echoString('abc')").executeString());
         assertTrue(mockCallbackReceiver.isCalled());
+        globalObject.delete("echoString");
+        javetCallbackContext = new JavetCallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoString", V8Value[].class));
+        globalObject.bindFunction("echoString", javetCallbackContext);
+        assertEquals("abc", v8Runtime.getExecutor("echoString('abc')").executeString());
+        assertEquals("abc,def", v8Runtime.getExecutor("echoString('abc', 'def')").executeString());
+        assertEquals("", v8Runtime.getExecutor("echoString()").executeString());
+        globalObject.delete("echoString");
         v8Runtime.requestGarbageCollectionForTesting(true);
     }
 

@@ -199,7 +199,14 @@ public final class V8FunctionCallback {
                     }
                 }
                 if (values.isEmpty()) {
-                    resultObject = method.invoke(callbackReceiver);
+                    if (method.isVarArgs()) {
+                        Class<?>[] parameterTypes = method.getParameterTypes();
+                        Class<?> parameterClass = parameterTypes[parameterTypes.length - 1];
+                        Object varObject = Array.newInstance(parameterClass.getComponentType(), 0);
+                        resultObject = method.invoke(callbackReceiver, varObject);
+                    } else {
+                        resultObject = method.invoke(callbackReceiver);
+                    }
                 } else {
                     final int length = values.size();
                     List<Object> objectValues = new ArrayList<>();

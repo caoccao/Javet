@@ -7,6 +7,7 @@ Release Notes
 
 * Renamed ``IJavetConsumer`` to ``IJavetUniConsumer``
 * Added ``IJavetUniIndexedConsumer`` and ``IJavetBiIndexedConsumer``
+* Fixed a bug in ``V8FunctionCallback`` on varargs
 
 0.8.9
 -----

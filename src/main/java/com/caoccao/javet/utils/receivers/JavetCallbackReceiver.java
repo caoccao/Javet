@@ -19,7 +19,6 @@ package com.caoccao.javet.utils.receivers;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
@@ -33,6 +32,7 @@ import java.util.Objects;
  * It is supposed to provide a common ground for customized V8 callback receiver.
  */
 public class JavetCallbackReceiver implements IJavetCallbackReceiver {
+    protected static final String COMMA = ",";
     /**
      * The V8 runtime.
      */
@@ -116,6 +116,6 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
         for (V8Value arg : args) {
             stringList.add(arg == null ? null : arg.toString());
         }
-        return String.join(JavetOSUtils.LINE_SEPARATOR, stringList);
+        return String.join(COMMA, stringList);
     }
 }
