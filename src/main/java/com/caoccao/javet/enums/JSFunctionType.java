@@ -6,8 +6,8 @@ public enum JSFunctionType {
     UserDefined(2, "UserDefined"),
     Unknown(3, "Unknown");
 
-    private int id;
-    private String name;
+    private final int id;
+    private final String name;
 
     JSFunctionType(int id, String name) {
         this.id = id;

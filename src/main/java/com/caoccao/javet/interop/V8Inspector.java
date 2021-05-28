@@ -27,10 +27,10 @@ import java.util.Objects;
 
 public final class V8Inspector {
     private IJavetLogger logger;
-    private String name;
-    private List<IV8InspectorListener> listeners;
-    private IV8Native v8Native;
-    private V8Runtime v8Runtime;
+    private final String name;
+    private final List<IV8InspectorListener> listeners;
+    private final IV8Native v8Native;
+    private final V8Runtime v8Runtime;
 
     V8Inspector(V8Runtime v8Runtime, String name, IV8Native v8Native) {
         logger = v8Runtime.getLogger();
@@ -108,6 +108,7 @@ public final class V8Inspector {
         }
     }
 
+    @SuppressWarnings("RedundantThrows")
     public void sendRequest(String message) throws JavetException {
         logger.logDebug("Sending request: {0}", message);
         for (IV8InspectorListener listener : listeners) {

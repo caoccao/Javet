@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
@@ -33,12 +34,14 @@ public class V8Module extends V8ValueReference implements IV8Module {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T evaluate(boolean resultRequired) throws JavetException {
         checkV8Runtime();
         return v8Runtime.moduleEvaluate(this, resultRequired);
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueError getException() throws JavetException {
         checkV8Runtime();
         return v8Runtime.moduleGetException(this);
@@ -53,6 +56,7 @@ public class V8Module extends V8ValueReference implements IV8Module {
      * @return the namespace
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     public V8ValueObject getNamespace() throws JavetException {
         checkV8Runtime();
         return v8Runtime.moduleGetNamespace(this);
@@ -91,6 +95,7 @@ public class V8Module extends V8ValueReference implements IV8Module {
     }
 
     @Override
+    @CheckReturnValue
     public V8Module toClone() throws JavetException {
         return this;
     }

@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
@@ -82,6 +83,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
+    @CheckReturnValue
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
         checkV8Runtime();
         return invoke(FUNCTION_ENTRIES);
@@ -93,6 +95,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
+    @CheckReturnValue
     public IV8ValueIterator<V8Value> getKeys() throws JavetException {
         checkV8Runtime();
         return invoke(FUNCTION_KEYS);

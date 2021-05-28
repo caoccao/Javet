@@ -17,11 +17,11 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 
-@SuppressWarnings("unchecked")
 public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements IV8ValueIterator<T> {
     protected static final String FUNCTION_NEXT = "next";
     protected static final String PROPERTY_DONE = "done";
@@ -37,12 +37,13 @@ public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements
     }
 
     @Override
+    @CheckReturnValue
     public T getNext() {
         try (V8ValueObject next = invoke(FUNCTION_NEXT)) {
             if (!next.getBoolean(PROPERTY_DONE)) {
                 return next.get(PROPERTY_VALUE);
             }
-        } catch (JavetException javetException) {
+        } catch (JavetException ignored) {
         }
         return null;
     }

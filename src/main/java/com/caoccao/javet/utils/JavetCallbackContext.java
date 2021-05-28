@@ -26,11 +26,11 @@ public final class JavetCallbackContext {
             "Callback receiver or callback method is invalid";
     private static final String ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
             "Javet callback context handle is invalid";
-    private Method callbackMethod;
-    private Object callbackReceiver;
+    private final Method callbackMethod;
+    private final Object callbackReceiver;
     private long handle;
-    private boolean returnResult;
-    private boolean thisObjectRequired;
+    private final boolean returnResult;
+    private final boolean thisObjectRequired;
 
     public JavetCallbackContext(
             Object callbackReceiver,

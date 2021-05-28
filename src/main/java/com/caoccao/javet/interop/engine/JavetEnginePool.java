@@ -30,13 +30,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("unchecked")
 public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>, Runnable {
+    protected final Object externalLock;
     protected JavetEngineConfig config;
     protected ConcurrentLinkedQueue<JavetEngine<R>> activeEngineList;
     protected Thread daemonThread;
     protected ConcurrentLinkedQueue<JavetEngine<R>> idleEngineList;
-    protected Object externalLock;
     protected boolean active;
     protected boolean quitting;
 
@@ -57,6 +56,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
 
     protected JavetEngine<R> createEngine() throws JavetException {
         V8Host v8Host = V8Host.getInstance(config.getJSRuntimeType());
+        @SuppressWarnings("ConstantConditions")
         R v8Runtime = v8Host.createV8Runtime(true, config.getGlobalName());
         v8Runtime.allowEval(config.isAllowEval());
         v8Runtime.setLogger(config.getJavetLogger());
@@ -99,6 +99,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 logger.logError(e, "Failed to sleep a while to wait for an idle engine.");
             }
         }
+        @SuppressWarnings("ConstantConditions")
         JavetEngineUsage usage = engine.getUsage();
         usage.increaseUsedCount();
         logger.debug("JavetEnginePool.getEngine() ends.");
@@ -125,7 +126,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     }
 
     @Override
-    public void releaseEngine(IJavetEngine engine) {
+    public void releaseEngine(IJavetEngine<R> engine) {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.releaseEngine() begins.");
         synchronized (externalLock) {
@@ -244,6 +245,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         quitting = true;
         try {
             config.getExecutorService().shutdown();
+            //noinspection ResultOfMethodCallIgnored
             config.getExecutorService().awaitTermination(config.getPoolShutdownTimeoutSeconds(), TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.logError(e, e.getMessage());

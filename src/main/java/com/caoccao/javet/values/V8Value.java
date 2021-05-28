@@ -17,13 +17,13 @@
 
 package com.caoccao.javet.values;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
 import java.util.Objects;
 
-@SuppressWarnings("unchecked")
 public abstract class V8Value extends V8Data implements IV8Value {
     protected V8Runtime v8Runtime;
 
@@ -44,6 +44,7 @@ public abstract class V8Value extends V8Data implements IV8Value {
     public abstract boolean equals(V8Value v8Value) throws JavetException;
 
     @Override
+    @CheckReturnValue
     public abstract <T extends V8Value> T toClone() throws JavetException;
 
     public V8Runtime getV8Runtime() {

@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop.engine;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
@@ -24,7 +25,6 @@ import com.caoccao.javet.utils.JavetDateTimeUtils;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-@SuppressWarnings("unchecked")
 public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     protected boolean active;
     protected IJavetEnginePool<R> iJavetEnginePool;
@@ -67,11 +67,13 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     }
 
     @Override
+    @CheckReturnValue
     public IJavetEngineGuard getGuard() {
         return getGuard(iJavetEnginePool.getConfig().getDefaultEngineGuardTimeoutMillis());
     }
 
     @Override
+    @CheckReturnValue
     public IJavetEngineGuard getGuard(long timeoutMillis) {
         return new JavetEngineGuard(this, v8Runtime, timeoutMillis);
     }
@@ -83,7 +85,7 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     @Override
     public R getV8Runtime() throws JavetException {
         setActive(true);
-        return (R) v8Runtime;
+        return v8Runtime;
     }
 
     /**

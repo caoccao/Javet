@@ -35,8 +35,6 @@ public final class V8ValueUtils {
         if (delimiter == null) {
             delimiter = EMPTY;
         }
-        return String.join(
-                delimiter,
-                Arrays.stream(v8Values).map(V8Value::toString).collect(Collectors.toList()));
+        return Arrays.stream(v8Values).map(V8Value::toString).collect(Collectors.joining(delimiter));
     }
 }

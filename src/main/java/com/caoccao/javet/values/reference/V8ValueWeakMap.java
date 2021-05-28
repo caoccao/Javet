@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -41,12 +42,14 @@ public class V8ValueWeakMap extends V8ValueObject {
         return true;
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T get(String key) throws JavetException {
         checkV8Runtime();
         return v8Runtime.get(this, v8Runtime.createV8ValueString(key));
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T get(Object key) throws JavetException {
         Objects.requireNonNull(key);
         if (!(key instanceof IV8ValueObject)) {
@@ -80,6 +83,7 @@ public class V8ValueWeakMap extends V8ValueObject {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueWeakMap toClone() throws JavetException {
         checkV8Runtime();
         return v8Runtime.cloneV8Value(this);

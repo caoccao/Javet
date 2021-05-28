@@ -29,9 +29,9 @@ import java.util.Objects;
  * It's designed for performance sensitive scenarios.
  */
 public final class V8Locker implements IJavetClosable {
-    private long threadId;
-    private IV8Native v8Native;
-    private V8Runtime v8Runtime;
+    private final long threadId;
+    private final IV8Native v8Native;
+    private final V8Runtime v8Runtime;
 
     /**
      * Instantiates a new V8 locker.

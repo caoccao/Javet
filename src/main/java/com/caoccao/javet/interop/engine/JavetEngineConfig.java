@@ -58,6 +58,7 @@ public final class JavetEngineConfig {
         reset();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig reset() {
         javetLogger = DEFAULT_JAVET_LOGGER;
         globalName = DEFAULT_GLOBAL_NAME;
@@ -109,6 +110,7 @@ public final class JavetEngineConfig {
         return executorService;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     JavetEngineConfig setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
         return this;
@@ -137,6 +139,7 @@ public final class JavetEngineConfig {
         return engineGuardCheckIntervalMillis;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setEngineGuardCheckIntervalMillis(int engineGuardCheckIntervalMillis) {
         this.engineGuardCheckIntervalMillis = engineGuardCheckIntervalMillis;
         return this;
@@ -219,6 +222,7 @@ public final class JavetEngineConfig {
         return poolDaemonCheckIntervalMillis;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setPoolDaemonCheckIntervalMillis(int poolDaemonCheckIntervalMillis) {
         this.poolDaemonCheckIntervalMillis = poolDaemonCheckIntervalMillis;
         return this;

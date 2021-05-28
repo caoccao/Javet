@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -60,6 +61,7 @@ public class V8ValueWeakSet extends V8ValueObject {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueWeakSet toClone() throws JavetException {
         checkV8Runtime();
         return v8Runtime.cloneV8Value(this);

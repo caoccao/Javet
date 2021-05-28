@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 
@@ -110,6 +111,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueArrayBuffer getBuffer() throws JavetException {
         return get(PROPERTY_BUFFER);
     }

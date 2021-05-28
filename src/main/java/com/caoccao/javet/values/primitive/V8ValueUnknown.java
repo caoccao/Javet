@@ -18,7 +18,6 @@
 package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
 public final class V8ValueUnknown extends V8ValuePrimitive<String> {

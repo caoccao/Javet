@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop.converters;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -70,5 +71,6 @@ public interface IJavetConverter {
         }
     }
 
+    @CheckReturnValue
     <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException;
 }

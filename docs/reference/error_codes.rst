@@ -51,3 +51,10 @@ Code Type        Name                                   Format
 
 
 [`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]
+====================================================================================================================================
+
+
+.. Error Codes End
+
+
+[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

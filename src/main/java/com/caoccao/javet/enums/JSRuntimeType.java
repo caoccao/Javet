@@ -21,8 +21,8 @@ public enum JSRuntimeType {
     Node("node", "8.4.371.19-node.18"),
     V8("v8", "9.0.257");
 
-    private String name;
-    private String version;
+    private final String name;
+    private final String version;
 
     JSRuntimeType(String name, String version) {
         this.name = name;

@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference.builtin;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -38,6 +39,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
         super(handle);
     }
 
+    @CheckReturnValue
     public V8ValuePromise all(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invoke(FUNCTION_ALL, v8Value);
@@ -48,6 +50,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
         invokeVoid(FUNCTION_ALL, v8Value);
     }
 
+    @CheckReturnValue
     public V8ValuePromise allSettled(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invoke(FUNCTION_ALL_SETTLED, v8Value);
@@ -58,6 +61,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
         invokeVoid(FUNCTION_ALL_SETTLED, v8Value);
     }
 
+    @CheckReturnValue
     public V8ValuePromise any(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invoke(FUNCTION_ANY, v8Value);
@@ -68,6 +72,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
         invokeVoid(FUNCTION_ANY, v8Value);
     }
 
+    @CheckReturnValue
     public V8ValuePromise race(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invoke(FUNCTION_RACE, v8Value);
@@ -83,6 +88,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
         invokeVoid(FUNCTION_REJECT, v8Value);
     }
 
+    @CheckReturnValue
     public V8ValuePromise reject(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invoke(FUNCTION_REJECT, v8Value);
@@ -93,6 +99,7 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
         invokeVoid(FUNCTION_RESOLVE, v8Value);
     }
 
+    @CheckReturnValue
     public V8ValuePromise resolve(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invoke(FUNCTION_RESOLVE, v8Value);

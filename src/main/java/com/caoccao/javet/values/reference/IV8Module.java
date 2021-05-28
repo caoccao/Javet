@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.IV8Executable;
 import com.caoccao.javet.values.V8Value;
@@ -30,13 +31,16 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
     int Evaluated = 4;
     int Errored = 5;
 
+    @CheckReturnValue
     default <T extends V8Value> T evaluate() throws JavetException {
         return evaluate(true);
     }
 
+    @CheckReturnValue
     <T extends V8Value> T evaluate(boolean resultRequired) throws JavetException;
 
     @Override
+    @CheckReturnValue
     default <T extends V8Value> T execute(boolean resultRequired) throws JavetException {
         if (getStatus() == Uninstantiated) {
             if (!instantiate()) {
@@ -44,11 +48,12 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
             }
         }
         if (getStatus() == Instantiated) {
-            return (T) evaluate(resultRequired);
+            return evaluate(resultRequired);
         }
         return (T) getV8Runtime().createV8ValueUndefined();
     }
 
+    @CheckReturnValue
     V8ValueError getException() throws JavetException;
 
     String getResourceName();
@@ -70,12 +75,13 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
     boolean instantiate() throws JavetException;
 
     @Override
-    default <T extends Object, V extends V8Value> T toObject(V v8Value) throws JavetException {
+    default <T, V extends V8Value> T toObject(V v8Value) throws JavetException {
         return getV8Runtime().toObject(v8Value);
     }
 
     @Override
-    default <T extends Object, V extends V8Value> V toV8Value(T object) throws JavetException {
+    @CheckReturnValue
+    default <T, V extends V8Value> V toV8Value(T object) throws JavetException {
         return getV8Runtime().toV8Value(object);
     }
 }

@@ -36,6 +36,7 @@ public class JavetEntityMap extends HashMap<String, Object> {
         super(m);
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public Object clone() {
         return new JavetEntityMap(this);

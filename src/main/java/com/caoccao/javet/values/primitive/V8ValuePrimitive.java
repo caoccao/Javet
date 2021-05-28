@@ -20,8 +20,7 @@ package com.caoccao.javet.values.primitive;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
-@SuppressWarnings("unchecked")
-public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
+public abstract class V8ValuePrimitive<T> extends V8Value {
     protected T value;
 
     public V8ValuePrimitive() {
@@ -39,7 +38,7 @@ public abstract class V8ValuePrimitive<T extends Object> extends V8Value {
 
     @Override
     public boolean equals(V8Value v8Value) {
-        if (v8Value == null || !(v8Value instanceof V8ValuePrimitive)) {
+        if (!(v8Value instanceof V8ValuePrimitive)) {
             return false;
         }
         if (v8Value.getClass() != this.getClass()) {

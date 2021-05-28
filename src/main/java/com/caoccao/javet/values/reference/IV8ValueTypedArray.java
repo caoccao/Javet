@@ -17,9 +17,11 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 
 public interface IV8ValueTypedArray extends IV8ValueObject {
+    @CheckReturnValue
     V8ValueArrayBuffer getBuffer() throws JavetException;
 
     int getByteLength() throws JavetException;

@@ -9,6 +9,7 @@ Release Notes
 * Added ``IJavetUniIndexedConsumer`` and ``IJavetBiIndexedConsumer``
 * Fixed a bug in ``V8FunctionCallback`` on varargs
 * Deprecated ``bindFunctions()`` and ``bindProperties()``
+* Added ``@CheckReturnValue`` to warn ignored return value
 
 0.8.9
 -----

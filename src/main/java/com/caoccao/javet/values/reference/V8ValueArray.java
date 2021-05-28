@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
@@ -27,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("unchecked")
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     protected static final String FUNCTION_NEXT = "next";
     protected static final String FUNCTION_KEYS = "keys";
@@ -54,7 +54,8 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public <Value extends V8Value, E extends Throwable> int forEach(IJavetUniIndexedConsumer<Value, E> consumer) throws JavetException, E {
+    public <Value extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Value, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         final int length = getLength();
         for (int i = 0; i < length; ++i) {
@@ -66,6 +67,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T get(int index) throws JavetException {
         checkV8Runtime();
         return v8Runtime.get(this, v8Runtime.createV8ValueInteger(index));
@@ -100,6 +102,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T pop() throws JavetException {
         checkV8Runtime();
         return invoke(FUNCTION_POP);

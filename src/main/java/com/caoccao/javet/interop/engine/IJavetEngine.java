@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop.engine;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
@@ -27,8 +28,10 @@ public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
 
     R getV8Runtime() throws JavetException;
 
+    @CheckReturnValue
     IJavetEngineGuard getGuard();
 
+    @CheckReturnValue
     IJavetEngineGuard getGuard(long timeoutMillis);
 
     boolean isActive();

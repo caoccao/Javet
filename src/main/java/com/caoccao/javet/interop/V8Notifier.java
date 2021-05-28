@@ -26,7 +26,7 @@ import java.lang.management.MemoryNotificationInfo;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class V8Notifier implements NotificationListener {
-    private ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
+    private final ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
 
     public V8Notifier(ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap) {
         this.v8RuntimeMap = v8RuntimeMap;
@@ -48,7 +48,7 @@ public final class V8Notifier implements NotificationListener {
         NotificationEmitter notificationEmitter = (NotificationEmitter) ManagementFactory.getMemoryMXBean();
         try {
             notificationEmitter.removeNotificationListener(this, null, null);
-        } catch (ListenerNotFoundException e) {
+        } catch (ListenerNotFoundException ignored) {
         }
         notificationEmitter.addNotificationListener(this, null, null);
     }
@@ -57,7 +57,7 @@ public final class V8Notifier implements NotificationListener {
         try {
             NotificationEmitter notificationEmitter = (NotificationEmitter) ManagementFactory.getMemoryMXBean();
             notificationEmitter.removeNotificationListener(this, null, null);
-        } catch (ListenerNotFoundException e) {
+        } catch (ListenerNotFoundException ignored) {
         }
     }
 }

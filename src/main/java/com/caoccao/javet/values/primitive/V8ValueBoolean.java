@@ -35,6 +35,6 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
     }
 
     public boolean toPrimitive() {
-        return value.booleanValue();
+        return value;
     }
 }

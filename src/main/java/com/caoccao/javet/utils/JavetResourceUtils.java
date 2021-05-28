@@ -40,7 +40,7 @@ public final class JavetResourceUtils {
         if (object instanceof IJavetClosable) {
             try {
                 ((IJavetClosable) object).close();
-            } catch (JavetException e) {
+            } catch (JavetException ignored) {
             }
         } else if (object instanceof V8Value[]) {
             for (V8Value v8Value : (V8Value[]) object) {
@@ -51,7 +51,7 @@ public final class JavetResourceUtils {
                 safeClose(o);
             }
         } else if (object instanceof Collection) {
-            for (Object o : (Collection) object) {
+            for (Object o : (Collection<?>) object) {
                 safeClose(o);
             }
         }

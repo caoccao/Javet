@@ -61,7 +61,7 @@ public class JavetDefaultLogger implements IJavetLogger {
                 cause.printStackTrace(printStream);
                 logger.severe(byteArrayOutputStream.toString(StandardCharsets.UTF_8.name()));
             }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
     }
 

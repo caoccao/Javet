@@ -32,10 +32,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public final class V8FunctionCallback {
 
-    private static Object convert(IJavetConverter converter, Class expectedClass, V8Value v8Value)
+    private static Object convert(IJavetConverter converter, Class<?> expectedClass, V8Value v8Value)
             throws JavetException {
         if (v8Value == null) {
             // This check is for null safety.
@@ -69,7 +68,7 @@ public final class V8FunctionCallback {
             if (convertedObject == null) {
                 return convert(converter, expectedClass, null);
             } else {
-                Class convertedObjectClass = convertedObject.getClass();
+                Class<?> convertedObjectClass = convertedObject.getClass();
                 if (expectedClass.isAssignableFrom(convertedObjectClass)) {
                     return convertedObject;
                 } else if (expectedClass.isPrimitive()) {
@@ -79,6 +78,7 @@ public final class V8FunctionCallback {
                      */
                     if (expectedClass == int.class) {
                         if (convertedObjectClass == Integer.class) {
+                            //noinspection UnnecessaryUnboxing
                             return ((Integer) convertedObject).intValue();
                         } else if (convertedObjectClass == Long.class) {
                             return ((Long) convertedObject).intValue();
@@ -88,9 +88,11 @@ public final class V8FunctionCallback {
                             return ((Byte) convertedObject).intValue();
                         }
                     } else if (expectedClass == boolean.class && convertedObjectClass == Boolean.class) {
+                        //noinspection UnnecessaryUnboxing
                         return ((Boolean) convertedObject).booleanValue();
                     } else if (expectedClass == double.class) {
                         if (convertedObjectClass == Double.class) {
+                            //noinspection UnnecessaryUnboxing
                             return ((Double) convertedObject).doubleValue();
                         } else if (convertedObjectClass == Float.class) {
                             return ((Float) convertedObject).doubleValue();
@@ -107,6 +109,7 @@ public final class V8FunctionCallback {
                         if (convertedObjectClass == Double.class) {
                             return ((Double) convertedObject).floatValue();
                         } else if (convertedObjectClass == Float.class) {
+                            //noinspection UnnecessaryUnboxing
                             return ((Float) convertedObject).floatValue();
                         } else if (convertedObjectClass == Integer.class) {
                             return ((Integer) convertedObject).floatValue();
@@ -119,6 +122,7 @@ public final class V8FunctionCallback {
                         }
                     } else if (expectedClass == long.class) {
                         if (convertedObjectClass == Long.class) {
+                            //noinspection UnnecessaryUnboxing
                             return ((Long) convertedObject).longValue();
                         } else if (convertedObjectClass == Integer.class) {
                             return ((Integer) convertedObject).longValue();
@@ -129,6 +133,7 @@ public final class V8FunctionCallback {
                         }
                     } else if (expectedClass == short.class) {
                         if (convertedObjectClass == Short.class) {
+                            //noinspection UnnecessaryUnboxing
                             return ((Short) convertedObject).shortValue();
                         } else if (convertedObjectClass == Integer.class) {
                             return ((Integer) convertedObject).shortValue();
@@ -139,6 +144,7 @@ public final class V8FunctionCallback {
                         }
                     } else if (expectedClass == byte.class) {
                         if (convertedObjectClass == Byte.class) {
+                            //noinspection UnnecessaryUnboxing
                             return ((Byte) convertedObject).byteValue();
                         } else if (convertedObjectClass == Integer.class) {
                             return ((Integer) convertedObject).byteValue();
@@ -149,6 +155,7 @@ public final class V8FunctionCallback {
                         }
                     } else if (expectedClass == char.class) {
                         if (convertedObjectClass == Character.class) {
+                            //noinspection UnnecessaryUnboxing
                             return ((Character) convertedObject).charValue();
                         } else if (convertedObjectClass == String.class) {
                             String convertedString = (String) convertedObject;
@@ -188,7 +195,7 @@ public final class V8FunctionCallback {
                  */
                 Method method = javetCallbackContext.getCallbackMethod();
                 Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
-                Object resultObject = null;
+                Object resultObject;
                 if (javetCallbackContext.isThisObjectRequired()) {
                     values.add(thisObject);
                 }
@@ -216,7 +223,7 @@ public final class V8FunctionCallback {
                             Class<?> parameterClass = parameterTypes[i];
                             if (parameterClass.isArray() && i == parameterTypes.length - 1) {
                                 // VarArgs is special. It requires special API to manipulate the array.
-                                Class componentType = parameterClass.getComponentType();
+                                Class<?> componentType = parameterClass.getComponentType();
                                 Object varObject = Array.newInstance(componentType, length - i);
                                 for (int j = i; j < length; ++j) {
                                     Array.set(varObject, j - i,

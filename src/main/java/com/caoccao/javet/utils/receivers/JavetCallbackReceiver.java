@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.utils.receivers;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
@@ -60,6 +61,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      * @return the V8 value
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     public V8Value echo(V8Value arg) throws JavetException {
         return arg.toClone();
     }
@@ -73,6 +75,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      * @return the V8 value array
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     public V8ValueArray echo(V8Value... args) throws JavetException {
         V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
         for (V8Value arg : args) {

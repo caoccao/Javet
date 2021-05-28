@@ -17,14 +17,12 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.*;
 
-import java.util.List;
-
-@SuppressWarnings("unchecked")
 public interface IV8ValueKeyContainer extends IV8ValueObject {
+    @CheckReturnValue
     IV8ValueIterator<? extends V8Value> getKeys() throws JavetException;
 
     int getSize() throws JavetException;
