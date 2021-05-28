@@ -44,8 +44,8 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
-                    v8ValueObject.bindProperties(mockAnnotationBasedCallbackReceiver);
-            assertEquals(3, javetCallbackContexts.size());
+                    v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
+            assertEquals(17, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());

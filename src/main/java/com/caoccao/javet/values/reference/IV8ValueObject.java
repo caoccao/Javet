@@ -29,7 +29,6 @@ import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,32 +37,27 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
     /**
-     * Bind both functions and properties.
+     * Bind both functions via @V8Function and properties via @V8Property.
      *
      * @param callbackReceiver the callback receiver
      * @return the list of callback context
      * @throws JavetException the javet exception
+     * @since 0.8.9
      */
-    default List<JavetCallbackContext> bind(Object callbackReceiver)
-            throws JavetException {
+    default List<JavetCallbackContext> bind(Object callbackReceiver) throws JavetException {
         return bind(callbackReceiver, false);
     }
 
     /**
-     * Bind both functions and properties.
+     * Bind both functions via @V8Function and properties via @V8Property.
      *
      * @param callbackReceiver   the callback receiver
      * @param thisObjectRequired the this object required
      * @return the list of callback context
      * @throws JavetException the javet exception
+     * @since 0.8.9
      */
-    default List<JavetCallbackContext> bind(Object callbackReceiver, boolean thisObjectRequired)
-            throws JavetException {
-        List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
-        javetCallbackContexts.addAll(bindProperties(callbackReceiver));
-        javetCallbackContexts.addAll(bindFunctions(callbackReceiver, thisObjectRequired));
-        return javetCallbackContexts;
-    }
+    List<JavetCallbackContext> bind(Object callbackReceiver, boolean thisObjectRequired) throws JavetException;
 
     /**
      * Binds function by name and callback context.
@@ -76,11 +70,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    default boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(javetCallbackContext)) {
-            return set(functionName, v8ValueFunction);
-        }
-    }
+    boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException;
 
     /**
      * Binds function by name and string.
@@ -98,11 +88,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    default boolean bindFunction(String functionName, String codeString) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute()) {
-            return set(functionName, v8ValueFunction);
-        }
-    }
+    boolean bindFunction(String functionName, String codeString) throws JavetException;
 
     /**
      * Binds functions.
@@ -112,6 +98,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
+    @Deprecated
     default List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver) throws JavetException {
         return bindFunctions(functionCallbackReceiver, false);
     }
@@ -125,8 +112,11 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired)
-            throws JavetException;
+    @Deprecated
+    default List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired)
+            throws JavetException {
+        return bind(functionCallbackReceiver, thisObjectRequired);
+    }
 
     /**
      * Bind properties via annotation @V8Property.
@@ -139,7 +129,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the list of callback context
      * @throws JavetException the javet exception
      */
-    List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver) throws JavetException;
+    @Deprecated
+    default List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver) throws JavetException {
+        return bind(propertyCallbackReceiver, false);
+    }
 
     /**
      * Bind property.

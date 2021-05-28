@@ -47,8 +47,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
-                    v8ValueObject.bindFunctions(mockAnnotationBasedCallbackReceiver);
-            assertEquals(14, javetCallbackContexts.size());
+                    v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
+            assertEquals(17, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -520,7 +520,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.getGlobalObject().get("x")) {
             MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
                     new MockAnnotationBasedCallbackReceiver();
-            v8ValueObject.bindFunctions(mockAnnotationBasedCallbackReceiver);
+            v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
             assertEquals(3, iV8Executor.executeInteger());
             v8ValueObject.forEach((key) -> v8ValueObject.delete(key));
         } catch (JavetExecutionException e) {
