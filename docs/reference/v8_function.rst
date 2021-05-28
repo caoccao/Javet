@@ -29,26 +29,20 @@ Function Interception
 
 Functions can be intercepted via Javet API. This is equivalent to the capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interceptor. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.
 
-``com.caoccao.javet.values.reference.IV8ValueObject`` exposes a set of ``bindFunction`` and ``bindFunctions`` that allow caller to register function interceptors in automatic or manual ways.
+``com.caoccao.javet.values.reference.IV8ValueObject`` exposes a set of ``bindFunction()`` that allow caller to register function interceptors in automatic or manual ways.
 
 Automatic Registration
 ----------------------
 
-bind, bindFunctions, bindProperties
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``bind()``
+^^^^^^^^^^
 
-``bindFunctions`` scans the input callback receiver for functions decorated by ``@V8Function``. It allows registering many functions in one call.
-
-``bindProperties`` scans the input callback receiver for functions decorated by ``@V8Property``. It allows registering many getters and setters in one call.
-
-``bind`` calls ``bindFunctions`` and ``bindProperties`` internally, in case a complete registration is needed.
+``bind()`` scans the input callback receiver for functions decorated by ``@V8Function`` and ``@V8Property``. It allows registering many getters / setters and functions in one call.
 
 .. code-block:: java
 
+    List<JavetCallbackContext> bind(Object functionCallbackReceiver);
     List<JavetCallbackContext> bind(Object functionCallbackReceiver, boolean thisObjectRequired);
-    List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver);
-    List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired);
-    List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver);
 
 How about Object Type Conversion?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -136,7 +130,7 @@ The second step is to call the functions or properties.
     try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
         v8Runtime.getGlobalObject().set("a", v8ValueObject);
         AnnotationBasedCallbackReceiver annotationBasedCallbackReceiver = new AnnotationBasedCallbackReceiver();
-        v8ValueObject.bindFunctions(annotationBasedCallbackReceiver);
+        v8ValueObject.bind(annotationBasedCallbackReceiver);
         assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
         assertEquals(3, v8Runtime.getExecutor("a.add(1, 2)").executeInteger());
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
