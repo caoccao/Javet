@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>, Runnable {
+    protected static final String JAVET_DAEMON_THREAD_NAME = "Javet Daemon";
     protected final Object externalLock;
     protected JavetEngineConfig config;
     protected ConcurrentLinkedQueue<JavetEngine<R>> activeEngineList;
@@ -234,6 +235,8 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         quitting = false;
         config.setExecutorService(Executors.newCachedThreadPool());
         daemonThread = new Thread(this);
+        daemonThread.setDaemon(true);
+        daemonThread.setName(JAVET_DAEMON_THREAD_NAME);
         daemonThread.start();
         active = true;
         logger.debug("JavetEnginePool.startDaemon() ends.");
