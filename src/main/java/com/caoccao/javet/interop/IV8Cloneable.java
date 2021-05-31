@@ -17,10 +17,11 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
-@SuppressWarnings("unchecked")
 public interface IV8Cloneable {
+    @CheckReturnValue
     <T extends V8Value> T toClone() throws JavetException;
 }

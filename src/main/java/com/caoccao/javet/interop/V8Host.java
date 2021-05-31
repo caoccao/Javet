@@ -45,19 +45,19 @@ public final class V8Host implements AutoCloseable {
     private static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";
     private static final Object nodeLock = new Object();
+    private static final V8Host v8Instance = new V8Host(JSRuntimeType.V8);
     private static volatile double memoryUsageThresholdRatio = 0.7;
     private static volatile V8Host nodeInstance;
-    private static V8Host v8Instance = new V8Host(JSRuntimeType.V8);
-    private V8Flags flags;
+    private final V8Flags flags;
+    private final JSRuntimeType jsRuntimeType;
+    private final IJavetLogger logger;
+    private final V8Notifier v8Notifier;
+    private final ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
     private JavetClassLoader javetClassLoader;
-    private JSRuntimeType jsRuntimeType;
     private boolean libLoaded;
     private JavetException lastException;
-    private IJavetLogger logger;
     private boolean isolateCreated;
     private IV8Native v8Native;
-    private V8Notifier v8Notifier;
-    private ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
 
     private V8Host(JSRuntimeType jsRuntimeType) {
         Objects.requireNonNull(jsRuntimeType);
@@ -162,6 +162,7 @@ public final class V8Host implements AutoCloseable {
         disableGCNotification();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public V8Host disableGCNotification() {
         v8Notifier.unregisterListener();
         return this;
@@ -215,10 +216,10 @@ public final class V8Host implements AutoCloseable {
         final long handle = v8Native.createV8Runtime(globalName);
         isolateCreated = true;
         flags.seal();
-        V8Runtime v8Runtime = null;
+        V8Runtime v8Runtime;
         if (jsRuntimeType.isNode()) {
             v8Runtime = new NodeRuntime(this, handle, pooled, v8Native);
-        } else if (jsRuntimeType.isV8()) {
+        } else {
             v8Runtime = new V8Runtime(this, handle, pooled, v8Native, globalName);
         }
         v8Native.registerV8Runtime(handle, v8Runtime);
@@ -294,6 +295,7 @@ public final class V8Host implements AutoCloseable {
         return isolateCreated;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public boolean setFlags() {
         if (libLoaded && !isolateCreated) {
             List<String> flags = new ArrayList<>();

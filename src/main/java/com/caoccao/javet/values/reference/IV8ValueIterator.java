@@ -25,7 +25,6 @@ import com.caoccao.javet.values.V8Value;
  *
  * @param <T> the type parameter
  */
-@SuppressWarnings("unchecked")
 public interface IV8ValueIterator<T extends V8Value> extends IJavetClosable {
     /**
      * Gets next.

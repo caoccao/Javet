@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop.executors;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
@@ -37,12 +38,15 @@ public abstract class BaseV8Executor implements IV8Executor {
     }
 
     @Override
+    @CheckReturnValue
     public abstract V8Script compileScript(boolean resultRequired) throws JavetException;
 
     @Override
+    @CheckReturnValue
     public abstract V8Module compileV8Module(boolean resultRequired) throws JavetException;
 
     @Override
+    @CheckReturnValue
     public abstract <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
 
     @Override

@@ -55,7 +55,7 @@ public class HelloJavet {
 
     public void playWithPoolAndConsole() throws JavetException {
         // Create a Javet engine pool.
-        try (IJavetEnginePool<V8Runtime> javetEnginePool = new JavetEnginePool<V8Runtime>()) {
+        try (IJavetEnginePool<V8Runtime> javetEnginePool = new JavetEnginePool<>()) {
             // Get a Javet engine from the pool.
             try (IJavetEngine<V8Runtime> javetEngine = javetEnginePool.getEngine()) {
                 // Get a V8 runtime from the engine.

@@ -17,14 +17,14 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
-import java.util.List;
-
-@SuppressWarnings("unchecked")
 public interface IV8ValueMap extends IV8ValueKeyContainer {
+    @CheckReturnValue
     IV8ValueIterator<V8ValueArray> getEntries() throws JavetException;
 
+    @CheckReturnValue
     IV8ValueIterator<? extends V8Value> getValues() throws JavetException;
 }

@@ -31,6 +31,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("unchecked")
 public class TestJavetEnginePool extends BaseTestJavet {
     public static final int TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1;
     public static final int TEST_MAX_TIMEOUT = 1000;

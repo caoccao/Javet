@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
@@ -26,7 +27,6 @@ import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
 import java.util.Optional;
 
-@SuppressWarnings("unchecked")
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     protected Optional<JSFunctionType> jsFunctionType;
 
@@ -36,6 +36,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, Object... objects)
             throws JavetException {
         checkV8Runtime();
@@ -45,6 +46,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values) throws JavetException {
         checkV8Runtime();
         v8Runtime.decorateV8Values(v8Values);
@@ -52,6 +54,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException {
         checkV8Runtime();
         try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
@@ -60,6 +63,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException {
         checkV8Runtime();
         v8Runtime.decorateV8Values(v8Values);
@@ -72,6 +76,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    @CheckReturnValue
     public IV8ValueArray getInternalProperties() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getInternalProperties(this);

@@ -66,20 +66,17 @@ public final class SimpleFreeMarkerFormat {
                     }
                     break;
                 case CHAR_VARIABLE_CLOSE:
-                    switch (state) {
-                        case Variable:
-                            String variableName = stringBuilderVariable.toString();
-                            Object parameter = parameters.get(variableName);
-                            if (parameter == null) {
-                                parameter = STRING_NULL;
-                            }
-                            stringBuilderMessage.append(parameter);
-                            stringBuilderVariable.setLength(0);
-                            state = State.Text;
-                            break;
-                        default:
-                            stringBuilderMessage.append(c);
-                            break;
+                    if (state == State.Variable) {
+                        String variableName = stringBuilderVariable.toString();
+                        Object parameter = parameters.get(variableName);
+                        if (parameter == null) {
+                            parameter = STRING_NULL;
+                        }
+                        stringBuilderMessage.append(parameter);
+                        stringBuilderVariable.setLength(0);
+                        state = State.Text;
+                    } else {
+                        stringBuilderMessage.append(c);
                     }
                     break;
                 default:

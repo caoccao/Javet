@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.annotations.V8Property;
 import com.caoccao.javet.annotations.V8RuntimeSetter;
@@ -24,7 +25,9 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
-import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
+import com.caoccao.javet.interfaces.IJavetUniConsumer;
+import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
@@ -37,7 +40,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-@SuppressWarnings("unchecked")
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String FUNCTION_ADD = "add";
     protected static final String FUNCTION_DELETE = "delete";
@@ -53,59 +55,15 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public List<JavetCallbackContext> bindFunctions(
-            Object functionCallbackReceiver,
-            boolean thisObjectRequired)
-            throws JavetException {
-        Map<String, Method> functionMap = new HashMap<>();
-        for (Method method : functionCallbackReceiver.getClass().getMethods()) {
-            if (method.isAnnotationPresent(V8Function.class)) {
-                V8Function v8Function = method.getAnnotation(V8Function.class);
-                String functionName = v8Function.name();
-                if (functionName == null || functionName.length() == 0) {
-                    functionName = method.getName();
-                }
-                // Duplicated function will be dropped.
-                if (!functionMap.containsKey(functionName)) {
-                    functionMap.put(functionName, method);
-                }
-            } else {
-                bindV8Runtime(functionCallbackReceiver, method);
-            }
-        }
-        List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
-        if (!functionMap.isEmpty()) {
-            for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
-                final Method method = entry.getValue();
-                try {
-                    // Static method needs to be identified.
-                    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                            Modifier.isStatic(method.getModifiers()) ? null : functionCallbackReceiver,
-                            method, thisObjectRequired);
-                    bindFunction(entry.getKey(), javetCallbackContext);
-                    javetCallbackContexts.add(javetCallbackContext);
-                } catch (Exception e) {
-                    throw new JavetException(
-                            JavetError.CallbackRegistrationFailure,
-                            SimpleMap.of(
-                                    JavetError.PARAMETER_METHOD_NAME, method.getName(),
-                                    JavetError.PARAMETER_MESSAGE, e.getMessage()),
-                            e);
-                }
-            }
-        }
-        return javetCallbackContexts;
-    }
-
-    @Override
-    public List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver) throws JavetException {
+    public List<JavetCallbackContext> bind(Object callbackReceiver, boolean thisObjectRequired) throws JavetException {
         Map<String, Method> propertyGetterMap = new HashMap<>();
         Map<String, Method> propertySetterMap = new HashMap<>();
-        for (Method method : propertyCallbackReceiver.getClass().getMethods()) {
+        Map<String, Method> functionMap = new HashMap<>();
+        for (Method method : callbackReceiver.getClass().getMethods()) {
             if (method.isAnnotationPresent(V8Property.class)) {
                 V8Property v8Property = method.getAnnotation(V8Property.class);
                 String propertyName = v8Property.name();
-                if (propertyName == null || propertyName.length() == 0) {
+                if (propertyName.length() == 0) {
                     String methodName = method.getName();
                     if (methodName.startsWith(METHOD_PREFIX_IS)) {
                         propertyName = methodName.substring(METHOD_PREFIX_IS.length());
@@ -114,11 +72,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     } else if (methodName.startsWith(METHOD_PREFIX_SET)) {
                         propertyName = methodName.substring(METHOD_PREFIX_SET.length());
                     }
-                    if (propertyName != null && propertyName.length() > 0) {
+                    if (propertyName.length() > 0) {
                         propertyName = propertyName.substring(0, 1).toLowerCase(Locale.ROOT) + propertyName.substring(1);
                     }
                 }
-                if (propertyName != null && propertyName.length() > 0) {
+                if (propertyName.length() > 0) {
                     if (method.getParameterCount() == 0) {
                         // Duplicated property name will be dropped.
                         if (!propertyGetterMap.containsKey(propertyName)) {
@@ -137,8 +95,18 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                         JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
                     }
                 }
+            } else if (method.isAnnotationPresent(V8Function.class)) {
+                V8Function v8Function = method.getAnnotation(V8Function.class);
+                String functionName = v8Function.name();
+                if (functionName.length() == 0) {
+                    functionName = method.getName();
+                }
+                // Duplicated function will be dropped.
+                if (!functionMap.containsKey(functionName)) {
+                    functionMap.put(functionName, method);
+                }
             } else {
-                bindV8Runtime(propertyCallbackReceiver, method);
+                bindV8Runtime(callbackReceiver, method);
             }
         }
         List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
@@ -149,7 +117,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 try {
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
-                            Modifier.isStatic(methodGetter.getModifiers()) ? null : propertyCallbackReceiver,
+                            Modifier.isStatic(methodGetter.getModifiers()) ? null : callbackReceiver,
                             methodGetter, false);
                     javetCallbackContexts.add(javetCallbackContextGetter);
                     JavetCallbackContext javetCallbackContextSetter = null;
@@ -157,7 +125,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         Method methodSetter = propertySetterMap.get(propertyName);
                         // Static method needs to be identified.
                         javetCallbackContextSetter = new JavetCallbackContext(
-                                Modifier.isStatic(methodSetter.getModifiers()) ? null : propertyCallbackReceiver,
+                                Modifier.isStatic(methodSetter.getModifiers()) ? null : callbackReceiver,
                                 methodSetter, false);
                         javetCallbackContexts.add(javetCallbackContextSetter);
                     }
@@ -172,7 +140,41 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 }
             }
         }
+        if (!functionMap.isEmpty()) {
+            for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
+                final Method method = entry.getValue();
+                try {
+                    // Static method needs to be identified.
+                    JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                            Modifier.isStatic(method.getModifiers()) ? null : callbackReceiver,
+                            method, thisObjectRequired);
+                    bindFunction(entry.getKey(), javetCallbackContext);
+                    javetCallbackContexts.add(javetCallbackContext);
+                } catch (Exception e) {
+                    throw new JavetException(
+                            JavetError.CallbackRegistrationFailure,
+                            SimpleMap.of(
+                                    JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                    JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                            e);
+                }
+            }
+        }
         return javetCallbackContexts;
+    }
+
+    @Override
+    public boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
+        try (V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(javetCallbackContext)) {
+            return set(functionName, v8ValueFunction);
+        }
+    }
+
+    @Override
+    public boolean bindFunction(String functionName, String codeString) throws JavetException {
+        try (V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute()) {
+            return set(functionName, v8ValueFunction);
+        }
     }
 
     @Override
@@ -185,7 +187,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         return v8Runtime.setAccessor(this, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
     }
 
-    protected boolean bindV8Runtime(Object callbackReceiver, Method method) throws JavetException {
+    protected void bindV8Runtime(Object callbackReceiver, Method method) throws JavetException {
         if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
             if (method.getParameterCount() != 1) {
                 throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
@@ -209,9 +211,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         SimpleMap.of(JavetError.PARAMETER_MESSAGE, e.getMessage()),
                         e);
             }
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -224,7 +224,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetConsumer<Key, E> consumer) throws JavetException, E {
+            IJavetUniConsumer<Key, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach(consumer);
+        }
+    }
+
+    @Override
+    public <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
             return iV8ValueArray.forEach(consumer);
@@ -245,6 +254,20 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiIndexedConsumer<Key, Value, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach((int index, Key key) -> {
+                try (Value value = get(key)) {
+                    consumer.accept(index, key, value);
+                }
+            });
+        }
+    }
+
+    @Override
+    @CheckReturnValue
     public <T extends V8Value> T get(Object key) throws JavetException {
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
@@ -259,18 +282,21 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    @CheckReturnValue
     public IV8ValueArray getOwnPropertyNames() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getOwnPropertyNames(this);
     }
 
     @Override
+    @CheckReturnValue
     public IV8ValueArray getPropertyNames() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getPropertyNames(this);
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T getProperty(Object key) throws JavetException {
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
@@ -300,6 +326,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, Object... objects)
             throws JavetException {
         checkV8Runtime();
@@ -309,6 +336,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, V8Value... v8Values)
             throws JavetException {
         checkV8Runtime();
@@ -318,7 +346,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean sameValue(V8Value v8Value) throws JavetException {
-        if (v8Value == null || !(v8Value instanceof V8ValueObject)) {
+        if (!(v8Value instanceof V8ValueObject)) {
             return false;
         }
         if (v8Value.getClass() != this.getClass()) {

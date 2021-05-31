@@ -17,9 +17,12 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
-import com.caoccao.javet.interfaces.IJavetConsumer;
+import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
+import com.caoccao.javet.interfaces.IJavetUniConsumer;
+import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
@@ -27,7 +30,6 @@ import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,32 +38,27 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
     /**
-     * Bind both functions and properties.
+     * Bind both functions via @V8Function and properties via @V8Property.
      *
      * @param callbackReceiver the callback receiver
      * @return the list of callback context
      * @throws JavetException the javet exception
+     * @since 0.8.9
      */
-    default List<JavetCallbackContext> bind(Object callbackReceiver)
-            throws JavetException {
+    default List<JavetCallbackContext> bind(Object callbackReceiver) throws JavetException {
         return bind(callbackReceiver, false);
     }
 
     /**
-     * Bind both functions and properties.
+     * Bind both functions via @V8Function and properties via @V8Property.
      *
      * @param callbackReceiver   the callback receiver
      * @param thisObjectRequired the this object required
      * @return the list of callback context
      * @throws JavetException the javet exception
+     * @since 0.8.9
      */
-    default List<JavetCallbackContext> bind(Object callbackReceiver, boolean thisObjectRequired)
-            throws JavetException {
-        List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
-        javetCallbackContexts.addAll(bindProperties(callbackReceiver));
-        javetCallbackContexts.addAll(bindFunctions(callbackReceiver, thisObjectRequired));
-        return javetCallbackContexts;
-    }
+    List<JavetCallbackContext> bind(Object callbackReceiver, boolean thisObjectRequired) throws JavetException;
 
     /**
      * Binds function by name and callback context.
@@ -74,11 +71,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    default boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(javetCallbackContext)) {
-            return set(functionName, v8ValueFunction);
-        }
-    }
+    boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException;
 
     /**
      * Binds function by name and string.
@@ -96,11 +89,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    default boolean bindFunction(String functionName, String codeString) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute()) {
-            return set(functionName, v8ValueFunction);
-        }
-    }
+    boolean bindFunction(String functionName, String codeString) throws JavetException;
 
     /**
      * Binds functions.
@@ -110,6 +99,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
+    @Deprecated
     default List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver) throws JavetException {
         return bindFunctions(functionCallbackReceiver, false);
     }
@@ -123,8 +113,11 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired)
-            throws JavetException;
+    @Deprecated
+    default List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired)
+            throws JavetException {
+        return bind(functionCallbackReceiver, thisObjectRequired);
+    }
 
     /**
      * Bind properties via annotation @V8Property.
@@ -137,7 +130,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the list of callback context
      * @throws JavetException the javet exception
      */
-    List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver) throws JavetException;
+    @Deprecated
+    default List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver) throws JavetException {
+        return bind(propertyCallbackReceiver, false);
+    }
 
     /**
      * Bind property.
@@ -206,7 +202,21 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @throws E              the exception
      */
-    <Key extends V8Value, E extends Throwable> int forEach(IJavetConsumer<Key, E> consumer) throws JavetException, E;
+    <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniConsumer<Key, E> consumer) throws JavetException, E;
+
+    /**
+     * For each.
+     *
+     * @param <Key>    the type of key
+     * @param <E>      the type of exception
+     * @param consumer the consumer
+     * @return the item count
+     * @throws JavetException the javet exception
+     * @throws E              the exception
+     */
+    <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E;
 
     /**
      * For each.
@@ -223,6 +233,20 @@ public interface IV8ValueObject extends IV8ValueReference {
             IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E;
 
     /**
+     * For each.
+     *
+     * @param <Key>    the type of key
+     * @param <Value>  the type of value
+     * @param <E>      the type of exception
+     * @param consumer the consumer
+     * @return the item count
+     * @throws JavetException the javet exception
+     * @throws E              the exception
+     */
+    <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiIndexedConsumer<Key, Value, E> consumer) throws JavetException, E;
+
+    /**
      * Get t.
      *
      * @param <T> the type parameter
@@ -230,6 +254,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the t
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     <T extends V8Value> T get(Object key) throws JavetException;
 
     /**
@@ -319,7 +344,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the object
      * @throws JavetException the javet exception
      */
-    default <T extends Object> T getObject(Object key) throws JavetException {
+    default <T> T getObject(Object key) throws JavetException {
         try {
             return getV8Runtime().toObject(get(key), true);
         } catch (JavetException e) {
@@ -335,6 +360,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the own property names
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     IV8ValueArray getOwnPropertyNames() throws JavetException;
 
     /**
@@ -346,11 +372,12 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the primitive
      * @throws JavetException the javet exception
      */
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getPrimitive(Object key)
-            throws JavetException {
+    default <R, T extends V8ValuePrimitive<R>> R getPrimitive(Object key) throws JavetException {
         try (V8Value v8Value = get(key)) {
             return ((T) v8Value).getValue();
-        } catch (Throwable t) {
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
         }
         return null;
     }
@@ -363,6 +390,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the property
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     <T extends V8Value> T getProperty(Object key) throws JavetException;
 
     /**
@@ -370,9 +398,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property boolean
-     * @throws JavetException the javet exception
      */
-    default Boolean getPropertyBoolean(Object key) throws JavetException {
+    default Boolean getPropertyBoolean(Object key) {
         return getPropertyPrimitive(key);
     }
 
@@ -381,9 +408,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property double
-     * @throws JavetException the javet exception
      */
-    default Double getPropertyDouble(Object key) throws JavetException {
+    default Double getPropertyDouble(Object key) {
         return getPropertyPrimitive(key);
     }
 
@@ -392,9 +418,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property float
-     * @throws JavetException the javet exception
      */
-    default Float getPropertyFloat(Object key) throws JavetException {
+    default Float getPropertyFloat(Object key) {
         Double result = getPropertyDouble(key);
         return result == null ? null : result.floatValue();
     }
@@ -404,9 +429,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property integer
-     * @throws JavetException the javet exception
      */
-    default Integer getPropertyInteger(Object key) throws JavetException {
+    default Integer getPropertyInteger(Object key) {
         return getPropertyPrimitive(key);
     }
 
@@ -415,9 +439,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property long
-     * @throws JavetException the javet exception
      */
-    default Long getPropertyLong(Object key) throws JavetException {
+    default Long getPropertyLong(Object key) {
         return getPropertyPrimitive(key);
     }
 
@@ -437,7 +460,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the property object
      * @throws JavetException the javet exception
      */
-    default <T extends Object> T getPropertyObject(Object key) throws JavetException {
+    default <T> T getPropertyObject(Object key) throws JavetException {
         try {
             return getV8Runtime().toObject(getProperty(key), true);
         } catch (JavetException e) {
@@ -454,13 +477,11 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param <T> the type parameter
      * @param key the key
      * @return the property primitive
-     * @throws JavetException the javet exception
      */
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getPropertyPrimitive(Object key)
-            throws JavetException {
+    default <R, T extends V8ValuePrimitive<R>> R getPropertyPrimitive(Object key) {
         try (V8Value v8Value = getProperty(key)) {
             return ((T) v8Value).getValue();
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
         }
         return null;
     }
@@ -470,9 +491,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property string
-     * @throws JavetException the javet exception
      */
-    default String getPropertyString(Object key) throws JavetException {
+    default String getPropertyString(Object key) {
         return getPropertyPrimitive(key);
     }
 
@@ -481,9 +501,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property zoned date time
-     * @throws JavetException the javet exception
      */
-    default ZonedDateTime getPropertyZonedDateTime(Object key) throws JavetException {
+    default ZonedDateTime getPropertyZonedDateTime(Object key) {
         return getPropertyPrimitive(key);
     }
 
@@ -567,6 +586,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the t
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     default <T extends V8Value> T invoke(String functionName, Object... objects) throws JavetException {
         return invokeExtended(functionName, true, objects);
     }
@@ -580,6 +600,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the t
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     default <T extends V8Value> T invoke(String functionName, V8Value... v8Values) throws JavetException {
         return invokeExtended(functionName, true, v8Values);
     }
@@ -590,14 +611,14 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the boolean
-     * @throws JavetException the javet exception
      */
-    default Boolean invokeBoolean(String functionName, Object... objects) throws JavetException {
+    default Boolean invokeBoolean(String functionName, Object... objects) {
         return invokePrimitive(functionName, objects);
     }
 
     /**
-     * Invoke extended t.
+     * Invoke extended and return V8 value which must be consumed,
+     * otherwise memory leak may occur.
      *
      * @param <T>          the type parameter
      * @param functionName the function name
@@ -606,10 +627,12 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the t
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, Object... objects) throws JavetException;
 
     /**
-     * Invoke extended t.
+     * Invoke extended and return V8 value which must be consumed,
+     * otherwise memory leak may occur.
      *
      * @param <T>          the type parameter
      * @param functionName the function name
@@ -618,6 +641,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the t
      * @throws JavetException the javet exception
      */
+    @CheckReturnValue
     <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
 
     /**
@@ -626,9 +650,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the double
-     * @throws JavetException the javet exception
      */
-    default Double invokeDouble(String functionName, Object... objects) throws JavetException {
+    default Double invokeDouble(String functionName, Object... objects) {
         return invokePrimitive(functionName, objects);
     }
 
@@ -638,9 +661,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the float
-     * @throws JavetException the javet exception
      */
-    default Float invokeFloat(String functionName, Object... objects) throws JavetException {
+    default Float invokeFloat(String functionName, Object... objects) {
         Double result = invokeDouble(functionName, objects);
         return result == null ? null : result.floatValue();
     }
@@ -651,9 +673,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the integer
-     * @throws JavetException the javet exception
      */
-    default Integer invokeInteger(String functionName, Object... objects) throws JavetException {
+    default Integer invokeInteger(String functionName, Object... objects) {
         return invokePrimitive(functionName, objects);
     }
 
@@ -663,9 +684,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the long
-     * @throws JavetException the javet exception
      */
-    default Long invokeLong(String functionName, Object... objects) throws JavetException {
+    default Long invokeLong(String functionName, Object... objects) {
         return invokePrimitive(functionName, objects);
     }
 
@@ -678,7 +698,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the t
      * @throws JavetException the javet exception
      */
-    default <T extends Object> T invokeObject(String functionName, Object... objects) throws JavetException {
+    default <T> T invokeObject(String functionName, Object... objects) throws JavetException {
         try {
             return getV8Runtime().toObject(invokeExtended(functionName, true, objects), true);
         } catch (JavetException e) {
@@ -695,11 +715,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param <T>          the type parameter
      * @param functionName the function name
      * @param objects      the objects
-     * @return the r
-     * @throws JavetException the javet exception
+     * @return the primitive value
      */
-    default <R extends Object, T extends V8ValuePrimitive<R>> R invokePrimitive(
-            String functionName, Object... objects) throws JavetException {
+    default <R, T extends V8ValuePrimitive<R>> R invokePrimitive(
+            String functionName, Object... objects) {
         try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
             return ((T) v8Value).getValue();
         } catch (Throwable t) {
@@ -713,9 +732,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the string
-     * @throws JavetException the javet exception
      */
-    default String invokeString(String functionName, Object... objects) throws JavetException {
+    default String invokeString(String functionName, Object... objects) {
         return invokePrimitive(functionName, objects);
     }
 
@@ -726,6 +744,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param objects      the objects
      * @throws JavetException the javet exception
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     default void invokeVoid(String functionName, Object... objects) throws JavetException {
         invokeExtended(functionName, false, objects);
     }
@@ -737,6 +756,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param v8Values     the v 8 values
      * @throws JavetException the javet exception
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     default void invokeVoid(String functionName, V8Value... v8Values) throws JavetException {
         invokeExtended(functionName, false, v8Values);
     }
@@ -830,6 +850,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the null
      * @throws JavetException the javet exception
      */
+    @SuppressWarnings("UnusedReturnValue")
     default boolean setNull(Object key) throws JavetException {
         return set(key, getV8Runtime().createV8ValueNull());
     }
@@ -873,6 +894,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the undefined
      * @throws JavetException the javet exception
      */
+    @SuppressWarnings("UnusedReturnValue")
     default boolean setUndefined(Object key) throws JavetException {
         return set(key, getV8Runtime().createV8ValueUndefined());
     }

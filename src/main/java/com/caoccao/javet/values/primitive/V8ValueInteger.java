@@ -22,7 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 @SuppressWarnings("unchecked")
 public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
     public V8ValueInteger() {
-        this(Integer.valueOf(0));
+        this(0);
     }
 
     public V8ValueInteger(int value) {
@@ -35,6 +35,6 @@ public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
     }
 
     public int toPrimitive() {
-        return value.intValue();
+        return value;
     }
 }

@@ -15,33 +15,11 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.enums;
+package com.caoccao.javet.interfaces;
 
-public enum JSRuntimeType {
-    Node("node", "8.4.371.19-node.18"),
-    V8("v8", "9.0.257");
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
 
-    private final String name;
-    private final String version;
-
-    JSRuntimeType(String name, String version) {
-        this.name = name;
-        this.version = version;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public boolean isNode() {
-        return this == Node;
-    }
-
-    public boolean isV8() {
-        return this == V8;
-    }
+public interface IJavetUniConsumer<T extends V8Value, E extends Throwable> {
+    void accept(T value) throws JavetException, E;
 }

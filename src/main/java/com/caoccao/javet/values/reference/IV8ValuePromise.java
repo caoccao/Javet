@@ -17,9 +17,8 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
@@ -32,8 +31,10 @@ public interface IV8ValuePromise extends IV8ValueObject {
     int STATE_FULFILLED = 1;
     int STATE_REJECTED = 2;
 
+    @CheckReturnValue
     V8ValuePromise except(V8ValueFunction function) throws JavetException;
 
+    @CheckReturnValue
     default V8ValuePromise except(String codeString) throws JavetException {
         Objects.requireNonNull(codeString);
         try (V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute()) {
@@ -41,6 +42,7 @@ public interface IV8ValuePromise extends IV8ValueObject {
         }
     }
 
+    @CheckReturnValue
     <Value extends V8Value> Value getResult() throws JavetException;
 
     default boolean getResultBoolean() throws JavetException {
@@ -59,7 +61,7 @@ public interface IV8ValuePromise extends IV8ValueObject {
         return getResultPrimitive();
     }
 
-    default <T extends Object> T getResultObject(Object key) throws JavetException {
+    default <T> T getResultObject(Object key) throws JavetException {
         try {
             return getV8Runtime().toObject(getResult(), true);
         } catch (JavetException e) {
@@ -69,12 +71,12 @@ public interface IV8ValuePromise extends IV8ValueObject {
         }
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R getResultPrimitive()
+    default <R, T extends V8ValuePrimitive<R>> R getResultPrimitive()
             throws JavetException {
         V8Value v8Value = getResult();
         try {
             return ((T) v8Value).getValue();
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
         }
         return null;
     }
@@ -105,16 +107,20 @@ public interface IV8ValuePromise extends IV8ValueObject {
 
     void markAsHandled() throws JavetException;
 
+    @CheckReturnValue
     default V8ValuePromise then(IV8ValueFunction functionFulfilled) throws JavetException {
         return then(functionFulfilled, null);
     }
 
+    @CheckReturnValue
     V8ValuePromise then(IV8ValueFunction functionFulfilled, IV8ValueFunction functionRejected) throws JavetException;
 
+    @CheckReturnValue
     default V8ValuePromise then(String codeStringFulfilled) throws JavetException {
         return then(codeStringFulfilled, null);
     }
 
+    @CheckReturnValue
     default V8ValuePromise then(String codeStringFulfilled, String codeStringRejected) throws JavetException {
         Objects.requireNonNull(codeStringFulfilled);
         try (V8ValueFunction v8ValueFunctionFulfilled = getV8Runtime().getExecutor(codeStringFulfilled).execute()) {

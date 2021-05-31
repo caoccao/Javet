@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop.converters;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
@@ -34,22 +35,24 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         if (v8Value == null || v8Value.isNull() || v8Value.isUndefined()) {
             return null;
         } else if (v8Value instanceof V8ValuePrimitive) {
-            return ((V8ValuePrimitive) v8Value).getValue();
+            return ((V8ValuePrimitive<?>) v8Value).getValue();
         }
         return v8Value;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
         /*
          * The following test is based on statistical analysis
          * so that the performance can be maximized.
          */
-        V8Value v8Value = null;
+        V8Value v8Value;
         if (object == null) {
             v8Value = v8Runtime.createV8ValueNull();
         } else if (object.getClass().isPrimitive()) {
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             if (objectClass == int.class) {
                 v8Value = v8Runtime.createV8ValueInteger((int) object);
             } else if (objectClass == boolean.class) {

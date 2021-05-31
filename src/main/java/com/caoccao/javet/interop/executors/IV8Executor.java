@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop.executors;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.IV8Executable;
 import com.caoccao.javet.interop.NodeRuntime;
@@ -31,24 +32,29 @@ import com.caoccao.javet.values.reference.V8Script;
 import java.io.File;
 import java.nio.file.Path;
 
-@SuppressWarnings("unchecked")
 public interface IV8Executor extends IV8Executable {
+    @CheckReturnValue
     default V8Script compileScript() throws JavetException {
         return compileScript(true);
     }
 
+    @CheckReturnValue
     V8Script compileScript(boolean resultRequired) throws JavetException;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     default void compileScriptVoid() throws JavetException {
         compileScript(false);
     }
 
+    @CheckReturnValue
     default V8Module compileV8Module() throws JavetException {
         return compileV8Module(true);
     }
 
+    @CheckReturnValue
     V8Module compileV8Module(boolean resultRequired) throws JavetException;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     default void compileV8ModuleVoid() throws JavetException {
         compileV8Module(false);
     }
@@ -87,12 +93,13 @@ public interface IV8Executor extends IV8Executable {
     V8ScriptOrigin getV8ScriptOrigin();
 
     @Override
-    default <T extends Object, V extends V8Value> T toObject(V v8Value) throws JavetException {
+    default <T, V extends V8Value> T toObject(V v8Value) throws JavetException {
         return getV8Runtime().toObject(v8Value);
     }
 
     @Override
-    default <T extends Object, V extends V8Value> V toV8Value(T object) throws JavetException {
+    @CheckReturnValue
+    default <T, V extends V8Value> V toV8Value(T object) throws JavetException {
         return getV8Runtime().toV8Value(object);
     }
 }

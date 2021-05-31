@@ -57,8 +57,8 @@ public enum V8ValueReferenceType {
         }
     }
 
-    private int id;
-    private String name;
+    private final int id;
+    private final String name;
 
     V8ValueReferenceType(int id, String name) {
         this.id = id;

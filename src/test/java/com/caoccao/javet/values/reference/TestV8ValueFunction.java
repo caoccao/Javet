@@ -47,8 +47,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
-                    v8ValueObject.bindFunctions(mockAnnotationBasedCallbackReceiver);
-            assertEquals(14, javetCallbackContexts.size());
+                    v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
+            assertEquals(17, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -293,11 +293,18 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
             globalObject.set("echoString", v8ValueFunction);
-            assertFalse(mockCallbackReceiver.isCalled());
-            assertEquals("abc", v8Runtime.getExecutor("const a = echoString('abc'); a;").executeString());
         }
-        globalObject.delete("echoString");
+        assertFalse(mockCallbackReceiver.isCalled());
+        assertEquals("abc", v8Runtime.getExecutor("echoString('abc')").executeString());
         assertTrue(mockCallbackReceiver.isCalled());
+        globalObject.delete("echoString");
+        javetCallbackContext = new JavetCallbackContext(
+                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoString", V8Value[].class));
+        globalObject.bindFunction("echoString", javetCallbackContext);
+        assertEquals("abc", v8Runtime.getExecutor("echoString('abc')").executeString());
+        assertEquals("abc,def", v8Runtime.getExecutor("echoString('abc', 'def')").executeString());
+        assertEquals("", v8Runtime.getExecutor("echoString()").executeString());
+        globalObject.delete("echoString");
         v8Runtime.requestGarbageCollectionForTesting(true);
     }
 
@@ -513,7 +520,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.getGlobalObject().get("x")) {
             MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
                     new MockAnnotationBasedCallbackReceiver();
-            v8ValueObject.bindFunctions(mockAnnotationBasedCallbackReceiver);
+            v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
             assertEquals(3, iV8Executor.executeInteger());
             v8ValueObject.forEach((key) -> v8ValueObject.delete(key));
         } catch (JavetExecutionException e) {
@@ -592,11 +599,14 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8Runtime.getReferenceCount());
             assertEquals(1, v8Runtime.getCallbackContextCount());
             mockCallbackReceiver.setCalled(false);
-            assertFalse(mockCallbackReceiver.isCalled());
-            String resultString = v8Runtime.getExecutor("a.test").executeString();
+            assertEquals("abc", v8Runtime.getExecutor("a.test").executeString());
             assertTrue(mockCallbackReceiver.isCalled());
-            assertEquals("abc", resultString);
+            mockCallbackReceiver.setCalled(false);
+            assertEquals("abc", v8Runtime.getExecutor("a['test']").executeString());
+            assertTrue(mockCallbackReceiver.isCalled());
+            mockCallbackReceiver.setCalled(false);
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
+            assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
         }
         v8Runtime.requestGarbageCollectionForTesting(true);
@@ -624,10 +634,14 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals("abc", mockCallbackReceiver.getValue());
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
             mockCallbackReceiver.setCalled(false);
-            String resultString = v8Runtime.getExecutor("a.test").executeString();
+            assertEquals("abc", v8Runtime.getExecutor("a.test").executeString());
             assertTrue(mockCallbackReceiver.isCalled());
-            assertEquals("abc", resultString);
+            mockCallbackReceiver.setCalled(false);
+            assertEquals("abc", v8Runtime.getExecutor("a['test']").executeString());
+            assertTrue(mockCallbackReceiver.isCalled());
+            mockCallbackReceiver.setCalled(false);
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
+            assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
         }
         v8Runtime.requestGarbageCollectionForTesting(true);

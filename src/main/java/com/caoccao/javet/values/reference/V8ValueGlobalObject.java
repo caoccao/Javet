@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
@@ -49,7 +50,8 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     }
 
     @Override
-    public void clearWeak() throws JavetException {
+    public void clearWeak() {
+        // Global object is persisted.
     }
 
     @Override
@@ -57,18 +59,20 @@ public final class V8ValueGlobalObject extends V8ValueObject {
         // Global object lives as long as V8 runtime lives.
     }
 
+    @CheckReturnValue
     public V8ValueBuiltInJson getJson() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_JSON);
         return v8Runtime.decorateV8Value(new V8ValueBuiltInJson(v8ValueObject.getHandle()));
     }
 
+    @CheckReturnValue
     public V8ValueBuiltInPromise getPromise() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_PROMISE);
         return v8Runtime.decorateV8Value(new V8ValueBuiltInPromise(v8ValueObject.getHandle()));
     }
 
     @Override
-    public boolean isWeak() throws JavetException {
+    public boolean isWeak() {
         return false;
     }
 
@@ -78,7 +82,8 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     }
 
     @Override
-    public void setWeak() throws JavetException {
+    public void setWeak() {
+        // Global object is persisted.
     }
 
     @Override

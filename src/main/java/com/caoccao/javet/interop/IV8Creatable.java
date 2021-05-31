@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetCallbackContext;
@@ -26,32 +27,40 @@ import com.caoccao.javet.values.reference.*;
 import java.time.ZonedDateTime;
 
 public interface IV8Creatable {
+    @CheckReturnValue
     V8ValueArray createV8ValueArray() throws JavetException;
 
+    @CheckReturnValue
     V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException;
 
     V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException;
 
+    @CheckReturnValue
     V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException;
 
     V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException;
 
+    @CheckReturnValue
     V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException;
 
     V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException;
 
     V8ValueLong createV8ValueLong(long longValue) throws JavetException;
 
+    @CheckReturnValue
     V8ValueMap createV8ValueMap() throws JavetException;
 
     V8ValueNull createV8ValueNull();
 
+    @CheckReturnValue
     V8ValueObject createV8ValueObject() throws JavetException;
 
+    @CheckReturnValue
     V8ValueSet createV8ValueSet() throws JavetException;
 
     V8ValueString createV8ValueString(String str) throws JavetException;
 
+    @CheckReturnValue
     V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException;
 
     V8ValueUndefined createV8ValueUndefined();

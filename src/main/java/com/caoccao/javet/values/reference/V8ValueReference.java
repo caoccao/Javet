@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -74,7 +75,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public boolean equals(V8Value v8Value) throws JavetException {
-        if (v8Value == null || !(v8Value instanceof V8ValueReference)) {
+        if (!(v8Value instanceof V8ValueReference)) {
             return false;
         }
         if (v8Value.getClass() != this.getClass()) {
@@ -96,7 +97,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public boolean isWeak() throws JavetException {
+    public boolean isWeak() {
         return weak;
     }
 
@@ -140,6 +141,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T toClone() throws JavetException {
         checkV8Runtime();
         return v8Runtime.cloneV8Value(this);

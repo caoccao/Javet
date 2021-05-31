@@ -50,12 +50,12 @@ public class V8ValueDataView extends V8ValueObject {
         super(handle);
     }
 
-    public long getBigInt64(int byteOffset) throws JavetException {
+    public long getBigInt64(int byteOffset) {
         return getBigInt64(byteOffset, true);
     }
 
-    public long getBigInt64(int byteOffset, boolean littleEndian) throws JavetException {
-        return invokeLong(FUNCTION_GET_BIG_INT_64, byteOffset, littleEndian).longValue();
+    public long getBigInt64(int byteOffset, boolean littleEndian) {
+        return invokeLong(FUNCTION_GET_BIG_INT_64, byteOffset, littleEndian);
     }
 
     public V8ValueArrayBuffer getBuffer() throws JavetException {
@@ -70,39 +70,39 @@ public class V8ValueDataView extends V8ValueObject {
         return getInteger(PROPERTY_BYTE_OFFSET);
     }
 
-    public float getFloat32(int byteOffset) throws JavetException {
+    public float getFloat32(int byteOffset) {
         return getFloat32(byteOffset, true);
     }
 
-    public float getFloat32(int byteOffset, boolean littleEndian) throws JavetException {
+    public float getFloat32(int byteOffset, boolean littleEndian) {
         return invokeDouble(FUNCTION_GET_FLOAT_32, byteOffset, littleEndian).floatValue();
     }
 
-    public double getFloat64(int byteOffset) throws JavetException {
+    public double getFloat64(int byteOffset) {
         return getFloat64(byteOffset, true);
     }
 
-    public double getFloat64(int byteOffset, boolean littleEndian) throws JavetException {
-        return invokeDouble(FUNCTION_GET_FLOAT_64, byteOffset, littleEndian).doubleValue();
+    public double getFloat64(int byteOffset, boolean littleEndian) {
+        return invokeDouble(FUNCTION_GET_FLOAT_64, byteOffset, littleEndian);
     }
 
-    public short getInt16(int byteOffset) throws JavetException {
+    public short getInt16(int byteOffset) {
         return getInt16(byteOffset, true);
     }
 
-    public short getInt16(int byteOffset, boolean littleEndian) throws JavetException {
+    public short getInt16(int byteOffset, boolean littleEndian) {
         return invokeInteger(FUNCTION_GET_INT_16, byteOffset, littleEndian).shortValue();
     }
 
-    public int getInt32(int byteOffset) throws JavetException {
+    public int getInt32(int byteOffset) {
         return getInt32(byteOffset, true);
     }
 
-    public int getInt32(int byteOffset, boolean littleEndian) throws JavetException {
-        return invokeInteger(FUNCTION_GET_INT_32, byteOffset, littleEndian).intValue();
+    public int getInt32(int byteOffset, boolean littleEndian) {
+        return invokeInteger(FUNCTION_GET_INT_32, byteOffset, littleEndian);
     }
 
-    public byte getInt8(int byteOffset) throws JavetException {
+    public byte getInt8(int byteOffset) {
         return invokeInteger(FUNCTION_GET_INT_8, byteOffset).byteValue();
     }
 

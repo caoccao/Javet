@@ -17,9 +17,9 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 
-@SuppressWarnings("unchecked")
 public interface IV8ValueSet extends IV8ValueKeyContainer {
     void add(Object key) throws JavetException;
 
@@ -31,5 +31,6 @@ public interface IV8ValueSet extends IV8ValueKeyContainer {
         add(getV8Runtime().createV8ValueUndefined());
     }
 
+    @CheckReturnValue
     IV8ValueIterator<V8ValueArray> getEntries() throws JavetException;
 }

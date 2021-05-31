@@ -29,8 +29,8 @@ public enum JavetPromiseRejectEvent {
             PromiseResolveAfterResolved,
             PromiseRejectAfterResolved};
 
-    private int code;
-    private String name;
+    private final int code;
+    private final String name;
 
     JavetPromiseRejectEvent(int code, String name) {
         this.code = code;

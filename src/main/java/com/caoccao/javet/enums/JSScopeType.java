@@ -11,8 +11,8 @@ public enum JSScopeType {
     With(7, "With"),
     Unknown(8, "Unknown");
 
-    private int id;
-    private String name;
+    private final int id;
+    private final String name;
 
     JSScopeType(int id, String name) {
         this.id = id;

@@ -44,15 +44,19 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
-                    v8ValueObject.bindProperties(mockAnnotationBasedCallbackReceiver);
-            assertEquals(3, javetCallbackContexts.size());
+                    v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
+            assertEquals(17, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
-            v8Runtime.getExecutor("a.stringValue = 'abc';").executeVoid();
+            assertEquals(123, v8Runtime.getExecutor("a['integerValue']").executeInteger());
             assertEquals(2, mockAnnotationBasedCallbackReceiver.getCount());
-            assertEquals("abc", v8Runtime.getExecutor("a.stringValue").executeString());
+            v8Runtime.getExecutor("a.stringValue = 'abc';").executeVoid();
             assertEquals(3, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals("abc", v8Runtime.getExecutor("a.stringValue").executeString());
+            assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals("abc", v8Runtime.getExecutor("a['stringValue']").executeString());
+            assertEquals(5, mockAnnotationBasedCallbackReceiver.getCount());
             v8Runtime.getGlobalObject().delete("a");
         }
         v8Runtime.requestGarbageCollectionForTesting(true);
@@ -92,6 +96,13 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(3, v8ValueObject.forEach((V8ValueString key, V8ValueInteger value) -> {
                 assertEquals("A" + Integer.toString(count.get()), key.getValue());
                 assertEquals(count.getAndIncrement(), value.getValue());
+            }));
+            assertEquals(3, v8ValueObject.forEach((int index, V8ValueString key) -> {
+                assertEquals("A" + Integer.toString(index), key.getValue());
+            }));
+            assertEquals(3, v8ValueObject.forEach((int index, V8ValueString key, V8ValueInteger value) -> {
+                assertEquals("A" + Integer.toString(index), key.getValue());
+                assertEquals(index, value.getValue());
             }));
         }
     }

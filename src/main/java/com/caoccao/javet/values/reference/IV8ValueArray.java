@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
@@ -27,12 +28,14 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public interface IV8ValueArray extends IV8ValueObject {
+    @CheckReturnValue
     <T extends V8Value> T get(int index) throws JavetException;
 
     List<Integer> getKeys() throws JavetException;
 
     int getLength() throws JavetException;
 
+    @CheckReturnValue
     <T extends V8Value> T pop() throws JavetException;
 
     default Boolean popBoolean() throws JavetException {
@@ -55,7 +58,7 @@ public interface IV8ValueArray extends IV8ValueObject {
         return pop();
     }
 
-    default <T extends Object> T popObject() throws JavetException {
+    default <T> T popObject() throws JavetException {
         try {
             return getV8Runtime().toObject(pop(), true);
         } catch (JavetException e) {
@@ -65,10 +68,12 @@ public interface IV8ValueArray extends IV8ValueObject {
         }
     }
 
-    default <R extends Object, T extends V8ValuePrimitive<R>> R popPrimitive() throws JavetException {
+    default <R, T extends V8ValuePrimitive<R>> R popPrimitive() throws JavetException {
         try (V8Value v8Value = pop()) {
             return ((T) v8Value).getValue();
-        } catch (Throwable t) {
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
         }
         return null;
     }

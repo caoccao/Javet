@@ -30,7 +30,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    static final String LIB_VERSION = "0.8.9";
+    static final String LIB_VERSION = "0.8.10";
     private static final String CHMOD = "chmod";
     private static final String XRR = "755";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
@@ -40,7 +40,7 @@ public final class JavetLibLoader {
     private static final String OS_LINUX = "linux";
     private static final String OS_WINDOWS = "windows";
     private static final int BUFFER_LENGTH = 4096;
-    private JSRuntimeType jsRuntimeType;
+    private final JSRuntimeType jsRuntimeType;
     private boolean loaded;
 
     public JavetLibLoader(JSRuntimeType jsRuntimeType) {
@@ -61,6 +61,7 @@ public final class JavetLibLoader {
         boolean isLibFileLocked = false;
         if (libFile.exists()) {
             try {
+                //noinspection ResultOfMethodCallIgnored
                 libFile.delete();
             } catch (Exception e) {
                 isLibFileLocked = true;
@@ -70,17 +71,19 @@ public final class JavetLibLoader {
             byte[] buffer = new byte[BUFFER_LENGTH];
             try (InputStream inputStream = JavetLibLoader.class.getResourceAsStream(resourceFileName);
                  FileOutputStream outputStream = new FileOutputStream(libFile.getAbsolutePath())) {
-                while (true) {
-                    int length = inputStream.read(buffer);
-                    if (length == -1) {
-                        break;
+                if (inputStream != null) {
+                    while (true) {
+                        int length = inputStream.read(buffer);
+                        if (length == -1) {
+                            break;
+                        }
+                        outputStream.write(buffer, 0, length);
                     }
-                    outputStream.write(buffer, 0, length);
-                }
-                if (JavetOSUtils.IS_LINUX) {
-                    try {
-                        Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
-                    } catch (Throwable e) {
+                    if (JavetOSUtils.IS_LINUX) {
+                        try {
+                            Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
+                        } catch (Throwable ignored) {
+                        }
                     }
                 }
             } catch (Exception e) {

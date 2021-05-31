@@ -17,13 +17,13 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.node.modules.INodeModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetResourceUtils;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
@@ -59,6 +59,7 @@ public class NodeRuntime extends V8Runtime {
         return JSRuntimeType.Node;
     }
 
+    @CheckReturnValue
     public <Module extends INodeModule> Module getNodeModule(
             Class<Module> nodeModuleClass) throws JavetException {
         if (!nodeModuleClass.isAnnotationPresent(NodeModule.class)) {
@@ -68,8 +69,9 @@ public class NodeRuntime extends V8Runtime {
         return getNodeModule(nodeModule.name(), nodeModuleClass);
     }
 
-    public <NodeModule extends INodeModule> NodeModule getNodeModule(
-            String name, Class<NodeModule> nodeModuleClass) throws JavetException {
+    @CheckReturnValue
+    public <NM extends INodeModule> NM getNodeModule(
+            String name, Class<NM> nodeModuleClass) throws JavetException {
         Objects.requireNonNull(name);
         INodeModule nodeModule = null;
         if (nodeModuleMap.containsKey(name)) {
@@ -84,7 +86,7 @@ public class NodeRuntime extends V8Runtime {
                 }
             }
             try {
-                Constructor<NodeModule> constructor = nodeModuleClass.getConstructor(
+                Constructor<NM> constructor = nodeModuleClass.getConstructor(
                         V8ValueObject.class, String.class);
                 nodeModule = constructor.newInstance(moduleObject, name);
                 nodeModuleMap.put(name, nodeModule);
@@ -92,7 +94,7 @@ public class NodeRuntime extends V8Runtime {
                 getLogger().logError(e, "Failed to create node module {0}.", name);
             }
         }
-        return (NodeModule) nodeModule;
+        return (NM) nodeModule;
     }
 
     public int getNodeModuleCount() {

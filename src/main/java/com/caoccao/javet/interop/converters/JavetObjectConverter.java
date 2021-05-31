@@ -17,11 +17,12 @@
 
 package com.caoccao.javet.interop.converters;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.entities.JavetEntityMap;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.values.reference.*;
 
 import java.util.*;
@@ -47,7 +48,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
     @Override
     public Object toObject(V8Value v8Value) throws JavetException {
         Object returnObject = super.toObject(v8Value);
-        if (returnObject == null || !(returnObject instanceof V8Value)) {
+        if (!(returnObject instanceof V8Value)) {
             return returnObject;
         }
         if (v8Value instanceof V8ValueArray) {
@@ -63,7 +64,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (v8Value instanceof V8ValueMap) {
             V8ValueMap v8ValueMap = (V8ValueMap) v8Value;
             Map<String, Object> map = createEntityMap();
-            v8ValueMap.forEach((key, value) -> map.put(key.toString(), toObject(value)));
+            v8ValueMap.forEach((V8Value key, V8Value value) -> map.put(key.toString(), toObject(value)));
             return map;
         } else if (v8Value instanceof V8ValueTypedArray) {
             V8ValueTypedArray v8ValueTypedArray = (V8ValueTypedArray) v8Value;
@@ -109,6 +110,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
     }
 
     @Override
+    @CheckReturnValue
     public <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
         V8Value v8Value = super.toV8Value(v8Runtime, object);
         if (v8Value != null && !(v8Value.isUndefined())) {
@@ -116,7 +118,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         }
         if (isEntityMap(object)) {
             V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap();
-            Map mapObject = (Map) object;
+            Map<?, ?> mapObject = (Map<?, ?>) object;
             for (Object key : mapObject.keySet()) {
                 try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key))) {
                     String childStringKey = key instanceof String ? (String) key : key.toString();
@@ -126,7 +128,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             v8Value = v8ValueMap;
         } else if (object instanceof Map) {
             V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
-            Map mapObject = (Map) object;
+            Map<?, ?> mapObject = (Map<?, ?>) object;
             for (Object key : mapObject.keySet()) {
                 try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key))) {
                     String childStringKey = key instanceof String ? (String) key : key.toString();
@@ -136,7 +138,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             v8Value = v8ValueObject;
         } else if (object instanceof Set) {
             V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet();
-            Set setObject = (Set) object;
+            Set<?> setObject = (Set<?>) object;
             for (Object item : setObject) {
                 try (V8Value childV8Value = toV8Value(v8Runtime, item)) {
                     v8ValueSet.add(childV8Value);
@@ -145,7 +147,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             v8Value = v8ValueSet;
         } else if (object instanceof Collection) {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (Object item : (Collection) object) {
+            for (Object item : (Collection<?>) object) {
                 try (V8Value childV8Value = toV8Value(v8Runtime, item)) {
                     v8ValueArray.push(childV8Value);
                 }

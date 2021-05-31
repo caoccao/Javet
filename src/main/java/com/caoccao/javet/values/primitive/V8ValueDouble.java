@@ -47,6 +47,6 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     }
 
     public double toPrimitive() {
-        return value.doubleValue();
+        return value;
     }
 }

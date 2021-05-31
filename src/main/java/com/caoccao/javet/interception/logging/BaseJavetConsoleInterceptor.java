@@ -97,6 +97,14 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
 
     @Override
     public boolean unregister(IV8ValueObject iV8ValueObject) throws JavetException {
+        try (V8ValueObject console = iV8ValueObject.get(PROPERTY_CONSOLE)) {
+            console.delete(JS_FUNCTION_DEBUG);
+            console.delete(JS_FUNCTION_ERROR);
+            console.delete(JS_FUNCTION_INFO);
+            console.delete(JS_FUNCTION_LOG);
+            console.delete(JS_FUNCTION_TRACE);
+            console.delete(JS_FUNCTION_WARN);
+        }
         return iV8ValueObject.delete(PROPERTY_CONSOLE);
     }
 }

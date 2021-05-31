@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
@@ -24,7 +25,6 @@ import com.caoccao.javet.values.V8Value;
 /**
  * The interface V8 convertible.
  */
-@SuppressWarnings("unchecked")
 public interface IV8Convertible {
     /**
      * Convert from V8 value to object.
@@ -36,7 +36,7 @@ public interface IV8Convertible {
      * @return the object
      * @throws JavetException the javet exception
      */
-    <T extends Object, V extends V8Value> T toObject(V v8Value) throws JavetException;
+    <T, V extends V8Value> T toObject(V v8Value) throws JavetException;
 
     /**
      * Convert from V8 value to object.
@@ -49,7 +49,7 @@ public interface IV8Convertible {
      * @return the t
      * @throws JavetException the javet exception
      */
-    default <T extends Object, V extends V8Value> T toObject(V v8Value, boolean autoClose) throws JavetException {
+    default <T, V extends V8Value> T toObject(V v8Value, boolean autoClose) throws JavetException {
         if (autoClose) {
             try {
                 return toObject(v8Value);
@@ -70,5 +70,6 @@ public interface IV8Convertible {
      * @return the V8 value
      * @throws JavetException the javet exception
      */
-    <T extends Object, V extends V8Value> V toV8Value(T object) throws JavetException;
+    @CheckReturnValue
+    <T, V extends V8Value> V toV8Value(T object) throws JavetException;
 }

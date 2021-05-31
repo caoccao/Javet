@@ -33,14 +33,14 @@ public class JavetEngineGuard implements IJavetEngineGuard {
     protected static final boolean IS_IN_DEBUG_MODE = ManagementFactory.getRuntimeMXBean().
             getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
 
-    protected Future future;
-    protected IJavetEngine iJavetEngine;
+    protected Future<?> future;
+    protected IJavetEngine<?> iJavetEngine;
     protected boolean quitting;
     protected boolean skipInDebugMode;
     protected long timeoutMillis;
     protected V8Runtime v8Runtime;
 
-    public JavetEngineGuard(IJavetEngine iJavetEngine, V8Runtime v8Runtime, long timeoutMills) {
+    public JavetEngineGuard(IJavetEngine<?> iJavetEngine, V8Runtime v8Runtime, long timeoutMills) {
         Objects.requireNonNull(iJavetEngine);
         this.iJavetEngine = iJavetEngine;
         quitting = false;
@@ -112,11 +112,11 @@ public class JavetEngineGuard implements IJavetEngineGuard {
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
-                } finally {
-                    break;
                 }
+                break;
             } else {
                 try {
+                    //noinspection BusyWait
                     Thread.sleep(config.getEngineGuardCheckIntervalMillis());
                 } catch (InterruptedException e) {
                     // It's closed.
