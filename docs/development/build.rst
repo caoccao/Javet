@@ -26,7 +26,7 @@ Windows Environment
 Download Pre-built Node.js and V8
 =================================
 
-I have prepared pre-built Linux and Windows version of Node.js ``v14.16.1`` and V8 ``v9.0.257``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
+I have prepared pre-built Linux and Windows version of Node.js ``v14.17.0`` and V8 ``v9.1.269.28``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
 
 Build Javet JNI Library
 =======================
@@ -75,7 +75,7 @@ Jar files are built under ``./target``.
 Build V8 (Optional)
 ===================
 
-Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8 ``v9.0.257``. If you face any issues, you may contact `@sjtucaocao <https://twitter.com/sjtucaocao>`_.
+Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8. If you face any issues, you may contact `@sjtucaocao <https://twitter.com/sjtucaocao>`_.
 
 Preparation (V8)
 ----------------
@@ -96,6 +96,7 @@ Also, please make sure ``args.gn`` file looks like the following.
     is_component_build = false
     v8_enable_i18n_support= false
     v8_enable_pointer_compression = false
+    v8_enable_webassembly = false
     v8_static_library = true
     symbol_level = 0
     use_custom_libcxx = false
@@ -119,17 +120,14 @@ Note: The patch script requires Python 3.
     set PATH=path_to_depot_tools;%PATH%
     set DEPOT_TOOLS_WIN_TOOLCHAIN=0
     cd root_path_to_v8
-    ninja -C out.gn/x64.release v8_wrappers
-    python root_path_to_javet\scripts\python\patch_v8_build.py -p .\
-    ninja -C out.gn/x64.release v8_wrappers
+    ninja -C out.gn/x64.release v8_monolith
     python root_path_to_javet\scripts\python\patch_v8_build.py -p .\
     ninja -C out.gn/x64.release v8_monolith
     gn gen --ide=vs out.gn\x64.solution
 
 Why Patching?
 
-* First patch: ``v8_wrappers.lib`` is a header only library without ``.cc`` file. MSVC refuses to generate such libraries. The patch is to create a dummy ``.cc`` file so that MSVC feels happy.
-* Second patch: A few ninja files set certain warnings as errors so that MSVC stops compilation. The patch is to turn off those errors.
+A few ninja files set certain warnings as errors so that MSVC stops compilation. The patch is to turn off those errors.
 
 Build Node.js (Optional)
 ========================
@@ -139,7 +137,7 @@ Please follow `Building Node.js <https://github.com/nodejs/node/blob/master/BUIL
 Preparation (Node.js)
 ---------------------
 
-* Linux requires Python 2.7, CMake 3.10+, GCC 9.3+. Ubuntu 20.04 is the recommended Linux distribution (V8 v8.9 is recommended to be built on Ubuntu 18.04, and V8 v9.0 is recommended to be built on Ubuntu 20.04).
+* Linux requires Python 2.7, CMake 3.10+, GCC 9.3+. Ubuntu 20.04 is the recommended Linux distribution (V8 v8.9 is recommended to be built on Ubuntu 18.04, and V8 v9.0+ is recommended to be built on Ubuntu 20.04).
 * Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
 * Clone the source code.
 * Checkout a proper version.

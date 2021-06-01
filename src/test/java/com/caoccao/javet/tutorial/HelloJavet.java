@@ -70,6 +70,8 @@ public class HelloJavet {
                 // Unregister the Javet console to V8 global object.
                 javetConsoleInterceptor.unregister(v8Runtime.getGlobalObject());
                 // close() is not necessary because the Javet pool handles that.
+                v8Runtime.lowMemoryNotification();
+                // Force V8 to GC.
             }
         }
     }

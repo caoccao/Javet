@@ -21,8 +21,6 @@ public final class V8Flags {
     private boolean allowNativesSyntax;
     private boolean exposeGC;
     private boolean exposeInspectorScripts;
-    // https://v8.dev/features/top-level-await
-    private boolean harmonyTopLevelAwait;
     private boolean sealed;
     private boolean trackRetainingPath;
     private boolean useStrict;
@@ -31,20 +29,9 @@ public final class V8Flags {
         allowNativesSyntax = false;
         exposeGC = false;
         exposeInspectorScripts = false;
-        harmonyTopLevelAwait = false;
         sealed = false;
         trackRetainingPath = false;
         useStrict = true;
-    }
-
-    public boolean isHarmonyTopLevelAwait() {
-        return harmonyTopLevelAwait;
-    }
-
-    public void setHarmonyTopLevelAwait(boolean harmonyTopLevelAwait) {
-        if (!sealed) {
-            this.harmonyTopLevelAwait = harmonyTopLevelAwait;
-        }
     }
 
     public boolean isExposeInspectorScripts() {

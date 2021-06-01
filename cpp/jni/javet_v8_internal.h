@@ -28,8 +28,7 @@
 #pragma warning(disable: 4291)
 #pragma warning(disable: 4819)
 #pragma warning(disable: 4996)
-#include <src/objects/objects.h>
-#include <src/api/api.h>
+#include <src/objects/objects-inl.h>
 #include <src/api/api-inl.h>
 #ifdef ENABLE_NODE
 #include <src/objects/js-objects-inl.h>
@@ -38,7 +37,6 @@
 #endif
 #include <src/objects/shared-function-info-inl.h>
 #include <src/handles/handles-inl.h>
-#include <src/strings/string-builder-inl.h>
 #include <src/inspector/v8-debugger.h>
 #include <src/inspector/v8-inspector-impl.h>
 #pragma warning(default: 4244)

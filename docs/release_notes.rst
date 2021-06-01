@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.9.0
+-----
+
+* Upgraded Node.js to ``v14.17.0`` `(2021-05-11) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.0>`_
+* Upgraded V8 to ``v9.1.269.28`` `(2021-05-10) <https://v8.dev/blog/v8-release-91>`_
+
 0.8.10
 ------
 
@@ -53,8 +59,8 @@ Release Notes
 * Added ``gcBeforeEngineClose`` to ``JavetEngineConfig``
 * Added ``JavetCallbackException``
 * Added ``IV8Value#isNullOrUndefined``
-* Upgraded Node.js to ``v14.16.1`` (2021-04-06)
-* Upgraded V8 to ``v9.0.257`` (2021-02-24)
+* Upgraded Node.js to ``v14.16.1`` `(2021-04-06) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.16.1>`_
+* Upgraded V8 to ``v9.0.257`` `(2021-02-24) <https://v8.dev/blog/v8-release-90>`_
 
 0.8.3
 -----
@@ -83,7 +89,7 @@ Release Notes
 0.8.0
 -----
 
-* Supported Node.js ``v14.16.0``
+* Supported Node.js ``v14.16.0`` `(2021-02-23) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.16.0>`_
 * Added ``V8Module`` and ``V8Script``
 * Enhanced ``V8ValuePromise``
 * Added dynamic switch between Node.js and V8
@@ -123,7 +129,7 @@ Release Notes
 
 * First release of Javet
 * Linux + Windows
-* V8 ``v8.9.255``
+* V8 ``v8.9.255`` `(2021-02-04) <https://v8.dev/blog/v8-release-89>`_
 * Exposure of the majority of V8 API in JVM
 * JS function interception
 * Native BigInt and Date
