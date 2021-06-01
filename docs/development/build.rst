@@ -96,7 +96,6 @@ Also, please make sure ``args.gn`` file looks like the following.
     is_component_build = false
     v8_enable_i18n_support= false
     v8_enable_pointer_compression = false
-    v8_enable_webassembly = false
     v8_static_library = true
     symbol_level = 0
     use_custom_libcxx = false

@@ -28,6 +28,10 @@
 #pragma warning(disable: 4291)
 #pragma warning(disable: 4819)
 #pragma warning(disable: 4996)
+#ifndef ENABLE_NODE
+// Starting from V8 v9.1, some internal V8 API diverged from their public representatives.
+#define V8_ENABLE_WEBASSEMBLY 1
+#endif
 #include <src/objects/objects-inl.h>
 #include <src/api/api-inl.h>
 #ifdef ENABLE_NODE
