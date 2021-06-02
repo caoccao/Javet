@@ -11,7 +11,7 @@ Javet Engine Pool
             // Get a V8 runtime from the engine.
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
             // Create a Javet console interceptor.
-            JavetConsoleInterceptor javetConsoleInterceptor = new JavetConsoleInterceptor(v8Runtime);
+            JavetStandardConsoleInterceptor javetConsoleInterceptor = new JavetStandardConsoleInterceptor(v8Runtime);
             // Register the Javet console to V8 global object.
             javetConsoleInterceptor.register(v8Runtime.getGlobalObject());
             // V8 console log is redirected to JVM console log.
