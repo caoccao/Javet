@@ -40,25 +40,12 @@ public interface IV8ValueObject extends IV8ValueReference {
     /**
      * Bind both functions via @V8Function and properties via @V8Property.
      *
-     * @param callbackReceiver the callback receiver
-     * @return the list of callback context
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    default List<JavetCallbackContext> bind(Object callbackReceiver) throws JavetException {
-        return bind(callbackReceiver, false);
-    }
-
-    /**
-     * Bind both functions via @V8Function and properties via @V8Property.
-     *
      * @param callbackReceiver   the callback receiver
-     * @param thisObjectRequired the this object required
      * @return the list of callback context
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    List<JavetCallbackContext> bind(Object callbackReceiver, boolean thisObjectRequired) throws JavetException;
+    List<JavetCallbackContext> bind(Object callbackReceiver) throws JavetException;
 
     /**
      * Binds function by name and callback context.
@@ -90,50 +77,6 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.9
      */
     boolean bindFunction(String functionName, String codeString) throws JavetException;
-
-    /**
-     * Binds functions.
-     *
-     * @param functionCallbackReceiver the function callback receiver
-     * @return the list of callback contexts
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    @Deprecated
-    default List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver) throws JavetException {
-        return bindFunctions(functionCallbackReceiver, false);
-    }
-
-    /**
-     * Binds functions via annotation @V8Function.
-     *
-     * @param functionCallbackReceiver the function callback receiver
-     * @param thisObjectRequired       the this object required
-     * @return the list of callback contexts
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    @Deprecated
-    default List<JavetCallbackContext> bindFunctions(Object functionCallbackReceiver, boolean thisObjectRequired)
-            throws JavetException {
-        return bind(functionCallbackReceiver, thisObjectRequired);
-    }
-
-    /**
-     * Bind properties via annotation @V8Property.
-     * <p>
-     * Note:
-     * 1. Getters and setters are determined by parameter count.
-     * 2. Getter must present, otherwise setter won't be bind.
-     *
-     * @param propertyCallbackReceiver the property callback receiver
-     * @return the list of callback context
-     * @throws JavetException the javet exception
-     */
-    @Deprecated
-    default List<JavetCallbackContext> bindProperties(Object propertyCallbackReceiver) throws JavetException {
-        return bind(propertyCallbackReceiver, false);
-    }
 
     /**
      * Bind property.
@@ -770,78 +713,6 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      */
     boolean set(Object key, Object value) throws JavetException;
-
-    /**
-     * Sets function by name and callback context.
-     * <p>
-     * It is for creating a Java code based function in V8.
-     * It is deprecated. Please use bindFunction instead.
-     *
-     * @param functionName         the function name
-     * @param javetCallbackContext the javet callback context
-     * @return true : function is set, false: function is not set
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    @Deprecated
-    default boolean setFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
-        return bindFunction(functionName, javetCallbackContext);
-    }
-
-    /**
-     * Sets function by name and string.
-     * <p>
-     * It is for creating a string based function in V8.
-     * It is deprecated. Please use bindFunction instead.
-     * <p>
-     * JS equivalent:
-     * <code>
-     * obj.func = function(arg1, arg2) { ... };
-     * </code>
-     *
-     * @param functionName the function name
-     * @param codeString   the code string
-     * @return true : function is set, false: function is not set
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    @Deprecated
-    default boolean setFunction(String functionName, String codeString) throws JavetException {
-        return bindFunction(functionName, codeString);
-    }
-
-    /**
-     * Sets functions.
-     * <p>
-     * It is deprecated. Please use bindFunctions instead.
-     *
-     * @param functionCallbackReceiver the function callback receiver
-     * @return the functions
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    @Deprecated
-    default List<JavetCallbackContext> setFunctions(Object functionCallbackReceiver) throws JavetException {
-        return bindFunctions(functionCallbackReceiver, false);
-    }
-
-    /**
-     * Sets functions.
-     * <p>
-     * It is deprecated. Please use bindFunctions instead.
-     *
-     * @param functionCallbackReceiver the function callback receiver
-     * @param thisObjectRequired       the this object required
-     * @return the functions
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    @Deprecated
-    default List<JavetCallbackContext> setFunctions(
-            Object functionCallbackReceiver,
-            boolean thisObjectRequired) throws JavetException {
-        return bindFunctions(functionCallbackReceiver, thisObjectRequired);
-    }
 
     /**
      * Sets null.

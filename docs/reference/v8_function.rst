@@ -42,7 +42,6 @@ Automatic Registration
 .. code-block:: java
 
     List<JavetCallbackContext> bind(Object functionCallbackReceiver);
-    List<JavetCallbackContext> bind(Object functionCallbackReceiver, boolean thisObjectRequired);
 
 How about Object Type Conversion?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

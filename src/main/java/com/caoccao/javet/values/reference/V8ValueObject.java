@@ -55,10 +55,10 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public List<JavetCallbackContext> bind(Object callbackReceiver, boolean thisObjectRequired) throws JavetException {
-        Map<String, Method> propertyGetterMap = new HashMap<>();
-        Map<String, Method> propertySetterMap = new HashMap<>();
-        Map<String, Method> functionMap = new HashMap<>();
+    public List<JavetCallbackContext> bind(Object callbackReceiver) throws JavetException {
+        Map<String, MethodDescriptor> propertyGetterMap = new HashMap<>();
+        Map<String, MethodDescriptor> propertySetterMap = new HashMap<>();
+        Map<String, MethodDescriptor> functionMap = new HashMap<>();
         for (Method method : callbackReceiver.getClass().getMethods()) {
             if (method.isAnnotationPresent(V8Property.class)) {
                 V8Property v8Property = method.getAnnotation(V8Property.class);
@@ -80,12 +80,12 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     if (method.getParameterCount() == 0) {
                         // Duplicated property name will be dropped.
                         if (!propertyGetterMap.containsKey(propertyName)) {
-                            propertyGetterMap.put(propertyName, method);
+                            propertyGetterMap.put(propertyName, new MethodDescriptor(method, v8Property.thisObjectRequired()));
                         }
                     } else if (method.getParameterCount() == 1) {
                         // Duplicated property name will be dropped.
                         if (!propertySetterMap.containsKey(propertyName)) {
-                            propertySetterMap.put(propertyName, method);
+                            propertySetterMap.put(propertyName, new MethodDescriptor(method, v8Property.thisObjectRequired()));
                         }
                     } else {
                         throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
@@ -103,7 +103,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 }
                 // Duplicated function will be dropped.
                 if (!functionMap.containsKey(functionName)) {
-                    functionMap.put(functionName, method);
+                    functionMap.put(functionName, new MethodDescriptor(method, v8Function.thisObjectRequired()));
                 }
             } else {
                 bindV8Runtime(callbackReceiver, method);
@@ -111,22 +111,22 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         }
         List<JavetCallbackContext> javetCallbackContexts = new ArrayList<>();
         if (!propertyGetterMap.isEmpty()) {
-            for (Map.Entry<String, Method> entry : propertyGetterMap.entrySet()) {
+            for (Map.Entry<String, MethodDescriptor> entry : propertyGetterMap.entrySet()) {
                 String propertyName = entry.getKey();
-                Method methodGetter = entry.getValue();
+                MethodDescriptor getterMethodDescriptor = entry.getValue();
                 try {
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
-                            Modifier.isStatic(methodGetter.getModifiers()) ? null : callbackReceiver,
-                            methodGetter, false);
+                            Modifier.isStatic(getterMethodDescriptor.method.getModifiers()) ? null : callbackReceiver,
+                            getterMethodDescriptor.method, false);
                     javetCallbackContexts.add(javetCallbackContextGetter);
                     JavetCallbackContext javetCallbackContextSetter = null;
                     if (propertySetterMap.containsKey(propertyName)) {
-                        Method methodSetter = propertySetterMap.get(propertyName);
+                        MethodDescriptor setterMethodDescriptor = propertySetterMap.get(propertyName);
                         // Static method needs to be identified.
                         javetCallbackContextSetter = new JavetCallbackContext(
-                                Modifier.isStatic(methodSetter.getModifiers()) ? null : callbackReceiver,
-                                methodSetter, false);
+                                Modifier.isStatic(setterMethodDescriptor.method.getModifiers()) ? null : callbackReceiver,
+                                setterMethodDescriptor.method, setterMethodDescriptor.thisObjectRequired);
                         javetCallbackContexts.add(javetCallbackContextSetter);
                     }
                     bindProperty(propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
@@ -134,27 +134,27 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     throw new JavetException(
                             JavetError.CallbackRegistrationFailure,
                             SimpleMap.of(
-                                    JavetError.PARAMETER_METHOD_NAME, methodGetter.getName(),
+                                    JavetError.PARAMETER_METHOD_NAME, getterMethodDescriptor.method.getName(),
                                     JavetError.PARAMETER_MESSAGE, e.getMessage()),
                             e);
                 }
             }
         }
         if (!functionMap.isEmpty()) {
-            for (Map.Entry<String, Method> entry : functionMap.entrySet()) {
-                final Method method = entry.getValue();
+            for (Map.Entry<String, MethodDescriptor> entry : functionMap.entrySet()) {
+                final MethodDescriptor methodDescriptor = entry.getValue();
                 try {
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                            Modifier.isStatic(method.getModifiers()) ? null : callbackReceiver,
-                            method, thisObjectRequired);
+                            Modifier.isStatic(methodDescriptor.method.getModifiers()) ? null : callbackReceiver,
+                            methodDescriptor.method, methodDescriptor.thisObjectRequired);
                     bindFunction(entry.getKey(), javetCallbackContext);
                     javetCallbackContexts.add(javetCallbackContext);
                 } catch (Exception e) {
                     throw new JavetException(
                             JavetError.CallbackRegistrationFailure,
                             SimpleMap.of(
-                                    JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                    JavetError.PARAMETER_METHOD_NAME, methodDescriptor.method.getName(),
                                     JavetError.PARAMETER_MESSAGE, e.getMessage()),
                             e);
                 }
@@ -411,6 +411,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
             }
         } catch (JavetException e) {
             return e.getMessage();
+        }
+    }
+
+    private static class MethodDescriptor {
+        public Method method;
+        public boolean thisObjectRequired;
+
+        public MethodDescriptor(Method method, boolean thisObjectRequired) {
+            this.method = method;
+            this.thisObjectRequired = thisObjectRequired;
         }
     }
 }

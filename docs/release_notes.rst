@@ -7,6 +7,7 @@ Release Notes
 
 * Upgraded Node.js to ``v14.17.0`` `(2021-05-11) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.0>`_
 * Upgraded V8 to ``v9.1.269.28`` `(2021-05-10) <https://v8.dev/blog/v8-release-91>`_
+* Added ``thisObjectRequired`` to ``@V8Function`` and ``@V8Property``
 
 0.8.10
 ------
