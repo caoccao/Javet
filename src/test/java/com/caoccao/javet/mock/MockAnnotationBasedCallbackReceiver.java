@@ -24,6 +24,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -162,6 +163,11 @@ public class MockAnnotationBasedCallbackReceiver {
     public char primitiveIncreaseChar(char c) {
         count.incrementAndGet();
         return (char) ((int) c + 1);
+    }
+
+    @V8Function(thisObjectRequired = true)
+    public V8ValueObject self(V8ValueObject thisObject) {
+        return thisObject;
     }
 
     public int getCount() {

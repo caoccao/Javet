@@ -180,6 +180,7 @@ public final class V8FunctionCallback {
             V8ValueArray args) throws Throwable {
         if (javetCallbackContext != null) {
             List<Object> values = new ArrayList<>();
+            Object resultObject = null;
             try {
                 v8Runtime.decorateV8Values(thisObject, args);
                 /*
@@ -195,7 +196,6 @@ public final class V8FunctionCallback {
                  */
                 Method method = javetCallbackContext.getCallbackMethod();
                 Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
-                Object resultObject;
                 if (javetCallbackContext.isThisObjectRequired()) {
                     values.add(thisObject);
                 }
@@ -267,11 +267,20 @@ public final class V8FunctionCallback {
                     throw t;
                 }
             } finally {
+                // Result object must be excluded because it will be closed in JNI.
                 if (!javetCallbackContext.isThisObjectRequired()) {
-                    JavetResourceUtils.safeClose(thisObject);
+                    if (thisObject != resultObject) {
+                        JavetResourceUtils.safeClose(thisObject);
+                    }
                 }
-                JavetResourceUtils.safeClose(args);
-                JavetResourceUtils.safeClose(values);
+                if (args != resultObject) {
+                    JavetResourceUtils.safeClose(args);
+                }
+                for (Object value : values) {
+                    if (value != resultObject) {
+                        JavetResourceUtils.safeClose(value);
+                    }
+                }
             }
         }
         return v8Runtime.createV8ValueUndefined();
