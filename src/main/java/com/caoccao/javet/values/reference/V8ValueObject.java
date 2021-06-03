@@ -77,12 +77,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                 }
                 if (propertyName.length() > 0) {
-                    if (method.getParameterCount() == 0) {
+                    final int expectedGetterParameterCount = v8Property.thisObjectRequired() ? 1 : 0;
+                    final int expectedSetterParameterCount = v8Property.thisObjectRequired() ? 2 : 1;
+                    if (method.getParameterCount() == expectedGetterParameterCount) {
                         // Duplicated property name will be dropped.
                         if (!propertyGetterMap.containsKey(propertyName)) {
                             propertyGetterMap.put(propertyName, new MethodDescriptor(method, v8Property.thisObjectRequired()));
                         }
-                    } else if (method.getParameterCount() == 1) {
+                    } else if (method.getParameterCount() == expectedSetterParameterCount) {
                         // Duplicated property name will be dropped.
                         if (!propertySetterMap.containsKey(propertyName)) {
                             propertySetterMap.put(propertyName, new MethodDescriptor(method, v8Property.thisObjectRequired()));
@@ -91,7 +93,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                 SimpleMap.of(
                                         JavetError.PARAMETER_METHOD_NAME, method.getName(),
-                                        JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 0,
+                                        JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, expectedGetterParameterCount,
                                         JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
                     }
                 }
@@ -118,7 +120,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
                             Modifier.isStatic(getterMethodDescriptor.method.getModifiers()) ? null : callbackReceiver,
-                            getterMethodDescriptor.method, false);
+                            getterMethodDescriptor.method, getterMethodDescriptor.thisObjectRequired);
                     javetCallbackContexts.add(javetCallbackContextGetter);
                     JavetCallbackContext javetCallbackContextSetter = null;
                     if (propertySetterMap.containsKey(propertyName)) {

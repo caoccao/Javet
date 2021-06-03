@@ -59,10 +59,22 @@ public class MockAnnotationBasedCallbackReceiver {
         return stringValue;
     }
 
+    @V8Property(thisObjectRequired = true)
+    public String getStringValueWithThis(V8ValueObject thisObject) throws JavetException {
+        count.incrementAndGet();
+        return thisObject.getString("stringValue");
+    }
+
     @V8Property
     public void setStringValue(String stringValue) {
         count.incrementAndGet();
         this.stringValue = stringValue;
+    }
+
+    @V8Property(thisObjectRequired = true)
+    public void setStringValueWithThis(V8ValueObject thisObject, String stringValue) throws JavetException {
+        count.incrementAndGet();
+        thisObject.set("stringValue", stringValue);
     }
 
     @V8Function
@@ -167,6 +179,7 @@ public class MockAnnotationBasedCallbackReceiver {
 
     @V8Function(thisObjectRequired = true)
     public V8ValueObject self(V8ValueObject thisObject) {
+        count.incrementAndGet();
         return thisObject;
     }
 
