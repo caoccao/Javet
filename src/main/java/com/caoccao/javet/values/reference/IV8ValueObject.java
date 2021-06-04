@@ -40,7 +40,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     /**
      * Bind both functions via @V8Function and properties via @V8Property.
      *
-     * @param callbackReceiver   the callback receiver
+     * @param callbackReceiver the callback receiver
      * @return the list of callback context
      * @throws JavetException the javet exception
      * @since 0.8.9
@@ -554,8 +554,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the boolean
+     * @throws JavetException the javet exception
      */
-    default Boolean invokeBoolean(String functionName, Object... objects) {
+    default Boolean invokeBoolean(String functionName, Object... objects) throws JavetException {
         return invokePrimitive(functionName, objects);
     }
 
@@ -593,8 +594,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the double
+     * @throws JavetException the javet exception
      */
-    default Double invokeDouble(String functionName, Object... objects) {
+    default Double invokeDouble(String functionName, Object... objects) throws JavetException {
         return invokePrimitive(functionName, objects);
     }
 
@@ -604,8 +606,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the float
+     * @throws JavetException the javet exception
      */
-    default Float invokeFloat(String functionName, Object... objects) {
+    default Float invokeFloat(String functionName, Object... objects) throws JavetException {
         Double result = invokeDouble(functionName, objects);
         return result == null ? null : result.floatValue();
     }
@@ -616,8 +619,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the integer
+     * @throws JavetException the javet exception
      */
-    default Integer invokeInteger(String functionName, Object... objects) {
+    default Integer invokeInteger(String functionName, Object... objects) throws JavetException {
         return invokePrimitive(functionName, objects);
     }
 
@@ -627,8 +631,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the long
+     * @throws JavetException the javet exception
      */
-    default Long invokeLong(String functionName, Object... objects) {
+    default Long invokeLong(String functionName, Object... objects) throws JavetException {
         return invokePrimitive(functionName, objects);
     }
 
@@ -659,11 +664,14 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the primitive value
+     * @throws JavetException the javet exception
      */
     default <R, T extends V8ValuePrimitive<R>> R invokePrimitive(
-            String functionName, Object... objects) {
+            String functionName, Object... objects) throws JavetException {
         try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
             return ((T) v8Value).getValue();
+        } catch (JavetException e) {
+            throw e;
         } catch (Throwable t) {
             return null;
         }
@@ -675,8 +683,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param functionName the function name
      * @param objects      the objects
      * @return the string
+     * @throws JavetException the javet exception
      */
-    default String invokeString(String functionName, Object... objects) {
+    default String invokeString(String functionName, Object... objects) throws JavetException {
         return invokePrimitive(functionName, objects);
     }
 

@@ -148,6 +148,11 @@ Null Safety
 
 What if the object converter meets ``null`` or ``undefined`` when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in ``java.lang.NullPointerException``. Luckily, Javet object converter is null safe by injecting default primitive values and the default primitive values can be overridden. Please check out ``com.caoccao.javet.interop.converters.IJavetConverter#getDefault*`` for detail.
 
+Circular Structure
+==================
+
+It is inefficient and inconvenient for Javet to detect circular structure during object conversion. So, how to detect that in application? The recommended approach is to catch ``java.lang.StackOverflowError``. It only takes 10-30ms for the object converter to throw this exception. The actual time depends on how complex the object is. You are welcome proposing a better approach.
+
 Final Note
 ==========
 

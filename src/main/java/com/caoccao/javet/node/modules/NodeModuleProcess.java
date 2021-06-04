@@ -36,7 +36,7 @@ public class NodeModuleProcess extends BaseNodeModule {
         super(moduleObject, name);
     }
 
-    public Path getWorkingDirectory() {
+    public Path getWorkingDirectory() throws JavetException {
         return new File(moduleObject.invokeString(FUNCTION_CWD)).toPath();
     }
 
