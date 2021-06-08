@@ -2,7 +2,7 @@
 
 # Usage for V8: build -DV8_DIR=~/v8
 # Usage for Node: build -DNODE_DIR=~/node
-JAVET_VERSION=0.9.0
+JAVET_VERSION=0.9.1
 rm -rf build
 mkdir build
 cd build
