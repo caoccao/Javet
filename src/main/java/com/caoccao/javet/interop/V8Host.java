@@ -43,10 +43,7 @@ public final class V8Host implements AutoCloseable {
     private static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
     private static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";
-    private static final Object nodeLock = new Object();
-    private static final V8Host v8Instance = new V8Host(JSRuntimeType.V8);
     private static volatile double memoryUsageThresholdRatio = 0.7;
-    private static volatile V8Host nodeInstance;
     private final V8Flags flags;
     private final JSRuntimeType jsRuntimeType;
     private final IJavetLogger logger;
@@ -91,25 +88,18 @@ public final class V8Host implements AutoCloseable {
      * @return the Node instance
      */
     public static V8Host getNodeInstance() {
-        if (nodeInstance == null) {
-            synchronized (nodeLock) {
-                if (nodeInstance == null) {
-                    nodeInstance = new V8Host(JSRuntimeType.Node);
-                }
-            }
-        }
-        return nodeInstance;
+        return NodeInstanceHolder.INSTANCE;
     }
 
     /**
      * Gets V8 instance.
      * <p>
-     * Note: V8 runtime library is loaded by the default class loader.
+     * Note: V8 runtime library is loaded by a custom class loader.
      *
      * @return the V8 instance
      */
     public static V8Host getV8Instance() {
-        return v8Instance;
+        return V8InstanceHolder.INSTANCE;
     }
 
     public static double getMemoryUsageThresholdRatio() {
@@ -243,38 +233,30 @@ public final class V8Host implements AutoCloseable {
         return jsRuntimeType;
     }
 
+    // This function is not open because it may cause core dump.
     private void loadLibrary() {
         if (!libLoaded) {
-            if (jsRuntimeType.isNode()) {
-                try {
-                    javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
-                    javetClassLoader.load();
-                    v8Native = javetClassLoader.getNative();
-                    libLoaded = true;
-                } catch (JavetException e) {
-                    logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
-                    lastException = e;
-                }
-            } else {
-                try {
-                    JavetLibLoader javetLibLoader = new JavetLibLoader(jsRuntimeType);
-                    javetLibLoader.load();
-                    v8Native = new V8Native();
-                    libLoaded = true;
-                } catch (JavetException e) {
-                    logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
-                    lastException = e;
-                }
+            try {
+                javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
+                javetClassLoader.load();
+                v8Native = javetClassLoader.getNative();
+                libLoaded = true;
+            } catch (JavetException e) {
+                logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
+                lastException = e;
             }
         }
     }
 
+    // This function is not open because it may cause core dump.
     private void unloadLibrary() {
-        if (jsRuntimeType.isNode() && libLoaded) {
+        if (libLoaded) {
+            v8Native = null;
             javetClassLoader = null;
             System.gc();
             System.runFinalization();
             libLoaded = false;
+            lastException = null;
         }
     }
 
@@ -317,5 +299,13 @@ public final class V8Host implements AutoCloseable {
             return true;
         }
         return false;
+    }
+
+    private static class NodeInstanceHolder {
+        private static V8Host INSTANCE = new V8Host(JSRuntimeType.Node);
+    }
+
+    private static class V8InstanceHolder {
+        private static V8Host INSTANCE = new V8Host(JSRuntimeType.V8);
     }
 }

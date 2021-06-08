@@ -25,6 +25,7 @@ import com.caoccao.javet.utils.SimpleMap;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.util.Objects;
 
 class JavetClassLoader extends ClassLoader {
     protected static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
@@ -35,14 +36,15 @@ class JavetClassLoader extends ClassLoader {
 
     JavetClassLoader(ClassLoader parent, JSRuntimeType jsRuntimeType) {
         super(parent);
-        assert jsRuntimeType.isNode(); // Prevent V8 from being dynamically loaded.
+        Objects.requireNonNull(jsRuntimeType);
         this.jsRuntimeType = jsRuntimeType;
     }
 
     IV8Native getNative() throws JavetException {
         try {
             Class<?> classNative = loadClass(jsRuntimeType.isNode() ? NODE_NATIVE_CLASS_NAME : V8_NATIVE_CLASS_NAME);
-            Constructor<?> constructor = classNative.getConstructor();
+            Constructor<?> constructor = classNative.getDeclaredConstructor();
+            constructor.setAccessible(true);
             return (IV8Native) constructor.newInstance();
         } catch (Exception e) {
             e.printStackTrace(System.err);

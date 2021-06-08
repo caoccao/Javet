@@ -153,6 +153,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             removeAllReferences();
             v8Host.closeV8Runtime(this);
             handle = INVALID_HANDLE;
+            v8Native = null;
         }
     }
 

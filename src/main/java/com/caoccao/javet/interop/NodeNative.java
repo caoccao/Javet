@@ -21,8 +21,8 @@ package com.caoccao.javet.interop;
  * The type Node native is the pure interface that defines the JNI C++ implementation.
  * It has to be public so that dynamic library loading can work.
  */
-public class NodeNative extends V8Native implements INodeNative {
-    public NodeNative() {
+class NodeNative extends V8Native implements INodeNative {
+    NodeNative() {
     }
 
     @Override
