@@ -24,4 +24,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface V8Property {
     String name() default "";
+
+    boolean thisObjectRequired() default false;
 }

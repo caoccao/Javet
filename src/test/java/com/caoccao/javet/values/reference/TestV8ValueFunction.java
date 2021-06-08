@@ -48,7 +48,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
                     v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
-            assertEquals(17, javetCallbackContexts.size());
+            assertEquals(20, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -91,6 +91,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("c", v8Runtime.getExecutor("a.primitiveIncreaseChar('bye')").executeString());
             assertEquals(16, mockAnnotationBasedCallbackReceiver.getCount());
+            assertTrue(v8Runtime.getExecutor("a.self() === a").executeBoolean());
+            assertEquals(17, mockAnnotationBasedCallbackReceiver.getCount());
             // Null safety test
             assertTrue(v8Runtime.getExecutor("a.primitiveRevertBoolean(null)").executeBoolean());
             assertTrue(v8Runtime.getExecutor("a.primitiveRevertBoolean(undefined)").executeBoolean());
@@ -121,7 +123,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
                     v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
-            assertEquals(17, javetCallbackContexts.size());
+            assertEquals(20, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());

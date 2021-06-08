@@ -223,12 +223,14 @@ namespace Javet {
 				auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
 				jobject externalV8Runtime = v8Runtime->externalV8Runtime;
 				V8ContextScope v8ContextScope(v8Context);
+				jboolean isThisObjectRequired = IsThisObjectRequired();
+				jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, args.This()) : nullptr;
 				jobject mResult = jniEnv->CallStaticObjectMethod(
 					jclassV8FunctionCallback,
 					jmethodIDV8FunctionCallbackReceiveCallback,
 					externalV8Runtime,
 					callbackContext,
-					nullptr,
+					thisObject,
 					nullptr);
 				if (jniEnv->ExceptionCheck()) {
 					jthrowable externalException = jniEnv->ExceptionOccurred();
@@ -253,6 +255,9 @@ namespace Javet {
 						args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Context, mResult));
 					}
 				}
+				if (thisObject != nullptr) {
+					jniEnv->DeleteLocalRef(thisObject);
+				}
 				if (mResult != nullptr) {
 					jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
 					jniEnv->DeleteLocalRef(mResult);
@@ -273,13 +278,15 @@ namespace Javet {
 				auto v8Array = v8::Array::New(v8Context->GetIsolate(), 1);
 				auto maybeResult = v8Array->Set(v8Context, 0, propertyValue);
 				maybeResult.Check();
+				jboolean isThisObjectRequired = IsThisObjectRequired();
+				jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, args.This()) : nullptr;
 				jobject mPropertyValue = Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Array);
 				jobject mResult = jniEnv->CallStaticObjectMethod(
 					jclassV8FunctionCallback,
 					jmethodIDV8FunctionCallbackReceiveCallback,
 					externalV8Runtime,
 					callbackContext,
-					nullptr,
+					thisObject,
 					mPropertyValue);
 				if (jniEnv->ExceptionCheck()) {
 					jthrowable externalException = jniEnv->ExceptionOccurred();
@@ -295,6 +302,9 @@ namespace Javet {
 					}
 					v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
 					jniEnv->DeleteLocalRef(externalException);
+				}
+				if (thisObject != nullptr) {
+					jniEnv->DeleteLocalRef(thisObject);
 				}
 				if (mResult != nullptr) {
 					jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);

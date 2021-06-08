@@ -37,13 +37,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertEquals(4, v8Module.getScriptId());
             }
             assertEquals("./test.js", v8Module.getResourceName());
-            if (v8Runtime.getJSRuntimeType().isNode()) {
-                try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
-                    assertTrue(v8ValuePromise.isFulfilled());
-                    assertTrue(v8ValuePromise.getResult().isUndefined());
-                }
-            } else {
-                assertEquals(1, v8Module.executeInteger());
+            try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
             }
             assertEquals(V8Module.Evaluated, v8Module.getStatus());
             assertNull(v8Module.getException());
@@ -65,24 +61,20 @@ public class TestV8Module extends BaseTestJavetRuntime {
                         "process.on('unhandledRejection', (reason, promise) => {\n" +
                         "  globalReason = reason;\n" +
                         "});").executeVoid();
-                try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
-                    assertTrue(v8ValuePromise.isFulfilled());
-                    assertTrue(v8ValuePromise.getResult().isUndefined());
-                }
-            } else {
-                assertTrue(v8Module.execute().isUndefined());
+            }
+            try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
             }
             // Import in module is supported.
             codeString = "import { test } from './test.js'; test();";
             iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./a.js").setModule(true);
             try (V8ValueObject v8ValueObject = iV8Executor.execute()) {
                 assertNotNull(v8ValueObject);
-                if (v8Runtime.getJSRuntimeType().isNode()) {
-                    V8ValuePromise v8ValuePromise = (V8ValuePromise) v8ValueObject;
-                    assertTrue(v8ValuePromise.isFulfilled());
-                    assertTrue(v8ValuePromise.getResult().isUndefined());
-                } else {
-                    assertEquals(1, v8ValueObject.getInteger("a"));
+                V8ValuePromise v8ValuePromise = (V8ValuePromise) v8ValueObject;
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
+                if (v8Runtime.getJSRuntimeType().isV8()) {
                     assertFalse(v8Runtime.containsV8Module("./a.js"));
                 }
             }
@@ -117,13 +109,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertEquals(4, v8Module1.getScriptId());
             }
             assertTrue(v8Module1.instantiate());
-            if (v8Runtime.getJSRuntimeType().isNode()) {
-                try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
-                    assertTrue(v8ValuePromise.isFulfilled());
-                    assertTrue(v8ValuePromise.getResult().isUndefined());
-                }
-            } else {
-                assertTrue(v8Module1.evaluate().isUndefined());
+            try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
             }
             iV8Executor = v8Runtime.getExecutor(codeString2).setResourceName(moduleName2);
             try (V8Module v8Module2 = iV8Executor.compileV8Module()) {
@@ -165,13 +153,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertEquals(4, v8Module1.getScriptId());
             }
             assertTrue(v8Module1.instantiate());
-            if (v8Runtime.getJSRuntimeType().isNode()) {
-                try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
-                    assertTrue(v8ValuePromise.isFulfilled());
-                    assertTrue(v8ValuePromise.getResult().isUndefined());
-                }
-            } else {
-                assertTrue(v8Module1.evaluate().isUndefined());
+            try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
             }
             try (V8ValueObject v8ValueObject = v8Module1.getNamespace()) {
                 assertNotNull(v8ValueObject);
@@ -187,13 +171,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
                     assertEquals(5, v8Module2.getScriptId());
                 }
                 assertTrue(v8Module2.instantiate());
-                if (v8Runtime.getJSRuntimeType().isNode()) {
-                    try (V8ValuePromise v8ValuePromise = v8Module2.evaluate()) {
-                        assertTrue(v8ValuePromise.isFulfilled());
-                        assertTrue(v8ValuePromise.getResult().isUndefined());
-                    }
-                } else {
-                    assertTrue(v8Module2.evaluate().isUndefined());
+                try (V8ValuePromise v8ValuePromise = v8Module2.evaluate()) {
+                    assertTrue(v8ValuePromise.isFulfilled());
+                    assertTrue(v8ValuePromise.getResult().isUndefined());
                 }
                 try (V8ValueObject v8ValueObject = v8Module2.getNamespace()) {
                     assertNotNull(v8ValueObject);
@@ -221,13 +201,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertEquals(V8Module.Instantiated, v8Module.getStatus());
             assertFalse(v8Module.instantiate());
             assertNull(v8Module.getException());
-            if (v8Runtime.getJSRuntimeType().isNode()) {
-                try (V8ValuePromise v8ValuePromise = v8Module.evaluate()) {
-                    assertTrue(v8ValuePromise.isFulfilled());
-                    assertTrue(v8ValuePromise.getResult().isUndefined());
-                }
-            } else {
-                assertTrue(v8Module.evaluate().isUndefined());
+            try (V8ValuePromise v8ValuePromise = v8Module.evaluate()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
             }
             assertEquals(V8Module.Evaluated, v8Module.getStatus());
             assertNull(v8Module.getException());

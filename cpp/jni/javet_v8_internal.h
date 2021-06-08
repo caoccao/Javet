@@ -28,8 +28,11 @@
 #pragma warning(disable: 4291)
 #pragma warning(disable: 4819)
 #pragma warning(disable: 4996)
-#include <src/objects/objects.h>
-#include <src/api/api.h>
+#ifndef ENABLE_NODE
+// Starting from V8 v9.1, some internal V8 API diverged from their public representatives.
+#define V8_ENABLE_WEBASSEMBLY 1
+#endif
+#include <src/objects/objects-inl.h>
 #include <src/api/api-inl.h>
 #ifdef ENABLE_NODE
 #include <src/objects/js-objects-inl.h>
@@ -38,7 +41,6 @@
 #endif
 #include <src/objects/shared-function-info-inl.h>
 #include <src/handles/handles-inl.h>
-#include <src/strings/string-builder-inl.h>
 #include <src/inspector/v8-debugger.h>
 #include <src/inspector/v8-inspector-impl.h>
 #pragma warning(default: 4244)
