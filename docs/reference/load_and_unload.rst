@@ -23,6 +23,8 @@ Assuming the JNI library per mode is already loaded, here are the step-by-step o
     // Step 4: Restore the switch.
     V8Host.setLibraryReloadable(false);
 
+How does ``unloadLibrary()`` work? There is no API that allows unloading a JNI library explicitly. The only way is GC will automatically unload the library if all references to that library are garbage collectable. So, application is supposed to close all V8 values, V8 runtimes prior to calling ``unloadLibrary()``. 
+
 Load
 ----
 
@@ -38,6 +40,7 @@ Assuming the JNI library per mode is already unloaded, here are the step-by-step
 Notes
 =====
 
+* ``unloadLibrary()`` can only take effect after all references are garbage collectable.
 * ``loadLibrary()`` is internally called by Javet in the first time and only takes effect after ``unloadLibrary()`` is called.
 * ``loadLibrary()`` and ``unloadLibrary()`` are for experiment only. **They may be unstable and crash JVM. Please use this feature at your own risk.**
 
