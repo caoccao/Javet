@@ -122,6 +122,7 @@ public final class V8Host implements AutoCloseable {
      * Gets memory usage threshold ratio.
      *
      * @return the memory usage threshold ratio
+     * @since 0.8.3
      */
     public static double getMemoryUsageThresholdRatio() {
         return memoryUsageThresholdRatio;
@@ -134,6 +135,7 @@ public final class V8Host implements AutoCloseable {
      * the increasing trend of memory usage with low overhead.
      *
      * @param memoryUsageThresholdRatio the memory usage threshold ratio
+     * @since 0.8.3
      */
     public static void setMemoryUsageThresholdRatio(double memoryUsageThresholdRatio) {
         assert 0 <= memoryUsageThresholdRatio && memoryUsageThresholdRatio < 1;
@@ -160,7 +162,7 @@ public final class V8Host implements AutoCloseable {
     /**
      * Determines whether the JNI library is reloadable or not.
      *
-     * @return true : reloadable, false: not reloadable, default: false
+     * @return true: reloadable, false: not reloadable, default: false
      * @since 0.9.1
      */
     public static boolean isLibraryReloadable() {
@@ -199,6 +201,7 @@ public final class V8Host implements AutoCloseable {
      * Disable GC notification.
      *
      * @return the self
+     * @since 0.8.3
      */
     @SuppressWarnings("UnusedReturnValue")
     public V8Host disableGCNotification() {
@@ -210,6 +213,7 @@ public final class V8Host implements AutoCloseable {
      * Enable GC notification.
      *
      * @return the self
+     * @since 0.8.3
      */
     public V8Host enableGCNotification() {
         setMemoryUsageThreshold();
@@ -222,6 +226,7 @@ public final class V8Host implements AutoCloseable {
      * Gets flags.
      *
      * @return the flags
+     * @since 0.7.0
      */
     public V8Flags getFlags() {
         return flags;
@@ -231,6 +236,7 @@ public final class V8Host implements AutoCloseable {
      * Get internal statistic internal for test purpose.
      *
      * @return the long [ ]
+     * @since 0.8.3
      */
     public long[] getInternalStatistic() {
         return v8Native.getInternalStatistic();
@@ -240,6 +246,7 @@ public final class V8Host implements AutoCloseable {
      * Gets javet version.
      *
      * @return the javet version
+     * @since 0.7.1
      */
     public String getJavetVersion() {
         return JavetLibLoader.LIB_VERSION;
@@ -249,6 +256,7 @@ public final class V8Host implements AutoCloseable {
      * Gets logger.
      *
      * @return the logger
+     * @since 0.7.3
      */
     public IJavetLogger getLogger() {
         return logger;
@@ -258,6 +266,7 @@ public final class V8Host implements AutoCloseable {
      * Gets V8 native.
      *
      * @return the V8 native
+     * @since 0.8.0
      */
     IV8Native getV8Native() {
         return v8Native;
@@ -269,6 +278,7 @@ public final class V8Host implements AutoCloseable {
      * @param <R> the type parameter
      * @return the V8 runtime
      * @throws JavetException the javet exception
+     * @since 0.7.0
      */
     public <R extends V8Runtime> R createV8Runtime() throws JavetException {
         return createV8Runtime(GLOBAL_THIS);
@@ -281,6 +291,7 @@ public final class V8Host implements AutoCloseable {
      * @param globalName the global name
      * @return the V8 runtime
      * @throws JavetException the javet exception
+     * @since 0.7.0
      */
     public <R extends V8Runtime> R createV8Runtime(String globalName) throws JavetException {
         return createV8Runtime(false, globalName);
@@ -294,6 +305,7 @@ public final class V8Host implements AutoCloseable {
      * @param globalName the global name
      * @return the V8 runtime
      * @throws JavetException the javet exception
+     * @since 0.7.0
      */
     public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) throws JavetException {
         if (!libraryLoaded) {
@@ -323,6 +335,7 @@ public final class V8Host implements AutoCloseable {
      * Close V8 runtime.
      *
      * @param v8Runtime the V8 runtime
+     * @since 0.7.0
      */
     public void closeV8Runtime(V8Runtime v8Runtime) {
         if (!libraryLoaded) {
@@ -341,6 +354,7 @@ public final class V8Host implements AutoCloseable {
      * Gets JS runtime type.
      *
      * @return the JS runtime type
+     * @since 0.8.0
      */
     public JSRuntimeType getJSRuntimeType() {
         return jsRuntimeType;
@@ -351,9 +365,10 @@ public final class V8Host implements AutoCloseable {
      * <p>
      * Note: setLibraryReloadable(true) must be called, otherwise, JVM will crash.
      *
+     * @return true: library is loaded, false: library is not loaded
      * @since 0.9.1
      */
-    public synchronized void loadLibrary() {
+    public synchronized boolean loadLibrary() {
         if (!libraryLoaded) {
             try {
                 javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
@@ -366,6 +381,7 @@ public final class V8Host implements AutoCloseable {
                 lastException = e;
             }
         }
+        return libraryLoaded;
     }
 
     /**
@@ -373,10 +389,11 @@ public final class V8Host implements AutoCloseable {
      * <p>
      * Note: setLibraryReloadable(true) must be called, otherwise, JVM will crash.
      *
+     * @return true: library is unloaded, false: library is loaded
      * @since 0.9.1
      */
-    public synchronized void unloadLibrary() {
-        if (libraryLoaded) {
+    public synchronized boolean unloadLibrary() {
+        if (libraryLoaded && v8RuntimeMap.isEmpty()) {
             isolateCreated = false;
             v8Native = null;
             javetClassLoader = null;
@@ -385,12 +402,14 @@ public final class V8Host implements AutoCloseable {
             libraryLoaded = false;
             lastException = null;
         }
+        return !libraryLoaded;
     }
 
     /**
      * Gets last exception.
      *
      * @return the last exception
+     * @since 0.7.0
      */
     public JavetException getLastException() {
         return lastException;
@@ -400,6 +419,7 @@ public final class V8Host implements AutoCloseable {
      * Gets V8 runtime count.
      *
      * @return the V8 runtime count
+     * @since 0.8.0
      */
     public int getV8RuntimeCount() {
         return v8RuntimeMap.size();
@@ -409,6 +429,7 @@ public final class V8Host implements AutoCloseable {
      * Is library loaded.
      *
      * @return true: loaded, false: not loaded
+     * @since 0.8.0
      */
     public boolean isLibraryLoaded() {
         return libraryLoaded;
@@ -418,6 +439,7 @@ public final class V8Host implements AutoCloseable {
      * Is isolate created.
      *
      * @return true: created, false: not created
+     * @since 0.8.0
      */
     public boolean isIsolateCreated() {
         return isolateCreated;

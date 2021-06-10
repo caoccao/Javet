@@ -70,14 +70,14 @@ public class TestJavetLibLoader {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
         }
-        v8Host.unloadLibrary();
+        assertTrue(v8Host.unloadLibrary());
         assertFalse(v8Host.isLibraryLoaded());
         try {
             v8Host.createV8Runtime();
         } catch (JavetException e) {
             assertEquals(JavetError.LibraryNotLoaded, e.getError());
         }
-        v8Host.loadLibrary();
+        assertTrue(v8Host.loadLibrary());
         assertTrue(v8Host.isLibraryLoaded());
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
