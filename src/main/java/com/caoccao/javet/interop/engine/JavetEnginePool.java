@@ -173,11 +173,10 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                         logger.logError(t, "Failed to release idle engine.");
                     }
                 } else {
-                    if (config.getMaxEngineUsedCount() > 0) {
+                    if (config.getResetEngineTimeoutSeconds() > 0) {
                         ZonedDateTime resetEngineZonedDateTime = usage.getLastActiveZonedDatetime()
                                 .plus(config.getResetEngineTimeoutSeconds(), ChronoUnit.SECONDS);
-                        if (usage.getEngineUsedCount() >= config.getMaxEngineUsedCount() ||
-                                resetEngineZonedDateTime.isBefore(getUTCNow())) {
+                        if (resetEngineZonedDateTime.isBefore(getUTCNow())) {
                             try {
                                 logger.debug("JavetEnginePool reset engine begins.");
                                 engine.resetContext();

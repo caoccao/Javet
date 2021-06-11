@@ -29,7 +29,6 @@ public final class JavetEngineConfig {
     public static final int DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS = 30000;
     public static final int DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS = 1000;
     public static final JSRuntimeType DEFAULT_JS_RUNTIME_TYPE = JSRuntimeType.V8;
-    public static final int DEFAULT_MAX_ENGINE_USED_COUNT = 100;
     public static final int DEFAULT_POOL_MIN_SIZE = 1;
     public static final int DEFAULT_POOL_IDLE_TIMEOUT_SECONDS = 60;
     public static final int DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1000;
@@ -46,7 +45,6 @@ public final class JavetEngineConfig {
     private String globalName;
     private IJavetLogger javetLogger;
     private JSRuntimeType jsRuntimeType;
-    private int maxEngineUsedCount;
     private int poolDaemonCheckIntervalMillis;
     private int poolIdleTimeoutSeconds;
     private int poolMaxSize;
@@ -80,10 +78,6 @@ public final class JavetEngineConfig {
 
     public IJavetLogger getJavetLogger() {
         return javetLogger;
-    }
-
-    public int getMaxEngineUsedCount() {
-        return maxEngineUsedCount;
     }
 
     public int getPoolDaemonCheckIntervalMillis() {
@@ -132,7 +126,6 @@ public final class JavetEngineConfig {
         engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
         gcBeforeEngineClose = false;
         jsRuntimeType = DEFAULT_JS_RUNTIME_TYPE;
-        maxEngineUsedCount = DEFAULT_MAX_ENGINE_USED_COUNT;
         final int cpuCount = JavetOSUtils.getCPUCount();
         poolMinSize = Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount >> 1);
         poolMaxSize = Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount);
@@ -189,11 +182,6 @@ public final class JavetEngineConfig {
     public JavetEngineConfig setJavetLogger(IJavetLogger javetLogger) {
         Objects.requireNonNull(javetLogger);
         this.javetLogger = javetLogger;
-        return this;
-    }
-
-    public JavetEngineConfig setMaxEngineUsedCount(int maxEngineUsedCount) {
-        this.maxEngineUsedCount = maxEngineUsedCount;
         return this;
     }
 
