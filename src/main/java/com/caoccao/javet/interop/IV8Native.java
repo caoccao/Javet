@@ -77,9 +77,9 @@ public interface IV8Native {
 
     Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
     Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

@@ -17,20 +17,15 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
 
 public class V8ValueError extends V8ValueObject {
-    protected static final String STACK = "stack";
     protected static final String MESSAGE = "message";
+    protected static final String STACK = "stack";
 
     V8ValueError(long handle) {
         super(handle);
-    }
-
-    @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Error;
     }
 
     public String getMessage() throws JavetException {
@@ -39,5 +34,10 @@ public class V8ValueError extends V8ValueObject {
 
     public String getStack() throws JavetException {
         return getPropertyString(STACK);
+    }
+
+    @Override
+    public V8ValueReferenceType getType() {
+        return V8ValueReferenceType.Error;
     }
 }

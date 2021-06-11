@@ -20,7 +20,6 @@ package com.caoccao.javet.tutorial;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetOSUtils;
-import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import org.junit.jupiter.api.Test;
 

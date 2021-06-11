@@ -46,8 +46,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String FUNCTION_GET = "get";
     protected static final String FUNCTION_HAS = "has";
     protected static final String FUNCTION_SET = "set";
-    protected static final String METHOD_PREFIX_IS = "is";
     protected static final String METHOD_PREFIX_GET = "get";
+    protected static final String METHOD_PREFIX_IS = "is";
     protected static final String METHOD_PREFIX_SET = "set";
 
     protected V8ValueObject(long handle) {
@@ -292,18 +292,18 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     @CheckReturnValue
-    public IV8ValueArray getPropertyNames() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.getPropertyNames(this);
-    }
-
-    @Override
-    @CheckReturnValue
     public <T extends V8Value> T getProperty(Object key) throws JavetException {
         checkV8Runtime();
         try (V8VirtualValue virtualKey = new V8VirtualValue(v8Runtime, key)) {
             return v8Runtime.getProperty(this, virtualKey.get());
         }
+    }
+
+    @Override
+    @CheckReturnValue
+    public IV8ValueArray getPropertyNames() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getPropertyNames(this);
     }
 
     @Override
@@ -395,22 +395,22 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public String toProtoString() {
-        try {
-            checkV8Runtime();
-            return v8Runtime.toProtoString(this);
-        } catch (JavetException e) {
-            return e.getMessage();
-        }
-    }
-
-    @Override
     public String toJsonString() {
         try {
             checkV8Runtime();
             try (V8ValueBuiltInJson v8ValueBuiltInJson = v8Runtime.getGlobalObject().getJson()) {
                 return v8ValueBuiltInJson.stringify(this);
             }
+        } catch (JavetException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Override
+    public String toProtoString() {
+        try {
+            checkV8Runtime();
+            return v8Runtime.toProtoString(this);
         } catch (JavetException e) {
             return e.getMessage();
         }

@@ -18,9 +18,9 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 
 public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements IV8ValueIterator<T> {
     protected static final String FUNCTION_NEXT = "next";
@@ -29,11 +29,6 @@ public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements
 
     V8ValueIterator(long handle) {
         super(handle);
-    }
-
-    @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Iterator;
     }
 
     @Override
@@ -46,5 +41,10 @@ public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements
         } catch (JavetException ignored) {
         }
         return null;
+    }
+
+    @Override
+    public V8ValueReferenceType getType() {
+        return V8ValueReferenceType.Iterator;
     }
 }

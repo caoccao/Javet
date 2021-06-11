@@ -30,9 +30,9 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
+    protected static final String FUNCTION_ENTRIES = "entries";
     protected static final String FUNCTION_KEYS = "keys";
     protected static final String FUNCTION_VALUES = "values";
-    protected static final String FUNCTION_ENTRIES = "entries";
 
     V8ValueMap(long handle) {
         super(handle);

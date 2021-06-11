@@ -58,8 +58,6 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
 
     String getResourceName();
 
-    void setResourceName(String resourceName);
-
     /**
      * Gets script id.
      * <p>
@@ -73,6 +71,8 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
     int getStatus() throws JavetException;
 
     boolean instantiate() throws JavetException;
+
+    void setResourceName(String resourceName);
 
     @Override
     default <T, V extends V8Value> T toObject(V v8Value) throws JavetException {

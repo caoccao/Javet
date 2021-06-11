@@ -21,30 +21,30 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 
 public class V8ValueDataView extends V8ValueObject {
-    /**
-     * The constant PROPERTY_BYTE_LENGTH.
-     */
-    protected static final String PROPERTY_BYTE_LENGTH = "byteLength";
+    protected static final String FUNCTION_GET_BIG_INT_64 = "getBigInt64";
+    protected static final String FUNCTION_GET_FLOAT_32 = "getFloat32";
+    protected static final String FUNCTION_GET_FLOAT_64 = "getFloat64";
+    protected static final String FUNCTION_GET_INT_16 = "getInt16";
+    protected static final String FUNCTION_GET_INT_32 = "getInt32";
+    protected static final String FUNCTION_GET_INT_8 = "getInt8";
+    protected static final String FUNCTION_SET_BIG_INT_64 = "setBigInt64";
+    protected static final String FUNCTION_SET_FLOAT_32 = "setFloat32";
+    protected static final String FUNCTION_SET_FLOAT_64 = "setFloat64";
+    protected static final String FUNCTION_SET_INT_16 = "setInt16";
+    protected static final String FUNCTION_SET_INT_32 = "setInt32";
+    protected static final String FUNCTION_SET_INT_8 = "setInt8";
     /**
      * The constant PROPERTY_BUFFER.
      */
     protected static final String PROPERTY_BUFFER = "buffer";
     /**
+     * The constant PROPERTY_BYTE_LENGTH.
+     */
+    protected static final String PROPERTY_BYTE_LENGTH = "byteLength";
+    /**
      * The constant PROPERTY_BYTE_OFFSET.
      */
     protected static final String PROPERTY_BYTE_OFFSET = "byteOffset";
-    protected static final String FUNCTION_GET_BIG_INT_64 = "getBigInt64";
-    protected static final String FUNCTION_GET_FLOAT_32 = "getFloat32";
-    protected static final String FUNCTION_GET_FLOAT_64 = "getFloat64";
-    protected static final String FUNCTION_GET_INT_8 = "getInt8";
-    protected static final String FUNCTION_GET_INT_16 = "getInt16";
-    protected static final String FUNCTION_GET_INT_32 = "getInt32";
-    protected static final String FUNCTION_SET_BIG_INT_64 = "setBigInt64";
-    protected static final String FUNCTION_SET_FLOAT_32 = "setFloat32";
-    protected static final String FUNCTION_SET_FLOAT_64 = "setFloat64";
-    protected static final String FUNCTION_SET_INT_8 = "setInt8";
-    protected static final String FUNCTION_SET_INT_16 = "setInt16";
-    protected static final String FUNCTION_SET_INT_32 = "setInt32";
 
     V8ValueDataView(long handle) {
         super(handle);
@@ -135,20 +135,20 @@ public class V8ValueDataView extends V8ValueObject {
         invokeVoid(FUNCTION_SET_FLOAT_64, byteOffset, value, littleEndian);
     }
 
-    public void setInt32(int byteOffset, int value) throws JavetException {
-        setInt32(byteOffset, value, true);
-    }
-
-    public void setInt32(int byteOffset, int value, boolean littleEndian) throws JavetException {
-        invokeVoid(FUNCTION_SET_INT_32, byteOffset, value, littleEndian);
-    }
-
     public void setInt16(int byteOffset, short value) throws JavetException {
         setInt16(byteOffset, value, true);
     }
 
     public void setInt16(int byteOffset, short value, boolean littleEndian) throws JavetException {
         invokeVoid(FUNCTION_SET_INT_16, byteOffset, value, littleEndian);
+    }
+
+    public void setInt32(int byteOffset, int value) throws JavetException {
+        setInt32(byteOffset, value, true);
+    }
+
+    public void setInt32(int byteOffset, int value, boolean littleEndian) throws JavetException {
+        invokeVoid(FUNCTION_SET_INT_32, byteOffset, value, littleEndian);
     }
 
     public void setInt8(int byteOffset, byte value) throws JavetException {

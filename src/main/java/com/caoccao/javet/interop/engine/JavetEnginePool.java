@@ -32,12 +32,12 @@ import java.util.concurrent.TimeUnit;
 
 public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>, Runnable {
     protected static final String JAVET_DAEMON_THREAD_NAME = "Javet Daemon";
+    protected final ConcurrentLinkedQueue<JavetEngine<R>> activeEngineList;
     protected final Object externalLock;
-    protected JavetEngineConfig config;
-    protected ConcurrentLinkedQueue<JavetEngine<R>> activeEngineList;
-    protected Thread daemonThread;
-    protected ConcurrentLinkedQueue<JavetEngine<R>> idleEngineList;
+    protected final ConcurrentLinkedQueue<JavetEngine<R>> idleEngineList;
     protected boolean active;
+    protected JavetEngineConfig config;
+    protected Thread daemonThread;
     protected boolean quitting;
 
     public JavetEnginePool() {
@@ -55,6 +55,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         startDaemon();
     }
 
+    @Override
+    public void close() throws JavetException {
+        stopDaemon();
+    }
+
     protected JavetEngine<R> createEngine() throws JavetException {
         V8Host v8Host = V8Host.getInstance(config.getJSRuntimeType());
         @SuppressWarnings("ConstantConditions")
@@ -62,11 +67,6 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         v8Runtime.allowEval(config.isAllowEval());
         v8Runtime.setLogger(config.getJavetLogger());
         return new JavetEngine<>(this, v8Runtime);
-    }
-
-    @Override
-    public void close() throws JavetException {
-        stopDaemon();
     }
 
     @Override

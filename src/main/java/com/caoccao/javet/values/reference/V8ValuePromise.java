@@ -18,9 +18,9 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 
 public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
 
@@ -68,7 +68,7 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
     @Override
     @CheckReturnValue
     public V8ValuePromise then(IV8ValueFunction functionFulfilled, IV8ValueFunction functionRejected)
-            throws JavetException{
+            throws JavetException {
         checkV8Runtime();
         return v8Runtime.promiseThen(this, functionFulfilled, functionRejected);
     }

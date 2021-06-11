@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Objects;
 
 public final class V8Inspector {
-    private IJavetLogger logger;
-    private final String name;
     private final List<IV8InspectorListener> listeners;
+    private final String name;
     private final IV8Native v8Native;
     private final V8Runtime v8Runtime;
+    private IJavetLogger logger;
 
     V8Inspector(V8Runtime v8Runtime, String name, IV8Native v8Native) {
         logger = v8Runtime.getLogger();
@@ -59,11 +59,6 @@ public final class V8Inspector {
 
     public IJavetLogger getLogger() {
         return logger;
-    }
-
-    public void setLogger(IJavetLogger logger) {
-        Objects.requireNonNull(logger);
-        this.logger = logger;
     }
 
     public String getName() {
@@ -119,5 +114,10 @@ public final class V8Inspector {
             }
         }
         v8Native.v8InspectorSend(v8Runtime.getHandle(), message);
+    }
+
+    public void setLogger(IJavetLogger logger) {
+        Objects.requireNonNull(logger);
+        this.logger = logger;
     }
 }

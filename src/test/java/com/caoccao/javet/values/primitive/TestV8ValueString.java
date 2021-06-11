@@ -22,7 +22,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestV8ValueString extends BaseTestJavetRuntime {
     @Test

@@ -29,13 +29,6 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
  */
 public interface IV8Value extends IJavetClosable, IV8Cloneable {
     /**
-     * Gets V8 runtime.
-     *
-     * @return the V8 runtime
-     */
-    V8Runtime getV8Runtime();
-
-    /**
      * Equals.
      * <p>
      * The behavior is different from JS behavior but is the same as Java behavior.
@@ -45,6 +38,13 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      * @throws JavetException the javet exception
      */
     boolean equals(V8Value v8Value) throws JavetException;
+
+    /**
+     * Gets V8 runtime.
+     *
+     * @return the V8 runtime
+     */
+    V8Runtime getV8Runtime();
 
     /**
      * Is null.

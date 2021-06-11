@@ -20,14 +20,14 @@ package com.caoccao.javet.exceptions;
 import java.text.MessageFormat;
 
 public final class JavetScriptingError {
+    private int endColumn;
+    private int endPosition;
+    private int lineNumber;
     private String message;
     private String resourceName;
     private String sourceLine;
-    private int lineNumber;
     private int startColumn;
-    private int endColumn;
     private int startPosition;
-    private int endPosition;
 
     public JavetScriptingError(
             String message, String resourceName, String sourceLine,
@@ -42,68 +42,68 @@ public final class JavetScriptingError {
         this.endPosition = endPosition;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
-    public String getSourceLine() {
-        return sourceLine;
-    }
-
-    public void setSourceLine(String sourceLine) {
-        this.sourceLine = sourceLine;
-    }
-
-    public int getLineNumber() {
-        return lineNumber;
-    }
-
-    public void setLineNumber(int lineNumber) {
-        this.lineNumber = lineNumber;
-    }
-
-    public int getStartColumn() {
-        return startColumn;
-    }
-
-    public void setStartColumn(int startColumn) {
-        this.startColumn = startColumn;
-    }
-
     public int getEndColumn() {
         return endColumn;
-    }
-
-    public void setEndColumn(int endColumn) {
-        this.endColumn = endColumn;
-    }
-
-    public int getStartPosition() {
-        return startPosition;
-    }
-
-    public void setStartPosition(int startPosition) {
-        this.startPosition = startPosition;
     }
 
     public int getEndPosition() {
         return endPosition;
     }
 
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public String getSourceLine() {
+        return sourceLine;
+    }
+
+    public int getStartColumn() {
+        return startColumn;
+    }
+
+    public int getStartPosition() {
+        return startPosition;
+    }
+
+    public void setEndColumn(int endColumn) {
+        this.endColumn = endColumn;
+    }
+
     public void setEndPosition(int endPosition) {
         this.endPosition = endPosition;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+
+    public void setSourceLine(String sourceLine) {
+        this.sourceLine = sourceLine;
+    }
+
+    public void setStartColumn(int startColumn) {
+        this.startColumn = startColumn;
+    }
+
+    public void setStartPosition(int startPosition) {
+        this.startPosition = startPosition;
     }
 
     @Override

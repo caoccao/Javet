@@ -117,10 +117,10 @@ class V8Native implements IV8Native {
     public native Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    public native Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     @Override
-    public native Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

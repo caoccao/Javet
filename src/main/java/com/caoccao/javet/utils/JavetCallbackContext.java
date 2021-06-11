@@ -28,9 +28,9 @@ public final class JavetCallbackContext {
             "Javet callback context handle is invalid";
     private final Method callbackMethod;
     private final Object callbackReceiver;
-    private long handle;
     private final boolean returnResult;
     private final boolean thisObjectRequired;
+    private long handle;
 
     public JavetCallbackContext(
             Object callbackReceiver,
@@ -53,28 +53,28 @@ public final class JavetCallbackContext {
         this.thisObjectRequired = thisObjectRequired;
     }
 
-    public boolean isThisObjectRequired() {
-        return thisObjectRequired;
+    public Method getCallbackMethod() {
+        return callbackMethod;
     }
 
     public Object getCallbackReceiver() {
         return callbackReceiver;
     }
 
-    public Method getCallbackMethod() {
-        return callbackMethod;
-    }
-
     public long getHandle() {
         return handle;
+    }
+
+    public boolean isReturnResult() {
+        return returnResult;
+    }
+
+    public boolean isThisObjectRequired() {
+        return thisObjectRequired;
     }
 
     public void setHandle(long handle) {
         assert handle > 0L : ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID;
         this.handle = handle;
-    }
-
-    public boolean isReturnResult() {
-        return returnResult;
     }
 }

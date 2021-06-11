@@ -194,24 +194,6 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testTypedArrayLongArray() throws JavetException {
-        IJavetConverter converter = new JavetObjectConverter();
-        long[] longs = new long[]{1L, 2L, 3L};
-        try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, longs)) {
-            assertEquals(longs.length, v8ValueTypedArray.getLength());
-            assertEquals(longs.length * v8ValueTypedArray.getSizeInBytes(), v8ValueTypedArray.getByteLength());
-            assertEquals(0, v8ValueTypedArray.getByteOffset());
-            assertArrayEquals(longs, v8ValueTypedArray.toLongs());
-        }
-        try (V8ValueTypedArray v8ValueTypedArray =
-                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.BigInt64Array, longs.length)) {
-            assertTrue(v8ValueTypedArray.fromLongs(longs));
-            long[] newLongs = (long[]) converter.toObject(v8ValueTypedArray);
-            assertArrayEquals(longs, newLongs);
-        }
-    }
-
-    @Test
     public void testTypedArrayIntegerArray() throws JavetException {
         IJavetConverter converter = new JavetObjectConverter();
         int[] integers = new int[]{1, 2, 3};
@@ -226,6 +208,24 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertTrue(v8ValueTypedArray.fromIntegers(integers));
             int[] newIntegers = (int[]) converter.toObject(v8ValueTypedArray);
             assertArrayEquals(integers, newIntegers);
+        }
+    }
+
+    @Test
+    public void testTypedArrayLongArray() throws JavetException {
+        IJavetConverter converter = new JavetObjectConverter();
+        long[] longs = new long[]{1L, 2L, 3L};
+        try (V8ValueTypedArray v8ValueTypedArray = converter.toV8Value(v8Runtime, longs)) {
+            assertEquals(longs.length, v8ValueTypedArray.getLength());
+            assertEquals(longs.length * v8ValueTypedArray.getSizeInBytes(), v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertArrayEquals(longs, v8ValueTypedArray.toLongs());
+        }
+        try (V8ValueTypedArray v8ValueTypedArray =
+                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.BigInt64Array, longs.length)) {
+            assertTrue(v8ValueTypedArray.fromLongs(longs));
+            long[] newLongs = (long[]) converter.toObject(v8ValueTypedArray);
+            assertArrayEquals(longs, newLongs);
         }
     }
 

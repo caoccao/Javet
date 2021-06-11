@@ -78,17 +78,12 @@ public class JavetEngineGuard implements IJavetEngineGuard {
         return timeoutMillis;
     }
 
-    @Override
-    public void setTimeoutMillis(long timeoutSeconds) {
-        this.timeoutMillis = timeoutSeconds;
+    protected ZonedDateTime getUTCNow() {
+        return JavetDateTimeUtils.getUTCNow();
     }
 
     public boolean isQuitting() {
         return quitting;
-    }
-
-    protected ZonedDateTime getUTCNow() {
-        return JavetDateTimeUtils.getUTCNow();
     }
 
     @Override
@@ -124,5 +119,10 @@ public class JavetEngineGuard implements IJavetEngineGuard {
             }
         }
         quitting = true;
+    }
+
+    @Override
+    public void setTimeoutMillis(long timeoutSeconds) {
+        this.timeoutMillis = timeoutSeconds;
     }
 }

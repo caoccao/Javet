@@ -66,11 +66,6 @@ public class V8Module extends V8ValueReference implements IV8Module {
         return resourceName;
     }
 
-    public void setResourceName(String resourceName) {
-        Objects.requireNonNull(resourceName);
-        this.resourceName = resourceName;
-    }
-
     @Override
     public int getScriptId() throws JavetException {
         checkV8Runtime();
@@ -92,6 +87,11 @@ public class V8Module extends V8ValueReference implements IV8Module {
     public boolean instantiate() throws JavetException {
         checkV8Runtime();
         return v8Runtime.moduleInstantiate(this);
+    }
+
+    public void setResourceName(String resourceName) {
+        Objects.requireNonNull(resourceName);
+        this.resourceName = resourceName;
     }
 
     @Override

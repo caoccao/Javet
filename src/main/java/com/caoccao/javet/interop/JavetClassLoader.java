@@ -29,9 +29,9 @@ import java.util.Objects;
 
 class JavetClassLoader extends ClassLoader {
     protected static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
+    protected static final String METHOD_LOAD = "load";
     protected static final String NODE_NATIVE_CLASS_NAME = NodeNative.class.getName();
     protected static final String V8_NATIVE_CLASS_NAME = V8Native.class.getName();
-    protected static final String METHOD_LOAD = "load";
     protected JSRuntimeType jsRuntimeType;
 
     JavetClassLoader(ClassLoader parent, JSRuntimeType jsRuntimeType) {

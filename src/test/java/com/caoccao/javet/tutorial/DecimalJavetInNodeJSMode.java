@@ -17,10 +17,10 @@
 
 package com.caoccao.javet.tutorial;
 
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
@@ -32,8 +32,8 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class DecimalJavetInNodeJSMode implements IJavetClosable {
-    private IJavetEnginePool<NodeRuntime> iJavetEnginePool;
     private IJavetEngine<NodeRuntime> iJavetEngine;
+    private IJavetEnginePool<NodeRuntime> iJavetEnginePool;
 
     public DecimalJavetInNodeJSMode() throws JavetException {
         iJavetEnginePool = new JavetEnginePool<>();
@@ -52,6 +52,20 @@ public class DecimalJavetInNodeJSMode implements IJavetClosable {
         }
     }
 
+    @Override
+    public void close() throws JavetException {
+        if (iJavetEngine != null) {
+            iJavetEngine.close();
+        }
+        if (iJavetEnginePool != null) {
+            iJavetEnginePool.close();
+        }
+    }
+
+    public IJavetLogger getLogger() {
+        return iJavetEnginePool.getConfig().getJavetLogger();
+    }
+
     public void test() throws JavetException {
         NodeRuntime nodeRuntime = iJavetEngine.getV8Runtime();
         Path workingDirectory = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node").toPath();
@@ -62,19 +76,5 @@ public class DecimalJavetInNodeJSMode implements IJavetClosable {
                         "const a = new Decimal(1.23);" +
                         "const b = new Decimal(2.34);" +
                         "a.add(b).toString();").executeString());
-    }
-
-    public IJavetLogger getLogger() {
-        return iJavetEnginePool.getConfig().getJavetLogger();
-    }
-
-    @Override
-    public void close() throws JavetException {
-        if (iJavetEngine != null) {
-            iJavetEngine.close();
-        }
-        if (iJavetEnginePool != null) {
-            iJavetEnginePool.close();
-        }
     }
 }

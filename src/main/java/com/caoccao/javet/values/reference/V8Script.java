@@ -18,9 +18,9 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 
 import java.util.Objects;
 
@@ -44,14 +44,14 @@ public class V8Script extends V8ValueReference implements IV8Script {
         return resourceName;
     }
 
-    public void setResourceName(String resourceName) {
-        Objects.requireNonNull(resourceName);
-        this.resourceName = resourceName;
-    }
-
     @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Script;
+    }
+
+    public void setResourceName(String resourceName) {
+        Objects.requireNonNull(resourceName);
+        this.resourceName = resourceName;
     }
 
     @Override

@@ -34,28 +34,28 @@ public final class V8Flags {
         useStrict = true;
     }
 
+    public boolean isAllowNativesSyntax() {
+        return allowNativesSyntax;
+    }
+
+    public boolean isExposeGC() {
+        return exposeGC;
+    }
+
     public boolean isExposeInspectorScripts() {
         return exposeInspectorScripts;
     }
 
-    public void setExposeInspectorScripts(boolean exposeInspectorScripts) {
-        if (!sealed) {
-            this.exposeInspectorScripts = exposeInspectorScripts;
-        }
+    public boolean isSealed() {
+        return sealed;
     }
 
     public boolean isTrackRetainingPath() {
         return trackRetainingPath;
     }
 
-    public void setTrackRetainingPath(boolean trackRetainingPath) {
-        if (!sealed) {
-            this.trackRetainingPath = trackRetainingPath;
-        }
-    }
-
-    public boolean isSealed() {
-        return sealed;
+    public boolean isUseStrict() {
+        return useStrict;
     }
 
     public void seal() {
@@ -64,8 +64,10 @@ public final class V8Flags {
         }
     }
 
-    public boolean isExposeGC() {
-        return exposeGC;
+    public void setAllowNativesSyntax(boolean allowNativesSyntax) {
+        if (!sealed) {
+            this.allowNativesSyntax = allowNativesSyntax;
+        }
     }
 
     public void setExposeGC(boolean exposeGC) {
@@ -74,23 +76,21 @@ public final class V8Flags {
         }
     }
 
-    public boolean isUseStrict() {
-        return useStrict;
+    public void setExposeInspectorScripts(boolean exposeInspectorScripts) {
+        if (!sealed) {
+            this.exposeInspectorScripts = exposeInspectorScripts;
+        }
+    }
+
+    public void setTrackRetainingPath(boolean trackRetainingPath) {
+        if (!sealed) {
+            this.trackRetainingPath = trackRetainingPath;
+        }
     }
 
     public void setUseStrict(boolean useStrict) {
         if (!sealed) {
             this.useStrict = useStrict;
-        }
-    }
-
-    public boolean isAllowNativesSyntax() {
-        return allowNativesSyntax;
-    }
-
-    public void setAllowNativesSyntax(boolean allowNativesSyntax) {
-        if (!sealed) {
-            this.allowNativesSyntax = allowNativesSyntax;
         }
     }
 }

@@ -63,6 +63,21 @@ public interface IV8Executor extends IV8Executable {
         return getV8ScriptOrigin().getResourceName();
     }
 
+    String getScriptString() throws JavetException;
+
+    V8Runtime getV8Runtime();
+
+    V8ScriptOrigin getV8ScriptOrigin();
+
+    default boolean isModule() {
+        return getV8ScriptOrigin().isModule();
+    }
+
+    default IV8Executor setModule(boolean module) {
+        getV8ScriptOrigin().setModule(module);
+        return this;
+    }
+
     default IV8Executor setResourceName(String resourceName) throws JavetException {
         getV8ScriptOrigin().setResourceName(resourceName);
         V8Runtime v8Runtime = getV8Runtime();
@@ -76,21 +91,6 @@ public interface IV8Executor extends IV8Executable {
         }
         return this;
     }
-
-    default boolean isModule() {
-        return getV8ScriptOrigin().isModule();
-    }
-
-    default IV8Executor setModule(boolean module) {
-        getV8ScriptOrigin().setModule(module);
-        return this;
-    }
-
-    String getScriptString() throws JavetException;
-
-    V8Runtime getV8Runtime();
-
-    V8ScriptOrigin getV8ScriptOrigin();
 
     @Override
     default <T, V extends V8Value> T toObject(V v8Value) throws JavetException {

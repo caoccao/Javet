@@ -35,14 +35,6 @@ public class JavetDefaultLogger implements IJavetLogger {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Logger getLogger() {
-        return logger;
-    }
-
     @Override
     public void debug(String message) {
         logger.log(Level.FINE, message);
@@ -63,6 +55,14 @@ public class JavetDefaultLogger implements IJavetLogger {
             }
         } catch (IOException ignored) {
         }
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

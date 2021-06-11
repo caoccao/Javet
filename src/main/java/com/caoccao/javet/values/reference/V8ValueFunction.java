@@ -37,24 +37,6 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     @CheckReturnValue
-    public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, Object... objects)
-            throws JavetException {
-        checkV8Runtime();
-        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
-            return v8Runtime.call(this, receiver, returnResult, virtualValueList.get());
-        }
-    }
-
-    @Override
-    @CheckReturnValue
-    public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values) throws JavetException {
-        checkV8Runtime();
-        v8Runtime.decorateV8Values(v8Values);
-        return v8Runtime.call(this, receiver, returnResult, v8Values);
-    }
-
-    @Override
-    @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException {
         checkV8Runtime();
         try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
@@ -71,8 +53,21 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Function;
+    @CheckReturnValue
+    public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, Object... objects)
+            throws JavetException {
+        checkV8Runtime();
+        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
+            return v8Runtime.call(this, receiver, returnResult, virtualValueList.get());
+        }
+    }
+
+    @Override
+    @CheckReturnValue
+    public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values) throws JavetException {
+        checkV8Runtime();
+        v8Runtime.decorateV8Values(v8Values);
+        return v8Runtime.call(this, receiver, returnResult, v8Values);
     }
 
     @Override
@@ -104,6 +99,11 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             return v8Runtime.getSourceCode(this);
         }
         return null;
+    }
+
+    @Override
+    public V8ValueReferenceType getType() {
+        return V8ValueReferenceType.Function;
     }
 
     @Override

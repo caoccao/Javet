@@ -43,13 +43,12 @@ public abstract class V8Value extends V8Data implements IV8Value {
     @Override
     public abstract boolean equals(V8Value v8Value) throws JavetException;
 
-    @Override
-    @CheckReturnValue
-    public abstract <T extends V8Value> T toClone() throws JavetException;
-
     public V8Runtime getV8Runtime() {
         return v8Runtime;
     }
+
+    @Override
+    public abstract boolean sameValue(V8Value v8Value) throws JavetException;
 
     public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
         Objects.requireNonNull(v8Runtime);
@@ -60,8 +59,9 @@ public abstract class V8Value extends V8Data implements IV8Value {
     }
 
     @Override
-    public abstract boolean sameValue(V8Value v8Value) throws JavetException;
+    public abstract boolean strictEquals(V8Value v8Value) throws JavetException;
 
     @Override
-    public abstract boolean strictEquals(V8Value v8Value) throws JavetException;
+    @CheckReturnValue
+    public abstract <T extends V8Value> T toClone() throws JavetException;
 }

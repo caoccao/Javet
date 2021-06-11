@@ -51,45 +51,6 @@ public class TestV8Module extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testImportValidModuleAndExecute() throws JavetException {
-        String codeString = "export function test() { return { a: 1 }; };";
-        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
-        try (V8Module v8Module = iV8Executor.compileV8Module()) {
-            if (v8Runtime.getJSRuntimeType().isNode()) {
-                v8Runtime.getExecutor("const process = require('process');\n" +
-                        "var globalReason = null;\n" +
-                        "process.on('unhandledRejection', (reason, promise) => {\n" +
-                        "  globalReason = reason;\n" +
-                        "});").executeVoid();
-            }
-            try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
-                assertTrue(v8ValuePromise.isFulfilled());
-                assertTrue(v8ValuePromise.getResult().isUndefined());
-            }
-            // Import in module is supported.
-            codeString = "import { test } from './test.js'; test();";
-            iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./a.js").setModule(true);
-            try (V8ValueObject v8ValueObject = iV8Executor.execute()) {
-                assertNotNull(v8ValueObject);
-                V8ValuePromise v8ValuePromise = (V8ValuePromise) v8ValueObject;
-                assertTrue(v8ValuePromise.isFulfilled());
-                assertTrue(v8ValuePromise.getResult().isUndefined());
-                if (v8Runtime.getJSRuntimeType().isV8()) {
-                    assertFalse(v8Runtime.containsV8Module("./a.js"));
-                }
-            }
-            // V8: Dynamic import is not supported.
-            // Node: UnhandledPromiseRejectionWarning: TypeError: Invalid host defined options.
-            codeString = "const p = import('./test.js'); p;";
-            iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./a.js").setModule(false);
-            try (V8ValuePromise v8ValuePromise = iV8Executor.execute()) {
-                assertNotNull(v8ValuePromise);
-                assertTrue(v8ValuePromise.isRejected());
-            }
-        }
-    }
-
-    @Test
     public void testImportInvalidModuleInModule() throws JavetException {
         String codeString1 = "export function test1() {\n" +
                 "  return { x: 1, y: 2, z: 3 };\n" +
@@ -132,6 +93,45 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 }
                 assertFalse(v8Module3.instantiate(), "Module is invalid");
                 assertNull(v8Module3.getException());
+            }
+        }
+    }
+
+    @Test
+    public void testImportValidModuleAndExecute() throws JavetException {
+        String codeString = "export function test() { return { a: 1 }; };";
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
+        try (V8Module v8Module = iV8Executor.compileV8Module()) {
+            if (v8Runtime.getJSRuntimeType().isNode()) {
+                v8Runtime.getExecutor("const process = require('process');\n" +
+                        "var globalReason = null;\n" +
+                        "process.on('unhandledRejection', (reason, promise) => {\n" +
+                        "  globalReason = reason;\n" +
+                        "});").executeVoid();
+            }
+            try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
+            }
+            // Import in module is supported.
+            codeString = "import { test } from './test.js'; test();";
+            iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./a.js").setModule(true);
+            try (V8ValueObject v8ValueObject = iV8Executor.execute()) {
+                assertNotNull(v8ValueObject);
+                V8ValuePromise v8ValuePromise = (V8ValuePromise) v8ValueObject;
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
+                if (v8Runtime.getJSRuntimeType().isV8()) {
+                    assertFalse(v8Runtime.containsV8Module("./a.js"));
+                }
+            }
+            // V8: Dynamic import is not supported.
+            // Node: UnhandledPromiseRejectionWarning: TypeError: Invalid host defined options.
+            codeString = "const p = import('./test.js'); p;";
+            iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./a.js").setModule(false);
+            try (V8ValuePromise v8ValuePromise = iV8Executor.execute()) {
+                assertNotNull(v8ValuePromise);
+                assertTrue(v8ValuePromise.isRejected());
             }
         }
     }

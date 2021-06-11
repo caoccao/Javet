@@ -35,11 +35,41 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  */
 public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     /**
-     * The constant SPACE.
+     * The constant JAVA_CONSOLE_DEBUG.
      *
-     * @since 0.7.1
+     * @since 0.7.0
      */
-    protected static final String SPACE = " ";
+    protected static final String JAVA_CONSOLE_DEBUG = "consoleDebug";
+    /**
+     * The constant JAVA_CONSOLE_ERROR.
+     *
+     * @since 0.7.0
+     */
+    protected static final String JAVA_CONSOLE_ERROR = "consoleError";
+    /**
+     * The constant JAVA_CONSOLE_INFO.
+     *
+     * @since 0.7.0
+     */
+    protected static final String JAVA_CONSOLE_INFO = "consoleInfo";
+    /**
+     * The constant JAVA_CONSOLE_LOG.
+     *
+     * @since 0.7.0
+     */
+    protected static final String JAVA_CONSOLE_LOG = "consoleLog";
+    /**
+     * The constant JAVA_CONSOLE_TRACE.
+     *
+     * @since 0.7.0
+     */
+    protected static final String JAVA_CONSOLE_TRACE = "consoleTrace";
+    /**
+     * The constant JAVA_CONSOLE_WARN.
+     *
+     * @since 0.7.0
+     */
+    protected static final String JAVA_CONSOLE_WARN = "consoleWarn";
     /**
      * The constant JS_FUNCTION_DEBUG.
      *
@@ -48,64 +78,46 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     protected static final String JS_FUNCTION_DEBUG = "debug";
     /**
      * The constant JS_FUNCTION_ERROR.
+     *
      * @since 0.7.0
      */
     protected static final String JS_FUNCTION_ERROR = "error";
     /**
      * The constant JS_FUNCTION_INFO.
+     *
      * @since 0.7.0
      */
     protected static final String JS_FUNCTION_INFO = "info";
     /**
      * The constant JS_FUNCTION_LOG.
+     *
      * @since 0.7.0
      */
     protected static final String JS_FUNCTION_LOG = "log";
     /**
      * The constant JS_FUNCTION_TRACE.
+     *
      * @since 0.7.0
      */
     protected static final String JS_FUNCTION_TRACE = "trace";
     /**
      * The constant JS_FUNCTION_WARN.
+     *
      * @since 0.7.0
      */
     protected static final String JS_FUNCTION_WARN = "warn";
     /**
-     * The constant JAVA_CONSOLE_DEBUG.
-     * @since 0.7.0
-     */
-    protected static final String JAVA_CONSOLE_DEBUG = "consoleDebug";
-    /**
-     * The constant JAVA_CONSOLE_ERROR.
-     * @since 0.7.0
-     */
-    protected static final String JAVA_CONSOLE_ERROR = "consoleError";
-    /**
-     * The constant JAVA_CONSOLE_INFO.
-     * @since 0.7.0
-     */
-    protected static final String JAVA_CONSOLE_INFO = "consoleInfo";
-    /**
-     * The constant JAVA_CONSOLE_LOG.
-     * @since 0.7.0
-     */
-    protected static final String JAVA_CONSOLE_LOG = "consoleLog";
-    /**
-     * The constant JAVA_CONSOLE_TRACE.
-     * @since 0.7.0
-     */
-    protected static final String JAVA_CONSOLE_TRACE = "consoleTrace";
-    /**
-     * The constant JAVA_CONSOLE_WARN.
-     * @since 0.7.0
-     */
-    protected static final String JAVA_CONSOLE_WARN = "consoleWarn";
-    /**
      * The constant PROPERTY_CONSOLE.
+     *
      * @since 0.7.0
      */
     protected static final String PROPERTY_CONSOLE = "console";
+    /**
+     * The constant SPACE.
+     *
+     * @since 0.7.1
+     */
+    protected static final String SPACE = " ";
 
     /**
      * Instantiates a new Base javet console interceptor.

@@ -45,11 +45,6 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
         return invoke(FUNCTION_ALL, v8Value);
     }
 
-    public void allVoid(V8Value v8Value) throws JavetException {
-        Objects.requireNonNull(v8Value);
-        invokeVoid(FUNCTION_ALL, v8Value);
-    }
-
     @CheckReturnValue
     public V8ValuePromise allSettled(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
@@ -59,6 +54,11 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
     public void allSettledVoid(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         invokeVoid(FUNCTION_ALL_SETTLED, v8Value);
+    }
+
+    public void allVoid(V8Value v8Value) throws JavetException {
+        Objects.requireNonNull(v8Value);
+        invokeVoid(FUNCTION_ALL, v8Value);
     }
 
     @CheckReturnValue
@@ -83,26 +83,26 @@ public class V8ValueBuiltInPromise extends V8ValueObject {
         invokeVoid(FUNCTION_RACE, v8Value);
     }
 
-    public void rejectVoid(V8Value v8Value) throws JavetException {
-        Objects.requireNonNull(v8Value);
-        invokeVoid(FUNCTION_REJECT, v8Value);
-    }
-
     @CheckReturnValue
     public V8ValuePromise reject(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invoke(FUNCTION_REJECT, v8Value);
     }
 
-    public void resolveVoid(V8Value v8Value) throws JavetException {
+    public void rejectVoid(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
-        invokeVoid(FUNCTION_RESOLVE, v8Value);
+        invokeVoid(FUNCTION_REJECT, v8Value);
     }
 
     @CheckReturnValue
     public V8ValuePromise resolve(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invoke(FUNCTION_RESOLVE, v8Value);
+    }
+
+    public void resolveVoid(V8Value v8Value) throws JavetException {
+        Objects.requireNonNull(v8Value);
+        invokeVoid(FUNCTION_RESOLVE, v8Value);
     }
 
     @Override

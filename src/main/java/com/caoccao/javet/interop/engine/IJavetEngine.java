@@ -26,13 +26,13 @@ import com.caoccao.javet.interop.V8Runtime;
 public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
     JavetEngineConfig getConfig();
 
-    R getV8Runtime() throws JavetException;
-
     @CheckReturnValue
     IJavetEngineGuard getGuard();
 
     @CheckReturnValue
     IJavetEngineGuard getGuard(long timeoutMillis);
+
+    R getV8Runtime() throws JavetException;
 
     boolean isActive();
 

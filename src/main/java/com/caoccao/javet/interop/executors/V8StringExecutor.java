@@ -49,13 +49,13 @@ public class V8StringExecutor extends BaseV8Executor {
     }
 
     @Override
-    public String getScriptString() throws JavetException {
-        return scriptString;
-    }
-
-    @Override
     @CheckReturnValue
     public <T extends V8Value> T execute(boolean resultRequired) throws JavetException {
         return v8Runtime.execute(getScriptString(), v8ScriptOrigin, resultRequired);
+    }
+
+    @Override
+    public String getScriptString() throws JavetException {
+        return scriptString;
     }
 }

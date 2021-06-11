@@ -27,18 +27,18 @@ import org.junit.jupiter.api.BeforeEach;
 public abstract class BaseTestJavetPool extends BaseTestJavet {
     protected IJavetEnginePool javetEnginePool;
 
-    @BeforeEach
-    public void beforeEach() {
-        javetEnginePool = new JavetEnginePool();
-        javetEnginePool.getConfig().setEngineGuardCheckIntervalMillis(1);
-        javetEnginePool.getConfig().setJSRuntimeType(v8Host.getJSRuntimeType());
-    }
-
     @AfterEach
     public void afterEach() throws JavetException {
         javetEnginePool.close();
         V8Host.getNodeInstance().clearInternalStatistic();
         V8Host.getV8Instance().clearInternalStatistic();
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        javetEnginePool = new JavetEnginePool();
+        javetEnginePool.getConfig().setEngineGuardCheckIntervalMillis(1);
+        javetEnginePool.getConfig().setJSRuntimeType(v8Host.getJSRuntimeType());
     }
 
 }
