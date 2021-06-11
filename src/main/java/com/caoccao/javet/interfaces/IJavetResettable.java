@@ -19,6 +19,17 @@ package com.caoccao.javet.interfaces;
 
 import com.caoccao.javet.exceptions.JavetException;
 
+/**
+ * The interface Javet resettable.
+ *
+ * @since 0.7.0
+ */
 public interface IJavetResettable {
+    /**
+     * Reset.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     void reset() throws JavetException;
 }

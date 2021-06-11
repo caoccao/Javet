@@ -19,6 +19,11 @@ package com.caoccao.javet.annotations;
 
 import java.lang.annotation.*;
 
+/**
+ * The interface V8 runtime setter.
+ *
+ * @since 0.8.1
+ */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

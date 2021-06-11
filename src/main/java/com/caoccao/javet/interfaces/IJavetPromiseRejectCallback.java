@@ -23,6 +23,8 @@ import com.caoccao.javet.values.reference.V8ValuePromise;
 
 /**
  * The interface Javet promise reject callback.
+ *
+ * @since 0.8.3
  */
 public interface IJavetPromiseRejectCallback {
 
@@ -32,6 +34,7 @@ public interface IJavetPromiseRejectCallback {
      * @param event   the event
      * @param promise the promise
      * @param value   the value
+     * @since 0.8.3
      */
     void callback(JavetPromiseRejectEvent event, V8ValuePromise promise, V8Value value);
 }

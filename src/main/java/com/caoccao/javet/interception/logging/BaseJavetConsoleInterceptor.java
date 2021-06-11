@@ -28,56 +28,179 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
+/**
+ * The type Base javet console interceptor.
+ *
+ * @since 0.7.0
+ */
 public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
+    /**
+     * The constant SPACE.
+     *
+     * @since 0.7.1
+     */
     protected static final String SPACE = " ";
+    /**
+     * The constant JS_FUNCTION_DEBUG.
+     *
+     * @since 0.7.0
+     */
     protected static final String JS_FUNCTION_DEBUG = "debug";
+    /**
+     * The constant JS_FUNCTION_ERROR.
+     * @since 0.7.0
+     */
     protected static final String JS_FUNCTION_ERROR = "error";
+    /**
+     * The constant JS_FUNCTION_INFO.
+     * @since 0.7.0
+     */
     protected static final String JS_FUNCTION_INFO = "info";
+    /**
+     * The constant JS_FUNCTION_LOG.
+     * @since 0.7.0
+     */
     protected static final String JS_FUNCTION_LOG = "log";
+    /**
+     * The constant JS_FUNCTION_TRACE.
+     * @since 0.7.0
+     */
     protected static final String JS_FUNCTION_TRACE = "trace";
+    /**
+     * The constant JS_FUNCTION_WARN.
+     * @since 0.7.0
+     */
     protected static final String JS_FUNCTION_WARN = "warn";
+    /**
+     * The constant JAVA_CONSOLE_DEBUG.
+     * @since 0.7.0
+     */
     protected static final String JAVA_CONSOLE_DEBUG = "consoleDebug";
+    /**
+     * The constant JAVA_CONSOLE_ERROR.
+     * @since 0.7.0
+     */
     protected static final String JAVA_CONSOLE_ERROR = "consoleError";
+    /**
+     * The constant JAVA_CONSOLE_INFO.
+     * @since 0.7.0
+     */
     protected static final String JAVA_CONSOLE_INFO = "consoleInfo";
+    /**
+     * The constant JAVA_CONSOLE_LOG.
+     * @since 0.7.0
+     */
     protected static final String JAVA_CONSOLE_LOG = "consoleLog";
+    /**
+     * The constant JAVA_CONSOLE_TRACE.
+     * @since 0.7.0
+     */
     protected static final String JAVA_CONSOLE_TRACE = "consoleTrace";
+    /**
+     * The constant JAVA_CONSOLE_WARN.
+     * @since 0.7.0
+     */
     protected static final String JAVA_CONSOLE_WARN = "consoleWarn";
+    /**
+     * The constant PROPERTY_CONSOLE.
+     * @since 0.7.0
+     */
     protected static final String PROPERTY_CONSOLE = "console";
 
+    /**
+     * Instantiates a new Base javet console interceptor.
+     *
+     * @param v8Runtime the V8 runtime
+     * @since 0.7.0
+     */
     public BaseJavetConsoleInterceptor(V8Runtime v8Runtime) {
         super(v8Runtime);
     }
 
+    /**
+     * Concat string.
+     *
+     * @param v8Values the V8 values
+     * @return the string
+     * @since 0.7.0
+     */
     public String concat(V8Value... v8Values) {
         return V8ValueUtils.concat(SPACE, v8Values);
     }
 
+    /**
+     * Console debug.
+     *
+     * @param v8Values the V8 values
+     * @since 0.7.0
+     */
     public abstract void consoleDebug(V8Value... v8Values);
 
+    /**
+     * Console error.
+     *
+     * @param v8Values the V8 values
+     * @since 0.7.0
+     */
     public abstract void consoleError(V8Value... v8Values);
 
+    /**
+     * Console info.
+     *
+     * @param v8Values the V8 values
+     * @since 0.7.0
+     */
     public abstract void consoleInfo(V8Value... v8Values);
 
+    /**
+     * Console log.
+     *
+     * @param v8Values the V8 values
+     * @since 0.7.0
+     */
     public abstract void consoleLog(V8Value... v8Values);
 
+    /**
+     * Console trace.
+     *
+     * @param v8Values the V8 values
+     * @since 0.7.0
+     */
     public abstract void consoleTrace(V8Value... v8Values);
 
+    /**
+     * Console warn.
+     *
+     * @param v8Values the V8 values
+     * @since 0.7.0
+     */
     public abstract void consoleWarn(V8Value... v8Values);
 
     @Override
-    public boolean register(IV8ValueObject iV8ValueObject) throws JavetException {
+    public boolean register(IV8ValueObject... iV8ValueObjects) throws JavetException {
         try (V8ValueObject console = v8Runtime.createV8ValueObject()) {
-            iV8ValueObject.set(PROPERTY_CONSOLE, console);
-            register(console, JS_FUNCTION_DEBUG, JAVA_CONSOLE_DEBUG);
-            register(console, JS_FUNCTION_ERROR, JAVA_CONSOLE_ERROR);
-            register(console, JS_FUNCTION_INFO, JAVA_CONSOLE_INFO);
-            register(console, JS_FUNCTION_LOG, JAVA_CONSOLE_LOG);
-            register(console, JS_FUNCTION_TRACE, JAVA_CONSOLE_TRACE);
-            register(console, JS_FUNCTION_WARN, JAVA_CONSOLE_WARN);
+            for (IV8ValueObject iV8ValueObject : iV8ValueObjects) {
+                iV8ValueObject.set(PROPERTY_CONSOLE, console);
+                register(console, JS_FUNCTION_DEBUG, JAVA_CONSOLE_DEBUG);
+                register(console, JS_FUNCTION_ERROR, JAVA_CONSOLE_ERROR);
+                register(console, JS_FUNCTION_INFO, JAVA_CONSOLE_INFO);
+                register(console, JS_FUNCTION_LOG, JAVA_CONSOLE_LOG);
+                register(console, JS_FUNCTION_TRACE, JAVA_CONSOLE_TRACE);
+                register(console, JS_FUNCTION_WARN, JAVA_CONSOLE_WARN);
+            }
             return true;
         }
     }
 
+    /**
+     * Register.
+     *
+     * @param iV8ValueObject   the V8 value object
+     * @param jsFunctionName   the js function name
+     * @param javaFunctionName the java function name
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     protected void register(IV8ValueObject iV8ValueObject, String jsFunctionName, String javaFunctionName)
             throws JavetException {
         try {
@@ -96,15 +219,19 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     }
 
     @Override
-    public boolean unregister(IV8ValueObject iV8ValueObject) throws JavetException {
-        try (V8ValueObject console = iV8ValueObject.get(PROPERTY_CONSOLE)) {
-            console.delete(JS_FUNCTION_DEBUG);
-            console.delete(JS_FUNCTION_ERROR);
-            console.delete(JS_FUNCTION_INFO);
-            console.delete(JS_FUNCTION_LOG);
-            console.delete(JS_FUNCTION_TRACE);
-            console.delete(JS_FUNCTION_WARN);
+    public boolean unregister(IV8ValueObject... iV8ValueObjects) throws JavetException {
+        boolean successful = true;
+        for (IV8ValueObject iV8ValueObject : iV8ValueObjects) {
+            try (V8ValueObject console = iV8ValueObject.get(PROPERTY_CONSOLE)) {
+                console.delete(JS_FUNCTION_DEBUG);
+                console.delete(JS_FUNCTION_ERROR);
+                console.delete(JS_FUNCTION_INFO);
+                console.delete(JS_FUNCTION_LOG);
+                console.delete(JS_FUNCTION_TRACE);
+                console.delete(JS_FUNCTION_WARN);
+            }
+            successful &= iV8ValueObject.delete(PROPERTY_CONSOLE);
         }
-        return iV8ValueObject.delete(PROPERTY_CONSOLE);
+        return successful;
     }
 }
