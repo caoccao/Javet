@@ -70,6 +70,7 @@ public class TestJavetLibLoader {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
         }
+        assertEquals(0, v8Host.getV8RuntimeCount());
         assertTrue(v8Host.unloadLibrary());
         assertFalse(v8Host.isLibraryLoaded());
         try {
@@ -82,5 +83,6 @@ public class TestJavetLibLoader {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
         }
+        assertEquals(0, v8Host.getV8RuntimeCount());
     }
 }

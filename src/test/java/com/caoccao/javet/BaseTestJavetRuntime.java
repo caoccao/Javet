@@ -52,6 +52,7 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
                     Arrays.copyOfRange(counters, 7, 13));
         }
         v8Host.clearInternalStatistic();
+        assertEquals(0, v8Host.getV8RuntimeCount());
     }
 
     @BeforeEach

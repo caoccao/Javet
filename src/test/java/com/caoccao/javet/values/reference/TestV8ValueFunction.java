@@ -112,7 +112,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(undefined)").executeString());
             v8Runtime.getGlobalObject().delete("a");
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -137,7 +137,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
             v8Runtime.getGlobalObject().delete("a");
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -158,7 +158,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
         v8Runtime.getGlobalObject().delete("a");
         v8Runtime.getGlobalObject().delete("b");
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -174,7 +174,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8ValueArray.getLength());
             assertEquals("x", v8ValueArray.toString());
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -215,7 +215,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("a");
         }
         assertEquals(1, v8Runtime.getReferenceCount());
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
         assertEquals(0, v8Runtime.getReferenceCount());
         try {
             v8ValueFunction.close();
@@ -242,7 +242,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("a");
         }
         assertEquals(1, v8Runtime.getReferenceCount());
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
         assertEquals(0, v8Runtime.getReferenceCount());
         try {
             v8ValueFunction.close();
@@ -277,7 +277,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("echoThis");
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -301,7 +301,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("echo");
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -326,7 +326,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("a");
         }
         assertTrue(mockCallbackReceiver.isCalled());
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -351,7 +351,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals("abc,def", v8Runtime.getExecutor("echoString('abc', 'def')").executeString());
         assertEquals("", v8Runtime.getExecutor("echoString()").executeString());
         globalObject.delete("echoString");
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -375,7 +375,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("a");
         }
         assertTrue(mockCallbackReceiver.isCalled());
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -396,7 +396,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
         assertTrue(mockCallbackReceiver.isCalled());
         assertTrue(globalObject.get("a").isUndefined());
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -422,7 +422,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
         globalObject.delete("testError");
         mockCallbackReceiver.setCalled(false);
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -449,7 +449,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("x");
         }
         assertTrue(mockCallbackReceiver.isCalled());
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -477,7 +477,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("x");
         }
         assertTrue(mockCallbackReceiver.isCalled());
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -500,7 +500,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("joinWithoutThis");
         }
         assertTrue(mockCallbackReceiver.isCalled());
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -529,7 +529,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             e.printStackTrace();
             fail(e.getScriptingError().toString());
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     /**
@@ -611,7 +611,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -646,6 +646,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 }

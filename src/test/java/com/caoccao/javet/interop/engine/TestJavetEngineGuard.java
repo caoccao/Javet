@@ -37,6 +37,7 @@ public class TestJavetEngineGuard extends BaseTestJavetPool {
             V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
             // Get a guard from the engine and apply try-with-resource pattern.
             try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(1)) {
+                iJavetEngineGuard.enableInDebugMode();
                 v8Runtime.getExecutor("while (true) {}").executeVoid();
                 // That infinite loop will be terminated in 10 seconds by the guard.
             } catch (JavetTerminatedException e) {
