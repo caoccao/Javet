@@ -173,7 +173,6 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                         logger.logError(t, "Failed to release idle engine.");
                     }
                 } else {
-                    idleEngineList.add(engine);
                     if (config.getMaxEngineUsedCount() > 0) {
                         ZonedDateTime resetEngineZonedDateTime = usage.getLastActiveZonedDatetime()
                                 .plus(config.getResetEngineTimeoutSeconds(), ChronoUnit.SECONDS);
@@ -188,6 +187,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                             }
                         }
                     }
+                    idleEngineList.add(engine);
                 }
             }
             synchronized (externalLock) {
