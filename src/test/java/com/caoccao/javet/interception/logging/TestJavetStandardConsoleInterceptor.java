@@ -56,6 +56,6 @@ public class TestJavetStandardConsoleInterceptor extends BaseTestJavetRuntime {
                         byteArrayOutputStream.toString(StandardCharsets.UTF_8.name()).trim());
             }
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 }

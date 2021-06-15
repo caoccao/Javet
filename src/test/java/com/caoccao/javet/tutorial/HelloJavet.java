@@ -35,24 +35,6 @@ public class HelloJavet {
         helloJavet.playWithPoolAndConsole();
     }
 
-    public void printHelloJavet() throws JavetException {
-        // Step 1: Create a V8 runtime from V8 host in try-with-resource.
-        try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
-            // Step 2: Execute a string as JavaScript code and print the result to console.
-            System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString()); // Hello Javet
-            // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
-        }
-    }
-
-    public void printOnePlusOne() throws JavetException {
-        // Step 1: Create a Node runtime from V8 host in try-with-resource.
-        try (NodeRuntime nodeRuntime = V8Host.getNodeInstance().createV8Runtime()) {
-            // Step 2: Execute a string as JavaScript code and print the result to console.
-            System.out.println("1 + 1 = " + nodeRuntime.getExecutor("1 + 1").executeInteger()); // 2
-            // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
-        }
-    }
-
     public void playWithPoolAndConsole() throws JavetException {
         // Create a Javet engine pool.
         try (IJavetEnginePool<V8Runtime> javetEnginePool = new JavetEnginePool<>()) {
@@ -73,6 +55,24 @@ public class HelloJavet {
                 v8Runtime.lowMemoryNotification();
                 // Force V8 to GC.
             }
+        }
+    }
+
+    public void printHelloJavet() throws JavetException {
+        // Step 1: Create a V8 runtime from V8 host in try-with-resource.
+        try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
+            // Step 2: Execute a string as JavaScript code and print the result to console.
+            System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString()); // Hello Javet
+            // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
+        }
+    }
+
+    public void printOnePlusOne() throws JavetException {
+        // Step 1: Create a Node runtime from V8 host in try-with-resource.
+        try (NodeRuntime nodeRuntime = V8Host.getNodeInstance().createV8Runtime()) {
+            // Step 2: Execute a string as JavaScript code and print the result to console.
+            System.out.println("1 + 1 = " + nodeRuntime.getExecutor("1 + 1").executeInteger()); // 2
+            // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
         }
     }
 }

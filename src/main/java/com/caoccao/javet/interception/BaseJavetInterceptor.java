@@ -29,13 +29,13 @@ public abstract class BaseJavetInterceptor implements IJavetInterceptor {
         this.v8Runtime = v8Runtime;
     }
 
-    @Override
-    public abstract boolean register(IV8ValueObject iV8ValueObject) throws JavetException;
-
-    @Override
-    public abstract boolean unregister(IV8ValueObject iV8ValueObject) throws JavetException;
-
     public V8Runtime getV8Runtime() {
         return v8Runtime;
     }
+
+    @Override
+    public abstract boolean register(IV8ValueObject... iV8ValueObjects) throws JavetException;
+
+    @Override
+    public abstract boolean unregister(IV8ValueObject... iV8ValueObjects) throws JavetException;
 }

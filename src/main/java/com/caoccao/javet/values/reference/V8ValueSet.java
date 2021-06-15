@@ -90,11 +90,6 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Set;
-    }
-
-    @Override
     @CheckReturnValue
     public IV8ValueIterator<V8Value> getKeys() throws JavetException {
         checkV8Runtime();
@@ -105,6 +100,11 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     public int getSize() throws JavetException {
         checkV8Runtime();
         return v8Runtime.getSize(this);
+    }
+
+    @Override
+    public V8ValueReferenceType getType() {
+        return V8ValueReferenceType.Set;
     }
 
 }

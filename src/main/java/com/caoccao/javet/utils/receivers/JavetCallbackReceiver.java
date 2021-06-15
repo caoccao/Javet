@@ -49,11 +49,6 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
         this.v8Runtime = v8Runtime;
     }
 
-    @Override
-    public V8Runtime getV8Runtime() {
-        return v8Runtime;
-    }
-
     /**
      * Echo the given V8 value.
      *
@@ -120,5 +115,10 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
             stringList.add(arg == null ? null : arg.toString());
         }
         return String.join(COMMA, stringList);
+    }
+
+    @Override
+    public V8Runtime getV8Runtime() {
+        return v8Runtime;
     }
 }

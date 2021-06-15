@@ -37,20 +37,20 @@ public final class CDTConfig {
         return port;
     }
 
+    public static V8Runtime getV8Runtime() {
+        return v8Runtime;
+    }
+
+    public static String getWebSocketUrl() {
+        return webSocketUrl;
+    }
+
     public static void setPort(int port) {
         CDTConfig.port = port;
         webSocketUrl = "ws://127.0.0.1:" + Integer.toString(port) + PATH_JAVET;
     }
 
-    public static V8Runtime getV8Runtime() {
-        return v8Runtime;
-    }
-
     public static void setV8Runtime(V8Runtime v8Runtime) {
         CDTConfig.v8Runtime = v8Runtime;
-    }
-
-    public static String getWebSocketUrl() {
-        return webSocketUrl;
     }
 }

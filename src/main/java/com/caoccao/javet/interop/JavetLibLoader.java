@@ -30,16 +30,16 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    static final String LIB_VERSION = "0.9.0";
+    static final String LIB_VERSION = "0.9.1";
+    private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
-    private static final String XRR = "755";
-    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
-    private static final String RESOURCE_NAME_FORMAT = "/{0}";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
+    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
     private static final String OS_LINUX = "linux";
     private static final String OS_WINDOWS = "windows";
-    private static final int BUFFER_LENGTH = 4096;
+    private static final String RESOURCE_NAME_FORMAT = "/{0}";
+    private static final String XRR = "755";
     private final JSRuntimeType jsRuntimeType;
     private boolean loaded;
 
@@ -47,14 +47,6 @@ public final class JavetLibLoader {
         Objects.requireNonNull(jsRuntimeType);
         this.jsRuntimeType = jsRuntimeType;
         loaded = false;
-    }
-
-    public boolean isLoaded() {
-        return loaded;
-    }
-
-    public JSRuntimeType getJSRuntimeType() {
-        return jsRuntimeType;
     }
 
     private void deployLibFile(String resourceFileName, File libFile) {
@@ -92,6 +84,10 @@ public final class JavetLibLoader {
         }
     }
 
+    public JSRuntimeType getJSRuntimeType() {
+        return jsRuntimeType;
+    }
+
     public String getResourceFileName()
             throws JavetException {
         String fileName, resourceFileName, osName, fileExtension;
@@ -115,6 +111,10 @@ public final class JavetLibLoader {
                     SimpleMap.of(JavetError.PARAMETER_PATH, resourceFileName));
         }
         return resourceFileName;
+    }
+
+    public boolean isLoaded() {
+        return loaded;
     }
 
     public void load()

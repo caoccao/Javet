@@ -17,19 +17,18 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Objects;
 
 public class V8ValueArrayBuffer extends V8ValueObject {
-    protected static final String PROPERTY_BYTE_LENGTH = "byteLength";
     protected static final int BYTE_LENGTH_1 = 1;
     protected static final int BYTE_LENGTH_2 = 2;
     protected static final int BYTE_LENGTH_3 = 3;
-
+    protected static final String PROPERTY_BYTE_LENGTH = "byteLength";
     protected ByteBuffer byteBuffer;
     protected ByteOrder byteOrder;
 
@@ -37,28 +36,6 @@ public class V8ValueArrayBuffer extends V8ValueObject {
         super(handle);
         this.byteBuffer = byteBuffer;
         byteOrder = ByteOrder.nativeOrder();
-    }
-
-    public ByteOrder getByteOrder() {
-        return byteOrder;
-    }
-
-    public void setByteOrder(ByteOrder byteOrder) {
-        Objects.requireNonNull(byteOrder);
-        this.byteOrder = byteOrder;
-    }
-
-    public ByteBuffer getByteBuffer() {
-        return byteBuffer;
-    }
-
-    public int getByteLength() throws JavetException {
-        return getInteger(PROPERTY_BYTE_LENGTH);
-    }
-
-    @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.ArrayBuffer;
     }
 
     public boolean fromBytes(byte[] bytes) {
@@ -107,6 +84,28 @@ public class V8ValueArrayBuffer extends V8ValueObject {
             return true;
         }
         return false;
+    }
+
+    public ByteBuffer getByteBuffer() {
+        return byteBuffer;
+    }
+
+    public int getByteLength() throws JavetException {
+        return getInteger(PROPERTY_BYTE_LENGTH);
+    }
+
+    public ByteOrder getByteOrder() {
+        return byteOrder;
+    }
+
+    @Override
+    public V8ValueReferenceType getType() {
+        return V8ValueReferenceType.ArrayBuffer;
+    }
+
+    public void setByteOrder(ByteOrder byteOrder) {
+        Objects.requireNonNull(byteOrder);
+        this.byteOrder = byteOrder;
     }
 
     public byte[] toBytes() {

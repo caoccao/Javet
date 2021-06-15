@@ -36,6 +36,10 @@ public class V8PathExecutor extends V8StringExecutor {
         setResourceName(scriptPath.toFile().getAbsolutePath());
     }
 
+    public Path getScriptPath() {
+        return scriptPath;
+    }
+
     @Override
     public String getScriptString() throws JavetException {
         if (scriptString == null) {
@@ -49,9 +53,5 @@ public class V8PathExecutor extends V8StringExecutor {
             }
         }
         return scriptString;
-    }
-
-    public Path getScriptPath() {
-        return scriptPath;
     }
 }

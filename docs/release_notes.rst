@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.9.1
+-----
+
+* Moved V8 to a custom classloader
+* Enabled ``unloadLibrary()`` and ``loadLibrary()`` in ``V8Host``
+
 0.9.0
 -----
 

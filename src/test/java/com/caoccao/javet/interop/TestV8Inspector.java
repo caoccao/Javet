@@ -96,6 +96,7 @@ public class TestV8Inspector extends BaseTestJavet {
         private List<String> notifications;
         private List<String> requests;
         private List<String> responses;
+
         public MockV8InspectorListener() {
             contextGroupIds = new ArrayList<>();
             notifications = new ArrayList<>();

@@ -17,13 +17,58 @@
 
 package com.caoccao.javet.enums;
 
+/**
+ * The enum Javet error type.
+ *
+ * @since 0.8.5
+ */
 public enum JavetErrorType {
+    /**
+     * System javet error type.
+     *
+     * @since 0.8.5
+     */
     System,
+    /**
+     * Compilation javet error type.
+     *
+     * @since 0.8.5
+     */
     Compilation,
+    /**
+     * Execution javet error type.
+     *
+     * @since 0.8.5
+     */
     Execution,
+    /**
+     * Callback javet error type.
+     *
+     * @since 0.8.5
+     */
     Callback,
+    /**
+     * Converter javet error type.
+     *
+     * @since 0.8.5
+     */
     Converter,
+    /**
+     * Module javet error type.
+     *
+     * @since 0.8.5
+     */
     Module,
+    /**
+     * Lock javet error type.
+     *
+     * @since 0.8.5
+     */
     Lock,
+    /**
+     * Runtime javet error type.
+     *
+     * @since 0.8.5
+     */
     Runtime,
 }

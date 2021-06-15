@@ -34,16 +34,16 @@ Javet supports both Node.js mode and V8 mode both of which can co-exist in one J
 .. image:: ../resources/images/javet_modes.png?raw=true
     :alt: Javet Modes
 
-As the diagram shows, Javet loads V8 v8.9+ in the default classloader as an out-of-box solution. Node.js is lazy loaded in a custom classloader. Detailed comparisons are as following.
+As the diagram shows, both Node.js and V8 are lazy loaded in dedicated custom classloaders. Detailed comparisons are as following.
 
 =========================== ======================= ==============================
 Feature                     Node.js Mode            V8 Mode
 =========================== ======================= ==============================
-Built-in                    No                      **Yes**
+Lazy Loadable               **Yes**                 **Yes**
 Customization               **High**                **High**
 Node.js Ecosystem           **Complete**            No
 Security                    Low                     **High**
-Unload                      Potentially Yes         No
+Unload                      **Yes**                 **Yes**
 V8 Ecosystem                **Complete**            **Complete**
 V8 Version                  Low                     **High**
 =========================== ======================= ==============================

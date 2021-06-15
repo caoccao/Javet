@@ -23,8 +23,8 @@ public final class SimpleFreeMarkerFormat {
 
     public static final String STRING_NULL = "<null>";
     private static final char CHAR_DOLLAR = '$';
-    private static final char CHAR_VARIABLE_OPEN = '{';
     private static final char CHAR_VARIABLE_CLOSE = '}';
+    private static final char CHAR_VARIABLE_OPEN = '{';
 
     public static String format(final String format, final Map<String, Object> parameters) {
         if (format == null || format.length() == 0 || parameters == null || parameters.isEmpty()) {

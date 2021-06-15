@@ -19,9 +19,20 @@ package com.caoccao.javet.annotations;
 
 import java.lang.annotation.*;
 
+/**
+ * The annotation Node module.
+ *
+ * @since 0.8.1
+ */
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NodeModule {
+    /**
+     * Name string.
+     *
+     * @return the string
+     * @since 0.8.1
+     */
     String name() default "";
 }

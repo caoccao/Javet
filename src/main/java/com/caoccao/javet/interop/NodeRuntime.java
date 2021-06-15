@@ -101,6 +101,12 @@ public class NodeRuntime extends V8Runtime {
         return nodeModuleMap.size();
     }
 
+    @Override
+    protected void removeAllReferences() throws JavetException {
+        removeNodeModules();
+        super.removeAllReferences();
+    }
+
     public void removeNodeModule(INodeModule iNodeModule) throws JavetException {
         Objects.requireNonNull(iNodeModule);
         if (nodeModuleMap.containsKey(iNodeModule.getName())) {
@@ -114,11 +120,5 @@ public class NodeRuntime extends V8Runtime {
             JavetResourceUtils.safeClose(nodeModuleMap.values());
             nodeModuleMap.clear();
         }
-    }
-
-    @Override
-    protected void removeAllReferences() throws JavetException {
-        removeNodeModules();
-        super.removeAllReferences();
     }
 }

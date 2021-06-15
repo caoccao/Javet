@@ -43,14 +43,24 @@
 namespace Javet {
 #ifdef ENABLE_NODE
 	namespace NodeNative {
+		static jclass jclassV8Host;
+		static jmethodID jmethodIDV8HostIsLibraryReloadable;
+
 		static std::shared_ptr<node::ArrayBufferAllocator> GlobalNodeArrayBufferAllocator;
 
-		void Dispose() {
-			GlobalNodeArrayBufferAllocator.reset();
+		void Dispose(JNIEnv* jniEnv) {
+			if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
+				GlobalNodeArrayBufferAllocator.reset();
+			}
 		}
 
 		void Initialize(JNIEnv* jniEnv) {
-			GlobalNodeArrayBufferAllocator = node::ArrayBufferAllocator::Create();
+			jclassV8Host = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Host"));
+			jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
+
+			if (!GlobalNodeArrayBufferAllocator) {
+				GlobalNodeArrayBufferAllocator = node::ArrayBufferAllocator::Create();
+			}
 		}
 	}
 #endif
@@ -62,15 +72,20 @@ namespace Javet {
 		static std::unique_ptr<V8Platform> GlobalV8Platform;
 #endif
 
+		static jclass jclassV8Host;
+		static jmethodID jmethodIDV8HostIsLibraryReloadable;
+
 		static jclass jclassV8ValueInteger;
 		static jmethodID jmethodIDV8ValueIntegerToPrimitive;
 
 		static jclass jclassV8ValueString;
 		static jmethodID jmethodIDV8ValueStringToPrimitive;
 
-		void Dispose() {
-			v8::V8::Dispose();
-			v8::V8::ShutdownPlatform();
+		void Dispose(JNIEnv* jniEnv) {
+			if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
+				v8::V8::Dispose();
+				v8::V8::ShutdownPlatform();
+			}
 		}
 
 		/*
@@ -79,6 +94,8 @@ namespace Javet {
 		or runtime memory corruption will take place.
 		*/
 		void Initialize(JNIEnv* jniEnv) {
+			jclassV8Host = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Host"));
+			jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
 
 			jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
 			jmethodIDV8ValueIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueInteger, JAVA_METHOD_TO_PRIMITIVE, "()I");
@@ -90,21 +107,26 @@ namespace Javet {
 #ifdef ENABLE_I18N
 			v8::V8::InitializeICU();
 #endif
-#ifdef ENABLE_NODE
-			uv_setup_args(0, nullptr);
-			std::vector<std::string> args{ "" };
-			std::vector<std::string> execArgs{ "" };
-			std::vector<std::string> errors;
-			int errorCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
-			if (errorCode != 0) {
-				LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
+			if (Javet::V8Native::GlobalV8Platform) {
+				LOG_INFO("V8::Initialize() is skipped.");
 			}
-			Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
+			else {
+#ifdef ENABLE_NODE
+				uv_setup_args(0, nullptr);
+				std::vector<std::string> args{ "" };
+				std::vector<std::string> execArgs{ "" };
+				std::vector<std::string> errors;
+				int errorCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
+				if (errorCode != 0) {
+					LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
+				}
+				Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
 #else
-			Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
+				Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
 #endif
-			v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
-			v8::V8::Initialize();
+				v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
+				v8::V8::Initialize();
+			}
 			LOG_INFO("V8::Initialize() ends.");
 		}
 	}

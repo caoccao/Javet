@@ -18,8 +18,8 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
 
 import java.util.Objects;
 
@@ -108,77 +108,6 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     V8ValueTypedArray(long handle, int type) {
         super(handle);
         setType(V8ValueReferenceType.parse(type));
-    }
-
-    @Override
-    @CheckReturnValue
-    public V8ValueArrayBuffer getBuffer() throws JavetException {
-        return get(PROPERTY_BUFFER);
-    }
-
-    @Override
-    public int getByteLength() throws JavetException {
-        return getInteger(PROPERTY_BYTE_LENGTH);
-    }
-
-    @Override
-    public int getByteOffset() throws JavetException {
-        return getInteger(PROPERTY_BYTE_OFFSET);
-    }
-
-    @Override
-    public int getLength() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.getLength(this);
-    }
-
-    @Override
-    public int getSizeInBytes() {
-        return sizeInBytes;
-    }
-
-    @Override
-    public V8ValueReferenceType getType() {
-        return type;
-    }
-
-    /**
-     * Sets type.
-     *
-     * @param type the type
-     */
-    protected void setType(V8ValueReferenceType type) {
-        switch (type) {
-            case Int8Array:
-            case Uint8Array:
-            case Uint8ClampedArray:
-                sizeInBytes = ONE_BYTE_PER_VALUE;
-                break;
-            case Int16Array:
-            case Uint16Array:
-                sizeInBytes = TWO_BYTES_PER_VALUE;
-                break;
-            case Int32Array:
-            case Uint32Array:
-            case Float32Array:
-                sizeInBytes = FOUR_BYTES_PER_VALUE;
-                break;
-            case Float64Array:
-            case BigInt64Array:
-            case BigUint64Array:
-                sizeInBytes = EIGHT_BYTES_PER_VALUE;
-                break;
-            default:
-                type = V8ValueReferenceType.Invalid;
-                sizeInBytes = ZERO_BYTE_PER_VALUE;
-                break;
-        }
-        this.type = type;
-    }
-
-    @Override
-    public boolean isValid() {
-        return type != V8ValueReferenceType.Invalid;
     }
 
     /**
@@ -288,6 +217,77 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
         return false;
     }
 
+    @Override
+    @CheckReturnValue
+    public V8ValueArrayBuffer getBuffer() throws JavetException {
+        return get(PROPERTY_BUFFER);
+    }
+
+    @Override
+    public int getByteLength() throws JavetException {
+        return getInteger(PROPERTY_BYTE_LENGTH);
+    }
+
+    @Override
+    public int getByteOffset() throws JavetException {
+        return getInteger(PROPERTY_BYTE_OFFSET);
+    }
+
+    @Override
+    public int getLength() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.getLength(this);
+    }
+
+    @Override
+    public int getSizeInBytes() {
+        return sizeInBytes;
+    }
+
+    @Override
+    public V8ValueReferenceType getType() {
+        return type;
+    }
+
+    @Override
+    public boolean isValid() {
+        return type != V8ValueReferenceType.Invalid;
+    }
+
+    /**
+     * Sets type.
+     *
+     * @param type the type
+     */
+    protected void setType(V8ValueReferenceType type) {
+        switch (type) {
+            case Int8Array:
+            case Uint8Array:
+            case Uint8ClampedArray:
+                sizeInBytes = ONE_BYTE_PER_VALUE;
+                break;
+            case Int16Array:
+            case Uint16Array:
+                sizeInBytes = TWO_BYTES_PER_VALUE;
+                break;
+            case Int32Array:
+            case Uint32Array:
+            case Float32Array:
+                sizeInBytes = FOUR_BYTES_PER_VALUE;
+                break;
+            case Float64Array:
+            case BigInt64Array:
+            case BigUint64Array:
+                sizeInBytes = EIGHT_BYTES_PER_VALUE;
+                break;
+            default:
+                type = V8ValueReferenceType.Invalid;
+                sizeInBytes = ZERO_BYTE_PER_VALUE;
+                break;
+        }
+        this.type = type;
+    }
+
     /**
      * To byte array.
      *
@@ -306,21 +306,6 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     }
 
     /**
-     * To float array.
-     *
-     * @return the float array
-     * @throws JavetException the javet exception
-     */
-    public float[] toFloats() throws JavetException {
-        if (getType() == V8ValueReferenceType.Float32Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.toFloats();
-            }
-        }
-        return null;
-    }
-
-    /**
      * To double array.
      *
      * @return the double array
@@ -330,6 +315,21 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
         if (getType() == V8ValueReferenceType.Float64Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toDoubles();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * To float array.
+     *
+     * @return the float array
+     * @throws JavetException the javet exception
+     */
+    public float[] toFloats() throws JavetException {
+        if (getType() == V8ValueReferenceType.Float32Array) {
+            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                return v8ValueArrayBuffer.toFloats();
             }
         }
         return null;

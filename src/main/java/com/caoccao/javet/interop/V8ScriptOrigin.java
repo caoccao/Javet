@@ -19,12 +19,12 @@ package com.caoccao.javet.interop;
 
 public final class V8ScriptOrigin {
 
-    private String resourceName;
-    private int resourceLineOffset;
+    private boolean module;
     private int resourceColumnOffset;
+    private int resourceLineOffset;
+    private String resourceName;
     private int scriptId;
     private boolean wasm;
-    private boolean module;
 
     public V8ScriptOrigin(
             String resourceName,
@@ -65,26 +65,33 @@ public final class V8ScriptOrigin {
                 scriptId, false, false);
     }
 
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public V8ScriptOrigin setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-        return this;
+    public int getResourceColumnOffset() {
+        return resourceColumnOffset;
     }
 
     public int getResourceLineOffset() {
         return resourceLineOffset;
     }
 
-    public V8ScriptOrigin setResourceLineOffset(int resourceLineOffset) {
-        this.resourceLineOffset = resourceLineOffset;
-        return this;
+    public String getResourceName() {
+        return resourceName;
     }
 
-    public int getResourceColumnOffset() {
-        return resourceColumnOffset;
+    public int getScriptId() {
+        return scriptId;
+    }
+
+    public boolean isModule() {
+        return module;
+    }
+
+    public boolean isWasm() {
+        return wasm;
+    }
+
+    public V8ScriptOrigin setModule(boolean module) {
+        this.module = module;
+        return this;
     }
 
     public V8ScriptOrigin setResourceColumnOffset(int resourceColumnOffset) {
@@ -92,8 +99,14 @@ public final class V8ScriptOrigin {
         return this;
     }
 
-    public int getScriptId() {
-        return scriptId;
+    public V8ScriptOrigin setResourceLineOffset(int resourceLineOffset) {
+        this.resourceLineOffset = resourceLineOffset;
+        return this;
+    }
+
+    public V8ScriptOrigin setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+        return this;
     }
 
     public V8ScriptOrigin setScriptId(int scriptId) {
@@ -101,21 +114,8 @@ public final class V8ScriptOrigin {
         return this;
     }
 
-    public boolean isWasm() {
-        return wasm;
-    }
-
     public V8ScriptOrigin setWasm(boolean wasm) {
         this.wasm = wasm;
-        return this;
-    }
-
-    public boolean isModule() {
-        return module;
-    }
-
-    public V8ScriptOrigin setModule(boolean module) {
-        this.module = module;
         return this;
     }
 }

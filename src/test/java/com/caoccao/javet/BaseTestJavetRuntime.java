@@ -38,7 +38,7 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
             NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
             assertEquals(nodeRuntime.getNodeModuleCount(), nodeRuntime.getReferenceCount(),
                     "Reference count should be the node module count after test case is ended.");
-        }else {
+        } else {
             assertEquals(0, v8Runtime.getReferenceCount(),
                     "Reference count should be 0 after test case is ended.");
         }
@@ -52,6 +52,7 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
                     Arrays.copyOfRange(counters, 7, 13));
         }
         v8Host.clearInternalStatistic();
+        assertEquals(0, v8Host.getV8RuntimeCount());
     }
 
     @BeforeEach

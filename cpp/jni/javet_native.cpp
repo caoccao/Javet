@@ -51,10 +51,19 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
 
 void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
 	LOG_INFO("JNI_OnUnload() begins.");
+	JNIEnv* jniEnv;
+	if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
+		LOG_ERROR("Failed to call JavaVM.GetEnv().");
+	}
+	if (jniEnv == nullptr) {
+		LOG_ERROR("Failed to get JNIEnv.");
+	}
+	else {
 #ifdef ENABLE_NODE
-	Javet::NodeNative::Dispose();
+		Javet::NodeNative::Dispose(jniEnv);
 #endif
-	Javet::V8Native::Dispose();
+		Javet::V8Native::Dispose(jniEnv);
+	}
 	LOG_INFO("JNI_OnUnload() ends.");
 }
 

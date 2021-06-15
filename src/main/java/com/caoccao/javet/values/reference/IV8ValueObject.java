@@ -561,6 +561,18 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
+     * Invoke double double.
+     *
+     * @param functionName the function name
+     * @param objects      the objects
+     * @return the double
+     * @throws JavetException the javet exception
+     */
+    default Double invokeDouble(String functionName, Object... objects) throws JavetException {
+        return invokePrimitive(functionName, objects);
+    }
+
+    /**
      * Invoke extended and return V8 value which must be consumed,
      * otherwise memory leak may occur.
      *
@@ -587,18 +599,6 @@ public interface IV8ValueObject extends IV8ValueReference {
      */
     @CheckReturnValue
     <T extends V8Value> T invokeExtended(String functionName, boolean returnResult, V8Value... v8Values) throws JavetException;
-
-    /**
-     * Invoke double double.
-     *
-     * @param functionName the function name
-     * @param objects      the objects
-     * @return the double
-     * @throws JavetException the javet exception
-     */
-    default Double invokeDouble(String functionName, Object... objects) throws JavetException {
-        return invokePrimitive(functionName, objects);
-    }
 
     /**
      * Invoke float float.

@@ -39,16 +39,16 @@ public class TestV8Host extends BaseTestJavet {
     }
 
     @Test
-    public void testCreateV8RuntimeWithoutGlobalName() throws JavetException {
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+    public void testCreateV8RuntimeWithGlobalName() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
             assertNotNull(v8Runtime);
             assertTrue(v8Host.isIsolateCreated());
         }
     }
 
     @Test
-    public void testCreateV8RuntimeWithGlobalName() throws JavetException {
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+    public void testCreateV8RuntimeWithoutGlobalName() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertNotNull(v8Runtime);
             assertTrue(v8Host.isIsolateCreated());
         }

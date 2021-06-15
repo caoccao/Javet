@@ -19,11 +19,28 @@ package com.caoccao.javet.annotations;
 
 import java.lang.annotation.*;
 
+/**
+ * The annotation V8 function is for auto-registering JS function interception.
+ *
+ * @since 0.8.1
+ */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface V8Function {
+    /**
+     * JS function name.
+     *
+     * @return the name of the JS function to be injected
+     * @since 0.8.1
+     */
     String name() default "";
 
+    /**
+     * This object required.
+     *
+     * @return true: this object is required, false: this object is ignored
+     * @since 0.9.0
+     */
     boolean thisObjectRequired() default false;
 }

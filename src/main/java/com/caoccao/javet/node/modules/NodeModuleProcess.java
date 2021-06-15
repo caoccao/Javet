@@ -40,11 +40,11 @@ public class NodeModuleProcess extends BaseNodeModule {
         return new File(moduleObject.invokeString(FUNCTION_CWD)).toPath();
     }
 
-    public void setWorkingDirectory(Path path) throws JavetException {
-        moduleObject.invokeVoid(FUNCTION_CHDIR, new V8ValueString(path.toAbsolutePath().toString()));
-    }
-
     public void on(String eventName, V8ValueFunction v8ValueFunction) throws JavetException {
         moduleObject.invokeVoid(FUNCTION_ON, new V8ValueString(eventName), v8ValueFunction);
+    }
+
+    public void setWorkingDirectory(Path path) throws JavetException {
+        moduleObject.invokeVoid(FUNCTION_CHDIR, new V8ValueString(path.toAbsolutePath().toString()));
     }
 }

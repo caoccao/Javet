@@ -92,13 +92,13 @@ namespace Javet {
 
 #ifdef ENABLE_NODE
 	namespace NodeNative {
-		void Dispose();
+		void Dispose(JNIEnv* jniEnv);
 		void Initialize(JNIEnv* jniEnv);
 	}
 #endif
 
 	namespace V8Native {
-		void Dispose();
+		void Dispose(JNIEnv* jniEnv);
 		void Initialize(JNIEnv* jniEnv);
 	}
 }

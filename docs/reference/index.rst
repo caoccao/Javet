@@ -9,6 +9,7 @@ Javet Reference
 * `Lock <lock.rst>`_
 * `Termination <termination.rst>`_
 * `Logging <logging.rst>`_
+* `Load and Unload <load_and_unload.rst>`_
 * `Best Practices <best_practices.rst>`_
 * `Performance <performance.rst>`_
 * `Error Codes <error_codes.rst>`_

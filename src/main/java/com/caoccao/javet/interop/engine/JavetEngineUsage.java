@@ -27,16 +27,12 @@ public class JavetEngineUsage {
         reset();
     }
 
-    public ZonedDateTime getLastActiveZonedDatetime() {
-        return lastActiveZonedDatetime;
-    }
-
-    public void setLastActiveZonedDatetime(ZonedDateTime lastActiveZonedDatetime) {
-        this.lastActiveZonedDatetime = lastActiveZonedDatetime;
-    }
-
     public int getEngineUsedCount() {
         return engineUsedCount;
+    }
+
+    public ZonedDateTime getLastActiveZonedDatetime() {
+        return lastActiveZonedDatetime;
     }
 
     public void increaseUsedCount() {
@@ -45,5 +41,9 @@ public class JavetEngineUsage {
 
     protected void reset() {
         engineUsedCount = 0;
+    }
+
+    public void setLastActiveZonedDatetime(ZonedDateTime lastActiveZonedDatetime) {
+        this.lastActiveZonedDatetime = lastActiveZonedDatetime;
     }
 }

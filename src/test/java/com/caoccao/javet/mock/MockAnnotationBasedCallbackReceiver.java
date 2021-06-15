@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MockAnnotationBasedCallbackReceiver {
     private AtomicInteger count;
-    private V8Runtime v8Runtime;
     private String stringValue;
+    private V8Runtime v8Runtime;
 
     public MockAnnotationBasedCallbackReceiver() {
         count = new AtomicInteger(0);
@@ -45,36 +45,6 @@ public class MockAnnotationBasedCallbackReceiver {
     @V8Function(name = "staticEcho")
     public static String staticEcho(String str) {
         return str;
-    }
-
-    @V8Property
-    public Integer getIntegerValue() {
-        count.incrementAndGet();
-        return 123;
-    }
-
-    @V8Property
-    public String getStringValue() {
-        count.incrementAndGet();
-        return stringValue;
-    }
-
-    @V8Property(thisObjectRequired = true)
-    public String getStringValueWithThis(V8ValueObject thisObject) throws JavetException {
-        count.incrementAndGet();
-        return thisObject.getString("stringValue");
-    }
-
-    @V8Property
-    public void setStringValue(String stringValue) {
-        count.incrementAndGet();
-        this.stringValue = stringValue;
-    }
-
-    @V8Property(thisObjectRequired = true)
-    public void setStringValueWithThis(V8ValueObject thisObject, String stringValue) throws JavetException {
-        count.incrementAndGet();
-        thisObject.set("stringValue", stringValue);
     }
 
     @V8Function
@@ -96,13 +66,6 @@ public class MockAnnotationBasedCallbackReceiver {
         return str;
     }
 
-    // Instance method with different name and same signature.
-    @V8Function(name = "add")
-    public Integer mathAdd(Integer a, Integer b) {
-        count.incrementAndGet();
-        return a + b;
-    }
-
     // Instance method with converter for non-primitive objects.
     @V8Function(name = "generateArrayWithConverter")
     public Object[] generateArrayWithConverter() throws JavetException {
@@ -119,6 +82,35 @@ public class MockAnnotationBasedCallbackReceiver {
         v8ValueArray.push("a");
         v8ValueArray.push(1);
         return v8ValueArray;
+    }
+
+    public int getCount() {
+        return count.get();
+    }
+
+    @V8Property
+    public Integer getIntegerValue() {
+        count.incrementAndGet();
+        return 123;
+    }
+
+    @V8Property
+    public String getStringValue() {
+        count.incrementAndGet();
+        return stringValue;
+    }
+
+    @V8Property(thisObjectRequired = true)
+    public String getStringValueWithThis(V8ValueObject thisObject) throws JavetException {
+        count.incrementAndGet();
+        return thisObject.getString("stringValue");
+    }
+
+    // Instance method with different name and same signature.
+    @V8Function(name = "add")
+    public Integer mathAdd(Integer a, Integer b) {
+        count.incrementAndGet();
+        return a + b;
     }
 
     // Instance method with primitive type byte
@@ -163,18 +155,18 @@ public class MockAnnotationBasedCallbackReceiver {
         return Integer.valueOf(a + b).shortValue();
     }
 
-    // Instance method with primitive type boolean
-    @V8Function(name = "primitiveRevertBoolean")
-    public boolean primitiveRevertBoolean(boolean b) {
-        count.incrementAndGet();
-        return !b;
-    }
-
     // Instance method with primitive type char
     @V8Function(name = "primitiveIncreaseChar")
     public char primitiveIncreaseChar(char c) {
         count.incrementAndGet();
         return (char) ((int) c + 1);
+    }
+
+    // Instance method with primitive type boolean
+    @V8Function(name = "primitiveRevertBoolean")
+    public boolean primitiveRevertBoolean(boolean b) {
+        count.incrementAndGet();
+        return !b;
     }
 
     @V8Function(thisObjectRequired = true)
@@ -183,8 +175,16 @@ public class MockAnnotationBasedCallbackReceiver {
         return thisObject;
     }
 
-    public int getCount() {
-        return count.get();
+    @V8Property
+    public void setStringValue(String stringValue) {
+        count.incrementAndGet();
+        this.stringValue = stringValue;
+    }
+
+    @V8Property(thisObjectRequired = true)
+    public void setStringValueWithThis(V8ValueObject thisObject, String stringValue) throws JavetException {
+        count.incrementAndGet();
+        thisObject.set("stringValue", stringValue);
     }
 
     // Declare the V8RuntimeSetter for dependency injection.

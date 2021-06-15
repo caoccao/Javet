@@ -33,8 +33,8 @@ import java.io.File;
 import java.math.BigDecimal;
 
 public class DecimalJavetInV8Mode implements IJavetClosable {
-    private IJavetEnginePool<V8Runtime> iJavetEnginePool;
     private IJavetEngine<V8Runtime> iJavetEngine;
+    private IJavetEnginePool<V8Runtime> iJavetEnginePool;
 
     public DecimalJavetInV8Mode() throws JavetException {
         iJavetEnginePool = new JavetEnginePool<>();
@@ -52,6 +52,20 @@ public class DecimalJavetInV8Mode implements IJavetClosable {
         } finally {
             decimalJavetInV8Mode.close();
         }
+    }
+
+    @Override
+    public void close() throws JavetException {
+        if (iJavetEngine != null) {
+            iJavetEngine.close();
+        }
+        if (iJavetEnginePool != null) {
+            iJavetEnginePool.close();
+        }
+    }
+
+    public IJavetLogger getLogger() {
+        return iJavetEnginePool.getConfig().getJavetLogger();
     }
 
     public void loadJS() throws JavetException {
@@ -87,20 +101,6 @@ public class DecimalJavetInV8Mode implements IJavetClosable {
                     }
                 }
             }
-        }
-    }
-
-    public IJavetLogger getLogger() {
-        return iJavetEnginePool.getConfig().getJavetLogger();
-    }
-
-    @Override
-    public void close() throws JavetException {
-        if (iJavetEngine != null) {
-            iJavetEngine.close();
-        }
-        if (iJavetEnginePool != null) {
-            iJavetEnginePool.close();
         }
     }
 }

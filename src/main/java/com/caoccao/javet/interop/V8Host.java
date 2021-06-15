@@ -33,36 +33,40 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * The type V8 host.
+ */
 @SuppressWarnings("unchecked")
 public final class V8Host implements AutoCloseable {
+    /**
+     * The constant GLOBAL_THIS.
+     */
     public static final String GLOBAL_THIS = "globalThis";
-    private static final long INVALID_HANDLE = 0L;
     private static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
     private static final String FLAG_EXPOSE_GC = "--expose-gc";
     private static final String FLAG_EXPOSE_INSPECTOR_SCRIPTS = "--expose-inspector-scripts";
     private static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
     private static final String FLAG_USE_STRICT = "--use-strict";
+    private static final long INVALID_HANDLE = 0L;
     private static final String SPACE = " ";
-    private static final Object nodeLock = new Object();
-    private static final V8Host v8Instance = new V8Host(JSRuntimeType.V8);
+    private static boolean libraryReloadable = false;
     private static volatile double memoryUsageThresholdRatio = 0.7;
-    private static volatile V8Host nodeInstance;
     private final V8Flags flags;
     private final JSRuntimeType jsRuntimeType;
     private final IJavetLogger logger;
     private final V8Notifier v8Notifier;
     private final ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
-    private JavetClassLoader javetClassLoader;
-    private boolean libLoaded;
-    private JavetException lastException;
     private boolean isolateCreated;
+    private JavetClassLoader javetClassLoader;
+    private JavetException lastException;
+    private boolean libraryLoaded;
     private IV8Native v8Native;
 
     private V8Host(JSRuntimeType jsRuntimeType) {
         Objects.requireNonNull(jsRuntimeType);
         javetClassLoader = null;
         lastException = null;
-        libLoaded = false;
+        libraryLoaded = false;
         flags = new V8Flags();
         logger = new JavetDefaultLogger(getClass().getName());
         v8RuntimeMap = new ConcurrentHashMap<>();
@@ -73,6 +77,13 @@ public final class V8Host implements AutoCloseable {
         v8Notifier = new V8Notifier(v8RuntimeMap);
     }
 
+    /**
+     * Gets instance by JS runtime type.
+     *
+     * @param jsRuntimeType the JS runtime type
+     * @return the instance
+     * @since 0.7.0
+     */
     public static V8Host getInstance(JSRuntimeType jsRuntimeType) {
         Objects.requireNonNull(jsRuntimeType);
         if (jsRuntimeType.isV8()) {
@@ -84,49 +95,57 @@ public final class V8Host implements AutoCloseable {
     }
 
     /**
-     * Gets Node instance.
-     * <p>
-     * Note: Node runtime library is loaded by a custom class loader.
+     * Gets memory usage threshold ratio.
      *
-     * @return the Node instance
+     * @return the memory usage threshold ratio
+     * @since 0.8.3
      */
-    public static V8Host getNodeInstance() {
-        if (nodeInstance == null) {
-            synchronized (nodeLock) {
-                if (nodeInstance == null) {
-                    nodeInstance = new V8Host(JSRuntimeType.Node);
-                }
-            }
-        }
-        return nodeInstance;
-    }
-
-    /**
-     * Gets V8 instance.
-     * <p>
-     * Note: V8 runtime library is loaded by the default class loader.
-     *
-     * @return the V8 instance
-     */
-    public static V8Host getV8Instance() {
-        return v8Instance;
-    }
-
     public static double getMemoryUsageThresholdRatio() {
         return memoryUsageThresholdRatio;
     }
 
     /**
-     * Sets memory usage threshold ratio.
+     * Gets Node instance.
      * <p>
-     * This manageable usage threshold attribute is designed for monitoring
-     * the increasing trend of memory usage with low overhead.
+     * Note: Node runtime library is loaded by a custom class loader.
      *
-     * @param memoryUsageThresholdRatio the memory usage threshold ratio
+     * @return the Node instance
+     * @since 0.8.0
      */
-    public static void setMemoryUsageThresholdRatio(double memoryUsageThresholdRatio) {
-        assert 0 <= memoryUsageThresholdRatio && memoryUsageThresholdRatio < 1;
-        V8Host.memoryUsageThresholdRatio = memoryUsageThresholdRatio;
+    public static V8Host getNodeInstance() {
+        return NodeInstanceHolder.INSTANCE;
+    }
+
+    /**
+     * Gets V8 instance.
+     * <p>
+     * Note: V8 runtime library is loaded by a custom class loader.
+     *
+     * @return the V8 instance
+     * @since 0.8.0
+     */
+    public static V8Host getV8Instance() {
+        return V8InstanceHolder.INSTANCE;
+    }
+
+    /**
+     * Determines whether the JNI library is reloadable or not.
+     *
+     * @return true: reloadable, false: not reloadable, default: false
+     * @since 0.9.1
+     */
+    public static boolean isLibraryReloadable() {
+        return libraryReloadable;
+    }
+
+    /**
+     * Sets whether the JNI library is reloadable or not.
+     *
+     * @param libraryReloadable true: reloadable, false: not reloadable
+     * @since 0.9.1
+     */
+    public static void setLibraryReloadable(boolean libraryReloadable) {
+        V8Host.libraryReloadable = libraryReloadable;
     }
 
     private static void setMemoryUsageThreshold() {
@@ -146,6 +165,23 @@ public final class V8Host implements AutoCloseable {
         }
     }
 
+    /**
+     * Sets memory usage threshold ratio.
+     * <p>
+     * This manageable usage threshold attribute is designed for monitoring
+     * the increasing trend of memory usage with low overhead.
+     *
+     * @param memoryUsageThresholdRatio the memory usage threshold ratio
+     * @since 0.8.3
+     */
+    public static void setMemoryUsageThresholdRatio(double memoryUsageThresholdRatio) {
+        assert 0 <= memoryUsageThresholdRatio && memoryUsageThresholdRatio < 1;
+        V8Host.memoryUsageThresholdRatio = memoryUsageThresholdRatio;
+    }
+
+    /**
+     * Clear internal statistic for internal test purpose.
+     */
     public void clearInternalStatistic() {
         v8Native.clearInternalStatistic();
     }
@@ -161,49 +197,62 @@ public final class V8Host implements AutoCloseable {
         disableGCNotification();
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public V8Host disableGCNotification() {
-        v8Notifier.unregisterListener();
-        return this;
+    /**
+     * Close V8 runtime.
+     *
+     * @param v8Runtime the V8 runtime
+     * @since 0.7.0
+     */
+    public void closeV8Runtime(V8Runtime v8Runtime) {
+        if (!libraryLoaded) {
+            return;
+        }
+        if (v8Runtime != null) {
+            final long handle = v8Runtime.getHandle();
+            if (handle > INVALID_HANDLE && v8RuntimeMap.containsKey(handle)) {
+                v8Native.closeV8Runtime(handle);
+                v8RuntimeMap.remove(handle);
+            }
+        }
     }
 
-    public V8Host enableGCNotification() {
-        setMemoryUsageThreshold();
-        // Javet {@link V8Notifier} listens to this notification to notify {@link V8Runtime} to perform GC.
-        v8Notifier.registerListeners();
-        return this;
-    }
-
-    public V8Flags getFlags() {
-        return flags;
-    }
-
-    public long[] getInternalStatistic() {
-        return v8Native.getInternalStatistic();
-    }
-
-    public String getJavetVersion() {
-        return JavetLibLoader.LIB_VERSION;
-    }
-
-    public IJavetLogger getLogger() {
-        return logger;
-    }
-
-    IV8Native getV8Native() {
-        return v8Native;
-    }
-
+    /**
+     * Create V8 runtime.
+     *
+     * @param <R> the type parameter
+     * @return the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public <R extends V8Runtime> R createV8Runtime() throws JavetException {
         return createV8Runtime(GLOBAL_THIS);
     }
 
+    /**
+     * Create V8 runtime.
+     *
+     * @param <R>        the type parameter
+     * @param globalName the global name
+     * @return the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public <R extends V8Runtime> R createV8Runtime(String globalName) throws JavetException {
         return createV8Runtime(false, globalName);
     }
 
+    /**
+     * Create V8 runtime.
+     *
+     * @param <R>        the type parameter
+     * @param pooled     the pooled
+     * @param globalName the global name
+     * @return the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) throws JavetException {
-        if (!libLoaded) {
+        if (!libraryLoaded) {
             if (lastException == null) {
                 throw new JavetException(
                         JavetError.LibraryNotLoaded,
@@ -226,77 +275,164 @@ public final class V8Host implements AutoCloseable {
         return (R) v8Runtime;
     }
 
-    public void closeV8Runtime(V8Runtime v8Runtime) {
-        if (!libLoaded) {
-            return;
-        }
-        if (v8Runtime != null) {
-            final long handle = v8Runtime.getHandle();
-            if (handle > INVALID_HANDLE && v8RuntimeMap.containsKey(handle)) {
-                v8Native.closeV8Runtime(v8Runtime.getHandle());
-                v8RuntimeMap.remove(handle);
-            }
-        }
+    /**
+     * Disable GC notification.
+     *
+     * @return the self
+     * @since 0.8.3
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public V8Host disableGCNotification() {
+        v8Notifier.unregisterListener();
+        return this;
     }
 
+    /**
+     * Enable GC notification.
+     *
+     * @return the self
+     * @since 0.8.3
+     */
+    public V8Host enableGCNotification() {
+        setMemoryUsageThreshold();
+        // Javet {@link V8Notifier} listens to this notification to notify {@link V8Runtime} to perform GC.
+        v8Notifier.registerListeners();
+        return this;
+    }
+
+    /**
+     * Gets flags.
+     *
+     * @return the flags
+     * @since 0.7.0
+     */
+    public V8Flags getFlags() {
+        return flags;
+    }
+
+    /**
+     * Get internal statistic internal for test purpose.
+     *
+     * @return the long [ ]
+     * @since 0.8.3
+     */
+    public long[] getInternalStatistic() {
+        return v8Native.getInternalStatistic();
+    }
+
+    /**
+     * Gets JS runtime type.
+     *
+     * @return the JS runtime type
+     * @since 0.8.0
+     */
     public JSRuntimeType getJSRuntimeType() {
         return jsRuntimeType;
     }
 
-    private void loadLibrary() {
-        if (!libLoaded) {
-            if (jsRuntimeType.isNode()) {
-                try {
-                    javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
-                    javetClassLoader.load();
-                    v8Native = javetClassLoader.getNative();
-                    libLoaded = true;
-                } catch (JavetException e) {
-                    logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
-                    lastException = e;
-                }
-            } else {
-                try {
-                    JavetLibLoader javetLibLoader = new JavetLibLoader(jsRuntimeType);
-                    javetLibLoader.load();
-                    v8Native = new V8Native();
-                    libLoaded = true;
-                } catch (JavetException e) {
-                    logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
-                    lastException = e;
-                }
-            }
-        }
+    /**
+     * Gets javet version.
+     *
+     * @return the javet version
+     * @since 0.7.1
+     */
+    public String getJavetVersion() {
+        return JavetLibLoader.LIB_VERSION;
     }
 
-    private void unloadLibrary() {
-        if (jsRuntimeType.isNode() && libLoaded) {
-            javetClassLoader = null;
-            System.gc();
-            System.runFinalization();
-            libLoaded = false;
-        }
-    }
-
+    /**
+     * Gets last exception.
+     *
+     * @return the last exception
+     * @since 0.7.0
+     */
     public JavetException getLastException() {
         return lastException;
     }
 
+    /**
+     * Gets logger.
+     *
+     * @return the logger
+     * @since 0.7.3
+     */
+    public IJavetLogger getLogger() {
+        return logger;
+    }
+
+    /**
+     * Gets V8 native.
+     *
+     * @return the V8 native
+     * @since 0.8.0
+     */
+    IV8Native getV8Native() {
+        return v8Native;
+    }
+
+    /**
+     * Gets V8 runtime count.
+     *
+     * @return the V8 runtime count
+     * @since 0.8.0
+     */
     public int getV8RuntimeCount() {
         return v8RuntimeMap.size();
     }
 
-    public boolean isLibLoaded() {
-        return libLoaded;
-    }
-
+    /**
+     * Is isolate created.
+     *
+     * @return true: created, false: not created
+     * @since 0.8.0
+     */
     public boolean isIsolateCreated() {
         return isolateCreated;
     }
 
+    /**
+     * Is library loaded.
+     *
+     * @return true: loaded, false: not loaded
+     * @since 0.8.0
+     */
+    public boolean isLibraryLoaded() {
+        return libraryLoaded;
+    }
+
+    /**
+     * Load library.
+     * <p>
+     * Note: setLibraryReloadable(true) must be called, otherwise, JVM will crash.
+     *
+     * @return true: library is loaded, false: library is not loaded
+     * @since 0.9.1
+     */
+    public synchronized boolean loadLibrary() {
+        if (!libraryLoaded) {
+            try {
+                javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
+                javetClassLoader.load();
+                v8Native = javetClassLoader.getNative();
+                libraryLoaded = true;
+                isolateCreated = false;
+            } catch (JavetException e) {
+                logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
+                lastException = e;
+            }
+        }
+        return libraryLoaded;
+    }
+
+    /**
+     * Sets flags.
+     *
+     * @return true: flags are set, false: flags are not set
+     * @since 0.7.0
+     */
     @SuppressWarnings("UnusedReturnValue")
     public boolean setFlags() {
-        if (libLoaded && !isolateCreated) {
+        if (libraryLoaded && !isolateCreated) {
             List<String> flags = new ArrayList<>();
             if (this.flags.isAllowNativesSyntax()) {
                 flags.add(FLAG_ALLOW_NATIVES_SYNTAX);
@@ -317,5 +453,34 @@ public final class V8Host implements AutoCloseable {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Unload library.
+     * <p>
+     * Note: setLibraryReloadable(true) must be called, otherwise, JVM will crash.
+     *
+     * @return true: library is unloaded, false: library is loaded
+     * @since 0.9.1
+     */
+    public synchronized boolean unloadLibrary() {
+        if (libraryLoaded && v8RuntimeMap.isEmpty()) {
+            isolateCreated = false;
+            v8Native = null;
+            javetClassLoader = null;
+            System.gc();
+            System.runFinalization();
+            libraryLoaded = false;
+            lastException = null;
+        }
+        return !libraryLoaded;
+    }
+
+    private static class NodeInstanceHolder {
+        private static V8Host INSTANCE = new V8Host(JSRuntimeType.Node);
+    }
+
+    private static class V8InstanceHolder {
+        private static V8Host INSTANCE = new V8Host(JSRuntimeType.V8);
     }
 }

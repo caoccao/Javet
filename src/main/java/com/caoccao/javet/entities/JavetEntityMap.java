@@ -20,18 +20,48 @@ package com.caoccao.javet.entities;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Javet entity map.
+ *
+ * @since 0.7.2
+ */
 public class JavetEntityMap extends HashMap<String, Object> {
+    /**
+     * Instantiates a new Javet entity map.
+     *
+     * @param initialCapacity the initial capacity
+     * @param loadFactor      the load factor
+     * @since 0.7.2
+     */
     public JavetEntityMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
     }
 
+    /**
+     * Instantiates a new Javet entity map.
+     *
+     * @param initialCapacity the initial capacity
+     * @since 0.7.2
+     */
     public JavetEntityMap(int initialCapacity) {
         super(initialCapacity);
     }
 
+    /**
+     * Instantiates a new Javet entity map.
+     *
+     * @since 0.7.2
+     */
     public JavetEntityMap() {
+        super();
     }
 
+    /**
+     * Instantiates a new Javet entity map.
+     *
+     * @param m the m
+     * @since 0.7.2
+     */
     public JavetEntityMap(Map<? extends String, ?> m) {
         super(m);
     }

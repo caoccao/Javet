@@ -75,47 +75,6 @@ public class TestPerformance extends BaseTestJavetPool {
 
     @Test
     @Tag("performance")
-    public void testAdHocIsolateAnd1Thread() throws Exception {
-        final int iterations = jsRuntimeType.isNode() ? 200 : 10000;
-        String codeString = "1 + 1";
-        final long startTime = System.currentTimeMillis();
-        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
-            V8Runtime v8Runtime = javetEngine.getV8Runtime();
-            IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
-            for (int i = 0; i < iterations; i++) {
-                javetEngine.resetIsolate();
-                assertEquals(2, v8Executor.executeInteger());
-            }
-        }
-        final long stopTime = System.currentTimeMillis();
-        final long tps = iterations * 1000 / (stopTime - startTime);
-        logger.logInfo(prefix + "Ad-hoc Isolate with 1 Thread: {0}", tps);
-        updateDoc(prefix + "Ad-hoc Isolate with 1 Thread", tps);
-    }
-
-    @Test
-    @Tag("performance")
-    public void testSingleContextAnd1Thread() throws Exception {
-        final int iterations = 2000000;
-        String codeString = "1 + 1";
-        final long startTime = System.currentTimeMillis();
-        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
-            V8Runtime v8Runtime = javetEngine.getV8Runtime();
-            try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
-                IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
-                for (int i = 0; i < iterations; i++) {
-                    assertEquals(2, v8Executor.executeInteger());
-                }
-            }
-        }
-        final long stopTime = System.currentTimeMillis();
-        final long tps = iterations * 1000 / (stopTime - startTime);
-        logger.logInfo(prefix + "Single Context with 1 Thread: {0}", tps);
-        updateDoc(prefix + "Single Context with 1 Thread", tps);
-    }
-
-    @Test
-    @Tag("performance")
     public void testAdHocContextAnd8Threads() throws Exception {
         final int threadCount = 8;
         final int iterations = jsRuntimeType.isNode() ? 50 : 5000;
@@ -150,6 +109,26 @@ public class TestPerformance extends BaseTestJavetPool {
 
     @Test
     @Tag("performance")
+    public void testAdHocIsolateAnd1Thread() throws Exception {
+        final int iterations = jsRuntimeType.isNode() ? 200 : 10000;
+        String codeString = "1 + 1";
+        final long startTime = System.currentTimeMillis();
+        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = javetEngine.getV8Runtime();
+            IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
+            for (int i = 0; i < iterations; i++) {
+                javetEngine.resetIsolate();
+                assertEquals(2, v8Executor.executeInteger());
+            }
+        }
+        final long stopTime = System.currentTimeMillis();
+        final long tps = iterations * 1000 / (stopTime - startTime);
+        logger.logInfo(prefix + "Ad-hoc Isolate with 1 Thread: {0}", tps);
+        updateDoc(prefix + "Ad-hoc Isolate with 1 Thread", tps);
+    }
+
+    @Test
+    @Tag("performance")
     public void testAdHocIsolateAnd8Threads() throws Exception {
         final int threadCount = 8;
         final int iterations = jsRuntimeType.isNode() ? 50 : 5000;
@@ -180,6 +159,27 @@ public class TestPerformance extends BaseTestJavetPool {
         final long tps = iterations * (long) threadCount * 1000 / (stopTime - startTime);
         logger.logInfo(prefix + "Ad-hoc Isolate with 8 Threads: {0}", tps);
         updateDoc(prefix + "Ad-hoc Isolate with 8 Threads", tps);
+    }
+
+    @Test
+    @Tag("performance")
+    public void testSingleContextAnd1Thread() throws Exception {
+        final int iterations = 2000000;
+        String codeString = "1 + 1";
+        final long startTime = System.currentTimeMillis();
+        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = javetEngine.getV8Runtime();
+            try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
+                IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
+                for (int i = 0; i < iterations; i++) {
+                    assertEquals(2, v8Executor.executeInteger());
+                }
+            }
+        }
+        final long stopTime = System.currentTimeMillis();
+        final long tps = iterations * 1000 / (stopTime - startTime);
+        logger.logInfo(prefix + "Single Context with 1 Thread: {0}", tps);
+        updateDoc(prefix + "Single Context with 1 Thread", tps);
     }
 
     @Test

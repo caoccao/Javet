@@ -20,8 +20,29 @@ package com.caoccao.javet.interfaces;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 
+/**
+ * The interface Javet interceptor.
+ *
+ * @since 0.7.0
+ */
 public interface IJavetInterceptor {
-    boolean register(IV8ValueObject iV8ValueObject) throws JavetException;
+    /**
+     * Register boolean.
+     *
+     * @param iV8ValueObjects the V8 value objects
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    boolean register(IV8ValueObject... iV8ValueObjects) throws JavetException;
 
-    boolean unregister(IV8ValueObject iV8ValueObject) throws JavetException;
+    /**
+     * Unregister boolean.
+     *
+     * @param iV8ValueObjects the V8 value objects
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    boolean unregister(IV8ValueObject... iV8ValueObjects) throws JavetException;
 }

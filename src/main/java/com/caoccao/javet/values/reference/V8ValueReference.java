@@ -89,12 +89,12 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     @Override
-    public abstract V8ValueReferenceType getType();
-
-    @Override
     public long getHandle() {
         return handle;
     }
+
+    @Override
+    public abstract V8ValueReferenceType getType();
 
     @Override
     public boolean isWeak() {

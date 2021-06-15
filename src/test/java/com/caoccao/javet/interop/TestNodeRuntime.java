@@ -34,8 +34,8 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestNodeRuntime extends BaseTestJavet {
-    protected NodeRuntime nodeRuntime;
     protected NodeModuleProcess nodeModuleProcess;
+    protected NodeRuntime nodeRuntime;
 
     public TestNodeRuntime() {
         super(JSRuntimeType.Node);
@@ -104,6 +104,13 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @Test
+    public void testModuleVM() throws JavetException {
+        internalTest(
+                "test-node-module-vm.js",
+                "[{\"a\":\"x\",\"b\":3},\"undefined\",\"undefined\"]");
+    }
+
+    @Test
     public void testSqlite3() throws JavetException {
         File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
         if (sqlite3File.exists()) {
@@ -122,12 +129,5 @@ public class TestNodeRuntime extends BaseTestJavet {
             assertEquals("[1,2]", v8ValueArray.toJsonString(),
                     "setTimeout() has been executed after await().");
         }
-    }
-
-    @Test
-    public void testModuleVM() throws JavetException {
-        internalTest(
-                "test-node-module-vm.js",
-                "[{\"a\":\"x\",\"b\":3},\"undefined\",\"undefined\"]");
     }
 }

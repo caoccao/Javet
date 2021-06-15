@@ -118,12 +118,12 @@ public class TestJavetCustomConverter extends BaseTestJavetRuntime {
             return name;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
         public String getValue() {
             return value;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public void setValue(String value) {

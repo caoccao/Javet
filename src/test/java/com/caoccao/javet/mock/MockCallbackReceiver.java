@@ -40,14 +40,6 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
         value = null;
     }
 
-    public boolean isCalled() {
-        return called;
-    }
-
-    public void setCalled(boolean called) {
-        this.called = called;
-    }
-
     public void blank() {
         called = true;
     }
@@ -58,9 +50,9 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
         return super.echo(arg);
     }
 
-    public V8Value echoThis(V8Value thisObject) throws JavetException {
+    public V8ValueArray echo(V8Value... args) throws JavetException {
         called = true;
-        return v8Runtime.createV8ValueString(((V8ValueObject) thisObject).toJsonString());
+        return super.echo(args);
     }
 
     @Override
@@ -81,9 +73,9 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
         return super.echoString(args);
     }
 
-    public V8ValueArray echo(V8Value... args) throws JavetException {
+    public V8Value echoThis(V8Value thisObject) throws JavetException {
         called = true;
-        return super.echo(args);
+        return v8Runtime.createV8ValueString(((V8ValueObject) thisObject).toJsonString());
     }
 
     public V8ValueString echoThis(V8Value thisObject, V8Value arg) throws JavetException {
@@ -134,9 +126,21 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
         return value;
     }
 
-    public void setValue(String value) {
+    public boolean isCalled() {
+        return called;
+    }
+
+    public String joinIntegerArrayWithThis(
+            V8ValueObject thisObject,
+            String s, Integer... integers) {
         called = true;
-        this.value = value;
+        List<String> lines = new ArrayList<>();
+        lines.add(thisObject.toJsonString());
+        lines.add(s);
+        for (Integer integer : integers) {
+            lines.add(integer.toString());
+        }
+        return String.join(",", lines);
     }
 
     public String joinWithThis(
@@ -155,19 +159,6 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
         return String.join(",", lines);
     }
 
-    public String joinIntegerArrayWithThis(
-            V8ValueObject thisObject,
-            String s, Integer... integers) {
-        called = true;
-        List<String> lines = new ArrayList<>();
-        lines.add(thisObject.toJsonString());
-        lines.add(s);
-        for (Integer integer : integers) {
-            lines.add(integer.toString());
-        }
-        return String.join(",", lines);
-    }
-
     public String joinWithoutThis(
             Boolean b, Double d, Integer i, Long l, String s, ZonedDateTime z, V8ValueString v) {
         called = true;
@@ -180,5 +171,14 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
         lines.add(z.withZoneSameInstant(ZoneId.of("UTC")).toString());
         lines.add(v.getValue());
         return String.join(",", lines);
+    }
+
+    public void setCalled(boolean called) {
+        this.called = called;
+    }
+
+    public void setValue(String value) {
+        called = true;
+        this.value = value;
     }
 }

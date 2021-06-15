@@ -65,7 +65,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(10, mockAnnotationBasedCallbackReceiver.getCount());
             v8Runtime.getGlobalObject().delete("a");
         }
-        v8Runtime.requestGarbageCollectionForTesting(true);
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -87,6 +87,28 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         assertEquals(0L, a.getHandle());
         try (V8ValueObject b = globalObject.get("a")) {
             assertTrue(b instanceof V8ValueObject);
+        }
+    }
+
+    @Test
+    public void testEquals() throws JavetException {
+        try (V8ValueObject v8ValueObject1 = v8Runtime.getExecutor(
+                "const a = {'x': '1'}; a;").execute()) {
+            assertFalse(v8ValueObject1.equals(null));
+            assertFalse(v8ValueObject1.sameValue(null));
+            assertFalse(v8ValueObject1.strictEquals(null));
+            assertFalse(v8ValueObject1.equals(v8Runtime.createV8ValueNull()));
+            assertFalse(v8ValueObject1.sameValue(v8Runtime.createV8ValueNull()));
+            assertFalse(v8ValueObject1.strictEquals(v8Runtime.createV8ValueNull()));
+            assertTrue(v8ValueObject1.equals(v8ValueObject1));
+            assertTrue(v8ValueObject1.sameValue(v8ValueObject1));
+            assertTrue(v8ValueObject1.strictEquals(v8ValueObject1));
+            try (V8ValueObject v8ValueObject2 = v8Runtime.getExecutor(
+                    "const b = {'x': '1'}; b;").execute()) {
+                assertFalse(v8ValueObject1.equals(v8ValueObject2));
+                assertFalse(v8ValueObject1.sameValue(v8ValueObject2));
+                assertFalse(v8ValueObject1.strictEquals(v8ValueObject2));
+            }
         }
     }
 
@@ -114,28 +136,6 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testEquals() throws JavetException {
-        try (V8ValueObject v8ValueObject1 = v8Runtime.getExecutor(
-                "const a = {'x': '1'}; a;").execute()) {
-            assertFalse(v8ValueObject1.equals(null));
-            assertFalse(v8ValueObject1.sameValue(null));
-            assertFalse(v8ValueObject1.strictEquals(null));
-            assertFalse(v8ValueObject1.equals(v8Runtime.createV8ValueNull()));
-            assertFalse(v8ValueObject1.sameValue(v8Runtime.createV8ValueNull()));
-            assertFalse(v8ValueObject1.strictEquals(v8Runtime.createV8ValueNull()));
-            assertTrue(v8ValueObject1.equals(v8ValueObject1));
-            assertTrue(v8ValueObject1.sameValue(v8ValueObject1));
-            assertTrue(v8ValueObject1.strictEquals(v8ValueObject1));
-            try (V8ValueObject v8ValueObject2 = v8Runtime.getExecutor(
-                    "const b = {'x': '1'}; b;").execute()) {
-                assertFalse(v8ValueObject1.equals(v8ValueObject2));
-                assertFalse(v8ValueObject1.sameValue(v8ValueObject2));
-                assertFalse(v8ValueObject1.strictEquals(v8ValueObject2));
-            }
-        }
-    }
-
-    @Test
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {
@@ -151,43 +151,6 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 assertEquals("g", iV8ValueArray.getPropertyString(5));
                 assertEquals("中文", iV8ValueArray.getPropertyString(6));
             }
-        }
-    }
-
-    @Test
-    public void testGetPropertyNames() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
-                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {
-            try (IV8ValueArray iV8ValueArray = v8ValueObject.getPropertyNames()) {
-                assertNotNull(iV8ValueArray);
-                assertEquals(7, iV8ValueArray.getLength());
-                // Order is preserved since ES2015.
-                assertEquals("a", iV8ValueArray.getPropertyString(0));
-                assertEquals("b", iV8ValueArray.getPropertyString(1));
-                assertEquals("c", iV8ValueArray.getPropertyString(2));
-                assertEquals("d", iV8ValueArray.getPropertyString(3));
-                assertEquals("e", iV8ValueArray.getPropertyString(4));
-                assertEquals("g", iV8ValueArray.getPropertyString(5));
-                assertEquals("中文", iV8ValueArray.getPropertyString(6));
-            }
-        }
-    }
-
-    @Test
-    public void testGetSetDelete() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
-            assertTrue(v8ValueObject.set("a", 1));
-            assertTrue(v8ValueObject.set("b", "2"));
-            assertTrue(v8ValueObject.set("c", new String[]{"x", "y"}));
-            assertEquals(1, v8ValueObject.getInteger("a"));
-            assertEquals("2", v8ValueObject.getString("b"));
-            assertArrayEquals(
-                    new String[]{"x", "y"},
-                    ((List<String>) v8Runtime.toObject(v8ValueObject.get("c"), true)).toArray(new String[0]));
-            assertTrue(v8ValueObject.delete("x"));
-            assertTrue(v8ValueObject.delete("b"));
-            V8Value v8Value = v8ValueObject.getUndefined("b");
-            assertNotNull(v8Value);
         }
     }
 
@@ -227,6 +190,43 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                     "2021-01-27T01:17:03.719Z[UTC]",
                     v8ValueObject.getPropertyZonedDateTime("k").withZoneSameInstant(ZoneId.of("UTC")).toString());
             assertEquals(1, v8Runtime.getReferenceCount());
+        }
+    }
+
+    @Test
+    public void testGetPropertyNames() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
+                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {
+            try (IV8ValueArray iV8ValueArray = v8ValueObject.getPropertyNames()) {
+                assertNotNull(iV8ValueArray);
+                assertEquals(7, iV8ValueArray.getLength());
+                // Order is preserved since ES2015.
+                assertEquals("a", iV8ValueArray.getPropertyString(0));
+                assertEquals("b", iV8ValueArray.getPropertyString(1));
+                assertEquals("c", iV8ValueArray.getPropertyString(2));
+                assertEquals("d", iV8ValueArray.getPropertyString(3));
+                assertEquals("e", iV8ValueArray.getPropertyString(4));
+                assertEquals("g", iV8ValueArray.getPropertyString(5));
+                assertEquals("中文", iV8ValueArray.getPropertyString(6));
+            }
+        }
+    }
+
+    @Test
+    public void testGetSetDelete() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
+            assertTrue(v8ValueObject.set("a", 1));
+            assertTrue(v8ValueObject.set("b", "2"));
+            assertTrue(v8ValueObject.set("c", new String[]{"x", "y"}));
+            assertEquals(1, v8ValueObject.getInteger("a"));
+            assertEquals("2", v8ValueObject.getString("b"));
+            assertArrayEquals(
+                    new String[]{"x", "y"},
+                    ((List<String>) v8Runtime.toObject(v8ValueObject.get("c"), true)).toArray(new String[0]));
+            assertTrue(v8ValueObject.delete("x"));
+            assertTrue(v8ValueObject.delete("b"));
+            V8Value v8Value = v8ValueObject.getUndefined("b");
+            assertNotNull(v8Value);
         }
     }
 
@@ -316,6 +316,42 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testSetWeakDirectDescendant() throws JavetException {
+        V8ValueObject a = v8Runtime.createV8ValueObject();
+        V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
+        globalObject.set("a", a);
+        a.setWeak();
+        assertTrue(a.isWeak());
+        assertEquals(1, v8Runtime.getReferenceCount());
+        a.close();
+        assertEquals(1, v8Runtime.getReferenceCount(),
+                "Close() should not work because 'a' is weak.");
+        a.clearWeak();
+        assertFalse(a.isWeak());
+        assertEquals(1, v8Runtime.getReferenceCount());
+        a.setWeak();
+        globalObject.delete("a");
+        v8Runtime.lowMemoryNotification();
+        assertEquals(0, v8Runtime.getReferenceCount());
+        assertEquals(0L, a.getHandle());
+        assertTrue(globalObject.get("a").isUndefined());
+    }
+
+    @Test
+    public void testSetWeakIndirectDescendant() throws JavetException {
+        V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
+        try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
+            globalObject.set("a", a);
+            V8ValueObject b = v8Runtime.createV8ValueObject();
+            a.set("b", b);
+            b.setWeak();
+        }
+        assertEquals(1, v8Runtime.getReferenceCount());
+        globalObject.delete("a");
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
     public void testToClone() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {
             v8ValueObject.setProperty("a", "1");
@@ -336,41 +372,5 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.setProperty("c", 1.23);
             assertEquals("{\"a\":\"1\",\"b\":2,\"c\":1.23}", v8ValueObject.toJsonString());
         }
-    }
-
-    @Test
-    public void testSetWeakDirectDescendant() throws JavetException {
-        V8ValueObject a = v8Runtime.createV8ValueObject();
-        V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
-        globalObject.set("a", a);
-        a.setWeak();
-        assertTrue(a.isWeak());
-        assertEquals(1, v8Runtime.getReferenceCount());
-        a.close();
-        assertEquals(1, v8Runtime.getReferenceCount(),
-                "Close() should not work because 'a' is weak.");
-        a.clearWeak();
-        assertFalse(a.isWeak());
-        assertEquals(1, v8Runtime.getReferenceCount());
-        a.setWeak();
-        globalObject.delete("a");
-        v8Runtime.requestGarbageCollectionForTesting(true);
-        assertEquals(0, v8Runtime.getReferenceCount());
-        assertEquals(0L, a.getHandle());
-        assertTrue(globalObject.get("a").isUndefined());
-    }
-
-    @Test
-    public void testSetWeakIndirectDescendant() throws JavetException {
-        V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
-        try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
-            globalObject.set("a", a);
-            V8ValueObject b = v8Runtime.createV8ValueObject();
-            a.set("b", b);
-            b.setWeak();
-        }
-        assertEquals(1, v8Runtime.getReferenceCount());
-        globalObject.delete("a");
-        v8Runtime.requestGarbageCollectionForTesting(true);
     }
 }

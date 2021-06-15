@@ -19,34 +19,105 @@ package com.caoccao.javet.interfaces;
 
 import java.text.MessageFormat;
 
+/**
+ * The interface Javet logger.
+ * @since 0.7.0
+ */
 public interface IJavetLogger {
+    /**
+     * Debug.
+     *
+     * @param message the message
+     * @since 0.7.0
+     */
     void debug(String message);
 
+    /**
+     * Error.
+     *
+     * @param message the message
+     * @since 0.7.0
+     */
     void error(String message);
 
+    /**
+     * Error.
+     *
+     * @param message the message
+     * @param cause   the cause
+     * @since 0.7.0
+     */
     void error(String message, Throwable cause);
 
+    /**
+     * Info.
+     *
+     * @param message the message
+     * @since 0.7.0
+     */
     void info(String message);
 
+    /**
+     * Log debug.
+     *
+     * @param format  the format
+     * @param objects the objects
+     * @since 0.7.0
+     */
     default void logDebug(String format, Object... objects) {
         debug(MessageFormat.format(format, objects));
     }
 
+    /**
+     * Log error.
+     *
+     * @param cause   the cause
+     * @param format  the format
+     * @param objects the objects
+     * @since 0.7.0
+     */
     default void logError(Throwable cause, String format, Object... objects) {
         error(MessageFormat.format(format, objects), cause);
     }
 
+    /**
+     * Log error.
+     *
+     * @param format  the format
+     * @param objects the objects
+     * @since 0.7.0
+     */
     default void logError(String format, Object... objects) {
         error(MessageFormat.format(format, objects));
     }
 
+    /**
+     * Log info.
+     *
+     * @param format  the format
+     * @param objects the objects
+     * @since 0.7.0
+     */
     default void logInfo(String format, Object... objects) {
         info(MessageFormat.format(format, objects));
     }
 
+    /**
+     * Log warn.
+     *
+     * @param format  the format
+     * @param objects the objects
+     * @since 0.7.0
+     */
     default void logWarn(String format, Object... objects) {
         warn(MessageFormat.format(format, objects));
     }
 
+    /**
+     * Warn.
+     *
+     * @param message the message
+     * @since 0.7.0
+     */
     void warn(String message);
 }

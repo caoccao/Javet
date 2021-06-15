@@ -19,6 +19,11 @@ package com.caoccao.javet.interfaces;
 
 import com.caoccao.javet.exceptions.JavetException;
 
+/**
+ * The interface Javet closable.
+ *
+ * @since 0.7.0
+ */
 public interface IJavetClosable extends AutoCloseable {
     void close() throws JavetException;
 }

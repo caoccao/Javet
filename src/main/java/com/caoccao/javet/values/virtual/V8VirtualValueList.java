@@ -20,7 +20,6 @@ package com.caoccao.javet.values.virtual;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 

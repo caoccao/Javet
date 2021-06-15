@@ -19,11 +19,28 @@ package com.caoccao.javet.annotations;
 
 import java.lang.annotation.*;
 
+/**
+ * The interface V8 property is for auto-registering JS property interception.
+ *
+ * @since 0.9.0
+ */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface V8Property {
+    /**
+     * JS property name.
+     *
+     * @return the name of the JS property to be injected
+     * @since 0.9.0
+     */
     String name() default "";
 
+    /**
+     * This object required.
+     *
+     * @return true: this object is required, false: this object is ignored
+     * @since 0.9.0
+     */
     boolean thisObjectRequired() default false;
 }

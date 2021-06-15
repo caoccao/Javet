@@ -26,21 +26,21 @@ import java.time.ZonedDateTime;
  */
 public final class JavetDateTimeUtils {
 
+    /**
+     * The constant ZONE_ID_UTC.
+     */
     public static final ZoneId ZONE_ID_UTC = ZoneId.of("UTC");
 
     private JavetDateTimeUtils() {
     }
 
     /**
-     * From JS timestamp to zoned date time.
-     * <p>
-     * Note: the ZoneId needs to be system default because that's what V8 sees.
+     * Gets utc now.
      *
-     * @param jsTimestamp the JS timestamp
-     * @return the zoned date time
+     * @return the utc now
      */
-    public static ZonedDateTime toZonedDateTime(long jsTimestamp) {
-        return toZonedDateTime(jsTimestamp, ZoneId.systemDefault());
+    public static ZonedDateTime getUTCNow() {
+        return ZonedDateTime.now(ZONE_ID_UTC);
     }
 
     /**
@@ -54,7 +54,15 @@ public final class JavetDateTimeUtils {
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(jsTimestamp), zoneId);
     }
 
-    public static ZonedDateTime getUTCNow() {
-        return ZonedDateTime.now(ZONE_ID_UTC);
+    /**
+     * From JS timestamp to zoned date time.
+     * <p>
+     * Note: the ZoneId needs to be system default because that's what V8 sees.
+     *
+     * @param jsTimestamp the JS timestamp
+     * @return the zoned date time
+     */
+    public static ZonedDateTime toZonedDateTime(long jsTimestamp) {
+        return toZonedDateTime(jsTimestamp, ZoneId.systemDefault());
     }
 }

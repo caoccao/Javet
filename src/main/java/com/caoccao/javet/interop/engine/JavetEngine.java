@@ -57,11 +57,6 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     }
 
     @Override
-    public void sendGCNotification() {
-        v8Runtime.lowMemoryNotification();
-    }
-
-    @Override
     public JavetEngineConfig getConfig() {
         return iJavetEnginePool.getConfig();
     }
@@ -78,6 +73,15 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
         return new JavetEngineGuard(this, v8Runtime, timeoutMillis);
     }
 
+    /**
+     * Gets utc now. It's designed for mocking the time in test scenario.
+     *
+     * @return the utc now
+     */
+    protected ZonedDateTime getUTCNow() {
+        return JavetDateTimeUtils.getUTCNow();
+    }
+
     protected JavetEngineUsage getUsage() {
         return usage;
     }
@@ -88,13 +92,9 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
         return v8Runtime;
     }
 
-    /**
-     * Gets utc now. It's designed for mocking the time in test scenario.
-     *
-     * @return the utc now
-     */
-    protected ZonedDateTime getUTCNow() {
-        return JavetDateTimeUtils.getUTCNow();
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     @Override
@@ -109,18 +109,18 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
         usage.reset();
     }
 
-    protected void touchLastActiveZonedDateTime() {
-        usage.setLastActiveZonedDatetime(getUTCNow());
-    }
-
     @Override
-    public boolean isActive() {
-        return active;
+    public void sendGCNotification() {
+        v8Runtime.lowMemoryNotification();
     }
 
     protected void setActive(boolean active) {
         this.active = active;
         touchLastActiveZonedDateTime();
+    }
+
+    protected void touchLastActiveZonedDateTime() {
+        usage.setLastActiveZonedDatetime(getUTCNow());
     }
 
 }

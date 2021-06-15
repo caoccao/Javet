@@ -31,6 +31,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetEngineGuard extends BaseTestJavetPool {
     @Test
+    public void testTermination() throws JavetException {
+        // Get an engine from the pool as usual.
+        try (IJavetEngine iJavetEngine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+            // Get a guard from the engine and apply try-with-resource pattern.
+            try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(1)) {
+                iJavetEngineGuard.enableInDebugMode();
+                v8Runtime.getExecutor("while (true) {}").executeVoid();
+                // That infinite loop will be terminated in 10 seconds by the guard.
+            } catch (JavetTerminatedException e) {
+                // JavetTerminatedException will be thrown to mark that.
+                assertFalse(e.isContinuable());
+            }
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
+                    "The V8 runtime is not dead and still be able to execute code afterwards.");
+        }
+    }
+
+    @Test
     public void testWithoutTermination() throws JavetException {
         final long timeoutMillis = 10000;
         ZonedDateTime startZonedDateTime = JavetDateTimeUtils.getUTCNow();
@@ -43,23 +62,5 @@ public class TestJavetEngineGuard extends BaseTestJavetPool {
         ZonedDateTime endZonedDateTime = JavetDateTimeUtils.getUTCNow();
         Duration duration = Duration.between(startZonedDateTime, endZonedDateTime);
         assertTrue(duration.toMillis() < timeoutMillis);
-    }
-
-    @Test
-    public void testTermination() throws JavetException {
-        // Get an engine from the pool as usual.
-        try (IJavetEngine iJavetEngine = javetEnginePool.getEngine()) {
-            V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
-            // Get a guard from the engine and apply try-with-resource pattern.
-            try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(1)) {
-                v8Runtime.getExecutor("while (true) {}").executeVoid();
-                // That infinite loop will be terminated in 10 seconds by the guard.
-            } catch (JavetTerminatedException e) {
-                // JavetTerminatedException will be thrown to mark that.
-                assertFalse(e.isContinuable());
-            }
-            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
-                    "The V8 runtime is not dead and still be able to execute code afterwards.");
-        }
     }
 }

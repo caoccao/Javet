@@ -74,9 +74,25 @@ public class TestInterception {
         }
     }
 
+    @V8Function
+    public int add(int delta) {
+        value += delta;
+        return value;
+    }
+
     @V8Property
     public String getName() {
         return name;
+    }
+
+    @V8Property
+    public int getValue() {
+        return value;
+    }
+
+    @V8Function
+    public int increaseAndGet() {
+        return ++value;
     }
 
     @V8Property
@@ -85,23 +101,7 @@ public class TestInterception {
     }
 
     @V8Property
-    public int getValue() {
-        return value;
-    }
-
-    @V8Property
     public void setValue(int value) {
         this.value = value;
-    }
-
-    @V8Function
-    public int increaseAndGet() {
-        return ++value;
-    }
-
-    @V8Function
-    public int add(int delta) {
-        value += delta;
-        return value;
     }
 }

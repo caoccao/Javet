@@ -43,31 +43,6 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testGetAndSet() throws JavetException {
-        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = new Array(); a;").execute()) {
-            v8ValueArray.set(0, "x");
-            v8ValueArray.set(1, "y");
-            v8ValueArray.set(2, "z");
-            v8ValueArray.set("a", 1);
-            v8ValueArray.set("b", "2");
-            assertEquals(3, v8ValueArray.getLength());
-            assertEquals("x", v8ValueArray.getString(0));
-            assertEquals("y", v8ValueArray.getString(1));
-            assertEquals("z", v8ValueArray.getString(2));
-            assertEquals(1, v8ValueArray.getInteger("a"));
-            assertEquals("2", v8ValueArray.getString("b"));
-            assertEquals("x,y,z", v8ValueArray.toString());
-            assertEquals("[object Array]", v8ValueArray.toProtoString());
-            assertEquals("[\"x\",\"y\",\"z\"]", v8ValueArray.toJsonString());
-            List<Integer> keys = v8ValueArray.getKeys();
-            assertEquals(3, keys.size());
-            assertEquals(0, keys.get(0));
-            assertEquals(1, keys.get(1));
-            assertEquals(2, keys.get(2));
-        }
-    }
-
-    @Test
     public void testGet() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
                 "[1,'2',3n, true, 1.23, [4, 5, null, new Date(1611710223719)]]").execute()) {
@@ -100,6 +75,31 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
             assertEquals(1, v8Runtime.getReferenceCount());
+        }
+    }
+
+    @Test
+    public void testGetAndSet() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = new Array(); a;").execute()) {
+            v8ValueArray.set(0, "x");
+            v8ValueArray.set(1, "y");
+            v8ValueArray.set(2, "z");
+            v8ValueArray.set("a", 1);
+            v8ValueArray.set("b", "2");
+            assertEquals(3, v8ValueArray.getLength());
+            assertEquals("x", v8ValueArray.getString(0));
+            assertEquals("y", v8ValueArray.getString(1));
+            assertEquals("z", v8ValueArray.getString(2));
+            assertEquals(1, v8ValueArray.getInteger("a"));
+            assertEquals("2", v8ValueArray.getString("b"));
+            assertEquals("x,y,z", v8ValueArray.toString());
+            assertEquals("[object Array]", v8ValueArray.toProtoString());
+            assertEquals("[\"x\",\"y\",\"z\"]", v8ValueArray.toJsonString());
+            List<Integer> keys = v8ValueArray.getKeys();
+            assertEquals(3, keys.size());
+            assertEquals(0, keys.get(0));
+            assertEquals(1, keys.get(1));
+            assertEquals(2, keys.get(2));
         }
     }
 

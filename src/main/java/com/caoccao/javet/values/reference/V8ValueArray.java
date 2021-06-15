@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
-    protected static final String FUNCTION_NEXT = "next";
     protected static final String FUNCTION_KEYS = "keys";
+    protected static final String FUNCTION_NEXT = "next";
     protected static final String FUNCTION_POP = "pop";
     protected static final String FUNCTION_PUSH = "push";
     protected static final String PROPERTY_DONE = "done";
