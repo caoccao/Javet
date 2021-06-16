@@ -412,7 +412,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public String toJsonString() {
         try {
             checkV8Runtime();
-            try (V8ValueBuiltInJson v8ValueBuiltInJson = v8Runtime.getGlobalObject().getJson()) {
+            try (V8ValueBuiltInJson v8ValueBuiltInJson = v8Runtime.getGlobalObject().getBuiltInJson()) {
                 return v8ValueBuiltInJson.stringify(this);
             }
         } catch (JavetException e) {
