@@ -23,6 +23,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
+import com.caoccao.javet.interop.binding.BindingContext;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
@@ -53,13 +54,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
     protected static final int V8_VALUE_NUMBER_LOWER_BOUND = -128; // Inclusive
     protected static final int V8_VALUE_NUMBER_UPPER_BOUND = 128; // Exclusive
-
+    protected WeakHashMap<Class<?>, BindingContext> bindingContextWeakHashMap;
     protected V8ValueBoolean[] cachedV8ValueBooleans;
     protected V8ValueInteger[] cachedV8ValueIntegers;
     protected V8ValueLong[] cachedV8ValueLongs;
     protected V8ValueNull cachedV8ValueNull;
     protected V8ValueUndefined cachedV8ValueUndefined;
-
     /*
      * V8 may not make final callback when V8 context is being recycled.
      * That may results in memory leak.
@@ -81,6 +81,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
+        bindingContextWeakHashMap = new WeakHashMap<>();
         callbackContextMap = new TreeMap<>();
         converter = DEFAULT_CONVERTER;
         gcScheduled = false;
@@ -332,6 +333,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return decorateV8Value((T) v8Native.get(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key));
+    }
+
+    public WeakHashMap<Class<?>, BindingContext> getBindingContextWeakHashMap() {
+        return bindingContextWeakHashMap;
     }
 
     public int getCallbackContextCount() {
