@@ -33,6 +33,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @SuppressWarnings("unchecked")
 public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     @Test
+    public void testAnonymousFunction() throws JavetException {
+        IJavetConverter converter = new JavetObjectConverter();
+        Object object = converter.toObject(v8Runtime.getExecutor("const x = {a: 1, b: () => 1}; x;").execute(), true);
+        assertTrue(object instanceof Map);
+        Map map = (Map) object;
+        assertEquals(2, map.size());
+        assertEquals(1, map.get("a"));
+        assertEquals("[Function (anonymous)]", map.get("b"));
+    }
+
+    @Test
     public void testArray() throws JavetException {
         IJavetConverter converter = new JavetObjectConverter();
         try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
