@@ -26,7 +26,7 @@ Windows Environment
 Download Pre-built Node.js and V8
 =================================
 
-I have prepared pre-built Linux and Windows version of Node.js ``v14.17.0`` and V8 ``v9.1.269.28``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
+I have prepared pre-built Linux and Windows version of Node.js ``v14.17.1`` and V8 ``v9.1.269.28``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
 
 Build Javet JNI Library
 =======================
