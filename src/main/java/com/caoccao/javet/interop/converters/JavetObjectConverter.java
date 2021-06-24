@@ -30,8 +30,9 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 public class JavetObjectConverter extends JavetPrimitiveConverter {
 
-    public static final String PROPERTY_CONSTRUCTOR = "constructor";
-    public static final String PROPERTY_NAME = "name";
+    protected static final String FUNCTION_ANONYMOUS = "[Function (anonymous)]";
+    protected static final String PROPERTY_CONSTRUCTOR = "constructor";
+    protected static final String PROPERTY_NAME = "name";
 
     public JavetObjectConverter() {
         super();
@@ -89,6 +90,8 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 default:
                     break;
             }
+        } else if (v8Value instanceof V8ValueFunction) {
+            return FUNCTION_ANONYMOUS;
         } else if (v8Value instanceof V8ValueObject) {
             V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
             Map<String, Object> map = new HashMap<>();

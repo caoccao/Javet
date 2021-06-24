@@ -2,6 +2,13 @@
 Release Notes
 =============
 
+0.9.2
+-----
+
+* Upgraded Node.js to ``v14.17.1`` `(2021-06-15) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.1>`_
+* Updated ``JavetObjectConverter`` to handle anonymous functions more efficiently
+* Added ``V8ValueBuiltInObject#assign``
+
 0.9.1
 -----
 
