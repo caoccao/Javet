@@ -35,10 +35,10 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     protected final ConcurrentLinkedQueue<JavetEngine<R>> activeEngineList;
     protected final Object externalLock;
     protected final ConcurrentLinkedQueue<JavetEngine<R>> idleEngineList;
-    protected boolean active;
+    protected volatile boolean active;
     protected JavetEngineConfig config;
     protected Thread daemonThread;
-    protected boolean quitting;
+    protected volatile boolean quitting;
 
     public JavetEnginePool() {
         this(new JavetEngineConfig());

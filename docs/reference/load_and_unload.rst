@@ -41,7 +41,7 @@ Notes
 =====
 
 * ``unloadLibrary()`` can only take effect after all references are garbage collectable.
-* ``loadLibrary()`` is internally called by Javet in the first time and only takes effect after ``unloadLibrary()`` is called.
+* ``loadLibrary()`` is internally called by Javet at the first time and only takes effect after ``unloadLibrary()`` is called.
 * ``loadLibrary()`` and ``unloadLibrary()`` are for experiment only. **They may be unstable and crash JVM. Please use this feature at your own risk.**
 
 [`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]
