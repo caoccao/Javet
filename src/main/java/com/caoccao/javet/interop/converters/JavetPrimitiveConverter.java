@@ -18,6 +18,7 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
@@ -27,11 +28,30 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public class JavetPrimitiveConverter implements IJavetConverter {
+    public static final int DEFAULT_MAX_DEPTH = 20;
+    protected int maxDepth;
+
     public JavetPrimitiveConverter() {
+        maxDepth = DEFAULT_MAX_DEPTH;
+    }
+
+    @Override
+    public int getMaxDepth() {
+        return maxDepth;
+    }
+
+    @Override
+    public void setMaxDepth(int maxDepth) {
+        this.maxDepth = maxDepth;
     }
 
     @Override
     public Object toObject(V8Value v8Value) throws JavetException {
+        return toObject(v8Value, 0);
+    }
+
+    protected Object toObject(V8Value v8Value, final int depth) throws JavetException {
+        validateDepth(depth);
         if (v8Value == null || v8Value.isNull() || v8Value.isUndefined()) {
             return null;
         } else if (v8Value instanceof V8ValuePrimitive) {
@@ -44,6 +64,14 @@ public class JavetPrimitiveConverter implements IJavetConverter {
     @Override
     @CheckReturnValue
     public <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
+        return toV8Value(v8Runtime, object, 0);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @CheckReturnValue
+    protected <T extends V8Value> T toV8Value(
+            V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
+        validateDepth(depth);
         /*
          * The following test is based on statistical analysis
          * so that the performance can be maximized.
@@ -98,6 +126,12 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             v8Value = v8Runtime.createV8ValueUndefined();
         }
         return (T) v8Runtime.decorateV8Value(v8Value);
+    }
+
+    protected void validateDepth(final int depth) throws JavetException {
+        if (depth >= maxDepth) {
+            throw JavetConverterException.circularStructure(maxDepth);
+        }
     }
 
 }

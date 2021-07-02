@@ -69,5 +69,11 @@ public class TestSimpleFreeMarkerFormat {
         assertEquals("abxc",
                 SimpleFreeMarkerFormat.format("ab${{}c", SimpleMap.of("{", "x")),
                 "Single open should pass.");
+        assertEquals("ab12345678c",
+                SimpleFreeMarkerFormat.format("ab${x}c", SimpleMap.of("x", 12345678)),
+                "Integer should pass.");
+        assertEquals("ab1234567890c",
+                SimpleFreeMarkerFormat.format("ab${x}c", SimpleMap.of("x", 1234567890L)),
+                "Long should pass.");
     }
 }

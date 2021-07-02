@@ -24,7 +24,6 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestV8ValueBuiltInJson extends BaseTestJavetRuntime {
     @Test
@@ -45,9 +44,6 @@ public class TestV8ValueBuiltInJson extends BaseTestJavetRuntime {
                                 "    --- property 'x' closes the circle",
                         e.getMessage());
             }
-            assertThrows(StackOverflowError.class, () -> {
-                Object b = v8Runtime.toObject(v8ValueObject);
-            });
         }
     }
 }

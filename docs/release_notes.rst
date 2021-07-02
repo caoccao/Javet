@@ -7,6 +7,7 @@ Release Notes
 
 * Upgraded Node.js to ``v14.17.2`` `(2021-07-01) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.2>`_
 * Added ``IV8ModuleResolver`` to allow intercepting module resolving callback
+* Updated ``JavetPrimitiveConverter`` and ``JavetObjectConverter`` to check recursion depth for circular structure detection
 
 0.9.2
 -----
