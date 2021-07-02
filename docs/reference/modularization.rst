@@ -111,7 +111,35 @@ Caution!
 V8 Mode
 =======
 
-In V8 mode, there is no out-of-box support to module. But, Javet provides complete support to ES6 module on top of V8. Here is an example. Assuming ``test.js`` depends on ``module.js``, the code looks like the following.
+In V8 mode, there is no out-of-box support to ES6 dynamic import. But, Javet provides complete support on top of V8. There are 2 ways of playing around with the ES6 dynamic import: Pre-load and On-demand.
+
+Pre-load
+--------
+
+Javet stores compiled modules in a map with key = module path, value = compiled module. When V8 meets a new module to be imported, Javet will look up the map and return the compiled module to V8. So, in order to simulate dynamic import, application needs to compile those required modules before the final execution.
+
+For instance: The dependency is as following.
+
+.. code-block::
+
+    Application
+    ├─A
+    │ ├─a.js (depends on b.js)
+    │ └─B
+    │   └─b.js
+    ├─C
+    │ └─c.js
+    └─d.js
+
+The execution steps are as following.
+
+1. Compile module ./A/B/b.js
+2. Compile module ./A/a.js
+3. Compile module ./C/c.js
+4. Compile module ./d.js
+5. Launch the application
+
+Here is an example. Assuming ``test.js`` depends on ``module.js``, the code looks like the following.
 
 .. code-block:: java
 
@@ -135,6 +163,36 @@ In V8 mode, there is no out-of-box support to module. But, Javet provides comple
         }
     }
 
+On-demand
+---------
+
+Obviously, pre-loading modules requires application to analyze the code for complete dependency. That is too heavy in most of the cases. Luckily, Javet also supports registering a module resolver which is called back when the modules are being imported. With the module resolver, application doesn't need to analyze the code for dependency. Of course, application is responsible for security check.
+
+Here is an example. Assuming ``test.js`` depends on ``module.js``, the code looks like the following.
+
+.. code-block:: java
+
+    // Step 1: Create a V8 runtime from V8 host in try-with-resource.
+    try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
+        // Step 2: Register a custom module resolver.
+        v8Runtime.setV8ModuleResolver((runtime, resourceName, v8ModuleReferrer) -> {
+            // Step 3: Compile module.js from source code if the resource name matches.
+            if ("./module.js".equals(resourceName)) {
+                return runtime.getExecutor("export function test() { return 1; }")
+                        .setResourceName(resourceName).compileV8Module();
+            } else {
+                return null;
+            }
+        });
+        // Step 4: Import module.js in test.js and expose test() in global context.
+        v8Runtime.getExecutor("import { test } from './module.js'; globalThis.test = test;")
+                .setModule(true).setResourceName("./test.js").executeVoid();
+        // Step 5: Call test() in global context.
+        System.out.println("test() -> " + v8Runtime.getExecutor("test()").executeInteger());
+    }
+
+It is V8 that performs the dependency analysis. Javet just relays the callback to application and actively caches the compiled modules so that the module resolver is only called one time per module.
+
 Internals
 =========
 
@@ -142,5 +200,7 @@ How Javet and V8 work internally for supporting modules can be found at `here <.
 
 .. image:: ../resources/images/javet_module_system.png?raw=true
     :alt: Javet Module System
+
+Please note that the way Javet handles dynamic import in V8 mode can be applied to Node.js mode. That means all Node.js modules can be virtualized by Javet.
 
 [`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

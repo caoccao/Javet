@@ -2,6 +2,11 @@
 Release Notes
 =============
 
+0.9.3
+-----
+
+* Added ``IV8ModuleResolver`` to allow intercepting module resolving callback
+
 0.9.2
 -----
 

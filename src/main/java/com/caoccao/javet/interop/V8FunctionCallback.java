@@ -23,6 +23,7 @@ import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.values.IV8Value;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
@@ -249,8 +250,8 @@ public final class V8FunctionCallback {
                     resultObject = method.invoke(callbackReceiver, objectValues.toArray());
                 }
                 if (javetCallbackContext.isReturnResult()) {
-                    if (resultObject instanceof V8Value) {
-                        v8Runtime.decorateV8Value((V8Value) resultObject);
+                    if (resultObject instanceof IV8Value) {
+                        v8Runtime.decorateV8Value((IV8Value) resultObject);
                     } else {
                         resultObject = v8Runtime.toV8Value(resultObject);
                     }

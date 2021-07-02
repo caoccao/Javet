@@ -46,15 +46,12 @@ namespace Javet {
 			jclassJavetResourceUtils = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/JavetResourceUtils"));
 			jmethodIDJavetResourceUtilsSafeClose = jniEnv->GetStaticMethodID(jclassJavetResourceUtils, "safeClose", "(Ljava/lang/Object;)V");
 
-			jclassThrowable = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/lang/Throwable"));
-			jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
-
 			jclassV8FunctionCallback = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8FunctionCallback"));
 			jmethodIDV8FunctionCallbackReceiveCallback = jniEnv->GetStaticMethodID(jclassV8FunctionCallback, "receiveCallback",
 				"(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/utils/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;Lcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
 
 			jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
-			jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;)Lcom/caoccao/javet/values/reference/IV8Module;");
+			jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
 			jmethodIDV8RuntimeReceivePromiseRejectCallback = jniEnv->GetMethodID(jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
 			jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
 		}
@@ -102,19 +99,32 @@ namespace Javet {
 			V8LocalModule referrer) {
 			auto v8Runtime = V8Runtime::FromV8Context(v8Context);
 			FETCH_JNI_ENV(GlobalJavaVM);
+			auto externalV8Runtime = v8Runtime->externalV8Runtime;
+			jobject mReferrerV8Module = referrer.IsEmpty() ? nullptr : Javet::Converter::ToExternalV8Module(jniEnv, externalV8Runtime, v8Context, referrer);
 			jobject mIV8Module = jniEnv->CallObjectMethod(
-				v8Runtime->externalV8Runtime, jmethodIDV8RuntimeGetV8Module,
-				Javet::Converter::ToJavaString(jniEnv, v8Context, specifier));
-			if (mIV8Module == nullptr) {
+				externalV8Runtime, jmethodIDV8RuntimeGetV8Module,
+				Javet::Converter::ToJavaString(jniEnv, v8Context, specifier),
+				mReferrerV8Module);
+			V8MaybeLocalModule resolvedV8MaybeLocalModule;
+			if (jniEnv->ExceptionCheck()) {
+				// JNI exception is not re-thrown in this callback function because it will pop up automatically.
+				LOG_ERROR("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " with exception");
+				resolvedV8MaybeLocalModule = V8MaybeLocalModule();
+			}
+			else if (mIV8Module == nullptr) {
 				LOG_ERROR("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " not found");
-				return V8MaybeLocalModule();
+				resolvedV8MaybeLocalModule = V8MaybeLocalModule();
 			}
 			else {
 				auto mHandle = jniEnv->CallLongMethod(mIV8Module, jmethodIDIV8ModuleGetHandle);
 				auto v8PersistentModule = TO_V8_PERSISTENT_MODULE_POINTER(mHandle);
 				LOG_DEBUG("ModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " found");
-				return v8PersistentModule->Get(v8Context->GetIsolate());
+				resolvedV8MaybeLocalModule = v8PersistentModule->Get(v8Context->GetIsolate());
 			}
+			if (mReferrerV8Module != nullptr) {
+				jniEnv->CallVoidMethod(mReferrerV8Module, jmethodIDIV8ValueReferenceClose, true);
+			}
+			return resolvedV8MaybeLocalModule;
 		}
 
 		void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) {
@@ -174,19 +184,7 @@ namespace Javet {
 					thisObject,
 					externalArgs);
 				if (jniEnv->ExceptionCheck()) {
-					jthrowable externalException = jniEnv->ExceptionOccurred();
-					jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
-					jniEnv->ExceptionClear();
-					V8LocalString v8ErrorMessage;
-					if (externalErrorMessage == nullptr) {
-						v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, "Uncaught JavaError in function callback").ToLocalChecked();
-					}
-					else {
-						v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, externalErrorMessage);
-						jniEnv->DeleteLocalRef(externalErrorMessage);
-					}
-					v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
-					jniEnv->DeleteLocalRef(externalException);
+					Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in function callback");
 				}
 				else if (isReturnResult) {
 					if (mResult == nullptr) {
@@ -233,19 +231,7 @@ namespace Javet {
 					thisObject,
 					nullptr);
 				if (jniEnv->ExceptionCheck()) {
-					jthrowable externalException = jniEnv->ExceptionOccurred();
-					jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
-					jniEnv->ExceptionClear();
-					V8LocalString v8ErrorMessage;
-					if (externalErrorMessage == nullptr) {
-						v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, "Uncaught JavaError in property getter callback").ToLocalChecked();
-					}
-					else {
-						v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, externalErrorMessage);
-						jniEnv->DeleteLocalRef(externalErrorMessage);
-					}
-					v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
-					jniEnv->DeleteLocalRef(externalException);
+					Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property getter callback");
 				}
 				else {
 					if (mResult == nullptr) {
@@ -289,19 +275,7 @@ namespace Javet {
 					thisObject,
 					mPropertyValue);
 				if (jniEnv->ExceptionCheck()) {
-					jthrowable externalException = jniEnv->ExceptionOccurred();
-					jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
-					jniEnv->ExceptionClear();
-					V8LocalString v8ErrorMessage;
-					if (externalErrorMessage == nullptr) {
-						v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, "Uncaught JavaError in function callback").ToLocalChecked();
-					}
-					else {
-						v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, externalErrorMessage);
-						jniEnv->DeleteLocalRef(externalErrorMessage);
-					}
-					v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
-					jniEnv->DeleteLocalRef(externalException);
+					Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property setter callback");
 				}
 				if (thisObject != nullptr) {
 					jniEnv->DeleteLocalRef(thisObject);
@@ -364,7 +338,7 @@ namespace Javet {
 				// v8PersistentDataPointer is borrowed. So it cannot be deleted.
 				v8PersistentDataPointer = nullptr;
 				FETCH_JNI_ENV(GlobalJavaVM);
-				jniEnv->CallVoidMethod(TO_JAVA_OBJECT(objectReference), jmethodIDIV8ValueReferenceClose, true);
+				jniEnv->CallVoidMethod(objectReference, jmethodIDIV8ValueReferenceClose, true);
 				jniEnv->DeleteGlobalRef(objectReference);
 				INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
 			}

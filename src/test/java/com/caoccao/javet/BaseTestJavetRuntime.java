@@ -36,10 +36,12 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
                 "Callback context count should be 0 after test case is ended.");
         if (v8Runtime.getJSRuntimeType().isNode()) {
             NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
-            assertEquals(nodeRuntime.getNodeModuleCount(), nodeRuntime.getReferenceCount(),
+            assertEquals(
+                    nodeRuntime.getV8ModuleCount() + nodeRuntime.getNodeModuleCount(),
+                    nodeRuntime.getReferenceCount(),
                     "Reference count should be the node module count after test case is ended.");
         } else {
-            assertEquals(0, v8Runtime.getReferenceCount(),
+            assertEquals(v8Runtime.getV8ModuleCount(), v8Runtime.getReferenceCount(),
                     "Reference count should be 0 after test case is ended.");
         }
         v8Runtime.close();
