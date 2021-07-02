@@ -17,7 +17,7 @@ Major Features
 ==============
 
 * 🐧Linux + 🖥️Windows
-* Node.js ``v14.17.1`` + V8 ``v9.1.269.28``
+* Node.js ``v14.17.2`` + V8 ``v9.1.269.28``
 * Dynamic switch between Node.js and V8
 * Exposure of the majority of V8 API in JVM
 * JS function interception
