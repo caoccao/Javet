@@ -271,5 +271,15 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8ValuePromise.isFulfilled());
             assertEquals(1, v8Runtime.getExecutor("test()").executeInteger());
         }
+        v8Runtime.removeV8Modules(true);
+        assertEquals(0, v8Runtime.getV8ModuleCount());
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "import { test } from './test.js'; globalThis.test = test;")
+                .setResourceName("./case.js").setModule(true).execute()) {
+            assertEquals(1, v8Runtime.getV8ModuleCount());
+            assertTrue(resolver.isCalled(), "Module resolver should be called after modules are cleared.");
+            assertTrue(v8ValuePromise.isFulfilled());
+            assertEquals(1, v8Runtime.getExecutor("test()").executeInteger());
+        }
     }
 }
