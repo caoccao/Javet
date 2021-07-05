@@ -36,7 +36,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.containsV8Module(v8Module.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(4, v8Module.getScriptId());
+                assertTrue(3 <= v8Module.getScriptId() && v8Module.getScriptId() <= 4);
             }
             assertEquals("./test.js", v8Module.getResourceName());
             try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
@@ -69,7 +69,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.containsV8Module(v8Module1.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(4, v8Module1.getScriptId());
+                assertTrue(3 <= v8Module1.getScriptId() && v8Module1.getScriptId() <= 4);
             }
             assertTrue(v8Module1.instantiate());
             try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
@@ -152,7 +152,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.containsV8Module(v8Module1.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(4, v8Module1.getScriptId());
+                assertTrue(3 <= v8Module1.getScriptId() && v8Module1.getScriptId() <= 4);
             }
             assertTrue(v8Module1.instantiate());
             try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
@@ -216,7 +216,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.containsV8Module(v8Module.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(4, v8Module.getScriptId());
+                assertTrue(3 <= v8Module.getScriptId() && v8Module.getScriptId() <= 4);
             }
             assertNotNull(v8Module);
             assertEquals(V8Module.Uninstantiated, v8Module.getStatus());
