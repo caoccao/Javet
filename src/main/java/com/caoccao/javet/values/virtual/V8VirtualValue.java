@@ -23,11 +23,36 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * The type V8 virtual value.
+ *
+ * @since 0.8.5
+ */
 @SuppressWarnings("unchecked")
 public class V8VirtualValue implements IJavetClosable {
+    /**
+     * It indicates whether the value is converted or not.
+     * true: converted
+     * false: not converted
+     *
+     * @since 0.8.5
+     */
     protected boolean converted;
+    /**
+     * The Value.
+     *
+     * @since 0.8.5
+     */
     protected V8Value value;
 
+    /**
+     * Instantiates a new V8 virtual value.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param object    the object
+     * @throws JavetException the javet exception
+     * @since 0.8.5
+     */
     public V8VirtualValue(V8Runtime v8Runtime, Object object) throws JavetException {
         if (object instanceof V8Value) {
             converted = false;
@@ -45,6 +70,13 @@ public class V8VirtualValue implements IJavetClosable {
         }
     }
 
+    /**
+     * Get the value.
+     *
+     * @param <T> the type parameter
+     * @return the value
+     * @since 0.8.5
+     */
     public <T extends V8Value> T get() {
         return (T) value;
     }
