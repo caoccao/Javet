@@ -46,17 +46,15 @@ Automatic Registration
 How about Object Type Conversion?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As V8 only accepts data represented by its own format, Java objects need to be converted to native ``V8Value`` objects. Creating native ``V8Value`` objects is trick in the callback receiver. There are typically 2 options.
+As V8 only accepts data represented by its own format, Java objects need to be converted to native ``V8Value`` objects. Creating native ``V8Value`` objects is tricky in the callback receiver. There are typically 2 options.
 
-1. Enhance the `Object Converter <object_converter.rst>`_ and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
+1. **Use Object Converter** - Enhance the `Object Converter <object_converter.rst>`_ and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
 
-The beauty of this option is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.
+The beauty of the object converter is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.
 
-2. If application doesn't want to have ``V8Runtime`` injected, it may borrow ``V8Runtime`` from the input arguments.
+2. **Convert via V8Runtime** - V8Runtime can be directly used to perform the type conversion. V8Runtime can be manually set by application, or borrowed from the input arguments. Sometimes the callback receiver is not able to borrow ``V8Runtime`` from input arguments, it may decorate a setter with ``@V8RuntimeSetter`` so that Javet will inject the current ``V8Runtime``. Please refer to ``generateArrayWithoutConverter()``.
 
-3. Sometimes the callback receiver is not able to borrow ``V8Runtime`` from input arguments, it may decorate a setter with ``@V8RuntimeSetter`` so that Javet will inject the current ``V8Runtime``. Please refer to ``generateArrayWithoutConverter()``.
-
-The first step is to declare callback receiver and callback functions. That is quite easy as the sample code shows.
+Here is a sample. The first step is to declare callback receiver and callback functions. That is quite easy as the sample code shows.
 
 .. code-block:: java
 
