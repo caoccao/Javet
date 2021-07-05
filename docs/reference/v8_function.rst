@@ -239,6 +239,16 @@ This method is for binding a JavaScript code based function.
     assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
     v8Runtime.getGlobalObject().delete("b");
 
+Type Mismatch
+-------------
+
+It is very easy to cause type mismatches in JavaScript. The Javet exception is so generic that applications may not be happy with it. So, how to customize the type mismatch exception? The recommended way is to declare the function signature to ``(V8Value... v8Values)`` or ``(Object... objects)``.
+
+* Javet doesn't throw exceptions under this signature in all cases.
+* Application is the one that performs the argument validation so that the error handling is completely customized.
+* When dealing with ``V8Value...``, application is responsible for the type conversion.
+* Variable arguments can be achieved under this signature so that a JavaScript function can be completely mirrored in Java.
+
 Summary
 -------
 
