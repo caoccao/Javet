@@ -81,7 +81,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
-                    assertEquals(5, v8Module2.getScriptId());
+                    assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
                 assertFalse(v8Module2.instantiate(), "Function is invalid");
                 assertNull(v8Module2.getException());
@@ -91,7 +91,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertTrue(v8Runtime.containsV8Module(v8Module3.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
-                    assertEquals(6, v8Module3.getScriptId());
+                    assertTrue(5 <= v8Module3.getScriptId() && v8Module3.getScriptId() <= 6);
                 }
                 assertFalse(v8Module3.instantiate(), "Module is invalid");
                 assertNull(v8Module3.getException());
@@ -170,7 +170,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
-                    assertEquals(5, v8Module2.getScriptId());
+                    assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
                 assertTrue(v8Module2.instantiate());
                 try (V8ValuePromise v8ValuePromise = v8Module2.evaluate()) {
