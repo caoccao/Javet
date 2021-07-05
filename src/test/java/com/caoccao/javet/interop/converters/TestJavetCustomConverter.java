@@ -67,8 +67,9 @@ public class TestJavetCustomConverter extends BaseTestJavetRuntime {
         }
 
         @Override
-        public V8Value toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
-            V8Value v8Value = super.toV8Value(v8Runtime, object);
+        protected V8Value toV8Value(
+                V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
+            V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
             if (v8Value != null && !(v8Value.isUndefined())) {
                 return v8Value;
             }
@@ -88,7 +89,7 @@ public class TestJavetCustomConverter extends BaseTestJavetRuntime {
                                 + methodName.substring(METHOD_PREFIX_GET.length() + 1);
                     }
                     if (propertyName != null) {
-                        try (V8Value v8ValueTemp = toV8Value(v8Runtime, method.invoke(object))) {
+                        try (V8Value v8ValueTemp = toV8Value(v8Runtime, method.invoke(object), depth + 1)) {
                             v8ValueObject.set(propertyName, v8ValueTemp);
                         } catch (Exception e) {
                             e.printStackTrace();

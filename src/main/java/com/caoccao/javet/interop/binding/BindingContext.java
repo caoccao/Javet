@@ -23,32 +23,51 @@ import java.util.Map;
 
 /**
  * The type Binding context.
+ *
+ * @since 0.9.2
  */
 public class BindingContext {
     /**
      * The Function map.
+     *
+     * @since 0.9.2
      */
     protected Map<String, MethodDescriptor> functionMap;
     /**
      * The Property getter map.
+     *
+     * @since 0.9.2
      */
     protected Map<String, MethodDescriptor> propertyGetterMap;
     /**
      * The Property setter map.
+     *
+     * @since 0.9.2
      */
     protected Map<String, MethodDescriptor> propertySetterMap;
     /**
+     * The V8 bind enabler.
+     *
+     * @since 0.9.3
+     */
+    protected Method v8BindEnabler;
+    /**
      * The V8 runtime setter.
+     *
+     * @since 0.9.2
      */
     protected Method v8RuntimeSetter;
 
     /**
      * Instantiates a new Binding context.
+     *
+     * @since 0.9.2
      */
     public BindingContext() {
         functionMap = new HashMap<>();
         propertyGetterMap = new HashMap<>();
         propertySetterMap = new HashMap<>();
+        v8BindEnabler = null;
         v8RuntimeSetter = null;
     }
 
@@ -56,6 +75,7 @@ public class BindingContext {
      * Gets function map.
      *
      * @return the function map
+     * @since 0.9.2
      */
     public Map<String, MethodDescriptor> getFunctionMap() {
         return functionMap;
@@ -65,6 +85,7 @@ public class BindingContext {
      * Gets property getter map.
      *
      * @return the property getter map
+     * @since 0.9.2
      */
     public Map<String, MethodDescriptor> getPropertyGetterMap() {
         return propertyGetterMap;
@@ -74,24 +95,47 @@ public class BindingContext {
      * Gets property setter map.
      *
      * @return the property setter map
+     * @since 0.9.2
      */
     public Map<String, MethodDescriptor> getPropertySetterMap() {
         return propertySetterMap;
     }
 
     /**
+     * Gets V8 bind enabler.
+     *
+     * @return the V8 bind enabler
+     * @since 0.9.3
+     */
+    public Method getV8BindEnabler() {
+        return v8BindEnabler;
+    }
+
+    /**
      * Gets V8 runtime setter.
      *
      * @return the V8 runtime setter
+     * @since 0.9.2
      */
     public Method getV8RuntimeSetter() {
         return v8RuntimeSetter;
     }
 
     /**
+     * Sets V8 bind enabler.
+     *
+     * @param v8BindEnabler the V8 bind enabler
+     * @since 0.9.3
+     */
+    public void setV8BindEnabler(Method v8BindEnabler) {
+        this.v8BindEnabler = v8BindEnabler;
+    }
+
+    /**
      * Sets V8 runtime setter.
      *
      * @param v8RuntimeSetter the V8 runtime setter
+     * @since 0.9.2
      */
     public void setV8RuntimeSetter(Method v8RuntimeSetter) {
         this.v8RuntimeSetter = v8RuntimeSetter;

@@ -46,17 +46,15 @@ Automatic Registration
 How about Object Type Conversion?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As V8 only accepts data represented by its own format, Java objects need to be converted to native ``V8Value`` objects. Creating native ``V8Value`` objects is trick in the callback receiver. There are typically 2 options.
+As V8 only accepts data represented by its own format, Java objects need to be converted to native ``V8Value`` objects. Creating native ``V8Value`` objects is tricky in the callback receiver. There are typically 2 options.
 
-1. Enhance the `Object Converter <object_converter.rst>`_ and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
+1. **Use Object Converter** - Enhance the `Object Converter <object_converter.rst>`_ and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
 
-The beauty of this option is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.
+The beauty of the object converter is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.
 
-2. If application doesn't want to have ``V8Runtime`` injected, it may borrow ``V8Runtime`` from the input arguments.
+2. **Convert via V8Runtime** - V8Runtime can be directly used to perform the type conversion. V8Runtime can be manually set by application, or borrowed from the input arguments. Sometimes the callback receiver is not able to borrow ``V8Runtime`` from input arguments, it may decorate a setter with ``@V8RuntimeSetter`` so that Javet will inject the current ``V8Runtime``. Please refer to ``generateArrayWithoutConverter()``.
 
-3. Sometimes the callback receiver is not able to borrow ``V8Runtime`` from input arguments, it may decorate a setter with ``@V8RuntimeSetter`` so that Javet will inject the current ``V8Runtime``. Please refer to ``generateArrayWithoutConverter()``.
-
-The first step is to declare callback receiver and callback functions. That is quite easy as the sample code shows.
+Here is a sample. The first step is to declare callback receiver and callback functions. That is quite easy as the sample code shows.
 
 .. code-block:: java
 
@@ -146,6 +144,33 @@ The second step is to call the functions or properties.
         v8Runtime.getGlobalObject().delete("a");
     }
 
+How to Disable Properties or Functions?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way of selectively disabling them. ``@V8BindEnabler`` is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.
+
+.. code-block:: java
+
+    @V8Function
+    public String disabledFunction() {
+        return "I am a disabled function.";
+    }
+
+    @V8Property
+    public String disabledProperty() {
+        return "I am a disabled property.";
+    }
+
+    @V8BindEnabler
+    public boolean isV8BindEnabled(String methodName) {
+        if ("disabledFunction".equals(methodName) || "disabledProperty".equals(methodName)) {
+            return false;
+        }
+        return true;
+    }
+
+``@V8BindEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
+
 Manual Registration
 -------------------
 
@@ -211,6 +236,16 @@ This method is for binding a JavaScript code based function.
     v8Runtime.getGlobalObject().bindFunction("b", "(x) => x + 1;");
     assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
     v8Runtime.getGlobalObject().delete("b");
+
+Type Mismatch
+-------------
+
+It is very easy to cause type mismatches in JavaScript. The Javet exception is so generic that applications may not be happy with it. So, how to customize the type mismatch exception? The recommended way is to declare the function signature to ``(V8Value... v8Values)`` or ``(Object... objects)``.
+
+* Javet doesn't throw exceptions under this signature in all cases.
+* Application is the one that performs the argument validation so that the error handling is completely customized.
+* When dealing with ``V8Value...``, application is responsible for the type conversion.
+* Variable arguments can be achieved under this signature so that a JavaScript function can be completely mirrored in Java.
 
 Summary
 -------

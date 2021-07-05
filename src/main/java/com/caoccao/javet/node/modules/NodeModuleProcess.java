@@ -31,9 +31,14 @@ public class NodeModuleProcess extends BaseNodeModule {
     public static final String FUNCTION_CHDIR = "chdir";
     public static final String FUNCTION_CWD = "cwd";
     public static final String FUNCTION_ON = "on";
+    public static final String PROPERTY_VERSION = "version";
 
     public NodeModuleProcess(V8ValueObject moduleObject, String name) {
         super(moduleObject, name);
+    }
+
+    public String getVersion() throws JavetException {
+        return moduleObject.getString(PROPERTY_VERSION);
     }
 
     public Path getWorkingDirectory() throws JavetException {

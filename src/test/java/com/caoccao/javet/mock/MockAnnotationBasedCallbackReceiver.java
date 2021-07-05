@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.mock;
 
+import com.caoccao.javet.annotations.V8BindEnabler;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.annotations.V8Property;
 import com.caoccao.javet.annotations.V8RuntimeSetter;
@@ -57,6 +58,16 @@ public class MockAnnotationBasedCallbackReceiver {
         } else {
             return 0;
         }
+    }
+
+    @V8Function
+    public String disabledFunction() {
+        return "I am a disabled function.";
+    }
+
+    @V8Property
+    public String disabledProperty() {
+        return "I am a disabled property.";
     }
 
     // Instance method with same name and same signature.
@@ -104,6 +115,14 @@ public class MockAnnotationBasedCallbackReceiver {
     public String getStringValueWithThis(V8ValueObject thisObject) throws JavetException {
         count.incrementAndGet();
         return thisObject.getString("stringValue");
+    }
+
+    @V8BindEnabler
+    public boolean isV8BindEnabled(String methodName) {
+        if ("disabledFunction".equals(methodName) || "disabledProperty".equals(methodName)) {
+            return false;
+        }
+        return true;
     }
 
     // Instance method with different name and same signature.

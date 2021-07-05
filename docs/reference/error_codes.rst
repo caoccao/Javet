@@ -36,6 +36,7 @@ Code Type        Name                                   Format
 403  Callback    CallbackInjectionFailure               Failed to inject runtime with error message ${message}                                                                                                           
 404  Callback    CallbackRegistrationFailure            Callback ${methodName} registration failed with error message ${message}                                                                                         
 501  Converter   ConverterFailure                       Failed to convert values with error message ${message}                                                                                                           
+502  Converter   ConverterCircularStructure             Circular structure is detected with max depth ${maxDepth} reached                                                                                                
 601  Module      ModuleNameEmpty                        Module name is empty                                                                                                                                             
 701  Lock        LockAcquisitionFailure                 Failed to acquire the lock                                                                                                                                       
 702  Lock        LockReleaseFailure                     Failed to release the lock                                                                                                                                       
@@ -45,13 +46,6 @@ Code Type        Name                                   Format
 803  Runtime     RuntimeNotRegistered                   Runtime is not registered                                                                                                                                        
 804  Runtime     RuntimeLeakageDetected                 ${count} runtime(s) leakage is detected                                                                                                                          
 ==== =========== ====================================== =================================================================================================================================================================
-
-
-.. Error Codes End
-
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]
-====================================================================================================================================
 
 
 .. Error Codes End

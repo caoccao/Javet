@@ -85,6 +85,14 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
     boolean sameValue(V8Value v8Value) throws JavetException;
 
     /**
+     * Sets V8 runtime.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException the javet exception
+     */
+    void setV8Runtime(V8Runtime v8Runtime) throws JavetException;
+
+    /**
      * Strict equals boolean.
      * <p>
      * The behavior is different from JS behavior but is the same as Java behavior.

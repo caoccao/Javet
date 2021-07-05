@@ -26,15 +26,41 @@ import com.caoccao.javet.values.V8Value;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type V8 virtual value list.
+ *
+ * @since 0.8.5
+ */
 @SuppressWarnings("unchecked")
 public class V8VirtualValueList implements IJavetClosable {
+    /**
+     * The To be closed values.
+     *
+     * @since 0.8.5
+     */
     protected List<V8Value> toBeClosedValues;
+    /**
+     * The Values.
+     *
+     * @since 0.8.5
+     */
     protected List<V8Value> values;
 
+    /**
+     * Instantiates a new V8 virtual value list.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param objects   the objects
+     * @throws JavetException the javet exception
+     * @since 0.8.5
+     */
     public V8VirtualValueList(V8Runtime v8Runtime, Object... objects) throws JavetException {
-        toBeClosedValues = new ArrayList<>(objects.length);
-        values = new ArrayList<>(objects.length);
-        if (objects != null && objects.length > 0) {
+        if (objects == null || objects.length == 0) {
+            toBeClosedValues = null;
+            values = null;
+        } else {
+            toBeClosedValues = new ArrayList<>(objects.length);
+            values = new ArrayList<>(objects.length);
             for (Object object : objects) {
                 if (object instanceof V8Value) {
                     values.add((V8Value) object);
@@ -52,7 +78,13 @@ public class V8VirtualValueList implements IJavetClosable {
         JavetResourceUtils.safeClose(toBeClosedValues);
     }
 
+    /**
+     * Get V8 value array.
+     *
+     * @return the V8 value array
+     * @since 0.8.5
+     */
     public V8Value[] get() {
-        return values.toArray(new V8Value[0]);
+        return values == null ? new V8Value[0] : values.toArray(new V8Value[0]);
     }
 }

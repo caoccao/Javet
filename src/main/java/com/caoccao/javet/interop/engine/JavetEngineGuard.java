@@ -35,7 +35,7 @@ public class JavetEngineGuard implements IJavetEngineGuard {
 
     protected Future<?> future;
     protected IJavetEngine<?> iJavetEngine;
-    protected boolean quitting;
+    protected volatile boolean quitting;
     protected boolean skipInDebugMode;
     protected long timeoutMillis;
     protected V8Runtime v8Runtime;

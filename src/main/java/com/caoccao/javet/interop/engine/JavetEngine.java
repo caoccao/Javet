@@ -26,7 +26,7 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
-    protected boolean active;
+    protected volatile boolean active;
     protected IJavetEnginePool<R> iJavetEnginePool;
     protected JavetEngineUsage usage;
     protected R v8Runtime;

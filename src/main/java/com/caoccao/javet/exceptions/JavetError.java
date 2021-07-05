@@ -50,6 +50,8 @@ public class JavetError {
     public static final String PARAMETER_PATH = "path";
     public static final String PARAMETER_REASON = "reason";
 
+    public static final String PARAMETER_MAX_DEPTH = "maxDepth";
+
     public static final JavetError OSNotSupported = new JavetError(
             101, JavetErrorType.System, "OS ${OS} is not supported");
     public static final JavetError LibraryNotFound = new JavetError(
@@ -80,6 +82,8 @@ public class JavetError {
 
     public static final JavetError ConverterFailure = new JavetError(
             501, JavetErrorType.Converter, "Failed to convert values with error message ${message}");
+    public static final JavetError ConverterCircularStructure = new JavetError(
+            502, JavetErrorType.Converter, "Circular structure is detected with max depth ${maxDepth} reached");
 
     public static final JavetError ModuleNameEmpty = new JavetError(
             601, JavetErrorType.Module, "Module name is empty");

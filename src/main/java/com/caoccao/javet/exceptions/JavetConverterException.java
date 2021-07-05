@@ -19,6 +19,8 @@ package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.utils.SimpleMap;
 
+import java.util.Map;
+
 /**
  * The type Javet converter exception is for JNI.
  */
@@ -26,9 +28,31 @@ public class JavetConverterException extends JavetException {
     /**
      * Instantiates a new Javet converter exception.
      *
+     * @param error      the error
+     * @param parameters the parameters
+     */
+    protected JavetConverterException(JavetError error, Map<String, Object> parameters) {
+        super(error, parameters);
+    }
+
+    /**
+     * Instantiates a new Javet converter exception.
+     *
      * @param message the message
      */
     public JavetConverterException(String message) {
-        super(JavetError.ConverterFailure, SimpleMap.of(JavetError.PARAMETER_MESSAGE, message));
+        this(JavetError.ConverterFailure, SimpleMap.of(JavetError.PARAMETER_MESSAGE, message));
+    }
+
+    /**
+     * Circular structure.
+     *
+     * @param maxDepth the max depth
+     * @return the javet converter exception
+     */
+    public static JavetConverterException circularStructure(int maxDepth) {
+        return new JavetConverterException(
+                JavetError.ConverterCircularStructure,
+                SimpleMap.of(JavetError.PARAMETER_MAX_DEPTH, maxDepth));
     }
 }

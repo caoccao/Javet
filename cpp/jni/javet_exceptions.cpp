@@ -29,11 +29,17 @@ namespace Javet {
 
 			jclassJavetCompilationException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetCompilationException"));
 			jmethodIDJavetCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetCompilationException, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
+
 			jclassJavetConverterException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetConverterException"));
+
 			jclassJavetExecutionException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetExecutionException"));
 			jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
+
 			jclassJavetTerminatedException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetTerminatedException"));
 			jmethodIDJavetTerminatedExceptionConstructor = jniEnv->GetMethodID(jclassJavetTerminatedException, "<init>", "(Z)V");
+
+			jclassThrowable = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/lang/Throwable"));
+			jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
 		}
 
 		void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
@@ -115,6 +121,23 @@ namespace Javet {
 				jmethodIDJavetTerminatedExceptionConstructor,
 				canContinue);
 			jniEnv->Throw(javetTerminatedException);
+		}
+
+		void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage) {
+			auto v8Isolate = v8Context->GetIsolate();
+			jthrowable externalException = jniEnv->ExceptionOccurred();
+			jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
+			jniEnv->ExceptionClear();
+			V8LocalString v8ErrorMessage;
+			if (externalErrorMessage == nullptr) {
+				v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, defaultMessage).ToLocalChecked();
+			}
+			else {
+				v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, externalErrorMessage);
+				jniEnv->DeleteLocalRef(externalErrorMessage);
+			}
+			v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
+			jniEnv->DeleteLocalRef(externalException);
 		}
 	}
 }

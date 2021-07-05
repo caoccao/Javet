@@ -23,42 +23,131 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * The interface Javet converter.
+ *
+ * @since 0.7.1
+ */
 @SuppressWarnings("unchecked")
 public interface IJavetConverter {
+    /**
+     * Gets default boolean.
+     *
+     * @return the default boolean
+     * @since 0.8.2
+     */
     default boolean getDefaultBoolean() {
         return false;
     }
 
+    /**
+     * Gets default byte.
+     *
+     * @return the default byte
+     * @since 0.8.2
+     */
     default byte getDefaultByte() {
         return (byte) 0;
     }
 
+    /**
+     * Gets default char.
+     *
+     * @return the default char
+     * @since 0.8.2
+     */
     default char getDefaultChar() {
         return '\0';
     }
 
+    /**
+     * Gets default double.
+     *
+     * @return the default double
+     * @since 0.8.2
+     */
     default double getDefaultDouble() {
         return 0D;
     }
 
+    /**
+     * Gets default float.
+     *
+     * @return the default float
+     * @since 0.8.2
+     */
     default float getDefaultFloat() {
         return 0F;
     }
 
+    /**
+     * Gets default int.
+     *
+     * @return the default int
+     * @since 0.8.2
+     */
     default int getDefaultInt() {
         return 0;
     }
 
+    /**
+     * Gets default long.
+     *
+     * @return the default long
+     * @since 0.8.2
+     */
     default long getDefaultLong() {
         return 0L;
     }
 
+    /**
+     * Gets default short.
+     *
+     * @return the default short
+     * @since 0.8.2
+     */
     default short getDefaultShort() {
         return (short) 0;
     }
 
+    /**
+     * Gets max depth.
+     *
+     * @return the max depth
+     * @since 0.9.3
+     */
+    int getMaxDepth();
+
+    /**
+     * Sets max depth.
+     *
+     * @param maxDepth the max depth
+     * @since 0.9.3
+     */
+    void setMaxDepth(int maxDepth);
+
+    /**
+     * To object.
+     * <p>
+     * Don't override this function, instead, override the one with depth as argument
+     * for circular structure detection.
+     *
+     * @param v8Value the V8 value
+     * @return the object
+     * @throws JavetException the javet exception
+     * @since 0.7.1
+     */
     Object toObject(V8Value v8Value) throws JavetException;
 
+    /**
+     * To object.
+     *
+     * @param v8Value   the V8 value
+     * @param autoClose the auto close
+     * @return the object
+     * @throws JavetException the javet exception
+     * @since 0.8.5
+     */
     default Object toObject(V8Value v8Value, boolean autoClose) throws JavetException {
         if (autoClose) {
             try {
@@ -71,6 +160,19 @@ public interface IJavetConverter {
         }
     }
 
+    /**
+     * To V8 value.
+     * <p>
+     * Don't override this function, instead, override the one with depth as argument
+     * for circular structure detection.
+     *
+     * @param <T>       the type parameter
+     * @param v8Runtime the V8 runtime
+     * @param object    the object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
     @CheckReturnValue
     <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException;
 }

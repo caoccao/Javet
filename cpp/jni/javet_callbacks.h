@@ -39,9 +39,6 @@ namespace Javet {
 		static jclass jclassJavetResourceUtils;
 		static jmethodID jmethodIDJavetResourceUtilsSafeClose;
 
-		static jclass jclassThrowable;
-		static jmethodID jmethodIDThrowableGetMessage;
-
 		static jclass jclassV8FunctionCallback;
 		static jmethodID jmethodIDV8FunctionCallbackReceiveCallback;
 

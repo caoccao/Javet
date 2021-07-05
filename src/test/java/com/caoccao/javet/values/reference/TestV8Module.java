@@ -21,6 +21,8 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetCompilationException;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.executors.IV8Executor;
+import com.caoccao.javet.mock.MockModuleResolver;
+import com.caoccao.javet.values.V8Value;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +36,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.containsV8Module(v8Module.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(4, v8Module.getScriptId());
+                assertTrue(3 <= v8Module.getScriptId() && v8Module.getScriptId() <= 4);
             }
             assertEquals("./test.js", v8Module.getResourceName());
             try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
@@ -67,7 +69,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.containsV8Module(v8Module1.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(4, v8Module1.getScriptId());
+                assertTrue(3 <= v8Module1.getScriptId() && v8Module1.getScriptId() <= 4);
             }
             assertTrue(v8Module1.instantiate());
             try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
@@ -79,7 +81,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
-                    assertEquals(5, v8Module2.getScriptId());
+                    assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
                 assertFalse(v8Module2.instantiate(), "Function is invalid");
                 assertNull(v8Module2.getException());
@@ -89,7 +91,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertTrue(v8Runtime.containsV8Module(v8Module3.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
-                    assertEquals(6, v8Module3.getScriptId());
+                    assertTrue(5 <= v8Module3.getScriptId() && v8Module3.getScriptId() <= 6);
                 }
                 assertFalse(v8Module3.instantiate(), "Module is invalid");
                 assertNull(v8Module3.getException());
@@ -150,7 +152,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.containsV8Module(v8Module1.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(4, v8Module1.getScriptId());
+                assertTrue(3 <= v8Module1.getScriptId() && v8Module1.getScriptId() <= 4);
             }
             assertTrue(v8Module1.instantiate());
             try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
@@ -168,7 +170,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
-                    assertEquals(5, v8Module2.getScriptId());
+                    assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
                 assertTrue(v8Module2.instantiate());
                 try (V8ValuePromise v8ValuePromise = v8Module2.evaluate()) {
@@ -186,13 +188,35 @@ public class TestV8Module extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testInvalidModuleResolver() throws JavetException {
+        assertEquals(0, v8Runtime.getV8ModuleCount());
+        MockModuleResolver resolver = new MockModuleResolver("./test.js", "a b c");
+        v8Runtime.setV8ModuleResolver(resolver);
+        assertFalse(resolver.isCalled());
+        try (V8Value v8Value = v8Runtime.getExecutor("import { test } from './test.js';")
+                .setResourceName("./case.js").setModule(true).execute()) {
+            fail("Failed to report SyntaxError.");
+        } catch (JavetCompilationException e) {
+            assertEquals(
+                    "Error: SyntaxError: Unexpected identifier\n" +
+                            "Resource: ./test.js\n" +
+                            "Source Code: a b c\n" +
+                            "Line Number: 1\n" +
+                            "Column: 2, 3\n" +
+                            "Position: 2, 3",
+                    e.getScriptingError().toString());
+        }
+        assertTrue(resolver.isCalled());
+    }
+
+    @Test
     public void testStatusConversion() throws JavetException {
         try (V8Module v8Module = v8Runtime.getExecutor(
                 "export function test() { return 1; }").setResourceName("./test.js").compileV8Module()) {
             assertTrue(v8Runtime.containsV8Module(v8Module.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(4, v8Module.getScriptId());
+                assertTrue(3 <= v8Module.getScriptId() && v8Module.getScriptId() <= 4);
             }
             assertNotNull(v8Module);
             assertEquals(V8Module.Uninstantiated, v8Module.getStatus());
@@ -219,6 +243,43 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertFalse(v8Runtime.containsV8Module("./test.js"));
             assertEquals(0, v8Runtime.getV8ModuleCount());
             assertEquals("SyntaxError: Unexpected identifier", e.getScriptingError().getMessage());
+        }
+    }
+
+    @Test
+    public void testValidModuleResolver() throws JavetException {
+        assertEquals(0, v8Runtime.getV8ModuleCount());
+        MockModuleResolver resolver = new MockModuleResolver(
+                "./test.js",
+                "export function test() { return 1; }");
+        v8Runtime.setV8ModuleResolver(resolver);
+        assertFalse(resolver.isCalled());
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "import { test } from './test.js'; globalThis.test = test;")
+                .setResourceName("./case.js").setModule(true).execute()) {
+            assertEquals(1, v8Runtime.getV8ModuleCount());
+            assertTrue(resolver.isCalled(), "Module resolver should be called in the first time.");
+            assertTrue(v8ValuePromise.isFulfilled());
+            assertEquals(1, v8Runtime.getExecutor("test()").executeInteger());
+        }
+        resolver.setCalled(false);
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "import { test } from './test.js'; globalThis.test = test;")
+                .setResourceName("./case.js").setModule(true).execute()) {
+            assertEquals(1, v8Runtime.getV8ModuleCount());
+            assertFalse(resolver.isCalled(), "Module resolver should not be called in the second time because it is cached.");
+            assertTrue(v8ValuePromise.isFulfilled());
+            assertEquals(1, v8Runtime.getExecutor("test()").executeInteger());
+        }
+        v8Runtime.removeV8Modules(true);
+        assertEquals(0, v8Runtime.getV8ModuleCount());
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "import { test } from './test.js'; globalThis.test = test;")
+                .setResourceName("./case.js").setModule(true).execute()) {
+            assertEquals(1, v8Runtime.getV8ModuleCount());
+            assertTrue(resolver.isCalled(), "Module resolver should be called after modules are cleared.");
+            assertTrue(v8ValuePromise.isFulfilled());
+            assertEquals(1, v8Runtime.getExecutor("test()").executeInteger());
         }
     }
 }

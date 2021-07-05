@@ -20,6 +20,8 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetConverterException;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.values.reference.*;
@@ -90,6 +92,25 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals(2, v8ValueArray.getLength());
             assertEquals(1, v8ValueArray.getInteger(0));
             assertEquals("abc", v8ValueArray.getString(1));
+        }
+    }
+
+    @Test
+    public void testCircularStructure() throws JavetException {
+        String codeString = "const a = {x: 1};\n" +
+                "var b = {y: a, z: 2};\n" +
+                "a.x = b;";
+        v8Runtime.getExecutor(codeString).executeVoid();
+        try (V8ValueObject v8ValueObject = v8Runtime.getGlobalObject().get("b")) {
+            assertEquals(2, v8ValueObject.getInteger("z"));
+            try {
+                Object b = v8Runtime.toObject(v8ValueObject);
+            } catch (JavetConverterException e) {
+                assertEquals(JavetError.ConverterCircularStructure, e.getError());
+                assertEquals(
+                        JavetPrimitiveConverter.DEFAULT_MAX_DEPTH,
+                        e.getParameters().get(JavetError.PARAMETER_MAX_DEPTH));
+            }
         }
     }
 

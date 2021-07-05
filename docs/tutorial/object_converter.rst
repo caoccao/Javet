@@ -59,6 +59,8 @@ Then, create a generic PojoConverter.
 
 * It is generic enough to cover all kinds of Pojo objects in a recursive way.
 * There is no need to deal with primitive types because the parent converter handles that.
+* Always override the methods with depth as argument for circular structure detection.
+* Always increment the depth in recursive call.
 
 .. code-block:: java
 
@@ -81,8 +83,9 @@ Then, create a generic PojoConverter.
         }
 
         @Override
-        public V8Value toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
-            V8Value v8Value = super.toV8Value(v8Runtime, object);
+        protected V8Value toV8Value(
+                V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
+            V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
             if (v8Value != null && !(v8Value.isUndefined())) {
                 return v8Value;
             }
@@ -102,7 +105,7 @@ Then, create a generic PojoConverter.
                                 + methodName.substring(METHOD_PREFIX_GET.length() + 1);
                     }
                     if (propertyName != null) {
-                        try (V8Value v8ValueTemp = toV8Value(v8Runtime, method.invoke(object))) {
+                        try (V8Value v8ValueTemp = toV8Value(v8Runtime, method.invoke(object), depth + 1)) {
                             v8ValueObject.set(propertyName, v8ValueTemp);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -151,7 +154,9 @@ What if the object converter meets ``null`` or ``undefined`` when target type is
 Circular Structure
 ==================
 
-It is inefficient and inconvenient for Javet to detect circular structure during object conversion. So, how to detect that in application? The recommended approach is to catch ``java.lang.StackOverflowError``. It only takes 10-30ms for the object converter to throw this exception. The actual time depends on how complex the object is. You are welcome proposing a better approach.
+It is inefficient and inconvenient for Javet to substantially detect circular structure during object conversion. Instead, Javet converter keeps increasing the depth of recursion and throws ``JavetConverterException`` when maximum depth is reach. Maximum depth can be changed before object conversion is started. This is a cheap operation with high performance.
+
+Please avoid setting maximum depth to an unrealistic number because JVM will throw ``StackOverflowError`` which brings considerable performance overhead. The thing worse than that is there will be memory leak because resource recycling logic written in ``finally`` block sometimes won't be called when stack overflow occurs. Attackers may easily drain the server resource in minutes by sending tiny circular structure data.
 
 Final Note
 ==========
