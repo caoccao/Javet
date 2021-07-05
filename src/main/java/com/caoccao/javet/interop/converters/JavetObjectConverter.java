@@ -27,21 +27,47 @@ import com.caoccao.javet.values.reference.*;
 
 import java.util.*;
 
+/**
+ * The type Javet object converter.
+ */
 @SuppressWarnings("unchecked")
 public class JavetObjectConverter extends JavetPrimitiveConverter {
 
+    /**
+     * The constant FUNCTION_ANONYMOUS.
+     */
     protected static final String FUNCTION_ANONYMOUS = "[Function (anonymous)]";
+    /**
+     * The constant PROPERTY_CONSTRUCTOR.
+     */
     protected static final String PROPERTY_CONSTRUCTOR = "constructor";
+    /**
+     * The constant PROPERTY_NAME.
+     */
     protected static final String PROPERTY_NAME = "name";
 
+    /**
+     * Instantiates a new Javet object converter.
+     */
     public JavetObjectConverter() {
         super();
     }
 
+    /**
+     * Create entity map map.
+     *
+     * @return the map
+     */
     protected Map<String, Object> createEntityMap() {
         return new JavetEntityMap();
     }
 
+    /**
+     * Is entity map boolean.
+     *
+     * @param object the object
+     * @return the boolean
+     */
     protected boolean isEntityMap(Object object) {
         return object instanceof JavetEntityMap;
     }
