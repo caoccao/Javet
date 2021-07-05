@@ -135,6 +135,14 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(3, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
+            assertFalse(v8ValueObject.hasOwnProperty("disabledFunction"));
+            assertThrows(JavetException.class, () -> {
+                v8Runtime.getExecutor("a.disabledFunction()").executeString();
+            });
+            assertFalse(v8ValueObject.hasOwnProperty("disabledProperty"));
+            try (V8Value v8Value = v8Runtime.getExecutor("a.disabledProperty").execute()) {
+                assertTrue(v8Value.isUndefined());
+            }
             v8Runtime.getGlobalObject().delete("a");
         }
         v8Runtime.lowMemoryNotification();

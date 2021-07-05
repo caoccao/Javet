@@ -146,6 +146,33 @@ The second step is to call the functions or properties.
         v8Runtime.getGlobalObject().delete("a");
     }
 
+How to Disable Properties or Functions?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way of selectively disabling them. ``@V8BindEnabler`` is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.
+
+.. code-block:: java
+
+    @V8Function
+    public String disabledFunction() {
+        return "I am a disabled function.";
+    }
+
+    @V8Property
+    public String disabledProperty() {
+        return "I am a disabled property.";
+    }
+
+    @V8BindEnabler
+    public boolean isV8BindEnabled(String methodName) {
+        if ("disabledFunction".equals(methodName) || "disabledProperty".equals(methodName)) {
+            return false;
+        }
+        return true;
+    }
+
+``@V8BindEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
+
 Manual Registration
 -------------------
 
