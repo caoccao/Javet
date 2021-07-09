@@ -23,7 +23,9 @@ import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueBuiltInJson extends BaseTestJavetRuntime {
     @Test
@@ -45,5 +47,12 @@ public class TestV8ValueBuiltInJson extends BaseTestJavetRuntime {
                         e.getMessage());
             }
         }
+    }
+
+    @Test
+    public void testConversion() throws JavetException {
+        Object jsonObject = v8Runtime.toObject(v8Runtime.getGlobalObject().getBuiltInJson(), true);
+        assertTrue(jsonObject instanceof Map);
+        assertTrue(((Map) jsonObject).isEmpty());
     }
 }

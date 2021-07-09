@@ -50,12 +50,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         config = new JavetConverterConfig();
     }
 
-    /**
-     * Gets config.
-     *
-     * @return the config
-     * @since 0.9.4
-     */
+    @Override
     public JavetConverterConfig getConfig() {
         return config;
     }
@@ -178,6 +173,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
      *
      * @param depth the depth
      * @throws JavetException the javet exception
+     * @since 0.9.3
      */
     protected void validateDepth(final int depth) throws JavetException {
         if (depth >= config.getMaxDepth()) {

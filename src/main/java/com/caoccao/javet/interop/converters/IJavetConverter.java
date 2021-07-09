@@ -31,6 +31,14 @@ import com.caoccao.javet.values.V8Value;
 @SuppressWarnings("unchecked")
 public interface IJavetConverter {
     /**
+     * Gets config.
+     *
+     * @return the config
+     * @since 0.9.4
+     */
+    JavetConverterConfig getConfig();
+
+    /**
      * Gets default boolean.
      *
      * @return the default boolean
