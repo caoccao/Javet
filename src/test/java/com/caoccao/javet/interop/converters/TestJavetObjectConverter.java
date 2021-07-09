@@ -18,12 +18,15 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.entities.JavetEntityFunction;
 import com.caoccao.javet.entities.JavetEntityMap;
+import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 import org.junit.jupiter.api.Test;
 
@@ -36,13 +39,38 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     @Test
     public void testAnonymousFunction() throws JavetException {
-        IJavetConverter converter = new JavetObjectConverter();
-        Object object = converter.toObject(v8Runtime.getExecutor("const x = {a: 1, b: () => 1}; x;").execute(), true);
+        String codeString = "const x = {a: 1, b: () => 1}; x;";
+        JavetObjectConverter converter = new JavetObjectConverter();
+        converter.setSkipFunctionInObject(false);
+        converter.setExtractFunctionSourceCode(true);
+        Object object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
         assertTrue(object instanceof Map);
         Map map = (Map) object;
         assertEquals(2, map.size());
         assertEquals(1, map.get("a"));
-        assertEquals("[Function (anonymous)]", map.get("b"));
+        JavetEntityFunction javetEntityFunction = (JavetEntityFunction) map.get("b");
+        assertTrue(javetEntityFunction.getJSFunctionType().isUserDefined());
+        assertEquals("() => 1", javetEntityFunction.getSourceCode());
+        v8Runtime.resetContext();
+        converter.setExtractFunctionSourceCode(false);
+        object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
+        map = (Map) object;
+        assertNull(((JavetEntityFunction) map.get("b")).getSourceCode());
+        v8Runtime.resetContext();
+        converter.setSkipFunctionInObject(true);
+        object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
+        map = (Map) object;
+        assertEquals(1, map.size());
+        assertEquals(1, map.get("a"));
+        v8Runtime.resetContext();
+        map.clear();
+        javetEntityFunction = new JavetEntityFunction("() => 2");
+        javetEntityFunction.setJSFunctionType(JSFunctionType.UserDefined);
+        map.put("a", javetEntityFunction);
+        try (V8Value v8Value = converter.toV8Value(v8Runtime, map)) {
+            v8Runtime.getGlobalObject().set("x", v8Value);
+        }
+        assertEquals(2, v8Runtime.getExecutor("x.a()").executeInteger());
     }
 
     @Test
