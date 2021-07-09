@@ -50,26 +50,14 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      * @since 0.7.2
      */
     protected static final String PROPERTY_NAME = "name";
-    /**
-     * The Extract function source code.
-     *
-     * @since 0.9.4
-     */
-    protected boolean extractFunctionSourceCode;
-    /**
-     * This flag determines whether function should be skipped in object or not.
-     *
-     * @since 0.9.4
-     */
-    protected boolean skipFunctionInObject;
 
     /**
      * Instantiates a new Javet object converter.
+     *
+     * @since 0.7.1
      */
     public JavetObjectConverter() {
         super();
-        extractFunctionSourceCode = false;
-        skipFunctionInObject = true;
     }
 
     /**
@@ -90,46 +78,6 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      */
     protected Map<String, Object> createEntityMap() {
         return new JavetEntityMap();
-    }
-
-    /**
-     * Is extract function source code boolean.
-     *
-     * @return the boolean
-     * @since 0.9.4
-     */
-    public boolean isExtractFunctionSourceCode() {
-        return extractFunctionSourceCode;
-    }
-
-    /**
-     * Is skip functions boolean.
-     *
-     * @return the boolean
-     * @since 0.9.4
-     */
-    public boolean isSkipFunctionInObject() {
-        return skipFunctionInObject;
-    }
-
-    /**
-     * Sets extract function source code.
-     *
-     * @param extractFunctionSourceCode the extract function source code
-     * @since 0.9.4
-     */
-    public void setExtractFunctionSourceCode(boolean extractFunctionSourceCode) {
-        this.extractFunctionSourceCode = extractFunctionSourceCode;
-    }
-
-    /**
-     * Sets skip functions.
-     *
-     * @param skipFunctionInObject the skip functions
-     * @since 0.9.4
-     */
-    public void setSkipFunctionInObject(boolean skipFunctionInObject) {
-        this.skipFunctionInObject = skipFunctionInObject;
     }
 
     @Override
@@ -178,7 +126,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
         } else if (v8Value instanceof V8ValueFunction) {
             IJavetEntityFunction javetEntityFunction = createEntityFunction();
-            if (extractFunctionSourceCode) {
+            if (config.isExtractFunctionSourceCode()) {
                 V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
                 javetEntityFunction.setJSFunctionType(v8ValueFunction.getJSFunctionType());
                 switch (javetEntityFunction.getJSFunctionType()) {
@@ -203,7 +151,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     map.put(PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
                 } else {
                     Object object = toObject(value, depth + 1);
-                    if (!(skipFunctionInObject && object instanceof JavetEntityFunction)) {
+                    if (!(config.isSkipFunctionInObject() && object instanceof JavetEntityFunction)) {
                         map.put(keyString, object);
                     }
                 }

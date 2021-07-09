@@ -41,8 +41,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     public void testAnonymousFunction() throws JavetException {
         String codeString = "const x = {a: 1, b: () => 1}; x;";
         JavetObjectConverter converter = new JavetObjectConverter();
-        converter.setSkipFunctionInObject(false);
-        converter.setExtractFunctionSourceCode(true);
+        converter.getConfig().setSkipFunctionInObject(false).setExtractFunctionSourceCode(true);
         Object object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
         assertTrue(object instanceof Map);
         Map map = (Map) object;
@@ -52,12 +51,12 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         assertTrue(javetEntityFunction.getJSFunctionType().isUserDefined());
         assertEquals("() => 1", javetEntityFunction.getSourceCode());
         v8Runtime.resetContext();
-        converter.setExtractFunctionSourceCode(false);
+        converter.getConfig().setExtractFunctionSourceCode(false);
         object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
         map = (Map) object;
         assertNull(((JavetEntityFunction) map.get("b")).getSourceCode());
         v8Runtime.resetContext();
-        converter.setSkipFunctionInObject(true);
+        converter.getConfig().setSkipFunctionInObject(true);
         object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
         map = (Map) object;
         assertEquals(1, map.size());
@@ -136,7 +135,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             } catch (JavetConverterException e) {
                 assertEquals(JavetError.ConverterCircularStructure, e.getError());
                 assertEquals(
-                        JavetPrimitiveConverter.DEFAULT_MAX_DEPTH,
+                        JavetConverterConfig.DEFAULT_MAX_DEPTH,
                         e.getParameters().get(JavetError.PARAMETER_MAX_DEPTH));
             }
         }

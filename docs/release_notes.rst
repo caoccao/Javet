@@ -5,6 +5,7 @@ Release Notes
 0.9.4
 -----
 
+* Added ``JavetConverterConfig``
 * Added ``JavetEntityFunction`` for ``JavetObjectConverter``
 * Updated ``JavetObjectConverter`` to allow skipping functions
 

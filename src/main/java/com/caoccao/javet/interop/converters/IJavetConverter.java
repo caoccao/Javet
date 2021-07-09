@@ -111,22 +111,6 @@ public interface IJavetConverter {
     }
 
     /**
-     * Gets max depth.
-     *
-     * @return the max depth
-     * @since 0.9.3
-     */
-    int getMaxDepth();
-
-    /**
-     * Sets max depth.
-     *
-     * @param maxDepth the max depth
-     * @since 0.9.3
-     */
-    void setMaxDepth(int maxDepth);
-
-    /**
      * To object.
      * <p>
      * Don't override this function, instead, override the one with depth as argument
