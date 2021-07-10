@@ -30,6 +30,54 @@ public class JavetConverterConfig {
      */
     public static final int DEFAULT_MAX_DEPTH = 20;
     /**
+     * The Default boolean.
+     *
+     * @since 0.9.4
+     */
+    protected boolean defaultBoolean;
+    /**
+     * The Default byte.
+     *
+     * @since 0.9.4
+     */
+    protected byte defaultByte;
+    /**
+     * The Default char.
+     *
+     * @since 0.9.4
+     */
+    protected char defaultChar;
+    /**
+     * The Default double.
+     *
+     * @since 0.9.4
+     */
+    protected double defaultDouble;
+    /**
+     * The Default float.
+     *
+     * @since 0.9.4
+     */
+    protected float defaultFloat;
+    /**
+     * The Default int.
+     *
+     * @since 0.9.4
+     */
+    protected int defaultInt;
+    /**
+     * The Default long.
+     *
+     * @since 0.9.4
+     */
+    protected long defaultLong;
+    /**
+     * The Default short.
+     *
+     * @since 0.9.4
+     */
+    protected short defaultShort;
+    /**
      * The Extract function source code.
      *
      * @since 0.9.4
@@ -54,9 +102,97 @@ public class JavetConverterConfig {
      * @since 0.9.4
      */
     public JavetConverterConfig() {
+        defaultBoolean = false;
+        defaultByte = (byte) 0;
+        defaultChar = '\0';
+        defaultDouble = 0D;
+        defaultFloat = 0F;
+        defaultInt = 0;
+        defaultLong = 0L;
+        defaultShort = 0;
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
         skipFunctionInObject = true;
+    }
+
+    /**
+     * Gets default boolean boolean.
+     *
+     * @return the boolean
+     * @since 0.9.4
+     */
+    public boolean getDefaultBoolean() {
+        return defaultBoolean;
+    }
+
+    /**
+     * Gets default byte.
+     *
+     * @return the default byte
+     * @since 0.9.4
+     */
+    public byte getDefaultByte() {
+        return defaultByte;
+    }
+
+    /**
+     * Gets default char.
+     *
+     * @return the default char
+     * @since 0.9.4
+     */
+    public char getDefaultChar() {
+        return defaultChar;
+    }
+
+    /**
+     * Gets default double.
+     *
+     * @return the default double
+     * @since 0.9.4
+     */
+    public double getDefaultDouble() {
+        return defaultDouble;
+    }
+
+    /**
+     * Gets default float.
+     *
+     * @return the default float
+     * @since 0.9.4
+     */
+    public float getDefaultFloat() {
+        return defaultFloat;
+    }
+
+    /**
+     * Gets default int.
+     *
+     * @return the default int
+     * @since 0.9.4
+     */
+    public int getDefaultInt() {
+        return defaultInt;
+    }
+
+    /**
+     * Gets default long.
+     *
+     * @return the default long
+     * @since 0.9.4
+     */
+    public long getDefaultLong() {
+        return defaultLong;
+    }
+
+    /**
+     * Gets default short.
+     *
+     * @return the default short
+     * @since 0.9.4
+     */
+    public short getDefaultShort() {
+        return defaultShort;
     }
 
     /**
@@ -87,6 +223,100 @@ public class JavetConverterConfig {
      */
     public boolean isSkipFunctionInObject() {
         return skipFunctionInObject;
+    }
+
+    /**
+     * Sets default boolean.
+     *
+     * @param defaultBoolean the default boolean
+     * @return the self
+     * @since 0.9.4
+     */
+    public JavetConverterConfig setDefaultBoolean(boolean defaultBoolean) {
+        this.defaultBoolean = defaultBoolean;
+        return this;
+    }
+
+    /**
+     * Sets default byte.
+     *
+     * @param defaultByte the default byte
+     * @return the self
+     * @since 0.9.4
+     */
+    public JavetConverterConfig setDefaultByte(byte defaultByte) {
+        this.defaultByte = defaultByte;
+        return this;
+    }
+
+    /**
+     * Sets default char.
+     *
+     * @param defaultChar the default char
+     * @since 0.9.4
+     */
+    public void setDefaultChar(char defaultChar) {
+        this.defaultChar = defaultChar;
+    }
+
+    /**
+     * Sets default double.
+     *
+     * @param defaultDouble the default double
+     * @return the self
+     * @since 0.9.4
+     */
+    public JavetConverterConfig setDefaultDouble(double defaultDouble) {
+        this.defaultDouble = defaultDouble;
+        return this;
+    }
+
+    /**
+     * Sets default float.
+     *
+     * @param defaultFloat the default float
+     * @return the self
+     * @since 0.9.4
+     */
+    public JavetConverterConfig setDefaultFloat(float defaultFloat) {
+        this.defaultFloat = defaultFloat;
+        return this;
+    }
+
+    /**
+     * Sets default int.
+     *
+     * @param defaultInt the default int
+     * @return the self
+     * @since 0.9.4
+     */
+    public JavetConverterConfig setDefaultInt(int defaultInt) {
+        this.defaultInt = defaultInt;
+        return this;
+    }
+
+    /**
+     * Sets default long.
+     *
+     * @param defaultLong the default long
+     * @return the self
+     * @since 0.9.4
+     */
+    public JavetConverterConfig setDefaultLong(long defaultLong) {
+        this.defaultLong = defaultLong;
+        return this;
+    }
+
+    /**
+     * Sets default short.
+     *
+     * @param defaultShort the default short
+     * @return the self
+     * @since 0.9.4
+     */
+    public JavetConverterConfig setDefaultShort(short defaultShort) {
+        this.defaultShort = defaultShort;
+        return this;
     }
 
     /**
