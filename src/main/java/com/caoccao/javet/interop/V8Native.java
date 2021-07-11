@@ -123,6 +123,9 @@ class V8Native implements IV8Native {
     public native Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native Object getPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
@@ -242,6 +245,10 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+
+    @Override
+    public native boolean setPrototype(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
 
     @Override
     public native boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);

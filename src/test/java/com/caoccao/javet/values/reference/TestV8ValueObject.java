@@ -279,6 +279,34 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testPrototype() throws JavetException {
+        v8Runtime.getExecutor("function A() {}; A.prototype.b = () => 2;").executeVoid();
+        v8Runtime.getExecutor("function B() {}").executeVoid();
+        try (V8ValueObject v8ValueObjectA = v8Runtime.getExecutor("A;").execute()) {
+            try (V8ValueObject v8ValueObjectPrototypeA = v8ValueObjectA.getPrototype()) {
+                assertTrue(v8ValueObjectPrototypeA.hasOwnProperty("b"));
+                assertFalse(v8ValueObjectPrototypeA.hasOwnProperty("a"));
+                v8ValueObjectPrototypeA.bindFunction("a", "() => 1");
+                assertTrue(v8ValueObjectPrototypeA.hasOwnProperty("a"));
+                try (V8ValueObject v8ValueObjectB = v8Runtime.getExecutor("B;").execute()) {
+                    try (V8ValueObject v8ValueObjectPrototypeB = v8ValueObjectB.getPrototype()) {
+                        assertFalse(v8ValueObjectPrototypeB.hasOwnProperty("b"));
+                        assertFalse(v8ValueObjectPrototypeB.hasOwnProperty("a"));
+                    }
+                    v8ValueObjectB.setPrototype(v8ValueObjectPrototypeA);
+                    try (V8ValueObject v8ValueObjectPrototypeB = v8ValueObjectB.getPrototype()) {
+                        assertTrue(v8ValueObjectPrototypeB.hasOwnProperty("b"));
+                        assertTrue(v8ValueObjectPrototypeB.hasOwnProperty("a"));
+                    }
+                }
+            }
+        }
+        assertEquals(1, v8Runtime.getExecutor("const a = new A(); a.a();").executeInteger());
+        assertEquals(1, v8Runtime.getExecutor("const b = new B(); b.a();").executeInteger());
+        assertEquals(2, v8Runtime.getExecutor("b.b();").executeInteger());
+    }
+
+    @Test
     public void testSetProperty() throws JavetException {
         ZonedDateTime now = ZonedDateTime.now();
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {

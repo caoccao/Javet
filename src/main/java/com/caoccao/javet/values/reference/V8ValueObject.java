@@ -39,6 +39,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String FUNCTION_ADD = "add";
     protected static final String FUNCTION_DELETE = "delete";
@@ -48,6 +49,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String METHOD_PREFIX_GET = "get";
     protected static final String METHOD_PREFIX_IS = "is";
     protected static final String METHOD_PREFIX_SET = "set";
+    protected static final String PROPERTY_PROTOTYPE = "prototype";
 
     protected V8ValueObject(long handle) {
         super(handle);
@@ -349,6 +351,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public <T extends IV8ValueObject> T getPrototype() throws JavetException {
+        return (T) get(PROPERTY_PROTOTYPE);
+    }
+
+    @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Object;
     }
@@ -419,6 +426,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
              V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, value)) {
             return v8Runtime.setProperty(this, virtualKey.get(), virtualValue.get());
         }
+    }
+
+    @Override
+    public boolean setPrototype(IV8ValueObject v8ValueObject) throws JavetException {
+        return set(PROPERTY_PROTOTYPE, v8ValueObject);
     }
 
     @Override

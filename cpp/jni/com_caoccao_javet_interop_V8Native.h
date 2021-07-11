@@ -225,6 +225,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPropertyNam
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getPrototype
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPrototype
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getSize
  * Signature: (JJI)I
  */
@@ -510,6 +518,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
   (JNIEnv *, jobject, jlong, jlong, jint, jobject, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setPrototype
+ * Signature: (JJIJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setPrototype
+  (JNIEnv *, jobject, jlong, jlong, jint, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

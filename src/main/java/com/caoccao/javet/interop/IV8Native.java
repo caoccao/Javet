@@ -81,6 +81,8 @@ public interface IV8Native {
 
     Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    Object getPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -166,6 +168,8 @@ public interface IV8Native {
     void setFlags(String flags);
 
     boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+
+    boolean setPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
 
     boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
 

@@ -442,6 +442,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
     }
 
+    public <T extends IV8ValueObject> T getPrototype(IV8ValueObject iV8ValueObject) throws JavetException {
+        return decorateV8Value((T) v8Native.getPrototype(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
+    }
+
     public int getReferenceCount() {
         return referenceMap.size();
     }
@@ -842,6 +847,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         decorateV8Values(key, value);
         return v8Native.setProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    public boolean setPrototype(
+            IV8ValueObject iV8ValueObject, IV8ValueObject iV8ValueObjectPrototype) throws JavetException {
+        decorateV8Value(iV8ValueObjectPrototype);
+        return v8Native.setPrototype(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
+                iV8ValueObjectPrototype.getHandle());
     }
 
     @SuppressWarnings("RedundantThrows")
