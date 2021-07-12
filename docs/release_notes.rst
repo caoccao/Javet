@@ -9,6 +9,7 @@ Release Notes
 * Added ``JavetEntityFunction`` for ``JavetObjectConverter``
 * Updated ``JavetObjectConverter`` to allow skipping functions
 * Added ``getPrototype()`` and ``setPrototype()`` to ``V8Runtime``
+* Changed the way that Javet libraries are deployed to be multi-process safe
 
 0.9.3
 -----
