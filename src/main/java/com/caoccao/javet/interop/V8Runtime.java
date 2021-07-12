@@ -727,12 +727,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
-    public void removeV8Module(String resourceName) {
-        v8ModuleMap.remove(resourceName);
+    public void removeV8Module(String resourceName, boolean forceClose) throws JavetException {
+        IV8Module iV8Module = v8ModuleMap.remove(resourceName);
+        if (forceClose && iV8Module != null) {
+            iV8Module.close(true);
+        }
     }
 
-    public void removeV8Module(IV8Module iV8Module) {
-        v8ModuleMap.remove(iV8Module.getResourceName());
+    public void removeV8Module(String resourceName) throws JavetException {
+        removeV8Module(resourceName, false);
+    }
+
+    public void removeV8Module(IV8Module iV8Module) throws JavetException {
+        removeV8Module(iV8Module, false);
+    }
+
+    public void removeV8Module(IV8Module iV8Module, boolean forceClose) throws JavetException {
+        removeV8Module(iV8Module.getResourceName(), forceClose);
     }
 
     public void removeV8Modules() throws JavetException {
