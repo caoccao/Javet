@@ -30,11 +30,11 @@ public final class JavetOSUtils {
 
     static {
         String processName = ManagementFactory.getRuntimeMXBean().getName();
-        if (IS_WINDOWS) {
-            PROCESS_ID = Long.parseLong(processName.substring(0, processName.indexOf("@")));
-        } else {
-            PROCESS_ID = Long.parseLong(processName);
+        int positionOfSeparator = processName.indexOf("@");
+        if (positionOfSeparator > 0) {
+            processName = processName.substring(0, positionOfSeparator);
         }
+        PROCESS_ID = Long.parseLong(processName);
     }
 
     private JavetOSUtils() {
