@@ -39,7 +39,7 @@ public final class JavetLibLoader {
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
-    private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 10L * 1000L; // 10 seconds
+    private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 60L * 1000L; // 1 minute
     private static final String OS_LINUX = "linux";
     private static final String OS_WINDOWS = "windows";
     private static final String RESOURCE_NAME_FORMAT = "/{0}";
@@ -96,7 +96,7 @@ public final class JavetLibLoader {
 
     private void deployLibFile(String resourceFileName, File libFile) {
         boolean isLibFileLocked = false;
-        if (libFile.exists()) {
+        if (libFile.exists() && libFile.canWrite()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 libFile.delete();

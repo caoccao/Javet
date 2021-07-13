@@ -140,7 +140,7 @@ Javet packages all the libraries in a single jar file and automatically loads co
 Multi-process Safety
 --------------------
 
-Javet is multi-process safe because it deploys the library files to ``system_temporary_directory/javet/pid`` to avoid race conditions during initialization. Also, Javet purges legacy libraries (at least 10 seconds old) at the beginning of the initialization.
+Javet is multi-process safe because it deploys the library files to ``system_temporary_directory/javet/pid`` to avoid race conditions during initialization. Also, Javet purges legacy libraries (at least 1 minute old) at the beginning of the initialization.
 
 Memory Leak Detection
 =====================
