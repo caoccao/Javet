@@ -31,100 +31,12 @@ import com.caoccao.javet.values.V8Value;
 @SuppressWarnings("unchecked")
 public interface IJavetConverter {
     /**
-     * Gets default boolean.
+     * Gets config.
      *
-     * @return the default boolean
-     * @since 0.8.2
+     * @return the config
+     * @since 0.9.4
      */
-    default boolean getDefaultBoolean() {
-        return false;
-    }
-
-    /**
-     * Gets default byte.
-     *
-     * @return the default byte
-     * @since 0.8.2
-     */
-    default byte getDefaultByte() {
-        return (byte) 0;
-    }
-
-    /**
-     * Gets default char.
-     *
-     * @return the default char
-     * @since 0.8.2
-     */
-    default char getDefaultChar() {
-        return '\0';
-    }
-
-    /**
-     * Gets default double.
-     *
-     * @return the default double
-     * @since 0.8.2
-     */
-    default double getDefaultDouble() {
-        return 0D;
-    }
-
-    /**
-     * Gets default float.
-     *
-     * @return the default float
-     * @since 0.8.2
-     */
-    default float getDefaultFloat() {
-        return 0F;
-    }
-
-    /**
-     * Gets default int.
-     *
-     * @return the default int
-     * @since 0.8.2
-     */
-    default int getDefaultInt() {
-        return 0;
-    }
-
-    /**
-     * Gets default long.
-     *
-     * @return the default long
-     * @since 0.8.2
-     */
-    default long getDefaultLong() {
-        return 0L;
-    }
-
-    /**
-     * Gets default short.
-     *
-     * @return the default short
-     * @since 0.8.2
-     */
-    default short getDefaultShort() {
-        return (short) 0;
-    }
-
-    /**
-     * Gets max depth.
-     *
-     * @return the max depth
-     * @since 0.9.3
-     */
-    int getMaxDepth();
-
-    /**
-     * Sets max depth.
-     *
-     * @param maxDepth the max depth
-     * @since 0.9.3
-     */
-    void setMaxDepth(int maxDepth);
+    JavetConverterConfig getConfig();
 
     /**
      * To object.

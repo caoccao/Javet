@@ -25,49 +25,46 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 /**
  * The type Javet primitive converter.
+ *
+ * @since 0.7.1
  */
 @SuppressWarnings("unchecked")
 public class JavetPrimitiveConverter implements IJavetConverter {
     /**
-     * The constant DEFAULT_MAX_DEPTH.
+     * The Config.
+     *
+     * @since 0.9.4
      */
-    public static final int DEFAULT_MAX_DEPTH = 20;
-    /**
-     * The Max depth.
-     */
-    protected int maxDepth;
+    protected JavetConverterConfig config;
 
     /**
      * Instantiates a new Javet primitive converter.
+     *
+     * @since 0.7.1
      */
     public JavetPrimitiveConverter() {
-        maxDepth = DEFAULT_MAX_DEPTH;
+        config = new JavetConverterConfig();
     }
 
     @Override
-    public int getMaxDepth() {
-        return maxDepth;
-    }
-
-    @Override
-    public void setMaxDepth(int maxDepth) {
-        this.maxDepth = maxDepth;
+    public JavetConverterConfig getConfig() {
+        return config;
     }
 
     /**
-     * To object.
-     * <p>
-     * Don't override this function, instead, override the one with depth as argument
-     * for circular structure detection.
+     * Sets config.
      *
-     * @param v8Value the V8 value
-     * @return the object
-     * @throws JavetException the javet exception
-     * @since 0.7.1
+     * @param config the config
+     * @since 0.9.4
      */
+    public void setConfig(JavetConverterConfig config) {
+        this.config = Objects.requireNonNull(config);
+    }
+
     @Override
     public final Object toObject(V8Value v8Value) throws JavetException {
         return toObject(v8Value, 0);
@@ -80,6 +77,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
      * @param depth   the depth
      * @return the object
      * @throws JavetException the javet exception
+     * @since 0.9.3
      */
     protected Object toObject(V8Value v8Value, final int depth) throws JavetException {
         validateDepth(depth);
@@ -91,19 +89,6 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         return v8Value;
     }
 
-    /**
-     * To V8 value.
-     * <p>
-     * Don't override this function, instead, override the one with depth as argument
-     * for circular structure detection.
-     *
-     * @param <T>       the type parameter
-     * @param v8Runtime the V8 runtime
-     * @param object    the object
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 0.7.2
-     */
     @SuppressWarnings("ConstantConditions")
     @Override
     @CheckReturnValue
@@ -112,14 +97,15 @@ public class JavetPrimitiveConverter implements IJavetConverter {
     }
 
     /**
-     * To v 8 value t.
+     * To V8 value.
      *
      * @param <T>       the type parameter
-     * @param v8Runtime the v 8 runtime
+     * @param v8Runtime the V8 runtime
      * @param object    the object
      * @param depth     the depth
-     * @return the t
+     * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.9.3
      */
     @SuppressWarnings("ConstantConditions")
     @CheckReturnValue
@@ -187,10 +173,11 @@ public class JavetPrimitiveConverter implements IJavetConverter {
      *
      * @param depth the depth
      * @throws JavetException the javet exception
+     * @since 0.9.3
      */
     protected void validateDepth(final int depth) throws JavetException {
-        if (depth >= maxDepth) {
-            throw JavetConverterException.circularStructure(maxDepth);
+        if (depth >= config.getMaxDepth()) {
+            throw JavetConverterException.circularStructure(config.getMaxDepth());
         }
     }
 

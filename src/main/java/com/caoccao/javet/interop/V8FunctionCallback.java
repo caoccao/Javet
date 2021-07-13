@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.converters.IJavetConverter;
+import com.caoccao.javet.interop.converters.JavetConverterConfig;
 import com.caoccao.javet.utils.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
@@ -44,22 +45,23 @@ public final class V8FunctionCallback {
                  * The following test is based on statistical analysis
                  * so that the performance can be maximized.
                  */
+                JavetConverterConfig config = converter.getConfig();
                 if (expectedClass == int.class) {
-                    return converter.getDefaultInt();
+                    return config.getDefaultInt();
                 } else if (expectedClass == boolean.class) {
-                    return converter.getDefaultBoolean();
+                    return config.getDefaultBoolean();
                 } else if (expectedClass == double.class) {
-                    return converter.getDefaultDouble();
+                    return config.getDefaultDouble();
                 } else if (expectedClass == float.class) {
-                    return converter.getDefaultFloat();
+                    return config.getDefaultFloat();
                 } else if (expectedClass == long.class) {
-                    return converter.getDefaultLong();
+                    return config.getDefaultLong();
                 } else if (expectedClass == short.class) {
-                    return converter.getDefaultShort();
+                    return config.getDefaultShort();
                 } else if (expectedClass == byte.class) {
-                    return converter.getDefaultByte();
+                    return config.getDefaultByte();
                 } else if (expectedClass == char.class) {
-                    return converter.getDefaultChar();
+                    return config.getDefaultChar();
                 }
             }
         } else if (expectedClass.isAssignableFrom(v8Value.getClass())) {
@@ -160,7 +162,8 @@ public final class V8FunctionCallback {
                             return ((Character) convertedObject).charValue();
                         } else if (convertedObjectClass == String.class) {
                             String convertedString = (String) convertedObject;
-                            return convertedString.length() > 0 ? convertedString.charAt(0) : converter.getDefaultChar();
+                            return convertedString.length() > 0 ?
+                                    convertedString.charAt(0) : converter.getConfig().getDefaultChar();
                         }
                     }
                 }

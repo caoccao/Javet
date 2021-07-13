@@ -442,6 +442,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
     }
 
+    public <T extends IV8ValueObject> T getPrototype(IV8ValueObject iV8ValueObject) throws JavetException {
+        return decorateV8Value((T) v8Native.getPrototype(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
+    }
+
     public int getReferenceCount() {
         return referenceMap.size();
     }
@@ -722,12 +727,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
-    public void removeV8Module(String resourceName) {
-        v8ModuleMap.remove(resourceName);
+    public void removeV8Module(String resourceName, boolean forceClose) throws JavetException {
+        IV8Module iV8Module = v8ModuleMap.remove(resourceName);
+        if (forceClose && iV8Module != null) {
+            iV8Module.close(true);
+        }
     }
 
-    public void removeV8Module(IV8Module iV8Module) {
-        v8ModuleMap.remove(iV8Module.getResourceName());
+    public void removeV8Module(String resourceName) throws JavetException {
+        removeV8Module(resourceName, false);
+    }
+
+    public void removeV8Module(IV8Module iV8Module) throws JavetException {
+        removeV8Module(iV8Module, false);
+    }
+
+    public void removeV8Module(IV8Module iV8Module, boolean forceClose) throws JavetException {
+        removeV8Module(iV8Module.getResourceName(), forceClose);
     }
 
     public void removeV8Modules() throws JavetException {
@@ -842,6 +858,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         decorateV8Values(key, value);
         return v8Native.setProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    public boolean setPrototype(
+            IV8ValueObject iV8ValueObject, IV8ValueObject iV8ValueObjectPrototype) throws JavetException {
+        decorateV8Value(iV8ValueObjectPrototype);
+        return v8Native.setPrototype(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
+                iV8ValueObjectPrototype.getHandle());
     }
 
     @SuppressWarnings("RedundantThrows")

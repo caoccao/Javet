@@ -134,8 +134,13 @@ Javet packages all the libraries in a single jar file and automatically loads co
     :alt: Javet Cross-platform
 
 * Javet calculates the library file name from OS and JS runtime.
-* Javet unpacks the library file from resource directory to system temporary directory.
-* Javet loads the library using either default classloader or custom classloader.
+* Javet unpacks the library files from resource directory to ``system_temporary_directory/javet/pid``.
+* Javet loads the library files using either default classloader or custom classloader.
+
+Multi-process Safety
+--------------------
+
+Javet is multi-process safe because it deploys the library files to ``system_temporary_directory/javet/pid`` to avoid race conditions during initialization. Also, Javet purges legacy libraries (at least 1 minute old) at the beginning of the initialization.
 
 Memory Leak Detection
 =====================

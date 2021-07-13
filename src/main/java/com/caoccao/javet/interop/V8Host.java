@@ -59,7 +59,7 @@ public final class V8Host implements AutoCloseable {
     private boolean isolateCreated;
     private JavetClassLoader javetClassLoader;
     private JavetException lastException;
-    private boolean libraryLoaded;
+    private volatile boolean libraryLoaded;
     private IV8Native v8Native;
 
     private V8Host(JSRuntimeType jsRuntimeType) {

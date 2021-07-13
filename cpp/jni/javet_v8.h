@@ -89,6 +89,7 @@ using V8Platform = v8::Platform;
 using V8StringUtf8Value = v8::String::Utf8Value;
 using V8StringValue = v8::String::Value;
 using V8TryCatch = v8::TryCatch;
+using V8ScriptCompilerSource = v8::ScriptCompiler::Source;
 
 // To Java
 

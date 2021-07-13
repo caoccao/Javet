@@ -149,7 +149,22 @@ This process is transparent and fully automated once the converter is set to ``V
 Null Safety
 ===========
 
-What if the object converter meets ``null`` or ``undefined`` when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in ``java.lang.NullPointerException``. Luckily, Javet object converter is null safe by injecting default primitive values and the default primitive values can be overridden. Please check out ``com.caoccao.javet.interop.converters.IJavetConverter#getDefault*`` for detail.
+What if the object converter meets ``null`` or ``undefined`` when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in ``java.lang.NullPointerException``. Luckily, Javet object converter is null safe by injecting default primitive values to ``JavetConverterConfig`` and these default primitive values can be overridden.
+
+Functions and Objects
+=====================
+
+There are few challenges in the object conversion.
+
+* V8 functions cannot be easily represented by Java objects.
+* V8 objects and maps cannot be easily differentiated in Java.
+* Sometimes unexpected functions from object conversion may break applications.
+
+So, Javet introduced ``IJavetEntityFunction`` and ``IJavetEntityMap`` so that V8 functions and V8 maps can be precisely represented in Java.
+
+Also, ``JavetConverterConfig`` exposes ``setSkipFunctionInObject(boolean)`` and ``setExtractFunctionSourceCode(boolean)`` to give application the opportunity to skip functions in objects or extract source code of functions.
+
+If the source code is provided to a user defined function, Javet object converter will inject that function from the source code automatically. That makes sure Java object from V8 object can be smoothly converted back to V8 object at both property and function levels.
 
 Circular Structure
 ==================

@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.entities;
 
+import com.caoccao.javet.interfaces.IJavetEntityMap;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +27,7 @@ import java.util.Map;
  *
  * @since 0.7.2
  */
-public class JavetEntityMap extends HashMap<String, Object> {
+public class JavetEntityMap extends HashMap<String, Object> implements IJavetEntityMap {
     /**
      * Instantiates a new Javet entity map.
      *

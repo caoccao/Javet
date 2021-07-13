@@ -20,26 +20,37 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.utils.SimpleMap;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    static final String LIB_VERSION = "0.9.3";
+    static final String LIB_VERSION = "0.9.4";
     private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
+    private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 60L * 1000L; // 1 minute
     private static final String OS_LINUX = "linux";
     private static final String OS_WINDOWS = "windows";
     private static final String RESOURCE_NAME_FORMAT = "/{0}";
+    private static final String TEMP_ROOT_NAME = "javet";
     private static final String XRR = "755";
+    private static IJavetLogger LOGGER = new JavetDefaultLogger(JavetLibLoader.class.getName());
+
+    static {
+        purgeLegacyLibraries();
+    }
+
     private final JSRuntimeType jsRuntimeType;
     private boolean loaded;
 
@@ -49,9 +60,43 @@ public final class JavetLibLoader {
         loaded = false;
     }
 
+    private static void purgeLegacyLibraries() {
+        File tempRootPath = new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME);
+        try {
+            for (File tempProcessIDPath : tempRootPath.listFiles()) {
+                if (tempProcessIDPath.isDirectory() &&
+                        tempProcessIDPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS < System.currentTimeMillis()) {
+                    try {
+                        boolean isLocked = false;
+                        for (File libFile : tempProcessIDPath.listFiles()) {
+                            if (libFile.delete()) {
+                                LOGGER.logDebug("Deleted {0}.", libFile.getAbsolutePath());
+                            } else {
+                                LOGGER.logDebug("{0} is locked.", libFile.getAbsolutePath());
+                                isLocked = true;
+                                break;
+                            }
+                        }
+                        if (!isLocked) {
+                            if (tempProcessIDPath.delete()) {
+                                LOGGER.logDebug("Deleted {0}.", tempProcessIDPath.getAbsolutePath());
+                            } else {
+                                LOGGER.logDebug("{0} is locked.", tempProcessIDPath.getAbsolutePath());
+                            }
+                        }
+                    } catch (Throwable t) {
+                        LOGGER.logError(t, "Failed to delete {0}.", tempProcessIDPath.getAbsolutePath());
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            LOGGER.logError(t, "Failed to clean up {0}.", tempRootPath.getAbsolutePath());
+        }
+    }
+
     private void deployLibFile(String resourceFileName, File libFile) {
         boolean isLibFileLocked = false;
-        if (libFile.exists()) {
+        if (libFile.exists() && libFile.canWrite()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 libFile.delete();
@@ -117,15 +162,23 @@ public final class JavetLibLoader {
         return loaded;
     }
 
-    public void load()
-            throws JavetException {
+    public void load() throws JavetException, IOException {
         if (!loaded) {
             String resourceFileName = getResourceFileName();
-            File libFile = new File(JavetOSUtils.TEMP_DIRECTORY, resourceFileName).getAbsoluteFile();
+            File tempRootPath = new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME);
+            File tempProcessIDPath = new File(tempRootPath, Long.toString(JavetOSUtils.PROCESS_ID));
+            if (!tempProcessIDPath.exists()) {
+                tempProcessIDPath.mkdirs();
+            }
+            File libFile = new File(tempProcessIDPath, resourceFileName).getAbsoluteFile();
             try {
                 deployLibFile(resourceFileName, libFile);
-                System.load(libFile.getAbsolutePath());
-                loaded = true;
+                try {
+                    System.load(libFile.getAbsolutePath());
+                    loaded = true;
+                } catch (UnsatisfiedLinkError e) {
+                    loaded = true;
+                }
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
                 throw new JavetException(

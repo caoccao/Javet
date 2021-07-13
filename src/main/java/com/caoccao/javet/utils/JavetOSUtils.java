@@ -17,13 +17,25 @@
 
 package com.caoccao.javet.utils;
 
+import java.lang.management.ManagementFactory;
+
 public final class JavetOSUtils {
     public static final String OS_NAME = System.getProperty("os.name");
     public static final boolean IS_LINUX = OS_NAME.startsWith("Linux");
     public static final boolean IS_WINDOWS = OS_NAME.startsWith("Windows");
+    public static final long PROCESS_ID;
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
     public static final String WORKING_DIRECTORY = System.getProperty("user.dir");
+
+    static {
+        String processName = ManagementFactory.getRuntimeMXBean().getName();
+        int positionOfSeparator = processName.indexOf("@");
+        if (positionOfSeparator > 0) {
+            processName = processName.substring(0, positionOfSeparator);
+        }
+        PROCESS_ID = Long.parseLong(processName);
+    }
 
     private JavetOSUtils() {
     }
