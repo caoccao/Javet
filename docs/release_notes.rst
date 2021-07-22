@@ -2,6 +2,11 @@
 Release Notes
 =============
 
+0.9.5
+-----
+
+* Upgraded V8 to ``v9.2.230.21`` `(2021-07-19) <https://v8.dev/blog/v8-release-92>`_
+
 0.9.4
 -----
 
