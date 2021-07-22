@@ -2,13 +2,18 @@
 Release Notes
 =============
 
+0.9.5
+-----
+
+* Upgraded V8 to ``v9.2.230.21`` `(2021-07-19) <https://v8.dev/blog/v8-release-92>`_
+
 0.9.4
 -----
 
 * Added ``JavetConverterConfig``
 * Added ``JavetEntityFunction`` for ``JavetObjectConverter``
 * Updated ``JavetObjectConverter`` to allow skipping functions
-* Added ``getPrototype()`` and ``setPrototype()`` to ``V8Runtime``
+* Added ``getPrototype()`` and ``setPrototype()`` to ``IV8ValueObject``
 * Changed the way that Javet libraries are deployed to be multi-process safe
 
 0.9.3
@@ -80,7 +85,7 @@ Release Notes
 -----
 
 * Universal object conversion is turned on for all API
-* Added ``createV8ValueDouble()``,``createV8ValueString()`` and ``createV8ValueZonedDateTime()`` to ``V8Runtime``
+* Added ``createV8ValueDouble()``, ``createV8ValueString()`` and ``createV8ValueZonedDateTime()`` to ``V8Runtime``
 * Added ``JavetError`` with error codes
 * Refactored ``invoke()``, ``call()``, ``set()``, ``has()`` to take ``Object`` instead of ``V8Value``
 * Removed a few exceptions

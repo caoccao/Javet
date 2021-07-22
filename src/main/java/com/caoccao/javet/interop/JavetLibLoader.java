@@ -33,7 +33,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    static final String LIB_VERSION = "0.9.4";
+    static final String LIB_VERSION = "0.9.5";
     private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
@@ -63,30 +63,36 @@ public final class JavetLibLoader {
     private static void purgeLegacyLibraries() {
         File tempRootPath = new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME);
         try {
-            for (File tempProcessIDPath : tempRootPath.listFiles()) {
-                if (tempProcessIDPath.isDirectory() &&
-                        tempProcessIDPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS < System.currentTimeMillis()) {
-                    try {
-                        boolean isLocked = false;
-                        for (File libFile : tempProcessIDPath.listFiles()) {
-                            if (libFile.delete()) {
-                                LOGGER.logDebug("Deleted {0}.", libFile.getAbsolutePath());
-                            } else {
-                                LOGGER.logDebug("{0} is locked.", libFile.getAbsolutePath());
-                                isLocked = true;
-                                break;
+            if (tempRootPath.exists()) {
+                if (tempRootPath.isDirectory()) {
+                    for (File tempProcessIDPath : tempRootPath.listFiles()) {
+                        if (tempProcessIDPath.isDirectory() &&
+                                tempProcessIDPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS < System.currentTimeMillis()) {
+                            try {
+                                boolean isLocked = false;
+                                for (File libFile : tempProcessIDPath.listFiles()) {
+                                    if (libFile.delete()) {
+                                        LOGGER.logDebug("Deleted {0}.", libFile.getAbsolutePath());
+                                    } else {
+                                        LOGGER.logDebug("{0} is locked.", libFile.getAbsolutePath());
+                                        isLocked = true;
+                                        break;
+                                    }
+                                }
+                                if (!isLocked) {
+                                    if (tempProcessIDPath.delete()) {
+                                        LOGGER.logDebug("Deleted {0}.", tempProcessIDPath.getAbsolutePath());
+                                    } else {
+                                        LOGGER.logDebug("{0} is locked.", tempProcessIDPath.getAbsolutePath());
+                                    }
+                                }
+                            } catch (Throwable t) {
+                                LOGGER.logError(t, "Failed to delete {0}.", tempProcessIDPath.getAbsolutePath());
                             }
                         }
-                        if (!isLocked) {
-                            if (tempProcessIDPath.delete()) {
-                                LOGGER.logDebug("Deleted {0}.", tempProcessIDPath.getAbsolutePath());
-                            } else {
-                                LOGGER.logDebug("{0} is locked.", tempProcessIDPath.getAbsolutePath());
-                            }
-                        }
-                    } catch (Throwable t) {
-                        LOGGER.logError(t, "Failed to delete {0}.", tempProcessIDPath.getAbsolutePath());
                     }
+                } else {
+                    tempRootPath.delete();
                 }
             }
         } catch (Throwable t) {
