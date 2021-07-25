@@ -19,6 +19,7 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
@@ -29,7 +30,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.text.MessageFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -112,11 +117,75 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @Test
-    public void testSqlite3() throws JavetException {
+    public void testSqlite3InRootDirectoryWithDoubleDots() throws JavetException, IOException {
         File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
         if (sqlite3File.exists()) {
             File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
-            nodeRuntime.getExecutor(scriptFile).executeVoid();
+            File testModuleModeFile = getScriptFile("../test-module-mode.js");
+            try {
+                if (testModuleModeFile.exists()) {
+                    testModuleModeFile.delete();
+                }
+                Files.write(
+                        testModuleModeFile.toPath(),
+                        Files.readAllBytes(scriptFile.toPath()),
+                        StandardOpenOption.CREATE);
+                // It should pass in module mode.
+                try {
+                    nodeRuntime.getExecutor(testModuleModeFile).executeVoid();
+                } catch (Throwable t) {
+                    t.printStackTrace(System.err);
+                    fail(MessageFormat.format(
+                            "{0} should pass in module mode.",
+                            testModuleModeFile.getAbsolutePath()));
+                }
+            } finally {
+                testModuleModeFile.delete();
+            }
+        }
+    }
+
+    @Test
+    public void testSqlite3InRootDirectoryWithoutDoubleDots() throws JavetException, IOException {
+        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
+        if (sqlite3File.exists()) {
+            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
+            File testModuleModeFile = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-module-mode.js");
+            try {
+                if (testModuleModeFile.exists()) {
+                    testModuleModeFile.delete();
+                }
+                Files.write(
+                        testModuleModeFile.toPath(),
+                        Files.readAllBytes(scriptFile.toPath()),
+                        StandardOpenOption.CREATE);
+                // It should fail in module mode.
+                try {
+                    nodeRuntime.getExecutor(testModuleModeFile).executeVoid();
+                    fail(MessageFormat.format(
+                            "{0} should fail in module mode.",
+                            testModuleModeFile.getAbsolutePath()));
+                } catch (JavetException e) {
+                    assertEquals(JavetError.ExecutionFailure, e.getError());
+                    assertTrue(e.getMessage().startsWith("Error: Cannot find module 'sqlite3'"));
+                }
+            } finally {
+                testModuleModeFile.delete();
+            }
+        }
+    }
+
+    @Test
+    public void testSqlite3InSubDirectory() throws JavetException {
+        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
+        if (sqlite3File.exists()) {
+            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
+            try {
+                nodeRuntime.getExecutor(scriptFile).executeVoid();
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+                fail(MessageFormat.format("{0} should pass.", scriptFile.getAbsolutePath()));
+            }
         }
     }
 
