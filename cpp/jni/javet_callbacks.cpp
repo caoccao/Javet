@@ -32,7 +32,7 @@ namespace Javet {
 
 		void Initialize(JNIEnv* jniEnv) {
 
-			jclassJavetCallbackContext = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/JavetCallbackContext"));
+			jclassJavetCallbackContext = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/callback/JavetCallbackContext"));
 			jmethodIDJavetCallbackContextIsReturnResult = jniEnv->GetMethodID(jclassJavetCallbackContext, "isReturnResult", "()Z");
 			jmethodIDJavetCallbackContextIsThisObjectRequired = jniEnv->GetMethodID(jclassJavetCallbackContext, "isThisObjectRequired", "()Z");
 			jmethodIDJavetCallbackContextSetHandle = jniEnv->GetMethodID(jclassJavetCallbackContext, "setHandle", "(J)V");
@@ -46,9 +46,9 @@ namespace Javet {
 			jclassJavetResourceUtils = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/utils/JavetResourceUtils"));
 			jmethodIDJavetResourceUtilsSafeClose = jniEnv->GetStaticMethodID(jclassJavetResourceUtils, "safeClose", "(Ljava/lang/Object;)V");
 
-			jclassV8FunctionCallback = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8FunctionCallback"));
+			jclassV8FunctionCallback = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/callback/V8FunctionCallback"));
 			jmethodIDV8FunctionCallbackReceiveCallback = jniEnv->GetStaticMethodID(jclassV8FunctionCallback, "receiveCallback",
-				"(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/utils/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;Lcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
+				"(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;Lcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
 
 			jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
 			jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");

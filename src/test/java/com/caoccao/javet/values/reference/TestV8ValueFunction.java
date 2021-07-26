@@ -24,7 +24,7 @@ import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.mock.MockCallbackReceiver;
-import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;

@@ -20,7 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 

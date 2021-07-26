@@ -20,7 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
-import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueLong;

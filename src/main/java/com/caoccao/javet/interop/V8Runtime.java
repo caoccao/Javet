@@ -30,7 +30,7 @@ import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
-import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPromiseRejectCallback;
 import com.caoccao.javet.utils.JavetResourceUtils;

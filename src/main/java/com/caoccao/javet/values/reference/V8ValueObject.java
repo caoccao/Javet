@@ -28,7 +28,7 @@ import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.BindingContext;
 import com.caoccao.javet.interop.binding.MethodDescriptor;
-import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
