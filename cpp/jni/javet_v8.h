@@ -66,6 +66,7 @@ using V8LocalValue = v8::Local<v8::Value>;
 
 using V8MaybeLocalModule = v8::MaybeLocal<v8::Module>;
 using V8MaybeLocalPromise = v8::MaybeLocal<v8::Promise>;
+using V8MaybeLocalString = v8::MaybeLocal<v8::String>;
 using V8MaybeLocalValue = v8::MaybeLocal<v8::Value>;
 
 // Persistent

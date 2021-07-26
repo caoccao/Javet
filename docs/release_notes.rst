@@ -2,6 +2,13 @@
 Release Notes
 =============
 
+0.9.6
+-----
+
+* Added ``IV8ValueProxy`` and ``V8ValueProxy``
+* Added ``getTarget()``, ``getHandler()``, ``isRevoked()`` and ``revoke()`` to ``IV8ValueProxy``
+* Added ``createV8ValueProxy()`` to ``V8Runtime``
+
 0.9.5
 -----
 

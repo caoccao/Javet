@@ -425,6 +425,38 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseThen
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    proxyGetHandler
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyGetHandler
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    proxyGetTarget
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyGetTarget
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    proxyIsRevoked
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_proxyIsRevoked
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    proxyRevoke
+ * Signature: (JJI)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_proxyRevoke
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    registerV8Runtime
  * Signature: (JLjava/lang/Object;)V
  */

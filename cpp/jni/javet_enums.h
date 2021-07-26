@@ -25,6 +25,7 @@
 #define IS_V8_MODULE(type) (type == Javet::Enums::V8ValueReferenceType::Module)
 #define IS_V8_OBJECT(type) (type == Javet::Enums::V8ValueReferenceType::Object)
 #define IS_V8_PROMISE(type) (type == Javet::Enums::V8ValueReferenceType::Promise)
+#define IS_V8_PROXY(type) (type == Javet::Enums::V8ValueReferenceType::Proxy)
 #define IS_V8_SCRIPT(type) (type == Javet::Enums::V8ValueReferenceType::Script)
 #define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
 

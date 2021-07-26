@@ -166,7 +166,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
-    public V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
+    public V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
+            throws JavetException {
         v8ScriptOrigin.setModule(false);
         return decorateV8Value((V8Script) v8Native.compile(
                 handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
@@ -174,7 +175,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
-    public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
+    public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
+            throws JavetException {
         v8ScriptOrigin.setModule(true);
         if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().length() == 0) {
             throw new JavetException(JavetError.ModuleNameEmpty);
@@ -256,7 +258,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     @Override
     public V8ValueMap createV8ValueMap() throws JavetException {
-        return decorateV8Value((V8ValueMap) v8Native.createV8Value(handle, V8ValueReferenceType.Map.getId(), null));
+        return decorateV8Value((V8ValueMap) v8Native.createV8Value(
+                handle, V8ValueReferenceType.Map.getId(), null));
     }
 
     @Override
@@ -266,12 +269,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     @Override
     public V8ValueObject createV8ValueObject() throws JavetException {
-        return decorateV8Value((V8ValueObject) v8Native.createV8Value(handle, V8ValueReferenceType.Object.getId(), null));
+        return decorateV8Value((V8ValueObject) v8Native.createV8Value(
+                handle, V8ValueReferenceType.Object.getId(), null));
+    }
+
+    @Override
+    public V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException {
+        return decorateV8Value((V8ValueProxy) v8Native.createV8Value(
+                handle, V8ValueReferenceType.Proxy.getId(), v8ValueObject));
     }
 
     @Override
     public V8ValueSet createV8ValueSet() throws JavetException {
-        return decorateV8Value((V8ValueSet) v8Native.createV8Value(handle, V8ValueReferenceType.Set.getId(), null));
+        return decorateV8Value((V8ValueSet) v8Native.createV8Value(
+                handle, V8ValueReferenceType.Set.getId(), null));
     }
 
     @Override
@@ -639,6 +650,24 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId(),
                 functionFulfilledHandle.getHandle(),
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
+    }
+
+    public V8ValueObject proxyGetHandler(IV8ValueProxy iV8ValueProxy) throws JavetException {
+        return decorateV8Value((V8ValueObject) v8Native.proxyGetHandler(
+                handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId()));
+    }
+
+    public V8ValueObject proxyGetTarget(IV8ValueProxy iV8ValueProxy) throws JavetException {
+        return decorateV8Value((V8ValueObject) v8Native.proxyGetTarget(
+                handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId()));
+    }
+
+    public boolean proxyIsRevoked(IV8ValueProxy iV8ValueProxy) throws JavetException {
+        return v8Native.proxyIsRevoked(handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId());
+    }
+
+    public void proxyRevoke(IV8ValueProxy iV8ValueProxy) throws JavetException {
+        v8Native.proxyRevoke(handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId());
     }
 
     protected void receivePromiseRejectCallback(int event, V8ValuePromise promise, V8Value value) {

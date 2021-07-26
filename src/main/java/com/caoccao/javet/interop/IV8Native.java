@@ -135,6 +135,14 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
 
+    Object proxyGetHandler(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object proxyGetTarget(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean proxyIsRevoked(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    void proxyRevoke(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     void registerV8Runtime(long v8RuntimeHandle, Object v8Runtime);
 
     void removeJNIGlobalRef(long handle);

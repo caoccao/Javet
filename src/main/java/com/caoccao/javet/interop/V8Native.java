@@ -202,6 +202,18 @@ class V8Native implements IV8Native {
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
 
     @Override
+    public native Object proxyGetHandler(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native Object proxyGetTarget(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean proxyIsRevoked(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native void proxyRevoke(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native void registerV8Runtime(long v8RuntimeHandle, Object v8Runtime);
 
     @Override
