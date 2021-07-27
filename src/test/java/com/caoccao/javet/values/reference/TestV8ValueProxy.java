@@ -19,7 +19,12 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.proxy.JavetUniversalInterceptionProxyHandler;
+import com.caoccao.javet.mock.MockPojo;
+import com.caoccao.javet.mock.MockPojoWithGenericGetterAndSetter;
 import org.junit.jupiter.api.Test;
+
+import java.text.MessageFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -86,6 +91,89 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                 "const b = {}; const a = new Proxy(RegExp, b); a;").execute()) {
             assertNotNull(v8ValueProxy);
             assertFalse(v8ValueProxy.isRevoked());
+        }
+    }
+
+    @Test
+    public void testUniversalInterceptionProxyHandler() throws JavetException {
+        JavetUniversalInterceptionProxyHandler<MockPojo> handler =
+                new JavetUniversalInterceptionProxyHandler<>(new MockPojo());
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
+            try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
+                assertNotNull(v8ValueProxy);
+                assertFalse(v8ValueProxy.isRevoked());
+                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                    iV8ValueObjectHandler.bind(handler);
+                }
+                v8Runtime.getGlobalObject().set("y", v8ValueProxy);
+                for (String methodName : "add sSSStringValue ssSStringValue sssStringValue stringValue".split("\\s+")) {
+                    assertTrue(v8ValueProxy.has(methodName),
+                            MessageFormat.format("{0} should be found", methodName));
+                }
+                for (String methodName : "subtract setStringValue getStringValue ssStringValue a b".split("\\s+")) {
+                    assertFalse(v8ValueProxy.has(methodName),
+                            MessageFormat.format("{0} should not be found", methodName));
+                }
+            }
+            assertEquals(3, v8Runtime.getExecutor("y.add(1,2)").executeInteger(),
+                    "Parameters with primitive type should work.");
+            assertEquals(2, v8Runtime.getExecutor("y.add(1)").executeInteger(),
+                    "Parameters with varargs should work.");
+            assertEquals(12, v8Runtime.getExecutor("y.add(1,2,3)").executeInteger(),
+                    "Parameters with varargs should work.");
+            assertEquals(3.3, v8Runtime.getExecutor("y.add(1.1,2.2)").executeDouble(), 0.001,
+                    "Parameters with non-primitive type should work.");
+            assertTrue(v8Runtime.getExecutor("y['a']").execute().isUndefined(),
+                    "Generic getter should return undefined.");
+            v8Runtime.getExecutor("y['name'] = 'abc';").executeVoid();
+            assertEquals("abc", handler.getTargetObject().getName(), "Getter should work.");
+            assertEquals("abc", v8Runtime.getExecutor("y['name']").executeString(),
+                    "Getter should work.");
+            v8Runtime.getExecutor("y['sssStringValue'] = 'abc';").executeVoid();
+            assertEquals("abc", handler.getTargetObject().getSSSStringValue(), "Getter should work.");
+            assertEquals("abc", v8Runtime.getExecutor("y['ssSStringValue']").executeString(),
+                    "Getter should work.");
+            assertEquals("abc", v8Runtime.getExecutor("y.concat('abc')").executeString(),
+                    "Parameters with varargs should work.");
+            assertEquals("abc, def", v8Runtime.getExecutor("y.concat('abc', 'def')").executeString(),
+                    "Parameters with varargs should work.");
+            assertEquals(
+                    "abc, def, null, null",
+                    v8Runtime.getExecutor("y.concat('abc', 'def', null, undefined)").executeString(),
+                    "Parameters with varargs should work.");
+            v8Runtime.getGlobalObject().delete("y");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testUniversalInterceptionProxyHandlerWithGenericGetterAndSetter() throws JavetException {
+        JavetUniversalInterceptionProxyHandler<MockPojoWithGenericGetterAndSetter> handler =
+                new JavetUniversalInterceptionProxyHandler<>(new MockPojoWithGenericGetterAndSetter());
+        handler.getTargetObject().set("c", "3");
+        handler.getTargetObject().set("d", "4");
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
+            try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
+                assertNotNull(v8ValueProxy);
+                assertFalse(v8ValueProxy.isRevoked());
+                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                    iV8ValueObjectHandler.bind(handler);
+                }
+                v8Runtime.getGlobalObject().set("y", v8ValueProxy);
+            }
+            assertEquals("3", v8Runtime.getExecutor("y['c']").executeString(),
+                    "Generic getter should work.");
+            assertTrue(v8Runtime.getExecutor("y['a']").execute().isUndefined(),
+                    "Generic getter should return undefined.");
+            v8Runtime.getExecutor("y['name'] = 'abc';").executeVoid();
+            assertNull(handler.getTargetObject().getName(), "Generic getter should take higher priority.");
+            assertEquals("abc", handler.getTargetObject().get("name"), "Getter should work.");
+            assertEquals("abc", v8Runtime.getExecutor("y['name']").executeString(),
+                    "Getter should work.");
+            v8Runtime.getGlobalObject().delete("y");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
     }
 }
