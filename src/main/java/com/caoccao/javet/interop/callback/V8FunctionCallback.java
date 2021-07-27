@@ -200,6 +200,7 @@ public final class V8FunctionCallback {
                  * If the callback receiver is null, that's a static method.
                  */
                 Method method = javetCallbackContext.getCallbackMethod();
+                method.setAccessible(true);
                 Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
                 if (javetCallbackContext.isThisObjectRequired()) {
                     values.add(thisObject);

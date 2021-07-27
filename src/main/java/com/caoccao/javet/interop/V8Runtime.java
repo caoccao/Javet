@@ -25,12 +25,12 @@ import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interfaces.IV8ModuleResolver;
 import com.caoccao.javet.interop.binding.BindingContext;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
-import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPromiseRejectCallback;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -360,6 +360,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public WeakHashMap<Class<?>, BindingContext> getBindingContextWeakHashMap() {
         return bindingContextWeakHashMap;
+    }
+
+    public JavetCallbackContext getCallbackContext(long handle) {
+        return callbackContextMap.get(handle);
     }
 
     public int getCallbackContextCount() {

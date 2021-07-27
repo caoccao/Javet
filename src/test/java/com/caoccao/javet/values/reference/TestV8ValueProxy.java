@@ -106,11 +106,12 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     iV8ValueObjectHandler.bind(handler);
                 }
                 v8Runtime.getGlobalObject().set("y", v8ValueProxy);
-                for (String methodName : "add sSSStringValue ssSStringValue sssStringValue stringValue".split("\\s+")) {
+                for (String methodName : ("add setStringValue getStringValue sSSStringValue ssSStringValue " +
+                        "sssStringValue stringValue").split("\\s+")) {
                     assertTrue(v8ValueProxy.has(methodName),
                             MessageFormat.format("{0} should be found", methodName));
                 }
-                for (String methodName : "subtract setStringValue getStringValue ssStringValue a b".split("\\s+")) {
+                for (String methodName : "subtract ssStringValue a b".split("\\s+")) {
                     assertFalse(v8ValueProxy.has(methodName),
                             MessageFormat.format("{0} should not be found", methodName));
                 }
@@ -128,6 +129,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
             v8Runtime.getExecutor("y['name'] = 'abc';").executeVoid();
             assertEquals("abc", handler.getTargetObject().getName(), "Getter should work.");
             assertEquals("abc", v8Runtime.getExecutor("y['name']").executeString(),
+                    "Getter should work.");
+            assertEquals("abc", v8Runtime.getExecutor("y.getName()").executeString(),
                     "Getter should work.");
             v8Runtime.getExecutor("y['sssStringValue'] = 'abc';").executeVoid();
             assertEquals("abc", handler.getTargetObject().getSSSStringValue(), "Getter should work.");

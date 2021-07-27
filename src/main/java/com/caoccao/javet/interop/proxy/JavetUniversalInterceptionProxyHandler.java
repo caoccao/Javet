@@ -210,23 +210,21 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
 
     protected void initializeMethods(Class targetClass) {
         for (Method method : targetClass.getMethods()) {
+            method.setAccessible(true);
             if (isGenericGetter(method)) {
                 genericGetters.add(method);
-                continue;
-            }
-            if (isGenericSetter(method)) {
+            } else if (isGenericSetter(method)) {
                 genericSetters.add(method);
-                continue;
-            }
-            final int getterPrefixLength = getGetterPrefixLength(method);
-            if (getterPrefixLength > 0) {
-                addMethod(method, getterPrefixLength, gettersMap);
-                continue;
-            }
-            final int setterPrefixLength = getSetterPrefixLength(method);
-            if (setterPrefixLength > 0) {
-                addMethod(method, setterPrefixLength, settersMap);
-                continue;
+            } else {
+                final int getterPrefixLength = getGetterPrefixLength(method);
+                if (getterPrefixLength > 0) {
+                    addMethod(method, getterPrefixLength, gettersMap);
+                } else {
+                    final int setterPrefixLength = getSetterPrefixLength(method);
+                    if (setterPrefixLength > 0) {
+                        addMethod(method, setterPrefixLength, settersMap);
+                    }
+                }
             }
             addMethod(method, 0, methodsMap);
         }
