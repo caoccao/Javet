@@ -22,6 +22,10 @@ public class MockPojo {
     protected String name;
     protected String stringValue;
 
+    public static int staticAdd(int a, int b) {
+        return a + b;
+    }
+
     public int add(int a, int b) {
         return a + b;
     }
