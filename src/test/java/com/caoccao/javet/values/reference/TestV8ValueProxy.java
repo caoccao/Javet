@@ -95,7 +95,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testUniversalInterceptionProxyHandler() throws JavetException {
+    public void testUniversalProxyHandler() throws JavetException {
         JavetUniversalProxyHandler<MockPojo> handler =
                 new JavetUniversalProxyHandler<>(v8Runtime, new MockPojo());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
@@ -153,7 +153,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testUniversalInterceptionProxyHandlerWithGenericGetterAndSetter() throws JavetException {
+    public void testUniversalProxyHandlerWithGenericGetterAndSetter() throws JavetException {
         JavetUniversalProxyHandler<MockPojoWithGenericGetterAndSetter> handler =
                 new JavetUniversalProxyHandler<>(v8Runtime, new MockPojoWithGenericGetterAndSetter());
         handler.getTargetObject().set("c", "3");
