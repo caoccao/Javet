@@ -144,6 +144,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     "abc, def, null, null",
                     v8Runtime.getExecutor("y.concat('abc', 'def', null, undefined)").executeString(),
                     "Parameters with varargs should work.");
+            assertEquals(3, v8Runtime.getExecutor("y.staticAdd(1,2)").executeInteger(),
+                    "Static function should work.");
             v8Runtime.getGlobalObject().delete("y");
         } finally {
             v8Runtime.lowMemoryNotification();
