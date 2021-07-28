@@ -2,7 +2,7 @@
 Object Converter
 ================
 
-Javet has a built-in object converter with the following features.
+Javet has a built-in ``JavetObjectConverter`` with the following features.
 
 * It covers primitive types + Set + Map + Array.
 * It is completely open to subclass.
@@ -145,6 +145,78 @@ The console output is:
     [ { name: 'Tom', value: 'CEO' }, { name: 'Jerry', value: 'CFO' } ]
 
 This process is transparent and fully automated once the converter is set to ``V8Runtime``.
+
+Universal Converter
+===================
+
+Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``JavetProxyConverter`` is designed for that. In general, the user experience is very much close to the one provided by GraalJS. As ``JavetProxyConverter`` opens almost the whole JVM to V8, it is very dangerous to allow end users to touch that V8 runtime, so ``JavetProxyConverter`` is not enabled by default. Here are the steps on how to enable that.
+
+.. code-block:: java
+
+    // Step 1: Create an instance of JavetProxyConverter.
+    JavetProxyConverter javetProxyConverter = new JavetProxyConverter();
+    // Step 2: Set the V8Runtime converter to JavetProxyConverter.
+    v8Runtime.setConverter(javetProxyConverter);
+    // Please feel free to inject arbitrary Java objects.
+
+    // Sample 1: java.io.File
+    File file = new File("/tmp/i-am-not-accessible");
+    v8Runtime.getGlobalObject().set("file", file);
+    assertEquals(file, v8Runtime.getGlobalObject().getObject("file"));
+    assertEquals(file.exists(), v8Runtime.getExecutor("file.exists()").executeBoolean());
+    assertEquals(file.isFile(), v8Runtime.getExecutor("file.isFile()").executeBoolean());
+    assertEquals(file.isDirectory(), v8Runtime.getExecutor("file.isDirectory()").executeBoolean());
+    assertEquals(file.canRead(), v8Runtime.getExecutor("file.canRead()").executeBoolean());
+    assertEquals(file.canWrite(), v8Runtime.getExecutor("file.canWrite()").executeBoolean());
+    assertEquals(file.canExecute(), v8Runtime.getExecutor("file.canExecute()").executeBoolean());
+
+    // Sample 2: java.util.Map
+    javetProxyConverter.getConfig().setProxyMapEnabled(true);
+    Map<String, Object> map = new HashMap<String, Object>() {{
+        put("x", 1);
+        put("y", "2");
+    }};
+    v8Runtime.getGlobalObject().set("map", map);
+    assertTrue(map == v8Runtime.getGlobalObject().getObject("map"));
+    assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
+    assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
+    assertEquals(1, v8Runtime.getExecutor("map.x").executeInteger());
+    assertEquals("2", v8Runtime.getExecutor("map.y").executeString());
+    assertEquals("3", v8Runtime.getExecutor("map['z'] = '3'; map.z;").executeString());
+    assertEquals("3", map.get("z"));
+    assertEquals("4", v8Runtime.getExecutor("map.z = '4'; map.z;").executeString());
+    assertEquals("4", map.get("z"));
+    v8Runtime.getGlobalObject().delete("map");
+    v8Runtime.lowMemoryNotification();
+    javetProxyConverter.getConfig().setProxyMapEnabled(false);
+
+    // Sample 3: java.nio.file.Path
+    Path path = new File("/tmp/i-am-not-accessible").toPath();
+    v8Runtime.getGlobalObject().set("path", path);
+    assertEquals(path, v8Runtime.getGlobalObject().getObject("path"));
+    assertEquals(path.toString(), v8Runtime.getExecutor("path.toString()").executeString());
+    Path newPath = v8Runtime.toObject(v8Runtime.getExecutor("path.resolve('abc')").execute(), true);
+    assertNotNull(newPath);
+    assertEquals(path.resolve("abc").toString(), newPath.toString());
+    assertEquals(path.resolve("abc").toString(), v8Runtime.getExecutor("path.resolve('abc').toString()").executeString());
+
+Features
+--------
+
+* Any Java objects generated inside V8 are automatically handled by the converter.
+* Getters and setters (``get``, ``is``, ``set`` and ``put``) are smartly handled.
+* Overloaded methods and varargs methods are identified well.
+* Primitive types, Set, Map, List, Array are not handled. Map is special because it can be enabled.
+
+How does JavetProxyConverter Work?
+----------------------------------
+
+``JavetProxyConverter`` creates a JavaScript proxy per Java object. For now, the proxy intercepts ``get``, ``has`` and ``set`` to achieve the complete virtualization of Java objects in JavaScript runtime.
+
+How to Customize JavetProxyConverter?
+-------------------------------------
+
+It is recommended to subclass ``JavetProxyConverter`` and override few internal API to achieve complete customization.
 
 Null Safety
 ===========

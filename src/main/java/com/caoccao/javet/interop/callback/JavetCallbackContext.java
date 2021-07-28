@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package com.caoccao.javet.utils;
+package com.caoccao.javet.interop.callback;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

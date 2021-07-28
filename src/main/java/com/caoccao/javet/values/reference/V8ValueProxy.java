@@ -18,15 +18,51 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
 
-public class V8ValueProxy extends V8ValueObject {
+/**
+ * The type V8 value proxy.
+ *
+ * @since 0.9.6
+ */
+public class V8ValueProxy extends V8ValueObject implements IV8ValueProxy {
 
+    /**
+     * Instantiates a new V8 value proxy.
+     *
+     * @param handle the handle
+     * @since 0.9.6
+     */
     V8ValueProxy(long handle) {
         super(handle);
     }
 
     @Override
+    public IV8ValueObject getHandler() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.proxyGetHandler(this);
+    }
+
+    @Override
+    public IV8ValueObject getTarget() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.proxyGetTarget(this);
+    }
+
+    @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Proxy;
+    }
+
+    @Override
+    public boolean isRevoked() throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.proxyIsRevoked(this);
+    }
+
+    @Override
+    public void revoke() throws JavetException {
+        checkV8Runtime();
+        v8Runtime.proxyRevoke(this);
     }
 }

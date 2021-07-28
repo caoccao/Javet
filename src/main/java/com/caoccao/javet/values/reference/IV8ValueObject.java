@@ -23,7 +23,7 @@ import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
-import com.caoccao.javet.utils.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
@@ -31,7 +31,6 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * The interface V8 value object.

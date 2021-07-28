@@ -79,6 +79,10 @@ public class JavetError {
             403, JavetErrorType.Callback, "Failed to inject runtime with error message ${message}");
     public static final JavetError CallbackRegistrationFailure = new JavetError(
             404, JavetErrorType.Callback, "Callback ${methodName} registration failed with error message ${message}");
+    public static final JavetError CallbackMethodFailure = new JavetError(
+            405, JavetErrorType.Callback, "Callback ${methodName} failed with error message ${message}");
+    public static final JavetError CallbackUnknownFailure = new JavetError(
+            406, JavetErrorType.Callback, "Callback failed with unknown error message ${message}");
 
     public static final JavetError ConverterFailure = new JavetError(
             501, JavetErrorType.Converter, "Failed to convert values with error message ${message}");
