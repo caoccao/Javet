@@ -56,7 +56,9 @@ public class JavetProxyConverter extends JavetObjectConverter {
         V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy();
         try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
             JavetUniversalProxyHandler<Object> javetUniversalProxyHandler =
-                    new JavetUniversalProxyHandler<>(v8Runtime, object);
+                    (object instanceof Class)
+                            ? new JavetUniversalProxyHandler<>(v8Runtime, (Class<Object>) object)
+                            : new JavetUniversalProxyHandler<>(v8Runtime, object);
             List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
             iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
         }

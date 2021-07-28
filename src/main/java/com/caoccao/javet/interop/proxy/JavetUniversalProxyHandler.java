@@ -84,6 +84,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     protected Map<String, List<Method>> settersMap;
     /**
+     * The Static mode.
+     *
+     * @since 0.9.7
+     */
+    protected boolean staticMode;
+    /**
      * The Target class.
      *
      * @since 0.9.6
@@ -99,13 +105,23 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     public JavetUniversalProxyHandler(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, targetObject);
-        genericGetters = new ArrayList<>();
-        genericSetters = new ArrayList<>();
-        methodsMap = new HashMap<>();
-        gettersMap = new HashMap<>();
-        settersMap = new HashMap<>();
+        staticMode = false;
         targetClass = (Class<T>) targetObject.getClass();
-        initializeMethods(targetClass);
+        initialize();
+    }
+
+    /**
+     * Instantiates a new Javet universal proxy handler.
+     *
+     * @param v8Runtime   the V8 runtime
+     * @param targetClass the target class
+     * @since 0.9.7
+     */
+    public JavetUniversalProxyHandler(V8Runtime v8Runtime, Class<T> targetClass) {
+        super(v8Runtime, (T) null);
+        staticMode = true;
+        this.targetClass = targetClass;
+        initialize();
     }
 
     /**
@@ -264,6 +280,20 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
+     * Initialize.
+     *
+     * @since 0.9.7
+     */
+    protected void initialize() {
+        genericGetters = new ArrayList<>();
+        genericSetters = new ArrayList<>();
+        methodsMap = new HashMap<>();
+        gettersMap = new HashMap<>();
+        settersMap = new HashMap<>();
+        initializeMethods(targetClass);
+    }
+
+    /**
      * Initialize methods.
      *
      * @param targetClass the target class
@@ -271,6 +301,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     protected void initializeMethods(Class targetClass) {
         for (Method method : targetClass.getMethods()) {
+            if (staticMode && !Modifier.isStatic(method.getModifiers())) {
+                continue;
+            }
             method.setAccessible(true);
             if (isGenericGetter(method)) {
                 genericGetters.add(method);
@@ -326,6 +359,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         return false;
+    }
+
+    /**
+     * Is static mode.
+     *
+     * @return true : static mode, false: instance mode
+     * @since 0.9.7
+     */
+    public boolean isStaticMode() {
+        return staticMode;
     }
 
     @V8Function
