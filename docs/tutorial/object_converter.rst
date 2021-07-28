@@ -200,6 +200,15 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     assertEquals(path.resolve("abc").toString(), newPath.toString());
     assertEquals(path.resolve("abc").toString(), v8Runtime.getExecutor("path.resolve('abc').toString()").executeString());
 
+    // Sample 4: java.util.regex.Pattern
+    v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
+    assertTrue(v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject() instanceof Pattern);
+    assertTrue(v8Runtime.getExecutor("p.matcher('123').matches();").executeBoolean());
+    assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
+    v8Runtime.getGlobalObject().delete("Pattern");
+    v8Runtime.getExecutor("p = undefined;").executeVoid();
+    v8Runtime.lowMemoryNotification();
+
 Features
 --------
 

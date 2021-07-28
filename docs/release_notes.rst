@@ -2,6 +2,11 @@
 Release Notes
 =============
 
+0.9.7
+-----
+
+* Added static mode to ``JavetUniversalProxyHandler``
+
 0.9.6
 -----
 

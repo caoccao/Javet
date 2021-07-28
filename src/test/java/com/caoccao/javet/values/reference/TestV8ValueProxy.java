@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.mock.MockPojo;
 import com.caoccao.javet.mock.MockPojoWithGenericGetterAndSetter;
@@ -95,9 +96,10 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testUniversalProxyHandler() throws JavetException {
+    public void testUniversalProxyHandlerInInstanceMode() throws JavetException {
         JavetUniversalProxyHandler<MockPojo> handler =
                 new JavetUniversalProxyHandler<>(v8Runtime, new MockPojo());
+        assertFalse(handler.isStaticMode());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
                 assertNotNull(v8ValueProxy);
@@ -153,9 +155,37 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testUniversalProxyHandlerInStaticMode() throws JavetException {
+        JavetUniversalProxyHandler<MockPojo> handler =
+                new JavetUniversalProxyHandler<>(v8Runtime, MockPojo.class);
+        assertNull(handler.getTargetObject());
+        assertTrue(handler.isStaticMode());
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
+            try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
+                assertNotNull(v8ValueProxy);
+                assertFalse(v8ValueProxy.isRevoked());
+                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                    iV8ValueObjectHandler.bind(handler);
+                }
+                v8Runtime.getGlobalObject().set("y", v8ValueProxy);
+            }
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("y.getName()").executeVoid(),
+                    "Instance method should not work.");
+            assertEquals(3, v8Runtime.getExecutor("y.staticAdd(1,2)").executeInteger(),
+                    "Static function should work.");
+            v8Runtime.getGlobalObject().delete("y");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
     public void testUniversalProxyHandlerWithGenericGetterAndSetter() throws JavetException {
         JavetUniversalProxyHandler<MockPojoWithGenericGetterAndSetter> handler =
                 new JavetUniversalProxyHandler<>(v8Runtime, new MockPojoWithGenericGetterAndSetter());
+        assertFalse(handler.isStaticMode());
         handler.getTargetObject().set("c", "3");
         handler.getTargetObject().set("d", "4");
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {

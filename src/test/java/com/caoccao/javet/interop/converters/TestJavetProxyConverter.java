@@ -26,6 +26,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -94,6 +95,17 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 path.resolve("abc").toString(),
                 v8Runtime.getExecutor("path.resolve('abc').toString()").executeString());
         v8Runtime.getGlobalObject().delete("path");
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testPattern() throws JavetException {
+        v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
+        assertTrue(v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject() instanceof Pattern);
+        assertTrue(v8Runtime.getExecutor("p.matcher('123').matches();").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
+        v8Runtime.getGlobalObject().delete("Pattern");
+        v8Runtime.getExecutor("p = undefined;").executeVoid();
         v8Runtime.lowMemoryNotification();
     }
 }

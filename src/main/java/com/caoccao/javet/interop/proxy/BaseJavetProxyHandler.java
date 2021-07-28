@@ -49,7 +49,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      * @since 0.9.6
      */
     public BaseJavetProxyHandler(V8Runtime v8Runtime, T targetObject) {
-        this.targetObject = Objects.requireNonNull(targetObject);
+        this.targetObject = targetObject;
         this.v8Runtime = Objects.requireNonNull(v8Runtime);
     }
 
