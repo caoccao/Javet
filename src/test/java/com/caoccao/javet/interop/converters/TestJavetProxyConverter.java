@@ -19,7 +19,6 @@ package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8Value;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +27,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     protected JavetProxyConverter javetProxyConverter;
@@ -49,12 +47,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     @Test
     public void testFile() throws JavetException {
         File file = new File("/tmp/i-am-not-accessible");
-        try (V8Value v8Value = v8Runtime.toV8Value(file)) {
-            v8Runtime.getGlobalObject().set("file", v8Value);
-        }
-        try (V8Value v8Value = v8Runtime.getGlobalObject().get("file")) {
-            assertEquals(file, v8Runtime.toObject(v8Value));
-        }
+        v8Runtime.getGlobalObject().set("file", file);
+        assertEquals(file, v8Runtime.getGlobalObject().getObject("file"));
         assertEquals(file.exists(), v8Runtime.getExecutor("file.exists()").executeBoolean());
         assertEquals(file.isFile(), v8Runtime.getExecutor("file.isFile()").executeBoolean());
         assertEquals(file.isDirectory(), v8Runtime.getExecutor("file.isDirectory()").executeBoolean());
@@ -66,14 +60,32 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testMap() throws JavetException {
+        javetProxyConverter.getConfig().setProxyMapEnabled(true);
+        Map<String, Object> map = new HashMap<String, Object>() {{
+            put("x", 1);
+            put("y", "2");
+        }};
+        v8Runtime.getGlobalObject().set("map", map);
+        assertTrue(map == v8Runtime.getGlobalObject().getObject("map"));
+        assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
+        assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
+        assertEquals(1, v8Runtime.getExecutor("map.x").executeInteger());
+        assertEquals("2", v8Runtime.getExecutor("map.y").executeString());
+        assertEquals("3", v8Runtime.getExecutor("map['z'] = '3'; map.z;").executeString());
+        assertEquals("3", map.get("z"));
+        assertEquals("4", v8Runtime.getExecutor("map.z = '4'; map.z;").executeString());
+        assertEquals("4", map.get("z"));
+        v8Runtime.getGlobalObject().delete("map");
+        v8Runtime.lowMemoryNotification();
+        javetProxyConverter.getConfig().setProxyMapEnabled(false);
+    }
+
+    @Test
     public void testPath() throws JavetException {
         Path path = new File("/tmp/i-am-not-accessible").toPath();
-        try (V8Value v8Value = v8Runtime.toV8Value(path)) {
-            v8Runtime.getGlobalObject().set("path", v8Value);
-        }
-        try (V8Value v8Value = v8Runtime.getGlobalObject().get("path")) {
-            assertEquals(path, v8Runtime.toObject(v8Value));
-        }
+        v8Runtime.getGlobalObject().set("path", path);
+        assertEquals(path, v8Runtime.getGlobalObject().getObject("path"));
         assertEquals(path.toString(), v8Runtime.getExecutor("path.toString()").executeString());
         Path newPath = v8Runtime.toObject(v8Runtime.getExecutor("path.resolve('abc')").execute(), true);
         assertNotNull(newPath);

@@ -19,7 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.proxy.JavetUniversalInterceptionProxyHandler;
+import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.mock.MockPojo;
 import com.caoccao.javet.mock.MockPojoWithGenericGetterAndSetter;
 import org.junit.jupiter.api.Test;
@@ -96,8 +96,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
 
     @Test
     public void testUniversalInterceptionProxyHandler() throws JavetException {
-        JavetUniversalInterceptionProxyHandler<MockPojo> handler =
-                new JavetUniversalInterceptionProxyHandler<>(new MockPojo());
+        JavetUniversalProxyHandler<MockPojo> handler =
+                new JavetUniversalProxyHandler<>(v8Runtime, new MockPojo());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
                 assertNotNull(v8ValueProxy);
@@ -152,8 +152,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
 
     @Test
     public void testUniversalInterceptionProxyHandlerWithGenericGetterAndSetter() throws JavetException {
-        JavetUniversalInterceptionProxyHandler<MockPojoWithGenericGetterAndSetter> handler =
-                new JavetUniversalInterceptionProxyHandler<>(new MockPojoWithGenericGetterAndSetter());
+        JavetUniversalProxyHandler<MockPojoWithGenericGetterAndSetter> handler =
+                new JavetUniversalProxyHandler<>(v8Runtime, new MockPojoWithGenericGetterAndSetter());
         handler.getTargetObject().set("c", "3");
         handler.getTargetObject().set("d", "4");
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {

@@ -18,13 +18,10 @@
 package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.annotations.V8Function;
-import com.caoccao.javet.annotations.V8RuntimeSetter;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
-import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPrimitiveUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
@@ -36,33 +33,89 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+/**
+ * The type Javet universal proxy handler.
+ *
+ * @param <T> the type parameter
+ * @since 0.9.6
+ */
 @SuppressWarnings("unchecked")
-public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHandler {
+public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
+    /**
+     * The constant GETTER_PREFIX_ARRAY.
+     *
+     * @since 0.9.6
+     */
     protected static final String[] GETTER_PREFIX_ARRAY = new String[]{"get", "is"};
+    /**
+     * The constant SETTER_PREFIX_ARRAY.
+     *
+     * @since 0.9.6
+     */
     protected static final String[] SETTER_PREFIX_ARRAY = new String[]{"set", "put"};
+    /**
+     * The Generic getters.
+     *
+     * @since 0.9.6
+     */
     protected List<Method> genericGetters;
+    /**
+     * The Generic setters.
+     *
+     * @since 0.9.6
+     */
     protected List<Method> genericSetters;
+    /**
+     * The Getters map.
+     *
+     * @since 0.9.6
+     */
     protected Map<String, List<Method>> gettersMap;
-    protected IJavetLogger logger;
+    /**
+     * The Methods map.
+     *
+     * @since 0.9.6
+     */
     protected Map<String, List<Method>> methodsMap;
+    /**
+     * The Setters map.
+     *
+     * @since 0.9.6
+     */
     protected Map<String, List<Method>> settersMap;
+    /**
+     * The Target class.
+     *
+     * @since 0.9.6
+     */
     protected Class<T> targetClass;
-    protected T targetObject;
-    protected V8Runtime v8Runtime;
 
-    public JavetUniversalInterceptionProxyHandler(T targetObject) {
-        this.targetObject = Objects.requireNonNull(targetObject);
+    /**
+     * Instantiates a new Javet universal proxy handler.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @since 0.9.6
+     */
+    public JavetUniversalProxyHandler(V8Runtime v8Runtime, T targetObject) {
+        super(v8Runtime, targetObject);
         genericGetters = new ArrayList<>();
         genericSetters = new ArrayList<>();
         methodsMap = new HashMap<>();
         gettersMap = new HashMap<>();
         settersMap = new HashMap<>();
         targetClass = (Class<T>) targetObject.getClass();
-        logger = new JavetDefaultLogger(targetClass.getName());
-        v8Runtime = null;
         initializeMethods(targetClass);
     }
 
+    /**
+     * Add method.
+     *
+     * @param method     the method
+     * @param startIndex the start index
+     * @param map        the map
+     * @since 0.9.6
+     */
     protected void addMethod(Method method, int startIndex, Map<String, List<Method>> map) {
         String methodName = method.getName();
         final int length = methodName.length();
@@ -131,6 +184,13 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
         return v8Runtime.createV8ValueUndefined();
     }
 
+    /**
+     * Gets getter prefix length.
+     *
+     * @param method the method
+     * @return the getter prefix length
+     * @since 0.9.6
+     */
     protected int getGetterPrefixLength(Method method) {
         String methodName = method.getName();
         for (String prefix : GETTER_PREFIX_ARRAY) {
@@ -142,10 +202,13 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
         return 0;
     }
 
-    public IJavetLogger getLogger() {
-        return logger;
-    }
-
+    /**
+     * Gets setter prefix length.
+     *
+     * @param method the method
+     * @return the setter prefix length
+     * @since 0.9.6
+     */
     protected int getSetterPrefixLength(Method method) {
         String methodName = method.getName();
         for (String prefix : SETTER_PREFIX_ARRAY) {
@@ -155,14 +218,6 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
             }
         }
         return 0;
-    }
-
-    public T getTargetObject() {
-        return targetObject;
-    }
-
-    public V8Runtime getV8Runtime() {
-        return v8Runtime;
     }
 
     @V8Function
@@ -208,6 +263,12 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
         return v8Runtime.createV8ValueBoolean(isFound);
     }
 
+    /**
+     * Initialize methods.
+     *
+     * @param targetClass the target class
+     * @since 0.9.6
+     */
     protected void initializeMethods(Class targetClass) {
         for (Method method : targetClass.getMethods()) {
             method.setAccessible(true);
@@ -228,12 +289,18 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
             }
             addMethod(method, 0, methodsMap);
         }
-        Class superclass = targetClass.getSuperclass();
-        if (superclass != Object.class) {
-            initializeMethods(superclass);
+        if (targetClass != Object.class) {
+            initializeMethods(targetClass.getSuperclass());
         }
     }
 
+    /**
+     * Is generic getter boolean.
+     *
+     * @param method the method
+     * @return the boolean
+     * @since 0.9.6
+     */
     protected boolean isGenericGetter(Method method) {
         String methodName = method.getName();
         for (String prefix : GETTER_PREFIX_ARRAY) {
@@ -244,6 +311,13 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
         return false;
     }
 
+    /**
+     * Is generic setter boolean.
+     *
+     * @param method the method
+     * @return the boolean
+     * @since 0.9.6
+     */
     protected boolean isGenericSetter(Method method) {
         String methodName = method.getName();
         for (String prefix : SETTER_PREFIX_ARRAY) {
@@ -315,21 +389,25 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
         return v8Runtime.createV8ValueBoolean(isSet);
     }
 
-    public void setLogger(IJavetLogger logger) {
-        this.logger = logger;
-    }
-
-    @V8RuntimeSetter
-    public void setV8Runtime(V8Runtime v8Runtime) {
-        this.v8Runtime = v8Runtime;
-    }
-
+    /**
+     * The type Javet universal interceptor.
+     *
+     * @since 0.9.6
+     */
     public static class JavetUniversalInterceptor {
         private static final String METHOD_NAME_INVOKE = "invoke";
         private String jsMethodName;
         private List<Method> methods;
         private Object targetObject;
 
+        /**
+         * Instantiates a new Javet universal interceptor.
+         *
+         * @param targetObject the target object
+         * @param jsMethodName the js method name
+         * @param methods      the methods
+         * @since 0.9.6
+         */
         public JavetUniversalInterceptor(Object targetObject, String jsMethodName, List<Method> methods) {
             this.jsMethodName = jsMethodName;
             this.methods = methods;
@@ -337,6 +415,12 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
         }
 
 
+        /**
+         * Gets callback context.
+         *
+         * @return the callback context
+         * @since 0.9.6
+         */
         public JavetCallbackContext getCallbackContext() {
             try {
                 return new JavetCallbackContext(
@@ -347,14 +431,34 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
             return null;
         }
 
+        /**
+         * Gets js method name.
+         *
+         * @return the js method name
+         * @since 0.9.6
+         */
         public String getJSMethodName() {
             return jsMethodName;
         }
 
+        /**
+         * Gets methods.
+         *
+         * @return the methods
+         * @since 0.9.6
+         */
         public List<Method> getMethods() {
             return methods;
         }
 
+        /**
+         * Gets score.
+         *
+         * @param method  the method
+         * @param objects the objects
+         * @return the score
+         * @since 0.9.6
+         */
         protected double getScore(Method method, Object... objects) {
             // Max score is 1. Min score is 0.
             final int parameterCount = method.getParameterCount();
@@ -429,10 +533,24 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
             return score;
         }
 
+        /**
+         * Gets target object.
+         *
+         * @return the target object
+         * @since 0.9.6
+         */
         public Object getTargetObject() {
             return targetObject;
         }
 
+        /**
+         * Invoke object.
+         *
+         * @param objects the objects
+         * @return the object
+         * @throws JavetException the javet exception
+         * @since 0.9.6
+         */
         public Object invoke(Object... objects) throws JavetException {
             final int length = objects.length;
             Object[] convertedObjects = new Object[length];
@@ -523,19 +641,43 @@ public class JavetUniversalInterceptionProxyHandler<T> implements IJavetProxyHan
         }
     }
 
+    /**
+     * The type Scored method.
+     *
+     * @since 0.9.6
+     */
     public static class ScoredMethod {
         private Method method;
         private double score;
 
+        /**
+         * Instantiates a new Scored method.
+         *
+         * @param score  the score
+         * @param method the method
+         * @since 0.9.6
+         */
         public ScoredMethod(double score, Method method) {
             this.score = score;
             this.method = method;
         }
 
+        /**
+         * Gets method.
+         *
+         * @return the method
+         * @since 0.9.6
+         */
         public Method getMethod() {
             return method;
         }
 
+        /**
+         * Gets score.
+         *
+         * @return the score
+         * @since 0.9.6
+         */
         public double getScore() {
             return score;
         }

@@ -27,10 +27,11 @@ import com.caoccao.javet.values.reference.V8ValueArguments;
  * <p>
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
  *
+ * @param <T> the type parameter
  * @since 0.9.6
  */
 @SuppressWarnings("unchecked")
-public interface IJavetProxyHandler {
+public interface IJavetProxyHandler<T> {
     /**
      * Apply to object
      *
@@ -98,6 +99,14 @@ public interface IJavetProxyHandler {
     default V8Value getPrototypeOf(V8Value target) throws JavetException {
         throw new RuntimeException("Not implemented");
     }
+
+    /**
+     * Gets target object.
+     *
+     * @return the target object
+     * @since 0.9.6
+     */
+    T getTargetObject();
 
     /**
      * Has property

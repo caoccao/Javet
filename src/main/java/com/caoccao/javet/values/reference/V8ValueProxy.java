@@ -20,8 +20,19 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 
+/**
+ * The type V8 value proxy.
+ *
+ * @since 0.9.6
+ */
 public class V8ValueProxy extends V8ValueObject implements IV8ValueProxy {
 
+    /**
+     * Instantiates a new V8 value proxy.
+     *
+     * @param handle the handle
+     * @since 0.9.6
+     */
     V8ValueProxy(long handle) {
         super(handle);
     }

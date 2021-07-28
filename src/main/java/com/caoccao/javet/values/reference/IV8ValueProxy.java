@@ -20,15 +20,47 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 
+/**
+ * The interface V8 value proxy.
+ *
+ * @since 0.9.6
+ */
 @SuppressWarnings("unchecked")
 public interface IV8ValueProxy extends IV8ValueObject {
+    /**
+     * Gets handler.
+     *
+     * @return the handler
+     * @throws JavetException the javet exception
+     * @since 0.9.6
+     */
     @CheckReturnValue
     IV8ValueObject getHandler() throws JavetException;
 
+    /**
+     * Gets target.
+     *
+     * @return the target
+     * @throws JavetException the javet exception
+     * @since 0.9.6
+     */
     @CheckReturnValue
     IV8ValueObject getTarget() throws JavetException;
 
+    /**
+     * Is revoked.
+     *
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.6
+     */
     boolean isRevoked() throws JavetException;
 
+    /**
+     * Revoke.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.9.6
+     */
     void revoke() throws JavetException;
 }

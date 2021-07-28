@@ -20,13 +20,15 @@ package com.caoccao.javet.interop.converters;
 /**
  * The type Javet converter config.
  *
+ * @param <T> the type parameter
  * @since 0.9.4
  */
-public class JavetConverterConfig {
+@SuppressWarnings("unchecked")
+public class JavetConverterConfig<T extends JavetConverterConfig> {
     /**
      * The constant DEFAULT_MAX_DEPTH.
      *
-     * @since 0.9.3
+     * @since 0.9.4
      */
     public static final int DEFAULT_MAX_DEPTH = 20;
     /**
@@ -90,6 +92,12 @@ public class JavetConverterConfig {
      */
     protected int maxDepth;
     /**
+     * The Proxy map enabled.
+     *
+     * @since 0.9.6
+     */
+    protected boolean proxyMapEnabled;
+    /**
      * This flag determines whether function should be skipped in object or not.
      *
      * @since 0.9.4
@@ -112,6 +120,7 @@ public class JavetConverterConfig {
         defaultShort = 0;
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
+        proxyMapEnabled = false;
         skipFunctionInObject = true;
     }
 
@@ -216,6 +225,16 @@ public class JavetConverterConfig {
     }
 
     /**
+     * Is proxy map enabled boolean.
+     *
+     * @return the boolean
+     * @since 0.9.6
+     */
+    public boolean isProxyMapEnabled() {
+        return proxyMapEnabled;
+    }
+
+    /**
      * Is skip functions boolean.
      *
      * @return the boolean
@@ -232,9 +251,9 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setDefaultBoolean(boolean defaultBoolean) {
+    public T setDefaultBoolean(boolean defaultBoolean) {
         this.defaultBoolean = defaultBoolean;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -244,9 +263,9 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setDefaultByte(byte defaultByte) {
+    public T setDefaultByte(byte defaultByte) {
         this.defaultByte = defaultByte;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -266,9 +285,9 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setDefaultDouble(double defaultDouble) {
+    public T setDefaultDouble(double defaultDouble) {
         this.defaultDouble = defaultDouble;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -278,9 +297,9 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setDefaultFloat(float defaultFloat) {
+    public T setDefaultFloat(float defaultFloat) {
         this.defaultFloat = defaultFloat;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -290,9 +309,9 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setDefaultInt(int defaultInt) {
+    public T setDefaultInt(int defaultInt) {
         this.defaultInt = defaultInt;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -302,9 +321,9 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setDefaultLong(long defaultLong) {
+    public T setDefaultLong(long defaultLong) {
         this.defaultLong = defaultLong;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -314,9 +333,9 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setDefaultShort(short defaultShort) {
+    public T setDefaultShort(short defaultShort) {
         this.defaultShort = defaultShort;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -326,9 +345,9 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setExtractFunctionSourceCode(boolean extractFunctionSourceCode) {
+    public T setExtractFunctionSourceCode(boolean extractFunctionSourceCode) {
         this.extractFunctionSourceCode = extractFunctionSourceCode;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -338,9 +357,21 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.3
      */
-    public JavetConverterConfig setMaxDepth(int maxDepth) {
+    public T setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;
-        return this;
+        return (T) this;
+    }
+
+    /**
+     * Sets proxy map enabled.
+     *
+     * @param proxyMapEnabled the proxy map enabled
+     * @return the self
+     * @since 0.9.6
+     */
+    public T setProxyMapEnabled(boolean proxyMapEnabled) {
+        this.proxyMapEnabled = proxyMapEnabled;
+        return (T) this;
     }
 
     /**
@@ -350,8 +381,8 @@ public class JavetConverterConfig {
      * @return the self
      * @since 0.9.4
      */
-    public JavetConverterConfig setSkipFunctionInObject(boolean skipFunctionInObject) {
+    public T setSkipFunctionInObject(boolean skipFunctionInObject) {
         this.skipFunctionInObject = skipFunctionInObject;
-        return this;
+        return (T) this;
     }
 }

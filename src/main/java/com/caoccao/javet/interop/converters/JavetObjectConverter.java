@@ -25,6 +25,9 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetEntityFunction;
 import com.caoccao.javet.interfaces.IJavetEntityMap;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
+import com.caoccao.javet.interop.proxy.JavetMapProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
@@ -50,6 +53,13 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      * @since 0.7.2
      */
     protected static final String PROPERTY_NAME = "name";
+
+    /**
+     * The constant PROXY_TARGET.
+     *
+     * @since 0.9.6
+     */
+    protected static final String PROXY_TARGET = "target";
 
     /**
      * Instantiates a new Javet object converter.
@@ -143,20 +153,38 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
             return javetEntityFunction;
         } else if (v8Value instanceof V8ValueObject) {
-            V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
-            Map<String, Object> map = new HashMap<>();
-            v8ValueObject.forEach((V8Value key, V8Value value) -> {
-                String keyString = key.toString();
-                if (PROPERTY_CONSTRUCTOR.equals(keyString)) {
-                    map.put(PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
-                } else {
-                    Object object = toObject(value, depth + 1);
-                    if (!(config.isSkipFunctionInObject() && object instanceof JavetEntityFunction)) {
-                        map.put(keyString, object);
+            if (v8Value instanceof V8ValueProxy) {
+                V8ValueProxy v8ValueProxy = (V8ValueProxy) v8Value;
+                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                    Long handle = iV8ValueObjectHandler.getLong(PROXY_TARGET);
+                    if (handle != null) {
+                        JavetCallbackContext javetCallbackContext = v8ValueProxy.getV8Runtime().getCallbackContext(handle);
+                        if (javetCallbackContext != null) {
+                            IJavetProxyHandler<Object> iJavetProxyHandler =
+                                    (IJavetProxyHandler<Object>) javetCallbackContext.getCallbackReceiver();
+                            returnObject = iJavetProxyHandler.getTargetObject();
+                            if (returnObject != null) {
+                                return returnObject;
+                            }
+                        }
                     }
                 }
-            });
-            return map;
+            } else {
+                V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
+                Map<String, Object> map = new HashMap<>();
+                v8ValueObject.forEach((V8Value key, V8Value value) -> {
+                    String keyString = key.toString();
+                    if (PROPERTY_CONSTRUCTOR.equals(keyString)) {
+                        map.put(PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
+                    } else {
+                        Object object = toObject(value, depth + 1);
+                        if (!(config.isSkipFunctionInObject() && object instanceof JavetEntityFunction)) {
+                            map.put(keyString, object);
+                        }
+                    }
+                });
+                return map;
+            }
         }
         return v8Value;
     }
@@ -180,15 +208,25 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
             v8Value = v8ValueMap;
         } else if (object instanceof Map) {
-            V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
-            Map<?, ?> mapObject = (Map<?, ?>) object;
-            for (Object key : mapObject.keySet()) {
-                try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
-                    String childStringKey = key instanceof String ? (String) key : key.toString();
-                    v8ValueObject.set(childStringKey, childV8Value);
+            if (config.isProxyMapEnabled()) {
+                V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy();
+                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                    JavetMapProxyHandler javetMapProxyHandler = new JavetMapProxyHandler(v8Runtime, (Map) object);
+                    List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetMapProxyHandler);
+                    iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                 }
+                v8Value = v8ValueProxy;
+            } else {
+                V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
+                Map<?, ?> mapObject = (Map<?, ?>) object;
+                for (Object key : mapObject.keySet()) {
+                    try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
+                        String childStringKey = key instanceof String ? (String) key : key.toString();
+                        v8ValueObject.set(childStringKey, childV8Value);
+                    }
+                }
+                v8Value = v8ValueObject;
             }
-            v8Value = v8ValueObject;
         } else if (object instanceof Set) {
             V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet();
             Set<?> setObject = (Set<?>) object;
