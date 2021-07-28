@@ -56,7 +56,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param functionName         the function name
      * @param javetCallbackContext the javet callback context
-     * @return true : function is bind, false: function is not bind
+     * @return true: function is bind, false: function is not bind
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
@@ -74,7 +74,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param functionName the function name
      * @param codeString   the code string
-     * @return true : function is bind, false: function is not bind
+     * @return true: function is bind, false: function is not bind
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
@@ -328,16 +328,6 @@ public interface IV8ValueObject extends IV8ValueReference {
     IV8ValueArray getOwnPropertyNames() throws JavetException;
 
     /**
-     * Gets prototype.
-     *
-     * @return the prototype
-     * @throws JavetException the javet exception
-     * @since 0.9.4
-     */
-    @CheckReturnValue
-    <T extends IV8ValueObject> T getPrototype() throws JavetException;
-
-    /**
      * Gets primitive.
      *
      * @param <R> the type parameter
@@ -491,6 +481,17 @@ public interface IV8ValueObject extends IV8ValueReference {
     default ZonedDateTime getPropertyZonedDateTime(Object key) {
         return getPropertyPrimitive(key);
     }
+
+    /**
+     * Gets prototype.
+     *
+     * @param <T> the type parameter
+     * @return the prototype
+     * @throws JavetException the javet exception
+     * @since 0.9.4
+     */
+    @CheckReturnValue
+    <T extends IV8ValueObject> T getPrototype() throws JavetException;
 
     /**
      * Gets string.
