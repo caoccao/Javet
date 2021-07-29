@@ -169,22 +169,21 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         }
                     }
                 }
-            } else {
-                V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
-                Map<String, Object> map = new HashMap<>();
-                v8ValueObject.forEach((V8Value key, V8Value value) -> {
-                    String keyString = key.toString();
-                    if (PROPERTY_CONSTRUCTOR.equals(keyString)) {
-                        map.put(PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
-                    } else {
-                        Object object = toObject(value, depth + 1);
-                        if (!(config.isSkipFunctionInObject() && object instanceof JavetEntityFunction)) {
-                            map.put(keyString, object);
-                        }
-                    }
-                });
-                return map;
             }
+            V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
+            Map<String, Object> map = new HashMap<>();
+            v8ValueObject.forEach((V8Value key, V8Value value) -> {
+                String keyString = key.toString();
+                if (PROPERTY_CONSTRUCTOR.equals(keyString)) {
+                    map.put(PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
+                } else {
+                    Object object = toObject(value, depth + 1);
+                    if (!(config.isSkipFunctionInObject() && object instanceof JavetEntityFunction)) {
+                        map.put(keyString, object);
+                    }
+                }
+            });
+            return map;
         }
         return v8Value;
     }

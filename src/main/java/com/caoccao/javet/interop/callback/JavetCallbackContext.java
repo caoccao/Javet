@@ -21,6 +21,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 
+/**
+ * The type Javet callback context.
+ *
+ * @since 0.7.1
+ */
 public final class JavetCallbackContext {
     private static final String ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID =
             "Callback receiver or callback method is invalid";
@@ -32,16 +37,26 @@ public final class JavetCallbackContext {
     private final boolean thisObjectRequired;
     private long handle;
 
-    public JavetCallbackContext(
-            Object callbackReceiver,
-            Method callbackMethod) {
+    /**
+     * Instantiates a new Javet callback context.
+     *
+     * @param callbackReceiver the callback receiver
+     * @param callbackMethod   the callback method
+     * @since 0.7.1
+     */
+    public JavetCallbackContext(Object callbackReceiver, Method callbackMethod) {
         this(callbackReceiver, callbackMethod, false);
     }
 
-    public JavetCallbackContext(
-            Object callbackReceiver,
-            Method callbackMethod,
-            boolean thisObjectRequired) {
+    /**
+     * Instantiates a new Javet callback context.
+     *
+     * @param callbackReceiver   the callback receiver
+     * @param callbackMethod     the callback method
+     * @param thisObjectRequired the this object required
+     * @since 0.7.1
+     */
+    public JavetCallbackContext(Object callbackReceiver, Method callbackMethod, boolean thisObjectRequired) {
         Objects.requireNonNull(callbackMethod);
         assert (callbackReceiver != null && !Modifier.isStatic(callbackMethod.getModifiers()))
                 || (callbackReceiver == null && Modifier.isStatic(callbackMethod.getModifiers()))
@@ -53,26 +68,62 @@ public final class JavetCallbackContext {
         this.thisObjectRequired = thisObjectRequired;
     }
 
+    /**
+     * Gets callback method.
+     *
+     * @return the callback method
+     * @since 0.9.1
+     */
     public Method getCallbackMethod() {
         return callbackMethod;
     }
 
+    /**
+     * Gets callback receiver.
+     *
+     * @return the callback receiver
+     * @since 0.7.1
+     */
     public Object getCallbackReceiver() {
         return callbackReceiver;
     }
 
+    /**
+     * Gets handle.
+     *
+     * @return the handle
+     * @since 0.7.1
+     */
     public long getHandle() {
         return handle;
     }
 
+    /**
+     * Is return result boolean.
+     *
+     * @return the boolean
+     * @since 0.9.1
+     */
     public boolean isReturnResult() {
         return returnResult;
     }
 
+    /**
+     * Is this object required boolean.
+     *
+     * @return the boolean
+     * @since 0.9.1
+     */
     public boolean isThisObjectRequired() {
         return thisObjectRequired;
     }
 
+    /**
+     * Sets handle.
+     *
+     * @param handle the handle
+     * @since 0.7.1
+     */
     public void setHandle(long handle) {
         assert handle > 0L : ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID;
         this.handle = handle;

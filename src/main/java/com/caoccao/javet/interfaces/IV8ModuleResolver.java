@@ -30,7 +30,7 @@ public interface IV8ModuleResolver {
     /**
      * Resolve V8 module.
      *
-     * @param v8Runtime        the v 8 runtime
+     * @param v8Runtime        the V8 runtime
      * @param resourceName     the resource name
      * @param v8ModuleReferrer the V8 module referrer
      * @return the V8 module
