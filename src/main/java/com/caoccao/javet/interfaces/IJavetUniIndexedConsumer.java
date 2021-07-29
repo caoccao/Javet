@@ -23,8 +23,8 @@ import com.caoccao.javet.values.V8Value;
 /**
  * The interface Javet uni indexed consumer.
  *
- * @param <T> the type parameter
- * @param <E> the type parameter
+ * @param <T> the type parameter for value
+ * @param <E> the type parameter for custom exception
  * @since 0.8.10
  */
 public interface IJavetUniIndexedConsumer<T extends V8Value, E extends Throwable> {
@@ -34,7 +34,7 @@ public interface IJavetUniIndexedConsumer<T extends V8Value, E extends Throwable
      * @param index the index
      * @param value the value
      * @throws JavetException the javet exception
-     * @throws E              the e
+     * @throws E              the custom exception
      * @since 0.8.10
      */
     void accept(int index, T value) throws JavetException, E;
