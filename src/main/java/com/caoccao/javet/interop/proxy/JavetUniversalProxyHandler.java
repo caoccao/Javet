@@ -23,12 +23,14 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetPrimitiveUtils;
+import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -53,6 +55,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     protected static final String[] SETTER_PREFIX_ARRAY = new String[]{"set", "put"};
+    /**
+     * The Field map.
+     *
+     * @since 0.9.7
+     */
+    protected Map<String, Field> fieldMap;
     /**
      * The Generic getters.
      *
@@ -153,6 +161,24 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @V8Function
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
+        if (!fieldMap.isEmpty() && property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).toPrimitive();
+            Field field = fieldMap.get(propertyName);
+            if (field != null) {
+                try {
+                    Object callee = Modifier.isStatic(field.getModifiers()) ? null : targetObject;
+                    Object value = field.get(callee);
+                    if (value != null) {
+                        return v8Runtime.toV8Value(value);
+                    }
+                } catch (JavetException e) {
+                    throw e;
+                } catch (Throwable t) {
+                    throw new JavetException(JavetError.CallbackUnknownFailure,
+                            SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
+                }
+            }
+        }
         if (!genericGetters.isEmpty()) {
             try {
                 Object propertyObject = v8Runtime.toObject(property);
@@ -242,7 +268,8 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         boolean isFound = false;
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            isFound = methodsMap.containsKey(propertyName)
+            isFound = fieldMap.containsKey(propertyName)
+                    || methodsMap.containsKey(propertyName)
                     || gettersMap.containsKey(propertyName)
                     || settersMap.containsKey(propertyName);
         }
@@ -285,45 +312,64 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.7
      */
     protected void initialize() {
+        fieldMap = new HashMap<>();
         genericGetters = new ArrayList<>();
         genericSetters = new ArrayList<>();
         methodsMap = new HashMap<>();
         gettersMap = new HashMap<>();
         settersMap = new HashMap<>();
-        initializeMethods(targetClass);
+        initializeFieldsAndMethods();
     }
 
     /**
-     * Initialize methods.
+     * Initialize fields and methods.
      *
-     * @param targetClass the target class
      * @since 0.9.6
      */
-    protected void initializeMethods(Class targetClass) {
-        for (Method method : targetClass.getMethods()) {
-            if (staticMode && !Modifier.isStatic(method.getModifiers())) {
-                continue;
+    protected void initializeFieldsAndMethods() {
+        Class currentClass = targetClass;
+        while (true) {
+            // All public fields are in the scope.
+            for (Field field : currentClass.getFields()) {
+                final int fieldModifiers = field.getModifiers();
+                if (staticMode && !Modifier.isStatic(fieldModifiers) && !Modifier.isPublic(fieldModifiers)) {
+                    continue;
+                }
+                String fieldName = field.getName();
+                if (fieldMap.containsKey(fieldName)) {
+                    continue;
+                }
+                JavetReflectionUtils.safeSetAccessible(field);
+                fieldMap.put(fieldName, field);
             }
-            method.setAccessible(true);
-            if (isGenericGetter(method)) {
-                genericGetters.add(method);
-            } else if (isGenericSetter(method)) {
-                genericSetters.add(method);
-            } else {
-                final int getterPrefixLength = getGetterPrefixLength(method);
-                if (getterPrefixLength > 0) {
-                    addMethod(method, getterPrefixLength, gettersMap);
+            // All public methods are in the scope.
+            for (Method method : currentClass.getMethods()) {
+                final int methodModifiers = method.getModifiers();
+                if (staticMode && !Modifier.isStatic(methodModifiers) && !(Modifier.isPublic(methodModifiers))) {
+                    continue;
+                }
+                JavetReflectionUtils.safeSetAccessible(method);
+                if (isGenericGetter(method)) {
+                    genericGetters.add(method);
+                } else if (isGenericSetter(method)) {
+                    genericSetters.add(method);
                 } else {
-                    final int setterPrefixLength = getSetterPrefixLength(method);
-                    if (setterPrefixLength > 0) {
-                        addMethod(method, setterPrefixLength, settersMap);
+                    final int getterPrefixLength = getGetterPrefixLength(method);
+                    if (getterPrefixLength > 0) {
+                        addMethod(method, getterPrefixLength, gettersMap);
+                    } else {
+                        final int setterPrefixLength = getSetterPrefixLength(method);
+                        if (setterPrefixLength > 0) {
+                            addMethod(method, setterPrefixLength, settersMap);
+                        }
                     }
                 }
+                addMethod(method, 0, methodsMap);
             }
-            addMethod(method, 0, methodsMap);
-        }
-        if (targetClass != Object.class) {
-            initializeMethods(targetClass.getSuperclass());
+            if (currentClass == Object.class) {
+                break;
+            }
+            currentClass = currentClass.getSuperclass();
         }
     }
 
@@ -375,7 +421,26 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @Override
     public V8ValueBoolean set(V8Value target, V8Value propertyKey, V8Value propertyValue, V8Value receiver) throws JavetException {
         boolean isSet = false;
-        if (!genericSetters.isEmpty() || !settersMap.isEmpty()) {
+        if (!fieldMap.isEmpty() && propertyKey instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) propertyKey).toPrimitive();
+            Field field = fieldMap.get(propertyName);
+            if (field != null) {
+                final int fieldModifiers = field.getModifiers();
+                if (!Modifier.isFinal(fieldModifiers)) {
+                    try {
+                        Object callee = Modifier.isStatic(fieldModifiers) ? null : targetObject;
+                        field.set(callee, v8Runtime.toObject(propertyValue));
+                        isSet = true;
+                    } catch (JavetException e) {
+                        throw e;
+                    } catch (Throwable t) {
+                        throw new JavetException(JavetError.CallbackUnknownFailure,
+                                SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
+                    }
+                }
+            }
+        }
+        if (!isSet && (!genericSetters.isEmpty() || !settersMap.isEmpty())) {
             Object propertyObject, valueObject;
             try {
                 propertyObject = v8Runtime.toObject(propertyKey);

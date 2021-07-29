@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetConverterConfig;
+import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.IV8Value;
@@ -215,7 +216,7 @@ public final class V8FunctionCallback {
                  * If the callback receiver is null, that's a static method.
                  */
                 Method method = javetCallbackContext.getCallbackMethod();
-                method.setAccessible(true);
+                JavetReflectionUtils.safeSetAccessible(method);
                 Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
                 if (javetCallbackContext.isThisObjectRequired()) {
                     values.add(thisObject);

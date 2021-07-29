@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.SimpleMap;
 
 import java.io.DataInputStream;
@@ -44,7 +45,7 @@ class JavetClassLoader extends ClassLoader {
         try {
             Class<?> classNative = loadClass(jsRuntimeType.isNode() ? NODE_NATIVE_CLASS_NAME : V8_NATIVE_CLASS_NAME);
             Constructor<?> constructor = classNative.getDeclaredConstructor();
-            constructor.setAccessible(true);
+            JavetReflectionUtils.safeSetAccessible(constructor);
             return (IV8Native) constructor.newInstance();
         } catch (Exception e) {
             e.printStackTrace(System.err);
