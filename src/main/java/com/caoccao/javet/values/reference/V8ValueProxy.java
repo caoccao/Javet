@@ -65,9 +65,4 @@ public class V8ValueProxy extends V8ValueObject implements IV8ValueProxy {
         checkV8Runtime();
         v8Runtime.proxyRevoke(this);
     }
-
-    @Override
-    public String toString() {
-        return getClass().getName();
-    }
 }
