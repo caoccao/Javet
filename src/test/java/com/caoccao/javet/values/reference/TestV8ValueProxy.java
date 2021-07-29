@@ -175,6 +175,19 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     "Instance method should not work.");
             assertEquals(3, v8Runtime.getExecutor("y.staticAdd(1,2)").executeInteger(),
                     "Static function should work.");
+            assertEquals("1", v8Runtime.getExecutor("y.STATIC_WRITABLE_VALUE").executeString(),
+                    "Static writable field should work.");
+            assertEquals("1", v8Runtime.getExecutor("y.STATIC_READONLY_VALUE").executeString(),
+                    "Static read-only field should work.");
+            v8Runtime.getExecutor("y.STATIC_WRITABLE_VALUE = '2'").executeVoid();
+            assertEquals("2", v8Runtime.getExecutor("y.STATIC_WRITABLE_VALUE").executeString(),
+                    "Static writable field should be assignable.");
+            assertEquals("2", MockPojo.STATIC_WRITABLE_VALUE,
+                    "Static writable field should be assignable.");
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("y.STATIC_READONLY_VALUE = 2").executeVoid(),
+                    "Static read-only field should not be assignable.");
             v8Runtime.getGlobalObject().delete("y");
         } finally {
             v8Runtime.lowMemoryNotification();

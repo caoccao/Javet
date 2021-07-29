@@ -18,6 +18,8 @@
 package com.caoccao.javet.mock;
 
 public class MockPojo {
+    public static final String STATIC_READONLY_VALUE = "1";
+    public static String STATIC_WRITABLE_VALUE = "1";
     protected int intValue;
     protected String name;
     protected String stringValue;

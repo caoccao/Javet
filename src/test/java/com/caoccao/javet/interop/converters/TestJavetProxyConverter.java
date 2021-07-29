@@ -18,7 +18,9 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +45,21 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void beforeEach() throws JavetException {
         super.beforeEach();
         v8Runtime.setConverter(javetProxyConverter);
+    }
+
+    @Test
+    public void testEnum() throws JavetException {
+        v8Runtime.getGlobalObject().set("JavetErrorType", JavetErrorType.class);
+        assertEquals(JavetErrorType.Converter, v8Runtime.getExecutor("JavetErrorType.Converter").executeObject());
+        assertThrows(
+                JavetExecutionException.class,
+                () -> v8Runtime.getExecutor("JavetErrorType.Converter = 1;").executeVoid(),
+                "Public final field should not be writable.");
+        v8Runtime.getGlobalObject().delete("JavetErrorType");
+        v8Runtime.getGlobalObject().set("Converter", JavetErrorType.Converter);
+        assertEquals(JavetErrorType.Converter, v8Runtime.getGlobalObject().getObject("Converter"));
+        v8Runtime.getGlobalObject().delete("Converter");
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
