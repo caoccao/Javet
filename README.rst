@@ -9,7 +9,7 @@ Javet
 .. |Gitter Chatroom| image:: https://badges.gitter.im/caoccao/Javet.svg
     :target: https://gitter.im/caoccao/Javet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. |Discord| image:: https://img.shields.io/badge/-Discord-%237289DA%20
+.. |Discord| image:: https://img.shields.io/badge/join%20our-Discord-%237289DA%20
     :target: https://discord.gg/R4vvKU96gw
 
 
