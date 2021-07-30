@@ -1,7 +1,7 @@
 Javet
 =====
 
-|Maven Central| |Gitter Chatroom|
+|Maven Central| |Gitter Chatroom| |Discord|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
@@ -9,10 +9,7 @@ Javet
 .. |Gitter Chatroom| image:: https://badges.gitter.im/caoccao/Javet.svg
     :target: https://gitter.im/caoccao/Javet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-
-|Discord|
-
-.. |Discord| image:: https://invidget.switchblade.xyz/R4vvKU96gw
+.. |Discord| image:: https://img.shields.io/badge/-Discord-%237289DA%20
     :target: https://discord.gg/R4vvKU96gw
 
 
