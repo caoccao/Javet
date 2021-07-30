@@ -9,6 +9,13 @@ Javet
 .. |Gitter Chatroom| image:: https://badges.gitter.im/caoccao/Javet.svg
     :target: https://gitter.im/caoccao/Javet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
+
+|Discord|
+
+.. |Discord| image:: https://invidget.switchblade.xyz/R4vvKU96gw
+    :target: https://discord.gg/R4vvKU96gw
+
+
 Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
 If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/.
