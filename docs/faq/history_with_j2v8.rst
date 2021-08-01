@@ -7,11 +7,11 @@ J2V8 Issues
 
 J2V8 is an excellent project on embedding V8 in Java. However, J2V8 community hasn't been active since 2017.
 
-The last Windows version 4.6.0 was released on 2016 and the last Linux version 4.8.0 was released on 2017. The V8 in Windows v4.6.0 doesn't even fully support ES6.
+The last Windows version 4.6.0 was released in 2016 and the last Linux version 4.8.0 was released in 2017. The V8 in Windows v4.6.0 doesn't even fully support ES6.
 
 The latest community activities were around Android versions. The Node.js API was dropped. The Windows build has been seriously broken for years. The Linux build is nearly broken. There are serious memory leak issues which are hard to be fixed under the current architecture.
 
-Its API has stopped evolving for years. Many new features I expect just don't get any chances to be implemented. Obviously, if the build system was broken and couldn't be easily fixed, almost no one would like to contribute. That includes me. When I was trying to fix the build system for Windows and Linux, I had to admit that's so, so, so, challenging. Why is that? I think it's not merely J2V8 community's problem because in the meanwhile V8, Node.js and ECMAScript move forward rapidly causing many unexpected challenges. Someone or some team needs to look after J2V8 from time to time. Unfortunately, reality is cruel.
+Its API has stopped evolving for years. Many new features I expect just don't get any chances to be implemented. Obviously, if the build system was broken and couldn't be easily fixed, almost no one would like to contribute. That includes me. When I was trying to fix the build system for Windows and Linux, I had to admit that's so, so, so, challenging. Why is that? I think it's not merely J2V8 community's problem because in the meanwhile V8, Node.js and ECMAScript move forward rapidly causing many unexpected challenges. Someone or some team needs to look after J2V8 from time to time. Unfortunately, the reality is cruel.
 
 J2V8 Latest Version
 ===================
@@ -48,6 +48,7 @@ TL;DR: It's too hard.
 * V8 is evolving rapidly. v8.3.110.9 is a relatively easy one to be mastered. I didn't move forward well with v8.9.213 which placed a different set of *solvable* challenges to me. I plan to revisit the latest V8 in near future.
 * Node.js was removed early. I haven't got time reviving it in J2V8.
 * J2V8 build system is too old.
+
   * Gradle v2.14.1 is far from the lowest supported gradle version in my latest IntelliJ IDEA. And I don't have interest in installing a legacy Eclipse to play with that version of gradle. Hey, why not upgrade gradle to satisfy IDEA? I tried, but all was bad luck. You may take a try, then understand what I have suffered from.
   * CMake is old and seriously broken on Windows. Nowadays, V8 only supports VS 2017 or 2019, but ``CMakeLists.txt`` is still at the VS 2015 age. No surprise, it doesn't work at all.
   * Docker build is deeply broken as well. The dependent docker image was gone. There are many errors in many steps. Sitting there, watching the docker build breaks made me full of frustration because I thought it would take me a few months fixing the problems, but I don't have a few months. No one pays me to do that.
