@@ -18,6 +18,7 @@ Advanced
 ========
 
 * `Object Converter <object_converter.rst>`_
+* `Java and JavaScript Interop <java_and_javascript_interop.rst>`_
 * `Interact with Node.js <interact_with_node_js.rst>`_
 
 Complete tutorial is available at `here <../../src/test/java/com/caoccao/javet/tutorial>`_.
