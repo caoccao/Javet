@@ -41,6 +41,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                 assertTrue(v8ValueProxy.get("c").isUndefined());
                 v8ValueObject.set("c", 3);
                 assertEquals(3, v8ValueProxy.getInteger("c"));
+                assertEquals("{\"a\":1,\"b\":2,\"c\":3}", v8ValueProxy.toJsonString());
                 v8ValueProxy.revoke();
                 assertTrue(v8ValueProxy.isRevoked());
             }
@@ -113,7 +114,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     assertTrue(v8ValueProxy.has(methodName),
                             MessageFormat.format("{0} should be found", methodName));
                 }
-                for (String methodName : "subtract ssStringValue a b".split("\\s+")) {
+                for (String methodName : "subtract ssStringValue sssstringValue a b".split("\\s+")) {
                     assertFalse(v8ValueProxy.has(methodName),
                             MessageFormat.format("{0} should not be found", methodName));
                 }
@@ -161,6 +162,13 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     JavetExecutionException.class,
                     () -> v8Runtime.getExecutor("y.instanceReadonlyValue = 2").executeVoid(),
                     "Static read-only field should not be assignable.");
+            assertEquals(
+                    "[\"STATIC_READONLY_VALUE\",\"STATIC_WRITABLE_VALUE\",\"class\"," +
+                            "\"instanceReadonlyValue\",\"instanceWritableValue\",\"intValue\"," +
+                            "\"name\",\"sssStringValue\",\"stringValue\"]",
+                    v8Runtime.getExecutor("const z = Object.getOwnPropertyNames(y);" +
+                            " z.sort(); JSON.stringify(z);").executeString(),
+                    "ownKeys should work.");
             v8Runtime.getGlobalObject().delete("y");
         } finally {
             v8Runtime.lowMemoryNotification();
@@ -201,6 +209,11 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     JavetExecutionException.class,
                     () -> v8Runtime.getExecutor("y.STATIC_READONLY_VALUE = 2").executeVoid(),
                     "Static read-only field should not be assignable.");
+            assertEquals(
+                    "[\"STATIC_READONLY_VALUE\",\"STATIC_WRITABLE_VALUE\"]",
+                    v8Runtime.getExecutor("const z = Object.getOwnPropertyNames(y);" +
+                            " z.sort(); JSON.stringify(z);").executeString(),
+                    "ownKeys should work.");
             v8Runtime.getGlobalObject().delete("y");
         } finally {
             v8Runtime.lowMemoryNotification();
@@ -232,6 +245,13 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
             assertEquals("abc", handler.getTargetObject().get("name"), "Getter should work.");
             assertEquals("abc", v8Runtime.getExecutor("y['name']").executeString(),
                     "Getter should work.");
+            assertEquals(
+                    "[\"STATIC_READONLY_VALUE\",\"STATIC_WRITABLE_VALUE\",\"class\"," +
+                            "\"instanceReadonlyValue\",\"instanceWritableValue\",\"intValue\"," +
+                            "\"name\",\"sssStringValue\",\"stringValue\"]",
+                    v8Runtime.getExecutor("const z = Object.getOwnPropertyNames(y);" +
+                            " z.sort(); JSON.stringify(z);").executeString(),
+                    "ownKeys should work.");
             v8Runtime.getGlobalObject().delete("y");
         } finally {
             v8Runtime.lowMemoryNotification();

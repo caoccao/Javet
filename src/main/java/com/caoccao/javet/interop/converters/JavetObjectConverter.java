@@ -27,7 +27,7 @@ import com.caoccao.javet.interfaces.IJavetEntityMap;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
-import com.caoccao.javet.interop.proxy.JavetMapProxyHandler;
+import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
@@ -162,9 +162,9 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         if (javetCallbackContext != null) {
                             IJavetProxyHandler<Object> iJavetProxyHandler =
                                     (IJavetProxyHandler<Object>) javetCallbackContext.getCallbackReceiver();
-                            returnObject = iJavetProxyHandler.getTargetObject();
-                            if (returnObject != null) {
-                                return returnObject;
+                            Object targetObject = iJavetProxyHandler.getTargetObject();
+                            if (targetObject != null) {
+                                return targetObject;
                             }
                         }
                     }
@@ -210,8 +210,10 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             if (config.isProxyMapEnabled()) {
                 V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy();
                 try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                    JavetMapProxyHandler javetMapProxyHandler = new JavetMapProxyHandler(v8Runtime, (Map) object);
-                    List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetMapProxyHandler);
+                    JavetUniversalProxyHandler<Map> javetUniversalProxyHandler =
+                            new JavetUniversalProxyHandler<>(v8Runtime, (Map) object);
+                    List<JavetCallbackContext> javetCallbackContexts =
+                            iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
                     iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                 }
                 v8Value = v8ValueProxy;

@@ -6,6 +6,7 @@ Release Notes
 -----
 
 * Added static mode to ``JavetUniversalProxyHandler``
+* Added ``ownKeys()`` to ``JavetUniversalProxyHandler``
 
 0.9.6
 -----
