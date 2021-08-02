@@ -21,14 +21,20 @@ import java.lang.reflect.Method;
 
 /**
  * The type Method descriptor.
+ *
+ * @since 0.9.2
  */
 public class MethodDescriptor {
     /**
      * The Method.
+     *
+     * @since 0.9.2
      */
     protected Method method;
     /**
      * The This object required.
+     *
+     * @since 0.9.2
      */
     protected boolean thisObjectRequired;
 
@@ -37,6 +43,7 @@ public class MethodDescriptor {
      *
      * @param method             the method
      * @param thisObjectRequired the this object required
+     * @since 0.9.2
      */
     public MethodDescriptor(Method method, boolean thisObjectRequired) {
         this.method = method;
@@ -47,6 +54,7 @@ public class MethodDescriptor {
      * Gets method.
      *
      * @return the method
+     * @since 0.9.2
      */
     public Method getMethod() {
         return method;
@@ -56,6 +64,7 @@ public class MethodDescriptor {
      * Is this object required boolean.
      *
      * @return the boolean
+     * @since 0.9.2
      */
     public boolean isThisObjectRequired() {
         return thisObjectRequired;

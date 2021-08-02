@@ -18,7 +18,9 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +28,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,6 +45,21 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void beforeEach() throws JavetException {
         super.beforeEach();
         v8Runtime.setConverter(javetProxyConverter);
+    }
+
+    @Test
+    public void testEnum() throws JavetException {
+        v8Runtime.getGlobalObject().set("JavetErrorType", JavetErrorType.class);
+        assertEquals(JavetErrorType.Converter, v8Runtime.getExecutor("JavetErrorType.Converter").executeObject());
+        assertThrows(
+                JavetExecutionException.class,
+                () -> v8Runtime.getExecutor("JavetErrorType.Converter = 1;").executeVoid(),
+                "Public final field should not be writable.");
+        v8Runtime.getGlobalObject().delete("JavetErrorType");
+        v8Runtime.getGlobalObject().set("Converter", JavetErrorType.Converter);
+        assertEquals(JavetErrorType.Converter, v8Runtime.getGlobalObject().getObject("Converter"));
+        v8Runtime.getGlobalObject().delete("Converter");
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -76,6 +94,9 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals("3", map.get("z"));
         assertEquals("4", v8Runtime.getExecutor("map.z = '4'; map.z;").executeString());
         assertEquals("4", map.get("z"));
+        assertEquals(
+                "[\"x\",\"y\",\"z\"]",
+                v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
         v8Runtime.getGlobalObject().delete("map");
         v8Runtime.lowMemoryNotification();
         javetProxyConverter.getConfig().setProxyMapEnabled(false);
@@ -94,6 +115,17 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 path.resolve("abc").toString(),
                 v8Runtime.getExecutor("path.resolve('abc').toString()").executeString());
         v8Runtime.getGlobalObject().delete("path");
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testPattern() throws JavetException {
+        v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
+        assertTrue(v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject() instanceof Pattern);
+        assertTrue(v8Runtime.getExecutor("p.matcher('123').matches();").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
+        v8Runtime.getGlobalObject().delete("Pattern");
+        v8Runtime.getExecutor("p = undefined;").executeVoid();
         v8Runtime.lowMemoryNotification();
     }
 }

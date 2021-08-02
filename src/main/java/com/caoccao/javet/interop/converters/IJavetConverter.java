@@ -39,7 +39,7 @@ public interface IJavetConverter {
     JavetConverterConfig getConfig();
 
     /**
-     * To object.
+     * To object from V8 value.
      * <p>
      * Don't override this function, instead, override the one with depth as argument
      * for circular structure detection.
@@ -52,7 +52,7 @@ public interface IJavetConverter {
     Object toObject(V8Value v8Value) throws JavetException;
 
     /**
-     * To object.
+     * To object from V8 value and auto close the V8 value.
      *
      * @param v8Value   the V8 value
      * @param autoClose the auto close
@@ -73,7 +73,7 @@ public interface IJavetConverter {
     }
 
     /**
-     * To V8 value.
+     * To V8 value from object.
      * <p>
      * Don't override this function, instead, override the one with depth as argument
      * for circular structure detection.

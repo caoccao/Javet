@@ -71,10 +71,10 @@ public class JavetPrimitiveConverter implements IJavetConverter {
     }
 
     /**
-     * To object object.
+     * To object with stack depth.
      *
-     * @param v8Value the v 8 value
-     * @param depth   the depth
+     * @param v8Value the V8 value
+     * @param depth   the stack depth
      * @return the object
      * @throws JavetException the javet exception
      * @since 0.9.3
@@ -97,12 +97,12 @@ public class JavetPrimitiveConverter implements IJavetConverter {
     }
 
     /**
-     * To V8 value.
+     * To V8 value with stack depth.
      *
      * @param <T>       the type parameter
      * @param v8Runtime the V8 runtime
      * @param object    the object
-     * @param depth     the depth
+     * @param depth     the stack depth
      * @return the V8 value
      * @throws JavetException the javet exception
      * @since 0.9.3
@@ -169,9 +169,9 @@ public class JavetPrimitiveConverter implements IJavetConverter {
     }
 
     /**
-     * Validate depth.
+     * Validate the stack depth.
      *
-     * @param depth the depth
+     * @param depth the stack depth
      * @throws JavetException the javet exception
      * @since 0.9.3
      */

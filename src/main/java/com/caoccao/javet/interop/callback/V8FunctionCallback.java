@@ -22,7 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetConverterConfig;
-import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.IV8Value;
@@ -35,6 +35,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type V8 function callback.
+ *
+ * @since 0.8.3
+ */
 public final class V8FunctionCallback {
 
     private static Object convert(IJavetConverter converter, Class<?> expectedClass, V8Value v8Value)
@@ -178,6 +183,17 @@ public final class V8FunctionCallback {
         return v8Value;
     }
 
+    /**
+     * Receive callback V8 value.
+     *
+     * @param v8Runtime            the V8 runtime
+     * @param javetCallbackContext the javet callback context
+     * @param thisObject           the this object
+     * @param args                 the args
+     * @return the V8 value
+     * @throws Throwable the throwable
+     * @since 0.8.3
+     */
     public static V8Value receiveCallback(
             V8Runtime v8Runtime,
             JavetCallbackContext javetCallbackContext,
@@ -200,7 +216,7 @@ public final class V8FunctionCallback {
                  * If the callback receiver is null, that's a static method.
                  */
                 Method method = javetCallbackContext.getCallbackMethod();
-                method.setAccessible(true);
+                JavetReflectionUtils.safeSetAccessible(method);
                 Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
                 if (javetCallbackContext.isThisObjectRequired()) {
                     values.add(thisObject);
@@ -266,12 +282,10 @@ public final class V8FunctionCallback {
                 } else {
                     JavetResourceUtils.safeClose(resultObject);
                 }
+            } catch (InvocationTargetException e) {
+                throw e.getCause();
             } catch (Throwable t) {
-                if (t instanceof InvocationTargetException) {
-                    throw t.getCause();
-                } else {
-                    throw t;
-                }
+                throw t;
             } finally {
                 // Result object must be excluded because it will be closed in JNI.
                 if (!javetCallbackContext.isThisObjectRequired()) {

@@ -159,7 +159,20 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     v8Runtime.setConverter(javetProxyConverter);
     // Please feel free to inject arbitrary Java objects.
 
-    // Sample 1: java.io.File
+    // Sample 1: Enum
+    v8Runtime.getGlobalObject().set("JavetErrorType", JavetErrorType.class);
+    assertEquals(JavetErrorType.Converter, v8Runtime.getExecutor("JavetErrorType.Converter").executeObject());
+    assertThrows(
+            JavetExecutionException.class,
+            () -> v8Runtime.getExecutor("JavetErrorType.Converter = 1;").executeVoid(),
+            "Public final field should not be writable.");
+    v8Runtime.getGlobalObject().delete("JavetErrorType");
+    v8Runtime.getGlobalObject().set("Converter", JavetErrorType.Converter);
+    assertEquals(JavetErrorType.Converter, v8Runtime.getGlobalObject().getObject("Converter"));
+    v8Runtime.getGlobalObject().delete("Converter");
+    v8Runtime.lowMemoryNotification();
+
+    // Sample 2: java.io.File
     File file = new File("/tmp/i-am-not-accessible");
     v8Runtime.getGlobalObject().set("file", file);
     assertEquals(file, v8Runtime.getGlobalObject().getObject("file"));
@@ -169,8 +182,10 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     assertEquals(file.canRead(), v8Runtime.getExecutor("file.canRead()").executeBoolean());
     assertEquals(file.canWrite(), v8Runtime.getExecutor("file.canWrite()").executeBoolean());
     assertEquals(file.canExecute(), v8Runtime.getExecutor("file.canExecute()").executeBoolean());
+    v8Runtime.getGlobalObject().delete("file");
+    v8Runtime.lowMemoryNotification();
 
-    // Sample 2: java.util.Map
+    // Sample 3: java.util.Map
     javetProxyConverter.getConfig().setProxyMapEnabled(true);
     Map<String, Object> map = new HashMap<String, Object>() {{
         put("x", 1);
@@ -190,7 +205,7 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     v8Runtime.lowMemoryNotification();
     javetProxyConverter.getConfig().setProxyMapEnabled(false);
 
-    // Sample 3: java.nio.file.Path
+    // Sample 4: java.nio.file.Path
     Path path = new File("/tmp/i-am-not-accessible").toPath();
     v8Runtime.getGlobalObject().set("path", path);
     assertEquals(path, v8Runtime.getGlobalObject().getObject("path"));
@@ -199,6 +214,17 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     assertNotNull(newPath);
     assertEquals(path.resolve("abc").toString(), newPath.toString());
     assertEquals(path.resolve("abc").toString(), v8Runtime.getExecutor("path.resolve('abc').toString()").executeString());
+    v8Runtime.getGlobalObject().delete("path");
+    v8Runtime.lowMemoryNotification();
+
+    // Sample 5: java.util.regex.Pattern
+    v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
+    assertTrue(v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject() instanceof Pattern);
+    assertTrue(v8Runtime.getExecutor("p.matcher('123').matches();").executeBoolean());
+    assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
+    v8Runtime.getGlobalObject().delete("Pattern");
+    v8Runtime.getExecutor("p = undefined;").executeVoid();
+    v8Runtime.lowMemoryNotification();
 
 Features
 --------
