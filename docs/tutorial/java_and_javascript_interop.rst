@@ -21,6 +21,12 @@ Inject a Static Class
             "main();").executeVoid();
     v8Runtime.getGlobalObject().delete("System");
 
+    /*
+     * Output:
+     *   Hello from Java
+     *   Hello from JavaScript
+     */
+
 Inject an Enum
 ==============
 
@@ -31,6 +37,12 @@ Inject an Enum
     System.out.println("The enum in JavaScript is the one in Java: " +
             (Color.pink == (Color) v8Runtime.getExecutor("Color.pink;").executeObject()));
     v8Runtime.getGlobalObject().delete("Color");
+
+    /*
+     * Output:
+     *   java.awt.Color[r=255,g=175,b=175]
+     *   The enum in JavaScript is the one in Java: true
+     */
 
 Inject a Pattern
 ================
@@ -45,5 +57,10 @@ Inject a Pattern
             "  ];\n" +
             "}").executeVoid();
     System.out.println(v8Runtime.getGlobalObject().invokeObject("main", pattern).toString());
+
+    /*
+     * Output:
+     *   [true, false]
+     */
 
 [`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]
