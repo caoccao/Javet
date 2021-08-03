@@ -27,7 +27,9 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,6 +88,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         }};
         v8Runtime.getGlobalObject().set("map", map);
         assertTrue(map == v8Runtime.getGlobalObject().getObject("map"));
+        assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
         assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
         assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
         assertEquals(1, v8Runtime.getExecutor("map.x").executeInteger());
@@ -127,5 +130,27 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("Pattern");
         v8Runtime.getExecutor("p = undefined;").executeVoid();
         v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testSet() throws JavetException {
+        javetProxyConverter.getConfig().setProxySetEnabled(true);
+        Set<String> set = new HashSet<String>() {{
+            add("x");
+            add("y");
+        }};
+        v8Runtime.getGlobalObject().set("set", set);
+        assertTrue(set == v8Runtime.getGlobalObject().getObject("set"));
+        assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("set.add('z')").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+        assertEquals(
+                "[\"x\",\"y\",\"z\"]",
+                v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
+        v8Runtime.getGlobalObject().delete("set");
+        v8Runtime.lowMemoryNotification();
+        javetProxyConverter.getConfig().setProxySetEnabled(false);
     }
 }

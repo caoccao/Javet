@@ -98,6 +98,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
      */
     protected boolean proxyMapEnabled;
     /**
+     * The Proxy set enabled.
+     *
+     * @since 0.9.8
+     */
+    protected boolean proxySetEnabled;
+    /**
      * This flag determines whether function should be skipped in object or not.
      *
      * @since 0.9.4
@@ -225,13 +231,23 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
     }
 
     /**
-     * Is proxy map enabled boolean.
+     * Is proxy map enabled.
      *
      * @return the boolean
      * @since 0.9.6
      */
     public boolean isProxyMapEnabled() {
         return proxyMapEnabled;
+    }
+
+    /**
+     * Is proxy set enabled.
+     *
+     * @return the boolean
+     * @since 0.9.8
+     */
+    public boolean isProxySetEnabled() {
+        return proxySetEnabled;
     }
 
     /**
@@ -272,10 +288,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
      * Sets default char.
      *
      * @param defaultChar the default char
+     * @return the self
      * @since 0.9.4
      */
-    public void setDefaultChar(char defaultChar) {
+    public T setDefaultChar(char defaultChar) {
         this.defaultChar = defaultChar;
+        return (T) this;
     }
 
     /**
@@ -371,6 +389,18 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
      */
     public T setProxyMapEnabled(boolean proxyMapEnabled) {
         this.proxyMapEnabled = proxyMapEnabled;
+        return (T) this;
+    }
+
+    /**
+     * Sets proxy set enabled.
+     *
+     * @param proxySetEnabled the proxy set enabled
+     * @return the self
+     * @since 0.9.8
+     */
+    public T setProxySetEnabled(boolean proxySetEnabled) {
+        this.proxySetEnabled = proxySetEnabled;
         return (T) this;
     }
 

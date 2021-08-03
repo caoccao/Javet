@@ -229,14 +229,26 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueObject;
             }
         } else if (object instanceof Set) {
-            V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet();
-            Set<?> setObject = (Set<?>) object;
-            for (Object item : setObject) {
-                try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                    v8ValueSet.add(childV8Value);
+            if (config.isProxySetEnabled()) {
+                V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy();
+                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                    JavetUniversalProxyHandler<Set> javetUniversalProxyHandler =
+                            new JavetUniversalProxyHandler<>(v8Runtime, (Set) object);
+                    List<JavetCallbackContext> javetCallbackContexts =
+                            iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
+                    iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                 }
+                v8Value = v8ValueProxy;
+            } else {
+                V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet();
+                Set<?> setObject = (Set<?>) object;
+                for (Object item : setObject) {
+                    try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
+                        v8ValueSet.add(childV8Value);
+                    }
+                }
+                v8Value = v8ValueSet;
             }
-            v8Value = v8ValueSet;
         } else if (object instanceof Collection) {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
             for (Object item : (Collection<?>) object) {
