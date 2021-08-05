@@ -2,6 +2,11 @@
 Release Notes
 =============
 
+0.9.8
+-----
+
+* Added ``resolve()`` and ``reject()`` to ``V8ValuePromise``
+
 0.9.7
 -----
 

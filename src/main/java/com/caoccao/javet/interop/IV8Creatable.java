@@ -56,6 +56,9 @@ public interface IV8Creatable {
     V8ValueObject createV8ValueObject() throws JavetException;
 
     @CheckReturnValue
+    V8ValuePromise createV8ValuePromise() throws JavetException;
+
+    @CheckReturnValue
     default V8ValueProxy createV8ValueProxy() throws JavetException {
         return createV8ValueProxy(null);
     }

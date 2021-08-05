@@ -274,6 +274,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    public V8ValuePromise createV8ValuePromise() throws JavetException {
+        return decorateV8Value((V8ValuePromise) v8Native.createV8Value(
+                handle, V8ValueReferenceType.Promise.getId(), null));
+    }
+
+    @Override
     public V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException {
         return decorateV8Value((V8ValueProxy) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Proxy.getId(), v8ValueObject));
@@ -630,6 +636,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId(), functionHandle.getHandle()));
     }
 
+    public V8ValuePromise promiseGetPromise(V8ValuePromise v8ValuePromise) throws JavetException {
+        return decorateV8Value((V8ValuePromise) v8Native.promiseGetPromise(
+                handle, v8ValuePromise.getHandle(), v8ValuePromise.getType().getId()));
+    }
+
     public <T extends V8Value> T promiseGetResult(IV8ValuePromise iV8ValuePromise) throws JavetException {
         return decorateV8Value((T) v8Native.promiseGetResult(
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId()));
@@ -645,6 +656,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public void promiseMarkAsHandled(IV8ValuePromise iV8ValuePromise) {
         v8Native.promiseMarkAsHandled(handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId());
+    }
+
+    public boolean promiseReject(V8ValuePromise v8ValuePromise, V8Value v8Value) {
+        return v8Native.promiseReject(
+                handle, v8ValuePromise.getHandle(), v8ValuePromise.getType().getId(), v8Value);
+    }
+
+    public boolean promiseResolve(V8ValuePromise v8ValuePromise, V8Value v8Value) {
+        return v8Native.promiseResolve(
+                handle, v8ValuePromise.getHandle(), v8ValuePromise.getType().getId(), v8Value);
     }
 
     public <T extends V8ValuePromise> T promiseThen(
