@@ -8,8 +8,18 @@ Build Environment
 Linux Environment
 -----------------
 
-* CMake 3.10+
 * Ubuntu 20.04
+* CMake 3.10+
+* JDK 8
+* Gradle 7.0+
+
+MacOS Environment (Experimental)
+--------------------------------
+
+* MacOS Mojave+
+* Latest Brew
+* Xcode 10.1+
+* Cmake 3.16+
 * JDK 8
 * Gradle 7.0+
 

@@ -22,8 +22,8 @@ The lifecycle is as the following chart shows.
 3. Java application creates a V8 promise resolver and holds the resolver.
 4. Java application gets a V8 promise from the resolver and returns that V8 promise as callback return.
 5. JavaScript application gets that promise and binds the ``.then()`` and ``.catch()``.
-6. Java application fetches the resource and call the resolver via ``.resolve()``.
-7. JavaScript application receives the resource in ``.then()`` and process the result.
+6. Java application fetches the resource and calls the resolver via ``.resolve()``.
+7. JavaScript application receives the resource in ``.then()`` and processes the result.
 
 .. image:: ../resources/images/v8_promise_lifecycle.png?raw=true
     :alt: V8 Promise Lifecycle
