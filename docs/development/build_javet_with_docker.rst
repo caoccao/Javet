@@ -36,7 +36,7 @@ Build Javet on Linux
 2. Navigate to the root directory of the Javet repository.
 3. Execute ``docker build -f docker/linux-x86_64/build.Dockerfile .`` (Be careful, please include the last ``.``).
 
-    * Docker will pull the corresponding image (~10GB) from Docker Hub.
-    * The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.
+   * Docker will pull the corresponding image (~10GB) from Docker Hub.
+   * The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.
 
 [`Home <../../README.rst>`_] [`Development <index.rst>`_]
