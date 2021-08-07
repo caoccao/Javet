@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t javet-base:0.9.8 -f docker/linux-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:0.9.8 -f docker/linux-x86_64/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
@@ -61,10 +61,29 @@ RUN echo Node.js preparation is completed.
 WORKDIR /node
 COPY ./scripts/python/patch_node_build.py .
 RUN python3 patch_node_build.py -p ./
-RUN ./configure --enable-static --without-intl; exit 0
+RUN ./configure --enable-static --without-intl
 RUN python3 patch_node_build.py -p ./
+RUN rm patch_node_build.py
 RUN make -j4
 RUN echo Node.js build is completed.
+
+# Prepare Javet Build Environment
+RUN apt-get install --upgrade -qq -y --no-install-recommends execstack
+RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-8-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+ENV SDKMAN_HOME="/root/.sdkman"
+ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
+RUN curl -s https://get.sdkman.io | bash
+RUN source ${SDKMAN_HOME}/bin/sdkman-init.sh && sdk install gradle 7.0.2
+ENV PATH=$GRADLE_HOME/bin:$PATH
+
+# Shrink
+RUN rm -rf ${SDKMAN_HOME}/archives/*
+RUN rm -rf ${SDKMAN_HOME}/tmp/*
+RUN apt-get clean -y
+RUN rm -rf /var/lib/apt/lists/*
+WORKDIR /
 
 # Completed
 RUN echo Javet build base image is completed.

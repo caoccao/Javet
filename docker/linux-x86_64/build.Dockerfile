@@ -18,11 +18,6 @@
 FROM sjtucaocao/javet:0.9.8
 WORKDIR /
 
-# Preparation
-RUN apt-get install --upgrade -qq -y --no-install-recommends execstack
-RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-8-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-
 # Copy Javet
 RUN mkdir Javet
 WORKDIR /Javet
@@ -30,19 +25,8 @@ COPY . .
 
 # Build JNI
 WORKDIR /Javet/cpp
-RUN ls -al .
 RUN sh ./build.sh -DV8_DIR=/google/v8
 RUN sh ./build.sh -DNODE_DIR=/node
-
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-ENV SDKMAN_HOME="/root/.sdkman"
-ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
-RUN curl -s https://get.sdkman.io | bash
-RUN source ${SDKMAN_HOME}/bin/sdkman-init.sh \
-    && sdk install gradle 7.0.2 \
-    && rm -rf ${SDKMAN_HOME}/archives/* \
-    && rm -rf ${SDKMAN_HOME}/tmp/*
-ENV PATH=$GRADLE_HOME/bin:$PATH
 
 # Build Jar
 WORKDIR /Javet
