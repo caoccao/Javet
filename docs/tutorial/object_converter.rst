@@ -151,6 +151,9 @@ Universal Converter
 
 Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``JavetProxyConverter`` is designed for that. In general, the user experience is very much close to the one provided by GraalJS. As ``JavetProxyConverter`` opens almost the whole JVM to V8, it is very dangerous to allow end users to touch that V8 runtime, so ``JavetProxyConverter`` is not enabled by default. Here are the steps on how to enable that.
 
+Preparation
+-----------
+
 .. code-block:: java
 
     // Step 1: Create an instance of JavetProxyConverter.
@@ -159,20 +162,11 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     v8Runtime.setConverter(javetProxyConverter);
     // Please feel free to inject arbitrary Java objects.
 
-    // Sample 1: Enum
-    v8Runtime.getGlobalObject().set("JavetErrorType", JavetErrorType.class);
-    assertEquals(JavetErrorType.Converter, v8Runtime.getExecutor("JavetErrorType.Converter").executeObject());
-    assertThrows(
-            JavetExecutionException.class,
-            () -> v8Runtime.getExecutor("JavetErrorType.Converter = 1;").executeVoid(),
-            "Public final field should not be writable.");
-    v8Runtime.getGlobalObject().delete("JavetErrorType");
-    v8Runtime.getGlobalObject().set("Converter", JavetErrorType.Converter);
-    assertEquals(JavetErrorType.Converter, v8Runtime.getGlobalObject().getObject("Converter"));
-    v8Runtime.getGlobalObject().delete("Converter");
-    v8Runtime.lowMemoryNotification();
+Instance: File
+--------------
 
-    // Sample 2: java.io.File
+.. code-block:: java
+
     File file = new File("/tmp/i-am-not-accessible");
     v8Runtime.getGlobalObject().set("file", file);
     assertEquals(file, v8Runtime.getGlobalObject().getObject("file"));
@@ -185,7 +179,11 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     v8Runtime.getGlobalObject().delete("file");
     v8Runtime.lowMemoryNotification();
 
-    // Sample 3: java.util.Map
+Instance: Map
+-------------
+
+.. code-block:: java
+
     javetProxyConverter.getConfig().setProxyMapEnabled(true);
     Map<String, Object> map = new HashMap<String, Object>() {{
         put("x", 1);
@@ -205,7 +203,11 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     v8Runtime.lowMemoryNotification();
     javetProxyConverter.getConfig().setProxyMapEnabled(false);
 
-    // Sample 4: java.nio.file.Path
+Instance: Path
+--------------
+
+.. code-block:: java
+
     Path path = new File("/tmp/i-am-not-accessible").toPath();
     v8Runtime.getGlobalObject().set("path", path);
     assertEquals(path, v8Runtime.getGlobalObject().getObject("path"));
@@ -217,13 +219,55 @@ Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``J
     v8Runtime.getGlobalObject().delete("path");
     v8Runtime.lowMemoryNotification();
 
-    // Sample 5: java.util.regex.Pattern
+Static: Pattern
+---------------
+
+.. code-block:: java
+
     v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
     assertTrue(v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject() instanceof Pattern);
     assertTrue(v8Runtime.getExecutor("p.matcher('123').matches();").executeBoolean());
     assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
     v8Runtime.getGlobalObject().delete("Pattern");
     v8Runtime.getExecutor("p = undefined;").executeVoid();
+    v8Runtime.lowMemoryNotification();
+
+Static: Enum
+------------
+
+Static class usually does not have an instance. The universal proxy based converter is smart enough to handle that.
+
+.. code-block:: java
+
+    v8Runtime.getGlobalObject().set("JavetErrorType", JavetErrorType.class);
+    assertEquals(JavetErrorType.Converter, v8Runtime.getExecutor("JavetErrorType.Converter").executeObject());
+    assertThrows(
+            JavetExecutionException.class,
+            () -> v8Runtime.getExecutor("JavetErrorType.Converter = 1;").executeVoid(),
+            "Public final field should not be writable.");
+    v8Runtime.getGlobalObject().delete("JavetErrorType");
+    v8Runtime.getGlobalObject().set("Converter", JavetErrorType.Converter);
+    assertEquals(JavetErrorType.Converter, v8Runtime.getGlobalObject().getObject("Converter"));
+    v8Runtime.getGlobalObject().delete("Converter");
+    v8Runtime.lowMemoryNotification();
+
+Static: Interface
+-----------------
+
+Sometimes injecting an actual ``Class`` instead of a static class may be very useful. Especially interface or annotation class can be injected for enabling Java reflection in V8. The universal proxy based converter can disable static class mode if ``JavetConverterConfig.setStaticClassEnabled(false)`` is called before the conversion.
+
+.. code-block:: java
+
+    javetProxyConverter.getConfig().setStaticClassEnabled(false);
+    v8Runtime.getGlobalObject().set("AutoCloseable", AutoCloseable.class);
+    v8Runtime.getGlobalObject().set("IJavetClosable", IJavetClosable.class);
+    assertTrue(AutoCloseable.class.isAssignableFrom(IJavetClosable.class));
+    assertTrue(v8Runtime.getExecutor("AutoCloseable.isAssignableFrom(IJavetClosable);").executeBoolean());
+    assertEquals(AutoCloseable.class, v8Runtime.getExecutor("AutoCloseable").executeObject());
+    assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
+    v8Runtime.getGlobalObject().delete("AutoCloseable");
+    v8Runtime.getGlobalObject().delete("IJavetClosable");
+    javetProxyConverter.getConfig().setStaticClassEnabled(true);
     v8Runtime.lowMemoryNotification();
 
 Features

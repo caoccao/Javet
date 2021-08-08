@@ -178,7 +178,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     @Test
     public void testUniversalProxyHandlerInStaticMode() throws JavetException {
         JavetUniversalProxyHandler<MockPojo> handler =
-                new JavetUniversalProxyHandler<>(v8Runtime, MockPojo.class);
+                new JavetUniversalProxyHandler<>(v8Runtime, MockPojo.class, true);
         assertNull(handler.getTargetObject());
         assertTrue(handler.isStaticMode());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {

@@ -131,7 +131,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     protected Set<String> uniqueKeySet;
 
     /**
-     * Instantiates a new Javet universal proxy handler.
+     * Instantiates a new Javet universal proxy handler in regular mode.
      *
      * @param v8Runtime    the V8 runtime
      * @param targetObject the target object
@@ -145,15 +145,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Instantiates a new Javet universal proxy handler.
+     * Instantiates a new Javet universal proxy handler in static mode.
      *
      * @param v8Runtime   the V8 runtime
      * @param targetClass the target class
+     * @param staticMode  the static mode
      * @since 0.9.7
      */
-    public JavetUniversalProxyHandler(V8Runtime v8Runtime, Class<T> targetClass) {
+    public JavetUniversalProxyHandler(V8Runtime v8Runtime, Class<T> targetClass, boolean staticMode) {
         super(v8Runtime, null);
-        staticMode = true;
+        this.staticMode = true;
         this.targetClass = targetClass;
         initialize();
     }
@@ -441,6 +442,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 break;
             }
             currentClass = currentClass.getSuperclass();
+            if (currentClass == null) {
+                break;
+            }
         }
     }
 
@@ -596,7 +600,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          * Instantiates a new Javet universal interceptor.
          *
          * @param targetObject the target object
-         * @param jsMethodName the js method name
+         * @param jsMethodName the JS method name
          * @param methods      the methods
          * @since 0.9.6
          */
@@ -624,9 +628,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
 
         /**
-         * Gets js method name.
+         * Gets JS method name.
          *
-         * @return the js method name
+         * @return the JS method name
          * @since 0.9.6
          */
         public String getJSMethodName() {

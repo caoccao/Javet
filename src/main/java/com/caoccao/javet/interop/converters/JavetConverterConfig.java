@@ -109,6 +109,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
      * @since 0.9.4
      */
     protected boolean skipFunctionInObject;
+    /**
+     * The Static class enabled.
+     *
+     * @since 0.9.8
+     */
+    protected boolean staticClassEnabled;
 
     /**
      * Instantiates a new Javet converter config.
@@ -128,6 +134,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
         maxDepth = DEFAULT_MAX_DEPTH;
         proxyMapEnabled = false;
         skipFunctionInObject = true;
+        staticClassEnabled = true;
     }
 
     /**
@@ -258,6 +265,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
      */
     public boolean isSkipFunctionInObject() {
         return skipFunctionInObject;
+    }
+
+    /**
+     * Is static class enabled boolean.
+     *
+     * @return the boolean
+     * @since 0.9.8
+     */
+    public boolean isStaticClassEnabled() {
+        return staticClassEnabled;
     }
 
     /**
@@ -414,5 +431,15 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
     public T setSkipFunctionInObject(boolean skipFunctionInObject) {
         this.skipFunctionInObject = skipFunctionInObject;
         return (T) this;
+    }
+
+    /**
+     * Sets static class enabled.
+     *
+     * @param staticClassEnabled the static class enabled
+     * @since 0.9.8
+     */
+    public void setStaticClassEnabled(boolean staticClassEnabled) {
+        this.staticClassEnabled = staticClassEnabled;
     }
 }

@@ -21,6 +21,7 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.interfaces.IJavetClosable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,15 +38,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     protected JavetProxyConverter javetProxyConverter;
 
-    public TestJavetProxyConverter() {
-        super();
-        javetProxyConverter = new JavetProxyConverter();
-    }
-
     @BeforeEach
     @Override
     public void beforeEach() throws JavetException {
         super.beforeEach();
+        javetProxyConverter = new JavetProxyConverter();
         v8Runtime.setConverter(javetProxyConverter);
     }
 
@@ -76,6 +73,21 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(file.canWrite(), v8Runtime.getExecutor("file.canWrite()").executeBoolean());
         assertEquals(file.canExecute(), v8Runtime.getExecutor("file.canExecute()").executeBoolean());
         v8Runtime.getGlobalObject().delete("file");
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testInterface() throws JavetException {
+        javetProxyConverter.getConfig().setStaticClassEnabled(false);
+        v8Runtime.getGlobalObject().set("AutoCloseable", AutoCloseable.class);
+        v8Runtime.getGlobalObject().set("IJavetClosable", IJavetClosable.class);
+        assertTrue(AutoCloseable.class.isAssignableFrom(IJavetClosable.class));
+        assertTrue(v8Runtime.getExecutor("AutoCloseable.isAssignableFrom(IJavetClosable);").executeBoolean());
+        assertEquals(AutoCloseable.class, v8Runtime.getExecutor("AutoCloseable").executeObject());
+        assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
+        v8Runtime.getGlobalObject().delete("AutoCloseable");
+        v8Runtime.getGlobalObject().delete("IJavetClosable");
+        javetProxyConverter.getConfig().setStaticClassEnabled(true);
         v8Runtime.lowMemoryNotification();
     }
 
