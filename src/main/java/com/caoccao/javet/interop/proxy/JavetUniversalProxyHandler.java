@@ -28,11 +28,9 @@ import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.reference.V8ValueArguments;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,6 +61,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     protected static final String[] SETTER_PREFIX_ARRAY = new String[]{"set", "put"};
+    /**
+     * The Constructors.
+     *
+     * @since 0.9.8
+     */
+    protected List<Constructor> constructors;
     /**
      * The Field map.
      *
@@ -188,6 +192,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         } else {
             map.computeIfAbsent(aliasMethodName, key -> new ArrayList<>()).add(method);
         }
+    }
+
+    @Override
+    public V8Value construct(V8Value target, V8ValueArguments arguments) throws JavetException {
+        // TODO
+        return v8Runtime.createV8ValueUndefined();
     }
 
     @V8Function
@@ -351,6 +361,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.7
      */
     protected void initialize() {
+        constructors = new ArrayList<>();
         fieldMap = new LinkedHashMap<>();
         genericGetters = new ArrayList<>();
         genericSetters = new ArrayList<>();
@@ -378,6 +389,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         while (true) {
+            for (Constructor constructor : currentClass.getConstructors()) {
+                constructors.add(constructor);
+            }
             // All public fields are in the scope.
             for (Field field : currentClass.getFields()) {
                 final int fieldModifiers = field.getModifiers();
