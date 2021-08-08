@@ -63,4 +63,23 @@ Inject a Pattern
      *   [true, false]
      */
 
+Inject a StringBuilder
+======================
+
+.. code-block:: java
+
+     v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
+     System.out.println(v8Runtime.getExecutor("function main() {\n" +
+             "  return new StringBuilder().append('Hello from StringBuilder').toString();\n" +
+             "}\n" +
+             "main();").executeString());
+     v8Runtime.getGlobalObject().delete("StringBuilder");
+
+    /*
+     * Output:
+     *   Hello from StringBuilder
+     */
+
+Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/TestJavaAndJSInterop.java>`_ for detail.
+
 [`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

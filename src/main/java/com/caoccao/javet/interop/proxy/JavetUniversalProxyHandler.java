@@ -28,7 +28,7 @@ import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.reference.V8ValueArguments;
+import com.caoccao.javet.values.reference.V8ValueArray;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -282,9 +282,10 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
     }
 
+    @V8Function
     @Override
-    public V8Value construct(V8Value target, V8ValueArguments arguments) throws JavetException {
-        Object[] objects = v8Runtime.toObject(arguments);
+    public V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException {
+        Object[] objects = ((ArrayList) v8Runtime.toObject(arguments)).toArray();
         final int length = objects.length;
         List<ScoredExecutable<Constructor>> sortedConstructors = new ArrayList<>();
         for (Constructor constructor : constructors) {

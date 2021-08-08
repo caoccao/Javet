@@ -219,6 +219,20 @@ Instance: Path
     v8Runtime.getGlobalObject().delete("path");
     v8Runtime.lowMemoryNotification();
 
+Static: StringBuilder
+---------------------
+
+.. code-block:: java
+
+    v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
+    assertEquals("abc def", v8Runtime.getExecutor(
+            "function main() {\n" +
+                    "  return new StringBuilder().append('abc').append(' ').append('def').toString();\n" +
+                    "}\n" +
+                    "main();").executeString());
+    v8Runtime.getGlobalObject().delete("StringBuilder");
+    v8Runtime.lowMemoryNotification();
+
 Static: Pattern
 ---------------
 

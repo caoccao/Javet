@@ -149,13 +149,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean bindFunction(String functionName, String codeString) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute()) {
-            return set(functionName, v8ValueFunction);
-        }
-    }
-
-    @Override
     public boolean bindProperty(
             String propertyName,
             JavetCallbackContext javetCallbackContextGetter,

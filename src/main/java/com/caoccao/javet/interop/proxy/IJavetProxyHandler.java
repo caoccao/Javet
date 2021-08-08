@@ -20,7 +20,7 @@ package com.caoccao.javet.interop.proxy;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
-import com.caoccao.javet.values.reference.V8ValueArguments;
+import com.caoccao.javet.values.reference.V8ValueArray;
 
 /**
  * The interface Javet proxy handler.
@@ -42,7 +42,7 @@ public interface IJavetProxyHandler<T> {
      * @throws JavetException the javet exception
      * @since 0.9.6
      */
-    default V8Value apply(V8Value target, V8Value thisObject, V8ValueArguments arguments) throws JavetException {
+    default V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException {
         throw new RuntimeException("Not implemented");
     }
 
@@ -51,11 +51,12 @@ public interface IJavetProxyHandler<T> {
      *
      * @param target    the target
      * @param arguments the arguments
+     * @param newTarget the new target
      * @return the V8 value
      * @throws JavetException the javet exception
      * @since 0.9.6
      */
-    default V8Value construct(V8Value target, V8ValueArguments arguments) throws JavetException {
+    default V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException {
         throw new RuntimeException("Not implemented");
     }
 

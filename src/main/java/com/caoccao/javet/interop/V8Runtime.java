@@ -241,6 +241,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    public V8ValueFunction createV8ValueFunction(String codeString) throws JavetException {
+        return getExecutor(codeString).execute();
+    }
+
+    @Override
     public V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException {
         if (integerValue >= V8_VALUE_NUMBER_LOWER_BOUND && integerValue < V8_VALUE_NUMBER_UPPER_BOUND) {
             return cachedV8ValueIntegers[integerValue - V8_VALUE_NUMBER_LOWER_BOUND];
