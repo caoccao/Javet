@@ -46,6 +46,19 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.setConverter(javetProxyConverter);
     }
 
+    // TODO
+//    @Test
+    public void testConstructor() throws JavetException {
+        v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
+        assertEquals("abc def", v8Runtime.getExecutor(
+                "function main() {\n" +
+                        "  return new StringBuilder().append('abc').append(' ').append('def').toString();" +
+                        "}\n" +
+                        "main();").executeString());
+        v8Runtime.getGlobalObject().delete("StringBuilder");
+        v8Runtime.lowMemoryNotification();
+    }
+
     @Test
     public void testEnum() throws JavetException {
         v8Runtime.getGlobalObject().set("JavetErrorType", JavetErrorType.class);

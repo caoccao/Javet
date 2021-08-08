@@ -43,12 +43,19 @@ import java.util.regex.Pattern;
  */
 @SuppressWarnings("unchecked")
 public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
+
     /**
      * The constant GETTER_PREFIX_ARRAY.
      *
      * @since 0.9.6
      */
     protected static final String[] GETTER_PREFIX_ARRAY = new String[]{"get", "is"};
+    /**
+     * The constant METHOD_NAME_CONSTRUCTOR.
+     *
+     * @since 0.9.8
+     */
+    protected static final String METHOD_NAME_CONSTRUCTOR = "constructor";
     /**
      * The constant PATTERN_CAPITALIZED_PREFIX.
      *
@@ -164,6 +171,88 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
+     * Calculate score double.
+     *
+     * @param executable the executable
+     * @param objects    the objects
+     * @return the score
+     * @since 0.9.8
+     */
+    protected static double calculateScore(Executable executable, Object... objects) {
+        // Max score is 1. Min score is 0.
+        final int parameterCount = executable.getParameterCount();
+        Class<?>[] parameterTypes = executable.getParameterTypes();
+        boolean isMethodVarArgs = executable.isVarArgs();
+        double score = 0;
+        final int length = objects.length;
+        if (length == 0) {
+            if (isMethodVarArgs) {
+                if (parameterCount == 1) {
+                    score = 0.99;
+                }
+            } else {
+                if (parameterCount == 0) {
+                    score = 1;
+                }
+            }
+        } else {
+            boolean isVarArgs = isMethodVarArgs && length >= parameterCount - 1;
+            boolean isFixedArgs = !isMethodVarArgs && length == parameterCount;
+            if (isVarArgs || isFixedArgs) {
+                double totalScore = 0;
+                final int fixedParameterCount = isMethodVarArgs ? parameterCount - 1 : parameterCount;
+                for (int i = 0; i < fixedParameterCount; i++) {
+                    Class<?> parameterType = parameterTypes[i];
+                    Object object = objects[i];
+                    if (object == null) {
+                        if (parameterType.isPrimitive()) {
+                            totalScore = 0;
+                            break;
+                        } else {
+                            totalScore += 1;
+                        }
+                    } else if (parameterType.isAssignableFrom(object.getClass())) {
+                        totalScore += 1;
+                    } else if (parameterType.isPrimitive()
+                            && JavetPrimitiveUtils.toExactPrimitive(parameterType, object) != null) {
+                        totalScore += 0.9;
+                    } else {
+                        totalScore = 0;
+                        break;
+                    }
+                }
+                if ((fixedParameterCount == 0 || (fixedParameterCount > 0 && totalScore > 0))
+                        && isMethodVarArgs && length >= parameterCount) {
+                    Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
+                    for (int i = fixedParameterCount; i < length; ++i) {
+                        Object object = objects[i];
+                        if (object == null) {
+                            if (componentType.isPrimitive()) {
+                                totalScore = 0;
+                                break;
+                            } else {
+                                totalScore += 1;
+                            }
+                        } else if (componentType.isAssignableFrom(object.getClass())) {
+                            totalScore += 1;
+                        } else if (componentType.isPrimitive()
+                                && JavetPrimitiveUtils.toExactPrimitive(componentType, object) != null) {
+                            totalScore += 0.8;
+                        } else {
+                            totalScore = 0;
+                            break;
+                        }
+                    }
+                }
+                if (totalScore > 0) {
+                    score = totalScore / length;
+                }
+            }
+        }
+        return score;
+    }
+
+    /**
      * Add method.
      *
      * @param method     the method
@@ -173,7 +262,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     protected void addMethod(Method method, int startIndex, Map<String, List<Method>> map) {
         String methodName = method.getName();
-        final int length = methodName.length();
         String aliasMethodName = methodName.substring(startIndex);
         Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
         if (matcher.find()) {
@@ -196,7 +284,80 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
 
     @Override
     public V8Value construct(V8Value target, V8ValueArguments arguments) throws JavetException {
-        // TODO
+        Object[] objects = v8Runtime.toObject(arguments);
+        final int length = objects.length;
+        List<ScoredExecutable<Constructor>> sortedConstructors = new ArrayList<>();
+        for (Constructor constructor : constructors) {
+            double score = calculateScore(constructor, objects);
+            if (score > 0) {
+                sortedConstructors.add(new ScoredExecutable(score, constructor));
+            }
+        }
+        if (!sortedConstructors.isEmpty()) {
+            sortedConstructors.sort((o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
+            Throwable lastException = null;
+            for (ScoredExecutable<Constructor> scoredConstructor : sortedConstructors) {
+                Constructor constructor = scoredConstructor.getExecutable();
+                final int parameterCount = constructor.getParameterCount();
+                Class<?>[] parameterTypes = constructor.getParameterTypes();
+                boolean isMethodVarArgs = constructor.isVarArgs();
+                try {
+                    if (length == 0) {
+                        if (isMethodVarArgs) {
+                            Class<?> componentType = parameterTypes[parameterCount - 1];
+                            Object varObject = Array.newInstance(componentType, 0);
+                            return v8Runtime.toV8Value(constructor.newInstance(varObject));
+                        } else {
+                            return v8Runtime.toV8Value(constructor.newInstance());
+                        }
+                    } else {
+                        List<Object> parameters = new ArrayList<>();
+                        if (isMethodVarArgs) {
+                            for (int i = 0; i < parameterCount; i++) {
+                                Class<?> parameterType = parameterTypes[i];
+                                if (parameterType.isArray() && i == parameterCount - 1) {
+                                    Class<?> componentType = parameterType.getComponentType();
+                                    Object varObject = Array.newInstance(componentType, length - i);
+                                    for (int j = i; j < length; ++j) {
+                                        Object parameter = objects[j];
+                                        if (parameter != null && !componentType.isAssignableFrom(parameter.getClass())
+                                                && componentType.isPrimitive()) {
+                                            parameter = JavetPrimitiveUtils.toExactPrimitive(componentType, parameter);
+                                        }
+                                        Array.set(varObject, j - i, parameter);
+                                    }
+                                    parameters.add(varObject);
+                                } else {
+                                    Object parameter = objects[i];
+                                    if (parameter != null && !parameterType.isAssignableFrom(parameter.getClass())
+                                            && parameterType.isPrimitive()) {
+                                        parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, parameter);
+                                    }
+                                    parameters.add(parameter);
+                                }
+                            }
+                        } else {
+                            for (int i = 0; i < length; i++) {
+                                Class<?> parameterType = parameterTypes[i];
+                                Object parameter = objects[i];
+                                if (parameter != null && !parameterType.isAssignableFrom(parameter.getClass())
+                                        && parameterType.isPrimitive()) {
+                                    parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, parameter);
+                                }
+                                parameters.add(parameter);
+                            }
+                        }
+                        return v8Runtime.toV8Value(constructor.newInstance(parameters.toArray()));
+                    }
+                } catch (Throwable t) {
+                    lastException = t;
+                }
+            }
+            throw new JavetException(JavetError.CallbackMethodFailure,
+                    SimpleMap.of(
+                            JavetError.PARAMETER_METHOD_NAME, METHOD_NAME_CONSTRUCTOR,
+                            JavetError.PARAMETER_MESSAGE, lastException.getMessage()), lastException);
+        }
         return v8Runtime.createV8ValueUndefined();
     }
 
@@ -463,6 +624,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
+     * Is constructor boolean.
+     *
+     * @return the boolean
+     * @since 0.9.8
+     */
+    public boolean isConstructor() {
+        return !constructors.isEmpty();
+    }
+
+    /**
      * Is generic getter boolean.
      *
      * @param method the method
@@ -662,88 +833,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
 
         /**
-         * Gets score.
-         *
-         * @param method  the method
-         * @param objects the objects
-         * @return the score
-         * @since 0.9.6
-         */
-        protected double getScore(Method method, Object... objects) {
-            // Max score is 1. Min score is 0.
-            final int parameterCount = method.getParameterCount();
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            boolean isMethodVarArgs = method.isVarArgs();
-            double score = 0;
-            final int length = objects.length;
-            if (length == 0) {
-                if (isMethodVarArgs) {
-                    if (parameterCount == 1) {
-                        score = 0.99;
-                    }
-                } else {
-                    if (parameterCount == 0) {
-                        score = 1;
-                    }
-                }
-            } else {
-                boolean isVarArgs = isMethodVarArgs && length >= parameterCount - 1;
-                boolean isFixedArgs = !isMethodVarArgs && length == parameterCount;
-                if (isVarArgs || isFixedArgs) {
-                    double totalScore = 0;
-                    final int fixedParameterCount = isMethodVarArgs ? parameterCount - 1 : parameterCount;
-                    for (int i = 0; i < fixedParameterCount; i++) {
-                        Class<?> parameterType = parameterTypes[i];
-                        Object object = objects[i];
-                        if (object == null) {
-                            if (parameterType.isPrimitive()) {
-                                totalScore = 0;
-                                break;
-                            } else {
-                                totalScore += 1;
-                            }
-                        } else if (parameterType.isAssignableFrom(object.getClass())) {
-                            totalScore += 1;
-                        } else if (parameterType.isPrimitive()
-                                && JavetPrimitiveUtils.toExactPrimitive(parameterType, object) != null) {
-                            totalScore += 0.9;
-                        } else {
-                            totalScore = 0;
-                            break;
-                        }
-                    }
-                    if ((fixedParameterCount == 0 || (fixedParameterCount > 0 && totalScore > 0))
-                            && isMethodVarArgs && length >= parameterCount) {
-                        Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
-                        for (int i = fixedParameterCount; i < length; ++i) {
-                            Object object = objects[i];
-                            if (object == null) {
-                                if (componentType.isPrimitive()) {
-                                    totalScore = 0;
-                                    break;
-                                } else {
-                                    totalScore += 1;
-                                }
-                            } else if (componentType.isAssignableFrom(object.getClass())) {
-                                totalScore += 1;
-                            } else if (componentType.isPrimitive()
-                                    && JavetPrimitiveUtils.toExactPrimitive(componentType, object) != null) {
-                                totalScore += 0.8;
-                            } else {
-                                totalScore = 0;
-                                break;
-                            }
-                        }
-                    }
-                    if (totalScore > 0) {
-                        score = totalScore / length;
-                    }
-                }
-            }
-            return score;
-        }
-
-        /**
          * Gets target object.
          *
          * @return the target object
@@ -774,18 +863,18 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 }
             }
             objects = convertedObjects;
-            List<ScoredMethod> scoredMethods = new ArrayList<>();
+            List<ScoredExecutable<Method>> sortedMethods = new ArrayList<>();
             for (Method method : methods) {
-                double score = getScore(method, objects);
+                double score = calculateScore(method, objects);
                 if (score > 0) {
-                    scoredMethods.add(new ScoredMethod(score, method));
+                    sortedMethods.add(new ScoredExecutable(score, method));
                 }
             }
-            if (!scoredMethods.isEmpty()) {
-                scoredMethods.sort((o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
+            if (!sortedMethods.isEmpty()) {
+                sortedMethods.sort((o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
                 Throwable lastException = null;
-                for (ScoredMethod scoredMethod : scoredMethods) {
-                    Method method = scoredMethod.getMethod();
+                for (ScoredExecutable<Method> scoredMethod : sortedMethods) {
+                    Method method = scoredMethod.getExecutable();
                     Object callee = Modifier.isStatic(method.getModifiers()) ? null : targetObject;
                     final int parameterCount = method.getParameterCount();
                     Class<?>[] parameterTypes = method.getParameterTypes();
@@ -852,24 +941,25 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * The type Scored method.
+     * The type Scored executable.
      *
+     * @param <E> the type parameter
      * @since 0.9.6
      */
-    public static class ScoredMethod {
-        private Method method;
+    public static class ScoredExecutable<E extends Executable> {
+        private E executable;
         private double score;
 
         /**
-         * Instantiates a new Scored method.
+         * Instantiates a new Scored executable.
          *
-         * @param score  the score
-         * @param method the method
+         * @param score      the score
+         * @param executable the executable
          * @since 0.9.6
          */
-        public ScoredMethod(double score, Method method) {
+        public ScoredExecutable(double score, E executable) {
             this.score = score;
-            this.method = method;
+            this.executable = executable;
         }
 
         /**
@@ -878,8 +968,8 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          * @return the method
          * @since 0.9.6
          */
-        public Method getMethod() {
-            return method;
+        public E getExecutable() {
+            return executable;
         }
 
         /**
