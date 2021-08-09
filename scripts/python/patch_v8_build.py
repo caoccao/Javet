@@ -22,7 +22,7 @@ import pathlib
 import platform
 import sys
 
-if importlib.util.find_spec('coloredlogs'):
+if hasattr(importlib, 'util') and importlib.util.find_spec('coloredlogs'):
   import coloredlogs
   coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
 

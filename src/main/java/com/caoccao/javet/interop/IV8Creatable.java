@@ -43,6 +43,9 @@ public interface IV8Creatable {
     @CheckReturnValue
     V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException;
 
+    @CheckReturnValue
+    V8ValueFunction createV8ValueFunction(String codeString) throws JavetException;
+
     V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException;
 
     V8ValueLong createV8ValueLong(long longValue) throws JavetException;
@@ -54,6 +57,9 @@ public interface IV8Creatable {
 
     @CheckReturnValue
     V8ValueObject createV8ValueObject() throws JavetException;
+
+    @CheckReturnValue
+    V8ValuePromise createV8ValuePromise() throws JavetException;
 
     @CheckReturnValue
     default V8ValueProxy createV8ValueProxy() throws JavetException {

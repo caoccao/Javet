@@ -185,6 +185,9 @@ class V8Native implements IV8Native {
     public native Object promiseCatch(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueFunctionHandle);
 
     @Override
+    public native Object promiseGetPromise(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object promiseGetResult(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
@@ -195,6 +198,12 @@ class V8Native implements IV8Native {
 
     @Override
     public native void promiseMarkAsHandled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean promiseReject(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    @Override
+    public native boolean promiseResolve(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     @Override
     public native Object promiseThen(

@@ -78,7 +78,11 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    boolean bindFunction(String functionName, String codeString) throws JavetException;
+    default boolean bindFunction(String functionName, String codeString) throws JavetException {
+        try (V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(codeString)) {
+            return set(functionName, v8ValueFunction);
+        }
+    }
 
     /**
      * Bind property.

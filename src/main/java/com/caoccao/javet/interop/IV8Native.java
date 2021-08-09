@@ -123,6 +123,8 @@ public interface IV8Native {
 
     Object promiseCatch(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueFunctionHandle);
 
+    Object promiseGetPromise(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object promiseGetResult(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     int promiseGetState(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -130,6 +132,10 @@ public interface IV8Native {
     boolean promiseHasHandler(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     void promiseMarkAsHandled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean promiseReject(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    boolean promiseResolve(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     Object promiseThen(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,

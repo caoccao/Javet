@@ -35,6 +35,7 @@ public class TestJavaAndJSInterop {
             testInjectStaticClass(v8Runtime);
             testInjectEnum(v8Runtime);
             testInjectRegex(v8Runtime);
+            testInjectStringBuilder(v8Runtime);
 
             // Notify V8 to perform GC. (Optional)
             v8Runtime.lowMemoryNotification();
@@ -77,6 +78,17 @@ public class TestJavaAndJSInterop {
                 "}\n" +
                 "main();").executeVoid();
         v8Runtime.getGlobalObject().delete("System");
+        System.out.println();
+    }
+
+    private static void testInjectStringBuilder(V8Runtime v8Runtime) throws JavetException {
+        System.out.println("--- testInjectStringBuilder ---");
+        v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
+        System.out.println(v8Runtime.getExecutor("function main() {\n" +
+                "  return new StringBuilder().append('Hello from StringBuilder').toString();\n" +
+                "}\n" +
+                "main();").executeString());
+        v8Runtime.getGlobalObject().delete("StringBuilder");
         System.out.println();
     }
 }

@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.values.reference.builtin;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
@@ -31,10 +32,9 @@ public class V8ValueBuiltInObject extends V8ValueObject {
         super(handle);
     }
 
+    @CheckReturnValue
     public V8ValueObject assign(V8ValueObject v8Value1, V8ValueObject v8Value2) throws JavetException {
-        Objects.requireNonNull(v8Value1);
-        Objects.requireNonNull(v8Value2);
-        return invoke(FUNCTION_ASSIGN, v8Value1, v8Value2);
+        return invoke(FUNCTION_ASSIGN, Objects.requireNonNull(v8Value1), Objects.requireNonNull(v8Value2));
     }
 
     @Override

@@ -334,6 +334,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 	else if (IS_V8_MAP(v8ValueType)) {
 		v8LocalValue = v8::Map::New(v8Context->GetIsolate());
 	}
+	else if (IS_V8_PROMISE(v8ValueType)) {
+		v8LocalValue = v8::Promise::Resolver::New(v8Context).ToLocalChecked();
+	}
 	else if (IS_V8_PROXY(v8ValueType)) {
 		V8LocalObject v8LocalObjectObject = mContext == nullptr
 			? v8::Object::New(v8Context->GetIsolate())
@@ -876,6 +879,39 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseThen
 		}
 	}
 	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseGetPromise
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_PROMISE(v8ValueType)) {
+		auto v8LocalPromiseResolver = v8LocalObject.As<v8::Promise::Resolver>();
+		return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalPromiseResolver->GetPromise());
+	}
+	return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseReject
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_PROMISE(v8ValueType)) {
+		auto v8LocalPromiseResolver = v8LocalObject.As<v8::Promise::Resolver>();
+		auto v8MaybeBool = v8LocalPromiseResolver->Reject(v8Context, Javet::Converter::ToV8Value(jniEnv, v8Context, value));
+		if (v8MaybeBool.IsJust()) {
+			return v8MaybeBool.ToChecked();
+		}
+	}
+	return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseResolve
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
+	RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle, v8ValueHandle);
+	if (IS_V8_PROMISE(v8ValueType)) {
+		auto v8LocalPromiseResolver = v8LocalObject.As<v8::Promise::Resolver>();
+		return v8LocalPromiseResolver->Resolve(v8Context, Javet::Converter::ToV8Value(jniEnv, v8Context, value)).ToChecked();
+	}
+	return false;
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyGetHandler

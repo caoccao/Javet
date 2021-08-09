@@ -86,22 +86,24 @@ public abstract class BaseTestJavet {
         }
     }
 
-    public void runAndWait(
+    public int runAndWait(
             long timeOutInMilliseconds,
             long intervalInMilliseconds,
             IRunner runner)
             throws TimeoutException {
+        int count = 0;
         ZonedDateTime startZonedDateTime = ZonedDateTime.now();
         ZonedDateTime endZonedDateTime = startZonedDateTime.plus(timeOutInMilliseconds, ChronoUnit.MILLIS);
         while (true) {
             if (runner.run()) {
-                return;
+                return count;
             }
             if (timeOutInMilliseconds > 0 && endZonedDateTime.isBefore(ZonedDateTime.now())) {
                 break;
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(intervalInMilliseconds);
+                ++count;
             } catch (InterruptedException e) {
                 throw new TimeoutException("Failed to sleep");
             }
@@ -109,8 +111,8 @@ public abstract class BaseTestJavet {
         throw new TimeoutException("Runner failed");
     }
 
-    public void runAndWait(long timeOutInMilliseconds, IRunner runner) throws TimeoutException {
-        runAndWait(timeOutInMilliseconds, DEFAULT_INTERVAL_IN_MILLISECONDS, runner);
+    public int runAndWait(long timeOutInMilliseconds, IRunner runner) throws TimeoutException {
+        return runAndWait(timeOutInMilliseconds, DEFAULT_INTERVAL_IN_MILLISECONDS, runner);
     }
 
     public interface IRunner {

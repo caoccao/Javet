@@ -385,6 +385,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseCatch
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    promiseGetPromise
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseGetPromise
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    promiseGetResult
  * Signature: (JJI)Ljava/lang/Object;
  */
@@ -414,6 +422,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseHasHan
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_promiseMarkAsHandled
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    promiseReject
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseReject
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    promiseResolve
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseResolve
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

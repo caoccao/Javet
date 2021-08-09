@@ -21,6 +21,7 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.enums.JavetPromiseRejectEvent;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
+import com.caoccao.javet.mock.MockFS;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -123,5 +124,72 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
             assertFalse(v8ValuePromise.hasHandler());
             assertEquals(1, v8ValuePromise.getResultInteger());
         }
+    }
+
+    @Test
+    public void testResolverReject() throws Exception {
+        try (MockFS mockFS = new MockFS(100)) {
+            try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                v8Runtime.getGlobalObject().set("fs", v8ValueObject);
+                v8ValueObject.bind(mockFS);
+            }
+            v8Runtime.getExecutor("const logs = [1, ];").executeVoid();
+            try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                    "fs.readFileAsync('a').then(fileContent => {\n" +
+                            "  logs.push(3);\n" +
+                            "  return fileContent;\n" +
+                            "}).catch(e => {\n" +
+                            "  logs.push(4);\n" +
+                            "  return e;\n" +
+                            "});").execute()) {
+                v8Runtime.getExecutor("logs.push(2);").executeVoid();
+                final int count = runAndWait(200, () -> {
+                    try {
+                        return v8ValuePromise.isFulfilled();
+                    } catch (JavetException e) {
+                        return false;
+                    }
+                });
+                assertTrue(count > 0);
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertTrue(v8ValuePromise.getResult().isUndefined());
+            }
+            assertEquals("[1,2,4]", v8Runtime.getExecutor("JSON.stringify(logs);").executeString());
+            v8Runtime.getGlobalObject().delete("fs");
+        }
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testResolverResolve() throws Exception {
+        try (MockFS mockFS = new MockFS(100)) {
+            mockFS.getFileMap().put("a", "a");
+            try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                v8Runtime.getGlobalObject().set("fs", v8ValueObject);
+                v8ValueObject.bind(mockFS);
+            }
+            v8Runtime.getExecutor("const logs = [1, ];").executeVoid();
+            assertEquals("a", v8Runtime.getExecutor("fs.readFileSync('a');").executeString());
+            try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                    "fs.readFileAsync('a').then(fileContent => {\n" +
+                            "  logs.push(3);\n" +
+                            "  return fileContent;\n" +
+                            "});").execute()) {
+                v8Runtime.getExecutor("logs.push(2);").executeVoid();
+                final int count = runAndWait(200, () -> {
+                    try {
+                        return v8ValuePromise.isFulfilled();
+                    } catch (JavetException e) {
+                        return false;
+                    }
+                });
+                assertTrue(count > 0);
+                assertTrue(v8ValuePromise.isFulfilled());
+                assertEquals("a", v8ValuePromise.getResultString());
+            }
+            assertEquals("[1,2,3]", v8Runtime.getExecutor("JSON.stringify(logs);").executeString());
+            v8Runtime.getGlobalObject().delete("fs");
+        }
+        v8Runtime.lowMemoryNotification();
     }
 }

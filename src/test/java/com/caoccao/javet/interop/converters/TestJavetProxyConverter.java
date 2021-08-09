@@ -21,13 +21,16 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.interfaces.IJavetClosable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,16 +38,24 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     protected JavetProxyConverter javetProxyConverter;
 
-    public TestJavetProxyConverter() {
-        super();
-        javetProxyConverter = new JavetProxyConverter();
-    }
-
     @BeforeEach
     @Override
     public void beforeEach() throws JavetException {
         super.beforeEach();
+        javetProxyConverter = new JavetProxyConverter();
         v8Runtime.setConverter(javetProxyConverter);
+    }
+
+    @Test
+    public void testConstructor() throws JavetException {
+        v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
+        assertEquals("abc def", v8Runtime.getExecutor(
+                "function main() {\n" +
+                        "  return new StringBuilder('abc').append(' ').append('def').toString();\n" +
+                        "}\n" +
+                        "main();").executeString());
+        v8Runtime.getGlobalObject().delete("StringBuilder");
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -78,6 +89,21 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testInterface() throws JavetException {
+        javetProxyConverter.getConfig().setStaticClassEnabled(false);
+        v8Runtime.getGlobalObject().set("AutoCloseable", AutoCloseable.class);
+        v8Runtime.getGlobalObject().set("IJavetClosable", IJavetClosable.class);
+        assertTrue(AutoCloseable.class.isAssignableFrom(IJavetClosable.class));
+        assertTrue(v8Runtime.getExecutor("AutoCloseable.isAssignableFrom(IJavetClosable);").executeBoolean());
+        assertEquals(AutoCloseable.class, v8Runtime.getExecutor("AutoCloseable").executeObject());
+        assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
+        v8Runtime.getGlobalObject().delete("AutoCloseable");
+        v8Runtime.getGlobalObject().delete("IJavetClosable");
+        javetProxyConverter.getConfig().setStaticClassEnabled(true);
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
     public void testMap() throws JavetException {
         javetProxyConverter.getConfig().setProxyMapEnabled(true);
         Map<String, Object> map = new HashMap<String, Object>() {{
@@ -86,6 +112,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         }};
         v8Runtime.getGlobalObject().set("map", map);
         assertTrue(map == v8Runtime.getGlobalObject().getObject("map"));
+        assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
         assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
         assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
         assertEquals(1, v8Runtime.getExecutor("map.x").executeInteger());
@@ -127,5 +154,27 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("Pattern");
         v8Runtime.getExecutor("p = undefined;").executeVoid();
         v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testSet() throws JavetException {
+        javetProxyConverter.getConfig().setProxySetEnabled(true);
+        Set<String> set = new HashSet<String>() {{
+            add("x");
+            add("y");
+        }};
+        v8Runtime.getGlobalObject().set("set", set);
+        assertTrue(set == v8Runtime.getGlobalObject().getObject("set"));
+        assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("set.add('z')").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+        assertEquals(
+                "[\"x\",\"y\",\"z\"]",
+                v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
+        v8Runtime.getGlobalObject().delete("set");
+        v8Runtime.lowMemoryNotification();
+        javetProxyConverter.getConfig().setProxySetEnabled(false);
     }
 }

@@ -2,6 +2,15 @@
 Release Notes
 =============
 
+0.9.8
+-----
+
+* Added ``resolve()`` and ``reject()`` to ``V8ValuePromise``
+* Added ``staticClassEnabled`` to ``JavetProxyConverter``
+* Added ``construct()`` to ``JavetUniversalProxyHandler``
+* Added Dockerfile for Linux x86-64
+* Refactored document for how to build Javet
+
 0.9.7
 -----
 

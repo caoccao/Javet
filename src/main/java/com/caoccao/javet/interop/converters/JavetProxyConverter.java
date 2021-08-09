@@ -24,6 +24,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueObject;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.util.List;
@@ -35,6 +36,16 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public class JavetProxyConverter extends JavetObjectConverter {
+    /**
+     * The constant DUMMY_FUNCTION_STRING.
+     *
+     * @since 0.9.8
+     */
+    protected static final String DUMMY_FUNCTION_STRING =
+            "(() => {\n" +
+                    "  const DummyFunction = function () { };\n" +
+                    "  return DummyFunction;\n" +
+                    "})();";
 
     /**
      * Instantiates a new Javet proxy converter.
@@ -53,12 +64,23 @@ public class JavetProxyConverter extends JavetObjectConverter {
         if (v8Value != null && !(v8Value.isUndefined())) {
             return (T) v8Value;
         }
-        V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy();
+        boolean staticMode = config.isStaticClassEnabled() && object instanceof Class;
+        V8ValueProxy v8ValueProxy;
+        if (staticMode) {
+            try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(DUMMY_FUNCTION_STRING)) {
+                v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueFunction);
+            }
+        } else {
+            v8ValueProxy = v8Runtime.createV8ValueProxy();
+        }
         try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-            JavetUniversalProxyHandler<Object> javetUniversalProxyHandler =
-                    (object instanceof Class)
-                            ? new JavetUniversalProxyHandler<>(v8Runtime, (Class<Object>) object)
-                            : new JavetUniversalProxyHandler<>(v8Runtime, object);
+            JavetUniversalProxyHandler<Object> javetUniversalProxyHandler;
+            if (staticMode) {
+                javetUniversalProxyHandler = new JavetUniversalProxyHandler<>(
+                        v8Runtime, null, (Class<Object>) object, true);
+            } else {
+                javetUniversalProxyHandler = new JavetUniversalProxyHandler<>(v8Runtime, object);
+            }
             List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
             iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
         }

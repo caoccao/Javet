@@ -25,42 +25,135 @@ import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+/**
+ * The interface V8 value promise is 2-sided.
+ * 1. As a promise resolver, its API includes getPromise(), resolve(), reject().
+ * 2. As a promise, its API includes _catch(), then(), hasHandler(), markAsHandled(), getState(), getResult().
+ *
+ * @since 0.8.0
+ */
 @SuppressWarnings("unchecked")
 public interface IV8ValuePromise extends IV8ValueObject {
+    /**
+     * The constant STATE_PENDING.
+     *
+     * @since 0.8.0
+     */
     int STATE_PENDING = 0;
+    /**
+     * The constant STATE_FULFILLED.
+     *
+     * @since 0.8.0
+     */
     int STATE_FULFILLED = 1;
+    /**
+     * The constant STATE_REJECTED.
+     *
+     * @since 0.8.0
+     */
     int STATE_REJECTED = 2;
 
+    /**
+     * Catch.
+     *
+     * @param function the function
+     * @return the V8 value promise
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
-    V8ValuePromise except(V8ValueFunction function) throws JavetException;
+    V8ValuePromise _catch(V8ValueFunction function) throws JavetException;
 
+    /**
+     * Catch.
+     *
+     * @param codeString the code string
+     * @return the V8 value promise
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
-    default V8ValuePromise except(String codeString) throws JavetException {
+    default V8ValuePromise _catch(String codeString) throws JavetException {
         Objects.requireNonNull(codeString);
         try (V8ValueFunction v8ValueFunction = getV8Runtime().getExecutor(codeString).execute()) {
-            return except(v8ValueFunction);
+            return _catch(v8ValueFunction);
         }
     }
 
+    /**
+     * Gets promise.
+     *
+     * @return the promise
+     * @throws JavetException the javet exception
+     * @since 0.9.8
+     */
+    @CheckReturnValue
+    V8ValuePromise getPromise() throws JavetException;
+
+    /**
+     * Gets result.
+     *
+     * @param <Value> the type parameter
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     <Value extends V8Value> Value getResult() throws JavetException;
 
+    /**
+     * Gets result boolean.
+     *
+     * @return the result boolean
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default boolean getResultBoolean() throws JavetException {
         return getResultPrimitive();
     }
 
+    /**
+     * Gets result double.
+     *
+     * @return the result double
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default double getResultDouble() throws JavetException {
         return getResultPrimitive();
     }
 
+    /**
+     * Gets result integer.
+     *
+     * @return the result integer
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default int getResultInteger() throws JavetException {
         return getResultPrimitive();
     }
 
+    /**
+     * Gets result long.
+     *
+     * @return the result long
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default long getResultLong() throws JavetException {
         return getResultPrimitive();
     }
 
+    /**
+     * Gets result object.
+     *
+     * @param <T> the type parameter
+     * @param key the key
+     * @return the result object
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default <T> T getResultObject(Object key) throws JavetException {
         try {
             return getV8Runtime().toObject(getResult(), true);
@@ -71,6 +164,15 @@ public interface IV8ValuePromise extends IV8ValueObject {
         }
     }
 
+    /**
+     * Gets result primitive.
+     *
+     * @param <R> the type parameter
+     * @param <T> the type parameter
+     * @return the result primitive
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default <R, T extends V8ValuePrimitive<R>> R getResultPrimitive()
             throws JavetException {
         V8Value v8Value = getResult();
@@ -81,45 +183,182 @@ public interface IV8ValuePromise extends IV8ValueObject {
         return null;
     }
 
+    /**
+     * Gets result string.
+     *
+     * @return the result string
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default String getResultString() throws JavetException {
         return getResultPrimitive();
     }
 
+    /**
+     * Gets result zoned date time.
+     *
+     * @return the result zoned date time
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default ZonedDateTime getResultZonedDateTime() throws JavetException {
         return getResultPrimitive();
     }
 
+    /**
+     * Gets state.
+     *
+     * @return the state
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     int getState() throws JavetException;
 
+    /**
+     * Has handler.
+     *
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     boolean hasHandler() throws JavetException;
 
+    /**
+     * Is fulfilled.
+     *
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default boolean isFulfilled() throws JavetException {
         return STATE_FULFILLED == getState();
     }
 
+    /**
+     * Is pending.
+     *
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default boolean isPending() throws JavetException {
         return STATE_PENDING == getState();
     }
 
+    /**
+     * Is rejected.
+     *
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     default boolean isRejected() throws JavetException {
         return STATE_REJECTED == getState();
     }
 
+    /**
+     * Mark as handled.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     void markAsHandled() throws JavetException;
 
+    /**
+     * Reject.
+     *
+     * @param v8Value the V8 value
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.8
+     */
+    boolean reject(V8Value v8Value) throws JavetException;
+
+    /**
+     * Reject.
+     *
+     * @param object the object
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.8
+     */
+    default boolean reject(Object object) throws JavetException {
+        try (V8Value v8Value = getV8Runtime().toV8Value(object)) {
+            return reject(v8Value);
+        }
+    }
+
+    /**
+     * Resolve.
+     *
+     * @param v8Value the V8 value
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.8
+     */
+    boolean resolve(V8Value v8Value) throws JavetException;
+
+    /**
+     * Resolve.
+     *
+     * @param object the object
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.8
+     */
+    default boolean resolve(Object object) throws JavetException {
+        try (V8Value v8Value = getV8Runtime().toV8Value(object)) {
+            return resolve(v8Value);
+        }
+    }
+
+    /**
+     * Then.
+     *
+     * @param functionFulfilled the function fulfilled
+     * @return the V8 value promise
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     default V8ValuePromise then(IV8ValueFunction functionFulfilled) throws JavetException {
         return then(functionFulfilled, null);
     }
 
+    /**
+     * Then.
+     *
+     * @param functionFulfilled the function fulfilled
+     * @param functionRejected  the function rejected
+     * @return the V8 value promise
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     V8ValuePromise then(IV8ValueFunction functionFulfilled, IV8ValueFunction functionRejected) throws JavetException;
 
+    /**
+     * Then.
+     *
+     * @param codeStringFulfilled the code string fulfilled
+     * @return the V8 value promise
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     default V8ValuePromise then(String codeStringFulfilled) throws JavetException {
         return then(codeStringFulfilled, null);
     }
 
+    /**
+     * Then.
+     *
+     * @param codeStringFulfilled the code string fulfilled
+     * @param codeStringRejected  the code string rejected
+     * @return the V8 value promise
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     default V8ValuePromise then(String codeStringFulfilled, String codeStringRejected) throws JavetException {
         Objects.requireNonNull(codeStringFulfilled);
