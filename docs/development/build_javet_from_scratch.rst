@@ -18,7 +18,7 @@ MacOS Environment (Experimental)
 
 * MacOS Mojave+
 * Latest Brew
-* Xcode 10.1+
+* Xcode 10.3+
 * Cmake 3.16+
 * JDK 8
 * Gradle 7.0+

@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,6 +60,7 @@ public class TestJavetLibLoader {
     }
 
     @Test
+    @Tag("manual")
     public void testLoadAndUnload() throws JavetException {
         testLoadAndUnload(JSRuntimeType.Node);
         testLoadAndUnload(JSRuntimeType.V8);
