@@ -76,7 +76,8 @@ public class JavetProxyConverter extends JavetObjectConverter {
         try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
             JavetUniversalProxyHandler<Object> javetUniversalProxyHandler;
             if (staticMode) {
-                javetUniversalProxyHandler = new JavetUniversalProxyHandler<>(v8Runtime, (Class<Object>) object, true);
+                javetUniversalProxyHandler = new JavetUniversalProxyHandler<>(
+                        v8Runtime, null, (Class<Object>) object, true);
             } else {
                 javetUniversalProxyHandler = new JavetUniversalProxyHandler<>(v8Runtime, object);
             }

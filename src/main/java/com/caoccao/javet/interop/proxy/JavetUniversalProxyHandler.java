@@ -149,23 +149,21 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     public JavetUniversalProxyHandler(V8Runtime v8Runtime, T targetObject) {
-        super(v8Runtime, Objects.requireNonNull(targetObject));
-        staticMode = false;
-        targetClass = (Class<T>) targetObject.getClass();
-        initialize();
+        this(v8Runtime, Objects.requireNonNull(targetObject), (Class<T>) targetObject.getClass(), false);
     }
 
     /**
      * Instantiates a new Javet universal proxy handler in static mode.
      *
-     * @param v8Runtime   the V8 runtime
-     * @param targetClass the target class
-     * @param staticMode  the static mode
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @param targetClass  the target class
+     * @param staticMode   the static mode
      * @since 0.9.7
      */
-    public JavetUniversalProxyHandler(V8Runtime v8Runtime, Class<T> targetClass, boolean staticMode) {
-        super(v8Runtime, null);
-        this.staticMode = true;
+    public JavetUniversalProxyHandler(V8Runtime v8Runtime, T targetObject, Class<T> targetClass, boolean staticMode) {
+        super(v8Runtime, targetObject);
+        this.staticMode = staticMode;
         this.targetClass = targetClass;
         initialize();
     }

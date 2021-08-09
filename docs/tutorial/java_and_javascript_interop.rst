@@ -70,7 +70,7 @@ Inject a StringBuilder
 
      v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
      System.out.println(v8Runtime.getExecutor("function main() {\n" +
-             "  return new StringBuilder().append('Hello from StringBuilder').toString();\n" +
+             "  return new StringBuilder('Hello').append(' from StringBuilder').toString();\n" +
              "}\n" +
              "main();").executeString());
      v8Runtime.getGlobalObject().delete("StringBuilder");
