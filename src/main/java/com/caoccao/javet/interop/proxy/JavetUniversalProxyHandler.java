@@ -153,7 +153,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Instantiates a new Javet universal proxy handler in static mode.
+     * Instantiates a new Javet universal proxy handler in either regular or static mode.
      *
      * @param v8Runtime    the V8 runtime
      * @param targetObject the target object

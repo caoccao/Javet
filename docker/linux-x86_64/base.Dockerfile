@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:0.9.8 -f docker/linux-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:0.9.9 -f docker/linux-x86_64/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
@@ -54,7 +54,7 @@ RUN echo V8 build is completed.
 WORKDIR /
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v14.17.2
+RUN git checkout v14.17.4
 RUN echo Node.js preparation is completed.
 
 # Build Node.js

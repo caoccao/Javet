@@ -16,7 +16,7 @@ Linux Environment
 MacOS Environment (Experimental)
 --------------------------------
 
-* MacOS Mojave+
+* MacOS Catalina+
 * Latest Brew
 * Xcode 10.3+
 * Cmake 3.16+
@@ -36,7 +36,7 @@ Windows Environment
 Download Pre-built Node.js and V8
 =================================
 
-I have prepared pre-built Linux and Windows version of Node.js ``v14.17.2`` and V8 ``v9.2.230.21``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
+I have prepared pre-built Linux and Windows version of Node.js ``v14.17.4`` and V8 ``v9.2.230.21``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
 
 Build Javet JNI Library
 =======================

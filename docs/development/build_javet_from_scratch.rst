@@ -16,7 +16,7 @@ Linux Environment
 MacOS Environment (Experimental)
 --------------------------------
 
-* MacOS Mojave+
+* MacOS Catalina+
 * Latest Brew
 * Xcode 10.3+
 * Cmake 3.16+

@@ -2,6 +2,11 @@
 Release Notes
 =============
 
+0.9.9
+-----
+
+* Upgraded Node.js to ``v14.17.4`` `(2021-07-29) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.4>`_
+
 0.9.8
 -----
 
