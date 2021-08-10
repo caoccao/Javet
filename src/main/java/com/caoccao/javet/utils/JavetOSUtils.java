@@ -22,6 +22,7 @@ import java.lang.management.ManagementFactory;
 public final class JavetOSUtils {
     public static final String OS_NAME = System.getProperty("os.name");
     public static final boolean IS_LINUX = OS_NAME.startsWith("Linux");
+    public static final boolean IS_MACOS = OS_NAME.startsWith("Mac OS");
     public static final boolean IS_WINDOWS = OS_NAME.startsWith("Windows");
     public static final long PROCESS_ID;
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
