@@ -18,7 +18,7 @@ MacOS Environment (Experimental)
 
 * MacOS Catalina+
 * Latest Brew
-* Xcode 10.3+
+* Xcode 11.4.1+
 * Cmake 3.16+
 * JDK 8
 * Gradle 7.0+
@@ -43,30 +43,30 @@ Build Javet JNI Library
 
 Once Node.js and V8 are ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
 
-=========== =========================================================== ==========================================================
-Type        Linux                                                       Windows
-=========== =========================================================== ==========================================================
-Node        ``sh build.sh -DNODE_DIR=/absolute_path_to_node_js_build``     ``build.cmd -DNODE_DIR=\absolute_path_to_node_js_build``
-V8          ``sh build.sh -DV8_DIR=/absolute_path_to_v8_build``         ``build.cmd -DV8_DIR=\absolute_path_to_v8_build``
-=========== =========================================================== ==========================================================
+=========== =================================================================== ===================================================================
+OS          Node.js                                                             V8
+=========== =================================================================== ===================================================================
+Linux       ``sh build-linux.sh -DNODE_DIR=/absolute_path_to_node_js_build``    ``build-linux.sh -DV8_DIR=\absolute_path_to_v8_build``
+Mac OS      ``sh build-macos.sh -DNODE_DIR=/absolute_path_to_node_js_build``    ``build-macos.sh -DV8_DIR=\absolute_path_to_v8_build``
+Windows     ``sh build-windows.cmd -DNODE_DIR=/absolute_path_to_node_js_build`` ``build-windows.cmd -DV8_DIR=\absolute_path_to_v8_build``
+=========== =================================================================== ===================================================================
 
 After a while, the following libraries will be placed in folder ``src/main/resources``.
 
 =========== =========================================================== ==========================================================
-Type        Linux                                                       Windows
+OS          Node.js                                                     V8
 =========== =========================================================== ==========================================================
-Node        ``libjavet-node-linux-x86_64.v.*.*.*.so``                   ``libjavet-node-windows-x86_64.v.*.*.*.dll``
-V8          ``libjavet-v8-linux-x86_64.v.*.*.*.so``                     ``libjavet-v8-windows-x86_64.v.*.*.*.dll``
+Linux       ``libjavet-node-linux-x86_64.v.*.*.*.so``                   ``libjavet-v8-linux-x86_64.v.*.*.*.so``
+Mac OS      ``libjavet-node-macos-x86_64.v.*.*.*.dylib``                ``libjavet-v8-macos-x86_64.v.*.*.*.dylib``
+Windows     ``libjavet-node-windows-x86_64.v.*.*.*.dll``                ``libjavet-v8-windows-x86_64.v.*.*.*.dll``
 =========== =========================================================== ==========================================================
 
 Build Javet Jar
 ===============
 
-Once both ``libjavet-*-linux-x86_64.v.*.*.*.so`` and ``libjavet-*-windows-x86_64.v.*.*.*.dll`` are built, please put them altogether under ``src/main/resources`` then kick off ``gradle build test``.
+Once all these libraries are built, please put them altogether under ``src/main/resources`` then kick off ``gradle build test``.
 
 After a while, ``javet-*.*.*.jar`` will be placed in folder ``build/libs``.
-
-Note: This jar file supports both Linux and Windows.
 
 Upload Javet to Maven Central (Optional)
 ----------------------------------------

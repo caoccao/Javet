@@ -6,6 +6,7 @@ Release Notes
 -----
 
 * Upgraded Node.js to ``v14.17.4`` `(2021-07-29) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.4>`_
+* Added experimental build for Mac OS x86_64
 
 0.9.8
 -----
