@@ -15,7 +15,7 @@ Javet
 
 Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
-If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/.
+If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
 Major Features
 ==============
@@ -25,7 +25,7 @@ Major Features
 * Node.js ``v14.17.4`` + V8 ``v9.2.230.21``
 * Dynamic switch between Node.js and V8
 * Exposure of the majority of V8 API in JVM
-* JS function interception
+* JavaScript and Java interop
 * Native BigInt and Date
 * Javet engine pool
 * Easy spring integration

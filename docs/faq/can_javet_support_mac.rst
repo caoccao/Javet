@@ -5,10 +5,10 @@ Can Javet Support Mac?
 Now
 ===
 
-My MacBook mid-2012 was revived with Mac OS Catalina which is the lowest version supported by latest V8. I managed to have built `snapshot version (x86_64) only <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ for testing purpose.
+My MacBook Air mid-2012 was revived with Mac OS Catalina which is the lowest version supported by latest V8. I managed to have built `snapshot version (x86_64 only) <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ for testing purpose.
 
-Major Technical Issue
----------------------
+Known Issue
+-----------
 
 There seems to be memory address conflict between Node.js mode and V8 mode, so the unit test cannot completely pass. It should be fine with only one mode.
 
@@ -17,7 +17,7 @@ You are welcome taking a try and I look forward to your feedback.
 Will the Mac OS Build be LTS?
 -----------------------------
 
-I doubt because next time V8 abandons Catalina, I won't be able to create any new builds unless someone takes care of the Mac OS build or I get enough donation for a new device.
+I doubt because when next time V8 abandons Catalina, I won't be able to create any new builds unless someone takes care of the Mac OS build or I get enough donation for a new device.
 
 How about arm64?
 ----------------
