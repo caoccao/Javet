@@ -1,0 +1,27 @@
+name: Build and Test Javet
+
+on: [push]
+
+jobs:
+
+  javet_linux_x86_64:
+
+    name: Javet Linux x86_64
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v2
+
+    - name: Build docker image
+      run: docker build -t javet:local -f docker/linux-x86_64/build.Dockerfile .
+
+    - name: Copy the artifact
+      run: docker run --rm -it -v build:/output javet:local cp -rf /Javet/build/libs /output
+
+    - name: Upload the artifact
+    - uses: actions/upload-artifact@v2
+      with:
+        name: javet-linux-x86_64
+        path: build/libs/javet*.jar

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -f docker/linux-x86_64/build.Dockerfile .
+# Usage: docker build -t javet:local -f docker/linux-x86_64/build.Dockerfile .
 
 FROM sjtucaocao/javet:0.9.9
 WORKDIR /
@@ -31,9 +31,11 @@ RUN sh ./build-linux.sh -DNODE_DIR=/node
 # Build Jar
 WORKDIR /Javet
 RUN touch src/main/resources/libjavet-v8*
-RUN gradle test --rerun-tasks
+RUN gradle build test --rerun-tasks
 RUN touch src/main/resources/libjavet-node*
 RUN gradle test --rerun-tasks
+
+VOLUME /output
 
 # Completed
 RUN echo Javet build is completed.
