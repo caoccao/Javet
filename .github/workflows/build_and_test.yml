@@ -21,7 +21,7 @@ jobs:
       run: docker run --rm -it -v build:/output javet:local cp -rf /Javet/build/libs /output
 
     - name: Upload the artifact
-    - uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2
       with:
         name: javet-linux-x86_64
         path: build/libs/javet*.jar
