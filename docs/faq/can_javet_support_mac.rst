@@ -7,12 +7,12 @@ Now
 
 My MacBook Air mid-2012 was revived with Mac OS Catalina which is the lowest version supported by latest V8. I managed to have built `snapshot version (x86_64 only) <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ for testing purpose.
 
+You are welcome taking a try and I look forward to your feedback.
+
 Known Issue
 -----------
 
-There seems to be memory address conflict between Node.js mode and V8 mode, so the unit test cannot completely pass. It should be fine with only one mode.
-
-You are welcome taking a try and I look forward to your feedback.
+Some of the Node.js symbols might not be exposed correctly. That might cause native node modules malfunction. Quick fix will be served per issue reported.
 
 Will the Mac OS Build be LTS?
 -----------------------------

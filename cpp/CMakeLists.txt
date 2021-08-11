@@ -1,3 +1,18 @@
+# Copyright (c) 2021 caoccao.com Sam Cao
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 cmake_minimum_required(VERSION 3.10)
 
 # Validation
@@ -158,6 +173,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"
             target_link_libraries(Javet PUBLIC v8_init)
             target_link_libraries(JavetStatic PUBLIC v8_init)
         endif()
+        # https://www.unix.com/man-page/osx/1/ld/
+        # https://stackoverflow.com/questions/37116330/jni-duplicate-library-loading-on-mac-os-x-crashes
+        target_link_libraries(Javet PUBLIC -exported_symbols_list ${CMAKE_SOURCE_DIR}/jni/exported_symbols_list.txt)
     else()
         message(FATAL_ERROR "Mac OS arm64 is not supported. Please donate to support the maintainer who will be able to purchase an arm64 device.")
     endif()

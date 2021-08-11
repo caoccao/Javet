@@ -29,15 +29,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestV8Host extends BaseTestJavet {
     @Test
     public void testBothNodeAndV8() throws JavetException {
-        if (JavetOSUtils.IS_WINDOWS || JavetOSUtils.IS_LINUX) {
-            try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
-                assertNotNull(v8Runtime);
-                assertTrue(v8Runtime.getJSRuntimeType().isNode());
-            }
-            try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
-                assertNotNull(v8Runtime);
-                assertTrue(v8Runtime.getJSRuntimeType().isV8());
-            }
+        try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
+            assertNotNull(v8Runtime);
+            assertTrue(v8Runtime.getJSRuntimeType().isNode());
+        }
+        try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
+            assertNotNull(v8Runtime);
+            assertTrue(v8Runtime.getJSRuntimeType().isV8());
         }
     }
 
