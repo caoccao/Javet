@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.JavetOSUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,13 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestV8Host extends BaseTestJavet {
     @Test
     public void testBothNodeAndV8() throws JavetException {
-        try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
-            assertNotNull(v8Runtime);
-            assertTrue(v8Runtime.getJSRuntimeType().isNode());
-        }
-        try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
-            assertNotNull(v8Runtime);
-            assertTrue(v8Runtime.getJSRuntimeType().isV8());
+        if (JavetOSUtils.IS_WINDOWS || JavetOSUtils.IS_LINUX) {
+            try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
+                assertNotNull(v8Runtime);
+                assertTrue(v8Runtime.getJSRuntimeType().isNode());
+            }
+            try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
+                assertNotNull(v8Runtime);
+                assertTrue(v8Runtime.getJSRuntimeType().isV8());
+            }
         }
     }
 
