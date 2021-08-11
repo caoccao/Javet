@@ -85,6 +85,7 @@ namespace Javet {
             if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
                 v8::V8::Dispose();
                 v8::V8::ShutdownPlatform();
+                GlobalV8Platform.reset();
             }
         }
 

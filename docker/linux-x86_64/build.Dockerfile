@@ -25,8 +25,8 @@ COPY . .
 
 # Build JNI
 WORKDIR /Javet/cpp
-RUN sh ./build.sh -DV8_DIR=/google/v8
-RUN sh ./build.sh -DNODE_DIR=/node
+RUN sh ./build-linux.sh -DV8_DIR=/google/v8
+RUN sh ./build-linux.sh -DNODE_DIR=/node
 
 # Build Jar
 WORKDIR /Javet
