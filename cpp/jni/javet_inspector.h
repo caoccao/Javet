@@ -22,60 +22,60 @@
 #include "javet_v8.h"
 
 namespace Javet {
-	namespace Inspector {
-		class JavetInspector;
-		class JavetInspectorClient;
-		class JavetInspectorChannel;
+    namespace Inspector {
+        class JavetInspector;
+        class JavetInspectorClient;
+        class JavetInspectorChannel;
 
-		static jclass jclassV8Inspector;
-		static jmethodID jmethodIDV8InspectorFlushProtocolNotifications;
-		static jmethodID jmethodIDV8InspectorGetName;
-		static jmethodID jmethodIDV8InspectorReceiveNotification;
-		static jmethodID jmethodIDV8InspectorReceiveResponse;
-		static jmethodID jmethodIDV8InspectorRunIfWaitingForDebugger;
+        static jclass jclassV8Inspector;
+        static jmethodID jmethodIDV8InspectorFlushProtocolNotifications;
+        static jmethodID jmethodIDV8InspectorGetName;
+        static jmethodID jmethodIDV8InspectorReceiveNotification;
+        static jmethodID jmethodIDV8InspectorReceiveResponse;
+        static jmethodID jmethodIDV8InspectorRunIfWaitingForDebugger;
 
-		void Initialize(JNIEnv* jniEnv);
+        void Initialize(JNIEnv* jniEnv);
 
-		class JavetInspector {
-		public:
-			JavetInspector(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector);
-			void send(const std::string& message);
-			virtual ~JavetInspector();
-		private:
-			jobject mV8Inspector;
-			Javet::V8Runtime* v8Runtime;
-			std::unique_ptr<JavetInspectorClient> client;
-		};
+        class JavetInspector {
+        public:
+            JavetInspector(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector);
+            void send(const std::string& message);
+            virtual ~JavetInspector();
+        private:
+            jobject mV8Inspector;
+            Javet::V8Runtime* v8Runtime;
+            std::unique_ptr<JavetInspectorClient> client;
+        };
 
-		class JavetInspectorClient final : public v8_inspector::V8InspectorClient {
-		public:
-			JavetInspectorClient(Javet::V8Runtime* v8Runtime, const std::string& name, const jobject& mV8Inspector);
-			void dispatchProtocolMessage(const v8_inspector::StringView& message);
-			void quitMessageLoopOnPause() override;
-			void runIfWaitingForDebugger(int contextGroupId) override;
-			void runMessageLoopOnPause(int contextGroupId) override;
-			virtual ~JavetInspectorClient();
-		private:
-			bool activateMessageLoop;
-			jobject mV8Inspector;
-			bool runningMessageLoop;
-			Javet::V8Runtime* v8Runtime;
-			std::unique_ptr<JavetInspectorChannel> javetInspectorChannel;
-			std::unique_ptr<v8_inspector::V8Inspector> v8Inspector;
-			std::unique_ptr<v8_inspector::V8InspectorSession> v8InspectorSession;
-			V8LocalContext ensureDefaultContextInGroup(int contextGroupId) override;
-		};
+        class JavetInspectorClient final : public v8_inspector::V8InspectorClient {
+        public:
+            JavetInspectorClient(Javet::V8Runtime* v8Runtime, const std::string& name, const jobject& mV8Inspector);
+            void dispatchProtocolMessage(const v8_inspector::StringView& message);
+            void quitMessageLoopOnPause() override;
+            void runIfWaitingForDebugger(int contextGroupId) override;
+            void runMessageLoopOnPause(int contextGroupId) override;
+            virtual ~JavetInspectorClient();
+        private:
+            bool activateMessageLoop;
+            jobject mV8Inspector;
+            bool runningMessageLoop;
+            Javet::V8Runtime* v8Runtime;
+            std::unique_ptr<JavetInspectorChannel> javetInspectorChannel;
+            std::unique_ptr<v8_inspector::V8Inspector> v8Inspector;
+            std::unique_ptr<v8_inspector::V8InspectorSession> v8InspectorSession;
+            V8LocalContext ensureDefaultContextInGroup(int contextGroupId) override;
+        };
 
-		class JavetInspectorChannel final : public v8_inspector::V8Inspector::Channel {
-		public:
-			JavetInspectorChannel(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector);
-			void flushProtocolNotifications() override;
-			void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) override;
-			void sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) override;
-			virtual ~JavetInspectorChannel();
-		private:
-			jobject mV8Inspector;
-			Javet::V8Runtime* v8Runtime;
-		};
-	}
+        class JavetInspectorChannel final : public v8_inspector::V8Inspector::Channel {
+        public:
+            JavetInspectorChannel(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector);
+            void flushProtocolNotifications() override;
+            void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) override;
+            void sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) override;
+            virtual ~JavetInspectorChannel();
+        private:
+            jobject mV8Inspector;
+            Javet::V8Runtime* v8Runtime;
+        };
+    }
 }
