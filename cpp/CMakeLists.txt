@@ -173,8 +173,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"
             target_link_libraries(Javet PUBLIC v8_init)
             target_link_libraries(JavetStatic PUBLIC v8_init)
         endif()
-        # https://www.unix.com/man-page/osx/1/ld/
-        # https://stackoverflow.com/questions/37116330/jni-duplicate-library-loading-on-mac-os-x-crashes
+        # https://caoccao.blogspot.com/2021/08/jni-symbol-conflicts-in-mac-os.html
         target_link_libraries(Javet PUBLIC -exported_symbols_list ${CMAKE_SOURCE_DIR}/jni/exported_symbols_list.txt)
     else()
         message(FATAL_ERROR "Mac OS arm64 is not supported. Please donate to support the maintainer who will be able to purchase an arm64 device.")
