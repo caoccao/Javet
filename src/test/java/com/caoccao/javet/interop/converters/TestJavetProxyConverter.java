@@ -90,7 +90,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testInterface() throws JavetException {
-        javetProxyConverter.getConfig().setStaticClassEnabled(false);
         v8Runtime.getGlobalObject().set("AutoCloseable", AutoCloseable.class);
         v8Runtime.getGlobalObject().set("IJavetClosable", IJavetClosable.class);
         assertTrue(AutoCloseable.class.isAssignableFrom(IJavetClosable.class));
@@ -99,7 +98,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
         v8Runtime.getGlobalObject().delete("AutoCloseable");
         v8Runtime.getGlobalObject().delete("IJavetClosable");
-        javetProxyConverter.getConfig().setStaticClassEnabled(true);
         v8Runtime.lowMemoryNotification();
     }
 

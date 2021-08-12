@@ -100,7 +100,6 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     public void testUniversalProxyHandlerInInstanceMode() throws JavetException {
         JavetUniversalProxyHandler<MockPojo> handler =
                 new JavetUniversalProxyHandler<>(v8Runtime, new MockPojo());
-        assertFalse(handler.isStaticMode());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
                 assertNotNull(v8ValueProxy);
@@ -177,10 +176,9 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
 
     @Test
     public void testUniversalProxyHandlerInStaticMode() throws JavetException {
-        JavetUniversalProxyHandler<MockPojo> handler =
-                new JavetUniversalProxyHandler<>(v8Runtime, null, MockPojo.class, true);
-        assertNull(handler.getTargetObject());
-        assertTrue(handler.isStaticMode());
+        JavetUniversalProxyHandler<Class> handler =
+                new JavetUniversalProxyHandler<>(v8Runtime, MockPojo.class);
+        assertEquals(MockPojo.class, handler.getTargetObject());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
                 assertNotNull(v8ValueProxy);
@@ -192,7 +190,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
             }
             assertThrows(
                     JavetExecutionException.class,
-                    () -> v8Runtime.getExecutor("y.getName()").executeVoid(),
+                    () -> v8Runtime.getExecutor("y.getStringValue()").executeVoid(),
                     "Instance method should not work.");
             assertEquals(3, v8Runtime.getExecutor("y.staticAdd(1,2)").executeInteger(),
                     "Static function should work.");
@@ -210,7 +208,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     () -> v8Runtime.getExecutor("y.STATIC_READONLY_VALUE = 2").executeVoid(),
                     "Static read-only field should not be assignable.");
             assertEquals(
-                    "[\"STATIC_READONLY_VALUE\",\"STATIC_WRITABLE_VALUE\"]",
+                    "[\"STATIC_READONLY_VALUE\",\"STATIC_WRITABLE_VALUE\",\"annotatedInterfaces\",\"annotatedSuperclass\",\"annotation\",\"annotations\",\"anonymousClass\",\"array\",\"canonicalName\",\"class\",\"classLoader\",\"classes\",\"componentType\",\"constructors\",\"declaredAnnotations\",\"declaredClasses\",\"declaredConstructors\",\"declaredFields\",\"declaredMethods\",\"declaringClass\",\"enclosingClass\",\"enclosingConstructor\",\"enclosingMethod\",\"enum\",\"enumConstants\",\"fields\",\"genericInterfaces\",\"genericSuperclass\",\"interface\",\"interfaces\",\"localClass\",\"memberClass\",\"methods\",\"modifiers\",\"name\",\"package\",\"primitive\",\"protectionDomain\",\"signers\",\"simpleName\",\"superclass\",\"synthetic\",\"typeName\",\"typeParameters\"]",
                     v8Runtime.getExecutor("const z = Object.getOwnPropertyNames(y);" +
                             " z.sort(); JSON.stringify(z);").executeString(),
                     "ownKeys should work.");
@@ -224,7 +222,6 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     public void testUniversalProxyHandlerWithGenericGetterAndSetter() throws JavetException {
         JavetUniversalProxyHandler<MockPojoWithGenericGetterAndSetter> handler =
                 new JavetUniversalProxyHandler<>(v8Runtime, new MockPojoWithGenericGetterAndSetter());
-        assertFalse(handler.isStaticMode());
         handler.getTargetObject().set("c", "3");
         handler.getTargetObject().set("d", "4");
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {

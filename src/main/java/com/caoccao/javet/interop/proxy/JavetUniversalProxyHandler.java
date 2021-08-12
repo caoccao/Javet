@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop.proxy;
 
+import com.caoccao.javet.annotations.V8BindEnabler;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -51,6 +52,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     protected static final String[] GETTER_PREFIX_ARRAY = new String[]{"get", "is"};
     /**
+     * The constant METHOD_NAME_CONSTRUCT.
+     *
+     * @since 0.9.9
+     */
+    protected static final String METHOD_NAME_CONSTRUCT = "construct";
+    /**
      * The constant METHOD_NAME_CONSTRUCTOR.
      *
      * @since 0.9.8
@@ -68,6 +75,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     protected static final String[] SETTER_PREFIX_ARRAY = new String[]{"set", "put"};
+    /**
+     * The Class mode.
+     *
+     * @since 0.9.9
+     */
+    protected boolean classMode;
     /**
      * The Constructors.
      *
@@ -123,12 +136,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     protected Map<String, List<Method>> settersMap;
     /**
-     * The Static mode.
-     *
-     * @since 0.9.7
-     */
-    protected boolean staticMode;
-    /**
      * The Target class.
      *
      * @since 0.9.6
@@ -142,29 +149,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     protected Set<String> uniqueKeySet;
 
     /**
-     * Instantiates a new Javet universal proxy handler in regular mode.
+     * Instantiates a new Javet universal proxy handler.
      *
      * @param v8Runtime    the V8 runtime
      * @param targetObject the target object
      * @since 0.9.6
      */
     public JavetUniversalProxyHandler(V8Runtime v8Runtime, T targetObject) {
-        this(v8Runtime, Objects.requireNonNull(targetObject), (Class<T>) targetObject.getClass(), false);
-    }
-
-    /**
-     * Instantiates a new Javet universal proxy handler in either regular or static mode.
-     *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
-     * @param targetClass  the target class
-     * @param staticMode   the static mode
-     * @since 0.9.7
-     */
-    public JavetUniversalProxyHandler(V8Runtime v8Runtime, T targetObject, Class<T> targetClass, boolean staticMode) {
-        super(v8Runtime, targetObject);
-        this.staticMode = staticMode;
-        this.targetClass = targetClass;
+        super(v8Runtime, Objects.requireNonNull(targetObject));
+        this.targetClass = (Class<T>) targetObject.getClass();
         initialize();
     }
 
@@ -248,6 +241,17 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         return score;
+    }
+
+    /**
+     * Is class mode.
+     *
+     * @param objectClass the object class
+     * @return the boolean
+     */
+    public static boolean isClassMode(Class objectClass) {
+        return !(objectClass.isPrimitive() || objectClass.isAnnotation()
+                || objectClass.isInterface() || objectClass.isArray());
     }
 
     /**
@@ -468,7 +472,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = false;
-        if (!staticMode) {
+        if (!classMode) {
             if (isTargetTypeMap) {
                 isFound = ((Map) targetObject).containsKey(v8Runtime.toObject(property));
             } else if (isTargetTypeSet) {
@@ -516,6 +520,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
+     * Has constructors.
+     *
+     * @return the boolean
+     * @since 0.9.9
+     */
+    public boolean hasConstructors() {
+        return !constructors.isEmpty();
+    }
+
+    /**
      * Initialize.
      *
      * @since 0.9.7
@@ -531,17 +545,24 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         uniqueKeySet = new LinkedHashSet<>();
         isTargetTypeMap = Map.class.isAssignableFrom(targetClass);
         isTargetTypeSet = Set.class.isAssignableFrom(targetClass);
-        initializeFieldsAndMethods();
+        classMode = false;
+        if (targetObject instanceof Class) {
+            Class objectClass = (Class) targetObject;
+            classMode = isClassMode(objectClass);
+            initializeFieldsAndMethods(objectClass, true);
+        }
+        initializeFieldsAndMethods(targetClass, false);
     }
 
     /**
      * Initialize fields and methods.
      *
+     * @param currentClass the current class
+     * @param staticMode   the static mode
      * @since 0.9.6
      */
-    protected void initializeFieldsAndMethods() {
-        Class currentClass = targetClass;
-        if (!staticMode) {
+    protected void initializeFieldsAndMethods(Class currentClass, boolean staticMode) {
+        if (!classMode) {
             if (isTargetTypeMap) {
                 uniqueKeySet.addAll(((Map) targetObject).keySet());
             } else if (isTargetTypeSet) {
@@ -549,8 +570,10 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         while (true) {
-            for (Constructor constructor : currentClass.getConstructors()) {
-                constructors.add(constructor);
+            if (classMode) {
+                for (Constructor constructor : currentClass.getConstructors()) {
+                    constructors.add(constructor);
+                }
             }
             // All public fields are in the scope.
             for (Field field : currentClass.getFields()) {
@@ -623,13 +646,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is constructor boolean.
+     * Is class mode.
      *
      * @return the boolean
-     * @since 0.9.8
+     * @since 0.9.9
      */
-    public boolean isConstructor() {
-        return !constructors.isEmpty();
+    public boolean isClassMode() {
+        return classMode;
     }
 
     /**
@@ -667,19 +690,23 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is static mode.
+     * Is V8 bind enabled.
      *
-     * @return true : static mode, false: instance mode
-     * @since 0.9.7
+     * @param methodName the method name
+     * @return the boolean
      */
-    public boolean isStaticMode() {
-        return staticMode;
+    @V8BindEnabler
+    public boolean isV8BindEnabled(String methodName) {
+        if (JavetUniversalProxyHandler.METHOD_NAME_CONSTRUCT.equals(methodName)) {
+            return hasConstructors();
+        }
+        return true;
     }
 
     @V8Function
     @Override
     public V8Value ownKeys(V8Value target) throws JavetException {
-        if (!staticMode) {
+        if (!classMode) {
             if (isTargetTypeMap) {
                 return v8Runtime.toV8Value(((Map) targetObject).keySet().toArray());
             } else if (isTargetTypeSet) {
