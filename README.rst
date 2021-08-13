@@ -1,7 +1,9 @@
 Javet
 =====
 
-|Maven Central| |Gitter Chatroom| |Discord| |Build|
+|Maven Central| |Gitter Chatroom| |Discord| |Donate|
+
+|Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
@@ -11,6 +13,9 @@ Javet
 
 .. |Discord| image:: https://img.shields.io/badge/join%20our-Discord-%237289DA%20
     :target: https://discord.gg/R4vvKU96gw
+
+.. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
+    :target: https://paypal.me/caoccao?locale.x=en_US
 
 .. |Build| image:: https://github.com/caoccao/Javet/actions/workflows/build_and_test.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/build_and_test.yml
