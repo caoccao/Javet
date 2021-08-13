@@ -13,8 +13,8 @@ Linux Environment
 * JDK 8
 * Gradle 7.0+
 
-MacOS Environment (Experimental)
---------------------------------
+MacOS Environment
+-----------------
 
 * MacOS Catalina+
 * Latest Brew
@@ -132,9 +132,9 @@ Build Node.js on Mac OS
 Build Node.js on Windows
 ------------------------
 
-* Clone the source code.
-* Checkout a proper version.
-* Execute ``vcbuild.bat static without-intl``.
+.. code-block:: shell
+
+    vcbuild.bat static without-intl
 
 Build Javet
 ===========
