@@ -247,6 +247,11 @@ It is very easy to cause type mismatches in JavaScript. The Javet exception is s
 * When dealing with ``V8Value...``, application is responsible for the type conversion.
 * Variable arguments can be achieved under this signature so that a JavaScript function can be completely mirrored in Java.
 
+Resource Management
+-------------------
+
+In the function callback, Javet manages the lifecycle of the input arguments and the return value. So, **DO NOT** close the input arguments, and **DO NOT** apply ``try-with-resource`` to the return value.
+
 Summary
 -------
 
