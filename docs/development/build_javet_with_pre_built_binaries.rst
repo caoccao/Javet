@@ -13,8 +13,8 @@ Linux Environment
 * JDK 8
 * Gradle 7.0+
 
-MacOS Environment (Experimental)
---------------------------------
+MacOS Environment
+-----------------
 
 * MacOS Catalina+
 * Latest Brew
