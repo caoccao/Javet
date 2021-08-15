@@ -15,17 +15,19 @@
 
 # Usage: docker build -t sjtucaocao/javet-windows:0.9.9 -f docker/windows-x86_64/base.Dockerfile .
 
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
+# Note: This is experimental and it doesn't work as expected yet.
+
+# https://hub.docker.com/_/microsoft-dotnet-framework-sdk/
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-20H2
 
 SHELL ["cmd", "/S", "/C"]
+RUN curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe
 
-RUN curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe `
+SHELL ["cmd", "/S", "/C"]
 RUN start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify \
         --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools" \
-        --add Microsoft.VisualStudio.Workload.AzureBuildTools \
         --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
         --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
-        --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
         --remove Microsoft.VisualStudio.Component.Windows81SDK \
         || IF "%ERRORLEVEL%"=="3010" EXIT 0
 RUN del /q vs_buildtools.exe
