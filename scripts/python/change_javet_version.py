@@ -35,8 +35,7 @@ class ChangeJavetVersion(object):
     self._update(
       'README.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)"'),
-      re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)\''),
+      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\']{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'build.gradle.kts', '\n',
@@ -44,18 +43,20 @@ class ChangeJavetVersion(object):
     self._update(
       'docs/tutorial/installation.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)"'),
-      re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)\''),
+      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\']{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'pom.xml', '\n',
       re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
       re.compile(r'^        <tag>javet-(?P<version>\d+\.\d+\.\d+)</tag>$'))
     self._update(
-      'cpp/build.cmd', '\r\n',
+      'cpp/build-linux.sh', '\n',
       re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      'cpp/build.sh', '\n',
+      'cpp/build-macos.sh', '\n',
+      re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      'cpp/build-windows.cmd', '\r\n',
       re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'src/main/java/com/caoccao/javet/interop/JavetLibLoader.java', '\n',
@@ -109,7 +110,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('0.9.9')
+  change_javet_version = ChangeJavetVersion('0.9.10')
   change_javet_version.update()
   return 0
 
