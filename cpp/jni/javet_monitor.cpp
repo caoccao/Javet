@@ -22,22 +22,22 @@
 Javet::Monitor::JavetNativeMonitor GlobalJavetNativeMonitor;
 
 namespace Javet {
-	namespace Monitor {
+    namespace Monitor {
 
-		JavetNativeMonitor::JavetNativeMonitor() {
-			Clear();
-		}
+        JavetNativeMonitor::JavetNativeMonitor() {
+            Clear();
+        }
 
-		jlongArray JavetNativeMonitor::GetCounters(JNIEnv* jniEnv) {
-			jlong buffer[CounterType::Max];
-			for (int i = 0; i < CounterType::Max; ++i) {
-				buffer[i] = counters[i].load();
-			}
-			jlongArray returnDataArray = jniEnv->NewLongArray(CounterType::Max);
-			jniEnv->SetLongArrayRegion(returnDataArray, 0, CounterType::Max, buffer);
-			return returnDataArray;
-		}
-	}
+        jlongArray JavetNativeMonitor::GetCounters(JNIEnv* jniEnv) {
+            jlong buffer[CounterType::Max];
+            for (int i = 0; i < CounterType::Max; ++i) {
+                buffer[i] = counters[i].load();
+            }
+            jlongArray returnDataArray = jniEnv->NewLongArray(CounterType::Max);
+            jniEnv->SetLongArrayRegion(returnDataArray, 0, CounterType::Max, buffer);
+            return returnDataArray;
+        }
+    }
 }
 #endif
 

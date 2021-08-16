@@ -13,12 +13,12 @@ Linux Environment
 * JDK 8
 * Gradle 7.0+
 
-MacOS Environment (Experimental)
---------------------------------
+MacOS Environment
+-----------------
 
-* MacOS Mojave+
+* MacOS Catalina+
 * Latest Brew
-* Xcode 10.3+
+* Xcode 11.4.1+
 * Cmake 3.16+
 * JDK 8
 * Gradle 7.0+
@@ -41,8 +41,6 @@ Please follow the `official guide <https://v8.dev/docs/build>`_ to build V8. If 
 Prepare V8
 ----------
 
-* Linux requires Python 2.7, CMake 3.10+. Ubuntu 20.04 is the recommended Linux distribution.
-* Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
 * Clone the source code.
 * Checkout a proper version.
 
@@ -61,8 +59,8 @@ Also, please make sure ``args.gn`` file looks like the following.
     symbol_level = 0
     use_custom_libcxx = false
 
-Build V8 on Linux
------------------
+Build V8 on Linux and Mac OS
+----------------------------
 
 .. code-block:: shell
 
@@ -97,8 +95,6 @@ Please follow `Building Node.js <https://github.com/nodejs/node/blob/master/BUIL
 Prepare Node.js
 ---------------
 
-* Linux requires Python 2.7, CMake 3.10+, GCC 9.3+. Ubuntu 20.04 is the recommended Linux distribution (V8 v8.9 is recommended to be built on Ubuntu 18.04, and V8 v9.0+ is recommended to be built on Ubuntu 20.04).
-* Windows requires Windows 10, Python 2.7, Visual Studio 2019 Community, CMake (comes with Visual Studio), Windows 10 SDK with WinDbg.
 * Clone the source code.
 * Checkout a proper version.
 
@@ -125,12 +121,20 @@ Why Patching?
     can not be used when making a shared object; 
     recompile with -fPIC
 
+Build Node.js on Mac OS
+-----------------------
+
+.. code-block:: shell
+
+    ./configure --enable-static --without-intl
+    make -j4
+
 Build Node.js on Windows
 ------------------------
 
-* Clone the source code.
-* Checkout a proper version.
-* Execute ``vcbuild.bat static without-intl``.
+.. code-block:: shell
+
+    vcbuild.bat static without-intl
 
 Build Javet
 ===========

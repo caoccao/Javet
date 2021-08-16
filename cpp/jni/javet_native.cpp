@@ -26,44 +26,44 @@
 JavaVM* GlobalJavaVM;
 
 jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
-	LOG_INFO("JNI_Onload() begins.");
-	JNIEnv* jniEnv;
-	if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
-		LOG_ERROR("Failed to call JavaVM.GetEnv().");
-		return ERROR_JNI_ON_LOAD;
-	}
-	if (jniEnv == nullptr) {
-		LOG_ERROR("Failed to get JNIEnv.");
-		return ERROR_JNI_ON_LOAD;
-	}
-	GlobalJavaVM = javaVM;
-	Javet::V8Native::Initialize(jniEnv);
+    LOG_INFO("JNI_Onload() begins.");
+    JNIEnv* jniEnv;
+    if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
+        LOG_ERROR("Failed to call JavaVM.GetEnv().");
+        return ERROR_JNI_ON_LOAD;
+    }
+    if (jniEnv == nullptr) {
+        LOG_ERROR("Failed to get JNIEnv.");
+        return ERROR_JNI_ON_LOAD;
+    }
+    GlobalJavaVM = javaVM;
+    Javet::V8Native::Initialize(jniEnv);
 #ifdef ENABLE_NODE
-	Javet::NodeNative::Initialize(jniEnv);
+    Javet::NodeNative::Initialize(jniEnv);
 #endif
-	Javet::Callback::Initialize(jniEnv);
-	Javet::Converter::Initialize(jniEnv);
-	Javet::Exceptions::Initialize(jniEnv);
-	Javet::Inspector::Initialize(jniEnv);
-	LOG_INFO("JNI_Onload() ends.");
-	return JNI_VERSION_1_8;
+    Javet::Callback::Initialize(jniEnv);
+    Javet::Converter::Initialize(jniEnv);
+    Javet::Exceptions::Initialize(jniEnv);
+    Javet::Inspector::Initialize(jniEnv);
+    LOG_INFO("JNI_Onload() ends.");
+    return JNI_VERSION_1_8;
 }
 
 void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
-	LOG_INFO("JNI_OnUnload() begins.");
-	JNIEnv* jniEnv;
-	if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
-		LOG_ERROR("Failed to call JavaVM.GetEnv().");
-	}
-	if (jniEnv == nullptr) {
-		LOG_ERROR("Failed to get JNIEnv.");
-	}
-	else {
+    LOG_INFO("JNI_OnUnload() begins.");
+    JNIEnv* jniEnv;
+    if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
+        LOG_ERROR("Failed to call JavaVM.GetEnv().");
+    }
+    if (jniEnv == nullptr) {
+        LOG_ERROR("Failed to get JNIEnv.");
+    }
+    else {
 #ifdef ENABLE_NODE
-		Javet::NodeNative::Dispose(jniEnv);
+        Javet::NodeNative::Dispose(jniEnv);
 #endif
-		Javet::V8Native::Dispose(jniEnv);
-	}
-	LOG_INFO("JNI_OnUnload() ends.");
+        Javet::V8Native::Dispose(jniEnv);
+    }
+    LOG_INFO("JNI_OnUnload() ends.");
 }
 

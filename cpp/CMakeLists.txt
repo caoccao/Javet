@@ -1,3 +1,18 @@
+# Copyright (c) 2021 caoccao.com Sam Cao
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 cmake_minimum_required(VERSION 3.10)
 
 # Validation
@@ -54,11 +69,11 @@ if(DEFINED NODE_DIR)
         v8_base_without_compiler v8_compiler v8_init v8_initializers
         v8_libbase v8_libplatform v8_libsampler v8_snapshot v8_zlib zlib)
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        list(APPEND importLibraries
-            libnode libuv)
+        list(APPEND importLibraries libnode libuv)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        list(APPEND importLibraries
-            node node_text_start uv)
+        list(APPEND importLibraries node node_text_start uv)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        list(APPEND importLibraries node uv)
     endif()
     add_definitions(-DENABLE_NODE)
     set(JAVET_LIB_TYPE "node")
@@ -71,7 +86,7 @@ endforeach(importLibrary)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(JAVET_LIB_PREFIX "libjavet")
     set(JAVET_LIB_SYSTEM "windows")
-    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
+    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0 -D_WIN32)
     list(APPEND includeDirs $ENV{JAVA_HOME}/include/win32)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     if(DEFINED V8_DIR)
@@ -95,42 +110,80 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_property(TARGET Javet APPEND_STRING PROPERTY LINK_FLAGS_RELEASE "")
     set_property(TARGET Javet PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     target_link_libraries(Javet ${importLibraries})
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     project(JavetStatic)
     set(JAVET_LIB_PREFIX "javet")
-    set(JAVET_LIB_SYSTEM "linux")
+    add_definitions(-D__x86_64__)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     add_library(Javet SHARED ${sourceFiles})
     add_library(JavetStatic STATIC ${sourceFiles})
-    list(APPEND includeDirs $ENV{JAVA_HOME}/include/linux)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64 ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 ")
-    if(DEFINED V8_DIR)
-        foreach(importLibrary ${importLibraries})
-            set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_DIR}/out.gn/x64.release/obj/lib${importLibrary}.a)
-        endforeach(importLibrary)
-        target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-            debug "-lrt" optimized "-lrt" "${libgcc}")
-        target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-            debug "-lrt" optimized "-lrt" "${libgcc}")
-    endif()
-    if(DEFINED NODE_DIR)
-        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-        list(APPEND includeDirs
-            ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root
-            ${NODE_DIR}/out/Release/obj/gen/inspector-generated-output-root
-            ${NODE_DIR}/out/Release/obj/gen/torque-output-root)
-        foreach(importLibrary ${importLibraries})
-            set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/lib${importLibrary}.a)
-        endforeach(importLibrary)
-        list(REMOVE_ITEM importLibraries v8_init)
-        target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-            v8_init debug "-lrt" optimized "-lrt" "${libgcc}")
-        target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-            v8_init debug "-lrt" optimized "-lrt" "${libgcc}")
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        set(JAVET_LIB_SYSTEM "linux")
+        add_definitions(-D__linux__)
+        list(APPEND includeDirs $ENV{JAVA_HOME}/include/linux)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64 ")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 ")
+        if(DEFINED V8_DIR)
+            foreach(importLibrary ${importLibraries})
+                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_DIR}/out.gn/x64.release/obj/lib${importLibrary}.a)
+            endforeach(importLibrary)
+            target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                debug "-lrt" optimized "-lrt" "${libgcc}")
+            target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                debug "-lrt" optimized "-lrt" "${libgcc}")
+        endif()
+        if(DEFINED NODE_DIR)
+            list(APPEND includeDirs
+                ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root
+                ${NODE_DIR}/out/Release/obj/gen/inspector-generated-output-root
+                ${NODE_DIR}/out/Release/obj/gen/torque-output-root)
+            foreach(importLibrary ${importLibraries})
+                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/lib${importLibrary}.a)
+            endforeach(importLibrary)
+            list(REMOVE_ITEM importLibraries v8_init)
+            target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                v8_init debug "-lrt" optimized "-lrt" "${libgcc}")
+            target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                v8_init debug "-lrt" optimized "-lrt" "${libgcc}")
+        endif()
+        # Exported symbol filter is disabled unless production issues call for it.
+        # https://www.gnu.org/software/gnulib/manual/html_node/LD-Version-Scripts.html
+        # target_link_libraries(Javet PUBLIC -Wl,--version-script=${CMAKE_SOURCE_DIR}/jni/version_script.map)
+    elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        set(JAVET_LIB_SYSTEM "macos")
+        add_definitions(-D__APPLE__)
+        list(APPEND includeDirs $ENV{JAVA_HOME}/include/darwin)
+        if(DEFINED V8_DIR)
+            foreach(importLibrary ${importLibraries})
+                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_DIR}/out.gn/x64.release/obj/lib${importLibrary}.a)
+                target_link_libraries(Javet PUBLIC -force_load ${importLibrary})
+                target_link_libraries(JavetStatic PUBLIC -force_load ${importLibrary})
+            endforeach(importLibrary)
+        endif()
+        if(DEFINED NODE_DIR)
+            list(APPEND includeDirs
+                ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root
+                ${NODE_DIR}/out/Release/obj/gen/inspector-generated-output-root
+                ${NODE_DIR}/out/Release/obj/gen/torque-output-root)
+            foreach(importLibrary ${importLibraries})
+                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/lib${importLibrary}.a)
+            endforeach(importLibrary)
+            list(REMOVE_ITEM importLibraries v8_init)
+            foreach(importLibrary ${importLibraries})
+                target_link_libraries(Javet PUBLIC -force_load ${importLibrary})
+                target_link_libraries(JavetStatic PUBLIC -force_load ${importLibrary})
+            endforeach(importLibrary)
+            target_link_libraries(Javet PUBLIC v8_init)
+            target_link_libraries(JavetStatic PUBLIC v8_init)
+        endif()
+        # https://caoccao.blogspot.com/2021/08/jni-symbol-conflicts-in-mac-os.html
+        target_link_libraries(Javet PUBLIC -exported_symbols_list ${CMAKE_SOURCE_DIR}/jni/exported_symbols_list.txt)
+    else()
+        message(FATAL_ERROR "Mac OS arm64 is not supported. Please donate to support the maintainer who will be able to purchase an arm64 device.")
     endif()
     set_target_properties(JavetStatic PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}-x86_64.v.${JAVET_VERSION}")
 else()
-    message(FATAL_ERROR "OS that is not either Windows or Linux hasn't been supported yet.")
+    message(FATAL_ERROR "Linux, Mac OS and Windows x86-64 are the only supported OS.")
 endif()
 
 set_target_properties(Javet PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}-x86_64.v.${JAVET_VERSION}")

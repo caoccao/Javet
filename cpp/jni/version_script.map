@@ -1,0 +1,9 @@
+{
+  global:
+    JNI_OnLoad;
+    JNI_OnUnload;
+    Java_com_caoccao_javet_*;
+    napi_*;
+  local:
+    *;
+};

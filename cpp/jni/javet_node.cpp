@@ -32,20 +32,20 @@
 
 namespace node {
 
-	v8::StartupData* NodeMainInstance::GetEmbeddedSnapshotBlob() {
-		return nullptr;
-	}
+    v8::StartupData* NodeMainInstance::GetEmbeddedSnapshotBlob() {
+        return nullptr;
+    }
 
-	const std::vector<size_t>* NodeMainInstance::GetIsolateDataIndexes() {
-		return nullptr;
-	}
+    const std::vector<size_t>* NodeMainInstance::GetIsolateDataIndexes() {
+        return nullptr;
+    }
 
-	namespace native_module {
+    namespace native_module {
 
-		const bool has_code_cache = false;
+        const bool has_code_cache = false;
 
-		void NativeModuleEnv::InitializeCodeCache() {}
+        void NativeModuleEnv::InitializeCodeCache() {}
 
-	}
+    }
 }
 #endif

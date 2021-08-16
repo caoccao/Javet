@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.JavetOSUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

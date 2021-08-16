@@ -33,14 +33,16 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    static final String LIB_VERSION = "0.9.8";
+    static final String LIB_VERSION = "0.9.9";
     private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
+    private static final String LIB_FILE_EXTENSION_MACOS = "dylib";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
     private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 60L * 1000L; // 1 minute
     private static final String OS_LINUX = "linux";
+    private static final String OS_MACOS = "macos";
     private static final String OS_WINDOWS = "windows";
     private static final String RESOURCE_NAME_FORMAT = "/{0}";
     private static final String TEMP_ROOT_NAME = "javet";
@@ -122,7 +124,7 @@ public final class JavetLibLoader {
                         }
                         outputStream.write(buffer, 0, length);
                     }
-                    if (JavetOSUtils.IS_LINUX) {
+                    if (JavetOSUtils.IS_LINUX || JavetOSUtils.IS_MACOS) {
                         try {
                             Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
                         } catch (Throwable ignored) {
@@ -148,6 +150,9 @@ public final class JavetLibLoader {
         } else if (JavetOSUtils.IS_LINUX) {
             fileExtension = LIB_FILE_EXTENSION_LINUX;
             osName = OS_LINUX;
+        } else if (JavetOSUtils.IS_MACOS) {
+            fileExtension = LIB_FILE_EXTENSION_MACOS;
+            osName = OS_MACOS;
         } else {
             throw new JavetException(
                     JavetError.OSNotSupported,

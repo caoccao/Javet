@@ -268,11 +268,10 @@ Static class usually does not have an instance. The universal proxy based conver
 Static: Interface
 -----------------
 
-Sometimes injecting an actual ``Class`` instead of a static class may be very useful. Especially interface or annotation class can be injected for enabling Java reflection in V8. The universal proxy based converter can disable static class mode if ``JavetConverterConfig.setStaticClassEnabled(false)`` is called before the conversion.
+Sometimes an interface or annotation class can be injected for enabling Java reflection in V8.
 
 .. code-block:: java
 
-    javetProxyConverter.getConfig().setStaticClassEnabled(false);
     v8Runtime.getGlobalObject().set("AutoCloseable", AutoCloseable.class);
     v8Runtime.getGlobalObject().set("IJavetClosable", IJavetClosable.class);
     assertTrue(AutoCloseable.class.isAssignableFrom(IJavetClosable.class));
@@ -281,7 +280,6 @@ Sometimes injecting an actual ``Class`` instead of a static class may be very us
     assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
     v8Runtime.getGlobalObject().delete("AutoCloseable");
     v8Runtime.getGlobalObject().delete("IJavetClosable");
-    javetProxyConverter.getConfig().setStaticClassEnabled(true);
     v8Runtime.lowMemoryNotification();
 
 Features

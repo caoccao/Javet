@@ -21,27 +21,27 @@
 #include "javet_v8.h"
 
 namespace Javet {
-	namespace Exceptions {
-		static jclass jclassJavetCompilationException;
-		static jmethodID jmethodIDJavetCompilationExceptionConstructor;
+    namespace Exceptions {
+        static jclass jclassJavetCompilationException;
+        static jmethodID jmethodIDJavetCompilationExceptionConstructor;
 
-		static jclass jclassJavetConverterException;
+        static jclass jclassJavetConverterException;
 
-		static jclass jclassJavetExecutionException;
-		static jmethodID jmethodIDJavetExecutionExceptionConstructor;
+        static jclass jclassJavetExecutionException;
+        static jmethodID jmethodIDJavetExecutionExceptionConstructor;
 
-		static jclass jclassJavetTerminatedException;
-		static jmethodID jmethodIDJavetTerminatedExceptionConstructor;
+        static jclass jclassJavetTerminatedException;
+        static jmethodID jmethodIDJavetTerminatedExceptionConstructor;
 
-		static jclass jclassThrowable;
-		static jmethodID jmethodIDThrowableGetMessage;
+        static jclass jclassThrowable;
+        static jmethodID jmethodIDThrowableGetMessage;
 
-		void Initialize(JNIEnv* jniEnv);
+        void Initialize(JNIEnv* jniEnv);
 
-		void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
-		void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
-		void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
-		void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue);
-		void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage);
-	}
+        void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
+        void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue);
+        void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage);
+    }
 }

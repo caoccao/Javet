@@ -35,6 +35,7 @@ gradle-app.setting
 # Package Files #
 *.jar
 *.dll
+*.dylib
 *.so
 *.war
 *.nar

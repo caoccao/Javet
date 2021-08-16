@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Usage for V8: build -DV8_DIR=~/v8
-# Usage for Node: build -DNODE_DIR=~/node
-JAVET_VERSION=0.9.8
+# Usage for V8: sh build-linux.sh -DV8_DIR=${HOME}/v8
+# Usage for Node: sh build-linux.sh -DNODE_DIR=${HOME}/node
+JAVET_VERSION=0.9.9
 rm -rf build
 mkdir build
 cd build

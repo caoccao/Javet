@@ -28,47 +28,47 @@
 
 #ifdef ENABLE_MONITOR
 namespace Javet {
-	namespace Monitor {
-		namespace CounterType {
-			enum CounterType {
-				Reserved = 0,
-				NewGlobalRef = 1,
-				NewWeakCallbackReference = 2,
-				NewJavetCallbackContextReference = 3,
-				NewPersistentReference = 4,
-				NewPersistentCallbackContextReference = 5,
-				NewV8Runtime = 6,
-				DeleteGlobalRef = 7,
-				DeleteWeakCallbackReference = 8,
-				DeleteJavetCallbackContextReference = 9,
-				DeletePersistentReference = 10,
-				DeletePersistentCallbackContextReference = 11,
-				DeleteV8Runtime = 12,
-				Max = 13,
-			};
-		};
+    namespace Monitor {
+        namespace CounterType {
+            enum CounterType {
+                Reserved = 0,
+                NewGlobalRef = 1,
+                NewWeakCallbackReference = 2,
+                NewJavetCallbackContextReference = 3,
+                NewPersistentReference = 4,
+                NewPersistentCallbackContextReference = 5,
+                NewV8Runtime = 6,
+                DeleteGlobalRef = 7,
+                DeleteWeakCallbackReference = 8,
+                DeleteJavetCallbackContextReference = 9,
+                DeletePersistentReference = 10,
+                DeletePersistentCallbackContextReference = 11,
+                DeleteV8Runtime = 12,
+                Max = 13,
+            };
+        };
 
-		class JavetNativeMonitor {
-		public:
+        class JavetNativeMonitor {
+        public:
 
-			JavetNativeMonitor();
+            JavetNativeMonitor();
 
-			inline void Clear() {
-				for (int i = 0; i < CounterType::Max; ++i) {
-					counters[i].store(0);
-				}
-			}
+            inline void Clear() {
+                for (int i = 0; i < CounterType::Max; ++i) {
+                    counters[i].store(0);
+                }
+            }
 
-			jlongArray GetCounters(JNIEnv* jniEnv);
+            jlongArray GetCounters(JNIEnv* jniEnv);
 
-			inline void IncreaseCounter(int counterType) {
-				counters[counterType]++;
-			}
-		private:
-			std::atomic<jlong> counters[CounterType::Max];
-		};
+            inline void IncreaseCounter(int counterType) {
+                counters[counterType]++;
+            }
+        private:
+            std::atomic<jlong> counters[CounterType::Max];
+        };
 
-	}
+    }
 }
 
 extern Javet::Monitor::JavetNativeMonitor GlobalJavetNativeMonitor;
