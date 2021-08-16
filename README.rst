@@ -1,9 +1,9 @@
 Javet
 =====
 
-|Maven Central| |Gitter Chatroom| |Discord| |Donate|
+|Maven Central| |Discord| |Donate|
 
-|Build|
+|Linux Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
@@ -17,8 +17,8 @@ Javet
 .. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
     :target: https://paypal.me/caoccao?locale.x=en_US
 
-.. |Build| image:: https://github.com/caoccao/Javet/actions/workflows/build_and_test.yml/badge.svg
-    :target: https://github.com/caoccao/Javet/actions/workflows/build_and_test.yml
+.. |Linux Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml
 
 Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
@@ -55,7 +55,7 @@ Maven
         <version>0.9.9</version>
     </dependency>
 
-    <!-- Mac OS -->
+    <!-- Mac OS (x86_64 Only) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
@@ -68,7 +68,7 @@ Gradle Kotlin DSL
 .. code-block:: kotlin
 
     implementation("com.caoccao.javet:javet:0.9.9") // Linux or Windows
-    implementation("com.caoccao.javet:javet-macos:0.9.9") // Mac OS
+    implementation("com.caoccao.javet:javet-macos:0.9.9") // Mac OS (x86_64 Only)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
@@ -76,7 +76,7 @@ Gradle Groovy DSL
 .. code-block:: groovy
 
     implementation 'com.caoccao.javet:javet:0.9.9' // Linux or Windows
-    implementation 'com.caoccao.javet:javet-macos:0.9.9' // Mac OS
+    implementation 'com.caoccao.javet:javet-macos:0.9.9' // Mac OS (x86_64 Only)
 
 Hello Javet
 -----------

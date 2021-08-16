@@ -22,8 +22,6 @@ FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-20H2
 
 SHELL ["cmd", "/S", "/C"]
 RUN curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe
-
-SHELL ["cmd", "/S", "/C"]
 RUN start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify \
         --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools" \
         --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
