@@ -81,17 +81,40 @@ RUN start /w vs_community.exe \
         --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
         --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
         || IF "%ERRORLEVEL%"=="3010" EXIT 0
-RUN del /q vs_community.exe
 
-Build V8
+# Install Windows SDK 10.0.19041.x
+RUN curl -SL --output winsdksetup.exe https://go.microsoft.com/fwlink/p/?linkid=2120843
+RUN start /w winsdksetup.exe /norestart /quiet /ceip off /features +
+RUN del /q vs_community.exe
+RUN del /q winsdksetup.exe
+
+# Build V8
 WORKDIR /google/v8
 RUN setx /M PATH "C:\Python27;C:\Python27\Scripts;%PATH%"
 RUN python tools/dev/v8gen.py x64.release -vv -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
 RUN ninja -C out.gn/x64.release v8_monolith || EXIT 0
 COPY ./scripts/python/patch_v8_build.py .
-RUN start /w "%ProgramFiles%\Python39\python.exe" patch_v8_build.py ./
-RUN start /w ninja -C out.gn/x64.release v8_monolith
-RUN del patch_v8_build.py .
+RUN ["C:\\Program Files\\Python39\\python.exe", "C:\\google\\v8\\patch_v8_build.py", "-p", "C:\\google\\v8\\"]
+RUN ninja -C out.gn/x64.release v8_monolith
+RUN del patch_v8_build.py
 RUN echo V8 build is completed.
 
-# ENTRYPOINT ["C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\BuildTools\\Common7\\Tools\\VsDevCmd.bat", "&&", "powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
+# Prepare Node.js
+WORKDIR /
+RUN powershell -ExecutionPolicy Bypass -c "iex(New-Object Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')"
+RUN choco install -y nasm
+RUN git clone https://github.com/nodejs/node.git
+WORKDIR /node
+RUN git checkout v14.17.4
+RUN echo Node.js preparation is completed.
+
+# Build Node.js
+RUN vcbuild.bat static without-intl
+RUN echo Node.js build is completed.
+
+# Prepare Javet Build Environment
+RUN choco install openjdk8
+RUN choco install gradle
+
+# Completed
+RUN echo Javet build base image is completed.
