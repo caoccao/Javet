@@ -27,8 +27,6 @@
 
 # Usage: docker build -t sjtucaocao/javet-windows:0.9.10 -m 4G -f docker/windows-x86_64/base.Dockerfile .
 
-# Note: This is experimental and it doesn't work as expected yet.
-
 # https://hub.docker.com/_/microsoft-windows
 FROM mcr.microsoft.com/windows:20H2-amd64
 
@@ -113,8 +111,13 @@ RUN vcbuild.bat static without-intl
 RUN echo Node.js build is completed.
 
 # Prepare Javet Build Environment
-RUN choco install openjdk8
-RUN choco install gradle
+RUN choco install -y openjdk8
+RUN setx /M PATH "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;%PATH%"
+RUN setx /M PATH "C:\Program Files\Git\usr\bin;%PATH%"
+
+# Shrink
+WORKDIR /
+RUN rd /s /q "C:\Users\ContainerAdministrator\AppData\Local\Temp"
 
 # Completed
 RUN echo Javet build base image is completed.
