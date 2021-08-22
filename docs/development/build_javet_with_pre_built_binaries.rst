@@ -38,6 +38,8 @@ Download Pre-built Node.js and V8
 
 I have prepared pre-built Linux and Windows version of Node.js ``v14.17.4`` and V8 ``v9.2.230.21``. Please download the zipped headers and binaries from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ and unzip them to local folders respectively.
 
+Note: As the docker builds are available, I'll stop publishing pre-built binaries. If you really need them, please contact the maintainer wisely.
+
 Build Javet JNI Library
 =======================
 
