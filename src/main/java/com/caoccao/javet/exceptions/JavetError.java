@@ -91,6 +91,10 @@ public class JavetError {
 
     public static final JavetError ModuleNameEmpty = new JavetError(
             601, JavetErrorType.Module, "Module name is empty");
+    public static final JavetError ModuleNotFound = new JavetError(
+            602, JavetErrorType.Module, "Module ${moduleName} is not found");
+    public static final JavetError ModulePermissionDenied = new JavetError(
+            603, JavetErrorType.Module, "Denied access to module ${moduleName}");
 
     public static final JavetError LockAcquisitionFailure = new JavetError(
             701, JavetErrorType.Lock, "Failed to acquire the lock");
