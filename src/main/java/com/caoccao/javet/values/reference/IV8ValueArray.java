@@ -24,7 +24,6 @@ import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
@@ -95,5 +94,14 @@ public interface IV8ValueArray extends IV8ValueObject {
 
     default int pushUndefined() throws JavetException {
         return push(getV8Runtime().createV8ValueUndefined());
+    }
+
+    default V8Value[] toArray() throws JavetException {
+        final int length = getLength();
+        V8Value[] v8Values = new V8Value[length];
+        for (int i = 0; i < length; ++i) {
+            v8Values[i] = get(i);
+        }
+        return v8Values;
     }
 }
