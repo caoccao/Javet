@@ -257,9 +257,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @V8Function
     @Override
     public V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException {
+        V8Value[] v8Values = null;
         try {
+            final int length = arguments.getLength();
+            v8Values = new V8Value[length];
+            for (int i = 0; i < length; ++i) {
+                v8Values[i] = arguments.get(i);
+            }
             return v8Runtime.toV8Value(execute(
-                    v8Runtime, null, constructors, V8ValueUtils.convertToVirtualObjects(arguments.toArray())));
+                    v8Runtime, null, constructors, V8ValueUtils.convertToVirtualObjects(v8Values)));
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -267,6 +273,8 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     SimpleMap.of(
                             JavetError.PARAMETER_METHOD_NAME, METHOD_NAME_CONSTRUCTOR,
                             JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
+        } finally {
+            JavetResourceUtils.safeClose((Object[]) v8Values);
         }
     }
 
