@@ -21,6 +21,7 @@ import com.caoccao.javet.annotations.V8BindEnabler;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.*;
@@ -28,6 +29,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -79,6 +81,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.10
      */
     protected static final Class<?> V8_VALUE_CLASS = V8Value.class;
+    /**
+     * The constant V8_VALUE_FUNCTION_CLASS.
+     *
+     * @since 0.9.10
+     */
+    protected static final Class<?> V8_VALUE_FUNCTION_CLASS = V8ValueFunction.class;
     /**
      * The Class mode.
      *
@@ -695,6 +703,42 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
+     * The type Dynamic proxy invocation handler.
+     *
+     * @since 0.9.10
+     */
+    public static class DynamicProxyInvocationHandler implements InvocationHandler, IJavetClosable {
+        private static final String METHOD_NAME_CLOSE = "close";
+        private V8ValueFunction v8ValueFunction;
+
+        /**
+         * Instantiates a new Dynamic proxy invocation handler.
+         *
+         * @param v8ValueFunction the V8 value function
+         * @since 0.9.10
+         */
+        public DynamicProxyInvocationHandler(V8ValueFunction v8ValueFunction) {
+            this.v8ValueFunction = v8ValueFunction;
+        }
+
+        @Override
+        public void close() throws JavetException {
+            JavetResourceUtils.safeClose(v8ValueFunction);
+            v8ValueFunction = null;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if (method.getName().equals(METHOD_NAME_CLOSE)) {
+                close();
+            } else if (v8ValueFunction != null && !v8ValueFunction.isClosed()) {
+                return v8ValueFunction.callObject(null, args);
+            }
+            return null;
+        }
+    }
+
+    /**
      * The type Javet universal interceptor.
      *
      * @since 0.9.6
@@ -855,17 +899,24 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     for (int i = 0; i < fixedParameterCount; i++) {
                         Class<?> parameterType = parameterTypes[i];
                         final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                        if (v8Value != null) {
+                            if (V8_VALUE_CLASS.isAssignableFrom(parameterType)
+                                    && parameterType.isAssignableFrom(v8Value.getClass())) {
+                                totalScore += 1;
+                                continue;
+                            } else if (parameterType.isInterface()
+                                    && V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                totalScore += 0.95;
+                                continue;
+                            }
+                        }
                         final Object object = javetVirtualObjects[i].getObject();
-                        if (v8Value != null && V8_VALUE_CLASS.isAssignableFrom(parameterType)
-                                && parameterType.isAssignableFrom(v8Value.getClass())) {
-                            totalScore += 1;
-                        } else if (object == null) {
+                        if (object == null) {
                             if (parameterType.isPrimitive()) {
                                 totalScore = 0;
                                 break;
-                            } else {
-                                totalScore += 0.9;
                             }
+                            totalScore += 0.9;
                         } else if (parameterType.isAssignableFrom(object.getClass())) {
                             totalScore += 0.9;
                         } else if (parameterType.isPrimitive()
@@ -880,11 +931,19 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
                         for (int i = fixedParameterCount; i < length; ++i) {
                             final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                            if (v8Value != null) {
+                                if (V8_VALUE_CLASS.isAssignableFrom(componentType)
+                                        && componentType.isAssignableFrom(v8Value.getClass())) {
+                                    totalScore += 0.95;
+                                    continue;
+                                } else if (componentType.isInterface()
+                                        && V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                    totalScore += 0.95;
+                                    continue;
+                                }
+                            }
                             final Object object = javetVirtualObjects[i].getObject();
-                            if (v8Value != null && V8_VALUE_CLASS.isAssignableFrom(componentType)
-                                    && componentType.isAssignableFrom(v8Value.getClass())) {
-                                totalScore += 0.95;
-                            } else if (object == null) {
+                            if (object == null) {
                                 if (componentType.isPrimitive()) {
                                     totalScore = 0;
                                     break;
@@ -949,9 +1008,19 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     final V8Value v8Value = javetVirtualObjects[i].getV8Value();
                     final Object object = javetVirtualObjects[i].getObject();
                     Object parameter = object;
-                    if (v8Value != null && V8_VALUE_CLASS.isAssignableFrom(parameterType)
-                            && parameterType.isAssignableFrom(v8Value.getClass())) {
-                        parameter = v8Value;
+                    if (v8Value != null) {
+                        if (V8_VALUE_CLASS.isAssignableFrom(parameterType)
+                                && parameterType.isAssignableFrom(v8Value.getClass())) {
+                            parameter = v8Value;
+                        } else if (parameterType.isInterface()
+                                && V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
+                            DynamicProxyInvocationHandler dynamicProxyInvocationHandler =
+                                    new DynamicProxyInvocationHandler(v8Value.toClone());
+                            parameter = Proxy.newProxyInstance(
+                                    getClass().getClassLoader(),
+                                    new Class[]{parameterType, AutoCloseable.class},
+                                    dynamicProxyInvocationHandler);
+                        }
                     } else if (object != null && !parameterType.isAssignableFrom(object.getClass())
                             && parameterType.isPrimitive()) {
                         parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, object);
@@ -965,9 +1034,19 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         final V8Value v8Value = javetVirtualObjects[i].getV8Value();
                         final Object object = javetVirtualObjects[i].getObject();
                         Object parameter = object;
-                        if (v8Value != null && V8_VALUE_CLASS.isAssignableFrom(componentType)
-                                && componentType.isAssignableFrom(v8Value.getClass())) {
-                            parameter = v8Value;
+                        if (v8Value != null) {
+                            if (V8_VALUE_CLASS.isAssignableFrom(componentType)
+                                    && componentType.isAssignableFrom(v8Value.getClass())) {
+                                parameter = v8Value;
+                            } else if (componentType.isInterface()
+                                    && V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                DynamicProxyInvocationHandler dynamicProxyInvocationHandler =
+                                        new DynamicProxyInvocationHandler(v8Value.toClone());
+                                parameter = Proxy.newProxyInstance(
+                                        getClass().getClassLoader(),
+                                        new Class[]{componentType, AutoCloseable.class},
+                                        dynamicProxyInvocationHandler);
+                            }
                         } else if (object != null && !componentType.isAssignableFrom(object.getClass())
                                 && componentType.isPrimitive()) {
                             parameter = JavetPrimitiveUtils.toExactPrimitive(componentType, object);

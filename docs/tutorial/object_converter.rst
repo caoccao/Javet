@@ -282,6 +282,64 @@ Sometimes an interface or annotation class can be injected for enabling Java ref
     v8Runtime.getGlobalObject().delete("IJavetClosable");
     v8Runtime.lowMemoryNotification();
 
+Dynamic: Anonymous Function
+---------------------------
+
+This feature is quite special as it allows implementing Java interfaces in JavaScript via anonymous functions, also known as lambda expressions.
+
+1. Define a simple interface ``IJoiner`` for joining two strings.
+
+.. code-block:: java
+
+    interface IJoiner extends AutoCloseable {
+        String join(String a, String b);
+    }
+
+2. Define a simple class ``StringJoiner`` which holds the interface ``IJoiner``.
+
+.. code-block:: java
+
+    static class StringJoiner implements AutoCloseable {
+        private IJoiner joiner;
+
+        public StringJoiner() {
+            joiner = null;
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (joiner != null) {
+                joiner.close();
+            }
+        }
+
+        public IJoiner getJoiner() {
+            return joiner;
+        }
+
+        public void setJoiner(IJoiner joiner) {
+            this.joiner = joiner;
+        }
+    }
+
+3. Inject the implementation from JavaScript.
+
+.. code-block:: java
+
+    try (StringJoiner stringJoiner = new StringJoiner()) {
+        v8Runtime.getGlobalObject().set("stringJoiner", stringJoiner);
+        v8Runtime.getExecutor("stringJoiner.setJoiner((a, b) => a + ',' + b);").executeVoid();
+        IJoiner joiner = stringJoiner.getJoiner();
+        assertEquals("a,b", joiner.join("a", "b"));
+        assertEquals("a,b,c", joiner.join(joiner.join("a", "b"), "c"));
+        v8Runtime.getGlobalObject().delete("stringJoiner");
+    }
+    v8Runtime.lowMemoryNotification();
+
+Voilà! It works.
+
+Note: The JavaScript implementation is backed up by ``V8ValueFunction`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoClosable`` as the sample shows so that the orphan ``V8ValueFunction`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueFunction`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
+
 Features
 --------
 
@@ -289,6 +347,7 @@ Features
 * Getters and setters (``get``, ``is``, ``set`` and ``put``) are smartly handled.
 * Overloaded methods and varargs methods are identified well.
 * Primitive types, Set, Map, List, Array are not handled. Map is special because it can be enabled.
+* Java interfaces can be implemented by anonymous functions in JavaScript.
 
 How does JavetProxyConverter Work?
 ----------------------------------

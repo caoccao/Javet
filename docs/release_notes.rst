@@ -6,7 +6,8 @@ Release Notes
 ------
 
 * Added ``JavetVirtualObject``
-* Updated ``JavetUniversalProxyHandler`` to be able to pass ``V8Value``
+* Updated ``JavetUniversalProxyHandler`` to allow passing ``V8Value``
+* Updated ``JavetUniversalProxyHandler`` to allow passing ``V8ValueFunction`` as anonymous function
 * Added error code 602 and 603
 
 0.9.9

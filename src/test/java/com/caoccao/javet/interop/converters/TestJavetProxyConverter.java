@@ -48,6 +48,19 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testAnonymousFunction() throws Exception {
+        try (StringJoiner stringJoiner = new StringJoiner()) {
+            v8Runtime.getGlobalObject().set("stringJoiner", stringJoiner);
+            v8Runtime.getExecutor("stringJoiner.setJoiner((a, b) => a + ',' + b);").executeVoid();
+            IJoiner joiner = stringJoiner.getJoiner();
+            assertEquals("a,b", joiner.join("a", "b"));
+            assertEquals("a,b,c", joiner.join(joiner.join("a", "b"), "c"));
+            v8Runtime.getGlobalObject().delete("stringJoiner");
+        }
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
     public void testConstructor() throws JavetException {
         v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
         assertEquals("abc def", v8Runtime.getExecutor(
@@ -187,5 +200,32 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("set");
         v8Runtime.lowMemoryNotification();
         javetProxyConverter.getConfig().setProxySetEnabled(false);
+    }
+
+    interface IJoiner extends AutoCloseable {
+        String join(String a, String b);
+    }
+
+    static class StringJoiner implements AutoCloseable {
+        private IJoiner joiner;
+
+        public StringJoiner() {
+            joiner = null;
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (joiner != null) {
+                joiner.close();
+            }
+        }
+
+        public IJoiner getJoiner() {
+            return joiner;
+        }
+
+        public void setJoiner(IJoiner joiner) {
+            this.joiner = joiner;
+        }
     }
 }

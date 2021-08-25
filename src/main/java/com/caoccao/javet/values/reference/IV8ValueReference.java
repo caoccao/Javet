@@ -30,6 +30,8 @@ public interface IV8ValueReference extends IV8Value {
 
     V8ValueReferenceType getType();
 
+    boolean isClosed();
+
     boolean isWeak() throws JavetException;
 
     boolean isWeak(boolean forceSync) throws JavetException;
