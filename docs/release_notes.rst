@@ -6,6 +6,7 @@ Release Notes
 ------
 
 * Added ``JavetVirtualObject``
+* Updated ``JavetUniversalProxyHandler`` to be able to pass ``V8Value``
 * Added error code 602 and 603
 
 0.9.9

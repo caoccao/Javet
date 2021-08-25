@@ -74,6 +74,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     protected static final String[] SETTER_PREFIX_ARRAY = new String[]{"set", "put"};
     /**
+     * The constant V8_VALUE_CLASS.
+     *
+     * @since 0.9.10
+     */
+    protected static final Class<?> V8_VALUE_CLASS = V8Value.class;
+    /**
      * The Class mode.
      *
      * @since 0.9.9
@@ -848,19 +854,23 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     final int fixedParameterCount = isExecutableVarArgs ? parameterCount - 1 : parameterCount;
                     for (int i = 0; i < fixedParameterCount; i++) {
                         Class<?> parameterType = parameterTypes[i];
-                        Object object = javetVirtualObjects[i].getObject();
-                        if (object == null) {
+                        final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                        final Object object = javetVirtualObjects[i].getObject();
+                        if (v8Value != null && V8_VALUE_CLASS.isAssignableFrom(parameterType)
+                                && parameterType.isAssignableFrom(v8Value.getClass())) {
+                            totalScore += 1;
+                        } else if (object == null) {
                             if (parameterType.isPrimitive()) {
                                 totalScore = 0;
                                 break;
                             } else {
-                                totalScore += 1;
+                                totalScore += 0.9;
                             }
                         } else if (parameterType.isAssignableFrom(object.getClass())) {
-                            totalScore += 1;
+                            totalScore += 0.9;
                         } else if (parameterType.isPrimitive()
                                 && JavetPrimitiveUtils.toExactPrimitive(parameterType, object) != null) {
-                            totalScore += 0.9;
+                            totalScore += 0.8;
                         } else {
                             totalScore = 0;
                             break;
@@ -869,19 +879,23 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     if ((fixedParameterCount == 0 || (fixedParameterCount > 0 && totalScore > 0)) && isVarArgs) {
                         Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
                         for (int i = fixedParameterCount; i < length; ++i) {
-                            Object object = javetVirtualObjects[i].getObject();
-                            if (object == null) {
+                            final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                            final Object object = javetVirtualObjects[i].getObject();
+                            if (v8Value != null && V8_VALUE_CLASS.isAssignableFrom(componentType)
+                                    && componentType.isAssignableFrom(v8Value.getClass())) {
+                                totalScore += 0.95;
+                            } else if (object == null) {
                                 if (componentType.isPrimitive()) {
                                     totalScore = 0;
                                     break;
                                 } else {
-                                    totalScore += 1;
+                                    totalScore += 0.85;
                                 }
                             } else if (componentType.isAssignableFrom(object.getClass())) {
-                                totalScore += 1;
+                                totalScore += 0.85;
                             } else if (componentType.isPrimitive()
                                     && JavetPrimitiveUtils.toExactPrimitive(componentType, object) != null) {
-                                totalScore += 0.8;
+                                totalScore += 0.75;
                             } else {
                                 totalScore = 0;
                                 break;
@@ -890,6 +904,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     }
                     if (totalScore > 0) {
                         score = totalScore / length;
+                        if (targetObject != null && executable.getDeclaringClass() != targetObject.getClass()) {
+                            score *= 0.9;
+                        }
                     }
                 }
             }
@@ -929,22 +946,31 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 final int fixedParameterCount = isExecutableVarArgs ? parameterCount - 1 : parameterCount;
                 for (int i = 0; i < fixedParameterCount; i++) {
                     Class<?> parameterType = parameterTypes[i];
-                    Object parameter = javetVirtualObjects[i].getObject();
-                    if (parameter != null && !parameterType.isAssignableFrom(parameter.getClass())
+                    final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                    final Object object = javetVirtualObjects[i].getObject();
+                    Object parameter = object;
+                    if (v8Value != null && V8_VALUE_CLASS.isAssignableFrom(parameterType)
+                            && parameterType.isAssignableFrom(v8Value.getClass())) {
+                        parameter = v8Value;
+                    } else if (object != null && !parameterType.isAssignableFrom(object.getClass())
                             && parameterType.isPrimitive()) {
-                        parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, parameter);
+                        parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, object);
                     }
                     parameters.add(parameter);
                 }
                 if (isExecutableVarArgs) {
-                    Class<?> parameterType = parameterTypes[fixedParameterCount];
-                    Class<?> componentType = parameterType.getComponentType();
+                    Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
                     Object varObject = Array.newInstance(componentType, length - fixedParameterCount);
                     for (int i = fixedParameterCount; i < length; ++i) {
-                        Object parameter = javetVirtualObjects[i].getObject();
-                        if (parameter != null && !componentType.isAssignableFrom(parameter.getClass())
+                        final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                        final Object object = javetVirtualObjects[i].getObject();
+                        Object parameter = object;
+                        if (v8Value != null && V8_VALUE_CLASS.isAssignableFrom(componentType)
+                                && componentType.isAssignableFrom(v8Value.getClass())) {
+                            parameter = v8Value;
+                        } else if (object != null && !componentType.isAssignableFrom(object.getClass())
                                 && componentType.isPrimitive()) {
-                            parameter = JavetPrimitiveUtils.toExactPrimitive(componentType, parameter);
+                            parameter = JavetPrimitiveUtils.toExactPrimitive(componentType, object);
                         }
                         Array.set(varObject, i - fixedParameterCount, parameter);
                     }

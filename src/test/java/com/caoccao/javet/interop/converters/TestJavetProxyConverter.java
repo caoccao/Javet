@@ -22,6 +22,7 @@ import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.mock.MockCallbackReceiver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -125,6 +126,18 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("map");
         v8Runtime.lowMemoryNotification();
         javetProxyConverter.getConfig().setProxyMapEnabled(false);
+    }
+
+    @Test
+    public void testMockCallbackReceiver() throws JavetException {
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        v8Runtime.getGlobalObject().set("m", mockCallbackReceiver);
+        assertEquals("abc", v8Runtime.getExecutor("m.echo('abc')").executeString());
+        assertEquals(
+                "[\"abc\",\"def\"]",
+                v8Runtime.getExecutor("JSON.stringify(m.echo('abc', 'def'))").executeString());
+        v8Runtime.getGlobalObject().delete("m");
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
