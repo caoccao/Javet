@@ -827,11 +827,11 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             // Max score is 1. Min score is 0.
             final int parameterCount = executable.getParameterCount();
             Class<?>[] parameterTypes = executable.getParameterTypes();
-            boolean isMethodVarArgs = executable.isVarArgs();
+            boolean isExecutableVarArgs = executable.isVarArgs();
             score = 0;
             final int length = javetVirtualObjects.length;
             if (length == 0) {
-                if (isMethodVarArgs) {
+                if (isExecutableVarArgs) {
                     if (parameterCount == 1) {
                         score = 0.99;
                     }
@@ -841,11 +841,11 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     }
                 }
             } else {
-                boolean isVarArgs = isMethodVarArgs && length >= parameterCount - 1;
-                boolean isFixedArgs = !isMethodVarArgs && length == parameterCount;
+                boolean isVarArgs = isExecutableVarArgs && length >= parameterCount - 1;
+                boolean isFixedArgs = !isExecutableVarArgs && length == parameterCount;
                 if (isVarArgs || isFixedArgs) {
                     double totalScore = 0;
-                    final int fixedParameterCount = isMethodVarArgs ? parameterCount - 1 : parameterCount;
+                    final int fixedParameterCount = isExecutableVarArgs ? parameterCount - 1 : parameterCount;
                     for (int i = 0; i < fixedParameterCount; i++) {
                         Class<?> parameterType = parameterTypes[i];
                         Object object = javetVirtualObjects[i].getObject();
@@ -866,8 +866,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             break;
                         }
                     }
-                    if ((fixedParameterCount == 0 || (fixedParameterCount > 0 && totalScore > 0))
-                            && isMethodVarArgs && length >= parameterCount) {
+                    if ((fixedParameterCount == 0 || (fixedParameterCount > 0 && totalScore > 0)) && isVarArgs) {
                         Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
                         for (int i = fixedParameterCount; i < length; ++i) {
                             Object object = javetVirtualObjects[i].getObject();
@@ -927,40 +926,29 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 }
             } else {
                 List<Object> parameters = new ArrayList<>();
+                final int fixedParameterCount = isExecutableVarArgs ? parameterCount - 1 : parameterCount;
+                for (int i = 0; i < fixedParameterCount; i++) {
+                    Class<?> parameterType = parameterTypes[i];
+                    Object parameter = javetVirtualObjects[i].getObject();
+                    if (parameter != null && !parameterType.isAssignableFrom(parameter.getClass())
+                            && parameterType.isPrimitive()) {
+                        parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, parameter);
+                    }
+                    parameters.add(parameter);
+                }
                 if (isExecutableVarArgs) {
-                    for (int i = 0; i < parameterCount; i++) {
-                        Class<?> parameterType = parameterTypes[i];
-                        if (parameterType.isArray() && i == parameterCount - 1) {
-                            Class<?> componentType = parameterType.getComponentType();
-                            Object varObject = Array.newInstance(componentType, length - i);
-                            for (int j = i; j < length; ++j) {
-                                Object parameter = javetVirtualObjects[j].getObject();
-                                if (parameter != null && !componentType.isAssignableFrom(parameter.getClass())
-                                        && componentType.isPrimitive()) {
-                                    parameter = JavetPrimitiveUtils.toExactPrimitive(componentType, parameter);
-                                }
-                                Array.set(varObject, j - i, parameter);
-                            }
-                            parameters.add(varObject);
-                        } else {
-                            Object parameter = javetVirtualObjects[i].getObject();
-                            if (parameter != null && !parameterType.isAssignableFrom(parameter.getClass())
-                                    && parameterType.isPrimitive()) {
-                                parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, parameter);
-                            }
-                            parameters.add(parameter);
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < length; i++) {
-                        Class<?> parameterType = parameterTypes[i];
+                    Class<?> parameterType = parameterTypes[fixedParameterCount];
+                    Class<?> componentType = parameterType.getComponentType();
+                    Object varObject = Array.newInstance(componentType, length - fixedParameterCount);
+                    for (int i = fixedParameterCount; i < length; ++i) {
                         Object parameter = javetVirtualObjects[i].getObject();
-                        if (parameter != null && !parameterType.isAssignableFrom(parameter.getClass())
-                                && parameterType.isPrimitive()) {
-                            parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, parameter);
+                        if (parameter != null && !componentType.isAssignableFrom(parameter.getClass())
+                                && componentType.isPrimitive()) {
+                            parameter = JavetPrimitiveUtils.toExactPrimitive(componentType, parameter);
                         }
-                        parameters.add(parameter);
+                        Array.set(varObject, i - fixedParameterCount, parameter);
                     }
+                    parameters.add(varObject);
                 }
                 if (executable instanceof Constructor) {
                     return ((Constructor) executable).newInstance(parameters.toArray());
