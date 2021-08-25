@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.9.10
+------
+
+* Added ``JavetVirtualObject``
+* Added error code 602 and 603
+
 0.9.9
 -----
 

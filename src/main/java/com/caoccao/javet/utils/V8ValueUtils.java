@@ -22,12 +22,25 @@ import com.caoccao.javet.values.V8Value;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+/**
+ * The type V8 value utils.
+ */
 public final class V8ValueUtils {
+    /**
+     * The constant EMPTY.
+     */
     public static final String EMPTY = "";
 
     private V8ValueUtils() {
     }
 
+    /**
+     * Concat string.
+     *
+     * @param delimiter the delimiter
+     * @param v8Values  the V8 values
+     * @return the string
+     */
     public static String concat(String delimiter, V8Value... v8Values) {
         if (v8Values == null || v8Values.length == 0) {
             return EMPTY;
@@ -36,5 +49,20 @@ public final class V8ValueUtils {
             delimiter = EMPTY;
         }
         return Arrays.stream(v8Values).map(V8Value::toString).collect(Collectors.joining(delimiter));
+    }
+
+    /**
+     * Convert to virtual objects.
+     *
+     * @param v8Values the V8 values
+     * @return the javet virtual objects
+     */
+    public static JavetVirtualObject[] convertToVirtualObjects(V8Value... v8Values) {
+        final int length = v8Values.length;
+        JavetVirtualObject[] javetVirtualObjects = new JavetVirtualObject[length];
+        for (int i = 0; i < length; ++i) {
+            javetVirtualObjects[i] = new JavetVirtualObject(v8Values[i]);
+        }
+        return javetVirtualObjects;
     }
 }

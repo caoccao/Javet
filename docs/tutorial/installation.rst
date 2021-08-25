@@ -53,7 +53,7 @@ Ubuntu 20.04                Yes
 Ubuntu 18.04                Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
 Ubuntu 16.04                Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
 Other Linux Distributions   Not Tested
-MacOS x86_64                Experimental (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
+MacOS x86_64                Yes
 MacOS arm64                 No (`Can Javet Support Mac? <../faq/can_javet_support_mac.rst>`_)
 =========================== =======================================================================================================================
 

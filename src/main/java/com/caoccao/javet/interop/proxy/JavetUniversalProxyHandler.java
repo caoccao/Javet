@@ -23,9 +23,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
-import com.caoccao.javet.utils.JavetPrimitiveUtils;
-import com.caoccao.javet.utils.JavetReflectionUtils;
-import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -164,21 +162,22 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     /**
      * Execute.
      *
-     * @param <E>          the type parameter
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
-     * @param executables  the executables
-     * @param v8Values     the V8 values
+     * @param <E>                 the type parameter
+     * @param v8Runtime           the V8 runtime
+     * @param targetObject        the target object
+     * @param executables         the executables
+     * @param javetVirtualObjects the javet virtual objects
      * @return the object
      * @throws Throwable the throwable
      * @since 0.9.10
      */
     protected static <E extends Executable> Object execute(
-            V8Runtime v8Runtime, Object targetObject, List<E> executables, V8Value[] v8Values) throws Throwable {
+            V8Runtime v8Runtime, Object targetObject, List<E> executables, JavetVirtualObject[] javetVirtualObjects)
+            throws Throwable {
         List<ScoredExecutable<E>> scoredExecutables = new ArrayList<>();
         for (E executable : executables) {
-            ScoredExecutable scoredExecutable = new ScoredExecutable(v8Runtime, targetObject, executable, v8Values);
-            scoredExecutable.convert();
+            ScoredExecutable scoredExecutable = new ScoredExecutable(
+                    v8Runtime, targetObject, executable, javetVirtualObjects);
             scoredExecutable.calculateScore();
             double score = scoredExecutable.getScore();
             if (score > 0) {
@@ -245,7 +244,8 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @Override
     public V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException {
         try {
-            return v8Runtime.toV8Value(execute(v8Runtime, null, constructors, arguments.toArray()));
+            return v8Runtime.toV8Value(execute(
+                    v8Runtime, null, constructors, V8ValueUtils.convertToVirtualObjects(arguments.toArray())));
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -774,7 +774,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          */
         public Object invoke(V8Value... v8Values) throws JavetException {
             try {
-                return execute(v8Runtime, targetObject, methods, v8Values);
+                return execute(v8Runtime, targetObject, methods, V8ValueUtils.convertToVirtualObjects(v8Values));
             } catch (JavetException e) {
                 throw e;
             } catch (Throwable t) {
@@ -794,41 +794,42 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     public static class ScoredExecutable<E extends Executable> {
         private E executable;
-        private Object[] objects;
+        private JavetVirtualObject[] javetVirtualObjects;
         private double score;
         private Object targetObject;
         private V8Runtime v8Runtime;
-        private V8Value[] v8Values;
 
         /**
          * Instantiates a new Scored executable.
          *
-         * @param v8Runtime    the V8 runtime
-         * @param targetObject the target object
-         * @param executable   the executable
-         * @param v8Values     the V8 values
+         * @param v8Runtime           the V8 runtime
+         * @param targetObject        the target object
+         * @param executable          the executable
+         * @param javetVirtualObjects the javet virtual objects
          * @since 0.9.10
          */
-        public ScoredExecutable(V8Runtime v8Runtime, Object targetObject, E executable, V8Value[] v8Values) {
+        public ScoredExecutable(
+                V8Runtime v8Runtime, Object targetObject, E executable, JavetVirtualObject[] javetVirtualObjects) {
             this.executable = executable;
+            this.javetVirtualObjects = javetVirtualObjects;
             this.score = 0;
             this.targetObject = targetObject;
             this.v8Runtime = v8Runtime;
-            this.v8Values = v8Values;
         }
 
         /**
          * Calculate score double.
          *
+         * @throws JavetException the javet exception
          * @since 0.9.10
          */
-        public void calculateScore() {
+        public void calculateScore() throws JavetException {
             // Max score is 1. Min score is 0.
             final int parameterCount = executable.getParameterCount();
             Class<?>[] parameterTypes = executable.getParameterTypes();
             boolean isMethodVarArgs = executable.isVarArgs();
             score = 0;
-            final int length = objects.length;
+            final int length = javetVirtualObjects.length;
             if (length == 0) {
                 if (isMethodVarArgs) {
                     if (parameterCount == 1) {
@@ -847,7 +848,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     final int fixedParameterCount = isMethodVarArgs ? parameterCount - 1 : parameterCount;
                     for (int i = 0; i < fixedParameterCount; i++) {
                         Class<?> parameterType = parameterTypes[i];
-                        Object object = objects[i];
+                        Object object = javetVirtualObjects[i].getObject();
                         if (object == null) {
                             if (parameterType.isPrimitive()) {
                                 totalScore = 0;
@@ -869,7 +870,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             && isMethodVarArgs && length >= parameterCount) {
                         Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
                         for (int i = fixedParameterCount; i < length; ++i) {
-                            Object object = objects[i];
+                            Object object = javetVirtualObjects[i].getObject();
                             if (object == null) {
                                 if (componentType.isPrimitive()) {
                                     totalScore = 0;
@@ -896,20 +897,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
 
         /**
-         * Convert.
-         *
-         * @throws JavetException the javet exception
-         * @since 0.9.10
-         */
-        public void convert() throws JavetException {
-            final int length = v8Values.length;
-            objects = new Object[length];
-            for (int i = 0; i < length; i++) {
-                objects[i] = v8Runtime.toObject(v8Values[i]);
-            }
-        }
-
-        /**
          * Execute.
          *
          * @return the object
@@ -917,7 +904,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          * @since 0.9.10
          */
         public Object execute() throws Throwable {
-            final int length = v8Values.length;
+            final int length = javetVirtualObjects.length;
             Object callee = Modifier.isStatic(executable.getModifiers()) ? null : targetObject;
             final int parameterCount = executable.getParameterCount();
             Class<?>[] parameterTypes = executable.getParameterTypes();
@@ -947,7 +934,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             Class<?> componentType = parameterType.getComponentType();
                             Object varObject = Array.newInstance(componentType, length - i);
                             for (int j = i; j < length; ++j) {
-                                Object parameter = objects[j];
+                                Object parameter = javetVirtualObjects[j].getObject();
                                 if (parameter != null && !componentType.isAssignableFrom(parameter.getClass())
                                         && componentType.isPrimitive()) {
                                     parameter = JavetPrimitiveUtils.toExactPrimitive(componentType, parameter);
@@ -956,7 +943,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             }
                             parameters.add(varObject);
                         } else {
-                            Object parameter = objects[i];
+                            Object parameter = javetVirtualObjects[i].getObject();
                             if (parameter != null && !parameterType.isAssignableFrom(parameter.getClass())
                                     && parameterType.isPrimitive()) {
                                 parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, parameter);
@@ -967,7 +954,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 } else {
                     for (int i = 0; i < length; i++) {
                         Class<?> parameterType = parameterTypes[i];
-                        Object parameter = objects[i];
+                        Object parameter = javetVirtualObjects[i].getObject();
                         if (parameter != null && !parameterType.isAssignableFrom(parameter.getClass())
                                 && parameterType.isPrimitive()) {
                             parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, parameter);
