@@ -287,20 +287,20 @@ Dynamic: Anonymous Function
 
 This feature is quite special as it allows implementing Java interfaces in JavaScript via anonymous functions, also known as lambda expressions.
 
-1. Define a simple interface ``IJoiner`` for joining two strings.
+1. Define a simple interface ``IStringJoiner`` for joining two strings.
 
 .. code-block:: java
 
-    interface IJoiner extends AutoCloseable {
+    interface IStringJoiner extends AutoCloseable {
         String join(String a, String b);
     }
 
-2. Define a simple class ``StringJoiner`` which holds the interface ``IJoiner``.
+2. Define a simple class ``StringJoiner`` which holds the interface ``IStringJoiner``.
 
 .. code-block:: java
 
-    static class StringJoiner implements AutoCloseable {
-        private IJoiner joiner;
+    public class StringJoiner implements AutoCloseable {
+        private IStringJoiner joiner;
 
         public StringJoiner() {
             joiner = null;
@@ -310,14 +310,15 @@ This feature is quite special as it allows implementing Java interfaces in JavaS
         public void close() throws Exception {
             if (joiner != null) {
                 joiner.close();
+                joiner = null;
             }
         }
 
-        public IJoiner getJoiner() {
+        public IStringJoiner getJoiner() {
             return joiner;
         }
 
-        public void setJoiner(IJoiner joiner) {
+        public void setJoiner(IStringJoiner joiner) {
             this.joiner = joiner;
         }
     }
@@ -329,7 +330,7 @@ This feature is quite special as it allows implementing Java interfaces in JavaS
     try (StringJoiner stringJoiner = new StringJoiner()) {
         v8Runtime.getGlobalObject().set("stringJoiner", stringJoiner);
         v8Runtime.getExecutor("stringJoiner.setJoiner((a, b) => a + ',' + b);").executeVoid();
-        IJoiner joiner = stringJoiner.getJoiner();
+        IStringJoiner joiner = stringJoiner.getJoiner();
         assertEquals("a,b", joiner.join("a", "b"));
         assertEquals("a,b,c", joiner.join(joiner.join("a", "b"), "c"));
         v8Runtime.getGlobalObject().delete("stringJoiner");
@@ -339,6 +340,76 @@ This feature is quite special as it allows implementing Java interfaces in JavaS
 Voilà! It works.
 
 Note: The JavaScript implementation is backed up by ``V8ValueFunction`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoClosable`` as the sample shows so that the orphan ``V8ValueFunction`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueFunction`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
+
+Dynamic: Anonymous Object
+-------------------------
+
+This feature is similar to the dynamic anonymous function, but is an enhanced version because it allows implementing all methods exposed by the Java interface.
+
+1. Define a simple interface ``IStringUtils`` for joining two strings.
+
+.. code-block:: java
+
+    interface IStringUtils extends AutoCloseable {
+        String hello();
+        String join(String separator, String... strings);
+        List<String> split(String separator, String string);
+    }
+
+2. Define a simple class ``StringUtils`` which holds the interface ``IStringUtils``.
+
+.. code-block:: java
+
+    public class StringUtils implements AutoCloseable {
+        private IStringUtils utils;
+
+        public StringUtils() {
+            utils = null;
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (utils != null) {
+                utils.close();
+                utils = null;
+            }
+        }
+
+        public IStringUtils getUtils() {
+            return utils;
+        }
+
+        public void setUtils(IStringUtils utils) {
+            this.utils = utils;
+        }
+    }
+
+3. Inject the implementation from JavaScript.
+
+.. code-block:: java
+
+    try (StringUtils stringUtils = new StringUtils()) {
+        v8Runtime.getGlobalObject().set("stringUtils", stringUtils);
+        v8Runtime.getExecutor(
+                "stringUtils.setUtils({\n" +
+                "  hello: () => 'hello',\n" +
+                "  join: (separator, ...strings) => [...strings].join(separator),\n" +
+                "  split: (separator, str) => str.split(separator),\n" +
+                "});"
+        ).executeVoid();
+        IStringUtils utils = stringUtils.getUtils();
+        assertEquals("hello", utils.hello());
+        assertEquals("a,b,c", utils.join(",", "a", "b", "c"));
+        assertArrayEquals(
+                new String[]{"a", "b", "c"},
+                utils.split(",", "a,b,c").toArray(new String[0]));
+        v8Runtime.getGlobalObject().delete("stringUtils");
+    }
+    v8Runtime.lowMemoryNotification();
+
+Voilà aussi! It works again.
+
+Note: The JavaScript implementation is backed up by ``V8ValueObject`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoClosable`` as the sample shows so that the orphan ``V8ValueObject`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueObject`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
 
 Features
 --------

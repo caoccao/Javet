@@ -28,10 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,10 +49,32 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         try (StringJoiner stringJoiner = new StringJoiner()) {
             v8Runtime.getGlobalObject().set("stringJoiner", stringJoiner);
             v8Runtime.getExecutor("stringJoiner.setJoiner((a, b) => a + ',' + b);").executeVoid();
-            IJoiner joiner = stringJoiner.getJoiner();
+            IStringJoiner joiner = stringJoiner.getJoiner();
             assertEquals("a,b", joiner.join("a", "b"));
             assertEquals("a,b,c", joiner.join(joiner.join("a", "b"), "c"));
             v8Runtime.getGlobalObject().delete("stringJoiner");
+        }
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testAnonymousObject() throws Exception {
+        try (StringUtils stringUtils = new StringUtils()) {
+            v8Runtime.getGlobalObject().set("stringUtils", stringUtils);
+            v8Runtime.getExecutor(
+                    "stringUtils.setUtils({\n" +
+                            "  hello: () => 'hello',\n" +
+                            "  join: (separator, ...strings) => [...strings].join(separator),\n" +
+                            "  split: (separator, str) => str.split(separator),\n" +
+                            "});"
+            ).executeVoid();
+            IStringUtils utils = stringUtils.getUtils();
+            assertEquals("hello", utils.hello());
+            assertEquals("a,b,c", utils.join(",", "a", "b", "c"));
+            assertArrayEquals(
+                    new String[]{"a", "b", "c"},
+                    utils.split(",", "a,b,c").toArray(new String[0]));
+            v8Runtime.getGlobalObject().delete("stringUtils");
         }
         v8Runtime.lowMemoryNotification();
     }
@@ -202,12 +221,20 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         javetProxyConverter.getConfig().setProxySetEnabled(false);
     }
 
-    interface IJoiner extends AutoCloseable {
+    interface IStringJoiner extends AutoCloseable {
         String join(String a, String b);
     }
 
+    interface IStringUtils extends AutoCloseable {
+        String hello();
+
+        String join(String separator, String... strings);
+
+        List<String> split(String separator, String string);
+    }
+
     static class StringJoiner implements AutoCloseable {
-        private IJoiner joiner;
+        private IStringJoiner joiner;
 
         public StringJoiner() {
             joiner = null;
@@ -217,15 +244,40 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         public void close() throws Exception {
             if (joiner != null) {
                 joiner.close();
+                joiner = null;
             }
         }
 
-        public IJoiner getJoiner() {
+        public IStringJoiner getJoiner() {
             return joiner;
         }
 
-        public void setJoiner(IJoiner joiner) {
+        public void setJoiner(IStringJoiner joiner) {
             this.joiner = joiner;
+        }
+    }
+
+    static class StringUtils implements AutoCloseable {
+        private IStringUtils utils;
+
+        public StringUtils() {
+            utils = null;
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (utils != null) {
+                utils.close();
+                utils = null;
+            }
+        }
+
+        public IStringUtils getUtils() {
+            return utils;
+        }
+
+        public void setUtils(IStringUtils utils) {
+            this.utils = utils;
         }
     }
 }

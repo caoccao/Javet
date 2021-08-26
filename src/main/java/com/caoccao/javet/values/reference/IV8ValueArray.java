@@ -96,6 +96,7 @@ public interface IV8ValueArray extends IV8ValueObject {
         return push(getV8Runtime().createV8ValueUndefined());
     }
 
+    @CheckReturnValue
     default V8Value[] toArray() throws JavetException {
         final int length = getLength();
         V8Value[] v8Values = new V8Value[length];

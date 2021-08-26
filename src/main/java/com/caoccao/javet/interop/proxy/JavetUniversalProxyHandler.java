@@ -21,7 +21,6 @@ import com.caoccao.javet.annotations.V8BindEnabler;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.*;
@@ -30,6 +29,8 @@ import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -87,6 +88,18 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.10
      */
     protected static final Class<?> V8_VALUE_FUNCTION_CLASS = V8ValueFunction.class;
+    /**
+     * The constant V8_VALUE_OBJECT_CLASS.
+     *
+     * @since 0.9.10
+     */
+    protected static final Class<?> V8_VALUE_OBJECT_CLASS = V8ValueObject.class;
+    /**
+     * The constant V8_VALUE_PROXY_CLASS.
+     *
+     * @since 0.9.10
+     */
+    protected static final Class<?> V8_VALUE_PROXY_CLASS = V8ValueProxy.class;
     /**
      * The Class mode.
      *
@@ -707,42 +720,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * The type Dynamic proxy invocation handler.
-     *
-     * @since 0.9.10
-     */
-    public static class DynamicProxyInvocationHandler implements InvocationHandler, IJavetClosable {
-        private static final String METHOD_NAME_CLOSE = "close";
-        private V8ValueFunction v8ValueFunction;
-
-        /**
-         * Instantiates a new Dynamic proxy invocation handler.
-         *
-         * @param v8ValueFunction the V8 value function
-         * @since 0.9.10
-         */
-        public DynamicProxyInvocationHandler(V8ValueFunction v8ValueFunction) {
-            this.v8ValueFunction = v8ValueFunction;
-        }
-
-        @Override
-        public void close() throws JavetException {
-            JavetResourceUtils.safeClose(v8ValueFunction);
-            v8ValueFunction = null;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getName().equals(METHOD_NAME_CLOSE)) {
-                close();
-            } else if (v8ValueFunction != null && !v8ValueFunction.isClosed()) {
-                return v8ValueFunction.callObject(null, args);
-            }
-            return null;
-        }
-    }
-
-    /**
      * The type Javet universal interceptor.
      *
      * @since 0.9.6
@@ -908,10 +885,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                     && parameterType.isAssignableFrom(v8Value.getClass())) {
                                 totalScore += 1;
                                 continue;
-                            } else if (parameterType.isInterface()
-                                    && V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                totalScore += 0.95;
-                                continue;
+                            } else if (parameterType.isInterface()) {
+                                if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                    totalScore += 0.95;
+                                    continue;
+                                } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
+                                        && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                    totalScore += 0.85;
+                                    continue;
+                                }
                             }
                         }
                         final Object object = javetVirtualObjects[i].getObject();
@@ -940,10 +922,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                         && componentType.isAssignableFrom(v8Value.getClass())) {
                                     totalScore += 0.95;
                                     continue;
-                                } else if (componentType.isInterface()
-                                        && V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                    totalScore += 0.95;
-                                    continue;
+                                } else if (componentType.isInterface()) {
+                                    if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                        totalScore += 0.95;
+                                        continue;
+                                    } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
+                                            && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                        totalScore += 0.85;
+                                        continue;
+                                    }
                                 }
                             }
                             final Object object = javetVirtualObjects[i].getObject();
@@ -1016,14 +1003,23 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         if (V8_VALUE_CLASS.isAssignableFrom(parameterType)
                                 && parameterType.isAssignableFrom(v8Value.getClass())) {
                             parameter = v8Value;
-                        } else if (parameterType.isInterface()
-                                && V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
-                            DynamicProxyInvocationHandler dynamicProxyInvocationHandler =
-                                    new DynamicProxyInvocationHandler(v8Value.toClone());
-                            parameter = Proxy.newProxyInstance(
-                                    getClass().getClassLoader(),
-                                    new Class[]{parameterType, AutoCloseable.class},
-                                    dynamicProxyInvocationHandler);
+                        } else if (parameterType.isInterface()) {
+                            if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
+                                        new DynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
+                                parameter = Proxy.newProxyInstance(
+                                        getClass().getClassLoader(),
+                                        new Class[]{parameterType, AutoCloseable.class},
+                                        invocationHandler);
+                            } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
+                                    && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                DynamicProxyV8ValueObjectInvocationHandler invocationHandler =
+                                        new DynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
+                                parameter = Proxy.newProxyInstance(
+                                        getClass().getClassLoader(),
+                                        new Class[]{parameterType, AutoCloseable.class},
+                                        invocationHandler);
+                            }
                         }
                     } else if (object != null && !parameterType.isAssignableFrom(object.getClass())
                             && parameterType.isPrimitive()) {
@@ -1042,14 +1038,23 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             if (V8_VALUE_CLASS.isAssignableFrom(componentType)
                                     && componentType.isAssignableFrom(v8Value.getClass())) {
                                 parameter = v8Value;
-                            } else if (componentType.isInterface()
-                                    && V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                DynamicProxyInvocationHandler dynamicProxyInvocationHandler =
-                                        new DynamicProxyInvocationHandler(v8Value.toClone());
-                                parameter = Proxy.newProxyInstance(
-                                        getClass().getClassLoader(),
-                                        new Class[]{componentType, AutoCloseable.class},
-                                        dynamicProxyInvocationHandler);
+                            } else if (componentType.isInterface()) {
+                                if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                    DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
+                                            new DynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
+                                    parameter = Proxy.newProxyInstance(
+                                            getClass().getClassLoader(),
+                                            new Class[]{componentType, AutoCloseable.class},
+                                            invocationHandler);
+                                } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
+                                        && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
+                                    DynamicProxyV8ValueObjectInvocationHandler invocationHandler =
+                                            new DynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
+                                    parameter = Proxy.newProxyInstance(
+                                            getClass().getClassLoader(),
+                                            new Class[]{componentType, AutoCloseable.class},
+                                            invocationHandler);
+                                }
                             }
                         } else if (object != null && !componentType.isAssignableFrom(object.getClass())
                                 && componentType.isPrimitive()) {
