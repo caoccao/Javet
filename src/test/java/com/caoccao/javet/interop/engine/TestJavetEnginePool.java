@@ -44,6 +44,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(0, javetEnginePool.getActiveEngineCount());
         assertEquals(0, javetEnginePool.getIdleEngineCount());
         assertFalse(javetEnginePool.isActive());
+        assertTrue(javetEnginePool.isClosed());
         assertEquals(0, v8Host.getV8RuntimeCount());
     }
 
@@ -51,6 +52,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
     private void beforeEach() {
         javetEnginePool = new JavetEnginePool();
         assertTrue(javetEnginePool.isActive());
+        assertFalse(javetEnginePool.isClosed());
         javetEngineConfig = javetEnginePool.getConfig();
         javetEngineConfig.setPoolDaemonCheckIntervalMillis(TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS);
         javetEngineConfig.setJSRuntimeType(v8Host.getJSRuntimeType());

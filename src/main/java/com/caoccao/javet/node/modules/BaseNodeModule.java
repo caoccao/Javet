@@ -21,18 +21,21 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
+import java.util.Objects;
+
 public abstract class BaseNodeModule implements INodeModule {
     protected V8ValueObject moduleObject;
     protected String name;
 
     public BaseNodeModule(V8ValueObject moduleObject, String name) {
-        this.moduleObject = moduleObject;
+        this.moduleObject = Objects.requireNonNull(moduleObject);
         this.name = name;
     }
 
     @Override
     public void close() throws JavetException {
         JavetResourceUtils.safeClose(moduleObject);
+        moduleObject = null;
     }
 
     @Override
@@ -42,6 +45,11 @@ public abstract class BaseNodeModule implements INodeModule {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return moduleObject == null || moduleObject.isClosed();
     }
 
 }

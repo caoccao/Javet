@@ -52,6 +52,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         assertEquals(nodeRuntime.getNodeModuleCount(), nodeRuntime.getReferenceCount(),
                 "Reference count should be equal to node module count after test case is ended.");
         nodeRuntime.close();
+        assertTrue(nodeRuntime.isClosed());
         assertEquals(0, v8Host.getV8RuntimeCount());
     }
 

@@ -23,6 +23,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestV8Locker extends BaseTestJavetRuntime {
     @Test
@@ -43,6 +44,7 @@ public class TestV8Locker extends BaseTestJavetRuntime {
         V8Locker v8Locker = v8Runtime.getV8Locker();
         assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
         v8Locker.close();
+        assertTrue(v8Locker.isClosed());
         try {
             v8Locker.close();
         } catch (JavetException e) {

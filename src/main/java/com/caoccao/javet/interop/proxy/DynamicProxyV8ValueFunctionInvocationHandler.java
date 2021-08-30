@@ -61,4 +61,9 @@ public class DynamicProxyV8ValueFunctionInvocationHandler implements InvocationH
         }
         return result;
     }
+
+    @Override
+    public boolean isClosed() {
+        return v8ValueFunction == null || v8ValueFunction.isClosed();
+    }
 }

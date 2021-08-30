@@ -98,7 +98,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public boolean isClosed() {
-        return handle == INVALID_HANDLE;
+        return handle == INVALID_HANDLE || super.isClosed();
     }
 
     @Override

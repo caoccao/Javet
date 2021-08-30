@@ -66,6 +66,11 @@ public class DecimalJavetInNodeJSMode implements IJavetClosable {
         return iJavetEnginePool.getConfig().getJavetLogger();
     }
 
+    @Override
+    public boolean isClosed() {
+        return iJavetEngine.isClosed();
+    }
+
     public void test() throws JavetException {
         NodeRuntime nodeRuntime = iJavetEngine.getV8Runtime();
         Path workingDirectory = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node").toPath();

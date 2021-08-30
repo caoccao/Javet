@@ -27,18 +27,21 @@ import java.util.Objects;
 /**
  * The type V8 locker.
  * It's designed for performance sensitive scenarios.
+ * @since 0.7.3
  */
 public final class V8Locker implements IJavetClosable {
     private final long threadId;
     private final IV8Native v8Native;
     private final V8Runtime v8Runtime;
+    private boolean locked;
 
     /**
      * Instantiates a new V8 locker.
      *
      * @param v8Runtime the V8 runtime
-     * @param v8Native  the v 8 native
+     * @param v8Native  the V8 native
      * @throws JavetException the javet exception
+     * @since 0.7.3
      */
     V8Locker(V8Runtime v8Runtime, IV8Native v8Native) throws JavetException {
         Objects.requireNonNull(v8Runtime);
@@ -48,6 +51,7 @@ public final class V8Locker implements IJavetClosable {
         if (!v8Native.lockV8Runtime(v8Runtime.getHandle())) {
             throw new JavetException(JavetError.LockAcquisitionFailure);
         }
+        locked = true;
     }
 
     @Override
@@ -61,5 +65,21 @@ public final class V8Locker implements IJavetClosable {
         if (!v8Native.unlockV8Runtime(v8Runtime.getHandle())) {
             throw new JavetException(JavetError.LockReleaseFailure);
         }
+        locked = false;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return !locked;
+    }
+
+    /**
+     * Is locked.
+     *
+     * @return the boolean
+     * @since 0.9.10
+     */
+    public boolean isLocked() {
+        return locked;
     }
 }

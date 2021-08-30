@@ -28,6 +28,13 @@ public final class JavetResourceUtils {
     private JavetResourceUtils() {
     }
 
+    public static boolean isClosed(Object object) {
+        if (object instanceof IJavetClosable) {
+            return ((IJavetClosable) object).isClosed();
+        }
+        return true;
+    }
+
     public static void safeClose(Object... objects) {
         for (Object object : objects) {
             safeClose(object);

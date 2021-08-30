@@ -68,6 +68,11 @@ public class DecimalJavetInV8Mode implements IJavetClosable {
         return iJavetEnginePool.getConfig().getJavetLogger();
     }
 
+    @Override
+    public boolean isClosed() {
+        return iJavetEngine.isClosed();
+    }
+
     public void loadJS() throws JavetException {
         File decimalJSFile = new File(
                 JavetOSUtils.WORKING_DIRECTORY,

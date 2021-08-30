@@ -68,6 +68,7 @@ public class V8VirtualValue implements IJavetClosable {
         if (converted) {
             JavetResourceUtils.safeClose(value);
         }
+        value = null;
     }
 
     /**
@@ -79,5 +80,10 @@ public class V8VirtualValue implements IJavetClosable {
      */
     public <T extends V8Value> T get() {
         return (T) value;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return value == null || value.isClosed();
     }
 }

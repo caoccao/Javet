@@ -61,4 +61,9 @@ public class DynamicProxyV8ValueObjectInvocationHandler implements InvocationHan
         }
         return result;
     }
+
+    @Override
+    public boolean isClosed() {
+        return v8ValueObject == null || v8ValueObject.isClosed();
+    }
 }
