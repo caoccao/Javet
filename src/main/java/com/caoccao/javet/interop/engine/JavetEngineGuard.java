@@ -29,19 +29,74 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The type Javet engine guard.
+ *
+ * @since 0.7.2
+ */
 public class JavetEngineGuard implements IJavetEngineGuard {
+    /**
+     * The constant IS_IN_DEBUG_MODE.
+     *
+     * @since 0.8.9
+     */
     protected static final boolean IS_IN_DEBUG_MODE = ManagementFactory.getRuntimeMXBean().
             getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
 
+    /**
+     * The Closed.
+     *
+     * @since 0.9.10
+     */
+    protected boolean closed;
+    /**
+     * The Future.
+     *
+     * @since 0.8.10
+     */
     protected Future<?> future;
+    /**
+     * The Javet engine.
+     *
+     * @since 0.8.10
+     */
     protected IJavetEngine<?> iJavetEngine;
+    /**
+     * The Quitting.
+     *
+     * @since 0.8.10
+     */
     protected volatile boolean quitting;
+    /**
+     * The Skip in debug mode.
+     *
+     * @since 0.8.9
+     */
     protected boolean skipInDebugMode;
+    /**
+     * The Timeout millis.
+     *
+     * @since 0.8.9
+     */
     protected long timeoutMillis;
+    /**
+     * The V8 runtime.
+     *
+     * @since 0.7.2
+     */
     protected V8Runtime v8Runtime;
 
+    /**
+     * Instantiates a new Javet engine guard.
+     *
+     * @param iJavetEngine the javet engine
+     * @param v8Runtime    the V8 runtime
+     * @param timeoutMills the timeout mills
+     * @since 0.7.2
+     */
     public JavetEngineGuard(IJavetEngine<?> iJavetEngine, V8Runtime v8Runtime, long timeoutMills) {
         Objects.requireNonNull(iJavetEngine);
+        closed = false;
         this.iJavetEngine = iJavetEngine;
         quitting = false;
         skipInDebugMode = true;
@@ -61,6 +116,7 @@ public class JavetEngineGuard implements IJavetEngineGuard {
         if (!future.isDone() && !future.isCancelled()) {
             future.cancel(true);
         }
+        closed = true;
     }
 
     @Override
@@ -78,10 +134,27 @@ public class JavetEngineGuard implements IJavetEngineGuard {
         return timeoutMillis;
     }
 
+    /**
+     * Gets utc now.
+     *
+     * @return the utc now
+     * @since 0.9.1
+     */
     protected ZonedDateTime getUTCNow() {
         return JavetDateTimeUtils.getUTCNow();
     }
 
+    @Override
+    public boolean isClosed() {
+        return closed || v8Runtime == null || v8Runtime.isClosed();
+    }
+
+    /**
+     * Is quitting boolean.
+     *
+     * @return the boolean
+     * @since 0.7.2
+     */
     public boolean isQuitting() {
         return quitting;
     }

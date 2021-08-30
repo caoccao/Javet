@@ -2,7 +2,7 @@
 
 # Usage for V8: sh build-macos.sh -DV8_DIR=${HOME}/v8
 # Usage for Node: sh build-macos.sh -DNODE_DIR=${HOME}/node
-JAVET_VERSION=0.9.9
+JAVET_VERSION=0.9.10
 rm -rf build
 mkdir build
 cd build

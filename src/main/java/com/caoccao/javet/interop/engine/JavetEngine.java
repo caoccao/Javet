@@ -98,6 +98,11 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     }
 
     @Override
+    public boolean isClosed() {
+        return v8Runtime == null || v8Runtime.isClosed();
+    }
+
+    @Override
     public void resetContext() throws JavetException {
         v8Runtime.resetContext();
         usage.reset();

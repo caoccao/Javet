@@ -26,4 +26,12 @@ import com.caoccao.javet.exceptions.JavetException;
  */
 public interface IJavetClosable extends AutoCloseable {
     void close() throws JavetException;
+
+    /**
+     * Is closed.
+     *
+     * @return the boolean
+     * @since 0.9.10
+     */
+    boolean isClosed();
 }

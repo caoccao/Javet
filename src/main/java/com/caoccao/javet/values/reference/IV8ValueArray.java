@@ -95,4 +95,14 @@ public interface IV8ValueArray extends IV8ValueObject {
     default int pushUndefined() throws JavetException {
         return push(getV8Runtime().createV8ValueUndefined());
     }
+
+    @CheckReturnValue
+    default V8Value[] toArray() throws JavetException {
+        final int length = getLength();
+        V8Value[] v8Values = new V8Value[length];
+        for (int i = 0; i < length; ++i) {
+            v8Values[i] = get(i);
+        }
+        return v8Values;
+    }
 }

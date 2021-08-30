@@ -22,15 +22,13 @@ import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.mock.MockCallbackReceiver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +42,41 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         super.beforeEach();
         javetProxyConverter = new JavetProxyConverter();
         v8Runtime.setConverter(javetProxyConverter);
+    }
+
+    @Test
+    public void testAnonymousFunction() throws Exception {
+        try (StringJoiner stringJoiner = new StringJoiner()) {
+            v8Runtime.getGlobalObject().set("stringJoiner", stringJoiner);
+            v8Runtime.getExecutor("stringJoiner.setJoiner((a, b) => a + ',' + b);").executeVoid();
+            IStringJoiner joiner = stringJoiner.getJoiner();
+            assertEquals("a,b", joiner.join("a", "b"));
+            assertEquals("a,b,c", joiner.join(joiner.join("a", "b"), "c"));
+            v8Runtime.getGlobalObject().delete("stringJoiner");
+        }
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testAnonymousObject() throws Exception {
+        try (StringUtils stringUtils = new StringUtils()) {
+            v8Runtime.getGlobalObject().set("stringUtils", stringUtils);
+            v8Runtime.getExecutor(
+                    "stringUtils.setUtils({\n" +
+                            "  hello: () => 'hello',\n" +
+                            "  join: (separator, ...strings) => [...strings].join(separator),\n" +
+                            "  split: (separator, str) => str.split(separator),\n" +
+                            "});"
+            ).executeVoid();
+            IStringUtils utils = stringUtils.getUtils();
+            assertEquals("hello", utils.hello());
+            assertEquals("a,b,c", utils.join(",", "a", "b", "c"));
+            assertArrayEquals(
+                    new String[]{"a", "b", "c"},
+                    utils.split(",", "a,b,c").toArray(new String[0]));
+            v8Runtime.getGlobalObject().delete("stringUtils");
+        }
+        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -128,6 +161,18 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testMockCallbackReceiver() throws JavetException {
+        MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
+        v8Runtime.getGlobalObject().set("m", mockCallbackReceiver);
+        assertEquals("abc", v8Runtime.getExecutor("m.echo('abc')").executeString());
+        assertEquals(
+                "[\"abc\",\"def\"]",
+                v8Runtime.getExecutor("JSON.stringify(m.echo('abc', 'def'))").executeString());
+        v8Runtime.getGlobalObject().delete("m");
+        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
     public void testPath() throws JavetException {
         Path path = new File("/tmp/i-am-not-accessible").toPath();
         v8Runtime.getGlobalObject().set("path", path);
@@ -174,5 +219,65 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("set");
         v8Runtime.lowMemoryNotification();
         javetProxyConverter.getConfig().setProxySetEnabled(false);
+    }
+
+    interface IStringJoiner extends AutoCloseable {
+        String join(String a, String b);
+    }
+
+    interface IStringUtils extends AutoCloseable {
+        String hello();
+
+        String join(String separator, String... strings);
+
+        List<String> split(String separator, String string);
+    }
+
+    static class StringJoiner implements AutoCloseable {
+        private IStringJoiner joiner;
+
+        public StringJoiner() {
+            joiner = null;
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (joiner != null) {
+                joiner.close();
+                joiner = null;
+            }
+        }
+
+        public IStringJoiner getJoiner() {
+            return joiner;
+        }
+
+        public void setJoiner(IStringJoiner joiner) {
+            this.joiner = joiner;
+        }
+    }
+
+    static class StringUtils implements AutoCloseable {
+        private IStringUtils utils;
+
+        public StringUtils() {
+            utils = null;
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (utils != null) {
+                utils.close();
+                utils = null;
+            }
+        }
+
+        public IStringUtils getUtils() {
+            return utils;
+        }
+
+        public void setUtils(IStringUtils utils) {
+            this.utils = utils;
+        }
     }
 }

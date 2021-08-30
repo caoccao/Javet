@@ -48,6 +48,11 @@ public abstract class V8Value extends V8Data implements IV8Value {
     }
 
     @Override
+    public boolean isClosed() {
+        return v8Runtime == null || v8Runtime.isClosed();
+    }
+
+    @Override
     public abstract boolean sameValue(V8Value v8Value) throws JavetException;
 
     public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {

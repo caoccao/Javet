@@ -21,12 +21,18 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueReference;
-import com.caoccao.javet.values.reference.V8ValueReference;
 
 import java.util.Collection;
 
 public final class JavetResourceUtils {
     private JavetResourceUtils() {
+    }
+
+    public static boolean isClosed(Object object) {
+        if (object instanceof IJavetClosable) {
+            return ((IJavetClosable) object).isClosed();
+        }
+        return true;
     }
 
     public static void safeClose(Object... objects) {
@@ -42,7 +48,7 @@ public final class JavetResourceUtils {
         if (object instanceof IV8ValueReference) {
             try {
                 IV8ValueReference iV8ValueReference = (IV8ValueReference) object;
-                if (iV8ValueReference.getHandle() != V8ValueReference.INVALID_HANDLE) {
+                if (!iV8ValueReference.isClosed()) {
                     iV8ValueReference.close();
                 }
             } catch (JavetException ignored) {

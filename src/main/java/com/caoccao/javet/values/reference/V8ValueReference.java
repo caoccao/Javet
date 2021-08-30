@@ -42,7 +42,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void checkV8Runtime() throws JavetException {
-        if (handle == INVALID_HANDLE) {
+        if (isClosed()) {
             throw new JavetException(JavetError.RuntimeAlreadyRegistered);
         }
         super.checkV8Runtime();
@@ -62,7 +62,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void close(boolean forceClose) throws JavetException {
-        if (handle == INVALID_HANDLE) {
+        if (isClosed()) {
             throw new JavetException(JavetError.RuntimeAlreadyClosed);
         }
         if (forceClose || !isWeak()) {
@@ -95,6 +95,11 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public abstract V8ValueReferenceType getType();
+
+    @Override
+    public boolean isClosed() {
+        return handle == INVALID_HANDLE || super.isClosed();
+    }
 
     @Override
     public boolean isWeak() {

@@ -2,6 +2,16 @@
 Release Notes
 =============
 
+0.9.10
+------
+
+* Added ``JavetVirtualObject``
+* Updated ``JavetUniversalProxyHandler`` to allow passing ``V8Value``
+* Updated ``JavetUniversalProxyHandler`` to allow passing ``V8ValueFunction`` as anonymous function
+* Updated ``JavetUniversalProxyHandler`` to allow passing ``V8ValueObject`` as anonymous object
+* Added ``isClosed()`` to ``IJavetClosable``
+* Added error code 602 and 603
+
 0.9.9
 -----
 

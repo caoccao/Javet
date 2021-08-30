@@ -30,20 +30,77 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The type Javet engine pool.
+ *
+ * @param <R> the type parameter
+ * @since 0.8.0
+ */
 public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>, Runnable {
+    /**
+     * The constant JAVET_DAEMON_THREAD_NAME.
+     *
+     * @since 0.8.10
+     */
     protected static final String JAVET_DAEMON_THREAD_NAME = "Javet Daemon";
+    /**
+     * The Active engine list.
+     *
+     * @since 0.9.1
+     */
     protected final ConcurrentLinkedQueue<JavetEngine<R>> activeEngineList;
+    /**
+     * The External lock.
+     *
+     * @since 0.8.10
+     */
     protected final Object externalLock;
+    /**
+     * The Idle engine list.
+     *
+     * @since 0.9.1
+     */
     protected final ConcurrentLinkedQueue<JavetEngine<R>> idleEngineList;
+    /**
+     * The Active.
+     *
+     * @since 0.7.0
+     */
     protected volatile boolean active;
+    /**
+     * The Config.
+     *
+     * @since 0.7.0
+     */
     protected JavetEngineConfig config;
+    /**
+     * The Daemon thread.
+     *
+     * @since 0.7.0
+     */
     protected Thread daemonThread;
+    /**
+     * The Quitting.
+     *
+     * @since 0.7.0
+     */
     protected volatile boolean quitting;
 
+    /**
+     * Instantiates a new Javet engine pool.
+     *
+     * @since 0.7.0
+     */
     public JavetEnginePool() {
         this(new JavetEngineConfig());
     }
 
+    /**
+     * Instantiates a new Javet engine pool.
+     *
+     * @param config the config
+     * @since 0.7.0
+     */
     public JavetEnginePool(JavetEngineConfig config) {
         Objects.requireNonNull(config);
         this.config = config;
@@ -60,6 +117,13 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         stopDaemon();
     }
 
+    /**
+     * Create engine javet engine.
+     *
+     * @return the javet engine
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     protected JavetEngine<R> createEngine() throws JavetException {
         V8Host v8Host = V8Host.getInstance(config.getJSRuntimeType());
         @SuppressWarnings("ConstantConditions")
@@ -112,6 +176,12 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         return idleEngineList.size();
     }
 
+    /**
+     * Gets utc now.
+     *
+     * @return the utc now
+     * @since 0.7.0
+     */
     protected ZonedDateTime getUTCNow() {
         return JavetDateTimeUtils.getUTCNow();
     }
@@ -119,6 +189,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     @Override
     public boolean isActive() {
         return active;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return !active;
     }
 
     @Override
@@ -224,6 +299,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         logger.debug("JavetEnginePool.run() ends.");
     }
 
+    /**
+     * Start daemon.
+     *
+     * @since 0.7.0
+     */
     protected void startDaemon() {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.startDaemon() begins.");
@@ -239,6 +319,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         logger.debug("JavetEnginePool.startDaemon() ends.");
     }
 
+    /**
+     * Stop daemon.
+     *
+     * @since 0.7.0
+     */
     protected void stopDaemon() {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.stopDaemon() begins.");

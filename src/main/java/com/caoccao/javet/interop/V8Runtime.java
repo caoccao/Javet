@@ -158,7 +158,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public void close(boolean forceClose) throws JavetException {
-        if (handle != INVALID_HANDLE && forceClose) {
+        if (!isClosed() && forceClose) {
             removeAllReferences();
             v8Host.closeV8Runtime(this);
             handle = INVALID_HANDLE;
@@ -541,7 +541,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @param deadlineInMillis the deadline in millis
      */
     public void idleNotificationDeadline(long deadlineInMillis) {
-        if (handle != INVALID_HANDLE && deadlineInMillis > 0) {
+        if (!isClosed() && deadlineInMillis > 0) {
             v8Native.idleNotificationDeadline(handle, deadlineInMillis);
         }
     }
@@ -576,6 +576,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), functionName, returnResult, v8Values));
     }
 
+    @Override
+    public boolean isClosed() {
+        return handle == INVALID_HANDLE;
+    }
+
     public boolean isDead() {
         return v8Native.isDead(handle);
     }
@@ -600,7 +605,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Send low memory notification to current V8 isolate.
      */
     public void lowMemoryNotification() {
-        if (handle != INVALID_HANDLE) {
+        if (!isClosed()) {
             v8Native.lowMemoryNotification(handle);
         }
     }
@@ -735,7 +740,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public void removeJNIGlobalRef(long handle) {
-        if (handle != INVALID_HANDLE) {
+        if (!isClosed()) {
             v8Native.removeJNIGlobalRef(handle);
         }
     }

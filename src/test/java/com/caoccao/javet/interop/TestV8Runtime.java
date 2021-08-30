@@ -50,8 +50,12 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testClose() throws JavetException {
+        V8Runtime danglingV8Runtime;
         try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+            assertFalse(v8Runtime.isClosed());
+            danglingV8Runtime = v8Runtime;
         }
+        assertTrue(danglingV8Runtime.isClosed());
     }
 
     @Test
