@@ -1,23 +1,18 @@
 Javet
 =====
 
-|Maven Central| |Discord| |Donate|
+|Maven Central| |Discord| |Donate| |Linux Build|
 
-|Linux Build|
-
-.. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet.svg
+.. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
 
-.. |Gitter Chatroom| image:: https://badges.gitter.im/caoccao/Javet.svg
-    :target: https://gitter.im/caoccao/Javet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
-.. |Discord| image:: https://img.shields.io/badge/join%20our-Discord-%237289DA%20
+.. |Discord| image:: https://img.shields.io/discord/870518906115211305?label=join%20our%20Discord&style=for-the-badge
     :target: https://discord.gg/R4vvKU96gw
 
-.. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
+.. |Donate| image:: https://img.shields.io/badge/Donate-Paypal-green?style=for-the-badge
     :target: https://paypal.me/caoccao?locale.x=en_US
 
-.. |Linux Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml/badge.svg
+.. |Linux Build| image:: https://img.shields.io/github/workflow/status/caoccao/Javet/Linux%20Build?label=Linux%20Build&style=for-the-badge
     :target: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml
 
 Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
