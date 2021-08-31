@@ -2,6 +2,13 @@
 Release Notes
 =============
 
+0.9.11
+------
+
+* Added ``unbind()``, ``unbindProperty()`` and ``unbindFunction()`` to ``IV8ValueObject``
+* Updated ``V8Runtime`` to be completely thread-safe
+* Added error code 407
+
 0.9.10
 ------
 

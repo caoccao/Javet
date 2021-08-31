@@ -171,6 +171,13 @@ As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way 
 
 ``@V8BindEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
 
+How to Unregister Properties or Functions?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``unbind()`` follows the same way that ``bind()`` goes to unregister both properties and functions.
+
+``unbindProperty()`` and ``unbindFunction()`` provide precise way of unregistering single property or function.
+
 Manual Registration
 -------------------
 

@@ -27,6 +27,10 @@ import java.util.Objects;
  * @since 0.7.1
  */
 public final class JavetCallbackContext {
+    /**
+     * The constant INVALID_HANDLE.
+     */
+    public static final long INVALID_HANDLE = 0L;
     private static final String ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID =
             "Callback receiver or callback method is invalid";
     private static final String ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
@@ -63,7 +67,7 @@ public final class JavetCallbackContext {
                 : ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID;
         this.callbackMethod = callbackMethod;
         this.callbackReceiver = callbackReceiver;
-        handle = 0L;
+        handle = INVALID_HANDLE;
         this.returnResult = !callbackMethod.getReturnType().equals(Void.TYPE);
         this.thisObjectRequired = thisObjectRequired;
     }
@@ -99,7 +103,7 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Is return result boolean.
+     * Is return result.
      *
      * @return the boolean
      * @since 0.9.1
@@ -109,7 +113,7 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Is this object required boolean.
+     * Is this object required.
      *
      * @return the boolean
      * @since 0.9.1
@@ -119,13 +123,23 @@ public final class JavetCallbackContext {
     }
 
     /**
+     * Is valid.
+     *
+     * @return the boolean
+     * @since 0.9.11
+     */
+    public boolean isValid() {
+        return handle != INVALID_HANDLE;
+    }
+
+    /**
      * Sets handle.
      *
      * @param handle the handle
      * @since 0.7.1
      */
     public void setHandle(long handle) {
-        assert handle > 0L : ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID;
+        assert !isValid() : ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID;
         this.handle = handle;
     }
 }

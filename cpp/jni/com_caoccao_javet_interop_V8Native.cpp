@@ -1056,34 +1056,38 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_set
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mPropertyName, jobject mContextGetter, jobject mContextSetter) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (v8LocalObject->IsObject() && mContextGetter != nullptr) {
+    if (v8LocalObject->IsObject()) {
         auto umPropertyName = Javet::Converter::ToV8String(jniEnv, v8Context, mPropertyName);
-        auto v8LocalArrayContext = v8::Array::New(v8Runtime->v8Isolate, 2);
-        auto javetCallbackContextReferencePointer = new Javet::Callback::JavetCallbackContextReference(jniEnv, mContextGetter);
-        INCREASE_COUNTER(Javet::Monitor::CounterType::NewJavetCallbackContextReference);
-        auto v8LocalContextGetterHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
-        javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer =
-            new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextGetterHandle);
-        INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
-        javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer->SetWeak(
-            javetCallbackContextReferencePointer, Javet::Callback::JavetCloseWeakCallbackContextHandle, v8::WeakCallbackType::kParameter);
-        auto maybeResult = v8LocalArrayContext->Set(v8Context, 0, v8LocalContextGetterHandle);
-        v8::AccessorNameGetterCallback getter = Javet::Callback::JavetPropertyGetterCallback;
-        v8::AccessorNameSetterCallback setter = nullptr;
-        if (mContextSetter != nullptr) {
-            javetCallbackContextReferencePointer = new Javet::Callback::JavetCallbackContextReference(jniEnv, mContextSetter);
+        if (mContextGetter == nullptr) {
+            return v8LocalObject.As<v8::Object>()->SetAccessor(v8Context, umPropertyName, nullptr).ToChecked();
+        }
+        else {
+            auto v8LocalArrayContext = v8::Array::New(v8Runtime->v8Isolate, 2);
+            auto javetCallbackContextReferencePointer = new Javet::Callback::JavetCallbackContextReference(jniEnv, mContextGetter);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewJavetCallbackContextReference);
-            auto v8LocalContextSetterHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
+            auto v8LocalContextGetterHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
             javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer =
-                new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextSetterHandle);
+                new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextGetterHandle);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
             javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer->SetWeak(
                 javetCallbackContextReferencePointer, Javet::Callback::JavetCloseWeakCallbackContextHandle, v8::WeakCallbackType::kParameter);
-            maybeResult = v8LocalArrayContext->Set(v8Context, 1, v8LocalContextSetterHandle);
-            setter = Javet::Callback::JavetPropertySetterCallback;
+            auto maybeResult = v8LocalArrayContext->Set(v8Context, 0, v8LocalContextGetterHandle);
+            v8::AccessorNameGetterCallback getter = Javet::Callback::JavetPropertyGetterCallback;
+            v8::AccessorNameSetterCallback setter = nullptr;
+            if (mContextSetter != nullptr) {
+                javetCallbackContextReferencePointer = new Javet::Callback::JavetCallbackContextReference(jniEnv, mContextSetter);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::NewJavetCallbackContextReference);
+                auto v8LocalContextSetterHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
+                javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer =
+                    new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextSetterHandle);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
+                javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer->SetWeak(
+                    javetCallbackContextReferencePointer, Javet::Callback::JavetCloseWeakCallbackContextHandle, v8::WeakCallbackType::kParameter);
+                maybeResult = v8LocalArrayContext->Set(v8Context, 1, v8LocalContextSetterHandle);
+                setter = Javet::Callback::JavetPropertySetterCallback;
+            }
+            return v8LocalObject.As<v8::Object>()->SetAccessor(v8Context, umPropertyName, getter, setter, v8LocalArrayContext).ToChecked();
         }
-        return v8LocalObject.As<v8::Object>()->SetAccessor(
-            v8Context, umPropertyName, getter, setter, v8LocalArrayContext).ToChecked();
     }
     return false;
 }

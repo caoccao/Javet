@@ -21,10 +21,10 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.mock.MockCallbackReceiver;
-import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -110,7 +110,13 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8Runtime.getExecutor("a.primitiveAddShort(1, undefined)").executeInteger());
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(null)").executeString());
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(undefined)").executeString());
-            v8Runtime.getGlobalObject().delete("a");
+            v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver);
+            try {
+                v8Runtime.getExecutor("a.echo('test')").executeVoid();
+                fail("Failed to throw an exception");
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: a.echo is not a function", e.getMessage());
+            }
         }
         v8Runtime.lowMemoryNotification();
     }

@@ -83,6 +83,8 @@ public class JavetError {
             405, JavetErrorType.Callback, "Callback ${methodName} failed with error message ${message}");
     public static final JavetError CallbackUnknownFailure = new JavetError(
             406, JavetErrorType.Callback, "Callback failed with unknown error message ${message}");
+    public static final JavetError CallbackUnregistrationFailure = new JavetError(
+            407, JavetErrorType.Callback, "Callback ${methodName} unregistration failed with error message ${message}");
 
     public static final JavetError ConverterFailure = new JavetError(
             501, JavetErrorType.Converter, "Failed to convert values with error message ${message}");

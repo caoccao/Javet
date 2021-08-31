@@ -56,7 +56,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param functionName         the function name
      * @param javetCallbackContext the javet callback context
-     * @return true: function is bind, false: function is not bind
+     * @return true : function is bind, false: function is not bind
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
@@ -74,7 +74,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param functionName the function name
      * @param codeString   the code string
-     * @return true: function is bind, false: function is not bind
+     * @return true : function is bind, false: function is not bind
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
@@ -537,7 +537,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * Has object property key.
      *
      * @param value the value
-     * @return true: yes, false: no
+     * @return true : yes, false: no
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
@@ -546,7 +546,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     /**
      * Has null property key.
      *
-     * @return true: yes, false: no
+     * @return true : yes, false: no
      * @throws JavetException the javet exception
      * @since 0.7.3
      */
@@ -558,7 +558,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * Has own property key.
      *
      * @param key the key
-     * @return true: yes, false: no
+     * @return true : yes, false: no
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
@@ -567,7 +567,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     /**
      * Has undefined property key.
      *
-     * @return true: yes, false: no
+     * @return true : yes, false: no
      * @throws JavetException the javet exception
      * @since 0.7.3
      */
@@ -787,7 +787,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key   the key
      * @param value the value
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
@@ -797,7 +797,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * Sets null.
      *
      * @param key the key
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
@@ -811,7 +811,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key   the key
      * @param value the value
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
@@ -833,7 +833,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * Sets property undefined.
      *
      * @param key the key
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
@@ -845,7 +845,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * Sets prototype.
      *
      * @param v8ValueObject the V8 value object
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 0.9.4
      */
@@ -855,7 +855,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * Sets undefined.
      *
      * @param key the key
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
@@ -882,4 +882,34 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.0
      */
     String toProtoString();
+
+    /**
+     * Unbind the interception.
+     *
+     * @param callbackReceiver the callback receiver
+     * @return the count
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    int unbind(Object callbackReceiver) throws JavetException;
+
+    /**
+     * Unbind function.
+     *
+     * @param functionName the function name
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    boolean unbindFunction(String functionName) throws JavetException;
+
+    /**
+     * Unbind property.
+     *
+     * @param propertyName the property name
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    boolean unbindProperty(String propertyName) throws JavetException;
 }
