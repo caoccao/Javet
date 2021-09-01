@@ -110,7 +110,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8Runtime.getExecutor("a.primitiveAddShort(1, undefined)").executeInteger());
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(null)").executeString());
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(undefined)").executeString());
-            v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver);
+            assertEquals(18, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
             try {
                 v8Runtime.getExecutor("a.echo('test')").executeVoid();
                 fail("Failed to throw an exception");

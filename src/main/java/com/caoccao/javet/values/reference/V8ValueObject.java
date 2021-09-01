@@ -472,6 +472,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         Map<String, MethodDescriptor> propertySetterMap = bindingContext.getPropertySetterMap();
         Map<String, MethodDescriptor> functionMap = bindingContext.getFunctionMap();
         Method v8BindEnabler = bindingContext.getV8BindEnabler();
+        int unbindCount = 0;
         if (!propertyGetterMap.isEmpty()) {
             for (Map.Entry<String, MethodDescriptor> entry : propertyGetterMap.entrySet()) {
                 String propertyName = entry.getKey();
@@ -481,7 +482,9 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                             callbackReceiver, getterMethodDescriptor.getMethod().getName())) {
                         continue;
                     }
-                    unbindProperty(propertyName);
+                    if (unbindProperty(propertyName)) {
+                        ++unbindCount;
+                    }
                 } catch (Exception e) {
                     throw new JavetException(
                             JavetError.CallbackUnregistrationFailure,
@@ -501,7 +504,9 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                             callbackReceiver, functionMethodDescriptor.getMethod().getName())) {
                         continue;
                     }
-                    unbindFunction(functionName);
+                    if (unbindFunction(functionName)) {
+                        ++unbindCount;
+                    }
                 } catch (Exception e) {
                     throw new JavetException(
                             JavetError.CallbackUnregistrationFailure,
@@ -512,12 +517,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 }
             }
         }
-        return 0;
+        return unbindCount;
     }
 
     @Override
     public boolean unbindFunction(String functionName) throws JavetException {
-        checkV8Runtime();
         return delete(functionName);
     }
 

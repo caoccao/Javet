@@ -63,7 +63,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(9, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("def", v8Runtime.getExecutor("a['stringValue']").executeString());
             assertEquals(10, mockAnnotationBasedCallbackReceiver.getCount());
-            v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver);
+            assertEquals(18, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
             assertNull(v8Runtime.getExecutor("a['stringValue']").executeString());
             assertEquals(10, mockAnnotationBasedCallbackReceiver.getCount());
         }
