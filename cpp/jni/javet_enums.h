@@ -28,6 +28,7 @@
 #define IS_V8_PROXY(type) (type == Javet::Enums::V8ValueReferenceType::Proxy)
 #define IS_V8_SCRIPT(type) (type == Javet::Enums::V8ValueReferenceType::Script)
 #define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
+#define IS_V8_SYMBOL(type) (type == Javet::Enums::V8ValueReferenceType::Symbol)
 
 namespace Javet {
     namespace Enums {

@@ -53,7 +53,11 @@
 #define IS_USER_DEFINED_FUNCTION(v8InternalShared) (!v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript())
 
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
+#ifdef ENABLE_NODE
 using V8InternalBuiltins = v8::internal::Builtins;
+#else
+using V8InternalBuiltin = v8::internal::Builtin;
+#endif
 using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilder;
 using V8InternalIsolate = v8::internal::Isolate;
 using V8InternalJSFunction = v8::internal::JSFunction;

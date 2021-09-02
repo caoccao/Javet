@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:0.9.9 -f docker/linux-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:0.9.11 -f docker/linux-x86_64/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
@@ -21,7 +21,7 @@ WORKDIR /
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip
+RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack
 RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
 RUN apt-get upgrade -y
 RUN pip3 install coloredlogs
@@ -36,7 +36,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.2.230.21
+RUN git checkout 9.3.345.16
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
@@ -54,7 +54,7 @@ RUN echo V8 build is completed.
 WORKDIR /
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v14.17.4
+RUN git checkout v14.17.6
 RUN echo Node.js preparation is completed.
 
 # Build Node.js
@@ -68,15 +68,15 @@ RUN make -j4
 RUN echo Node.js build is completed.
 
 # Prepare Javet Build Environment
-RUN apt-get install --upgrade -qq -y --no-install-recommends execstack
 RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-8-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 ENV SDKMAN_HOME="/root/.sdkman"
 ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
 RUN curl -s https://get.sdkman.io | bash
-RUN source ${SDKMAN_HOME}/bin/sdkman-init.sh && sdk install gradle 7.0.2
+RUN source ${SDKMAN_HOME}/bin/sdkman-init.sh && sdk install gradle 7.2
 ENV PATH=$GRADLE_HOME/bin:$PATH
+RUN apt-get install --upgrade -qq -y --no-install-recommends cmake
 
 # Shrink
 RUN rm -rf ${SDKMAN_HOME}/archives/*

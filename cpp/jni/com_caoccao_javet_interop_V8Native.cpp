@@ -1184,7 +1184,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                 // Discard compiled data and set lazy compile.
                 if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
                     V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
+#ifdef ENABLE_NODE
                     v8InternalFunction.set_code(v8InternalIsolate->builtins()->builtin(V8InternalBuiltins::kCompileLazy));
+#else
+                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy));
+#endif
                 }
 
                 /*
@@ -1251,6 +1255,9 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
         }
         else if (IS_V8_SET(v8ValueType)) {
             v8MaybeLocalString = v8LocalObject.As<v8::Set>()->ToString(v8Context);
+        }
+        else if (IS_V8_SYMBOL(v8ValueType)) {
+            v8MaybeLocalString = v8LocalObject.As<v8::Value>()->ToString(v8Context);
         }
         else if (v8LocalObject->IsObject()) {
             v8MaybeLocalString = v8LocalObject->ToString(v8Context);

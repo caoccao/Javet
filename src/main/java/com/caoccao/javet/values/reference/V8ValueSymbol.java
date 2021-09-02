@@ -20,10 +20,9 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 
-import java.text.MessageFormat;
-
 public class V8ValueSymbol extends V8ValueObject {
 
+    protected static final String FUNCTION_TO_STRING = "toString";
     protected static final String PROPERTY_DESCRIPTION = "description";
     protected static final String SYMBOL_0 = "Symbol({0})";
 
@@ -43,7 +42,7 @@ public class V8ValueSymbol extends V8ValueObject {
     @Override
     public String toString() {
         try {
-            return MessageFormat.format(SYMBOL_0, getDescription());
+            return invokeString(FUNCTION_TO_STRING);
         } catch (JavetException e) {
             return e.getMessage();
         }

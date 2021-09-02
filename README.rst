@@ -23,7 +23,7 @@ Major Features
 ==============
 
 * Linux + Mac OS + ️Windows (x86_64)
-* Node.js ``v14.17.4`` + V8 ``v9.2.230.21``
+* Node.js ``v14.17.6`` + V8 ``v9.3.345.16``
 * Dynamic switch between Node.js and V8
 * Exposure of the majority of V8 API in JVM
 * JavaScript and Java interop
