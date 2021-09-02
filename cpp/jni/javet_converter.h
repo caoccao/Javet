@@ -139,6 +139,10 @@ namespace Javet {
         static jmethodID jmethodIDV8ValueSymbolConstructor;
         static jmethodID jmethodIDV8ValueSymbolGetHandle;
 
+        static jclass jclassV8ValueSymbolObject;
+        static jmethodID jmethodIDV8ValueSymbolObjectConstructor;
+        static jmethodID jmethodIDV8ValueSymbolObjectGetHandle;
+
         static jclass jclassV8ValueTypedArray;
         static jmethodID jmethodIDV8ValueTypedArrayConstructor;
         static jmethodID jmethodIDV8ValueTypedArrayGetHandle;
@@ -244,11 +248,10 @@ namespace Javet {
             return TO_JAVA_LONG(v8PersistentDataPointer);
         }
 
-        static inline jlong ToV8PersistentObjectReference(const V8LocalContext& v8Context, const V8LocalValue v8Value) {
-            V8PersistentObject* v8PersistentObjectPointer = new V8PersistentObject(
-                v8Context->GetIsolate(), v8Value->ToObject(v8Context).ToLocalChecked());
+        static inline jlong ToV8PersistentValueReference(const V8LocalContext& v8Context, const V8LocalValue v8Value) {
+            V8PersistentValue* v8PersistentValuePointer = new V8PersistentValue(v8Context->GetIsolate(), v8Value);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
-            return TO_JAVA_LONG(v8PersistentObjectPointer);
+            return TO_JAVA_LONG(v8PersistentValuePointer);
         }
 
         static inline jlong ToV8PersistentScriptReference(const V8LocalContext& v8Context, const V8LocalScript v8Script) {

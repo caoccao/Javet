@@ -9,6 +9,7 @@ Release Notes
 * Upgraded V8 to ``v9.3.345.16`` `(2021-08-17) <https://v8.dev/blog/v8-release-93>`_
 * Added ``unbind()``, ``unbindProperty()`` and ``unbindFunction()`` to ``IV8ValueObject``
 * Updated ``V8Runtime`` to be completely thread-safe
+* Added ``V8ValueBuiltInSymbol``
 * Added error code 407
 
 0.9.10

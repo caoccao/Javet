@@ -30,7 +30,7 @@ import java.util.Optional;
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     protected Optional<JSFunctionType> jsFunctionType;
 
-    V8ValueFunction(long handle) {
+    protected V8ValueFunction(long handle) {
         super(handle);
         jsFunctionType = Optional.empty();
     }

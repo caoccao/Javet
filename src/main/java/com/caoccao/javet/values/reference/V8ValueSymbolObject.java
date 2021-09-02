@@ -17,61 +17,48 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 
 /**
- * The type V8 value symbol.
+ * The type V8 value symbol object.
+ * It has never been used in V8.
  *
  * @since 0.9.11
  */
-public class V8ValueSymbol extends V8ValueObject {
-
+public class V8ValueSymbolObject extends V8ValueSymbol {
     /**
-     * The constant FUNCTION_TO_STRING.
+     * The constant FUNCTION_VALUE_OF.
      *
      * @since 0.9.11
      */
-    protected static final String FUNCTION_TO_STRING = "toString";
-    /**
-     * The constant PROPERTY_DESCRIPTION.
-     *
-     * @since 0.9.11
-     */
-    protected static final String PROPERTY_DESCRIPTION = "description";
+    protected static final String FUNCTION_VALUE_OF = "valueOf";
 
     /**
-     * Instantiates a new V8 value symbol.
+     * Instantiates a new V8 value symbol object.
      *
      * @param handle the handle
      * @since 0.9.11
      */
-    V8ValueSymbol(long handle) {
+    V8ValueSymbolObject(long handle) {
         super(handle);
-    }
-
-    /**
-     * Gets description.
-     *
-     * @return the description
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    public String getDescription() throws JavetException {
-        return getPropertyString(PROPERTY_DESCRIPTION);
     }
 
     @Override
     public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Symbol;
+        return V8ValueReferenceType.SymbolObject;
     }
 
-    @Override
-    public String toString() {
-        try {
-            return invokeString(FUNCTION_TO_STRING);
-        } catch (JavetException e) {
-            return e.getMessage();
-        }
+    /**
+     * Value of V8 value symbol.
+     *
+     * @return the V8 value symbol
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    @CheckReturnValue
+    public V8ValueSymbol valueOf() throws JavetException {
+        return invoke(FUNCTION_VALUE_OF);
     }
 }

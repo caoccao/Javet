@@ -17,12 +17,13 @@
 
 package com.caoccao.javet.values.reference.builtin;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
 
 @SuppressWarnings("unchecked")
-public class V8ValueBuiltInSymbol extends V8ValueObject {
+public class V8ValueBuiltInSymbol extends V8ValueFunction {
 
     public static final String PROPERTY_ASYNC_ITERATOR = "asyncIterator";
     public static final String PROPERTY_HAS_INSTANCE = "hasInstance";
@@ -37,9 +38,16 @@ public class V8ValueBuiltInSymbol extends V8ValueObject {
     public static final String PROPERTY_TO_PRIMITIVE = "toPrimitive";
     public static final String PROPERTY_TO_STRING_TAG = "toStringTag";
     public static final String PROPERTY_UNSCOPABLES = "unscopables";
+    public static final String FUNCTION_FOR = "for";
+    public static final String FUNCTION_KEY_FOR = "keyFor";
 
     public V8ValueBuiltInSymbol(long handle) {
         super(handle);
+    }
+
+    @CheckReturnValue
+    public V8ValueSymbol _for(String name) throws JavetException {
+        return invoke(FUNCTION_FOR, name);
     }
 
     public V8ValueSymbol getAsyncIterator() throws JavetException {
@@ -92,6 +100,10 @@ public class V8ValueBuiltInSymbol extends V8ValueObject {
 
     public V8ValueSymbol getUnscopables() throws JavetException {
         return get(PROPERTY_UNSCOPABLES);
+    }
+
+    public String keyFor(V8ValueSymbol v8ValueSymbol) throws JavetException {
+        return invokeString(FUNCTION_KEY_FOR, v8ValueSymbol);
     }
 
     @Override

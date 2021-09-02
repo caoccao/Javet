@@ -22,7 +22,14 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestV8ValueBuiltInSymbol extends BaseTestJavetRuntime {
     @Test
@@ -66,6 +73,26 @@ public class TestV8ValueBuiltInSymbol extends BaseTestJavetRuntime {
             }
             try (V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol.getUnscopables()) {
                 assertEquals("Symbol(Symbol.unscopables)", v8ValueSymbol.toString());
+            }
+        }
+    }
+
+    @Test
+    public void testStaticMethods() throws JavetException, IllegalAccessException {
+        try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol()) {
+            Class cls = V8ValueBuiltInSymbol.class;
+            List<Field> fields = Arrays.stream(cls.getFields())
+                    .filter(field -> Modifier.isStatic(field.getModifiers()) && field.getName().startsWith("PROPERTY_"))
+                    .collect(Collectors.toList());
+            for (Field field : fields) {
+                try (V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol._for((String) field.get(v8ValueBuiltInSymbol))) {
+                    assertNotNull(v8ValueSymbol);
+                }
+            }
+            try (V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol._for("test")) {
+                assertEquals("Symbol(test)", v8ValueSymbol.toString());
+                assertEquals("test", v8ValueSymbol.getDescription());
+                assertEquals("test", v8ValueBuiltInSymbol.keyFor(v8ValueSymbol));
             }
         }
     }
