@@ -113,6 +113,8 @@ public class JavetError {
             803, JavetErrorType.Runtime, "Runtime is not registered");
     public static final JavetError RuntimeLeakageDetected = new JavetError(
             804, JavetErrorType.Runtime, "${count} runtime(s) leakage is detected");
+    public static final JavetError RuntimeCloseFailure = new JavetError(
+            805, JavetErrorType.Runtime, "Failed to close the runtime with error message ${message}");
 
     protected int code;
     protected String format;

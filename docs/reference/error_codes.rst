@@ -50,6 +50,7 @@ Code Type        Name                                   Format
 802  Runtime     RuntimeAlreadyRegistered               Runtime is already registered                                                                                                                                    
 803  Runtime     RuntimeNotRegistered                   Runtime is not registered                                                                                                                                        
 804  Runtime     RuntimeLeakageDetected                 ${count} runtime(s) leakage is detected                                                                                                                          
+805  Runtime     RuntimeCloseFailure                    Failed to close the runtime with error message ${message}                                                                                                        
 ==== =========== ====================================== =================================================================================================================================================================
 
 

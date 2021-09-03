@@ -11,7 +11,7 @@ Release Notes
 * Updated ``V8Runtime`` to be completely thread-safe
 * Added ``V8ValueBuiltInSymbol``
 * Added ``createV8ValueSymbol`` to ``V8Runtime``
-* Added error code 407
+* Added error code 407 and 805
 
 0.9.10
 ------
