@@ -46,62 +46,76 @@ public class V8ValueBuiltInSymbol extends V8ValueFunction {
     }
 
     @CheckReturnValue
-    public V8ValueSymbol _for(String name) throws JavetException {
-        return invoke(FUNCTION_FOR, name);
+    public V8ValueSymbol _for(String description) throws JavetException {
+        return invoke(FUNCTION_FOR, description);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getAsyncIterator() throws JavetException {
         return get(PROPERTY_ASYNC_ITERATOR);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getHasInstance() throws JavetException {
         return get(PROPERTY_HAS_INSTANCE);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getIsConcatSpreadable() throws JavetException {
         return get(PROPERTY_IS_CONCAT_SPREADABLE);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getIterator() throws JavetException {
         return get(PROPERTY_ITERATOR);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getMatch() throws JavetException {
         return get(PROPERTY_MATCH);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getMatchAll() throws JavetException {
         return get(PROPERTY_MATCH_ALL);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getReplace() throws JavetException {
         return get(PROPERTY_REPLACE);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getSearch() throws JavetException {
         return get(PROPERTY_SEARCH);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getSpecies() throws JavetException {
         return get(PROPERTY_SPECIES);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getSplit() throws JavetException {
         return get(PROPERTY_SPLIT);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getToPrimitive() throws JavetException {
         return get(PROPERTY_TO_PRIMITIVE);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getToStringTag() throws JavetException {
         return get(PROPERTY_TO_STRING_TAG);
     }
 
+    @CheckReturnValue
     public V8ValueSymbol getUnscopables() throws JavetException {
         return get(PROPERTY_UNSCOPABLES);
     }
 
+    @CheckReturnValue
     public String keyFor(V8ValueSymbol v8ValueSymbol) throws JavetException {
         return invokeString(FUNCTION_KEY_FOR, v8ValueSymbol);
     }

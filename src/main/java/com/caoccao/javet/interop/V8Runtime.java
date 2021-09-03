@@ -38,6 +38,7 @@ import com.caoccao.javet.values.IV8Value;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -300,6 +301,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     public V8ValueString createV8ValueString(String str) throws JavetException {
         return decorateV8Value(new V8ValueString(str));
+    }
+
+    @Override
+    public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
+        Objects.requireNonNull(description);
+        assert description.length() > 0;
+        if (global) {
+            try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
+                return v8ValueBuiltInSymbol._for(description);
+            }
+        } else {
+            return decorateV8Value((V8ValueSymbol) v8Native.createV8Value(
+                    handle, V8ValueReferenceType.Symbol.getId(), description));
+        }
     }
 
     @Override

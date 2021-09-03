@@ -310,16 +310,16 @@ Error, Promise, RegExp, Proxy, Symbol, etc. are not supported.
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint v8ValueType, jobject mContext) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    V8LocalValue v8LocalValue;
+    V8LocalValue v8LocalValueResult;
     if (IS_V8_OBJECT(v8ValueType)) {
-        v8LocalValue = v8::Object::New(v8Context->GetIsolate());
+        v8LocalValueResult = v8::Object::New(v8Context->GetIsolate());
     }
     else if (IS_V8_ARRAY(v8ValueType)) {
-        v8LocalValue = v8::Array::New(v8Context->GetIsolate());
+        v8LocalValueResult = v8::Array::New(v8Context->GetIsolate());
     }
     else if (IS_V8_ARRAY_BUFFER(v8ValueType)) {
         if (IS_JAVA_INTEGER(jniEnv, mContext)) {
-            v8LocalValue = v8::ArrayBuffer::New(v8Context->GetIsolate(), TO_JAVA_INTEGER(jniEnv, mContext));
+            v8LocalValueResult = v8::ArrayBuffer::New(v8Context->GetIsolate(), TO_JAVA_INTEGER(jniEnv, mContext));
         }
     }
     else if (IS_V8_FUNCTION(v8ValueType)) {
@@ -328,28 +328,33 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
         javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer = new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextHandle);
         INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
-        v8LocalValue = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle).ToLocalChecked();
+        v8LocalValueResult = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle).ToLocalChecked();
         javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer->SetWeak(
             javetCallbackContextReferencePointer, Javet::Callback::JavetCloseWeakCallbackContextHandle, v8::WeakCallbackType::kParameter);
     }
     else if (IS_V8_MAP(v8ValueType)) {
-        v8LocalValue = v8::Map::New(v8Context->GetIsolate());
+        v8LocalValueResult = v8::Map::New(v8Context->GetIsolate());
     }
     else if (IS_V8_PROMISE(v8ValueType)) {
-        v8LocalValue = v8::Promise::Resolver::New(v8Context).ToLocalChecked();
+        v8LocalValueResult = v8::Promise::Resolver::New(v8Context).ToLocalChecked();
     }
     else if (IS_V8_PROXY(v8ValueType)) {
         V8LocalObject v8LocalObjectObject = mContext == nullptr
             ? v8::Object::New(v8Context->GetIsolate())
             : Javet::Converter::ToV8Value(jniEnv, v8Context, mContext).As<v8::Object>();
         auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
-        v8LocalValue = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler).ToLocalChecked();
+        v8LocalValueResult = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler).ToLocalChecked();
     }
     else if (IS_V8_SET(v8ValueType)) {
-        v8LocalValue = v8::Set::New(v8Context->GetIsolate());
+        v8LocalValueResult = v8::Set::New(v8Context->GetIsolate());
     }
-    if (!v8LocalValue.IsEmpty()) {
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalValue);
+    else if (IS_V8_SYMBOL(v8ValueType)) {
+        auto mDescription = (jstring)mContext;
+        auto v8LocalValueDescription = Javet::Converter::ToV8String(jniEnv, v8Context, mDescription);
+        v8LocalValueResult = v8::Symbol::New(v8Context->GetIsolate(), v8LocalValueDescription);
+    }
+    if (!v8LocalValueResult.IsEmpty()) {
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalValueResult);
     }
     return nullptr;
 }
@@ -1229,7 +1234,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
 #else
                     v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy));
 #endif
-                }
+            }
 
                 /*
                  * Set the source and update the start and end position.
@@ -1242,9 +1247,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                 const int newEndPosition = startPosition + umSourceCode->Length();
                 v8InternalShared.scope_info().SetPositionInfo(startPosition, newEndPosition);
                 return true;
-            }
         }
     }
+}
     return false;
 }
 

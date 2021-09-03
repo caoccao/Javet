@@ -75,6 +75,14 @@ public interface IV8Creatable {
     V8ValueString createV8ValueString(String str) throws JavetException;
 
     @CheckReturnValue
+    default V8ValueSymbol createV8ValueSymbol(String description) throws JavetException {
+        return createV8ValueSymbol(description, false);
+    }
+
+    @CheckReturnValue
+    V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException;
+
+    @CheckReturnValue
     V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException;
 
     V8ValueUndefined createV8ValueUndefined();

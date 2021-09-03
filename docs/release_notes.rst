@@ -10,6 +10,7 @@ Release Notes
 * Added ``unbind()``, ``unbindProperty()`` and ``unbindFunction()`` to ``IV8ValueObject``
 * Updated ``V8Runtime`` to be completely thread-safe
 * Added ``V8ValueBuiltInSymbol``
+* Added ``createV8ValueSymbol`` to ``V8Runtime``
 * Added error code 407
 
 0.9.10
