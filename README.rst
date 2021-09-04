@@ -19,6 +19,10 @@ Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js
 
 If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
+⚠️ If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because my MacBook Air 2012 will be soon deprecated by new version of V8. Please `donate <https://paypal.me/caoccao?locale.x=en_US>`_ to support me purchasing a new Mac OS (x86_64) device.
+
+⚠️ If you use Mac OS (arm64), unfortunately there is no Mac OS (arm64) build because I don't have any Mac OS (arm64) device. Please `donate <https://paypal.me/caoccao?locale.x=en_US>`_ to support me purchasing a new Mac OS (arm64) device.
+
 Major Features
 ==============
 
