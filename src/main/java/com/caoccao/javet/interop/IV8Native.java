@@ -169,7 +169,7 @@ public interface IV8Native {
 
     boolean setAccessor(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            String propertyName, Object getter, Object setter);
+            Object propertyName, Object getter, Object setter);
 
     /**
      * Sets flags.

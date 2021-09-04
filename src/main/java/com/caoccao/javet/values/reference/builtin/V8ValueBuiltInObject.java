@@ -19,22 +19,70 @@ package com.caoccao.javet.values.reference.builtin;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.IV8ValueArray;
+import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.Objects;
 
+/**
+ * The type V8 value built in object.
+ *
+ * @since 0.9.2
+ */
 @SuppressWarnings("unchecked")
 public class V8ValueBuiltInObject extends V8ValueObject {
 
+    /**
+     * The constant FUNCTION_ASSIGN.
+     *
+     * @since 0.9.2
+     */
     public static final String FUNCTION_ASSIGN = "assign";
+    /**
+     * The constant FUNCTION_GET_OWN_PROPERTY_SYMBOLS.
+     *
+     * @since 0.9.11
+     */
+    public static final String FUNCTION_GET_OWN_PROPERTY_SYMBOLS = "getOwnPropertySymbols";
 
+    /**
+     * Instantiates a new V 8 value built in object.
+     *
+     * @param handle the handle
+     * @since 0.9.2
+     */
     public V8ValueBuiltInObject(long handle) {
         super(handle);
     }
 
+    /**
+     * Assign V8 value object.
+     *
+     * @param v8Value1 the V8 value 1
+     * @param v8Value2 the V8 value 2
+     * @return the V8 value object
+     * @throws JavetException the javet exception
+     * @since 0.9.2
+     */
     @CheckReturnValue
     public V8ValueObject assign(V8ValueObject v8Value1, V8ValueObject v8Value2) throws JavetException {
         return invoke(FUNCTION_ASSIGN, Objects.requireNonNull(v8Value1), Objects.requireNonNull(v8Value2));
+    }
+
+
+    /**
+     * Gets own property symbols.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return the own property symbols
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    @CheckReturnValue
+    public IV8ValueArray getOwnPropertySymbols(IV8ValueObject iV8ValueObject) throws JavetException {
+        return invoke(FUNCTION_GET_OWN_PROPERTY_SYMBOLS, iV8ValueObject);
     }
 
     @Override

@@ -7,10 +7,12 @@ Release Notes
 
 * Upgraded Node.js to ``v14.17.6`` `(2021-08-31) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.6>`_
 * Upgraded V8 to ``v9.3.345.16`` `(2021-08-17) <https://v8.dev/blog/v8-release-93>`_
-* Added ``unbind()``, ``unbindProperty()`` and ``unbindFunction()`` to ``IV8ValueObject``
+* Added ``unbind()``, ``unbindProperty()``, ``unbindFunction()`` to ``IV8ValueObject``
 * Updated ``V8Runtime`` to be completely thread-safe
 * Added ``V8ValueBuiltInSymbol``
-* Added ``createV8ValueSymbol`` to ``V8Runtime``
+* Added ``getOwnPropertySymbols()`` to ``V8ValueBuiltInObject``
+* Added ``createV8ValueSymbol()`` to ``V8Runtime``
+* Added ``symbol`` to ``V8Property`` to enable getter and setter on symbol
 * Added error code 407 and 805
 
 0.9.10

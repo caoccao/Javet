@@ -31,6 +31,7 @@ import com.caoccao.javet.interop.binding.MethodDescriptor;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 import com.caoccao.javet.values.virtual.V8VirtualValue;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
@@ -102,7 +103,13 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                 setterMethodDescriptor.getMethod(), setterMethodDescriptor.isThisObjectRequired());
                         javetCallbackContexts.add(javetCallbackContextSetter);
                     }
-                    bindProperty(propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+                    if (getterMethodDescriptor.isSymbol()) {
+                        try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(propertyName, true)) {
+                            bindProperty(v8ValueSymbol, javetCallbackContextGetter, javetCallbackContextSetter);
+                        }
+                    } else {
+                        bindProperty(propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+                    }
                 } catch (Exception e) {
                     throw new JavetException(
                             JavetError.CallbackRegistrationFailure,
@@ -151,12 +158,24 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean bindProperty(
-            String propertyName,
+            V8ValueString propertyName,
             JavetCallbackContext javetCallbackContextGetter,
             JavetCallbackContext javetCallbackContextSetter) throws JavetException {
         Objects.requireNonNull(javetCallbackContextGetter);
         checkV8Runtime();
-        return v8Runtime.setAccessor(this, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+        return v8Runtime.setAccessor(
+                this, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+    }
+
+    @Override
+    public boolean bindProperty(
+            V8ValueSymbol propertyName,
+            JavetCallbackContext javetCallbackContextGetter,
+            JavetCallbackContext javetCallbackContextSetter) throws JavetException {
+        Objects.requireNonNull(javetCallbackContextGetter);
+        checkV8Runtime();
+        return v8Runtime.setAccessor(
+                this, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
     }
 
     @Override
@@ -251,12 +270,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         if (method.getParameterCount() == expectedGetterParameterCount) {
                             // Duplicated property name will be dropped.
                             if (!propertyGetterMap.containsKey(propertyName)) {
-                                propertyGetterMap.put(propertyName, new MethodDescriptor(method, v8Property.thisObjectRequired()));
+                                propertyGetterMap.put(
+                                        propertyName,
+                                        new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbol()));
                             }
                         } else if (method.getParameterCount() == expectedSetterParameterCount) {
                             // Duplicated property name will be dropped.
                             if (!propertySetterMap.containsKey(propertyName)) {
-                                propertySetterMap.put(propertyName, new MethodDescriptor(method, v8Property.thisObjectRequired()));
+                                propertySetterMap.put(
+                                        propertyName,
+                                        new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbol()));
                             }
                         } else {
                             throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
@@ -274,7 +297,9 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                     // Duplicated function will be dropped.
                     if (!functionMap.containsKey(functionName)) {
-                        functionMap.put(functionName, new MethodDescriptor(method, v8Function.thisObjectRequired()));
+                        functionMap.put(
+                                functionName,
+                                new MethodDescriptor(method, v8Function.thisObjectRequired()));
                     }
                 } else if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
                     if (method.getParameterCount() != 1) {
@@ -482,8 +507,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                             callbackReceiver, getterMethodDescriptor.getMethod().getName())) {
                         continue;
                     }
-                    if (unbindProperty(propertyName)) {
-                        ++unbindCount;
+                    if (getterMethodDescriptor.isSymbol()) {
+                        try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(propertyName, true)) {
+                            if (unbindProperty(v8ValueSymbol)) {
+                                ++unbindCount;
+                            }
+                        }
+                    } else {
+                        if (unbindProperty(propertyName)) {
+                            ++unbindCount;
+                        }
                     }
                 } catch (Exception e) {
                     throw new JavetException(
@@ -526,8 +559,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean unbindProperty(String propertyName) throws JavetException {
+    public boolean unbindProperty(V8ValueString propertyName) throws JavetException {
         checkV8Runtime();
-        return v8Runtime.setAccessor(this, propertyName, null, null);
+        return v8Runtime.setAccessor(
+                this, propertyName, null, null);
+    }
+
+    @Override
+    public boolean unbindProperty(V8ValueSymbol propertyName) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.setAccessor(
+                this, propertyName, null, null);
     }
 }

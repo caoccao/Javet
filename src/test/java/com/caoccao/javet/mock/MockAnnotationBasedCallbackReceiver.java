@@ -34,11 +34,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MockAnnotationBasedCallbackReceiver {
     private AtomicInteger count;
     private String stringValue;
+    private String symbolValue;
     private V8Runtime v8Runtime;
 
     public MockAnnotationBasedCallbackReceiver() {
         count = new AtomicInteger(0);
         stringValue = null;
+        symbolValue = null;
         v8Runtime = null;
     }
 
@@ -115,6 +117,12 @@ public class MockAnnotationBasedCallbackReceiver {
     public String getStringValueWithThis(V8ValueObject thisObject) throws JavetException {
         count.incrementAndGet();
         return thisObject.getString("stringValue");
+    }
+
+    @V8Property(symbol = true)
+    public String getSymbolValue() {
+        count.incrementAndGet();
+        return symbolValue;
     }
 
     @V8BindEnabler
@@ -204,6 +212,12 @@ public class MockAnnotationBasedCallbackReceiver {
     public void setStringValueWithThis(V8ValueObject thisObject, String stringValue) throws JavetException {
         count.incrementAndGet();
         thisObject.set("stringValue", stringValue);
+    }
+
+    @V8Property(symbol = true)
+    public void setSymbolValue(String symbolValue) {
+        count.incrementAndGet();
+        this.symbolValue = symbolValue;
     }
 
     // Declare the V8RuntimeSetter for dependency injection.

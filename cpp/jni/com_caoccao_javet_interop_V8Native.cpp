@@ -37,6 +37,7 @@
 
 #define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueInteger)
 #define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueString)
+#define IS_JAVA_SYMBOL(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueSymbol)
 #define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::V8Native::jmethodIDV8ValueIntegerToPrimitive)
 #define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::V8Native::jmethodIDV8ValueStringToPrimitive)
 
@@ -81,6 +82,8 @@ namespace Javet {
         static jclass jclassV8ValueString;
         static jmethodID jmethodIDV8ValueStringToPrimitive;
 
+        static jclass jclassV8ValueSymbol;
+
         void Dispose(JNIEnv* jniEnv) {
             if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
                 v8::V8::Dispose();
@@ -103,6 +106,8 @@ namespace Javet {
 
             jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueString"));
             jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
+
+            jclassV8ValueSymbol = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueSymbol"));
 
             LOG_INFO("V8::Initialize() begins.");
 #ifdef ENABLE_I18N
@@ -1096,13 +1101,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_set
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mPropertyName, jobject mContextGetter, jobject mContextSetter) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mPropertyName, jobject mContextGetter, jobject mContextSetter) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
-        auto umPropertyName = Javet::Converter::ToV8String(jniEnv, v8Context, mPropertyName);
+        V8LocalName v8LocalName;
+        if (IS_JAVA_STRING(jniEnv, mPropertyName)) {
+            v8LocalName = Javet::Converter::ToV8Value(jniEnv, v8Context, mPropertyName).As<v8::String>();
+        }
+        else if (IS_JAVA_SYMBOL(jniEnv, mPropertyName)) {
+            v8LocalName = Javet::Converter::ToV8Value(jniEnv, v8Context, mPropertyName).As<v8::Symbol>();
+        }
+        else {
+            return false;
+        }
         if (mContextGetter == nullptr) {
-            return v8LocalObject.As<v8::Object>()->SetAccessor(v8Context, umPropertyName, nullptr).ToChecked();
+            return v8LocalObject.As<v8::Object>()->SetAccessor(v8Context, v8LocalName, nullptr).ToChecked();
         }
         else {
             auto v8LocalArrayContext = v8::Array::New(v8Runtime->v8Isolate, 2);
@@ -1129,7 +1143,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
                 maybeResult = v8LocalArrayContext->Set(v8Context, 1, v8LocalContextSetterHandle);
                 setter = Javet::Callback::JavetPropertySetterCallback;
             }
-            return v8LocalObject.As<v8::Object>()->SetAccessor(v8Context, umPropertyName, getter, setter, v8LocalArrayContext).ToChecked();
+            return v8LocalObject.As<v8::Object>()->SetAccessor(v8Context, v8LocalName, getter, setter, v8LocalArrayContext).ToChecked();
         }
     }
     return false;

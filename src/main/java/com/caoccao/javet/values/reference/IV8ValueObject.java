@@ -27,6 +27,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.time.ZonedDateTime;
@@ -105,12 +106,77 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param propertyName               the property name
      * @param javetCallbackContextGetter the javet callback context getter
      * @param javetCallbackContextSetter the javet callback context setter
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    default boolean bindProperty(
+            String propertyName,
+            JavetCallbackContext javetCallbackContextGetter,
+            JavetCallbackContext javetCallbackContextSetter) throws JavetException {
+        return bindProperty(
+                getV8Runtime().createV8ValueString(propertyName),
+                javetCallbackContextGetter,
+                javetCallbackContextSetter);
+    }
+
+    /**
+     * Bind property.
+     *
+     * @param propertyName               the property name
+     * @param javetCallbackContextGetter the javet callback context getter
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    default boolean bindProperty(
+            V8ValueString propertyName,
+            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
+        return bindProperty(propertyName, javetCallbackContextGetter, null);
+    }
+
+    /**
+     * Bind property.
+     *
+     * @param propertyName               the property name
+     * @param javetCallbackContextGetter the javet callback context getter
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    default boolean bindProperty(
+            V8ValueSymbol propertyName,
+            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
+        return bindProperty(propertyName, javetCallbackContextGetter, null);
+    }
+
+    /**
+     * Bind property.
+     *
+     * @param propertyName               the property name
+     * @param javetCallbackContextGetter the javet callback context getter
+     * @param javetCallbackContextSetter the javet callback context setter
      * @return true if the property is bind, false if the property is not bind
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
     boolean bindProperty(
-            String propertyName,
+            V8ValueString propertyName,
+            JavetCallbackContext javetCallbackContextGetter,
+            JavetCallbackContext javetCallbackContextSetter) throws JavetException;
+
+    /**
+     * Bind property.
+     *
+     * @param propertyName               the property name
+     * @param javetCallbackContextGetter the javet callback context getter
+     * @param javetCallbackContextSetter the javet callback context setter
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    boolean bindProperty(
+            V8ValueSymbol propertyName,
             JavetCallbackContext javetCallbackContextGetter,
             JavetCallbackContext javetCallbackContextSetter) throws JavetException;
 
@@ -911,5 +977,25 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.9.11
      */
-    boolean unbindProperty(String propertyName) throws JavetException;
+    default boolean unbindProperty(String propertyName) throws JavetException {
+        return unbindProperty(getV8Runtime().createV8ValueString(propertyName));
+    }
+
+    /**
+     * Unbind property boolean.
+     *
+     * @param propertyName the property name
+     * @return the boolean
+     * @throws JavetException the javet exception
+     */
+    boolean unbindProperty(V8ValueString propertyName) throws JavetException;
+
+    /**
+     * Unbind property boolean.
+     *
+     * @param propertyName the property name
+     * @return the boolean
+     * @throws JavetException the javet exception
+     */
+    boolean unbindProperty(V8ValueSymbol propertyName) throws JavetException;
 }

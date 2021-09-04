@@ -902,9 +902,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     public boolean setAccessor(
             IV8ValueObject iV8ValueObject,
-            String propertyName,
+            V8Value propertyName,
             JavetCallbackContext javetCallbackContextGetter,
             JavetCallbackContext javetCallbackContextSetter) throws JavetException {
+        assert (propertyName instanceof V8ValueString || propertyName instanceof V8ValueSymbol);
         boolean isAccessorSet = v8Native.setAccessor(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
                 propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
         if (javetCallbackContextGetter != null && javetCallbackContextGetter.isValid()) {

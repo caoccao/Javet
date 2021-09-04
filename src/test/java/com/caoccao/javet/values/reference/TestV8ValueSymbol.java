@@ -18,12 +18,39 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueSymbol extends BaseTestJavetRuntime {
+    @Test
+    public void testGetAndSet() throws JavetException {
+        try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
+             V8ValueBuiltInObject v8ValueBuiltInObject = v8Runtime.getGlobalObject().getBuiltInObject();
+             V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            assertEquals("{}", v8ValueObject.toJsonString());
+            try (V8ValueSymbol v8ValueSymbolA = v8ValueBuiltInSymbol._for("a");
+                 V8ValueSymbol v8ValueSymbolB = v8ValueBuiltInSymbol._for("b")) {
+                assertTrue(v8ValueObject.get(v8ValueSymbolA).isUndefined());
+                assertTrue(v8ValueObject.get(v8ValueSymbolB).isUndefined());
+                v8ValueObject.set(v8ValueSymbolA, "aaa");
+                v8ValueObject.set(v8ValueSymbolB, "bbb");
+                assertEquals("aaa", v8ValueObject.getString(v8ValueSymbolA));
+                assertEquals("bbb", v8ValueObject.getString(v8ValueSymbolB));
+            }
+            assertEquals("{}", v8ValueObject.toJsonString());
+            try (IV8ValueArray v8ValueArray = v8ValueBuiltInObject.getOwnPropertySymbols(v8ValueObject)) {
+                assertEquals(2, v8ValueArray.getLength());
+                assertEquals("a", ((JavetEntitySymbol) v8ValueArray.getObject(0)).getDescription());
+                assertEquals("b", ((JavetEntitySymbol) v8ValueArray.getObject(1)).getDescription());
+            }
+        }
+    }
+
     @Test
     public void testGlobalSymbol() throws JavetException {
         try (V8ValueSymbol v8ValueSymbol1 = v8Runtime.createV8ValueSymbol("test", true);
