@@ -42,6 +42,8 @@ public class TestV8ValueSymbol extends BaseTestJavetRuntime {
                 assertEquals("aaa", v8ValueObject.getString(v8ValueSymbolA));
                 assertEquals("bbb", v8ValueObject.getString(v8ValueSymbolB));
             }
+            assertEquals("aaa", v8ValueObject.getString(new JavetEntitySymbol("a")));
+            assertEquals("bbb", v8ValueObject.getString(new JavetEntitySymbol("b")));
             assertEquals("{}", v8ValueObject.toJsonString());
             try (IV8ValueArray v8ValueArray = v8ValueBuiltInObject.getOwnPropertySymbols(v8ValueObject)) {
                 assertEquals(2, v8ValueArray.getLength());
