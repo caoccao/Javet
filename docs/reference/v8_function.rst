@@ -144,6 +144,39 @@ The second step is to call the functions or properties.
         v8Runtime.getGlobalObject().delete("a");
     }
 
+Can ``this`` be Passed in?
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Yes, both ``@V8Function`` and ``@V8Property`` support ``thisObjectRequired``. Just set it to ``true`` and specify the first argument as ``this``.
+
+.. code-block:: java
+
+    @V8Property(thisObjectRequired = true)
+    public ... functionName(V8ValueObject thisObject, ...) {
+        // function body
+    }
+
+This feature is especially useful when ``this`` needs to be returned. Just simply return the input ``this`` object and there is no need to create a new V8 object.
+
+Can Symbol Properties be Intercepted?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Yes, ``@V8Property`` supports ``symbol``. Just set it to ``true``.
+
+.. code-block:: java
+
+    @V8Property(symbol = true)
+    public String getValue() {
+        return value;
+    }
+
+    @V8Property(symbol = true)
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+Be careful, Javet only supports symbols that are registered as global symbols in property interception.
+
 How to Disable Properties or Functions?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -170,6 +203,13 @@ As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way 
     }
 
 ``@V8BindEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
+
+How to Unregister Properties or Functions?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``unbind()`` follows the same way that ``bind()`` goes to unregister both properties and functions.
+
+``unbindProperty()`` and ``unbindFunction()`` provide precise way of unregistering single property or function.
 
 Manual Registration
 -------------------

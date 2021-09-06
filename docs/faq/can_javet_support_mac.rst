@@ -5,9 +5,7 @@ Can Javet Support Mac?
 Now
 ===
 
-My MacBook Air mid-2012 was revived with Mac OS Catalina which is the lowest version supported by latest V8. I managed to have built `snapshot version (x86_64 only) <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_ for testing purpose.
-
-You are welcome taking a try and I look forward to your feedback.
+My MacBook Air mid-2012 was revived with Mac OS Catalina which is the lowest version supported by latest V8. I managed to include it in the regular release cycle.
 
 Known Issue
 -----------
@@ -19,13 +17,13 @@ Will the Mac OS Build be LTS?
 
 I doubt because when next time V8 abandons Catalina, I won't be able to create any new builds unless someone takes care of the Mac OS build or I get enough donation for a new device. |Donate|
 
-.. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
-    :target: https://paypal.me/caoccao?locale.x=en_US
-
 How about arm64?
 ----------------
 
-That is still not supported. Please read the reasons in the next section.
+That is still not supported. Please |Donate|
+
+.. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
+    :target: https://paypal.me/caoccao?locale.x=en_US
 
 Before Aug 10, 2021
 ===================

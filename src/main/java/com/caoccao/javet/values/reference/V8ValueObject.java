@@ -31,6 +31,7 @@ import com.caoccao.javet.interop.binding.MethodDescriptor;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 import com.caoccao.javet.values.virtual.V8VirtualValue;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
@@ -78,7 +79,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         if (!propertyGetterMap.isEmpty()) {
             for (Map.Entry<String, MethodDescriptor> entry : propertyGetterMap.entrySet()) {
                 String propertyName = entry.getKey();
-                MethodDescriptor getterMethodDescriptor = entry.getValue();
+                final MethodDescriptor getterMethodDescriptor = entry.getValue();
                 try {
                     if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
                             callbackReceiver, getterMethodDescriptor.getMethod().getName())) {
@@ -102,7 +103,13 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                 setterMethodDescriptor.getMethod(), setterMethodDescriptor.isThisObjectRequired());
                         javetCallbackContexts.add(javetCallbackContextSetter);
                     }
-                    bindProperty(propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+                    if (getterMethodDescriptor.isSymbol()) {
+                        try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(propertyName, true)) {
+                            bindProperty(v8ValueSymbol, javetCallbackContextGetter, javetCallbackContextSetter);
+                        }
+                    } else {
+                        bindProperty(propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+                    }
                 } catch (Exception e) {
                     throw new JavetException(
                             JavetError.CallbackRegistrationFailure,
@@ -115,6 +122,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         }
         if (!functionMap.isEmpty()) {
             for (Map.Entry<String, MethodDescriptor> entry : functionMap.entrySet()) {
+                String functionName = entry.getKey();
                 final MethodDescriptor functionMethodDescriptor = entry.getValue();
                 try {
                     if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
@@ -126,7 +134,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                             Modifier.isStatic(functionMethodDescriptor.getMethod().getModifiers()) ?
                                     null : callbackReceiver,
                             functionMethodDescriptor.getMethod(), functionMethodDescriptor.isThisObjectRequired());
-                    bindFunction(entry.getKey(), javetCallbackContext);
+                    bindFunction(functionName, javetCallbackContext);
                     javetCallbackContexts.add(javetCallbackContext);
                 } catch (Exception e) {
                     throw new JavetException(
@@ -150,12 +158,24 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean bindProperty(
-            String propertyName,
+            V8ValueString propertyName,
             JavetCallbackContext javetCallbackContextGetter,
             JavetCallbackContext javetCallbackContextSetter) throws JavetException {
         Objects.requireNonNull(javetCallbackContextGetter);
         checkV8Runtime();
-        return v8Runtime.setAccessor(this, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+        return v8Runtime.setAccessor(
+                this, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+    }
+
+    @Override
+    public boolean bindProperty(
+            V8ValueSymbol propertyName,
+            JavetCallbackContext javetCallbackContextGetter,
+            JavetCallbackContext javetCallbackContextSetter) throws JavetException {
+        Objects.requireNonNull(javetCallbackContextGetter);
+        checkV8Runtime();
+        return v8Runtime.setAccessor(
+                this, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
     }
 
     @Override
@@ -220,7 +240,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     protected BindingContext getBindingContext(Class<?> callbackReceiverClass) throws JavetException {
-        WeakHashMap<Class<?>, BindingContext> bindingContextWeakHashMap = v8Runtime.getBindingContextWeakHashMap();
+        Map<Class<?>, BindingContext> bindingContextWeakHashMap = v8Runtime.getBindingContextWeakHashMap();
         BindingContext bindingContext = bindingContextWeakHashMap.get(callbackReceiverClass);
         if (bindingContext == null) {
             bindingContext = new BindingContext();
@@ -250,12 +270,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         if (method.getParameterCount() == expectedGetterParameterCount) {
                             // Duplicated property name will be dropped.
                             if (!propertyGetterMap.containsKey(propertyName)) {
-                                propertyGetterMap.put(propertyName, new MethodDescriptor(method, v8Property.thisObjectRequired()));
+                                propertyGetterMap.put(
+                                        propertyName,
+                                        new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbol()));
                             }
                         } else if (method.getParameterCount() == expectedSetterParameterCount) {
                             // Duplicated property name will be dropped.
                             if (!propertySetterMap.containsKey(propertyName)) {
-                                propertySetterMap.put(propertyName, new MethodDescriptor(method, v8Property.thisObjectRequired()));
+                                propertySetterMap.put(
+                                        propertyName,
+                                        new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbol()));
                             }
                         } else {
                             throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
@@ -273,7 +297,9 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                     // Duplicated function will be dropped.
                     if (!functionMap.containsKey(functionName)) {
-                        functionMap.put(functionName, new MethodDescriptor(method, v8Function.thisObjectRequired()));
+                        functionMap.put(
+                                functionName,
+                                new MethodDescriptor(method, v8Function.thisObjectRequired()));
                     }
                 } else if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
                     if (method.getParameterCount() != 1) {
@@ -461,5 +487,88 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         } catch (JavetException e) {
             return e.getMessage();
         }
+    }
+
+    @Override
+    public int unbind(Object callbackReceiver) throws JavetException {
+        Objects.requireNonNull(callbackReceiver);
+        BindingContext bindingContext = getBindingContext(callbackReceiver.getClass());
+        Map<String, MethodDescriptor> propertyGetterMap = bindingContext.getPropertyGetterMap();
+        Map<String, MethodDescriptor> propertySetterMap = bindingContext.getPropertySetterMap();
+        Map<String, MethodDescriptor> functionMap = bindingContext.getFunctionMap();
+        Method v8BindEnabler = bindingContext.getV8BindEnabler();
+        int unbindCount = 0;
+        if (!propertyGetterMap.isEmpty()) {
+            for (Map.Entry<String, MethodDescriptor> entry : propertyGetterMap.entrySet()) {
+                String propertyName = entry.getKey();
+                final MethodDescriptor getterMethodDescriptor = entry.getValue();
+                try {
+                    if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
+                            callbackReceiver, getterMethodDescriptor.getMethod().getName())) {
+                        continue;
+                    }
+                    if (getterMethodDescriptor.isSymbol()) {
+                        try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(propertyName, true)) {
+                            if (unbindProperty(v8ValueSymbol)) {
+                                ++unbindCount;
+                            }
+                        }
+                    } else {
+                        if (unbindProperty(propertyName)) {
+                            ++unbindCount;
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new JavetException(
+                            JavetError.CallbackUnregistrationFailure,
+                            SimpleMap.of(
+                                    JavetError.PARAMETER_METHOD_NAME, getterMethodDescriptor.getMethod().getName(),
+                                    JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                            e);
+                }
+            }
+        }
+        if (!functionMap.isEmpty()) {
+            for (Map.Entry<String, MethodDescriptor> entry : functionMap.entrySet()) {
+                String functionName = entry.getKey();
+                final MethodDescriptor functionMethodDescriptor = entry.getValue();
+                try {
+                    if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
+                            callbackReceiver, functionMethodDescriptor.getMethod().getName())) {
+                        continue;
+                    }
+                    if (unbindFunction(functionName)) {
+                        ++unbindCount;
+                    }
+                } catch (Exception e) {
+                    throw new JavetException(
+                            JavetError.CallbackUnregistrationFailure,
+                            SimpleMap.of(
+                                    JavetError.PARAMETER_METHOD_NAME, functionMethodDescriptor.getMethod().getName(),
+                                    JavetError.PARAMETER_MESSAGE, e.getMessage()),
+                            e);
+                }
+            }
+        }
+        return unbindCount;
+    }
+
+    @Override
+    public boolean unbindFunction(String functionName) throws JavetException {
+        return delete(functionName);
+    }
+
+    @Override
+    public boolean unbindProperty(V8ValueString propertyName) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.setAccessor(
+                this, propertyName, null, null);
+    }
+
+    @Override
+    public boolean unbindProperty(V8ValueSymbol propertyName) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.setAccessor(
+                this, propertyName, null, null);
     }
 }

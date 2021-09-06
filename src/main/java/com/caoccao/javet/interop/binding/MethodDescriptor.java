@@ -32,6 +32,12 @@ public class MethodDescriptor {
      */
     protected Method method;
     /**
+     * The Symbol.
+     *
+     * @since 0.9.11
+     */
+    protected boolean symbol;
+    /**
      * The This object required.
      *
      * @since 0.9.2
@@ -46,7 +52,20 @@ public class MethodDescriptor {
      * @since 0.9.2
      */
     public MethodDescriptor(Method method, boolean thisObjectRequired) {
+        this(method, thisObjectRequired, false);
+    }
+
+    /**
+     * Instantiates a new Method descriptor.
+     *
+     * @param method             the method
+     * @param thisObjectRequired the this object required
+     * @param symbol             the symbol
+     * @since 0.9.11
+     */
+    public MethodDescriptor(Method method, boolean thisObjectRequired, boolean symbol) {
         this.method = method;
+        this.symbol = symbol;
         this.thisObjectRequired = thisObjectRequired;
     }
 
@@ -58,6 +77,16 @@ public class MethodDescriptor {
      */
     public Method getMethod() {
         return method;
+    }
+
+    /**
+     * Is symbol.
+     *
+     * @return the boolean
+     * @since 0.9.11
+     */
+    public boolean isSymbol() {
+        return symbol;
     }
 
     /**

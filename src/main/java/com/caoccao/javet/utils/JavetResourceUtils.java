@@ -24,10 +24,22 @@ import com.caoccao.javet.values.reference.IV8ValueReference;
 
 import java.util.Collection;
 
+/**
+ * The type Javet resource utils.
+ *
+ * @since 0.7.0
+ */
 public final class JavetResourceUtils {
     private JavetResourceUtils() {
     }
 
+    /**
+     * Is closed.
+     *
+     * @param object the object
+     * @return the boolean
+     * @since 0.9.10
+     */
     public static boolean isClosed(Object object) {
         if (object instanceof IJavetClosable) {
             return ((IJavetClosable) object).isClosed();
@@ -35,12 +47,24 @@ public final class JavetResourceUtils {
         return true;
     }
 
+    /**
+     * Safe close.
+     *
+     * @param objects the objects
+     * @since 0.7.1
+     */
     public static void safeClose(Object... objects) {
         for (Object object : objects) {
             safeClose(object);
         }
     }
 
+    /**
+     * Safe close.
+     *
+     * @param object the object
+     * @since 0.7.1
+     */
     public static void safeClose(Object object) {
         if (object == null) {
             return;
@@ -71,5 +95,24 @@ public final class JavetResourceUtils {
                 safeClose(o);
             }
         }
+    }
+
+    /**
+     * To clone V8 value array.
+     *
+     * @param v8Values the V8 values
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    public static V8Value[] toClone(V8Value[] v8Values) throws JavetException {
+        if (v8Values == null) {
+            return null;
+        }
+        V8Value[] clonedV8Values = new V8Value[v8Values.length];
+        for (int i = 0; i < v8Values.length; ++i) {
+            clonedV8Values[i] = v8Values[i].toClone();
+        }
+        return clonedV8Values;
     }
 }

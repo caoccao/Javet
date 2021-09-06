@@ -554,10 +554,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_set
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    setAccessor
- * Signature: (JJILjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)Z
+ * Signature: (JJILjava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
-  (JNIEnv *, jobject, jlong, jlong, jint, jstring, jobject, jobject);
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jobject, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

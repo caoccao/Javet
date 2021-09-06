@@ -18,6 +18,7 @@ Development
 ===========
 
 * `How to Think in Javet? <how_to_think_in_javet.rst>`_
+* `Where are ES6 API in V8 Mode? <where_are_es6_api_in_v8_mode.rst>`_
 
 Troubleshooting
 ===============

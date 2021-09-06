@@ -83,6 +83,8 @@ public class JavetError {
             405, JavetErrorType.Callback, "Callback ${methodName} failed with error message ${message}");
     public static final JavetError CallbackUnknownFailure = new JavetError(
             406, JavetErrorType.Callback, "Callback failed with unknown error message ${message}");
+    public static final JavetError CallbackUnregistrationFailure = new JavetError(
+            407, JavetErrorType.Callback, "Callback ${methodName} unregistration failed with error message ${message}");
 
     public static final JavetError ConverterFailure = new JavetError(
             501, JavetErrorType.Converter, "Failed to convert values with error message ${message}");
@@ -111,6 +113,8 @@ public class JavetError {
             803, JavetErrorType.Runtime, "Runtime is not registered");
     public static final JavetError RuntimeLeakageDetected = new JavetError(
             804, JavetErrorType.Runtime, "${count} runtime(s) leakage is detected");
+    public static final JavetError RuntimeCloseFailure = new JavetError(
+            805, JavetErrorType.Runtime, "Failed to close the runtime with error message ${message}");
 
     protected int code;
     protected String format;

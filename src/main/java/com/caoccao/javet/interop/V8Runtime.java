@@ -38,12 +38,14 @@ import com.caoccao.javet.values.IV8Value;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
@@ -56,7 +58,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
     protected static final int V8_VALUE_NUMBER_LOWER_BOUND = -128; // Inclusive
     protected static final int V8_VALUE_NUMBER_UPPER_BOUND = 128; // Exclusive
-    protected WeakHashMap<Class<?>, BindingContext> bindingContextWeakHashMap;
+    protected Map<Class<?>, BindingContext> bindingContextWeakHashMap;
     protected V8ValueBoolean[] cachedV8ValueBooleans;
     protected V8ValueInteger[] cachedV8ValueIntegers;
     protected V8ValueLong[] cachedV8ValueLongs;
@@ -88,17 +90,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
-        bindingContextWeakHashMap = new WeakHashMap<>();
-        callbackContextMap = new TreeMap<>();
+        bindingContextWeakHashMap = Collections.synchronizedMap(new WeakHashMap<>());
+        callbackContextMap = new ConcurrentHashMap<>();
         converter = DEFAULT_CONVERTER;
         gcScheduled = false;
         this.globalName = globalName;
         this.handle = handle;
         logger = new JavetDefaultLogger(getClass().getName());
-        v8ModuleMap = new HashMap<>();
+        v8ModuleMap = Collections.synchronizedMap(new HashMap<>());
         this.pooled = pooled;
         promiseRejectCallback = new JavetPromiseRejectCallback(logger);
-        referenceMap = new TreeMap<>();
+        referenceMap = new ConcurrentHashMap<>();
         this.v8Host = v8Host;
         this.v8Native = v8Native;
         v8ModuleResolver = null;
@@ -302,6 +304,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
+        Objects.requireNonNull(description);
+        assert description.length() > 0;
+        if (global) {
+            try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
+                return v8ValueBuiltInSymbol._for(description);
+            }
+        } else {
+            return decorateV8Value((V8ValueSymbol) v8Native.createV8Value(
+                    handle, V8ValueReferenceType.Symbol.getId(), description));
+        }
+    }
+
+    @Override
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(type.getName())) {
             return v8ValueFunction.callAsConstructor(length);
@@ -369,7 +385,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key));
     }
 
-    public WeakHashMap<Class<?>, BindingContext> getBindingContextWeakHashMap() {
+    public Map<Class<?>, BindingContext> getBindingContextWeakHashMap() {
         return bindingContextWeakHashMap;
     }
 
@@ -748,13 +764,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     public void removeReference(IV8ValueReference iV8ValueReference) throws JavetException {
         final long referenceHandle = iV8ValueReference.getHandle();
-        if (referenceMap.containsKey(referenceHandle)) {
-            final int referenceType = iV8ValueReference.getType().getId();
-            if (referenceType == V8ValueReferenceType.Module.getId()) {
-                removeV8Module((IV8Module) iV8ValueReference);
+        synchronized (referenceMap) {
+            if (referenceMap.containsKey(referenceHandle)) {
+                final int referenceType = iV8ValueReference.getType().getId();
+                if (referenceType == V8ValueReferenceType.Module.getId()) {
+                    removeV8Module((IV8Module) iV8ValueReference);
+                }
+                v8Native.removeReferenceHandle(referenceHandle, referenceType);
+                referenceMap.remove(referenceHandle);
             }
-            v8Native.removeReferenceHandle(referenceHandle, referenceType);
-            referenceMap.remove(referenceHandle);
         }
         if (gcScheduled) {
             lowMemoryNotification();
@@ -884,14 +902,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     public boolean setAccessor(
             IV8ValueObject iV8ValueObject,
-            String propertyName,
+            V8Value propertyName,
             JavetCallbackContext javetCallbackContextGetter,
             JavetCallbackContext javetCallbackContextSetter) throws JavetException {
-        Objects.requireNonNull(javetCallbackContextGetter);
+        assert (propertyName instanceof V8ValueString || propertyName instanceof V8ValueSymbol);
         boolean isAccessorSet = v8Native.setAccessor(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
                 propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
-        callbackContextMap.put(javetCallbackContextGetter.getHandle(), javetCallbackContextGetter);
-        if (javetCallbackContextSetter != null) {
+        if (javetCallbackContextGetter != null && javetCallbackContextGetter.isValid()) {
+            callbackContextMap.put(javetCallbackContextGetter.getHandle(), javetCallbackContextGetter);
+        }
+        if (javetCallbackContextSetter != null && javetCallbackContextSetter.isValid()) {
             callbackContextMap.put(javetCallbackContextSetter.getHandle(), javetCallbackContextSetter);
         }
         return isAccessorSet;

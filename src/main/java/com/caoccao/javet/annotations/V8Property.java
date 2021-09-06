@@ -37,9 +37,17 @@ public @interface V8Property {
     String name() default "";
 
     /**
+     * Symbol boolean.
+     *
+     * @return the boolean
+     * @since 0.9.11
+     */
+    boolean symbol() default false;
+
+    /**
      * This object required.
      *
-     * @return true: this object is required, false: this object is ignored
+     * @return true : this object is required, false: this object is ignored
      * @since 0.9.0
      */
     boolean thisObjectRequired() default false;

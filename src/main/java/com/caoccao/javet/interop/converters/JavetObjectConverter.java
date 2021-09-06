@@ -20,6 +20,7 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.entities.JavetEntityFunction;
 import com.caoccao.javet.entities.JavetEntityMap;
+import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetEntityFunction;
@@ -152,6 +153,9 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 }
             }
             return javetEntityFunction;
+        } else if (v8Value instanceof V8ValueSymbol) {
+            V8ValueSymbol v8ValueSymbol = (V8ValueSymbol) v8Value;
+            return new JavetEntitySymbol(v8ValueSymbol.getDescription());
         } else if (v8Value instanceof V8ValueObject) {
             if (v8Value instanceof V8ValueProxy) {
                 V8ValueProxy v8ValueProxy = (V8ValueProxy) v8Value;
@@ -266,6 +270,9 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             } else {
                 v8Value = v8Runtime.getExecutor(sourceCode).execute();
             }
+        } else if (object instanceof JavetEntitySymbol) {
+            JavetEntitySymbol javetEntitySymbol = (JavetEntitySymbol) object;
+            v8Value = v8Runtime.createV8ValueSymbol(javetEntitySymbol.getDescription(), true);
         } else if (object instanceof boolean[]) {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
             for (boolean item : (boolean[]) object) {

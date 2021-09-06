@@ -28,6 +28,8 @@
 #define IS_V8_PROXY(type) (type == Javet::Enums::V8ValueReferenceType::Proxy)
 #define IS_V8_SCRIPT(type) (type == Javet::Enums::V8ValueReferenceType::Script)
 #define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
+#define IS_V8_SYMBOL(type) (type == Javet::Enums::V8ValueReferenceType::Symbol)
+#define IS_V8_SYMBOL_OBJECT(type) (type == Javet::Enums::V8ValueReferenceType::SymbolObject)
 
 namespace Javet {
     namespace Enums {
@@ -47,14 +49,15 @@ namespace Javet {
                 Promise = 4,
                 Proxy = 5,
                 Symbol = 6,
-                Arguments = 7,
-                Map = 8,
-                Set = 9,
-                Array = 10,
-                Function = 11,
-                Iterator = 12,
-                WeakMap = 13,
-                WeakSet = 14,
+                SymbolObject = 7,
+                Arguments = 8,
+                Map = 9,
+                Set = 10,
+                Array = 11,
+                Function = 12,
+                Iterator = 13,
+                WeakMap = 14,
+                WeakSet = 15,
                 Script = 20,
                 Module = 21,
                 DataView = 30,

@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 /**
  * The type V8 value global object is a special object.
@@ -35,6 +36,7 @@ public final class V8ValueGlobalObject extends V8ValueObject {
 
     public static final String PROPERTY_JSON = "JSON";
     public static final String PROPERTY_PROMISE = "Promise";
+    public static final String PROPERTY_SYMBOL = "Symbol";
     public static final String PROPERTY_OBJECT = "Object";
 
     /**
@@ -77,6 +79,12 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     public V8ValueBuiltInPromise getBuiltInPromise() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_PROMISE);
         return v8Runtime.decorateV8Value(new V8ValueBuiltInPromise(v8ValueObject.getHandle()));
+    }
+
+    @CheckReturnValue
+    public V8ValueBuiltInSymbol getBuiltInSymbol() throws JavetException {
+        V8ValueObject v8ValueObject = get(PROPERTY_SYMBOL);
+        return v8Runtime.decorateV8Value(new V8ValueBuiltInSymbol(v8ValueObject.getHandle()));
     }
 
     @Override

@@ -20,6 +20,7 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.entities.JavetEntityFunction;
 import com.caoccao.javet.entities.JavetEntityMap;
+import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetConverterException;
@@ -210,6 +211,22 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertTrue(v8ValueSet.has("b"));
             assertTrue(v8ValueSet.has("c"));
         }
+    }
+
+    @Test
+    public void testSymbol() throws JavetException {
+        IJavetConverter converter = new JavetObjectConverter();
+        JavetEntitySymbol javetEntitySymbol = new JavetEntitySymbol("x");
+        try (V8ValueSymbol v8ValueSymbol = converter.toV8Value(v8Runtime, javetEntitySymbol)) {
+            assertNotNull(v8ValueSymbol);
+            assertEquals("x", v8ValueSymbol.getDescription());
+            assertEquals("Symbol(x)", v8ValueSymbol.toString());
+        }
+        javetEntitySymbol = v8Runtime.getExecutor("Symbol('test');").executeObject();
+        assertNotNull(javetEntitySymbol);
+        assertEquals("test", javetEntitySymbol.getDescription());
+        v8Runtime.getGlobalObject().set("a", javetEntitySymbol);
+        assertEquals("Symbol(test)", v8Runtime.getExecutor("a.toString();").executeString());
     }
 
     @Test

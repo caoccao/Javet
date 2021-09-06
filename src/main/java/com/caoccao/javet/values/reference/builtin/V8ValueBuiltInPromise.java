@@ -20,13 +20,13 @@ package com.caoccao.javet.values.reference.builtin;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValuePromise;
 
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
-public class V8ValueBuiltInPromise extends V8ValueObject {
+public class V8ValueBuiltInPromise extends V8ValueFunction {
 
     public static final String FUNCTION_ALL = "all";
     public static final String FUNCTION_ALL_SETTLED = "allSettled";

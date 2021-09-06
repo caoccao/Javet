@@ -68,10 +68,21 @@ Build V8 on Linux and Mac OS
     cd root_path_to_v8
     ninja -C out.gn/x64.release v8_monolith
 
+⚠️ In V8 v9.3, the following file needs to be patched.
+
+./include/cppgc/allocation.h
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: cpp
+
+    #include <cstdint>
+    #include <utility> // This line needs to be added.
+    #include <new>
+
 Build V8 on Windows
 -------------------
 
-Note: The patch script requires Python 3.
+⚠️ The patch script requires Python 3.
 
 .. code-block:: shell
 
@@ -101,7 +112,7 @@ Prepare Node.js
 Build Node.js on Linux
 ----------------------
 
-Note: The patch script requires Python 3.
+⚠️ The patch script requires Python 3.
 
 .. code-block:: shell
 

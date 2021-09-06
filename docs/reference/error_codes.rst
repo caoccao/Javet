@@ -37,6 +37,7 @@ Code Type        Name                                   Format
 404  Callback    CallbackRegistrationFailure            Callback ${methodName} registration failed with error message ${message}                                                                                         
 405  Callback    CallbackMethodFailure                  Callback ${methodName} failed with error message ${message}                                                                                                      
 406  Callback    CallbackUnknownFailure                 Callback failed with unknown error message ${message}                                                                                                            
+407  Callback    CallbackUnregistrationFailure          Callback ${methodName} unregistration failed with error message ${message}                                                                                       
 501  Converter   ConverterFailure                       Failed to convert values with error message ${message}                                                                                                           
 502  Converter   ConverterCircularStructure             Circular structure is detected with max depth ${maxDepth} reached                                                                                                
 601  Module      ModuleNameEmpty                        Module name is empty                                                                                                                                             
@@ -49,6 +50,7 @@ Code Type        Name                                   Format
 802  Runtime     RuntimeAlreadyRegistered               Runtime is already registered                                                                                                                                    
 803  Runtime     RuntimeNotRegistered                   Runtime is not registered                                                                                                                                        
 804  Runtime     RuntimeLeakageDetected                 ${count} runtime(s) leakage is detected                                                                                                                          
+805  Runtime     RuntimeCloseFailure                    Failed to close the runtime with error message ${message}                                                                                                        
 ==== =========== ====================================== =================================================================================================================================================================
 
 
