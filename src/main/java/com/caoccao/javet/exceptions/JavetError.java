@@ -44,6 +44,7 @@ public class JavetError {
     public static final String PARAMETER_OS = "OS";
 
     public static final String PARAMETER_FEATURE = "feature";
+    public static final String PARAMETER_SYMBOL = "symbol";
 
     public static final String PARAMETER_COUNT = "count";
     public static final String PARAMETER_CONTINUABLE = "continuable";
@@ -90,6 +91,8 @@ public class JavetError {
             501, JavetErrorType.Converter, "Failed to convert values with error message ${message}");
     public static final JavetError ConverterCircularStructure = new JavetError(
             502, JavetErrorType.Converter, "Circular structure is detected with max depth ${maxDepth} reached");
+    public static final JavetError ConverterSymbolNotBuiltIn = new JavetError(
+            503, JavetErrorType.Converter, "${symbol} is not a built-in symbol");
 
     public static final JavetError ModuleNameEmpty = new JavetError(
             601, JavetErrorType.Module, "Module name is empty");

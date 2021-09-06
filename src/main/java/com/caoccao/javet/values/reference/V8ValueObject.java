@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
@@ -33,6 +34,7 @@ import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 import com.caoccao.javet.values.virtual.V8VirtualValue;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
@@ -103,8 +105,18 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                 setterMethodDescriptor.getMethod(), setterMethodDescriptor.isThisObjectRequired());
                         javetCallbackContexts.add(javetCallbackContextSetter);
                     }
-                    if (getterMethodDescriptor.isSymbol()) {
+                    if (getterMethodDescriptor.getSymbolType() == V8ValueSymbolType.Custom) {
                         try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(propertyName, true)) {
+                            bindProperty(v8ValueSymbol, javetCallbackContextGetter, javetCallbackContextSetter);
+                        }
+                    } else if (getterMethodDescriptor.getSymbolType() == V8ValueSymbolType.BuiltIn) {
+                        try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
+                             V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(propertyName)) {
+                            if (v8ValueSymbol == null) {
+                                throw new JavetException(
+                                        JavetError.ConverterSymbolNotBuiltIn,
+                                        SimpleMap.of(JavetError.PARAMETER_SYMBOL, propertyName));
+                            }
                             bindProperty(v8ValueSymbol, javetCallbackContextGetter, javetCallbackContextSetter);
                         }
                     } else {
@@ -272,14 +284,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                             if (!propertyGetterMap.containsKey(propertyName)) {
                                 propertyGetterMap.put(
                                         propertyName,
-                                        new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbol()));
+                                        new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbolType()));
                             }
                         } else if (method.getParameterCount() == expectedSetterParameterCount) {
                             // Duplicated property name will be dropped.
                             if (!propertySetterMap.containsKey(propertyName)) {
                                 propertySetterMap.put(
                                         propertyName,
-                                        new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbol()));
+                                        new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbolType()));
                             }
                         } else {
                             throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
@@ -507,8 +519,20 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                             callbackReceiver, getterMethodDescriptor.getMethod().getName())) {
                         continue;
                     }
-                    if (getterMethodDescriptor.isSymbol()) {
+                    if (getterMethodDescriptor.getSymbolType() == V8ValueSymbolType.Custom) {
                         try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(propertyName, true)) {
+                            if (unbindProperty(v8ValueSymbol)) {
+                                ++unbindCount;
+                            }
+                        }
+                    } else if (getterMethodDescriptor.getSymbolType() == V8ValueSymbolType.BuiltIn) {
+                        try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
+                             V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(propertyName)) {
+                            if (v8ValueSymbol == null) {
+                                throw new JavetException(
+                                        JavetError.ConverterSymbolNotBuiltIn,
+                                        SimpleMap.of(JavetError.PARAMETER_SYMBOL, propertyName));
+                            }
                             if (unbindProperty(v8ValueSymbol)) {
                                 ++unbindCount;
                             }

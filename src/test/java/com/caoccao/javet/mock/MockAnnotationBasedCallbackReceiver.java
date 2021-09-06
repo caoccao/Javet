@@ -21,6 +21,7 @@ import com.caoccao.javet.annotations.V8BindEnabler;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.annotations.V8Property;
 import com.caoccao.javet.annotations.V8RuntimeSetter;
+import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -119,7 +120,7 @@ public class MockAnnotationBasedCallbackReceiver {
         return thisObject.getString("stringValue");
     }
 
-    @V8Property(symbol = true)
+    @V8Property(symbolType = V8ValueSymbolType.Custom)
     public String getSymbolValue() {
         count.incrementAndGet();
         return symbolValue;
@@ -214,7 +215,7 @@ public class MockAnnotationBasedCallbackReceiver {
         thisObject.set("stringValue", stringValue);
     }
 
-    @V8Property(symbol = true)
+    @V8Property(symbolType = V8ValueSymbolType.Custom)
     public void setSymbolValue(String symbolValue) {
         count.incrementAndGet();
         this.symbolValue = symbolValue;
@@ -224,5 +225,11 @@ public class MockAnnotationBasedCallbackReceiver {
     @V8RuntimeSetter
     public void setV8Runtime(V8Runtime v8Runtime) {
         this.v8Runtime = v8Runtime;
+    }
+
+    @V8Property(name = "toPrimitive", symbolType = V8ValueSymbolType.BuiltIn)
+    public Integer toPrimitive() {
+        count.incrementAndGet();
+        return 1000;
     }
 }

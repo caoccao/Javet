@@ -48,7 +48,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
                     v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
-            assertEquals(22, javetCallbackContexts.size());
+            assertEquals(23, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -110,7 +110,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8Runtime.getExecutor("a.primitiveAddShort(1, undefined)").executeInteger());
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(null)").executeString());
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(undefined)").executeString());
-            assertEquals(19, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
+            assertEquals(20, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
             try {
                 v8Runtime.getExecutor("a.echo('test')").executeVoid();
                 fail("Failed to throw an exception");
@@ -129,7 +129,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
                     v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
-            assertEquals(22, javetCallbackContexts.size());
+            assertEquals(23, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());

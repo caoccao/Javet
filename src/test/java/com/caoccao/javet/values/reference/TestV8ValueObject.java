@@ -45,7 +45,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
                     v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
-            assertEquals(22, javetCallbackContexts.size());
+            assertEquals(23, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -71,9 +71,11 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(13, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("abc", v8Runtime.getExecutor("a[Symbol.for('symbolValue')]").executeString());
             assertEquals(14, mockAnnotationBasedCallbackReceiver.getCount());
-            assertEquals(19, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
+            assertEquals(1000, v8Runtime.getExecutor("a[Symbol.toPrimitive]").executeInteger());
+            assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(20, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
             assertNull(v8Runtime.getExecutor("a['stringValue']").executeString());
-            assertEquals(14, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
         }
         v8Runtime.lowMemoryNotification();
     }

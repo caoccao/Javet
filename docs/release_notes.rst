@@ -2,6 +2,12 @@
 Release Notes
 =============
 
+0.9.12
+------
+
+* Added error code 503
+* Enhanced ``V8Property`` to support built-in symbols
+
 0.9.11
 ------
 
