@@ -46,6 +46,7 @@
 #define IS_JAVA_REFERENCE(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueReference)
 #define IS_JAVA_REG_EXP(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueRegExp)
 #define IS_JAVA_SET(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueSet)
+#define IS_JAVA_SHARED_ARRAY_BUFFER(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueSharedArrayBuffer)
 #define IS_JAVA_SYMBOL(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueSymbol)
 #define IS_JAVA_SYMBOL_OBJECT(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueSymbolObject)
 #define IS_JAVA_WEAK_MAP(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueWeakMap)
@@ -169,6 +170,10 @@ namespace Javet {
             jmethodIDV8ValueSetConstructor = jniEnv->GetMethodID(jclassV8ValueSet, JAVA_CONSTRUCTOR_AND_SIGNATURE_FROM_HANDLE);
             jmethodIDV8ValueSetGetHandle = jniEnv->GetMethodID(jclassV8ValueSet, JAVA_METHOD_AND_SIGNATURE_GET_HANDLE);
 
+            jclassV8ValueSharedArrayBuffer = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueSharedArrayBuffer"));
+            jmethodIDV8ValueSharedArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueSharedArrayBuffer, "<init>", "(JLjava/nio/ByteBuffer;)V");
+            jmethodIDV8ValueSharedArrayBufferGetHandle = jniEnv->GetMethodID(jclassV8ValueSharedArrayBuffer, JAVA_METHOD_AND_SIGNATURE_GET_HANDLE);
+
             jclassV8ValueSymbol = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueSymbol"));
             jmethodIDV8ValueSymbolConstructor = jniEnv->GetMethodID(jclassV8ValueSymbol, JAVA_CONSTRUCTOR_AND_SIGNATURE_FROM_HANDLE);
             jmethodIDV8ValueSymbolGetHandle = jniEnv->GetMethodID(jclassV8ValueSymbol, JAVA_METHOD_AND_SIGNATURE_GET_HANDLE);
@@ -273,6 +278,11 @@ namespace Javet {
                 return jniEnv->NewObject(jclassV8ValueArrayBuffer, jmethodIDV8ValueArrayBufferConstructor, ToV8PersistentValueReference(v8Context, v8Value),
                     jniEnv->NewDirectByteBuffer(v8ArrayBuffer->GetBackingStore()->Data(), v8ArrayBuffer->ByteLength()));
             }
+            if (v8Value->IsSharedArrayBuffer()) {
+                auto v8SharedArrayBuffer = v8Value.As<v8::SharedArrayBuffer>();
+                return jniEnv->NewObject(jclassV8ValueSharedArrayBuffer, jmethodIDV8ValueSharedArrayBufferConstructor, ToV8PersistentValueReference(v8Context, v8Value),
+                    jniEnv->NewDirectByteBuffer(v8SharedArrayBuffer->GetBackingStore()->Data(), v8SharedArrayBuffer->ByteLength()));
+            }
             if (v8Value->IsArrayBufferView()) {
                 /*
                 ArrayBufferView is a helper type representing any of typed array or DataView.
@@ -349,7 +359,10 @@ namespace Javet {
                 return ToExternalV8ValuePrimitive(jniEnv, jclassV8ValueString, jmethodIDV8ValueStringConstructor, v8Context, v8Value);
             }
             if (v8Value->IsName()) {
-                // It defaults to V8ValueObject.
+                /*
+                 * Name is handled by either String or Symbol.
+                 * This block should not be entered.
+                 */
             }
 #ifndef ENABLE_NODE
             if (v8Value->IsModule()) {

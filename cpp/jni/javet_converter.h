@@ -135,6 +135,10 @@ namespace Javet {
         static jmethodID jmethodIDV8ValueSetConstructor;
         static jmethodID jmethodIDV8ValueSetGetHandle;
 
+        static jclass jclassV8ValueSharedArrayBuffer;
+        static jmethodID jmethodIDV8ValueSharedArrayBufferConstructor;
+        static jmethodID jmethodIDV8ValueSharedArrayBufferGetHandle;
+
         static jclass jclassV8ValueSymbol;
         static jmethodID jmethodIDV8ValueSymbolConstructor;
         static jmethodID jmethodIDV8ValueSymbolGetHandle;
