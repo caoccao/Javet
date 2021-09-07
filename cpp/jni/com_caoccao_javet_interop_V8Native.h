@@ -121,6 +121,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_delete
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    deletePrivateProperty
+ * Signature: (JJILjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_deletePrivateProperty
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    equals
  * Signature: (JJJ)Z
  */
@@ -209,6 +217,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getOwnProperty
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getPrivateProperty
+ * Signature: (JJILjava/lang/String;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPrivateProperty
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getProperty
  * Signature: (JJILjava/lang/Object;)Ljava/lang/Object;
  */
@@ -270,6 +286,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_has
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnProperty
   (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    hasPrivateProperty
+ * Signature: (JJILjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPrivateProperty
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -566,6 +590,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
   (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setPrivateProperty
+ * Signature: (JJILjava/lang/String;Ljava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setPrivateProperty
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

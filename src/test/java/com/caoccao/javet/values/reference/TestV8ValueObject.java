@@ -225,7 +225,23 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testGetSetDelete() throws JavetException {
+    public void testGetSetDeletePrivate() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            assertFalse(v8ValueObject.hasPrivateProperty("x"));
+            assertTrue(v8ValueObject.getPrivateProperty("x").isUndefined());
+            assertTrue(v8ValueObject.setPrivateProperty("x", 1));
+            assertTrue(v8ValueObject.hasPrivateProperty("x"));
+            assertEquals(1, v8ValueObject.getPrivatePropertyInteger("x"));
+            try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
+                assertEquals("[]", iV8ValueArray.toJsonString());
+            }
+            assertTrue(v8ValueObject.deletePrivateProperty("x"));
+            assertTrue(v8ValueObject.getPrivateProperty("x").isUndefined());
+        }
+    }
+
+    @Test
+    public void testGetSetDeletePublic() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
             assertTrue(v8ValueObject.set("a", 1));
             assertTrue(v8ValueObject.set("b", "2"));

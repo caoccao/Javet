@@ -23,6 +23,8 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 
+import java.util.Objects;
+
 /**
  * The type V8 virtual value.
  *
@@ -54,6 +56,7 @@ public class V8VirtualValue implements IJavetClosable {
      * @since 0.8.5
      */
     public V8VirtualValue(V8Runtime v8Runtime, Object object) throws JavetException {
+        Objects.requireNonNull(v8Runtime);
         if (object instanceof V8Value) {
             converted = false;
             value = (V8Value) object;

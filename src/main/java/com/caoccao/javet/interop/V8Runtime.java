@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.*;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -129,6 +130,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         v8Native.await(handle);
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T call(
             IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
             throws JavetException {
@@ -137,6 +139,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), receiver, returnResult, v8Values));
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(
             IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
         decorateV8Values(v8Values);
@@ -149,6 +152,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         v8Native.clearWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws JavetException {
         return decorateV8Value((T) v8Native.cloneV8Value(
                 handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId()));
@@ -168,6 +172,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    @CheckReturnValue
     public V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(false);
@@ -177,6 +182,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
+    @CheckReturnValue
     public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(true);
@@ -201,12 +207,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueArray createV8ValueArray() throws JavetException {
         return decorateV8Value((V8ValueArray) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Array.getId(), null));
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException {
         return decorateV8Value((V8ValueArrayBuffer) v8Native.createV8Value(
                 handle, V8ValueReferenceType.ArrayBuffer.getId(), createV8ValueInteger(length)));
@@ -221,6 +229,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
         Objects.requireNonNull(v8ValueArrayBuffer);
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(PROPERTY_DATA_VIEW)) {
@@ -234,6 +243,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
         Objects.requireNonNull(javetCallbackContext);
         V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
@@ -243,6 +253,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueFunction createV8ValueFunction(String codeString) throws JavetException {
         return getExecutor(codeString).execute();
     }
@@ -256,6 +267,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueLong createV8ValueLong(long longValue) throws JavetException {
         if (longValue >= V8_VALUE_NUMBER_LOWER_BOUND && longValue < V8_VALUE_NUMBER_UPPER_BOUND) {
             return cachedV8ValueLongs[(int) longValue - V8_VALUE_NUMBER_LOWER_BOUND];
@@ -264,6 +276,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueMap createV8ValueMap() throws JavetException {
         return decorateV8Value((V8ValueMap) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Map.getId(), null));
@@ -275,24 +288,28 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueObject createV8ValueObject() throws JavetException {
         return decorateV8Value((V8ValueObject) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Object.getId(), null));
     }
 
     @Override
+    @CheckReturnValue
     public V8ValuePromise createV8ValuePromise() throws JavetException {
         return decorateV8Value((V8ValuePromise) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Promise.getId(), null));
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException {
         return decorateV8Value((V8ValueProxy) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Proxy.getId(), v8ValueObject));
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueSet createV8ValueSet() throws JavetException {
         return decorateV8Value((V8ValueSet) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Set.getId(), null));
@@ -304,6 +321,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
         Objects.requireNonNull(description);
         assert description.length() > 0;
@@ -318,6 +336,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(type.getName())) {
             return v8ValueFunction.callAsConstructor(length);
@@ -339,6 +358,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return decorateV8Value(new V8ValueZonedDateTime(zonedDateTime));
     }
 
+    @CheckReturnValue
     public <T extends IV8Value> T decorateV8Value(T v8Value) throws JavetException {
         if (v8Value != null) {
             if (v8Value.getV8Runtime() == null) {
@@ -366,11 +386,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.delete(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
+    public boolean deletePrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
+        return v8Native.deletePrivateProperty(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
+    }
+
     public boolean equals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
             throws JavetException {
         return v8Native.equals(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T execute(
             String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
         return decorateV8Value((T) v8Native.execute(
@@ -379,6 +405,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T get(
             IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return decorateV8Value((T) v8Native.get(
@@ -430,6 +457,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.getIdentityHash(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
+    @CheckReturnValue
     public IV8ValueArray getInternalProperties(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return decorateV8Value((V8ValueArray) v8Native.getInternalProperties(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
@@ -461,16 +489,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return logger;
     }
 
+    @CheckReturnValue
     public IV8ValueArray getOwnPropertyNames(
             IV8ValueObject iV8ValueObject) throws JavetException {
         return decorateV8Value((V8ValueArray) v8Native.getOwnPropertyNames(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
     }
 
+    @CheckReturnValue
+    public <T extends V8Value> T getPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName)
+            throws JavetException {
+        return decorateV8Value((T) v8Native.getPrivateProperty(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName));
+    }
+
     public IJavetPromiseRejectCallback getPromiseRejectCallback() {
         return promiseRejectCallback;
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T getProperty(
             IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         decorateV8Value(key);
@@ -478,12 +515,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key));
     }
 
+    @CheckReturnValue
     public IV8ValueArray getPropertyNames(
             IV8ValueObject iV8ValueObject) throws JavetException {
         return decorateV8Value((V8ValueArray) v8Native.getPropertyNames(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
     }
 
+    @CheckReturnValue
     public <T extends IV8ValueObject> T getPrototype(IV8ValueObject iV8ValueObject) throws JavetException {
         return decorateV8Value((T) v8Native.getPrototype(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
@@ -513,10 +552,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Inspector;
     }
 
+    @CheckReturnValue
     public V8Locker getV8Locker() throws JavetException {
         return new V8Locker(this, v8Native);
     }
 
+    @CheckReturnValue
     public IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
         decorateV8Value(v8ModuleReferrer);
         if (containsV8Module(resourceName)) {
@@ -547,6 +588,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         decorateV8Value(key);
         return v8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
+    }
+
+    public boolean hasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
+        return v8Native.hasPrivateProperty(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
     }
 
     /**
@@ -584,6 +630,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T invoke(
             IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values)
             throws JavetException {
@@ -626,16 +673,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T moduleEvaluate(
             IV8Module iV8Module, boolean resultRequired) throws JavetException {
         return decorateV8Value((T) v8Native.moduleEvaluate(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId(), resultRequired));
     }
 
+    @CheckReturnValue
     public V8ValueError moduleGetException(IV8Module iV8Module) throws JavetException {
-        return decorateV8Value((V8ValueError) v8Native.moduleGetException(handle, iV8Module.getHandle(), iV8Module.getType().getId()));
+        return decorateV8Value((V8ValueError) v8Native.moduleGetException(
+                handle, iV8Module.getHandle(), iV8Module.getType().getId()));
     }
 
+    @CheckReturnValue
     public V8ValueObject moduleGetNamespace(IV8Module iV8Module) throws JavetException {
         return decorateV8Value((V8ValueObject) v8Native.moduleGetNamespace(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId()));
@@ -656,17 +707,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.moduleInstantiate(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
+    @CheckReturnValue
     public <T extends V8ValuePromise> T promiseCatch(
             IV8ValuePromise iV8ValuePromise, IV8ValueFunction functionHandle) throws JavetException {
         return decorateV8Value((T) v8Native.promiseCatch(
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId(), functionHandle.getHandle()));
     }
 
+    @CheckReturnValue
     public V8ValuePromise promiseGetPromise(V8ValuePromise v8ValuePromise) throws JavetException {
         return decorateV8Value((V8ValuePromise) v8Native.promiseGetPromise(
                 handle, v8ValuePromise.getHandle(), v8ValuePromise.getType().getId()));
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T promiseGetResult(IV8ValuePromise iV8ValuePromise) throws JavetException {
         return decorateV8Value((T) v8Native.promiseGetResult(
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId()));
@@ -694,6 +748,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, v8ValuePromise.getHandle(), v8ValuePromise.getType().getId(), v8Value);
     }
 
+    @CheckReturnValue
     public <T extends V8ValuePromise> T promiseThen(
             IV8ValuePromise iV8ValuePromise, IV8ValueFunction functionFulfilledHandle,
             IV8ValueFunction functionRejectedHandle) throws JavetException {
@@ -703,11 +758,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
     }
 
+    @CheckReturnValue
     public V8ValueObject proxyGetHandler(IV8ValueProxy iV8ValueProxy) throws JavetException {
         return decorateV8Value((V8ValueObject) v8Native.proxyGetHandler(
                 handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId()));
     }
 
+    @CheckReturnValue
     public V8ValueObject proxyGetTarget(IV8ValueProxy iV8ValueProxy) throws JavetException {
         return decorateV8Value((V8ValueObject) v8Native.proxyGetTarget(
                 handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId()));
@@ -888,6 +945,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.sameValue(handle, iV8ValueObject1.getHandle(), iV8ValueObject2.getHandle());
     }
 
+    @CheckReturnValue
     public <T extends V8Value> T scriptRun(
             IV8Script iV8Script, boolean resultRequired) throws JavetException {
         return decorateV8Value((T) v8Native.scriptRun(
@@ -932,6 +990,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public void setLogger(IJavetLogger logger) {
         this.logger = logger;
+    }
+
+    public boolean setPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName, V8Value propertyValue)
+            throws JavetException {
+        decorateV8Value(propertyValue);
+        return v8Native.setPrivateProperty(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName, propertyValue);
     }
 
     public void setPromiseRejectCallback(IJavetPromiseRejectCallback promiseRejectCallback) {
@@ -996,6 +1061,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @CheckReturnValue
     public <T, V extends V8Value> V toV8Value(T object) throws JavetException {
         return converter.toV8Value(this, object);
     }

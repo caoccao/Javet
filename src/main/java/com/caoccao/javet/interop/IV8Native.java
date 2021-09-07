@@ -52,6 +52,8 @@ public interface IV8Native {
 
     boolean delete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
+    boolean deletePrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key);
+
     boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     Object execute(
@@ -77,6 +79,8 @@ public interface IV8Native {
 
     Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    Object getPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String propertyName);
+
     Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -92,6 +96,8 @@ public interface IV8Native {
     boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
+
+    boolean hasPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int type, String propertyName);
 
     void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
 
@@ -180,6 +186,8 @@ public interface IV8Native {
      * @param flags the flags
      */
     void setFlags(String flags);
+
+    boolean setPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);
 
     boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
