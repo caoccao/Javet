@@ -46,7 +46,9 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
@@ -65,6 +67,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected V8ValueLong[] cachedV8ValueLongs;
     protected V8ValueNull cachedV8ValueNull;
     protected V8ValueUndefined cachedV8ValueUndefined;
+    protected ReadWriteLock callbackContextLock;
     /**
      * The Callback context map.
      * <p>
@@ -82,9 +85,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected IJavetLogger logger;
     protected boolean pooled;
     protected IJavetPromiseRejectCallback promiseRejectCallback;
+    protected ReadWriteLock referenceLock;
     protected Map<Long, IV8ValueReference> referenceMap;
     protected V8Host v8Host;
     protected V8Inspector v8Inspector;
+    protected ReadWriteLock v8ModuleLock;
     protected Map<String, IV8Module> v8ModuleMap;
     protected IV8ModuleResolver v8ModuleResolver;
     protected IV8Native v8Native;
@@ -92,20 +97,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
         assert handle != 0;
         bindingContextWeakHashMap = Collections.synchronizedMap(new WeakHashMap<>());
-        callbackContextMap = new ConcurrentHashMap<>();
+        callbackContextLock = new ReentrantReadWriteLock();
+        callbackContextMap = new HashMap<>();
         converter = DEFAULT_CONVERTER;
         gcScheduled = false;
         this.globalName = globalName;
         this.handle = handle;
         logger = new JavetDefaultLogger(getClass().getName());
-        v8ModuleMap = Collections.synchronizedMap(new HashMap<>());
         this.pooled = pooled;
         promiseRejectCallback = new JavetPromiseRejectCallback(logger);
-        referenceMap = new ConcurrentHashMap<>();
+        referenceLock = new ReentrantReadWriteLock();
+        referenceMap = new HashMap<>();
         this.v8Host = v8Host;
-        this.v8Native = v8Native;
-        v8ModuleResolver = null;
         v8Inspector = null;
+        this.v8Native = v8Native;
+        v8ModuleLock = new ReentrantReadWriteLock();
+        v8ModuleMap = new HashMap<>();
+        v8ModuleResolver = null;
         initializeV8ValueCache();
     }
 
@@ -115,11 +123,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public void addReference(IV8ValueReference iV8ValueReference) {
-        referenceMap.put(iV8ValueReference.getHandle(), iV8ValueReference);
+        Lock readLock = referenceLock.readLock();
+        try {
+            readLock.lock();
+            referenceMap.put(iV8ValueReference.getHandle(), iV8ValueReference);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public void addV8Module(IV8Module iV8Module) {
-        v8ModuleMap.put(iV8Module.getResourceName(), iV8Module);
+        Lock readLock = v8ModuleLock.readLock();
+        try {
+            readLock.lock();
+            v8ModuleMap.put(iV8Module.getResourceName(), iV8Module);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public void allowEval(boolean allow) {
@@ -203,7 +223,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public boolean containsV8Module(String resourceName) {
-        return v8ModuleMap.containsKey(resourceName);
+        Lock readLock = v8ModuleLock.readLock();
+        try {
+            readLock.lock();
+            return v8ModuleMap.containsKey(resourceName);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
@@ -248,7 +274,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         Objects.requireNonNull(javetCallbackContext);
         V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Function.getId(), javetCallbackContext));
-        callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
+        Lock writeLock = callbackContextLock.writeLock();
+        try {
+            writeLock.lock();
+            callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
+        } finally {
+            writeLock.unlock();
+        }
         return v8ValueFunction;
     }
 
@@ -417,11 +449,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public JavetCallbackContext getCallbackContext(long handle) {
-        return callbackContextMap.get(handle);
+        Lock readLock = callbackContextLock.readLock();
+        try {
+            readLock.lock();
+            return callbackContextMap.get(handle);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public int getCallbackContextCount() {
-        return callbackContextMap.size();
+        Lock readLock = callbackContextLock.readLock();
+        try {
+            readLock.lock();
+            return callbackContextMap.size();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public IJavetConverter getConverter() {
@@ -529,7 +573,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public int getReferenceCount() {
-        return referenceMap.size();
+        Lock readLock = referenceLock.readLock();
+        try {
+            readLock.lock();
+            return referenceMap.size();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
@@ -559,17 +609,42 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     @CheckReturnValue
     public IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
-        decorateV8Value(v8ModuleReferrer);
-        if (containsV8Module(resourceName)) {
-            return v8ModuleMap.get(resourceName);
-        } else if (v8ModuleResolver != null) {
-            return v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
+        if (resourceName != null && resourceName.length() > 0) {
+            decorateV8Value(v8ModuleReferrer);
+            Lock readLock = v8ModuleLock.readLock();
+            try {
+                readLock.lock();
+                if (v8ModuleMap.containsKey(resourceName)) {
+                    return v8ModuleMap.get(resourceName);
+                }
+            } finally {
+                readLock.unlock();
+            }
+            if (v8ModuleResolver != null) {
+                IV8Module iV8Module = v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
+                if (iV8Module != null) {
+                    Lock writeLock = v8ModuleLock.writeLock();
+                    try {
+                        writeLock.lock();
+                        v8ModuleMap.put(resourceName, iV8Module);
+                        return iV8Module;
+                    } finally {
+                        writeLock.unlock();
+                    }
+                }
+            }
         }
         return null;
     }
 
     public int getV8ModuleCount() {
-        return v8ModuleMap.size();
+        Lock readLock = v8ModuleLock.readLock();
+        try {
+            readLock.lock();
+            return v8ModuleMap.size();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public IV8ModuleResolver getV8ModuleResolver() {
@@ -797,18 +872,30 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public void removeCallbackContext(long handle) {
-        callbackContextMap.remove(handle);
+        Lock writeLock = callbackContextLock.writeLock();
+        try {
+            writeLock.lock();
+            callbackContextMap.remove(handle);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     protected void removeCallbackContexts() {
-        if (!callbackContextMap.isEmpty()) {
-            final int callbackContextCount = callbackContextMap.size();
-            for (long handle : callbackContextMap.keySet()) {
-                removeJNIGlobalRef(handle);
+        Lock writeLock = callbackContextLock.writeLock();
+        try {
+            writeLock.lock();
+            if (!callbackContextMap.isEmpty()) {
+                final int callbackContextCount = callbackContextMap.size();
+                for (long handle : callbackContextMap.keySet()) {
+                    removeJNIGlobalRef(handle);
+                }
+                logger.logWarn("{0} V8 callback context object(s) not recycled.",
+                        Integer.toString(callbackContextCount));
+                callbackContextMap.clear();
             }
-            logger.logWarn("{0} V8 callback context object(s) not recycled.",
-                    Integer.toString(callbackContextCount));
-            callbackContextMap.clear();
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -821,7 +908,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     public void removeReference(IV8ValueReference iV8ValueReference) throws JavetException {
         final long referenceHandle = iV8ValueReference.getHandle();
-        synchronized (referenceMap) {
+        Lock writeLock = referenceLock.writeLock();
+        try {
+            writeLock.lock();
             if (referenceMap.containsKey(referenceHandle)) {
                 final int referenceType = iV8ValueReference.getType().getId();
                 if (referenceType == V8ValueReferenceType.Module.getId()) {
@@ -830,6 +919,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 v8Native.removeReferenceHandle(referenceHandle, referenceType);
                 referenceMap.remove(referenceHandle);
             }
+        } finally {
+            writeLock.unlock();
         }
         if (gcScheduled) {
             lowMemoryNotification();
@@ -838,36 +929,49 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     protected void removeReferences() throws JavetException {
-        if (!referenceMap.isEmpty()) {
-            final int referenceCount = getReferenceCount();
-            final int v8ModuleCount = getV8ModuleCount();
-            int weakReferenceCount = 0;
-            for (IV8ValueReference iV8ValueReference : new ArrayList<>(referenceMap.values())) {
-                if (iV8ValueReference instanceof IV8ValueObject) {
-                    IV8ValueObject iV8ValueObject = (IV8ValueObject) iV8ValueReference;
-                    if (iV8ValueObject.isWeak()) {
-                        ++weakReferenceCount;
+        Lock writeLock = referenceLock.writeLock();
+        try {
+            writeLock.lock();
+            if (!referenceMap.isEmpty()) {
+                final int referenceCount = getReferenceCount();
+                final int v8ModuleCount = getV8ModuleCount();
+                int weakReferenceCount = 0;
+                for (IV8ValueReference iV8ValueReference : new ArrayList<>(referenceMap.values())) {
+                    if (iV8ValueReference instanceof IV8ValueObject) {
+                        IV8ValueObject iV8ValueObject = (IV8ValueObject) iV8ValueReference;
+                        if (iV8ValueObject.isWeak()) {
+                            ++weakReferenceCount;
+                        }
                     }
+                    iV8ValueReference.close(true);
                 }
-                iV8ValueReference.close(true);
+                if (v8ModuleCount + weakReferenceCount < referenceCount) {
+                    logger.logWarn("{0} V8 object(s) not recycled, {1} weak, {2} module(s).",
+                            Integer.toString(referenceCount),
+                            Integer.toString(weakReferenceCount),
+                            Integer.toString(v8ModuleCount));
+                } else {
+                    logger.logDebug("{0} V8 object(s) not recycled, {1} weak, {2} module(s).",
+                            Integer.toString(referenceCount),
+                            Integer.toString(weakReferenceCount),
+                            Integer.toString(v8ModuleCount));
+                }
+                referenceMap.clear();
             }
-            if (v8ModuleCount + weakReferenceCount < referenceCount) {
-                logger.logWarn("{0} V8 object(s) not recycled, {1} weak, {2} module(s).",
-                        Integer.toString(referenceCount),
-                        Integer.toString(weakReferenceCount),
-                        Integer.toString(v8ModuleCount));
-            } else {
-                logger.logDebug("{0} V8 object(s) not recycled, {1} weak, {2} module(s).",
-                        Integer.toString(referenceCount),
-                        Integer.toString(weakReferenceCount),
-                        Integer.toString(v8ModuleCount));
-            }
-            referenceMap.clear();
+        } finally {
+            writeLock.unlock();
         }
     }
 
     public void removeV8Module(String resourceName, boolean forceClose) throws JavetException {
-        IV8Module iV8Module = v8ModuleMap.remove(resourceName);
+        IV8Module iV8Module;
+        Lock writeLock = v8ModuleLock.writeLock();
+        try {
+            writeLock.lock();
+            iV8Module = v8ModuleMap.remove(resourceName);
+        } finally {
+            writeLock.unlock();
+        }
         if (forceClose && iV8Module != null) {
             iV8Module.close(true);
         }
@@ -890,15 +994,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public void removeV8Modules(boolean forceClose) throws JavetException {
-        if (!v8ModuleMap.isEmpty()) {
-            logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
-            for (IV8Module iV8Module : v8ModuleMap.values()) {
-                logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
-                if (forceClose) {
-                    iV8Module.close(true);
+        Lock writeLock = v8ModuleLock.writeLock();
+        try {
+            writeLock.lock();
+            if (!v8ModuleMap.isEmpty()) {
+                logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
+                for (IV8Module iV8Module : v8ModuleMap.values()) {
+                    logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
+                    if (forceClose) {
+                        iV8Module.close(true);
+                    }
                 }
+                v8ModuleMap.clear();
             }
-            v8ModuleMap.clear();
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -966,11 +1076,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         assert (propertyName instanceof V8ValueString || propertyName instanceof V8ValueSymbol);
         boolean isAccessorSet = v8Native.setAccessor(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
                 propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
-        if (javetCallbackContextGetter != null && javetCallbackContextGetter.isValid()) {
-            callbackContextMap.put(javetCallbackContextGetter.getHandle(), javetCallbackContextGetter);
-        }
-        if (javetCallbackContextSetter != null && javetCallbackContextSetter.isValid()) {
-            callbackContextMap.put(javetCallbackContextSetter.getHandle(), javetCallbackContextSetter);
+        Lock writeLock = callbackContextLock.writeLock();
+        try {
+            writeLock.lock();
+            if (javetCallbackContextGetter != null && javetCallbackContextGetter.isValid()) {
+                callbackContextMap.put(javetCallbackContextGetter.getHandle(), javetCallbackContextGetter);
+            }
+            if (javetCallbackContextSetter != null && javetCallbackContextSetter.isValid()) {
+                callbackContextMap.put(javetCallbackContextSetter.getHandle(), javetCallbackContextSetter);
+            }
+        } finally {
+            writeLock.unlock();
         }
         return isAccessorSet;
     }
