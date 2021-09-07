@@ -60,7 +60,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      *
      * @since 0.9.6
      */
-    protected static final String PROXY_TARGET = "target";
+    protected static final String PROXY_TARGET = "Javet#proxyTarget";
 
     /**
      * Instantiates a new Javet object converter.
@@ -160,7 +160,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             if (v8Value instanceof V8ValueProxy) {
                 V8ValueProxy v8ValueProxy = (V8ValueProxy) v8Value;
                 try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                    Long handle = iV8ValueObjectHandler.getLong(PROXY_TARGET);
+                    Long handle = iV8ValueObjectHandler.getPrivatePropertyLong(PROXY_TARGET);
                     if (handle != null) {
                         JavetCallbackContext javetCallbackContext = v8ValueProxy.getV8Runtime().getCallbackContext(handle);
                         if (javetCallbackContext != null) {
@@ -218,7 +218,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                             new JavetUniversalProxyHandler<>(v8Runtime, (Map) object);
                     List<JavetCallbackContext> javetCallbackContexts =
                             iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                    iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+                    iV8ValueObjectHandler.setPrivateProperty(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                 }
                 v8Value = v8ValueProxy;
             } else {
@@ -240,7 +240,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                             new JavetUniversalProxyHandler<>(v8Runtime, (Set) object);
                     List<JavetCallbackContext> javetCallbackContexts =
                             iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                    iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+                    iV8ValueObjectHandler.setPrivateProperty(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                 }
                 v8Value = v8ValueProxy;
             } else {
