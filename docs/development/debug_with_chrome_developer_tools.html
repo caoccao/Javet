@@ -1,0 +1,345 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Javet Design" href="design.html" />
+
+    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+        <title>Debug with Chrome Developer Tools - Javet 0.9.12 documentation</title>
+      <link rel="stylesheet" href="../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <link rel="stylesheet" href="../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/hello_javet.html">Hello Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine_pool.html">Javet Engine Pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/interception.html">Interception</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/polyfill.html">Polyfill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/object_converter.html">Object Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/interact_with_node_js.html">Interact with Node.js</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_collection.html">V8 Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_function.html">V8 Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_promise.html">V8 Promise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/modularization.html">Modularization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/memory_management.html">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/lock.html">Know the Lock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/termination.html">Termination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/load_and_unload.html">Load and Unload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/best_practices.html">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/performance.html">Javet Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/error_codes.html">Error Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/todo_list.html">TODO List</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/history_with_j2v8.html">History with J2V8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Development</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tools.html">Development Tools</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="build_javet_with_docker.html">Build Javet with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_javet_from_scratch.html">Build Javet from Scratch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Test Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design.html">Javet Design</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Debug with Chrome Developer Tools</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <div class="section" id="debug-with-chrome-developer-tools">
+<h1>Debug with Chrome Developer Tools<a class="headerlink" href="#debug-with-chrome-developer-tools" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://developers.google.com/web/tools/chrome-devtools">Chrome DevTools</a> (aka. CDT) is a set of web developer tools built directly into the Google Chrome browser. DevTools can help you edit pages on-the-fly and diagnose problems quickly, which ultimately helps you build better websites, faster.</p>
+<div class="section" id="cdt-shell">
+<h2>CDT Shell<a class="headerlink" href="#cdt-shell" title="Permalink to this headline">¶</a></h2>
+<p>Javet ships a demo <a class="reference external" href="../../src/test/java/com/caoccao/javet/tutorial/cdt/TestCDT.java">CDT Shell</a> application to demonstrate how to work with CDT to perform a live debugging.</p>
+<div class="section" id="run-cdt-shell">
+<h3>1. Run CDT Shell<a class="headerlink" href="#run-cdt-shell" title="Permalink to this headline">¶</a></h3>
+<p>Run CDT Shell as a normal Java console application and an interactive console will appear working just like a node console does.</p>
+</div>
+<div class="section" id="run-script-in-cdt-shell">
+<h3>2. Run Script in CDT Shell<a class="headerlink" href="#run-script-in-cdt-shell" title="Permalink to this headline">¶</a></h3>
+<p>Run arbitrary code in the console just like what can be done in a node console.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kd">let</span> <span class="nx">a</span> <span class="o">=</span> <span class="mf">3</span>
+<span class="kc">undefined</span>
+<span class="o">&gt;</span> <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="mf">4</span>
+<span class="kc">undefined</span>
+<span class="o">&gt;</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span>
+<span class="mf">7</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="open-cdt">
+<h3>3. Open CDT<a class="headerlink" href="#open-cdt" title="Permalink to this headline">¶</a></h3>
+<p>Open chrome://inspect/ in Chrome, wait few seconds and Javet will appear as a remote target.</p>
+<img alt="Remote Target Javet" src="../_images/chome_developer_tools_devices_remote_target_javet.png"/>
+</div>
+<div class="section" id="debug-as-usual">
+<h3>4. Debug as Usual<a class="headerlink" href="#debug-as-usual" title="Permalink to this headline">¶</a></h3>
+<p>Click <code class="docutils literal notranslate"><span class="pre">inspect</span></code>. Voilà, DevTools is up. As the screenshot shows, live evaluation and auto-completion work successfully. Enjoy the live debugging.</p>
+<img alt="Remote Target Javet" src="../_images/chome_developer_tools_console.png"/>
+</div>
+</div>
+<div class="section" id="chrome-developer-tools-internals">
+<h2>Chrome Developer Tools Internals<a class="headerlink" href="#chrome-developer-tools-internals" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="handshake">
+<h3>Handshake<a class="headerlink" href="#handshake" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>CDT Shell listens to port 9229 by default because CDT constantly queries <a class="reference external" href="http://127.0.0.1:9229/json">http://127.0.0.1:9229/json</a> for remote target. CDT Shell tells CDT that it is a node flavored remote target via <a class="reference external" href="http://127.0.0.1:9229/json">http://127.0.0.1:9229/json</a> and the websocket address is <a class="reference external" href="http://127.0.0.1:9229/javet">http://127.0.0.1:9229/javet</a>.</p></li>
+<li><p>CDT queries <a class="reference external" href="http://127.0.0.1:9229/json/version">http://127.0.0.1:9229/json/version</a> for protocol version. CDT Shell currently uses v1.3. The complete protocol API docs are available at <a class="reference external" href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p></li>
+<li><p>CDT queries <a class="reference external" href="http://127.0.0.1:9229/javet">http://127.0.0.1:9229/javet</a> with a websocket upgrade request. CDT Shell responses with websocket upgrade accepted.</p></li>
+<li><p>CDT switches to ws://127.0.0.1:9229/javet and sends the following 8 messages to perform a handshake with a node flavored remote target.</p></li>
+</ul>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">Chrome</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">1</span><span class="p">,</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Runtime.enable"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Javet</span> <span class="nx">Notification</span><span class="o">:</span> <span class="p">{</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Runtime.executionContextCreated"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{</span><span class="s2">"context"</span><span class="o">:</span><span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">1</span><span class="p">,</span><span class="s2">"origin"</span><span class="o">:</span><span class="s2">""</span><span class="p">,</span><span class="s2">"name"</span><span class="o">:</span><span class="s2">"Javet Inspector 00000000"</span><span class="p">,</span><span class="s2">"uniqueId"</span><span class="o">:</span><span class="s2">"00000000.00000000"</span><span class="p">}}}</span>
+<span class="nx">Javet</span> <span class="nx">Response</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">1</span><span class="p">,</span><span class="s2">"result"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Chrome</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">2</span><span class="p">,</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Debugger.enable"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{</span><span class="s2">"maxScriptsCacheSize"</span><span class="o">:</span><span class="mf">100000000</span><span class="p">}}</span>
+<span class="nx">Javet</span> <span class="nx">Response</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">2</span><span class="p">,</span><span class="s2">"result"</span><span class="o">:</span><span class="p">{</span><span class="s2">"debuggerId"</span><span class="o">:</span><span class="s2">"00000000.00000000"</span><span class="p">}}</span>
+<span class="nx">Chrome</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">3</span><span class="p">,</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Debugger.setPauseOnExceptions"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{</span><span class="s2">"state"</span><span class="o">:</span><span class="s2">"none"</span><span class="p">}}</span>
+<span class="nx">Javet</span> <span class="nx">Response</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">3</span><span class="p">,</span><span class="s2">"result"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Chrome</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">4</span><span class="p">,</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Debugger.setAsyncCallStackDepth"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{</span><span class="s2">"maxDepth"</span><span class="o">:</span><span class="mf">32</span><span class="p">}}</span>
+<span class="nx">Javet</span> <span class="nx">Response</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">4</span><span class="p">,</span><span class="s2">"result"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Chrome</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">5</span><span class="p">,</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Profiler.enable"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Javet</span> <span class="nx">Response</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">5</span><span class="p">,</span><span class="s2">"result"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Chrome</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">6</span><span class="p">,</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Runtime.getIsolateId"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Javet</span> <span class="nx">Response</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">6</span><span class="p">,</span><span class="s2">"result"</span><span class="o">:</span><span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="s2">"00000000"</span><span class="p">}}</span>
+<span class="nx">Chrome</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">7</span><span class="p">,</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Debugger.setBlackboxPatterns"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{</span><span class="s2">"patterns"</span><span class="o">:</span><span class="p">[]}}</span>
+<span class="nx">Javet</span> <span class="nx">Response</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">7</span><span class="p">,</span><span class="s2">"result"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Chrome</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">8</span><span class="p">,</span><span class="s2">"method"</span><span class="o">:</span><span class="s2">"Runtime.runIfWaitingForDebugger"</span><span class="p">,</span><span class="s2">"params"</span><span class="o">:</span><span class="p">{}}</span>
+<span class="nx">Javet</span> <span class="nx">Response</span><span class="o">:</span> <span class="p">{</span><span class="s2">"id"</span><span class="o">:</span><span class="mf">8</span><span class="p">,</span><span class="s2">"result"</span><span class="o">:</span><span class="p">{}}</span>
+</pre></div>
+</div>
+<p>Note: Method <code class="docutils literal notranslate"><span class="pre">Runtime.runIfWaitingForDebugger</span></code> can be regarded as the handshake completion and there is no need to parse this message because it is exposed as a callback in <code class="docutils literal notranslate"><span class="pre">IV8InspectorListener</span></code>.</p>
+<p>Actually, inside V8, the first message can enable the debugging without the rest of them. Please visit <a class="reference external" href="../../src/test/java/com/caoccao/javet/interop/TestV8Inspector.java">TestV8Inspector.java</a> for detail.</p>
+</div>
+</div>
+<div class="section" id="customization">
+<h2>Customization<a class="headerlink" href="#customization" title="Permalink to this headline">¶</a></h2>
+<p>Yes, please feel free to customize the debugging server in your environment. CDT Shell is created as a showcase for further customization. Here are some tips.</p>
+<ul>
+<li><p>Integrate with your HTTP and WebSocket servers. CDT Shell currently uses embedded Jetty. Be careful, HTTP and WebSocket servers need to be hosted together, otherwise, CDT refuses to communicate with the WebSocket server.</p></li>
+<li><p>Add your <code class="docutils literal notranslate"><span class="pre">IV8InspectorListener</span></code> to intercept all the event messages. In practice, a decent JSON library like JackSon, GSon may help interpret those messages. As a demo, CDT Shell doesn't process those messages. Why intercept those messages? Because:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>To set up breakpoints before script is executed.</p></li>
+<li><p>To send messages to CDT right after CDT is connected.</p></li>
+<li><p>To turn on / off certain features.</p></li>
+<li><p>To enforce authentication and authorization.</p></li>
+<li><p>To change V8 runtime.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="design.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Javet Design</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021. caoccao.com Sam Cao
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            |
+            <a class="muted-link" href="../_sources/development/debug_with_chrome_developer_tools.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Debug with Chrome Developer Tools</a><ul>
+<li><a class="reference internal" href="#cdt-shell">CDT Shell</a><ul>
+<li><a class="reference internal" href="#run-cdt-shell">1. Run CDT Shell</a></li>
+<li><a class="reference internal" href="#run-script-in-cdt-shell">2. Run Script in CDT Shell</a></li>
+<li><a class="reference internal" href="#open-cdt">3. Open CDT</a></li>
+<li><a class="reference internal" href="#debug-as-usual">4. Debug as Usual</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chrome-developer-tools-internals">Chrome Developer Tools Internals</a><ul>
+<li><a class="reference internal" href="#handshake">Handshake</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#customization">Customization</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script src="../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>

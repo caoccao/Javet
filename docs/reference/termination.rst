@@ -71,5 +71,3 @@ How about Debug Mode?
 =====================
 
 Usually, when application is being debugged, ``JavetEngineGuard`` may easily interrupt the debug. No worry, ``JavetEngineGuard`` is by default disabled in debug mode. Please refer to ``disableInDebugMode()`` and ``enableInDebugMode()`` for detail.
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

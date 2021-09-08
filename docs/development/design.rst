@@ -5,7 +5,7 @@ Javet Design
 Architecture
 ============
 
-.. image:: ../resources/images/javet_architecture.png?raw=true
+.. image:: ../resources/images/javet_architecture.png
     :alt: Javet Architecture
 
 Primitive and Reference Types in Javet
@@ -24,14 +24,14 @@ Set to Weak                 No                      Yes
 
 Reference typed objects keep memory footprint in V8 + JNI + JVM. All resource will be recycled when ``close()`` is called. That is quite an old school way of managing resource. Javet tries to hide that kind of tedious work from Java applications via try-with-resource.
 
-Please refer to `Best Practices <../reference/best_practices.rst>`_ for detail.
+Please refer to :doc:`../reference/best_practices` for detail.
 
 Node.js Mode vs. V8 Mode
 ========================
 
 Javet supports both Node.js mode and V8 mode both of which can co-exist in one JVM. In other words, they can run side by side and don't interfere with each other.
 
-.. image:: ../resources/images/javet_modes.png?raw=true
+.. image:: ../resources/images/javet_modes.png
     :alt: Javet Modes
 
 As the diagram shows, both Node.js and V8 are lazy loaded in dedicated custom classloaders. Detailed comparisons are as following.
@@ -83,13 +83,13 @@ Javet doesn't build ``require()`` in but allows applications to set an intercept
 
 Javet provides complete support to ES6 ``import()`` because certain work inside JNI has to be in place as V8 only partially supports ``import()``. So, in Javet the module is kind of virtualized, in other words, the module is represented by an arbitrary string that can be interpreted by applications during runtime. E.g. ``module.js`` may come from a file, a URL, a string in memory or whatever. Javet stores the compiled and evaluated module in a map with that string as key, and feeds V8 that module when V8 looks it up by that string.
 
-.. image:: ../resources/images/javet_module_system.png?raw=true
+.. image:: ../resources/images/javet_module_system.png
     :alt: Javet Module System
 
 Engine Pool
 ===========
 
-.. image:: ../resources/images/javet_engine_pool.png?raw=true
+.. image:: ../resources/images/javet_engine_pool.png
     :alt: Javet Engine Pool
 
 V8 Isolate and Context in Javet
@@ -113,24 +113,24 @@ Multiple Javet engines are managed by Javet Engine Pool which works almost the s
 * V8 isolate and V8 context are single-threaded. Thread context violation results in V8 core dump immediately.
 * Javet Engine performs better without locks. Actually, Javet engine only validates current thread ID to minimize the performance overhead.
 
-Please refer to `Best Practices <../reference/best_practices.rst>`_ for detail.
+Please refer to :doc:`../reference/best_practices` for detail.
 
 Interception
 ============
 
 Javet allows intercepting almost all V8 API so that JS code actually interacts with Java code behind the scene.
 
-.. image:: ../resources/images/javet_interception.png?raw=true
+.. image:: ../resources/images/javet_interception.png
     :alt: Javet Interception
 
-Sample code is available at `here <../reference/v8_function.rst>`_.
+Sample code is available at :doc:`../reference/v8_function`.
 
 Cross-platform
 ==============
 
 Javet packages all the libraries in a single jar file and automatically loads corresponding library per OS and JS runtime.
 
-.. image:: ../resources/images/javet_cross_platform.png?raw=true
+.. image:: ../resources/images/javet_cross_platform.png
     :alt: Javet Cross-platform
 
 * Javet calculates the library file name from OS and JS runtime.
@@ -148,5 +148,3 @@ Memory Leak Detection
 Javet native library keeps track of every ``new`` and ``delete`` in ``JavetNativeMonitor``. Javet every unit test case fetches the tracking data, compares the ``new`` and ``delete`` count to verify unmanaged objects are properly allocated and freed.
 
 This feature is only turned on in debug version and there is zero performance overhead in release version.
-
-[`Home <../../README.rst>`_] [`Development <index.rst>`_]

@@ -1,0 +1,814 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Java and JavaScript Interop" href="java_and_javascript_interop.html" /><link rel="prev" title="Polyfill" href="polyfill.html" />
+
+    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+        <title>Object Converter - Javet 0.9.12 documentation</title>
+      <link rel="stylesheet" href="../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <link rel="stylesheet" href="../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorial</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hello_javet.html">Hello Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="engine_pool.html">Javet Engine Pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interception.html">Interception</a></li>
+<li class="toctree-l2"><a class="reference internal" href="javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfill.html">Polyfill</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Object Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interact_with_node_js.html">Interact with Node.js</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_collection.html">V8 Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_function.html">V8 Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_promise.html">V8 Promise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/modularization.html">Modularization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/memory_management.html">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/lock.html">Know the Lock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/termination.html">Termination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/load_and_unload.html">Load and Unload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/best_practices.html">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/performance.html">Javet Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/error_codes.html">Error Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/todo_list.html">TODO List</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/history_with_j2v8.html">History with J2V8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../development/tools.html">Development Tools</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_with_docker.html">Build Javet with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../development/test.html">Test Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development/design.html">Javet Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development/debug_with_chrome_developer_tools.html">Debug with Chrome Developer Tools</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <div class="section" id="object-converter">
+<h1>Object Converter<a class="headerlink" href="#object-converter" title="Permalink to this headline">¶</a></h1>
+<p>Javet has a built-in <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> with the following features.</p>
+<ul class="simple">
+<li><p>It covers primitive types + Set + Map + Array.</p></li>
+<li><p>It is completely open to subclass.</p></li>
+<li><p>It minimizes the performance overhead.</p></li>
+<li><p>It allows registering custom objects.</p></li>
+</ul>
+<p>So, Javet doesn't natively support converting POJO objects because a POJO converter has to deal with reflection which is so slow that Javet leaves that to applications. However, if the POJO objects are owned by the application, it is possible to register custom objects with the built-in <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code>. Otherwise, designing a POJO converter is the alternative solution.</p>
+<p>What if the application wants to inject arbitrary Java objects? No worry, the <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> is designed for that purpose.</p>
+<div class="section" id="register-custom-objects">
+<h2>Register Custom Objects<a class="headerlink" href="#register-custom-objects" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> exposes <code class="docutils literal notranslate"><span class="pre">registerCustomObject()</span></code> for alien objects which match the following conditions.</p>
+<ul class="simple">
+<li><p>Default constructor without arguments</p></li>
+<li><p>Method with signature <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">fromMap(Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">map)</span></code></p></li>
+<li><p>Method with signature <code class="docutils literal notranslate"><span class="pre">Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">toMap()</span></code></p></li>
+</ul>
+<div class="section" id="enhance-the-custom-object">
+<h3>Enhance the Custom Object<a class="headerlink" href="#enhance-the-custom-object" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Create a default constructor without arguments.</p></li>
+<li><p>Add a method with signature <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">fromMap(Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">map)</span></code></p></li>
+<li><p>Add a method with signature <code class="docutils literal notranslate"><span class="pre">Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">toMap()</span></code></p></li>
+</ul>
+<p>Can the method names be changed? Yes, they can have arbitrary names.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">CustomObject</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="p">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="nf">CustomObject</span><span class="p">(</span><span class="n">String</span> <span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="nf">CustomObject</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">fromMap</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">setName</span><span class="p">((</span><span class="n">String</span><span class="p">)</span> <span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"name"</span><span class="p">));</span>
+        <span class="n">setValue</span><span class="p">((</span><span class="n">Integer</span><span class="p">)</span> <span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"value"</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">toMap</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+            <span class="p">{</span>
+                <span class="n">put</span><span class="p">(</span><span class="s">"name"</span><span class="p">,</span> <span class="n">getName</span><span class="p">());</span>
+                <span class="n">put</span><span class="p">(</span><span class="s">"value"</span><span class="p">,</span> <span class="n">getValue</span><span class="p">());</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+
+    <span class="c1">// getters and setters</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="register-the-custom-object">
+<h3>Register the Custom Object<a class="headerlink" href="#register-the-custom-object" title="Permalink to this headline">¶</a></h3>
+<p>As the default converter is <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code>, just follow the code snippet below to register a custom object.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetObjectConverter</span> <span class="n">converter</span> <span class="o">=</span> <span class="p">(</span><span class="n">JavetObjectConverter</span><span class="p">)</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getConverter</span><span class="p">();</span>
+<span class="n">converter</span><span class="p">.</span><span class="na">registerCustomObject</span><span class="p">(</span><span class="n">CustomObject</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If the method names are different from the default ones, just provide the names upon registration as the following.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">converter</span><span class="p">.</span><span class="na">registerCustomObject</span><span class="p">(</span><span class="n">CustomObject</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="s">"customFromMap"</span><span class="p">,</span> <span class="s">"customToMap"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>After the registration is completed, there is no additional steps any more. Just follow the regular pattern.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CustomObject</span><span class="o">[]</span> <span class="n">customObjects</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CustomObject</span><span class="o">[]</span><span class="p">{</span>
+        <span class="k">new</span> <span class="n">CustomObject</span><span class="p">(</span><span class="s">"x"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="k">new</span> <span class="n">CustomObject</span><span class="p">(</span><span class="s">"y"</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+<span class="p">};</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">customObjects</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.length"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">CustomObject</span><span class="o">&gt;</span> <span class="n">v8CustomObjects</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+<span class="n">assertNotNull</span><span class="p">(</span><span class="n">v8CustomObjects</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">v8CustomObjects</span><span class="p">.</span><span class="na">size</span><span class="p">());</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">customObjects</span><span class="p">.</span><span class="na">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="n">customObjects</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a["</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s">"].name"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="n">customObjects</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">.</span><span class="na">getValue</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a["</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s">"].value"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="n">customObjects</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span> <span class="n">v8CustomObjects</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="na">getName</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="n">customObjects</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">.</span><span class="na">getValue</span><span class="p">(),</span> <span class="n">v8CustomObjects</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="na">getValue</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="highlights">
+<h3>Highlights<a class="headerlink" href="#highlights" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>PROS: This is a built-in feature so there is no need to deal with a POJO converter.</p></li>
+<li><p>CONS: This is a little bit intrusive to the custom objects.</p></li>
+</ul>
+</div>
+<div class="section" id="how-does-it-work">
+<h3>How does It Work?<a class="headerlink" href="#how-does-it-work" title="Permalink to this headline">¶</a></h3>
+<p>As V8 supports private properties, <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> sets the custom object class name to the V8 object in <code class="docutils literal notranslate"><span class="pre">toMap()</span></code> and gets the name from the V8 object in <code class="docutils literal notranslate"><span class="pre">fromMap()</span></code>. So it is the V8 object that carries the type information all the time and <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> is free from memorizing the complicated relationship between the Java objects and V8 objects.</p>
+</div>
+</div>
+<div class="section" id="design-a-pojo-converter">
+<h2>Design a POJO Converter<a class="headerlink" href="#design-a-pojo-converter" title="Permalink to this headline">¶</a></h2>
+<p>A POJO converter usually is designed for the Java objects that are now owned by the application. So, it has to deal with reflection heavily. The following sample code runs in JDK 11. It's easy to tweak few API for JDK 8.</p>
+<div class="section" id="define-pojo-object">
+<h3>Define POJO Object<a class="headerlink" href="#define-pojo-object" title="Permalink to this headline">¶</a></h3>
+<p>Let's say you have a Pojo that allows you to define a name-value pair.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Pojo</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="p">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">value</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="nf">Pojo</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="nf">Pojo</span><span class="p">(</span><span class="n">String</span> <span class="n">name</span><span class="p">,</span> <span class="n">String</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="p">(</span><span class="n">String</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="p">(</span><span class="n">String</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-pojoconverter">
+<h3>Create PojoConverter<a class="headerlink" href="#create-pojoconverter" title="Permalink to this headline">¶</a></h3>
+<p>Then, create a generic PojoConverter.</p>
+<ul class="simple">
+<li><p>It is generic enough to cover all kinds of Pojo objects in a recursive way.</p></li>
+<li><p>There is no need to deal with primitive types because the parent converter handles that.</p></li>
+<li><p>Always override the methods with depth as argument for circular structure detection.</p></li>
+<li><p>Always increment the depth in recursive call.</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">"unchecked"</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PojoConverter</span> <span class="kd">extends</span> <span class="n">JavetObjectConverter</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">METHOD_PREFIX_GET</span> <span class="o">=</span> <span class="s">"get"</span><span class="p">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">METHOD_PREFIX_IS</span> <span class="o">=</span> <span class="s">"is"</span><span class="p">;</span>
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">EXCLUDED_METHODS</span><span class="p">;</span>
+
+    <span class="kd">static</span> <span class="p">{</span>
+        <span class="n">EXCLUDED_METHODS</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">Method</span> <span class="n">method</span> <span class="p">:</span> <span class="n">Object</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getMethods</span><span class="p">())</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">method</span><span class="p">.</span><span class="na">getParameterCount</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">String</span> <span class="n">methodName</span> <span class="o">=</span> <span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">();</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">methodName</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="n">METHOD_PREFIX_IS</span><span class="p">)</span> <span class="o">||</span> <span class="n">methodName</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="n">METHOD_PREFIX_GET</span><span class="p">))</span> <span class="p">{</span>
+                    <span class="n">EXCLUDED_METHODS</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">methodName</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="n">V8Value</span> <span class="nf">toV8Value</span><span class="p">(</span>
+            <span class="n">V8Runtime</span> <span class="n">v8Runtime</span><span class="p">,</span> <span class="n">Object</span> <span class="n">object</span><span class="p">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">depth</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
+        <span class="n">V8Value</span> <span class="n">v8Value</span> <span class="o">=</span> <span class="kd">super</span><span class="p">.</span><span class="na">toV8Value</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">,</span> <span class="n">object</span><span class="p">,</span> <span class="n">depth</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">v8Value</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">v8Value</span><span class="p">.</span><span class="na">isUndefined</span><span class="p">()))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">v8Value</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">Class</span> <span class="n">objectClass</span> <span class="o">=</span> <span class="n">object</span><span class="p">.</span><span class="na">getClass</span><span class="p">();</span>
+        <span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">();</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">Method</span> <span class="n">method</span> <span class="p">:</span> <span class="n">objectClass</span><span class="p">.</span><span class="na">getMethods</span><span class="p">())</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">method</span><span class="p">.</span><span class="na">getParameterCount</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">method</span><span class="p">.</span><span class="na">canAccess</span><span class="p">(</span><span class="n">object</span><span class="p">))</span> <span class="p">{</span>
+                <span class="n">String</span> <span class="n">methodName</span> <span class="o">=</span> <span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">();</span>
+                <span class="n">String</span> <span class="n">propertyName</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">methodName</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="n">METHOD_PREFIX_IS</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">EXCLUDED_METHODS</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">methodName</span><span class="p">)</span>
+                        <span class="o">&amp;&amp;</span> <span class="n">methodName</span><span class="p">.</span><span class="na">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">METHOD_PREFIX_IS</span><span class="p">.</span><span class="na">length</span><span class="p">())</span> <span class="p">{</span>
+                    <span class="n">propertyName</span> <span class="o">=</span> <span class="n">methodName</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="n">METHOD_PREFIX_IS</span><span class="p">.</span><span class="na">length</span><span class="p">(),</span> <span class="n">METHOD_PREFIX_IS</span><span class="p">.</span><span class="na">length</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">).</span><span class="na">toLowerCase</span><span class="p">(</span><span class="n">Locale</span><span class="p">.</span><span class="na">ROOT</span><span class="p">)</span>
+                            <span class="o">+</span> <span class="n">methodName</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="n">METHOD_PREFIX_IS</span><span class="p">.</span><span class="na">length</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">methodName</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="n">METHOD_PREFIX_GET</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">EXCLUDED_METHODS</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">methodName</span><span class="p">)</span>
+                        <span class="o">&amp;&amp;</span> <span class="n">methodName</span><span class="p">.</span><span class="na">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">METHOD_PREFIX_GET</span><span class="p">.</span><span class="na">length</span><span class="p">())</span> <span class="p">{</span>
+                    <span class="n">propertyName</span> <span class="o">=</span> <span class="n">methodName</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="n">METHOD_PREFIX_GET</span><span class="p">.</span><span class="na">length</span><span class="p">(),</span> <span class="n">METHOD_PREFIX_GET</span><span class="p">.</span><span class="na">length</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">).</span><span class="na">toLowerCase</span><span class="p">(</span><span class="n">Locale</span><span class="p">.</span><span class="na">ROOT</span><span class="p">)</span>
+                            <span class="o">+</span> <span class="n">methodName</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="n">METHOD_PREFIX_GET</span><span class="p">.</span><span class="na">length</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">propertyName</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">try</span> <span class="p">(</span><span class="n">V8Value</span> <span class="n">v8ValueTemp</span> <span class="o">=</span> <span class="n">toV8Value</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">,</span> <span class="n">method</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">object</span><span class="p">),</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+                        <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">propertyName</span><span class="p">,</span> <span class="n">v8ValueTemp</span><span class="p">);</span>
+                    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">v8Value</span> <span class="o">=</span> <span class="n">v8ValueObject</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">decorateV8Value</span><span class="p">(</span><span class="n">v8Value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ready-go">
+<h3>Ready! Go!<a class="headerlink" href="#ready-go" title="Permalink to this headline">¶</a></h3>
+<p>Just write few lines of code to interact with Javet.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestPojo</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
+        <span class="n">Pojo</span><span class="o">[]</span> <span class="n">pojoArray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Pojo</span><span class="o">[]</span><span class="p">{</span>
+                <span class="k">new</span> <span class="n">Pojo</span><span class="p">(</span><span class="s">"Tom"</span><span class="p">,</span> <span class="s">"CEO"</span><span class="p">),</span>
+                <span class="k">new</span> <span class="n">Pojo</span><span class="p">(</span><span class="s">"Jerry"</span><span class="p">,</span> <span class="s">"CFO"</span><span class="p">)};</span>
+        <span class="k">try</span> <span class="p">(</span><span class="n">V8Runtime</span> <span class="n">v8Runtime</span> <span class="o">=</span> <span class="n">V8Host</span><span class="p">.</span><span class="na">getNodeInstance</span><span class="p">().</span><span class="na">createV8Runtime</span><span class="p">())</span> <span class="p">{</span>
+            <span class="n">v8Runtime</span><span class="p">.</span><span class="na">setConverter</span><span class="p">(</span><span class="k">new</span> <span class="n">PojoConverter</span><span class="p">());</span>
+            <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"pojoArray"</span><span class="p">,</span> <span class="n">pojoArray</span><span class="p">);</span>
+            <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"console.log(pojoArray);"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The console output is:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">'Tom'</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">'CEO'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">'Jerry'</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">'CFO'</span> <span class="p">}</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>This process is transparent and fully automated once the converter is set to <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code>.</p>
+</div>
+</div>
+<div class="section" id="universal-converter">
+<h2>Universal Converter<a class="headerlink" href="#universal-converter" title="Permalink to this headline">¶</a></h2>
+<p>Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> is designed for that. In general, the user experience is very much close to the one provided by GraalJS. As <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> opens almost the whole JVM to V8, it is very dangerous to allow end users to touch that V8 runtime, so <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> is not enabled by default. Here are the steps on how to enable that.</p>
+<div class="section" id="preparation">
+<h3>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 1: Create an instance of JavetProxyConverter.</span>
+<span class="n">JavetProxyConverter</span> <span class="n">javetProxyConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JavetProxyConverter</span><span class="p">();</span>
+<span class="c1">// Step 2: Set the V8Runtime converter to JavetProxyConverter.</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">setConverter</span><span class="p">(</span><span class="n">javetProxyConverter</span><span class="p">);</span>
+<span class="c1">// Please feel free to inject arbitrary Java objects.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="instance-file">
+<h3>Instance: File<a class="headerlink" href="#instance-file" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="n">file</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="p">(</span><span class="s">"/tmp/i-am-not-accessible"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"file"</span><span class="p">,</span> <span class="n">file</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">"file"</span><span class="p">));</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="na">exists</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"file.exists()"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="na">isFile</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"file.isFile()"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="na">isDirectory</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"file.isDirectory()"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="na">canRead</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"file.canRead()"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="na">canWrite</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"file.canWrite()"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="na">canExecute</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"file.canExecute()"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"file"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="instance-map">
+<h3>Instance: Map<a class="headerlink" href="#instance-map" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxyMapEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{{</span>
+    <span class="n">put</span><span class="p">(</span><span class="s">"x"</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="n">put</span><span class="p">(</span><span class="s">"y"</span><span class="p">,</span> <span class="s">"2"</span><span class="p">);</span>
+<span class="p">}};</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"map"</span><span class="p">,</span> <span class="n">map</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">map</span> <span class="o">==</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">"map"</span><span class="p">));</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"map['x']"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"2"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"map['y']"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"map.x"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"2"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"map.y"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"3"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"map['z'] = '3'; map.z;"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"3"</span><span class="p">,</span> <span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"z"</span><span class="p">));</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"4"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"map.z = '4'; map.z;"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"4"</span><span class="p">,</span> <span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"z"</span><span class="p">));</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"map"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxyMapEnabled</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="instance-path">
+<h3>Instance: Path<a class="headerlink" href="#instance-path" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Path</span> <span class="n">path</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="p">(</span><span class="s">"/tmp/i-am-not-accessible"</span><span class="p">).</span><span class="na">toPath</span><span class="p">();</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"path"</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">"path"</span><span class="p">));</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">path</span><span class="p">.</span><span class="na">toString</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"path.toString()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">Path</span> <span class="n">newPath</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">toObject</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"path.resolve('abc')"</span><span class="p">).</span><span class="na">execute</span><span class="p">(),</span> <span class="kc">true</span><span class="p">);</span>
+<span class="n">assertNotNull</span><span class="p">(</span><span class="n">newPath</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">path</span><span class="p">.</span><span class="na">resolve</span><span class="p">(</span><span class="s">"abc"</span><span class="p">).</span><span class="na">toString</span><span class="p">(),</span> <span class="n">newPath</span><span class="p">.</span><span class="na">toString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">path</span><span class="p">.</span><span class="na">resolve</span><span class="p">(</span><span class="s">"abc"</span><span class="p">).</span><span class="na">toString</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"path.resolve('abc').toString()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"path"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="static-stringbuilder">
+<h3>Static: StringBuilder<a class="headerlink" href="#static-stringbuilder" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"StringBuilder"</span><span class="p">,</span> <span class="n">StringBuilder</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc def"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
+        <span class="s">"function main() {\n"</span> <span class="o">+</span>
+                <span class="s">"  return new StringBuilder().append('abc').append(' ').append('def').toString();\n"</span> <span class="o">+</span>
+                <span class="s">"}\n"</span> <span class="o">+</span>
+                <span class="s">"main();"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"StringBuilder"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="static-pattern">
+<h3>Static: Pattern<a class="headerlink" href="#static-pattern" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"Pattern"</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"let p = Pattern.compile('^\\\\d+$'); p;"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">()</span> <span class="k">instanceof</span> <span class="n">Pattern</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"p.matcher('123').matches();"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"p.matcher('a123').matches();"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"Pattern"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"p = undefined;"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="static-enum">
+<h3>Static: Enum<a class="headerlink" href="#static-enum" title="Permalink to this headline">¶</a></h3>
+<p>Static class usually does not have an instance. The universal proxy based converter is smart enough to handle that.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"JavetErrorType"</span><span class="p">,</span> <span class="n">JavetErrorType</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">JavetErrorType</span><span class="p">.</span><span class="na">Converter</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"JavetErrorType.Converter"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertThrows</span><span class="p">(</span>
+        <span class="n">JavetExecutionException</span><span class="p">.</span><span class="na">class</span><span class="p">,</span>
+        <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"JavetErrorType.Converter = 1;"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">(),</span>
+        <span class="s">"Public final field should not be writable."</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"JavetErrorType"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"Converter"</span><span class="p">,</span> <span class="n">JavetErrorType</span><span class="p">.</span><span class="na">Converter</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">JavetErrorType</span><span class="p">.</span><span class="na">Converter</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">"Converter"</span><span class="p">));</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"Converter"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="static-interface">
+<h3>Static: Interface<a class="headerlink" href="#static-interface" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes an interface or annotation class can be injected for enabling Java reflection in V8.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"AutoCloseable"</span><span class="p">,</span> <span class="n">AutoCloseable</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"IJavetClosable"</span><span class="p">,</span> <span class="n">IJavetClosable</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">AutoCloseable</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">isAssignableFrom</span><span class="p">(</span><span class="n">IJavetClosable</span><span class="p">.</span><span class="na">class</span><span class="p">));</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"AutoCloseable.isAssignableFrom(IJavetClosable);"</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">AutoCloseable</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"AutoCloseable"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="n">IJavetClosable</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"IJavetClosable"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"AutoCloseable"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"IJavetClosable"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dynamic-anonymous-function">
+<h3>Dynamic: Anonymous Function<a class="headerlink" href="#dynamic-anonymous-function" title="Permalink to this headline">¶</a></h3>
+<p>This feature is quite special as it allows implementing Java interfaces in JavaScript via anonymous functions, also known as lambda expressions.</p>
+<ol class="arabic simple">
+<li><p>Define a simple interface <code class="docutils literal notranslate"><span class="pre">IStringJoiner</span></code> for joining two strings.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">interface</span> <span class="nc">IStringJoiner</span> <span class="kd">extends</span> <span class="n">AutoCloseable</span> <span class="p">{</span>
+    <span class="n">String</span> <span class="nf">join</span><span class="p">(</span><span class="n">String</span> <span class="n">a</span><span class="p">,</span> <span class="n">String</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Define a simple class <code class="docutils literal notranslate"><span class="pre">StringJoiner</span></code> which holds the interface <code class="docutils literal notranslate"><span class="pre">IStringJoiner</span></code>.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">StringJoiner</span> <span class="kd">implements</span> <span class="n">AutoCloseable</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="n">IStringJoiner</span> <span class="n">joiner</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="nf">StringJoiner</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">joiner</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">close</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">joiner</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">joiner</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+            <span class="n">joiner</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="n">IStringJoiner</span> <span class="nf">getJoiner</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">joiner</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setJoiner</span><span class="p">(</span><span class="n">IStringJoiner</span> <span class="n">joiner</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">joiner</span> <span class="o">=</span> <span class="n">joiner</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Inject the implementation from JavaScript.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">(</span><span class="n">StringJoiner</span> <span class="n">stringJoiner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringJoiner</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"stringJoiner"</span><span class="p">,</span> <span class="n">stringJoiner</span><span class="p">);</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"stringJoiner.setJoiner((a, b) =&gt; a + ',' + b);"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+    <span class="n">IStringJoiner</span> <span class="n">joiner</span> <span class="o">=</span> <span class="n">stringJoiner</span><span class="p">.</span><span class="na">getJoiner</span><span class="p">();</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"a,b"</span><span class="p">,</span> <span class="n">joiner</span><span class="p">.</span><span class="na">join</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="s">"b"</span><span class="p">));</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"a,b,c"</span><span class="p">,</span> <span class="n">joiner</span><span class="p">.</span><span class="na">join</span><span class="p">(</span><span class="n">joiner</span><span class="p">.</span><span class="na">join</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="s">"b"</span><span class="p">),</span> <span class="s">"c"</span><span class="p">));</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"stringJoiner"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Voilà! It works.</p>
+<p>Note: The JavaScript implementation is backed up by <code class="docutils literal notranslate"><span class="pre">V8ValueFunction</span></code> which is an orphan object. After its internal <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is closed, it will no longer callable. It's recommended to have the interface implement <code class="docutils literal notranslate"><span class="pre">AutoClosable</span></code> as the sample shows so that the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueFunction</span></code> can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueFunction</span></code> when the <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is being closed. Be careful, if you keep the application running for long while without recycling them in time, <code class="docutils literal notranslate"><span class="pre">OutOfMemoryError</span></code> may occur.</p>
+</div>
+<div class="section" id="dynamic-anonymous-object">
+<h3>Dynamic: Anonymous Object<a class="headerlink" href="#dynamic-anonymous-object" title="Permalink to this headline">¶</a></h3>
+<p>This feature is similar to the dynamic anonymous function, but is an enhanced version because it allows implementing all methods exposed by the Java interface.</p>
+<ol class="arabic simple">
+<li><p>Define a simple interface <code class="docutils literal notranslate"><span class="pre">IStringUtils</span></code> for joining two strings.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">interface</span> <span class="nc">IStringUtils</span> <span class="kd">extends</span> <span class="n">AutoCloseable</span> <span class="p">{</span>
+    <span class="n">String</span> <span class="nf">hello</span><span class="p">();</span>
+    <span class="n">String</span> <span class="nf">join</span><span class="p">(</span><span class="n">String</span> <span class="n">separator</span><span class="p">,</span> <span class="n">String</span><span class="p">...</span> <span class="n">strings</span><span class="p">);</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">split</span><span class="p">(</span><span class="n">String</span> <span class="n">separator</span><span class="p">,</span> <span class="n">String</span> <span class="n">string</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Define a simple class <code class="docutils literal notranslate"><span class="pre">StringUtils</span></code> which holds the interface <code class="docutils literal notranslate"><span class="pre">IStringUtils</span></code>.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">StringUtils</span> <span class="kd">implements</span> <span class="n">AutoCloseable</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="n">IStringUtils</span> <span class="n">utils</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="nf">StringUtils</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">utils</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">close</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">utils</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">utils</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+            <span class="n">utils</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="n">IStringUtils</span> <span class="nf">getUtils</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUtils</span><span class="p">(</span><span class="n">IStringUtils</span> <span class="n">utils</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">utils</span> <span class="o">=</span> <span class="n">utils</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Inject the implementation from JavaScript.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">(</span><span class="n">StringUtils</span> <span class="n">stringUtils</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringUtils</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"stringUtils"</span><span class="p">,</span> <span class="n">stringUtils</span><span class="p">);</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
+            <span class="s">"stringUtils.setUtils({\n"</span> <span class="o">+</span>
+            <span class="s">"  hello: () =&gt; 'hello',\n"</span> <span class="o">+</span>
+            <span class="s">"  join: (separator, ...strings) =&gt; [...strings].join(separator),\n"</span> <span class="o">+</span>
+            <span class="s">"  split: (separator, str) =&gt; str.split(separator),\n"</span> <span class="o">+</span>
+            <span class="s">"});"</span>
+    <span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+    <span class="n">IStringUtils</span> <span class="n">utils</span> <span class="o">=</span> <span class="n">stringUtils</span><span class="p">.</span><span class="na">getUtils</span><span class="p">();</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"hello"</span><span class="p">,</span> <span class="n">utils</span><span class="p">.</span><span class="na">hello</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"a,b,c"</span><span class="p">,</span> <span class="n">utils</span><span class="p">.</span><span class="na">join</span><span class="p">(</span><span class="s">","</span><span class="p">,</span> <span class="s">"a"</span><span class="p">,</span> <span class="s">"b"</span><span class="p">,</span> <span class="s">"c"</span><span class="p">));</span>
+    <span class="n">assertArrayEquals</span><span class="p">(</span>
+            <span class="k">new</span> <span class="n">String</span><span class="o">[]</span><span class="p">{</span><span class="s">"a"</span><span class="p">,</span> <span class="s">"b"</span><span class="p">,</span> <span class="s">"c"</span><span class="p">},</span>
+            <span class="n">utils</span><span class="p">.</span><span class="na">split</span><span class="p">(</span><span class="s">","</span><span class="p">,</span> <span class="s">"a,b,c"</span><span class="p">).</span><span class="na">toArray</span><span class="p">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">));</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"stringUtils"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Voilà aussi! It works again.</p>
+<p>Note: The JavaScript implementation is backed up by <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> which is an orphan object. After its internal <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is closed, it will no longer callable. It's recommended to have the interface implement <code class="docutils literal notranslate"><span class="pre">AutoClosable</span></code> as the sample shows so that the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> when the <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is being closed. Be careful, if you keep the application running for long while without recycling them in time, <code class="docutils literal notranslate"><span class="pre">OutOfMemoryError</span></code> may occur.</p>
+</div>
+<div class="section" id="features">
+<h3>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Any Java objects generated inside V8 are automatically handled by the converter.</p></li>
+<li><p>Getters and setters (<code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">is</span></code>, <code class="docutils literal notranslate"><span class="pre">set</span></code> and <code class="docutils literal notranslate"><span class="pre">put</span></code>) are smartly handled.</p></li>
+<li><p>Overloaded methods and varargs methods are identified well.</p></li>
+<li><p>Primitive types, Set, Map, List, Array are not handled. Map is special because it can be enabled.</p></li>
+<li><p>Java interfaces can be implemented by anonymous functions in JavaScript.</p></li>
+</ul>
+</div>
+<div class="section" id="how-does-javetproxyconverter-work">
+<h3>How does JavetProxyConverter Work?<a class="headerlink" href="#how-does-javetproxyconverter-work" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> creates a JavaScript proxy per Java object. For now, the proxy intercepts <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">has</span></code> and <code class="docutils literal notranslate"><span class="pre">set</span></code> to achieve the complete virtualization of Java objects in JavaScript runtime.</p>
+</div>
+<div class="section" id="how-to-customize-javetproxyconverter">
+<h3>How to Customize JavetProxyConverter?<a class="headerlink" href="#how-to-customize-javetproxyconverter" title="Permalink to this headline">¶</a></h3>
+<p>It is recommended to subclass <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> and override few internal API to achieve complete customization.</p>
+</div>
+</div>
+<div class="section" id="null-safety">
+<h2>Null Safety<a class="headerlink" href="#null-safety" title="Permalink to this headline">¶</a></h2>
+<p>What if the object converter meets <code class="docutils literal notranslate"><span class="pre">null</span></code> or <code class="docutils literal notranslate"><span class="pre">undefined</span></code> when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in <code class="docutils literal notranslate"><span class="pre">java.lang.NullPointerException</span></code>. Luckily, Javet object converter is null safe by injecting default primitive values to <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code> and these default primitive values can be overridden.</p>
+</div>
+<div class="section" id="functions-and-objects">
+<h2>Functions and Objects<a class="headerlink" href="#functions-and-objects" title="Permalink to this headline">¶</a></h2>
+<p>There are few challenges in the object conversion.</p>
+<ul class="simple">
+<li><p>V8 functions cannot be easily represented by Java objects.</p></li>
+<li><p>V8 objects and maps cannot be easily differentiated in Java.</p></li>
+<li><p>Sometimes unexpected functions from object conversion may break applications.</p></li>
+</ul>
+<p>So, Javet introduced <code class="docutils literal notranslate"><span class="pre">IJavetEntityFunction</span></code> and <code class="docutils literal notranslate"><span class="pre">IJavetEntityMap</span></code> so that V8 functions and V8 maps can be precisely represented in Java.</p>
+<p>Also, <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code> exposes <code class="docutils literal notranslate"><span class="pre">setSkipFunctionInObject(boolean)</span></code> and <code class="docutils literal notranslate"><span class="pre">setExtractFunctionSourceCode(boolean)</span></code> to give application the opportunity to skip functions in objects or extract source code of functions.</p>
+<p>If the source code is provided to a user defined function, Javet object converter will inject that function from the source code automatically. That makes sure Java object from V8 object can be smoothly converted back to V8 object at both property and function levels.</p>
+</div>
+<div class="section" id="circular-structure">
+<h2>Circular Structure<a class="headerlink" href="#circular-structure" title="Permalink to this headline">¶</a></h2>
+<p>It is inefficient and inconvenient for Javet to substantially detect circular structure during object conversion. Instead, Javet converter keeps increasing the depth of recursion and throws <code class="docutils literal notranslate"><span class="pre">JavetConverterException</span></code> when maximum depth is reach. Maximum depth can be changed before object conversion is started. This is a cheap operation with high performance.</p>
+<p>Please avoid setting maximum depth to an unrealistic number because JVM will throw <code class="docutils literal notranslate"><span class="pre">StackOverflowError</span></code> which brings considerable performance overhead. The thing worse than that is there will be memory leak because resource recycling logic written in <code class="docutils literal notranslate"><span class="pre">finally</span></code> block sometimes won't be called when stack overflow occurs. Attackers may easily drain the server resource in minutes by sending tiny circular structure data.</p>
+</div>
+<div class="section" id="final-note">
+<h2>Final Note<a class="headerlink" href="#final-note" title="Permalink to this headline">¶</a></h2>
+<p>The built-in converter supports bi-directional conversion. The sample above shows the way of how to convert Java objects to V8 values. The opposite way follows the same pattern.</p>
+<p>Please refer to <a class="reference external" href="../../src/test/java/com/caoccao/javet/interop/converters/TestJavetCustomConverter.java">source code</a> for detail.</p>
+</div>
+</div>
+
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="java_and_javascript_interop.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Java and JavaScript Interop</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="polyfill.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Polyfill</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021. caoccao.com Sam Cao
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            |
+            <a class="muted-link" href="../_sources/tutorial/object_converter.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Object Converter</a><ul>
+<li><a class="reference internal" href="#register-custom-objects">Register Custom Objects</a><ul>
+<li><a class="reference internal" href="#enhance-the-custom-object">Enhance the Custom Object</a></li>
+<li><a class="reference internal" href="#register-the-custom-object">Register the Custom Object</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#highlights">Highlights</a></li>
+<li><a class="reference internal" href="#how-does-it-work">How does It Work?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#design-a-pojo-converter">Design a POJO Converter</a><ul>
+<li><a class="reference internal" href="#define-pojo-object">Define POJO Object</a></li>
+<li><a class="reference internal" href="#create-pojoconverter">Create PojoConverter</a></li>
+<li><a class="reference internal" href="#ready-go">Ready! Go!</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#universal-converter">Universal Converter</a><ul>
+<li><a class="reference internal" href="#preparation">Preparation</a></li>
+<li><a class="reference internal" href="#instance-file">Instance: File</a></li>
+<li><a class="reference internal" href="#instance-map">Instance: Map</a></li>
+<li><a class="reference internal" href="#instance-path">Instance: Path</a></li>
+<li><a class="reference internal" href="#static-stringbuilder">Static: StringBuilder</a></li>
+<li><a class="reference internal" href="#static-pattern">Static: Pattern</a></li>
+<li><a class="reference internal" href="#static-enum">Static: Enum</a></li>
+<li><a class="reference internal" href="#static-interface">Static: Interface</a></li>
+<li><a class="reference internal" href="#dynamic-anonymous-function">Dynamic: Anonymous Function</a></li>
+<li><a class="reference internal" href="#dynamic-anonymous-object">Dynamic: Anonymous Object</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#how-does-javetproxyconverter-work">How does JavetProxyConverter Work?</a></li>
+<li><a class="reference internal" href="#how-to-customize-javetproxyconverter">How to Customize JavetProxyConverter?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#null-safety">Null Safety</a></li>
+<li><a class="reference internal" href="#functions-and-objects">Functions and Objects</a></li>
+<li><a class="reference internal" href="#circular-structure">Circular Structure</a></li>
+<li><a class="reference internal" href="#final-note">Final Note</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script src="../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>

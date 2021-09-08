@@ -1,98 +1,389 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tutorial" href="tutorial/index.html" />
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Javet - An awesome way of embedding Node.js and V8 in Java</title>
-    <meta name="description" content="Javet - An awesome way of embedding Node.js and V8 in Java">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style type="text/css">
-        html,
-        body {
-            height: 100%;
-            font-family: Arial;
-        }
+    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+        <title>Home - Javet 0.9.12 documentation</title>
+      <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
+    
 
-        body {
-            margin: 0;
-            background-color: #4285F4;
-        }
 
-        body,
-        a {
-            color: white;
-        }
+<style>
+  :root {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
 
-        .container {
-            height: 100%;
-            padding: 0;
-            margin: 0;
-            display: -webkit-box;
-            display: -moz-box;
-            display: -ms-flexbox;
-            display: -webkit-flex;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
 
-        .row {
-            width: auto;
-        }
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
-        .title,
-        .subtitle,
-        .author,
-        .twitter {
-            width: 70%;
-            min-width: 700px;
-            text-align: left;
-        }
 
-        .title {
-            font-size: 3em;
-            font-weight: bold;
-            line-height: 200%;
-        }
 
-        .subtitle,
-        .project {
-            font-size: 1.5em;
-            line-height: 150%;
-        }
-
-        .author {
-            margin-top: 10%;
-        }
-
-        .author,
-        .twitter {
-            font-size: 1.2em;
-            line-height: 150%;
-        }
-    </style>
-</head>
-
-<body>
-    <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-
-    <div class="container">
-        <div class="row">
-            <div class="title">Javet</div>
-            <div class="subtitle">An awesome way of embedding Node.js and V8 in Java</div>
-            <div class="project"><a href="https://github.com/caoccao/Javet/">https://github.com/caoccao/Javet/</a>
-            </div>
-            <div class="author">Sam Cao</div>
-            <div class="twitter"><a href="https://twitter.com/sjtucaocao">https://twitter.com/sjtucaocao</a></div>
-        </div>
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
     </div>
-</body>
+    <div class="header-center">
+      <a href="#"><div class="brand">Javet 0.9.12 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+  
+  
+  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/hello_javet.html">Hello Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/engine_pool.html">Javet Engine Pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/interception.html">Interception</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/polyfill.html">Polyfill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/object_converter.html">Object Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/interact_with_node_js.html">Interact with Node.js</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/v8_collection.html">V8 Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/v8_function.html">V8 Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/v8_promise.html">V8 Promise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/modularization.html">Modularization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/memory_management.html">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/lock.html">Know the Lock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/termination.html">Termination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/load_and_unload.html">Load and Unload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/best_practices.html">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/performance.html">Javet Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/error_codes.html">Error Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/todo_list.html">TODO List</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq/what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/history_with_j2v8.html">History with J2V8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="development/tools.html">Development Tools</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="development/build_javet_with_docker.html">Build Javet with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="development/test.html">Test Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/design.html">Javet Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/debug_with_chrome_developer_tools.html">Debug with Chrome Developer Tools</a></li>
+</ul>
+</li>
+</ul>
 
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <div class="section" id="javet">
+<h1>Javet<a class="headerlink" href="#javet" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://search.maven.org/search?q=g:com.caoccao.javet"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge"/></a> <a class="reference external" href="https://discord.gg/R4vvKU96gw"><img alt="Discord" src="https://img.shields.io/discord/870518906115211305?label=join%20our%20Discord&amp;style=for-the-badge"/></a> <a class="reference external" href="https://paypal.me/caoccao?locale.x=en_US"><img alt="Donate" src="https://img.shields.io/badge/Donate-Paypal-green?style=for-the-badge"/></a> <a class="reference external" href="https://github.com/caoccao/Javet/actions/workflows/linux_build.yml"><img alt="Linux Build" src="https://img.shields.io/github/workflow/status/caoccao/Javet/Linux%20Build?label=Linux%20Build&amp;style=for-the-badge"/></a></p>
+<p>Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.</p>
+<p>If you like my work, please <strong>Star</strong> this project. And, you may follow me <a class="reference external" href="https://twitter.com/sjtucaocao">@sjtucaocao</a>, or visit <a class="reference external" href="http://caoccao.blogspot.com/">http://caoccao.blogspot.com/</a>. And the official support channel is at <a class="reference external" href="https://discord.gg/R4vvKU96gw">discord</a>.</p>
+<p>💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because my MacBook Air mid-2012 will be soon deprecated by new version of V8. Please <a class="reference external" href="https://paypal.me/caoccao?locale.x=en_US">donate</a> to support me purchasing a new Mac OS (x86_64) device.</p>
+<p>💖 If you use Mac OS (arm64), unfortunately there is no Mac OS (arm64) build because I don't have any Mac OS (arm64) device. Please <a class="reference external" href="https://paypal.me/caoccao?locale.x=en_US">donate</a> to support me purchasing a new Mac OS (arm64) device.</p>
+</div>
+<div class="section" id="major-features">
+<h1>Major Features<a class="headerlink" href="#major-features" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Linux + Mac OS + ️Windows (x86_64)</p></li>
+<li><p>Node.js <code class="docutils literal notranslate"><span class="pre">v14.17.6</span></code> + V8 <code class="docutils literal notranslate"><span class="pre">v9.3.345.16</span></code></p></li>
+<li><p>Dynamic switch between Node.js and V8 mode</p></li>
+<li><p>Polyfill V8 mode with <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a></p></li>
+<li><p>Exposure of the majority of V8 API in JVM</p></li>
+<li><p>JavaScript and Java interop</p></li>
+<li><p>Native BigInt and Date</p></li>
+<li><p>Javet engine pool</p></li>
+<li><p>Easy spring integration</p></li>
+<li><p>Live debug with Chrome DevTools</p></li>
+</ul>
+</div>
+<div class="section" id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dependency">
+<h2>Dependency<a class="headerlink" href="#dependency" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="maven">
+<h3>Maven<a class="headerlink" href="#maven" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="c">&lt;!-- Linux or Windows --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>0.9.12<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+<span class="c">&lt;!-- Mac OS (x86_64 Only) --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>0.9.12<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="gradle-kotlin-dsl">
+<h3>Gradle Kotlin DSL<a class="headerlink" href="#gradle-kotlin-dsl" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet:0.9.12"</span><span class="p">)</span> <span class="c1">// Linux or Windows</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-macos:0.9.12"</span><span class="p">)</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="gradle-groovy-dsl">
+<h3>Gradle Groovy DSL<a class="headerlink" href="#gradle-groovy-dsl" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet:0.9.12'</span> <span class="c1">// Linux or Windows</span>
+<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-macos:0.9.12'</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="hello-javet">
+<h2>Hello Javet<a class="headerlink" href="#hello-javet" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Node.js Mode</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">V8Runtime</span> <span class="n">v8Runtime</span> <span class="o">=</span> <span class="n">V8Host</span><span class="p">.</span><span class="na">getNodeInstance</span><span class="p">().</span><span class="na">createV8Runtime</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"'Hello Javet'"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="c1">// V8 Mode</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">V8Runtime</span> <span class="n">v8Runtime</span> <span class="o">=</span> <span class="n">V8Host</span><span class="p">.</span><span class="na">getV8Instance</span><span class="p">().</span><span class="na">createV8Runtime</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"'Hello Javet'"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="LICENSE">APACHE LICENSE, VERSION 2.0</a>.</p>
+</div>
+<div class="section" id="documents">
+<h1>Documents<a class="headerlink" href="#documents" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/">Javet Intro</a></p></li>
+<li><p><a class="reference external" href="https://www.caoccao.com/Javet/">Javet Document Portal</a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#basic">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#advanced">Advanced</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/v8_collection.html">V8 Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/v8_function.html">V8 Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/v8_promise.html">V8 Promise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/modularization.html">Modularization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/memory_management.html">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/lock.html">Know the Lock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/termination.html">Termination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/load_and_unload.html">Load and Unload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/best_practices.html">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/performance.html">Javet Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/error_codes.html">Error Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/todo_list.html">TODO List</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release_notes.html#x">0.9.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes.html#id22">0.8.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes.html#id37">0.7.x</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#environment">Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#development">Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development/index.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development/tools.html">Development Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/build.html">Build Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/test.html">Test Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/design.html">Javet Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/debug_with_chrome_developer_tools.html">Debug with Chrome Developer Tools</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="tutorial/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Tutorial</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021. caoccao.com Sam Cao
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            |
+            <a class="muted-link" href="_sources/index.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Javet</a></li>
+<li><a class="reference internal" href="#major-features">Major Features</a></li>
+<li><a class="reference internal" href="#quick-start">Quick Start</a><ul>
+<li><a class="reference internal" href="#dependency">Dependency</a><ul>
+<li><a class="reference internal" href="#maven">Maven</a></li>
+<li><a class="reference internal" href="#gradle-kotlin-dsl">Gradle Kotlin DSL</a></li>
+<li><a class="reference internal" href="#gradle-groovy-dsl">Gradle Groovy DSL</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hello-javet">Hello Javet</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#documents">Documents</a></li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/tabs.js"></script>
+    <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
 </html>

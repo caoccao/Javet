@@ -9,7 +9,7 @@ Promise and Resolver
 
 Resolver is a new concept to some JavaScript developers. In fact, it is already an old friend. Inside ``new Promise((resolve, reject) => {});``, ``(resolve, reject)`` is called resolver in V8. Javet exposes the V8 promise and resolver via the same interface ``IV8ValuePromise`` because in V8 they really are the same. So, they both share the same set of API. But the ownership of the API makes the difference as the following chart shows.
 
-.. image:: ../resources/images/v8_promise_and_resolver.png?raw=true
+.. image:: ../resources/images/v8_promise_and_resolver.png
     :alt: V8 Promise and Resolver
 
 Lifecycle
@@ -25,7 +25,7 @@ The lifecycle is as the following chart shows.
 6. Java application fetches the resource and calls the resolver via ``.resolve()``.
 7. JavaScript application receives the resource in ``.then()`` and processes the result.
 
-.. image:: ../resources/images/v8_promise_lifecycle.png?raw=true
+.. image:: ../resources/images/v8_promise_lifecycle.png
     :alt: V8 Promise Lifecycle
 
 Example fs.readFileAsync()
@@ -95,5 +95,3 @@ In Node.js mode, event ``unhandledRejection`` is recommended to be listened.
 Be careful, the ``V8Runtime.setPromiseRejectCallback()`` in V8 mode also works in Node.js mode and it can disable the built-in Node.js event ``unhandledRejection``. Sometimes, this is a handy feature.
 
 Please review `test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValuePromise.java>`_ for more detail.
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

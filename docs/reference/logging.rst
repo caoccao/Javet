@@ -75,5 +75,3 @@ Injecting the logger is quite simple.
     JavetEnginePool javetEnginePool = new JavetEnginePool(javetEngineConfig);
 
 Now, Javet is integrated into your logging system.
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

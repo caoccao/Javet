@@ -151,6 +151,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      *
      * @param customObjectClass the custom object class
      * @return true : success, false: failure
+     * @since 0.9.12
      */
     public boolean registerCustomObject(Class<?> customObjectClass) {
         return registerCustomObject(customObjectClass, METHOD_NAME_FROM_MAP, METHOD_NAME_TO_MAP);
@@ -163,6 +164,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      * @param methodNameFromMap the method name from map
      * @param methodNameToMap   the method name to map
      * @return true : success, false: failure
+     * @since 0.9.12
      */
     public boolean registerCustomObject(Class<?> customObjectClass, String methodNameFromMap, String methodNameToMap) {
         if (customObjectClass == null
@@ -502,6 +504,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      *
      * @param customObjectClass the custom object class
      * @return true : success, false: failure
+     * @since 0.9.12
      */
     public boolean unregisterCustomObject(Class<?> customObjectClass) {
         if (customObjectClass == null) {

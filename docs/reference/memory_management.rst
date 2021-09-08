@@ -116,7 +116,7 @@ So, how to notify V8 GC that Java heap memory pool is running out of space? Jave
 
 Here is a sample heap memory usage with default memory usage threshold ration and ``-Xms64m -Xmx64m``. Please note that in this sample, application is under high pressure of creating and destroying V8 objects. In normal cases, the curve is much smoother.
 
-.. image:: ../resources/images/javet_memory_management_passive_gc.png?raw=true
+.. image:: ../resources/images/javet_memory_management_passive_gc.png
     :alt: Javet Memory Management Passive GC
 
 What happens internally is as following.
@@ -155,5 +155,3 @@ This API explicitly tells Node.js or V8 runtime that the application expects a G
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It is also used in automatic GC aforementioned.
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

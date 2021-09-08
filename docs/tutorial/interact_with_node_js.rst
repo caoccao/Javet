@@ -136,5 +136,3 @@ How can this work? The ``await()`` in the worker thread actually plays the follo
                 resume_the_event_loop()
             else:
                 break
-
-[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

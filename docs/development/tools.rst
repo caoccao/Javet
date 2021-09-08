@@ -15,7 +15,7 @@ I personally recommend IntelliJ IDEA.
 Gradle
 ======
 
-For now, Gradle v6.7 + Kotlin DSL constructs the build system.
+For now, Gradle v7.2 + Kotlin DSL constructs the build system.
 
 Node.js
 =================
@@ -36,5 +36,3 @@ Python 3.8+ (Optional)
 ======================
 
 Python 3.8+ is required if you want to upgrade the version.
-
-[`Home <../../README.rst>`_] [`Development <index.rst>`_]

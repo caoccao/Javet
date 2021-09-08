@@ -2,6 +2,9 @@
 Release Notes
 =============
 
+0.9.x
+=====
+
 0.9.12
 ------
 
@@ -107,6 +110,9 @@ Release Notes
 * Upgraded V8 to ``v9.1.269.28`` `(2021-05-10) <https://v8.dev/blog/v8-release-91>`_
 * Added ``thisObjectRequired`` to ``@V8Function`` and ``@V8Property``
 
+0.8.x
+=====
+
 0.8.10
 ------
 
@@ -193,6 +199,9 @@ Release Notes
 * Enhanced ``V8ValuePromise``
 * Added dynamic switch between Node.js and V8
 
+0.7.x
+=====
+
 0.7.4
 -----
 
@@ -233,5 +242,3 @@ Release Notes
 * JS function interception
 * Native BigInt and Date
 * Javet engine pool
-
-[`Home <../README.rst>`_]

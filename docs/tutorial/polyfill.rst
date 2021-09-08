@@ -54,5 +54,3 @@ V8 Mode
 =======
 
 Polyfilling V8 mode is at another project `Javenode <https://github.com/caoccao/Javenode>`_ which aims at simulating Node.js with Java in Javet V8 mode. Why? Because Javet V8 mode is much more secure than the Node.js mode, but lacks of some basic features, e.g. setTimeout, setInterval, etc. So, these must-have API can be found in Javenode.
-
-[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

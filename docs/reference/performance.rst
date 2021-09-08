@@ -37,5 +37,3 @@ Highlights
 * Node.js on Linux is built as `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ which comes with an additional performance overhead.
 
 Reference: https://v8.dev/docs/embed#contexts
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

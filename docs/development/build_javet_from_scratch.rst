@@ -150,6 +150,4 @@ Build Node.js on Windows
 Build Javet
 ===========
 
-Once Node.js and V8 are ready, please proceed with `Build Javet with Pre-built Binaries <build_javet_with_pre_built_binaries.rst>`_.
-
-[`Home <../../README.rst>`_] [`Development <index.rst>`_]
+Once Node.js and V8 are ready, please proceed with :doc:`build_javet_with_pre_built_binaries`.

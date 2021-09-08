@@ -91,7 +91,7 @@ The native modules on Windows don't know the existence of Javet. Windows dynamic
 
 The fix is a bit complicated.
 
-* Prepare the Windows build environment by following `Build Javet <../development/build.rst>`_.
+* Prepare the Windows build environment by following :doc:`../development/build`.
 * Install the node modules from source code ``npm install --build-from-source``.
 * Download the corresponding Javet library file from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_.
 * Unzip the Javet library file somewhere.
@@ -196,11 +196,9 @@ It is V8 that performs the dependency analysis. Javet just relays the callback t
 Internals
 =========
 
-How Javet and V8 work internally for supporting modules can be found at `here <../development/design.rst>`_.
+How Javet and V8 work internally for supporting modules can be found at :doc:`../development/design`.
 
-.. image:: ../resources/images/javet_module_system.png?raw=true
+.. image:: ../resources/images/javet_module_system.png
     :alt: Javet Module System
 
 Please note that the way Javet handles dynamic import in V8 mode can be applied to Node.js mode. That means all Node.js modules can be virtualized by Javet.
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

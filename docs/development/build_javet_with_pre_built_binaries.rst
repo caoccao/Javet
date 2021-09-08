@@ -81,5 +81,3 @@ Package Jar files in Maven.
     mvn release:perform
 
 Jar files are built under ``./target``.
-
-[`Home <../../README.rst>`_] [`Development <index.rst>`_]

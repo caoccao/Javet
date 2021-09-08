@@ -44,5 +44,3 @@ Node.js
 * Always register unhandled rejection event.
 * In **non-module** mode (similar to V8 in web browser), always put launch script in a dedicated folder whose parent folder contains ``node_modules`` and avoid ``require`` modules in the same folder.
 * In **module** mode (similar to V8 in Node.js), be aware that the execution result is a promise and the behavior is different from native Node.js runtime behavior unless ``await()`` is called.
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

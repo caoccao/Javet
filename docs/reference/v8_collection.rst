@@ -78,5 +78,3 @@ V8ValueMap
         assertTrue(v8ValueMap.has("a"));
         assertTrue(v8ValueMap.delete("a"));
     }
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

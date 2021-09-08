@@ -8,6 +8,4 @@ Sometimes starting from scratch implies lower cost than upgrading an existing so
 
 Also, I had got many ideas on how the API will look like. At the end of 2020, I thought I would be able to write a new one from scratch and leave J2V8 behind. Indeed, I made it few months later.
 
-Please refer to `History with J2V8 <history_with_j2v8.rst>`_ for detail.
-
-[`Home <../../README.rst>`_] [`FAQ <index.rst>`_]
+Please refer to :doc:`history_with_j2v8` for detail.

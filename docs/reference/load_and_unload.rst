@@ -2,7 +2,7 @@
 Load and Unload
 ===============
 
-As documented in `design <../development/design.rst>`_, Javet supports loading and unloading the JNI libraries during runtime in both Node.js and V8 modes.
+As documented in :doc:`../development/design`, Javet supports loading and unloading the JNI libraries during runtime in both Node.js and V8 modes.
 
 How?
 ====
@@ -43,5 +43,3 @@ Notes
 * ``unloadLibrary()`` can only take effect after all references are garbage collectable.
 * ``loadLibrary()`` is internally called by Javet at the first time and only takes effect after ``unloadLibrary()`` is called.
 * ``loadLibrary()`` and ``unloadLibrary()`` are for experiment only. **They may be unstable and crash JVM. Please use this feature at your own risk.**
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]

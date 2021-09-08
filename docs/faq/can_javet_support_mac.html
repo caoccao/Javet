@@ -1,0 +1,299 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Can Javet Support Legacy Linux?" href="can_javet_support_legacy_linux.html" /><link rel="prev" title="History with J2V8" href="history_with_j2v8.html" />
+
+    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+        <title>Can Javet Support Mac? - Javet 0.9.12 documentation</title>
+      <link rel="stylesheet" href="../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <link rel="stylesheet" href="../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/hello_javet.html">Hello Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine_pool.html">Javet Engine Pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/interception.html">Interception</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/polyfill.html">Polyfill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/object_converter.html">Object Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/interact_with_node_js.html">Interact with Node.js</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_collection.html">V8 Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_function.html">V8 Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/v8_promise.html">V8 Promise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/modularization.html">Modularization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/memory_management.html">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/lock.html">Know the Lock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/termination.html">Termination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/load_and_unload.html">Load and Unload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/best_practices.html">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/performance.html">Javet Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/error_codes.html">Error Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/todo_list.html">TODO List</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">FAQ</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history_with_j2v8.html">History with J2V8</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Can Javet Support Mac?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../development/tools.html">Development Tools</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_with_docker.html">Build Javet with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../development/test.html">Test Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development/design.html">Javet Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development/debug_with_chrome_developer_tools.html">Debug with Chrome Developer Tools</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <div class="section" id="can-javet-support-mac">
+<h1>Can Javet Support Mac?<a class="headerlink" href="#can-javet-support-mac" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="now">
+<h2>Now<a class="headerlink" href="#now" title="Permalink to this headline">¶</a></h2>
+<p>My MacBook Air mid-2012 was revived with Mac OS Catalina which is the lowest version supported by latest V8. I managed to include it in the regular release cycle.</p>
+<div class="section" id="known-issue">
+<h3>Known Issue<a class="headerlink" href="#known-issue" title="Permalink to this headline">¶</a></h3>
+<p>Some of the Node.js symbols might not be exposed correctly. That might cause native node modules malfunction. Quick fix will be served per issue reported.</p>
+</div>
+<div class="section" id="will-the-mac-os-build-be-lts">
+<h3>Will the Mac OS Build be LTS?<a class="headerlink" href="#will-the-mac-os-build-be-lts" title="Permalink to this headline">¶</a></h3>
+<p>I doubt because when next time V8 abandons Catalina, I won't be able to create any new builds unless someone takes care of the Mac OS build or I get enough donation for a new device. <a class="reference external" href="https://paypal.me/caoccao?locale.x=en_US"><img alt="Donate" src="https://img.shields.io/badge/Donate-PayPal-green.svg"/></a></p>
+</div>
+<div class="section" id="how-about-arm64">
+<h3>How about arm64?<a class="headerlink" href="#how-about-arm64" title="Permalink to this headline">¶</a></h3>
+<p>That is still not supported. Please <a class="reference external" href="https://paypal.me/caoccao?locale.x=en_US"><img alt="Donate" src="https://img.shields.io/badge/Donate-PayPal-green.svg"/></a></p>
+</div>
+</div>
+<div class="section" id="before-aug-10-2021">
+<h2>Before Aug 10, 2021<a class="headerlink" href="#before-aug-10-2021" title="Permalink to this headline">¶</a></h2>
+<p>Short answer is <strong>Yes and No</strong>.</p>
+<div class="section" id="yes">
+<h3>Yes<a class="headerlink" href="#yes" title="Permalink to this headline">¶</a></h3>
+<p>There is no technical difficulties. The code is written in cross-platform manner. Someone needs to pay considerable effort creating and maintaining the Mac build.</p>
+</div>
+<div class="section" id="no">
+<h3>No<a class="headerlink" href="#no" title="Permalink to this headline">¶</a></h3>
+<p>I don't own a decent Mac device. To be more precisely, I have Mac Mini and MacBook Air, but they are too old (building Node.js and V8 would take many hours). Besides, there are both x86 and arm64 to be supported.</p>
+<p>I have no plan on buying 2 new Mac devices for supporting Javet only in the near future. If I could be well funded, I would consider supporting Mac.</p>
+</div>
+</div>
+</div>
+
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="can_javet_support_legacy_linux.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Can Javet Support Legacy Linux?</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="history_with_j2v8.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">History with J2V8</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021. caoccao.com Sam Cao
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            |
+            <a class="muted-link" href="../_sources/faq/can_javet_support_mac.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Can Javet Support Mac?</a><ul>
+<li><a class="reference internal" href="#now">Now</a><ul>
+<li><a class="reference internal" href="#known-issue">Known Issue</a></li>
+<li><a class="reference internal" href="#will-the-mac-os-build-be-lts">Will the Mac OS Build be LTS?</a></li>
+<li><a class="reference internal" href="#how-about-arm64">How about arm64?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#before-aug-10-2021">Before Aug 10, 2021</a><ul>
+<li><a class="reference internal" href="#yes">Yes</a></li>
+<li><a class="reference internal" href="#no">No</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script src="../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>

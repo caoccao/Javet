@@ -1,0 +1,324 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Logging" href="logging.html" /><link rel="prev" title="Know the Lock" href="lock.html" />
+
+    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+        <title>Termination - Javet 0.9.12 documentation</title>
+      <link rel="stylesheet" href="../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <link rel="stylesheet" href="../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/hello_javet.html">Hello Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/engine_pool.html">Javet Engine Pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/interception.html">Interception</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/polyfill.html">Polyfill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/object_converter.html">Object Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/interact_with_node_js.html">Interact with Node.js</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="v8_collection.html">V8 Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="v8_function.html">V8 Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="v8_promise.html">V8 Promise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modularization.html">Modularization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lock.html">Know the Lock</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Termination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_and_unload.html">Load and Unload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="performance.html">Javet Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_codes.html">Error Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo_list.html">TODO List</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/history_with_j2v8.html">History with J2V8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../development/tools.html">Development Tools</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_with_docker.html">Build Javet with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../development/test.html">Test Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development/design.html">Javet Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development/debug_with_chrome_developer_tools.html">Debug with Chrome Developer Tools</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <div class="section" id="termination">
+<h1>Termination<a class="headerlink" href="#termination" title="Permalink to this headline">¶</a></h1>
+<p>Terminating scripts that run out of control is quite important in terms of protecting the applications from being attacked by malicious scripts. In Javet, there are 2 typical ways of terminating scripts.</p>
+<div class="section" id="automatic-termination-with-pool-and-engine">
+<h2>Automatic Termination with Pool and Engine<a class="headerlink" href="#automatic-termination-with-pool-and-engine" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">IJavetEngineGuard</span></code> is the built-in support for terminating a script which runs out of control.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Get an engine from the pool as usual.</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">IJavetEngine</span> <span class="n">iJavetEngine</span> <span class="o">=</span> <span class="n">iJavetEnginePool</span><span class="p">.</span><span class="na">getEngine</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">V8Runtime</span> <span class="n">v8Runtime</span> <span class="o">=</span> <span class="n">iJavetEngine</span><span class="p">.</span><span class="na">getV8Runtime</span><span class="p">();</span>
+    <span class="c1">// Get a guard from the engine and apply try-with-resource pattern.</span>
+    <span class="k">try</span> <span class="p">(</span><span class="n">IJavetEngineGuard</span> <span class="n">iJavetEngineGuard</span> <span class="o">=</span> <span class="n">iJavetEngine</span><span class="p">.</span><span class="na">getGuard</span><span class="p">(</span><span class="mi">10000</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"while (true) {}"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+        <span class="c1">// That infinite loop will be terminated in 10 seconds by the guard.</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">JavetTerminatedException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// JavetTerminatedException will be thrown to mark that.</span>
+        <span class="n">assertFalse</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">isContinuable</span><span class="p">());</span>
+    <span class="p">}</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"1 + 1"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">(),</span>
+            <span class="s">"The V8 runtime is not dead and still be able to execute code afterwards."</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Does <code class="docutils literal notranslate"><span class="pre">IJavetEngineGuard</span></code> hang normal scripts till timeout is hit? No, it doesn't cause any overhead. If the script completes, <code class="docutils literal notranslate"><span class="pre">IJavetEngineGuard.close()</span></code> will be called via try-with-resource pattern and cancel the daemon thread immediately.</p>
+<p>Please refer to <a class="reference external" href="../../src/test/java/com/caoccao/javet/interop/engine/TestJavetEngineGuard.java">source code</a> for more detail.</p>
+</div>
+<div class="section" id="manual-termination">
+<h2>Manual Termination<a class="headerlink" href="#manual-termination" title="Permalink to this headline">¶</a></h2>
+<p>Manual termination gives applications complete control. In return, the coding effort is considerable.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">V8Host</span> <span class="n">v8Host</span> <span class="o">=</span> <span class="n">V8Host</span><span class="p">.</span><span class="na">getV8Instance</span><span class="p">();</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">V8Runtime</span> <span class="n">v8Runtime</span> <span class="o">=</span> <span class="n">v8Host</span><span class="p">.</span><span class="na">createV8Runtime</span><span class="p">())</span> <span class="p">{</span>
+    <span class="c1">// Create a daemon thread monitoring the V8 runtime status.</span>
+    <span class="n">Thread</span> <span class="n">daemonThread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="p">(()</span> <span class="o">-&gt;</span> <span class="p">{</span>
+        <span class="c1">// V8 runtime isInUse() does not require lock.</span>
+        <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">isInUse</span><span class="p">())</span> <span class="p">{</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="n">TimeUnit</span><span class="p">.</span><span class="na">MILLISECONDS</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="c1">// V8 runtime terminateExecution() does not require lock.</span>
+        <span class="n">v8Runtime</span><span class="p">.</span><span class="na">terminateExecution</span><span class="p">();</span>
+    <span class="p">});</span>
+    <span class="n">daemonThread</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
+                <span class="s">"var count = 0; while (true) { ++count; }"</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">executeVoid</span><span class="p">();</span>
+        <span class="n">fail</span><span class="p">(</span><span class="s">"Failed to throw exception when execution is terminated."</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">JavetTerminatedException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">assertFalse</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">isContinuable</span><span class="p">());</span>
+    <span class="p">}</span>
+    <span class="kd">final</span> <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getInteger</span><span class="p">(</span><span class="s">"count"</span><span class="p">);</span>
+    <span class="n">assertTrue</span><span class="p">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s">"Count should be greater than 0."</span><span class="p">);</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"1 + 1"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">(),</span>
+            <span class="s">"V8 runtime should still be able to execute script after being terminated."</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-about-debug-mode">
+<h2>How about Debug Mode?<a class="headerlink" href="#how-about-debug-mode" title="Permalink to this headline">¶</a></h2>
+<p>Usually, when application is being debugged, <code class="docutils literal notranslate"><span class="pre">JavetEngineGuard</span></code> may easily interrupt the debug. No worry, <code class="docutils literal notranslate"><span class="pre">JavetEngineGuard</span></code> is by default disabled in debug mode. Please refer to <code class="docutils literal notranslate"><span class="pre">disableInDebugMode()</span></code> and <code class="docutils literal notranslate"><span class="pre">enableInDebugMode()</span></code> for detail.</p>
+</div>
+</div>
+
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="logging.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Logging</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="lock.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Know the Lock</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021. caoccao.com Sam Cao
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            |
+            <a class="muted-link" href="../_sources/reference/termination.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Termination</a><ul>
+<li><a class="reference internal" href="#automatic-termination-with-pool-and-engine">Automatic Termination with Pool and Engine</a></li>
+<li><a class="reference internal" href="#manual-termination">Manual Termination</a></li>
+<li><a class="reference internal" href="#how-about-debug-mode">How about Debug Mode?</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script src="../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>

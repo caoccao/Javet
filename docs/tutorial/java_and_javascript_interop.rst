@@ -81,5 +81,3 @@ Inject a StringBuilder
      */
 
 Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/TestJavaAndJSInterop.java>`_ for detail.
-
-[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

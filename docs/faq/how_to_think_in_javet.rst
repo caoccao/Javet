@@ -44,5 +44,3 @@ Learn from Unit Test
 ====================
 
 Most of the Javet API is unit test coverted. Learning from Javet unit test is an express and effective way to Thinking in Javet.
-
-[`Home <../../README.rst>`_] [`FAQ <index.rst>`_]

@@ -1,6 +1,6 @@
-==================
-Javet Installation
-==================
+============
+Installation
+============
 
 Dependency
 ==========
@@ -54,7 +54,5 @@ Ubuntu 18.04                Yes (`Private Build <https://drive.google.com/drive/
 Ubuntu 16.04                Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
 Other Linux Distributions   Not Tested
 MacOS x86_64                Yes
-MacOS arm64                 No (`Can Javet Support Mac? <../faq/can_javet_support_mac.rst>`_)
+MacOS arm64                 No (:doc:`../faq/can_javet_support_mac`)
 =========================== =======================================================================================================================
-
-[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

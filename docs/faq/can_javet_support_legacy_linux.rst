@@ -35,5 +35,3 @@ Notes
 =====
 
 Private builds imply considerable additional effort, so there is no commitments. Please contact the maintainer for private builds wisely.
-
-[`Home <../../README.rst>`_] [`FAQ <index.rst>`_]

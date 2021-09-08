@@ -62,5 +62,3 @@ Note:
 
 * The base image is so large (60+GB) that it's not efficient to push the base image to docker hub. Of course, without the base image at docker hub, it's not wise to enable the github workflow for Windows build.
 * Building the base image takes many hours and may experience intermittent errors.
-
-[`Home <../../README.rst>`_] [`Development <index.rst>`_]

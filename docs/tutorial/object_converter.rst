@@ -243,7 +243,7 @@ Just write few lines of code to interact with Javet.
 
 The console output is:
 
-.. code-block:: json
+.. code-block:: js
 
     [ { name: 'Tom', value: 'CEO' }, { name: 'Jerry', value: 'CFO' } ]
 
@@ -566,5 +566,3 @@ Final Note
 The built-in converter supports bi-directional conversion. The sample above shows the way of how to convert Java objects to V8 values. The opposite way follows the same pattern.
 
 Please refer to `source code <../../src/test/java/com/caoccao/javet/interop/converters/TestJavetCustomConverter.java>`_ for detail.
-
-[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

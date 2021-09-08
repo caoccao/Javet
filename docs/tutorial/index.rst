@@ -5,22 +5,24 @@ Tutorial
 Basic
 =====
 
-* `Installation <installation.rst>`_
-* `Hello Javet <hello_javet.rst>`_
-* `Engine Pool <engine_pool.rst>`_
-* `Interception <interception.rst>`_
-* `Javet Shell <javet_shell.rst>`_
-* `Node.js Mode and V8 Mode <node_js_mode_and_v8_mode.rst>`_
-* `Spring Integration <spring_integration.rst>`_
-* `Polyfill <polyfill.rst>`_
+.. toctree::
+    :maxdepth: 1
+
+    installation.rst
+    hello_javet.rst
+    engine_pool.rst
+    interception.rst
+    javet_shell.rst
+    node_js_mode_and_v8_mode.rst
+    spring_integration.rst
+    polyfill.rst
 
 Advanced
 ========
 
-* `Object Converter <object_converter.rst>`_
-* `Java and JavaScript Interop <java_and_javascript_interop.rst>`_
-* `Interact with Node.js <interact_with_node_js.rst>`_
+.. toctree::
+    :maxdepth: 1
 
-Complete tutorial is available at `here <../../src/test/java/com/caoccao/javet/tutorial>`_.
-
-[`Home <../../README.rst>`_]
+    object_converter.rst
+    java_and_javascript_interop.rst
+    interact_with_node_js.rst

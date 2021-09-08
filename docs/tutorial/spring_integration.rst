@@ -28,7 +28,7 @@ Configuration
             javetEngineConfigNode.setPoolIdleTimeoutSeconds(...);
             javetEngineConfigNode.setPoolMinSize(...);
             javetEngineConfigNode.setPoolMaxSize(...);
-            javetEngineConfigNode.setPoolMaxSize(...);
+            javetEngineConfigNode.setPoolShutdownTimeoutSeconds(...);
             javetEngineConfigNode.setResetEngineTimeoutSeconds(...);
             javetEngineConfigNode.setJavetLogger(new MyJavetLogger(MyJavetLogger.class.getName()));
             javetEngineConfigNode.setJSRuntimeType(JSRuntimeType.Node);
@@ -46,7 +46,7 @@ Configuration
             javetEngineConfigV8.setPoolIdleTimeoutSeconds(...);
             javetEngineConfigV8.setPoolMinSize(...);
             javetEngineConfigV8.setPoolMaxSize(...);
-            javetEngineConfigV8.setPoolMaxSize(...);
+            javetEngineConfigV8.setPoolShutdownTimeoutSeconds(...);
             javetEngineConfigV8.setResetEngineTimeoutSeconds(...);
             javetEngineConfigV8.setJavetLogger(new MyJavetLogger(MyJavetLogger.class.getName()));
             javetEngineConfigV8.setJSRuntimeType(JSRuntimeType.V8);
@@ -62,5 +62,3 @@ You may easily inject your engine pool in the Spring way.
 
     @Resource
     protected IJavetEnginePool javetEnginePool;
-
-[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

@@ -41,6 +41,9 @@ class ChangeJavetVersion(object):
       'build.gradle.kts', '\n',
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
+      'docs/conf.py', '\n',
+      re.compile(r'release\s*=\s*\'(?P<version>\d+\.\d+\.\d+)\'$'))
+    self._update(
       'docs/tutorial/installation.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
       re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\']{1}'),

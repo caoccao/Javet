@@ -1,18 +1,20 @@
-===============
-Javet Reference
-===============
+=========
+Reference
+=========
 
-* `V8 Collection <v8_collection.rst>`_
-* `V8 Function <v8_function.rst>`_
-* `V8 Promise <v8_promise.rst>`_
-* `Modularization <modularization.rst>`_
-* `Memory Management <memory_management.rst>`_
-* `Lock <lock.rst>`_
-* `Termination <termination.rst>`_
-* `Logging <logging.rst>`_
-* `Load and Unload <load_and_unload.rst>`_
-* `Best Practices <best_practices.rst>`_
-* `Performance <performance.rst>`_
-* `Error Codes <error_codes.rst>`_
+.. toctree::
+    :maxdepth: 1
 
-[`Home <../../README.rst>`_]
+    v8_collection
+    v8_function
+    v8_promise
+    modularization
+    memory_management
+    lock
+    termination
+    logging
+    load_and_unload
+    best_practices
+    performance
+    error_codes
+    todo_list

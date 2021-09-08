@@ -26,5 +26,3 @@ Javet Engine Pool
     }
 
 Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java>`_ for more detail.
-
-[`Home <../../README.rst>`_] [`Javet Tutorial <index.rst>`_]

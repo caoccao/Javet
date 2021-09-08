@@ -33,7 +33,7 @@ Run arbitrary code in the console just like what can be done in a node console.
 
 Open chrome://inspect/ in Chrome, wait few seconds and Javet will appear as a remote target.
 
-.. image:: ../resources/images/chome_developer_tools_devices_remote_target_javet.png?raw=true
+.. image:: ../resources/images/chome_developer_tools_devices_remote_target_javet.png
     :alt: Remote Target Javet
 
 4. Debug as Usual
@@ -41,7 +41,7 @@ Open chrome://inspect/ in Chrome, wait few seconds and Javet will appear as a re
 
 Click ``inspect``. Voilà, DevTools is up. As the screenshot shows, live evaluation and auto-completion work successfully. Enjoy the live debugging.
 
-.. image:: ../resources/images/chome_developer_tools_console.png?raw=true
+.. image:: ../resources/images/chome_developer_tools_console.png
     :alt: Remote Target Javet
 
 Chrome Developer Tools Internals
@@ -55,7 +55,7 @@ Handshake
 * CDT queries http://127.0.0.1:9229/javet with a websocket upgrade request. CDT Shell responses with websocket upgrade accepted.
 * CDT switches to ws://127.0.0.1:9229/javet and sends the following 8 messages to perform a handshake with a node flavored remote target.
 
-.. code-block:: json
+.. code-block:: js
 
     Chrome: {"id":1,"method":"Runtime.enable","params":{}}
     Javet Notification: {"method":"Runtime.executionContextCreated","params":{"context":{"id":1,"origin":"","name":"Javet Inspector 00000000","uniqueId":"00000000.00000000"}}}

@@ -41,5 +41,3 @@ Thread-safety
 Implicit mode is thread-safe because its locking granularity is at API call level. Multiple threads are free to share the same V8 runtime in concurrent scenarios. Of course, be careful that JavaScript variables may be changed by other threads. It's better not to touch the same JavaScript variable among multiple threads, otherwise, Javet may crash. Yes, crash, because Javet doesn't perform this kind of check.
 
 Explicit mode is **NOT** thread-safe because it's designed to improve performance in single-threaded scenarios. Sharing V8 locker protected V8 runtime among multiple threads will result in Javet crash immediately.
-
-[`Home <../../README.rst>`_] [`Javet Reference <index.rst>`_]
