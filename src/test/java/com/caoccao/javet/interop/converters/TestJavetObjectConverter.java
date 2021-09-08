@@ -143,6 +143,30 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testCustomObject() throws JavetException {
+        IJavetConverter originalConverter = v8Runtime.getConverter();
+        JavetObjectConverter converter = new JavetObjectConverter();
+        converter.registerCustomObject(CustomObject.class);
+        v8Runtime.setConverter(converter);
+        CustomObject[] customObjects = new CustomObject[]{
+                new CustomObject("x", 1),
+                new CustomObject("y", 2),
+        };
+        v8Runtime.getGlobalObject().set("a", customObjects);
+        assertEquals(2, v8Runtime.getExecutor("a.length").executeInteger());
+        List<CustomObject> v8CustomObjects = v8Runtime.getGlobalObject().getObject("a");
+        assertNotNull(v8CustomObjects);
+        assertEquals(2, v8CustomObjects.size());
+        for (int i = 0; i < customObjects.length; i++) {
+            assertEquals(customObjects[i].getName(), v8Runtime.getExecutor("a[" + i + "].name").executeString());
+            assertEquals(customObjects[i].getValue(), v8Runtime.getExecutor("a[" + i + "].value").executeInteger());
+            assertEquals(customObjects[i].getName(), v8CustomObjects.get(i).getName());
+            assertEquals(customObjects[i].getValue(), v8CustomObjects.get(i).getValue());
+        }
+        v8Runtime.setConverter(originalConverter);
+    }
+
+    @Test
     public void testMap() throws JavetException {
         IJavetConverter converter = new JavetObjectConverter();
         try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
@@ -334,6 +358,50 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertTrue(v8ValueTypedArray.fromShorts(shorts));
             short[] newShorts = (short[]) converter.toObject(v8ValueTypedArray);
             assertArrayEquals(shorts, newShorts);
+        }
+    }
+
+    static final class CustomObject {
+        private String name;
+        private int value;
+
+        public CustomObject(String name, int value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public CustomObject() {
+            this(null, 0);
+        }
+
+        public void fromMap(Map<String, Object> map) {
+            setName((String) map.get("name"));
+            setValue((Integer) map.get("value"));
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
+        }
+
+        public Map<String, Object> toMap() {
+            return new HashMap<String, Object>() {
+                {
+                    put("name", getName());
+                    put("value", getValue());
+                }
+            };
         }
     }
 }

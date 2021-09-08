@@ -8,6 +8,7 @@ Release Notes
 * Added error code 503
 * Enhanced ``V8Property`` to support built-in symbols
 * Added ``V8ValueSharedArrayBuffer``
+* Added ``registerCustomObject()`` and ``unregisterCustomObject()`` to ``JavetObjectConverter``
 * Added private property support to ``IV8ValueObject``
 
 0.9.11
