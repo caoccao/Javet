@@ -31,7 +31,8 @@ release = '0.9.12'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx_inline_tabs",
+    'sphinx_inline_tabs',
+    'sphinx.ext.extlinks',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -79,3 +80,10 @@ html_css_files = [
 
 # html_logo = 'resources/images/logo.ico'
 # html_favicon = 'resources/images/logo.ico'
+
+extlinks = {
+    'extsource0': ('https://github.com/caoccao/Javet/tree/main/%s', '%s'),
+    'extsource1': ('https://github.com/caoccao/Javet/tree/main/1/%s', '%s'),
+    'extsource2': ('https://github.com/caoccao/Javet/tree/main/1/2/%s', '%s'),
+    'extsource3': ('https://github.com/caoccao/Javet/tree/main/1/2/3/%s', '%s'),
+}

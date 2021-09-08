@@ -80,4 +80,4 @@ Inject a StringBuilder
      *   Hello from StringBuilder
      */
 
-Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/TestJavaAndJSInterop.java>`_ for detail.
+Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/tutorial/TestJavaAndJSInterop.java>` for detail.

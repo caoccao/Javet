@@ -26,4 +26,4 @@ Print **1 + 1** in Node.js Mode
         // Step 3: Resource is recycled automatically at the end of the try-with-resource block.
     }
 
-Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java>`_ for more detail.
+Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java>` for more detail.

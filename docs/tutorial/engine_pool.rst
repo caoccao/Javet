@@ -2,6 +2,24 @@
 Javet Engine Pool
 =================
 
+Motivation
+==========
+
+* It takes quite some time to spawn a ``V8Runtime``, especially in Node.js mode.
+* It takes a lot of time to initialize a ``V8Runtime`` to prepare for script execution.
+* ``V8Runtime`` is not recommended to be used in multi-threaded environments. (Though Javet allows it to be used that way.)
+
+Goals
+=====
+
+* Provide a basic user experience similar to a database connection pool.
+* Minimize the performance overhead of ``V8Runtime`` creation and initialization.
+* Free applications from explicitly closing ``V8Runtime`` from time to time.
+* Allow easy extension.
+
+Usage
+=====
+
 .. code-block:: java
 
     // Create a Javet engine pool.
@@ -25,4 +43,4 @@ Javet Engine Pool
         }
     }
 
-Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java>`_ for more detail.
+Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java>` for more detail.

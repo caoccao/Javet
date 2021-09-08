@@ -28,7 +28,7 @@ Automatic Termination with Pool and Engine
 
 Does ``IJavetEngineGuard`` hang normal scripts till timeout is hit? No, it doesn't cause any overhead. If the script completes, ``IJavetEngineGuard.close()`` will be called via try-with-resource pattern and cancel the daemon thread immediately.
 
-Please refer to `source code <../../src/test/java/com/caoccao/javet/interop/engine/TestJavetEngineGuard.java>`_ for more detail.
+Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/interop/engine/TestJavetEngineGuard.java>` for more detail.
 
 Manual Termination
 ==================

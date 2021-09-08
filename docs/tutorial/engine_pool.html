@@ -91,7 +91,7 @@
       <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
     </div>
     <div class="header-right">
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
     </div>
@@ -176,11 +176,30 @@
   <main class="main">
     <div class="content">
       <article role="main">
-        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+        <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <div class="section" id="javet-engine-pool">
 <h1>Javet Engine Pool<a class="headerlink" href="#javet-engine-pool" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>It takes quite some time to spawn a <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code>, especially in Node.js mode.</p></li>
+<li><p>It takes a lot of time to initialize a <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> to prepare for script execution.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is not recommended to be used in multi-threaded environments. (Though Javet allows it to be used that way.)</p></li>
+</ul>
+</div>
+<div class="section" id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Provide a basic user experience similar to a database connection pool.</p></li>
+<li><p>Minimize the performance overhead of <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> creation and initialization.</p></li>
+<li><p>Free applications from explicitly closing <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> from time to time.</p></li>
+<li><p>Allow easy extension.</p></li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a Javet engine pool.</span>
 <span class="k">try</span> <span class="p">(</span><span class="n">IJavetEnginePool</span><span class="o">&lt;</span><span class="n">V8Runtime</span><span class="o">&gt;</span> <span class="n">javetEnginePool</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JavetEnginePool</span><span class="o">&lt;&gt;</span><span class="p">())</span> <span class="p">{</span>
     <span class="c1">// Get a Javet engine from the pool.</span>
@@ -203,7 +222,8 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Please refer to <a class="reference external" href="../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java">source code</a> for more detail.</p>
+<p>Please refer to the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/../../src/test/java/com/caoccao/javet/tutorial/HelloJavet.java">source code</a> for more detail.</p>
+</div>
 </div>
 
       </article>
@@ -248,8 +268,29 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Javet Engine Pool</a><ul>
+<li><a class="reference internal" href="#motivation">Motivation</a></li>
+<li><a class="reference internal" href="#goals">Goals</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

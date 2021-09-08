@@ -7,7 +7,7 @@ Debug with Chrome Developer Tools
 CDT Shell
 =========
 
-Javet ships a demo `CDT Shell <../../src/test/java/com/caoccao/javet/tutorial/cdt/TestCDT.java>`_ application to demonstrate how to work with CDT to perform a live debugging.
+Javet ships a demo :extsource2:`CDT Shell <../../src/test/java/com/caoccao/javet/tutorial/cdt/TestCDT.java>` application to demonstrate how to work with CDT to perform a live debugging.
 
 1. Run CDT Shell
 ----------------
@@ -77,7 +77,7 @@ Handshake
 
 Note: Method ``Runtime.runIfWaitingForDebugger`` can be regarded as the handshake completion and there is no need to parse this message because it is exposed as a callback in ``IV8InspectorListener``.
 
-Actually, inside V8, the first message can enable the debugging without the rest of them. Please visit `TestV8Inspector.java <../../src/test/java/com/caoccao/javet/interop/TestV8Inspector.java>`_ for detail.
+Actually, inside V8, the first message can enable the debugging without the rest of them. Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/interop/TestV8Inspector.java>` for detail.
 
 Customization
 =============

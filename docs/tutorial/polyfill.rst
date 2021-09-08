@@ -48,7 +48,7 @@ decimal.js
         }
     }
 
-Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/DecimalJavetInV8Mode.java>`_ for more detail.
+Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/tutorial/DecimalJavetInV8Mode.java>` for more detail.
 
 V8 Mode
 =======

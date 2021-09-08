@@ -94,4 +94,4 @@ In Node.js mode, event ``unhandledRejection`` is recommended to be listened.
 
 Be careful, the ``V8Runtime.setPromiseRejectCallback()`` in V8 mode also works in Node.js mode and it can disable the built-in Node.js event ``unhandledRejection``. Sometimes, this is a handy feature.
 
-Please review `test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValuePromise.java>`_ for more detail.
+Please review the :extsource2:`test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValuePromise.java>` for more detail.

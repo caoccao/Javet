@@ -96,7 +96,7 @@ Javet offers complete support to all the typed arrays as well as ``DataView`` as
 | BigUint64Array    | 0 to 264-1                  | 8             | 64-bit unsigned integer                                                            | bigint              | uint64_t (unsigned long long) |
 +-------------------+-----------------------------+---------------+------------------------------------------------------------------------------------+---------------------+-------------------------------+
 
-Please refer to `TestV8ValueTypedArray <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java>`_ and `TestV8ValueDataView <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueDataView.java>`_ for sample code snippets.
+Please refer to :extsource2:`TestV8ValueTypedArray <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java>` and :extsource2:`TestV8ValueDataView <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueDataView.java>` for sample code snippets.
 
 GC
 ==

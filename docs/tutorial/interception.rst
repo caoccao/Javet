@@ -107,4 +107,4 @@ Test
         v8Runtime.lowMemoryNotification();
     }
 
-Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/TestInterception.java>`_ for more detail.
+Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/tutorial/TestInterception.java>` for more detail.

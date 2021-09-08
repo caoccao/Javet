@@ -44,4 +44,4 @@ The user experience is very much like the one in node.
     > a + b
     7
 
-Please refer to `source code <../../src/test/java/com/caoccao/javet/tutorial/cdt/CDTShell.java>`_ for more detail.
+Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/tutorial/cdt/CDTShell.java>` for more detail.

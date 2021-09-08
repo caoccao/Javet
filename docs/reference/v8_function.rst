@@ -487,4 +487,4 @@ How about Bind?
     // func.bind(object); func(a, b, c); without return
     object.set("func", func); object.invokeVoid("func", a, b, c);
 
-Please review `test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>`_ for more detail.
+Please review the :extsource2:`test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>` for more detail.
