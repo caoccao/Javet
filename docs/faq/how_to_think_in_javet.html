@@ -197,14 +197,14 @@
 <h1>How to Think in Javet?<a class="headerlink" href="#how-to-think-in-javet" title="Permalink to this headline">¶</a></h1>
 <p>There are folks migrating projects from other libraries (e.g. J2V8) to Javet. Some experienced certain challenges which from Javet perspective required <strong>Thinking in Javet</strong>. So, how?</p>
 <div class="section" id="v8runtime-and-v8valueglobalobject">
-<h2><code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> and <code class="docutils literal notranslate"><span class="pre">V8ValueGlobalObject</span></code><a class="headerlink" href="#v8runtime-and-v8valueglobalobject" title="Permalink to this headline">¶</a></h2>
+<h2>V8Runtime and V8ValueGlobalObject<a class="headerlink" href="#v8runtime-and-v8valueglobalobject" title="Permalink to this headline">¶</a></h2>
 <p>In Javet, <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> and <code class="docutils literal notranslate"><span class="pre">V8ValueGlobalObject</span></code> are separate concepts.</p>
 <div class="section" id="v8runtime">
-<h3><code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code><a class="headerlink" href="#v8runtime" title="Permalink to this headline">¶</a></h3>
+<h3>V8Runtime<a class="headerlink" href="#v8runtime" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is only a representative of the V8 isolate and V8 context. It has nothing to do with <code class="docutils literal notranslate"><span class="pre">globalThis</span></code> or <code class="docutils literal notranslate"><span class="pre">window</span></code>. However, in few other libraries these concepts are mixed up.</p>
 </div>
 <div class="section" id="v8valueglobalobject">
-<h3><code class="docutils literal notranslate"><span class="pre">V8ValueGlobalObject</span></code><a class="headerlink" href="#v8valueglobalobject" title="Permalink to this headline">¶</a></h3>
+<h3>V8ValueGlobalObject<a class="headerlink" href="#v8valueglobalobject" title="Permalink to this headline">¶</a></h3>
 <p>As <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> no longer represents <code class="docutils literal notranslate"><span class="pre">globalThis</span></code> or <code class="docutils literal notranslate"><span class="pre">window</span></code>, <code class="docutils literal notranslate"><span class="pre">V8ValueGlobalObject</span></code> from <code class="docutils literal notranslate"><span class="pre">V8Runtime.getGlobalObject()</span></code> is the one.</p>
 <p>If you want to access global objects or call top level functions, <code class="docutils literal notranslate"><span class="pre">globalObject.get('...')</span></code> and <code class="docutils literal notranslate"><span class="pre">globalObject.invoke('...')</span></code> are the Javet ways.</p>
 </div>
@@ -213,20 +213,20 @@
 <h2>Executor and Execute<a class="headerlink" href="#executor-and-execute" title="Permalink to this headline">¶</a></h2>
 <p>In Javet, executing a script involves 2 steps.</p>
 <ol class="arabic simple">
-<li><p>Get the executor.</p></li>
+<li><p>Get an executor.</p></li>
 <li><p>Call certain execute method of that executor.</p></li>
 </ol>
 <p>This is quite different from the common practice of few other libraries where execute is just a 1-step thing.</p>
 <p>Why? Javet intends to offer a builder pattern in the script execution. With an executor, application may do every other things before the actual execution. For instance: security check, enable / disable certain V8 features, hack the AST, set up interception, etc. The scope may be limited to that executor only. Also, the executor can be reused to avoid the duplicated resource loading overhead.</p>
 </div>
-<div class="section" id="declarative-function-interception">
-<h2>Declarative Function Interception<a class="headerlink" href="#declarative-function-interception" title="Permalink to this headline">¶</a></h2>
-<p>Javet offers an easy way of registering function interception in a declarative way. Just decorate a function of arbitrary object with <code class="docutils literal notranslate"><span class="pre">@V8Function(name</span> <span class="pre">=</span> <span class="pre">"...")</span></code>, Javet is able to register it and that function will be called back from V8. Application is free from managing those tedious things like resource leakage, object lifecycle, type conversion, etc. Javet just handles that behind the scene and everything goes smoothly.</p>
+<div class="section" id="declarative-function-and-property-interception">
+<h2>Declarative Function and Property Interception<a class="headerlink" href="#declarative-function-and-property-interception" title="Permalink to this headline">¶</a></h2>
+<p>Javet offers an easy way of registering function and property interception in a declarative way. Just decorate a function of arbitrary object with <code class="docutils literal notranslate"><span class="pre">@V8Function(name</span> <span class="pre">=</span> <span class="pre">"...")</span></code> or <code class="docutils literal notranslate"><span class="pre">@V8Property(name</span> <span class="pre">=</span> <span class="pre">"...")</span></code>, Javet is able to register it and that function will be called back from V8. Application is free from managing those tedious things like resource leakage, object lifecycle, type conversion, etc. Javet just handles that behind the scene and everything goes smoothly.</p>
 <p>The coding experience is a little bit close to working with Spring Framework.</p>
 </div>
 <div class="section" id="learn-from-unit-test">
 <h2>Learn from Unit Test<a class="headerlink" href="#learn-from-unit-test" title="Permalink to this headline">¶</a></h2>
-<p>Most of the Javet API is unit test coverted. Learning from Javet unit test is an express and effective way to Thinking in Javet.</p>
+<p>Most of the Javet API is unit test covered. Learning from Javet unit test is an express and effective way to Thinking in Javet.</p>
 </div>
 </div>
 
@@ -285,13 +285,13 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">How to Think in Javet?</a><ul>
-<li><a class="reference internal" href="#v8runtime-and-v8valueglobalobject"><code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> and <code class="docutils literal notranslate"><span class="pre">V8ValueGlobalObject</span></code></a><ul>
-<li><a class="reference internal" href="#v8runtime"><code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code></a></li>
-<li><a class="reference internal" href="#v8valueglobalobject"><code class="docutils literal notranslate"><span class="pre">V8ValueGlobalObject</span></code></a></li>
+<li><a class="reference internal" href="#v8runtime-and-v8valueglobalobject">V8Runtime and V8ValueGlobalObject</a><ul>
+<li><a class="reference internal" href="#v8runtime">V8Runtime</a></li>
+<li><a class="reference internal" href="#v8valueglobalobject">V8ValueGlobalObject</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#executor-and-execute">Executor and Execute</a></li>
-<li><a class="reference internal" href="#declarative-function-interception">Declarative Function Interception</a></li>
+<li><a class="reference internal" href="#declarative-function-and-property-interception">Declarative Function and Property Interception</a></li>
 <li><a class="reference internal" href="#learn-from-unit-test">Learn from Unit Test</a></li>
 </ul>
 </li>
