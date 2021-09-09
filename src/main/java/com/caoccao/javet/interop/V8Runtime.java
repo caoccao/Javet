@@ -621,17 +621,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 readLock.unlock();
             }
             if (v8ModuleResolver != null) {
-                IV8Module iV8Module = v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
-                if (iV8Module != null) {
-                    Lock writeLock = v8ModuleLock.writeLock();
-                    try {
-                        writeLock.lock();
-                        v8ModuleMap.put(resourceName, iV8Module);
-                        return iV8Module;
-                    } finally {
-                        writeLock.unlock();
-                    }
-                }
+                return v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
             }
         }
         return null;
