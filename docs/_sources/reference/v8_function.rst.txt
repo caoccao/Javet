@@ -48,7 +48,7 @@ How about Object Type Conversion?
 
 As V8 only accepts data represented by its own format, Java objects need to be converted to native ``V8Value`` objects. Creating native ``V8Value`` objects is tricky in the callback receiver. There are typically 2 options.
 
-1. **Use Object Converter** - Enhance the :doc:`../tutorial/object_converter` and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
+1. **Use Object Converter** - Enhance the :doc:`../tutorial/advanced/object_converter` and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
 
 The beauty of the object converter is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.
 
@@ -440,7 +440,7 @@ For instance: The following 4 functions are all the same and valid.
         return i == null? 0: i.getValue();
     }
 
-Can the default values be changed in terms of null safety? Yes, :doc:`../tutorial/object_converter` allows overriding the default values.
+Can the default values be changed in terms of null safety? Yes, :doc:`../tutorial/advanced/object_converter` allows overriding the default values.
 
 Call vs. Invoke
 ===============

@@ -15,7 +15,7 @@ Javet
 .. |Linux Build| image:: https://img.shields.io/github/workflow/status/caoccao/Javet/Linux%20Build?label=Linux%20Build&style=for-the-badge
     :target: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml
 
-Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
+`Javet <https://github.com/caoccao/Javet/>`_ is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
 If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 

@@ -5,6 +5,6 @@
 
    tutorial/index
    reference/index
-   release_notes
+   release_notes/index
    faq/index
    development/index
