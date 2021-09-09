@@ -78,8 +78,8 @@ html_css_files = [
     'css/custom.css',
 ]
 
-# html_logo = 'resources/images/logo.ico'
-# html_favicon = 'resources/images/logo.ico'
+html_logo = 'resources/images/logo.png'
+html_favicon = 'resources/images/logo.ico'
 
 extlinks = {
     'extsource0': ('https://github.com/caoccao/Javet/tree/main/%s', '%s'),
