@@ -2,10 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Development" href="../development/index.html" /><link rel="prev" title="What is the Motivation?" href="what_is_the_motivation.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Development" href="../../development/index.html" /><link rel="prev" title="Can I Debug Javet in Chrome DevTools?" href="can_i_debug_javet_in_chrome_dev_tools.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>History with J2V8 - Javet 0.9.12 documentation</title>
+        <title>Why Node.js Crashes When being Closed? - Javet 0.9.12 documentation</title>
       <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="../../_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
@@ -156,9 +156,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">FAQ</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Background</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="what_is_the_motivation.html">What is the Motivation?</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">History with J2V8</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../background/what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../background/history_with_j2v8.html">History with J2V8</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -171,10 +171,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Troubleshooting</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Why Node.js Crashes When being Closed?</a></li>
 </ul>
 </li>
 </ul>
@@ -206,85 +206,46 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="history-with-j2v8">
-<h1>History with J2V8<a class="headerlink" href="#history-with-j2v8" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="j2v8-issues">
-<h2>J2V8 Issues<a class="headerlink" href="#j2v8-issues" title="Permalink to this headline">¶</a></h2>
-<p>J2V8 is an excellent project on embedding V8 in Java. However, J2V8 community hasn't been active since 2017.</p>
-<p>The last Windows version 4.6.0 was released in 2016 and the last Linux version 4.8.0 was released in 2017. The V8 in Windows v4.6.0 doesn't even fully support ES6.</p>
-<p>The latest community activities were around Android versions. The Node.js API was dropped. The Windows build has been seriously broken for years. The Linux build is nearly broken. There are serious memory leak issues which are hard to be fixed under the current architecture.</p>
-<p>Its API has stopped evolving for years. Many new features I expect just don't get any chances to be implemented. Obviously, if the build system was broken and couldn't be easily fixed, almost no one would like to contribute. That includes me. When I was trying to fix the build system for Windows and Linux, I had to admit that's so, so, so, challenging. Why is that? I think it's not merely J2V8 community's problem because in the meanwhile V8, Node.js and ECMAScript move forward rapidly causing many unexpected challenges. Someone or some team needs to look after J2V8 from time to time. Unfortunately, the reality is cruel.</p>
+        <div class="section" id="why-node-js-crashes-when-being-closed">
+<h1>Why Node.js Crashes When being Closed?<a class="headerlink" href="#why-node-js-crashes-when-being-closed" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Some Javet users experience segfaults when using the Node.js mode. The segfaults occur when <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code> is being closed. E.g. <a class="reference external" href="https://github.com/caoccao/Javet/issues/20">issue #20</a> and <a class="reference external" href="https://github.com/caoccao/Javet/issues/82">issue #82</a>.</p>
 </div>
-<div class="section" id="j2v8-latest-version">
-<h2>J2V8 Latest Version<a class="headerlink" href="#j2v8-latest-version" title="Permalink to this headline">¶</a></h2>
-<p>I managed to unofficially build the latest <a class="reference external" href="https://github.com/caoccao/Javet/releases/tag/0.6.2.0">J2V8 v6.2.0</a>.</p>
-<ul class="simple">
-<li><p>V8 is upgraded to v8.3.110.9 which was released in May, 2020.</p></li>
-<li><p>Windows and Linux are supported.</p></li>
-<li><p>Node.js is dropped temporarily.</p></li>
-</ul>
-<p>I've tested the performance between <code class="docutils literal notranslate"><span class="pre">j2v8_win32_x86_64-4.6.0.jar</span></code> and <code class="docutils literal notranslate"><span class="pre">j2v8_win32_x86_64-6.2.0.jar</span></code> on a Windows machine with CPU i7 10700K. The test code is just <code class="docutils literal notranslate"><span class="pre">1+1</span> <span class="pre">-&gt;</span> <span class="pre">2</span></code>. Here are the comparisons.</p>
-<div class="table-wrapper"><table class="docutils align-default">
-<colgroup>
-<col style="width: 53%"/>
-<col style="width: 24%"/>
-<col style="width: 22%"/>
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Case</p></th>
-<th class="head"><p>4.6.0 (TPS)</p></th>
-<th class="head"><p>6.2.0 (TPS)</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Single Session with 1 Thread</p></td>
-<td><p>1,003,009</p></td>
-<td><p>1,338,688</p></td>
-</tr>
-<tr class="row-odd"><td><p>Ad-hoc Session with 1 Thread</p></td>
-<td><p>35</p></td>
-<td><p>299</p></td>
-</tr>
-<tr class="row-even"><td><p>4 Sessions with 4 threads</p></td>
-<td><p>2,274,019</p></td>
-<td><p>4,571,428</p></td>
-</tr>
-</tbody>
-</table></div>
-<p>With this kind of performance improvement, what are the reasons of sticking to <code class="docutils literal notranslate"><span class="pre">v4.6.0</span></code>?</p>
+<div class="section" id="root-cause">
+<h2>Root Cause<a class="headerlink" href="#root-cause" title="Permalink to this headline">¶</a></h2>
+<p>The root cause is Node.js event loop is activated when Node.js is exiting. Let's see how <code class="docutils literal notranslate"><span class="pre">NodeRuntime.close()</span></code> works behind the scenes.</p>
+<ol class="arabic simple">
+<li><p>Close all Node.js modules</p></li>
+<li><p>Close all reference objects</p></li>
+<li><p>Close all callback context objects</p></li>
+<li><p>Close all V8 modules</p></li>
+<li><p>Hand over the control to Node.js exiting process</p></li>
+</ol>
+<p>If the application registers interceptors, those interceptors will be closed at step 3. However, the corresponding JavaScript objects hasn't been recycled yet. So, at step 5, Node.js activates the event loop and async objects will get resolved or rejected. The callbacks land Javet which is not able to handle because the callback context objects are gone. That leads to memory corruption and segfaults.</p>
+<p>Can Javet address that? Yes, but that implies hacking Node.js event loop. People choose Javet Node.js mode mostly because it is a genuine Node.js. So, no, Javet does not perform such hack.</p>
 </div>
-<div class="section" id="why-windows-and-linux-only">
-<h2>Why Windows and Linux only?<a class="headerlink" href="#why-windows-and-linux-only" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>I don't own a decent Mac device. To be more precisely, I have Mac Mini and MacBook Air, but they are too old (building V8 would take many hours). And I have no plan on buying a new one in the near future. Call for donation? Don't be joking. So there's no MacOS release.</p></li>
-<li><p>I don't intend to support Android for now.</p></li>
-</ul>
+<div class="section" id="solution">
+<h2>Solution<a class="headerlink" href="#solution" title="Permalink to this headline">¶</a></h2>
+<p>Well, how to prevent that from happening? In fact, knowing how Javet works and following the Javet way, that won't happen.</p>
+<div class="section" id="event-unhandledrejection">
+<h3>Event unhandledRejection<a class="headerlink" href="#event-unhandledrejection" title="Permalink to this headline">¶</a></h3>
+<p>Node.js provides a standard <a class="reference external" href="https://nodejs.org/docs/latest/api/process.html">solution</a>. Application can listen to event <code class="docutils literal notranslate"><span class="pre">unhandledRejection</span></code> to prevent that event from hitting Javet so that the segfaults will not take place.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">process</span> <span class="nx">from</span> <span class="s1">'process'</span><span class="p">;</span>
+<span class="nx">process</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'unhandledRejection'</span><span class="p">,</span> <span class="p">(</span><span class="nx">reason</span><span class="p">,</span> <span class="nx">promise</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// Do whatever you want to do</span>
+<span class="p">});</span>
+</pre></div>
 </div>
-<div class="section" id="why-not-automate-the-j2v8-build-system">
-<h2>Why not Automate the J2V8 Build System?<a class="headerlink" href="#why-not-automate-the-j2v8-build-system" title="Permalink to this headline">¶</a></h2>
-<p>TL;DR: It's too hard.</p>
-<ul class="simple">
-<li><p>V8 is evolving rapidly. v8.3.110.9 is a relatively easy one to be mastered. I didn't move forward well with v8.9.213 which placed a different set of <em>solvable</em> challenges to me. I plan to revisit the latest V8 in near future.</p></li>
-<li><p>Node.js was removed early. I haven't got time reviving it in J2V8.</p></li>
-<li><p>J2V8 build system is too old.</p>
-<ul>
-<li><p>Gradle v2.14.1 is far from the lowest supported gradle version in my latest IntelliJ IDEA. And I don't have interest in installing a legacy Eclipse to play with that version of gradle. Hey, why not upgrade gradle to satisfy IDEA? I tried, but all was bad luck. You may take a try, then understand what I have suffered from.</p></li>
-<li><p>CMake is old and seriously broken on Windows. Nowadays, V8 only supports VS 2017 or 2019, but <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> is still at the VS 2015 age. No surprise, it doesn't work at all.</p></li>
-<li><p>Docker build is deeply broken as well. The dependent docker image was gone. There are many errors in many steps. Sitting there, watching the docker build breaks made me full of frustration because I thought it would take me a few months fixing the problems, but I don't have a few months. No one pays me to do that.</p></li>
-<li><p>Python2 scripts form the outer layer of the build system, also hide the actual building logic from someone who tries to fix the build system. I don't want to spend my precious time fixing Python2 scripts, because I've been on Python3 for many years. I wish my hair could be as much as Guido van Rossum's. Obviously, I am not, so no more Python2.</p></li>
-<li><p>Maven is old but the least problematic. At least it allows me to package the jar files with my hack to the <code class="docutils literal notranslate"><span class="pre">pom.xml</span></code>.</p></li>
-</ul>
-</li>
-</ul>
-<p>With these uncertainties, to me, automating the build system is something with ROI closing to 0. Supposing I achieved it in a particular version of V8, let's say <code class="docutils literal notranslate"><span class="pre">v8.3.110.9</span></code>, it would for sure break in <code class="docutils literal notranslate"><span class="pre">v8.9.x</span></code>. Later, I managed to build <code class="docutils literal notranslate"><span class="pre">v8.9.255</span></code> which has been embeded into Javet.</p>
 </div>
-<div class="section" id="why-not-deploy-j2v8-to-maven-repository">
-<h2>Why not Deploy J2V8 to Maven Repository?<a class="headerlink" href="#why-not-deploy-j2v8-to-maven-repository" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>I don't have the permission to its official repository.</p></li>
-<li><p>There has been no Windows / Linux releases deployed since 2016 / 2017. I really don't know who to contact with.</p></li>
-<li><p>You may easily integrate the jar files in your local maven repository.</p></li>
-</ul>
+<div class="section" id="noderuntime-await">
+<h3>NodeRuntime.await()<a class="headerlink" href="#noderuntime-await" title="Permalink to this headline">¶</a></h3>
+<p>Application may call <code class="docutils literal notranslate"><span class="pre">NodeRuntime.await()</span></code> before closing the <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code>. This call explicitly tells <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code> to activate the event loop.</p>
+</div>
+<div class="section" id="noderuntime-lowmemorynotification">
+<h3>NodeRuntime.lowMemoryNotification()<a class="headerlink" href="#noderuntime-lowmemorynotification" title="Permalink to this headline">¶</a></h3>
+<p>Application may call <code class="docutils literal notranslate"><span class="pre">NodeRuntime.lowMemoryNotification()</span></code> before closing the <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code>. This call forces <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code> to perform garbage collection. During the garbage collection, the callbacks can be safely handled by Javet without segfaults.</p>
+</div>
 </div>
 </div>
 
@@ -292,7 +253,7 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../development/index.html">
+          <a class="next-page" href="../../development/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
@@ -301,14 +262,14 @@
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="what_is_the_motivation.html">
+          <a class="prev-page" href="can_i_debug_javet_in_chrome_dev_tools.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">What is the Motivation?</div>
+                <div class="title">Can I Debug Javet in Chrome DevTools?</div>
                 
               </div>
             </a>
@@ -322,7 +283,7 @@
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
             |
-            <a class="muted-link" href="../../_sources/faq/background/history_with_j2v8.rst.txt"
+            <a class="muted-link" href="../../_sources/faq/troubleshooting/why_node_js_crashes_when_being_closed.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -342,12 +303,15 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">History with J2V8</a><ul>
-<li><a class="reference internal" href="#j2v8-issues">J2V8 Issues</a></li>
-<li><a class="reference internal" href="#j2v8-latest-version">J2V8 Latest Version</a></li>
-<li><a class="reference internal" href="#why-windows-and-linux-only">Why Windows and Linux only?</a></li>
-<li><a class="reference internal" href="#why-not-automate-the-j2v8-build-system">Why not Automate the J2V8 Build System?</a></li>
-<li><a class="reference internal" href="#why-not-deploy-j2v8-to-maven-repository">Why not Deploy J2V8 to Maven Repository?</a></li>
+<li><a class="reference internal" href="#">Why Node.js Crashes When being Closed?</a><ul>
+<li><a class="reference internal" href="#background">Background</a></li>
+<li><a class="reference internal" href="#root-cause">Root Cause</a></li>
+<li><a class="reference internal" href="#solution">Solution</a><ul>
+<li><a class="reference internal" href="#event-unhandledrejection">Event unhandledRejection</a></li>
+<li><a class="reference internal" href="#noderuntime-await">NodeRuntime.await()</a></li>
+<li><a class="reference internal" href="#noderuntime-lowmemorynotification">NodeRuntime.lowMemoryNotification()</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
