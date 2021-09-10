@@ -7,3 +7,4 @@ Tutorial
 
     basic/index
     advanced/index
+    migration_guides/index
