@@ -12,8 +12,8 @@ Javet provides ``@V8Property`` and ``@V8Function`` which allow Java applications
 Sample
 ======
 
-``@V8Property`` and ``@V8Function``
------------------------------------
+@V8Property and @V8Function
+---------------------------
 
 ``@V8Property`` is for registering getters and setters. Javet is good at guessing the property name, e.g. getName => name, setValue => value.
 

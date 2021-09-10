@@ -42,7 +42,7 @@ Please refer to :doc:`../../reference/v8_function` for more details.
 V8Locker
 --------
 
-* Javet introduced **Implicit Mode** which allows applications to eliminate ``V8Locker`` from the code base and still be able to share the same ``V8Runtime`` among multiple threads, because Javet does the synchronization automatically. That frees applications developers from the tedious ``acquire()`` and ``release()`` calls, and gets the rid of the runtime exceptions caused by multiple threads.
+* Javet introduced **Implicit Mode** which allows applications to eliminate ``V8Locker`` from the code base and still be able to share the same ``V8Runtime`` among multiple threads, because Javet does the synchronization automatically. That frees application developers from the tedious ``acquire()`` and ``release()`` calls, and gets the rid of the runtime exceptions caused by multiple threads.
 * Javet also has **Explicit Mode** for performance sensitive scenarios.
 
 Please refer to :doc:`../../reference/lock` for more details.

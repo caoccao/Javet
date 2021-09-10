@@ -274,7 +274,7 @@
 <div class="section" id="automatic-registration">
 <h3>Automatic Registration<a class="headerlink" href="#automatic-registration" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="bind">
-<h4><code class="docutils literal notranslate"><span class="pre">bind()</span></code><a class="headerlink" href="#bind" title="Permalink to this headline">¶</a></h4>
+<h4>bind()<a class="headerlink" href="#bind" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">bind()</span></code> scans the input callback receiver for functions decorated by <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code>. It allows registering many getters / setters and functions in one call.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">JavetCallbackContext</span><span class="o">&gt;</span> <span class="nf">bind</span><span class="p">(</span><span class="n">Object</span> <span class="n">functionCallbackReceiver</span><span class="p">);</span>
 </pre></div>
@@ -378,7 +378,7 @@
 </div>
 </div>
 <div class="section" id="can-this-be-passed-in">
-<h4>Can <code class="docutils literal notranslate"><span class="pre">this</span></code> be Passed in?<a class="headerlink" href="#can-this-be-passed-in" title="Permalink to this headline">¶</a></h4>
+<h4>Can <strong>this</strong> be Passed in?<a class="headerlink" href="#can-this-be-passed-in" title="Permalink to this headline">¶</a></h4>
 <p>Yes, both <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> support <code class="docutils literal notranslate"><span class="pre">thisObjectRequired</span></code>. Just set it to <code class="docutils literal notranslate"><span class="pre">true</span></code> and specify the first argument as <code class="docutils literal notranslate"><span class="pre">this</span></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">thisObjectRequired</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
 <span class="kd">public</span> <span class="p">...</span> <span class="n">functionName</span><span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">thisObject</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
@@ -438,7 +438,7 @@
 <h3>Manual Registration<a class="headerlink" href="#manual-registration" title="Permalink to this headline">¶</a></h3>
 <p>Manual registration allows the applications to have full control over every step of the function interception.</p>
 <div class="section" id="boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext">
-<h4><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">bindFunction(String</span> <span class="pre">functionName,</span> <span class="pre">JavetCallbackContext</span> <span class="pre">javetCallbackContext)</span></code><a class="headerlink" href="#boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext" title="Permalink to this headline">¶</a></h4>
+<h4>boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)<a class="headerlink" href="#boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext" title="Permalink to this headline">¶</a></h4>
 <p>This method is for binding a Java code based function in semi-manual way. The caller is expected to do the following steps.</p>
 <ul class="simple">
 <li><p>Create a callback receiver.</p></li>
@@ -458,7 +458,7 @@
 </div>
 </div>
 <div class="section" id="boolean-set-string-key-v8value-value">
-<h4><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">set(String</span> <span class="pre">key,</span> <span class="pre">V8Value</span> <span class="pre">value)</span></code><a class="headerlink" href="#boolean-set-string-key-v8value-value" title="Permalink to this headline">¶</a></h4>
+<h4>boolean set(String key, V8Value value)<a class="headerlink" href="#boolean-set-string-key-v8value-value" title="Permalink to this headline">¶</a></h4>
 <p>This method is for binding a Java code based function in complete manual way. The caller is expected to do the following steps.</p>
 <ul class="simple">
 <li><p>Create a callback receiver.</p></li>
@@ -486,7 +486,7 @@
 </div>
 </div>
 <div class="section" id="boolean-bindfunction-string-functionname-string-codestring">
-<h4><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">bindFunction(String</span> <span class="pre">functionName,</span> <span class="pre">String</span> <span class="pre">codeString)</span></code><a class="headerlink" href="#boolean-bindfunction-string-functionname-string-codestring" title="Permalink to this headline">¶</a></h4>
+<h4>boolean bindFunction(String functionName, String codeString)<a class="headerlink" href="#boolean-bindfunction-string-functionname-string-codestring" title="Permalink to this headline">¶</a></h4>
 <p>This method is for binding a JavaScript code based function.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">bindFunction</span><span class="p">(</span><span class="s">"b"</span><span class="p">,</span> <span class="s">"(x) =&gt; x + 1;"</span><span class="p">);</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"b(1);"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
@@ -737,18 +737,18 @@
 </li>
 <li><a class="reference internal" href="#function-interception">Function Interception</a><ul>
 <li><a class="reference internal" href="#automatic-registration">Automatic Registration</a><ul>
-<li><a class="reference internal" href="#bind"><code class="docutils literal notranslate"><span class="pre">bind()</span></code></a></li>
+<li><a class="reference internal" href="#bind">bind()</a></li>
 <li><a class="reference internal" href="#how-about-object-type-conversion">How about Object Type Conversion?</a></li>
-<li><a class="reference internal" href="#can-this-be-passed-in">Can <code class="docutils literal notranslate"><span class="pre">this</span></code> be Passed in?</a></li>
+<li><a class="reference internal" href="#can-this-be-passed-in">Can <strong>this</strong> be Passed in?</a></li>
 <li><a class="reference internal" href="#can-symbol-properties-be-intercepted">Can Symbol Properties be Intercepted?</a></li>
 <li><a class="reference internal" href="#how-to-disable-properties-or-functions">How to Disable Properties or Functions?</a></li>
 <li><a class="reference internal" href="#how-to-unregister-properties-or-functions">How to Unregister Properties or Functions?</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#manual-registration">Manual Registration</a><ul>
-<li><a class="reference internal" href="#boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext"><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">bindFunction(String</span> <span class="pre">functionName,</span> <span class="pre">JavetCallbackContext</span> <span class="pre">javetCallbackContext)</span></code></a></li>
-<li><a class="reference internal" href="#boolean-set-string-key-v8value-value"><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">set(String</span> <span class="pre">key,</span> <span class="pre">V8Value</span> <span class="pre">value)</span></code></a></li>
-<li><a class="reference internal" href="#boolean-bindfunction-string-functionname-string-codestring"><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">bindFunction(String</span> <span class="pre">functionName,</span> <span class="pre">String</span> <span class="pre">codeString)</span></code></a></li>
+<li><a class="reference internal" href="#boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext">boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)</a></li>
+<li><a class="reference internal" href="#boolean-set-string-key-v8value-value">boolean set(String key, V8Value value)</a></li>
+<li><a class="reference internal" href="#boolean-bindfunction-string-functionname-string-codestring">boolean bindFunction(String functionName, String codeString)</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#type-mismatch">Type Mismatch</a></li>

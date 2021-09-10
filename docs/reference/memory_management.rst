@@ -31,8 +31,8 @@ Recommended Options
 
 Javet directly borrows the way V8 manages objects in JVM. The rule is simple in the following 2 Options.
 
-Automatic Management with ``try-with-resource``
------------------------------------------------
+Automatic Management with try-with-resource
+-------------------------------------------
 
 .. code-block:: java
 
@@ -141,17 +141,17 @@ Manual GC
 
 There are 3 ways of manually triggering GC in both Node.js mode and V8 mode.
 
-``V8Runtime.await()``
-^^^^^^^^^^^^^^^^^^^^^
+V8Runtime.await()
+^^^^^^^^^^^^^^^^^
 
 This API represents a light-weighted way of giving V8 a hint to perform GC. It actually tells Node.js or V8 runtime to drain the message or task queue. As a side effect of the drain, a GC may occur based on the decision of Node.js or V8 runtime.
 
-``V8Runtime.idleNotificationDeadline(long deadlineInMillis)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+V8Runtime.idleNotificationDeadline(long deadlineInMillis)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This API explicitly tells Node.js or V8 runtime that the application expects a GC to happen in the given milliseconds. Be careful, Node.js or V8 runtime may disregard this instruction.
 
-``V8Runtime.lowMemoryNotification()``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+V8Runtime.lowMemoryNotification()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It is also used in automatic GC aforementioned.

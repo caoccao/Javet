@@ -34,8 +34,8 @@ Functions can be intercepted via Javet API. This is equivalent to the capability
 Automatic Registration
 ----------------------
 
-``bind()``
-^^^^^^^^^^
+bind()
+^^^^^^
 
 ``bind()`` scans the input callback receiver for functions decorated by ``@V8Function`` and ``@V8Property``. It allows registering many getters / setters and functions in one call.
 
@@ -144,7 +144,7 @@ The second step is to call the functions or properties.
         v8Runtime.getGlobalObject().delete("a");
     }
 
-Can ``this`` be Passed in?
+Can **this** be Passed in?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Yes, both ``@V8Function`` and ``@V8Property`` support ``thisObjectRequired``. Just set it to ``true`` and specify the first argument as ``this``.
@@ -216,8 +216,8 @@ Manual Registration
 
 Manual registration allows the applications to have full control over every step of the function interception.
 
-``boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This method is for binding a Java code based function in semi-manual way. The caller is expected to do the following steps.
 
@@ -237,8 +237,8 @@ This method is for binding a Java code based function in semi-manual way. The ca
     v8Runtime.getExecutor("blank();").executeVoid();
     globalObject.delete("blank");
 
-``boolean set(String key, V8Value value)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+boolean set(String key, V8Value value)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This method is for binding a Java code based function in complete manual way. The caller is expected to do the following steps.
 
@@ -266,8 +266,8 @@ This method is for binding a Java code based function in complete manual way. Th
         globalObject.delete("a");
     }
 
-``boolean bindFunction(String functionName, String codeString)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+boolean bindFunction(String functionName, String codeString)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This method is for binding a JavaScript code based function.
 
