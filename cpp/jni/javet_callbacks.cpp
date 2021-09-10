@@ -60,8 +60,13 @@ namespace Javet {
             FETCH_JNI_ENV(GlobalJavaVM);
             auto javetCallbackContextReferencePointer = info.GetParameter();
             auto v8Context = info.GetIsolate()->GetCurrentContext();
-            jobject externalV8Runtime = Javet::V8Runtime::FromV8Context(v8Context)->externalV8Runtime;
-            javetCallbackContextReferencePointer->RemoveCallbackContext(externalV8Runtime);
+            if (!v8Context.IsEmpty()) {
+                auto v8Runtime = V8Runtime::FromV8Context(v8Context);
+                if (v8Runtime != nullptr) {
+                    jobject externalV8Runtime = v8Runtime->externalV8Runtime;
+                    javetCallbackContextReferencePointer->RemoveCallbackContext(externalV8Runtime);
+                }
+            }
             delete javetCallbackContextReferencePointer;
             INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteJavetCallbackContextReference);
         }
