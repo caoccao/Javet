@@ -5,6 +5,7 @@ Reference
 .. toctree::
     :maxdepth: 1
 
+    javadoc/index
     v8_collection
     v8_function
     v8_promise
