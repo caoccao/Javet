@@ -179,13 +179,13 @@ implements <a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.h
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>abstract boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interception/BaseJavetInterceptor.html#register-com.caoccao.javet.values.reference.IV8ValueObject...-">register</a></span>(<a href="../../../../com/caoccao/javet/values/reference/IV8ValueObject.html" title="interface in com.caoccao.javet.values.reference">IV8ValueObject</a>...&nbsp;iV8ValueObjects)</code>
-<div class="block">Register boolean.</div>
+<div class="block">Register the interceptor to the given V8 value object.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>abstract boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interception/BaseJavetInterceptor.html#unregister-com.caoccao.javet.values.reference.IV8ValueObject...-">unregister</a></span>(<a href="../../../../com/caoccao/javet/values/reference/IV8ValueObject.html" title="interface in com.caoccao.javet.values.reference">IV8ValueObject</a>...&nbsp;iV8ValueObjects)</code>
-<div class="block">Unregister boolean.</div>
+<div class="block">Unregister the interceptor from the given V8 value object.</div>
 </td>
 </tr>
 </table>
@@ -262,14 +262,14 @@ implements <a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.h
 <pre>public abstract&nbsp;boolean&nbsp;register(<a href="../../../../com/caoccao/javet/values/reference/IV8ValueObject.html" title="interface in com.caoccao.javet.values.reference">IV8ValueObject</a>...&nbsp;iV8ValueObjects)
                           throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.html#register-com.caoccao.javet.values.reference.IV8ValueObject...-">IJavetInterceptor</a></code></span></div>
-<div class="block">Register boolean.</div>
+<div class="block">Register the interceptor to the given V8 value object.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.html#register-com.caoccao.javet.values.reference.IV8ValueObject...-">register</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.html" title="interface in com.caoccao.javet.interfaces">IJavetInterceptor</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>iV8ValueObjects</code> - the V8 value objects</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the boolean</dd>
+<dd>true: success, false: failure</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
 </dl>
@@ -284,14 +284,14 @@ implements <a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.h
 <pre>public abstract&nbsp;boolean&nbsp;unregister(<a href="../../../../com/caoccao/javet/values/reference/IV8ValueObject.html" title="interface in com.caoccao.javet.values.reference">IV8ValueObject</a>...&nbsp;iV8ValueObjects)
                             throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.html#unregister-com.caoccao.javet.values.reference.IV8ValueObject...-">IJavetInterceptor</a></code></span></div>
-<div class="block">Unregister boolean.</div>
+<div class="block">Unregister the interceptor from the given V8 value object.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.html#unregister-com.caoccao.javet.values.reference.IV8ValueObject...-">unregister</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../com/caoccao/javet/interfaces/IJavetInterceptor.html" title="interface in com.caoccao.javet.interfaces">IJavetInterceptor</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>iV8ValueObjects</code> - the V8 value objects</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the boolean</dd>
+<dd>true: success, false: failure</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
 </dl>

@@ -27,20 +27,20 @@ import com.caoccao.javet.values.reference.IV8ValueObject;
  */
 public interface IJavetInterceptor {
     /**
-     * Register boolean.
+     * Register the interceptor to the given V8 value object.
      *
      * @param iV8ValueObjects the V8 value objects
-     * @return the boolean
+     * @return true: success, false: failure
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     boolean register(IV8ValueObject... iV8ValueObjects) throws JavetException;
 
     /**
-     * Unregister boolean.
+     * Unregister the interceptor from the given V8 value object.
      *
      * @param iV8ValueObjects the V8 value objects
-     * @return the boolean
+     * @return true: success, false: failure
      * @throws JavetException the javet exception
      * @since 0.7.0
      */

@@ -205,12 +205,12 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
     }
 
     /**
-     * Register.
+     * Register a JS function by name.
      *
      * @param iV8ValueObject   the V8 value object
-     * @param jsFunctionName   the js function name
-     * @param javaFunctionName the java function name
-     * @throws JavetException the javet exception
+     * @param jsFunctionName   the JS function name
+     * @param javaFunctionName the Java function name
+     * @throws JavetException the Javet exception
      * @since 0.7.0
      */
     protected void register(IV8ValueObject iV8ValueObject, String jsFunctionName, String javaFunctionName)
