@@ -5,7 +5,7 @@ Can Javet Support Mac?
 Now
 ===
 
-My MacBook Air mid-2012 was revived with Mac OS Catalina which is the lowest version supported by latest V8. I managed to include it in the regular release cycle.
+My `MacBook Air mid-2012 <https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html>`_ was revived with Mac OS Catalina which is the lowest version supported by latest V8. I managed to include it in the regular release cycle.
 
 Known Issue
 -----------

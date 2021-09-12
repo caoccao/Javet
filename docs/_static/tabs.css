@@ -71,7 +71,7 @@ html .tab-set > label:hover {
   order: 99;
   display: none;
   width: 100%;
-  box-shadow: 0 -2px var(--tabs--border);
+  box-shadow: 0 -0.0625rem var(--tabs--border);
 }
 /* Show content, when input is checked. */
 .tab-set > input:checked + label + .tab-content {
