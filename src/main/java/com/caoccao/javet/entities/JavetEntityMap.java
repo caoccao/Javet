@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The type Javet entity map.
+ * The type Javet entity map is for converting JS map
+ * to or from Java map.
  *
  * @since 0.7.2
  */

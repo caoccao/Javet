@@ -18,7 +18,7 @@
 package com.caoccao.javet.enums;
 
 /**
- * The enum Javet error type.
+ * The enum Javet error type is for categorizing the errors.
  *
  * @since 0.8.5
  */

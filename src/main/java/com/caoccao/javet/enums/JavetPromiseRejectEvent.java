@@ -17,10 +17,25 @@
 
 package com.caoccao.javet.enums;
 
+/**
+ * The enum Javet promise reject event represents the corresponding event in V8.
+ */
 public enum JavetPromiseRejectEvent {
+    /**
+     * PromiseRejectWithNoHandler.
+     */
     PromiseRejectWithNoHandler(0, "PromiseRejectWithNoHandler"),
+    /**
+     * PromiseHandlerAddedAfterReject.
+     */
     PromiseHandlerAddedAfterReject(1, "PromiseHandlerAddedAfterReject"),
+    /**
+     * PromiseResolveAfterResolved.
+     */
     PromiseResolveAfterResolved(2, "PromiseResolveAfterResolved"),
+    /**
+     * PromiseRejectAfterResolved.
+     */
     PromiseRejectAfterResolved(3, "PromiseRejectAfterResolved");
 
     private static final JavetPromiseRejectEvent[] EVENTS = new JavetPromiseRejectEvent[]{
@@ -37,17 +52,33 @@ public enum JavetPromiseRejectEvent {
         this.name = name;
     }
 
-    public static JavetPromiseRejectEvent parse(int event) {
-        if (event >= 0 && event < EVENTS.length) {
-            return EVENTS[event];
+    /**
+     * Parse javet promise reject event by code.
+     *
+     * @param code the event code
+     * @return the javet promise reject event
+     */
+    public static JavetPromiseRejectEvent parse(int code) {
+        if (code >= 0 && code < EVENTS.length) {
+            return EVENTS[code];
         }
         return null;
     }
 
+    /**
+     * Gets event code.
+     *
+     * @return the event code
+     */
     public int getCode() {
         return code;
     }
 
+    /**
+     * Gets event name.
+     *
+     * @return the event name
+     */
     public String getName() {
         return name;
     }

@@ -21,7 +21,8 @@ import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.interfaces.IJavetEntityFunction;
 
 /**
- * The type Javet entity function.
+ * The type Javet entity function is for converting JS function
+ * to or from Java object.
  *
  * @since 0.9.4
  */
