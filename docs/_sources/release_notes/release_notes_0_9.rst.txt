@@ -10,6 +10,8 @@ Release Notes 0.9.x
 * Added ``V8ValueSharedArrayBuffer``
 * Added ``registerCustomObject()`` and ``unregisterCustomObject()`` to ``JavetObjectConverter``
 * Added private property support to ``IV8ValueObject``
+* Fixed potential core dump issue in V8 runtime close.
+* Added Javadoc.
 
 0.9.11 V8 v9.3
 --------------
