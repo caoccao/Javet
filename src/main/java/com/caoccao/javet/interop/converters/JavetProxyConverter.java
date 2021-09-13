@@ -80,7 +80,7 @@ public class JavetProxyConverter extends JavetObjectConverter {
             JavetUniversalProxyHandler<Object> javetUniversalProxyHandler =
                     new JavetUniversalProxyHandler<>(v8Runtime, object);
             List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-            iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+            iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
         }
         v8Value = v8ValueProxy;
         return (T) v8Runtime.decorateV8Value(v8Value);

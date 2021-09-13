@@ -19,8 +19,12 @@ package com.caoccao.javet.values.reference.builtin;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetSupplier;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class V8ValueBuiltInSymbol extends V8ValueFunction {
@@ -40,9 +44,26 @@ public class V8ValueBuiltInSymbol extends V8ValueFunction {
     public static final String PROPERTY_UNSCOPABLES = "unscopables";
     public static final String FUNCTION_FOR = "for";
     public static final String FUNCTION_KEY_FOR = "keyFor";
+    public static final String PREFIX_PROPERTY = "PROPERTY_";
+
+    protected Map<String, IJavetSupplier<V8ValueSymbol, Throwable>> builtInSymbolMap;
 
     public V8ValueBuiltInSymbol(long handle) {
         super(handle);
+        builtInSymbolMap = new HashMap<>();
+        builtInSymbolMap.put(PROPERTY_ASYNC_ITERATOR, this::getAsyncIterator);
+        builtInSymbolMap.put(PROPERTY_HAS_INSTANCE, this::getHasInstance);
+        builtInSymbolMap.put(PROPERTY_IS_CONCAT_SPREADABLE, this::getIsConcatSpreadable);
+        builtInSymbolMap.put(PROPERTY_ITERATOR, this::getIterator);
+        builtInSymbolMap.put(PROPERTY_MATCH, this::getMatch);
+        builtInSymbolMap.put(PROPERTY_MATCH_ALL, this::getMatchAll);
+        builtInSymbolMap.put(PROPERTY_REPLACE, this::getReplace);
+        builtInSymbolMap.put(PROPERTY_SEARCH, this::getSearch);
+        builtInSymbolMap.put(PROPERTY_SPECIES, this::getSpecies);
+        builtInSymbolMap.put(PROPERTY_SPLIT, this::getSplit);
+        builtInSymbolMap.put(PROPERTY_TO_PRIMITIVE, this::getToPrimitive);
+        builtInSymbolMap.put(PROPERTY_TO_STRING_TAG, this::getToStringTag);
+        builtInSymbolMap.put(PROPERTY_UNSCOPABLES, this::getUnscopables);
     }
 
     @CheckReturnValue
@@ -53,6 +74,18 @@ public class V8ValueBuiltInSymbol extends V8ValueFunction {
     @CheckReturnValue
     public V8ValueSymbol getAsyncIterator() throws JavetException {
         return get(PROPERTY_ASYNC_ITERATOR);
+    }
+
+    @CheckReturnValue
+    public V8ValueSymbol getBuiltInSymbol(String description) throws JavetException {
+        IJavetSupplier<V8ValueSymbol, Throwable> iJavetSupplier = builtInSymbolMap.get(description);
+        if (iJavetSupplier != null) {
+            try {
+                return iJavetSupplier.get();
+            } catch (Throwable e) {
+            }
+        }
+        return null;
     }
 
     @CheckReturnValue

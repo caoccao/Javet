@@ -20,7 +20,8 @@ package com.caoccao.javet.entities;
 import java.util.Objects;
 
 /**
- * The type Javet entity symbol.
+ * The type Javet entity symbol is for converting JS symbol
+ * to or from Java symbol.
  *
  * @since 0.9.11
  */

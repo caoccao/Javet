@@ -32,7 +32,13 @@ import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * The type Javet object converter.
@@ -43,24 +49,71 @@ import java.util.*;
 public class JavetObjectConverter extends JavetPrimitiveConverter {
 
     /**
-     * The constant PROPERTY_CONSTRUCTOR.
+     * The constant EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR.
      *
-     * @since 0.7.2
+     * @since 0.9.12
      */
-    protected static final String PROPERTY_CONSTRUCTOR = "constructor";
+    protected static final int EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR = 0;
+    /**
+     * The constant EXECUTABLE_INDEX_FROM_MAP.
+     *
+     * @since 0.9.12
+     */
+    protected static final int EXECUTABLE_INDEX_FROM_MAP = 1;
+    /**
+     * The constant EXECUTABLE_INDEX_TO_MAP.
+     *
+     * @since 0.9.12
+     */
+    protected static final int EXECUTABLE_INDEX_TO_MAP = 2;
+    /**
+     * The constant METHOD_NAME_FROM_MAP.
+     *
+     * @since 0.9.12
+     */
+    protected static final String METHOD_NAME_FROM_MAP = "fromMap";
+    /**
+     * The constant METHOD_NAME_TO_MAP.
+     *
+     * @since 0.9.12
+     */
+    protected static final String METHOD_NAME_TO_MAP = "toMap";
+    /**
+     * The constant PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME.
+     *
+     * @since 0.9.6
+     */
+    protected static final String PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME = "JavetObjectConverter#customObjectClassName";
+    /**
+     * The constant PRIVATE_PROPERTY_PROXY_TARGET.
+     *
+     * @since 0.9.6
+     */
+    protected static final String PRIVATE_PROPERTY_PROXY_TARGET = "Javet#proxyTarget";
     /**
      * The constant PROPERTY_NAME.
      *
      * @since 0.7.2
      */
     protected static final String PROPERTY_NAME = "name";
-
     /**
-     * The constant PROXY_TARGET.
+     * The constant PUBLIC_PROPERTY_CONSTRUCTOR.
      *
-     * @since 0.9.6
+     * @since 0.7.2
      */
-    protected static final String PROXY_TARGET = "target";
+    protected static final String PUBLIC_PROPERTY_CONSTRUCTOR = "constructor";
+    /**
+     * The Custom object lock.
+     *
+     * @since 0.9.12
+     */
+    protected ReentrantReadWriteLock customObjectLock;
+    /**
+     * The Custom object map.
+     *
+     * @since 0.9.12
+     */
+    protected Map<String, Executable[]> customObjectMap;
 
     /**
      * Instantiates a new Javet object converter.
@@ -69,6 +122,8 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      */
     public JavetObjectConverter() {
         super();
+        customObjectLock = new ReentrantReadWriteLock();
+        customObjectMap = new HashMap<>();
     }
 
     /**
@@ -89,6 +144,66 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      */
     protected Map<String, Object> createEntityMap() {
         return new JavetEntityMap();
+    }
+
+    /**
+     * Register custom object.
+     *
+     * @param customObjectClass the custom object class
+     * @return true : success, false: failure
+     * @since 0.9.12
+     */
+    public boolean registerCustomObject(Class<?> customObjectClass) {
+        return registerCustomObject(customObjectClass, METHOD_NAME_FROM_MAP, METHOD_NAME_TO_MAP);
+    }
+
+    /**
+     * Register custom object.
+     *
+     * @param customObjectClass the custom object class
+     * @param methodNameFromMap the method name from map
+     * @param methodNameToMap   the method name to map
+     * @return true : success, false: failure
+     * @since 0.9.12
+     */
+    public boolean registerCustomObject(Class<?> customObjectClass, String methodNameFromMap, String methodNameToMap) {
+        if (customObjectClass == null
+                || methodNameFromMap == null || methodNameToMap == null
+                || methodNameFromMap.length() == 0 || methodNameToMap.length() == 0
+                || methodNameFromMap.equals(methodNameToMap)) {
+            return false;
+        }
+        Lock readLock = customObjectLock.readLock();
+        try {
+            readLock.lock();
+            if (customObjectMap.containsKey(customObjectClass)) {
+                return false;
+            }
+        } finally {
+            readLock.unlock();
+        }
+        try {
+            Constructor defaultConstructor = customObjectClass.getConstructor();
+            Method methodFromMap = customObjectClass.getMethod(methodNameFromMap, Map.class);
+            if (Modifier.isStatic(methodFromMap.getModifiers())) {
+                return false;
+            }
+            Method methodToMap = customObjectClass.getMethod(methodNameToMap);
+            if (Modifier.isStatic(methodToMap.getModifiers())) {
+                return false;
+            }
+            Executable[] executables = new Executable[]{defaultConstructor, methodFromMap, methodToMap};
+            Lock writeLock = customObjectLock.writeLock();
+            try {
+                writeLock.lock();
+                customObjectMap.put(customObjectClass.getName(), executables);
+            } finally {
+                writeLock.unlock();
+            }
+        } catch (Throwable t) {
+            // Do nothing.
+        }
+        return false;
     }
 
     @Override
@@ -160,7 +275,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             if (v8Value instanceof V8ValueProxy) {
                 V8ValueProxy v8ValueProxy = (V8ValueProxy) v8Value;
                 try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                    Long handle = iV8ValueObjectHandler.getLong(PROXY_TARGET);
+                    Long handle = iV8ValueObjectHandler.getPrivatePropertyLong(PRIVATE_PROPERTY_PROXY_TARGET);
                     if (handle != null) {
                         JavetCallbackContext javetCallbackContext = v8ValueProxy.getV8Runtime().getCallbackContext(handle);
                         if (javetCallbackContext != null) {
@@ -178,8 +293,8 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             Map<String, Object> map = new HashMap<>();
             v8ValueObject.forEach((V8Value key, V8Value value) -> {
                 String keyString = key.toString();
-                if (PROPERTY_CONSTRUCTOR.equals(keyString)) {
-                    map.put(PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
+                if (PUBLIC_PROPERTY_CONSTRUCTOR.equals(keyString)) {
+                    map.put(PUBLIC_PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
                 } else {
                     Object object = toObject(value, depth + 1);
                     if (!(config.isSkipFunctionInObject() && object instanceof JavetEntityFunction)) {
@@ -187,6 +302,35 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     }
                 }
             });
+            if (!customObjectMap.isEmpty()
+                    && v8ValueObject.hasPrivateProperty(PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME)) {
+                String customObjectClassName =
+                        v8ValueObject.getPrivatePropertyString(PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME);
+                Lock readLock = customObjectLock.readLock();
+                Constructor defaultConstructor = null;
+                Method methodFromMap = null;
+                try {
+                    readLock.lock();
+                    Executable[] executables = customObjectMap.get(customObjectClassName);
+                    if (executables != null) {
+                        defaultConstructor = (Constructor) executables[EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR];
+                        methodFromMap = (Method) executables[EXECUTABLE_INDEX_FROM_MAP];
+                    }
+                } catch (Throwable t) {
+                    // Do nothing
+                } finally {
+                    readLock.unlock();
+                }
+                if (defaultConstructor != null) {
+                    try {
+                        Object customObject = defaultConstructor.newInstance();
+                        methodFromMap.invoke(customObject, map);
+                        return customObject;
+                    } catch (Throwable t) {
+                        // Do nothing
+                    }
+                }
+            }
             return map;
         }
         return v8Value;
@@ -218,7 +362,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                             new JavetUniversalProxyHandler<>(v8Runtime, (Map) object);
                     List<JavetCallbackContext> javetCallbackContexts =
                             iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                    iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+                    iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                 }
                 v8Value = v8ValueProxy;
             } else {
@@ -240,7 +384,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                             new JavetUniversalProxyHandler<>(v8Runtime, (Set) object);
                     List<JavetCallbackContext> javetCallbackContexts =
                             iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                    iV8ValueObjectHandler.set(PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+                    iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                 }
                 v8Value = v8ValueProxy;
             } else {
@@ -329,7 +473,49 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 }
             }
             v8Value = v8ValueArray;
+        } else if (!customObjectMap.isEmpty()) {
+            String customObjectClassName = object.getClass().getName();
+            Lock readLock = customObjectLock.readLock();
+            Method methodToMap = null;
+            try {
+                readLock.lock();
+                Executable[] executables = customObjectMap.get(customObjectClassName);
+                if (executables != null) {
+                    methodToMap = (Method) executables[EXECUTABLE_INDEX_TO_MAP];
+                }
+            } finally {
+                readLock.unlock();
+            }
+            if (methodToMap != null) {
+                try {
+                    Map map = (Map) methodToMap.invoke(object);
+                    v8Value = toV8Value(v8Runtime, map);
+                    ((V8ValueObject) v8Value).setPrivateProperty(
+                            PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME, customObjectClassName);
+                } catch (Throwable t) {
+                }
+            }
         }
         return (T) v8Runtime.decorateV8Value(v8Value);
+    }
+
+    /**
+     * Unregister custom object.
+     *
+     * @param customObjectClass the custom object class
+     * @return true : success, false: failure
+     * @since 0.9.12
+     */
+    public boolean unregisterCustomObject(Class<?> customObjectClass) {
+        if (customObjectClass == null) {
+            return false;
+        }
+        Lock writeLock = customObjectLock.writeLock();
+        try {
+            writeLock.lock();
+            return customObjectMap.remove(customObjectClass) != null;
+        } finally {
+            writeLock.unlock();
+        }
     }
 }

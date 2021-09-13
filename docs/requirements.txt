@@ -1,0 +1,4 @@
+Pygments==2.9.0
+furo==2021.9.8
+sphinx==4.2.0
+sphinx_inline_tabs==2021.8.17b10

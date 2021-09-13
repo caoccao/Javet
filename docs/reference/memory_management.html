@@ -1,0 +1,580 @@
+<!doctype html>
+<html class="no-js" lang="en, zh-CN">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Know the Lock" href="lock.html" /><link rel="prev" title="Modularization" href="modularization.html" />
+
+    <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
+        <title>Memory Management - Javet 0.9.12 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/hello_javet.html">Hello Javet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/engine_pool.html">Javet Engine Pool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/interception.html">Interception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/polyfill.html">Polyfill</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/object_converter.html">Object Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/interact_with_node_js.html">Interact with Node.js</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/migration_guides/index.html">Migration Guides</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/migration_guides/migrate_from_j2v8.html">Migrate from J2V8</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="javadoc/index.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="v8_collection.html">V8 Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="v8_function.html">V8 Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="v8_promise.html">V8 Promise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modularization.html">Modularization</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lock.html">Know the Lock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="termination.html">Termination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_and_unload.html">Load and Unload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="performance.html">Javet Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_codes.html">Error Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo_list.html">TODO List</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0_9.html">Release Notes 0.9.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0_8.html">Release Notes 0.8.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0_7.html">Release Notes 0.7.x</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../faq/background/what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/background/history_with_j2v8.html">History with J2V8</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../faq/environment/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../development/tools.html">Development Tools</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_with_docker.html">Build Javet with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../development/test.html">Test Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development/design.html">Javet Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development/debug_with_chrome_developer_tools.html">Debug with Chrome Developer Tools</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="section" id="memory-management">
+<h1>Memory Management<a class="headerlink" href="#memory-management" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="challenges-in-memory-management">
+<h2>3 Challenges in Memory Management<a class="headerlink" href="#challenges-in-memory-management" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="jvm-gc">
+<h3>JVM GC<a class="headerlink" href="#jvm-gc" title="Permalink to this headline">¶</a></h3>
+<p>JVM is known to have a GC that manages memory automatically. However, that doesn't cover the objects in JNI native implementation. Once <code class="docutils literal notranslate"><span class="pre">NewGlobalRef(javaObject)</span></code> is called, that <code class="docutils literal notranslate"><span class="pre">javaObject</span></code> lives forever in JVM until <code class="docutils literal notranslate"><span class="pre">DeleteGlobalRef(javaObject)</span></code> is called.</p>
+</div>
+<div class="section" id="c-runtime">
+<h3>C++ Runtime<a class="headerlink" href="#c-runtime" title="Permalink to this headline">¶</a></h3>
+<p>Smart pointers in C++ cannot easily work across JNI to JVM, in other words, raw pointers are directly referenced in JVM as <code class="docutils literal notranslate"><span class="pre">long</span></code>. C++ runtime has no idea when to free the memory of those raw pointers unless JVM tells C++ runtime to release via JNI.</p>
+</div>
+<div class="section" id="v8-gc">
+<h3>V8 GC<a class="headerlink" href="#v8-gc" title="Permalink to this headline">¶</a></h3>
+<p>V8 generally categorizes objects in memory to 3 types.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v8::Local</span></code> - It lives within the local scope of a C++ function call.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v8::Persistent</span></code> - Its lifecycle is managed by V8 GC.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v8::External</span></code> - V8 GC treats it as root object so that it lives as long as the V8 isolate lives.</p></li>
+</ol>
+<p>The awful thing in V8 GC is V8 does not make final callback when a context is being closed. From V8 perspective, that's a performance improvement. But from Javet perspective, Javet cannot completely rely on V8 to do the resource management. So, Javet keeps track of all unmanaged resource and makes sure there is no memory leak in all cases.</p>
+</div>
+</div>
+<div class="section" id="recommended-options">
+<h2>Recommended Options<a class="headerlink" href="#recommended-options" title="Permalink to this headline">¶</a></h2>
+<p>Javet directly borrows the way V8 manages objects in JVM. The rule is simple in the following 2 Options.</p>
+<div class="section" id="automatic-management-with-try-with-resource">
+<h3>Automatic Management with try-with-resource<a class="headerlink" href="#automatic-management-with-try-with-resource" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create an object and wrap it with try resource.</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
+    <span class="c1">// Do whatever you want to do with this object</span>
+    <span class="c1">// v8ValueObject.close() is called automatically at the end of the block.</span>
+<span class="p">}</span>
+<span class="c1">// Outside the code block, this object is no longer valid.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="automatically-manage-with-weak-reference">
+<h3>Automatically Manage with Weak Reference<a class="headerlink" href="#automatically-manage-with-weak-reference" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create an object.</span>
+<span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">();</span>
+<span class="c1">// Do whatever you want to do with this object</span>
+<span class="n">v8ValueObject</span><span class="p">.</span><span class="na">setWeak</span><span class="p">();</span>
+<span class="c1">// Do whatever you want to do with this object</span>
+<span class="cm">/*</span>
+<span class="cm"> v8ValueObject.close() is called automatically via V8 GC callback.</span>
+<span class="cm"> So, there is no need to close the V8 object explicitly.</span>
+<span class="cm"> This is quite useful when the lifecycle is not determined, E.g. V8 function.</span>
+<span class="cm"> */</span>
+</pre></div>
+</div>
+<p>Note: V8 does not recycle objects that are referenced by other objects. Please make sure the object chain is broken so that GC can work as expected. <code class="docutils literal notranslate"><span class="pre">com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor</span></code> is a good sample showing how to deal with that.</p>
+</div>
+</div>
+<div class="section" id="alternative-option-arraybuffer">
+<h2>Alternative Option: ArrayBuffer<a class="headerlink" href="#alternative-option-arraybuffer" title="Permalink to this headline">¶</a></h2>
+<p>The ArrayBuffer object is used to represent a generic, fixed-length raw binary data buffer.</p>
+<p>It is an array of bytes, often referred to in other languages as a "byte array".You cannot directly manipulate the contents of an ArrayBuffer; instead, you create one of the typed array objects or a DataView object which represents the buffer in a specific format, and use that to read and write the contents of the buffer.</p>
+<p>Javet offers complete support to all the typed arrays as well as <code class="docutils literal notranslate"><span class="pre">DataView</span></code> as following. There is a <code class="docutils literal notranslate"><span class="pre">java.nio.ByteBuffer</span></code> inside every typed array and <code class="docutils literal notranslate"><span class="pre">DataView</span></code>. That <code class="docutils literal notranslate"><span class="pre">ByteBuffer</span></code> directly links to the corresponding backing store of V8 typed array. In other words, Javet and V8 can both access the same address to achieve zero memory copy. Please consider using typed array in performance sensitive scenarios.</p>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 10%"/>
+<col style="width: 15%"/>
+<col style="width: 8%"/>
+<col style="width: 42%"/>
+<col style="width: 11%"/>
+<col style="width: 16%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Value Range</p></th>
+<th class="head"><p>Size in bytes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Web IDL type</p></th>
+<th class="head"><p>Equivalent C type</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Int8Array</p></td>
+<td><p>-128 to 127</p></td>
+<td><p>1</p></td>
+<td><p>8-bit two's complement signed   integer</p></td>
+<td><p>byte</p></td>
+<td><p>int8_t</p></td>
+</tr>
+<tr class="row-odd"><td><p>Uint8Array</p></td>
+<td><p>0 to 255</p></td>
+<td><p>1</p></td>
+<td><p>8-bit unsigned integer</p></td>
+<td><p>octet</p></td>
+<td><p>uint8_t</p></td>
+</tr>
+<tr class="row-even"><td><p>Uint8ClampedArray</p></td>
+<td><p>0 to 255</p></td>
+<td><p>1</p></td>
+<td><p>8-bit unsigned integer (clamped)</p></td>
+<td><p>octet</p></td>
+<td><p>uint8_t</p></td>
+</tr>
+<tr class="row-odd"><td><p>Int16Array</p></td>
+<td><p>-32768 to 32767</p></td>
+<td><p>2</p></td>
+<td><p>16-bit two's complement signed   integer</p></td>
+<td><p>short</p></td>
+<td><p>int16_t</p></td>
+</tr>
+<tr class="row-even"><td><p>Uint16Array</p></td>
+<td><p>0 to 65535</p></td>
+<td><p>2</p></td>
+<td><p>16-bit unsigned integer</p></td>
+<td><p>unsigned short</p></td>
+<td><p>uint16_t</p></td>
+</tr>
+<tr class="row-odd"><td><p>Int32Array</p></td>
+<td><p>-2147483648   to 2147483647</p></td>
+<td><p>4</p></td>
+<td><p>32-bit two's complement signed   integer</p></td>
+<td><p>long</p></td>
+<td><p>int32_t</p></td>
+</tr>
+<tr class="row-even"><td><p>Uint32Array</p></td>
+<td><p>0 to 4294967295</p></td>
+<td><p>4</p></td>
+<td><p>32-bit unsigned integer</p></td>
+<td><p>unsigned long</p></td>
+<td><p>uint32_t</p></td>
+</tr>
+<tr class="row-odd"><td><p>Float32Array</p></td>
+<td><p>1.2×10-38 to 3.4×1038</p></td>
+<td><p>4</p></td>
+<td><p>32-bit IEEE floating point   number (7 significant digits e.g., 1.234567)</p></td>
+<td><p>unrestricted float</p></td>
+<td><p>float</p></td>
+</tr>
+<tr class="row-even"><td><p>Float64Array</p></td>
+<td><p>5.0×10-324 to 1.8×10308</p></td>
+<td><p>8</p></td>
+<td><p>64-bit IEEE floating point   number (16 significant digits e.g., 1.23456789012345)</p></td>
+<td><p>unrestricted double</p></td>
+<td><p>double</p></td>
+</tr>
+<tr class="row-odd"><td><p>BigInt64Array</p></td>
+<td><p>-263 to 263-1</p></td>
+<td><p>8</p></td>
+<td><p>64-bit two's complement signed   integer</p></td>
+<td><p>bigint</p></td>
+<td><p>int64_t (signed long long)</p></td>
+</tr>
+<tr class="row-even"><td><p>BigUint64Array</p></td>
+<td><p>0 to 264-1</p></td>
+<td><p>8</p></td>
+<td><p>64-bit unsigned integer</p></td>
+<td><p>bigint</p></td>
+<td><p>uint64_t (unsigned long long)</p></td>
+</tr>
+</tbody>
+</table></div>
+<p>Please refer to <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java">TestV8ValueTypedArray</a> and <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueDataView.java">TestV8ValueDataView</a> for sample code snippets.</p>
+</div>
+<div class="section" id="gc">
+<h2>GC<a class="headerlink" href="#gc" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="automatic-gc">
+<h3>Automatic GC<a class="headerlink" href="#automatic-gc" title="Permalink to this headline">¶</a></h3>
+<p>Javet has built-in automatic GC in both Node.js mode and V8 mode. Why? In high frequency API calling area, V8 may not keep up with the GC pace that JVM performs. Sometimes, JVM is running out of heap memory whereas V8 holds many zombie objects that are referenced by Javet in JVM. In this case, JVM ignores those objects unless V8 releases them in V8 GC cycle.</p>
+<div class="section" id="passive-gc">
+<h4>Passive GC<a class="headerlink" href="#passive-gc" title="Permalink to this headline">¶</a></h4>
+<p>So, how to notify V8 GC that Java heap memory pool is running out of space? Javet automates this via <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> and <code class="docutils literal notranslate"><span class="pre">V8Notifier</span></code>. By default, this feature is disabled. Here is the step-by-step on how to enable this feature.</p>
+<ol class="arabic simple">
+<li><p>(Optional) Call <code class="docutils literal notranslate"><span class="pre">V8Host.setMemoryUsageThresholdRatio(double)</span></code> to set memory usage threshold ratio. This is optional because the default value is 0.7.</p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">V8Host.getNodeInstance().enableGCNotification()</span></code> or <code class="docutils literal notranslate"><span class="pre">V8Host.getV8Instance().enableGCNotification()</span></code> to enable the notification.</p></li>
+</ol>
+<p>Here is a sample heap memory usage with default memory usage threshold ration and <code class="docutils literal notranslate"><span class="pre">-Xms64m</span> <span class="pre">-Xmx64m</span></code>. Please note that in this sample, application is under high pressure of creating and destroying V8 objects. In normal cases, the curve is much smoother.</p>
+<img alt="Javet Memory Management Passive GC" src="../_images/javet_memory_management_passive_gc.png"/>
+<p>What happens internally is as following.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">V8Notifier</span></code> listens to the heap memory notification from JVM per <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> instance.</p></li>
+<li><p>JVM notifies <code class="docutils literal notranslate"><span class="pre">V8Notifier</span></code> that memory threshold exceeds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">V8Notifier</span></code> broadcasts GC scheduled flag to all <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> managed by the <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> instance.</p></li>
+<li><p>Each <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> performs GC in its own isolate.</p></li>
+</ol>
+</div>
+<div class="section" id="aggressive-gc">
+<h4>Aggressive GC<a class="headerlink" href="#aggressive-gc" title="Permalink to this headline">¶</a></h4>
+<p>Just get <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> from Javet engine pool that aggressively sends GC notification to idle engine in daemon thread. There is no performance overhead because:</p>
+<ul class="simple">
+<li><p>The engine performs GC when it is idle in a dedicated thread.</p></li>
+<li><p>Javet engine pool is lock free so that the GC doesn't affect other worker threads.</p></li>
+</ul>
+<p>Of course, this behavior can be turned off by calling <code class="docutils literal notranslate"><span class="pre">JavetEngineConfig.setAutoSendGCNotification(false)</span></code>.</p>
+</div>
+</div>
+<div class="section" id="manual-gc">
+<h3>Manual GC<a class="headerlink" href="#manual-gc" title="Permalink to this headline">¶</a></h3>
+<p>There are 3 ways of manually triggering GC in both Node.js mode and V8 mode.</p>
+<div class="section" id="v8runtime-await">
+<h4>V8Runtime.await()<a class="headerlink" href="#v8runtime-await" title="Permalink to this headline">¶</a></h4>
+<p>This API represents a light-weighted way of giving V8 a hint to perform GC. It actually tells Node.js or V8 runtime to drain the message or task queue. As a side effect of the drain, a GC may occur based on the decision of Node.js or V8 runtime.</p>
+</div>
+<div class="section" id="v8runtime-idlenotificationdeadline-long-deadlineinmillis">
+<h4>V8Runtime.idleNotificationDeadline(long deadlineInMillis)<a class="headerlink" href="#v8runtime-idlenotificationdeadline-long-deadlineinmillis" title="Permalink to this headline">¶</a></h4>
+<p>This API explicitly tells Node.js or V8 runtime that the application expects a GC to happen in the given milliseconds. Be careful, Node.js or V8 runtime may disregard this instruction.</p>
+</div>
+<div class="section" id="v8runtime-lowmemorynotification">
+<h4>V8Runtime.lowMemoryNotification()<a class="headerlink" href="#v8runtime-lowmemorynotification" title="Permalink to this headline">¶</a></h4>
+<p>This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It is also used in automatic GC aforementioned.</p>
+</div>
+</div>
+</div>
+</div>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="lock.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Know the Lock</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="modularization.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Modularization</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021. caoccao.com Sam Cao |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
+            <a class="muted-link" href="../_sources/reference/memory_management.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Memory Management</a><ul>
+<li><a class="reference internal" href="#challenges-in-memory-management">3 Challenges in Memory Management</a><ul>
+<li><a class="reference internal" href="#jvm-gc">JVM GC</a></li>
+<li><a class="reference internal" href="#c-runtime">C++ Runtime</a></li>
+<li><a class="reference internal" href="#v8-gc">V8 GC</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#recommended-options">Recommended Options</a><ul>
+<li><a class="reference internal" href="#automatic-management-with-try-with-resource">Automatic Management with try-with-resource</a></li>
+<li><a class="reference internal" href="#automatically-manage-with-weak-reference">Automatically Manage with Weak Reference</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#alternative-option-arraybuffer">Alternative Option: ArrayBuffer</a></li>
+<li><a class="reference internal" href="#gc">GC</a><ul>
+<li><a class="reference internal" href="#automatic-gc">Automatic GC</a><ul>
+<li><a class="reference internal" href="#passive-gc">Passive GC</a></li>
+<li><a class="reference internal" href="#aggressive-gc">Aggressive GC</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#manual-gc">Manual GC</a><ul>
+<li><a class="reference internal" href="#v8runtime-await">V8Runtime.await()</a></li>
+<li><a class="reference internal" href="#v8runtime-idlenotificationdeadline-long-deadlineinmillis">V8Runtime.idleNotificationDeadline(long deadlineInMillis)</a></li>
+<li><a class="reference internal" href="#v8runtime-lowmemorynotification">V8Runtime.lowMemoryNotification()</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/main.js"></script>
+    <script src="../_static/tabs.js"></script>
+    </body>
+</html>

@@ -23,9 +23,9 @@ package com.caoccao.javet.interop;
  * <p>
  * Guidelines:
  * 1. Please keep V8Native as small, simple as possible so that the C++ implementation is minimized.
- * 2. Please make sure V8Native doesn't not reference any other types so that JNI code generation is quick and clean.
+ * 2. Please make sure V8Native does not reference any other types so that JNI code generation is quick and clean.
  * 3. Please keep the methods in ascending order so that the generated .h file keeps the same order.
- * 4. Please don't not inject any other non-public native code.
+ * 4. Please do not inject any other non-public native code.
  */
 class V8Native implements IV8Native {
     V8Native() {
@@ -81,6 +81,9 @@ class V8Native implements IV8Native {
     public native boolean delete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     @Override
+    public native boolean deletePrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key);
+
+    @Override
     public native boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     @Override
@@ -117,6 +120,10 @@ class V8Native implements IV8Native {
     public native Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native Object getPrivateProperty(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String propertyName);
+
+    @Override
     public native Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     @Override
@@ -139,6 +146,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
+
+    @Override
+    public native boolean hasPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int type, String propertyName);
 
     @Override
     public native void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
@@ -263,6 +273,10 @@ class V8Native implements IV8Native {
      */
     @Override
     public native void setFlags(String flags);
+
+    @Override
+    public native boolean setPrivateProperty(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);
 
     @Override
     public native boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);

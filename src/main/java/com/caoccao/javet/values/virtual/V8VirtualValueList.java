@@ -25,6 +25,7 @@ import com.caoccao.javet.values.V8Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The type V8 virtual value list.
@@ -55,6 +56,7 @@ public class V8VirtualValueList implements IJavetClosable {
      * @since 0.8.5
      */
     public V8VirtualValueList(V8Runtime v8Runtime, Object... objects) throws JavetException {
+        Objects.requireNonNull(v8Runtime);
         if (objects == null || objects.length == 0) {
             toBeClosedValues = null;
             values = null;

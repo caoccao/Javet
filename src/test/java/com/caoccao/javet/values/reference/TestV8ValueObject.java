@@ -45,7 +45,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
                     v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
-            assertEquals(22, javetCallbackContexts.size());
+            assertEquals(23, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -71,9 +71,11 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(13, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("abc", v8Runtime.getExecutor("a[Symbol.for('symbolValue')]").executeString());
             assertEquals(14, mockAnnotationBasedCallbackReceiver.getCount());
-            assertEquals(19, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
+            assertEquals(1000, v8Runtime.getExecutor("a[Symbol.toPrimitive]").executeInteger());
+            assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(20, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
             assertNull(v8Runtime.getExecutor("a['stringValue']").executeString());
-            assertEquals(14, mockAnnotationBasedCallbackReceiver.getCount());
+            assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
         }
         v8Runtime.lowMemoryNotification();
     }
@@ -223,7 +225,23 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testGetSetDelete() throws JavetException {
+    public void testGetSetDeletePrivate() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            assertFalse(v8ValueObject.hasPrivateProperty("x"));
+            assertTrue(v8ValueObject.getPrivateProperty("x").isUndefined());
+            assertTrue(v8ValueObject.setPrivateProperty("x", 1));
+            assertTrue(v8ValueObject.hasPrivateProperty("x"));
+            assertEquals(1, v8ValueObject.getPrivatePropertyInteger("x"));
+            try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
+                assertEquals("[]", iV8ValueArray.toJsonString());
+            }
+            assertTrue(v8ValueObject.deletePrivateProperty("x"));
+            assertTrue(v8ValueObject.getPrivateProperty("x").isUndefined());
+        }
+    }
+
+    @Test
+    public void testGetSetDeletePublic() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
             assertTrue(v8ValueObject.set("a", 1));
             assertTrue(v8ValueObject.set("b", "2"));

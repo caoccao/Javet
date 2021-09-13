@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.annotations;
 
+import com.caoccao.javet.enums.V8ValueSymbolType;
+
 import java.lang.annotation.*;
 
 /**
@@ -37,12 +39,12 @@ public @interface V8Property {
     String name() default "";
 
     /**
-     * Symbol boolean.
+     * Symbol V8 value symbol type.
      *
-     * @return the boolean
+     * @return the V8 value symbol type
      * @since 0.9.11
      */
-    boolean symbol() default false;
+    V8ValueSymbolType symbolType() default V8ValueSymbolType.None;
 
     /**
      * This object required.

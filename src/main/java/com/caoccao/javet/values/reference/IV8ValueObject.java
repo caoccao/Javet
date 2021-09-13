@@ -32,6 +32,7 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The interface V8 value object.
@@ -80,6 +81,8 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.9
      */
     default boolean bindFunction(String functionName, String codeString) throws JavetException {
+        Objects.requireNonNull(functionName);
+        Objects.requireNonNull(codeString);
         try (V8ValueFunction v8ValueFunction = getV8Runtime().createV8ValueFunction(codeString)) {
             return set(functionName, v8ValueFunction);
         }
@@ -114,6 +117,7 @@ public interface IV8ValueObject extends IV8ValueReference {
             String propertyName,
             JavetCallbackContext javetCallbackContextGetter,
             JavetCallbackContext javetCallbackContextSetter) throws JavetException {
+        Objects.requireNonNull(propertyName);
         return bindProperty(
                 getV8Runtime().createV8ValueString(propertyName),
                 javetCallbackContextGetter,
@@ -200,6 +204,16 @@ public interface IV8ValueObject extends IV8ValueReference {
     default boolean deleteNull() throws JavetException {
         return delete(getV8Runtime().createV8ValueNull());
     }
+
+    /**
+     * Delete private property boolean.
+     *
+     * @param propertyName the property name
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    boolean deletePrivateProperty(String propertyName) throws JavetException;
 
     /**
      * Delete undefined boolean.
@@ -418,6 +432,167 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
+     * Gets private property.
+     *
+     * @param <T>          the type parameter
+     * @param propertyName the property name
+     * @return the private property
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    @CheckReturnValue
+    <T extends V8Value> T getPrivateProperty(String propertyName) throws JavetException;
+
+    /**
+     * Gets private property boolean.
+     *
+     * @param propertyName the property name
+     * @return the private property boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default Boolean getPrivatePropertyBoolean(String propertyName) throws JavetException {
+        return getPrivatePropertyPrimitive(propertyName);
+    }
+
+    /**
+     * Gets private property double.
+     *
+     * @param propertyName the property name
+     * @return the private property double
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default Double getPrivatePropertyDouble(String propertyName) throws JavetException {
+        return getPrivatePropertyPrimitive(propertyName);
+    }
+
+    /**
+     * Gets private property float.
+     *
+     * @param propertyName the property name
+     * @return the private property float
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default Float getPrivatePropertyFloat(String propertyName) throws JavetException {
+        Double result = getPrivatePropertyDouble(propertyName);
+        return result == null ? null : result.floatValue();
+    }
+
+    /**
+     * Gets private property integer.
+     *
+     * @param propertyName the property name
+     * @return the private property integer
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default Integer getPrivatePropertyInteger(String propertyName) throws JavetException {
+        return getPrivatePropertyPrimitive(propertyName);
+    }
+
+    /**
+     * Gets private property long.
+     *
+     * @param propertyName the property name
+     * @return the private property long
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default Long getPrivatePropertyLong(String propertyName) throws JavetException {
+        return getPrivatePropertyPrimitive(propertyName);
+    }
+
+    /**
+     * Gets private property null.
+     *
+     * @param propertyName the property name
+     * @return the private property null
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default V8ValueNull getPrivatePropertyNull(String propertyName) throws JavetException {
+        return getPrivateProperty(propertyName);
+    }
+
+    /**
+     * Gets private property object.
+     *
+     * @param <T>          the type parameter
+     * @param propertyName the property name
+     * @return the private property object
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default <T> T getPrivatePropertyObject(String propertyName) throws JavetException {
+        try {
+            return getV8Runtime().toObject(getPrivateProperty(propertyName), true);
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /**
+     * Gets private property primitive.
+     *
+     * @param <R>          the type parameter
+     * @param <T>          the type parameter
+     * @param propertyName the property name
+     * @return the private property primitive
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default <R, T extends V8ValuePrimitive<R>> R getPrivatePropertyPrimitive(String propertyName)
+            throws JavetException {
+        try (V8Value v8Value = getPrivateProperty(propertyName)) {
+            return ((T) v8Value).getValue();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
+    }
+
+    /**
+     * Gets private property string.
+     *
+     * @param propertyName the property name
+     * @return the private property string
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default String getPrivatePropertyString(String propertyName) throws JavetException {
+        return getPrivatePropertyPrimitive(propertyName);
+    }
+
+    /**
+     * Gets private property undefined.
+     *
+     * @param propertyName the property name
+     * @return the private property undefined
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default V8ValueUndefined getPrivatePropertyUndefined(String propertyName) throws JavetException {
+        return getPrivateProperty(propertyName);
+    }
+
+    /**
+     * Gets private property zoned date time.
+     *
+     * @param propertyName the property name
+     * @return the private property zoned date time
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default ZonedDateTime getPrivatePropertyZonedDateTime(String propertyName) throws JavetException {
+        return getPrivatePropertyPrimitive(propertyName);
+    }
+
+    /**
      * Gets property.
      *
      * @param <T> the type parameter
@@ -434,9 +609,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property boolean
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Boolean getPropertyBoolean(Object key) {
+    default Boolean getPropertyBoolean(Object key) throws JavetException {
         return getPropertyPrimitive(key);
     }
 
@@ -445,9 +621,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property double
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Double getPropertyDouble(Object key) {
+    default Double getPropertyDouble(Object key) throws JavetException {
         return getPropertyPrimitive(key);
     }
 
@@ -456,9 +633,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property float
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Float getPropertyFloat(Object key) {
+    default Float getPropertyFloat(Object key) throws JavetException {
         Double result = getPropertyDouble(key);
         return result == null ? null : result.floatValue();
     }
@@ -468,9 +646,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property integer
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Integer getPropertyInteger(Object key) {
+    default Integer getPropertyInteger(Object key) throws JavetException {
         return getPropertyPrimitive(key);
     }
 
@@ -479,9 +658,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property long
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Long getPropertyLong(Object key) {
+    default Long getPropertyLong(Object key) throws JavetException {
         return getPropertyPrimitive(key);
     }
 
@@ -520,11 +700,14 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param <T> the type parameter
      * @param key the key
      * @return the property primitive
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default <R, T extends V8ValuePrimitive<R>> R getPropertyPrimitive(Object key) {
+    default <R, T extends V8ValuePrimitive<R>> R getPropertyPrimitive(Object key) throws JavetException {
         try (V8Value v8Value = getProperty(key)) {
             return ((T) v8Value).getValue();
+        } catch (JavetException e) {
+            throw e;
         } catch (Throwable ignored) {
         }
         return null;
@@ -535,9 +718,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property string
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default String getPropertyString(Object key) {
+    default String getPropertyString(Object key) throws JavetException {
         return getPropertyPrimitive(key);
     }
 
@@ -546,9 +730,10 @@ public interface IV8ValueObject extends IV8ValueReference {
      *
      * @param key the key
      * @return the property zoned date time
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default ZonedDateTime getPropertyZonedDateTime(Object key) {
+    default ZonedDateTime getPropertyZonedDateTime(Object key) throws JavetException {
         return getPropertyPrimitive(key);
     }
 
@@ -629,6 +814,16 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     boolean hasOwnProperty(Object key) throws JavetException;
+
+    /**
+     * Has private property boolean.
+     *
+     * @param propertyName the property name
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    boolean hasPrivateProperty(String propertyName) throws JavetException;
 
     /**
      * Has undefined property key.
@@ -873,6 +1068,41 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
+     * Sets private property.
+     *
+     * @param propertyName  the property name
+     * @param propertyValue the property value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    boolean setPrivateProperty(String propertyName, Object propertyValue) throws JavetException;
+
+    /**
+     * Sets private property null.
+     *
+     * @param propertyKey the property key
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default boolean setPrivatePropertyNull(String propertyKey) throws JavetException {
+        return setPrivateProperty(propertyKey, getV8Runtime().createV8ValueNull());
+    }
+
+    /**
+     * Sets private property undefined.
+     *
+     * @param propertyKey the property key
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    default boolean setPrivatePropertyUndefined(String propertyKey) throws JavetException {
+        return setPrivateProperty(propertyKey, getV8Runtime().createV8ValueUndefined());
+    }
+
+    /**
      * Sets property.
      *
      * @param key   the key
@@ -887,7 +1117,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * Sets property null.
      *
      * @param key the key
-     * @return the property null
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
@@ -978,6 +1208,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.9.11
      */
     default boolean unbindProperty(String propertyName) throws JavetException {
+        Objects.requireNonNull(propertyName);
         return unbindProperty(getV8Runtime().createV8ValueString(propertyName));
     }
 

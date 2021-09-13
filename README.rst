@@ -15,11 +15,11 @@ Javet
 .. |Linux Build| image:: https://img.shields.io/github/workflow/status/caoccao/Javet/Linux%20Build?label=Linux%20Build&style=for-the-badge
     :target: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml
 
-Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
+`Javet <https://github.com/caoccao/Javet/>`_ is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
 If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
-💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because my MacBook Air mid-2012 will be soon deprecated by new version of V8. Please `donate <https://paypal.me/caoccao?locale.x=en_US>`_ to support me purchasing a new Mac OS (x86_64) device.
+💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because my `MacBook Air mid-2012 <https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html>`_ will be soon deprecated by new version of V8. Please `donate <https://paypal.me/caoccao?locale.x=en_US>`_ to support me purchasing a new Mac OS (x86_64) device. Or, if you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will also be great. Thank you for supporting Javet.
 
 💖 If you use Mac OS (arm64), unfortunately there is no Mac OS (arm64) build because I don't have any Mac OS (arm64) device. Please `donate <https://paypal.me/caoccao?locale.x=en_US>`_ to support me purchasing a new Mac OS (arm64) device.
 
@@ -52,14 +52,14 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>0.9.11</version>
+        <version>0.9.12</version>
     </dependency>
 
     <!-- Mac OS (x86_64 Only) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>0.9.11</version>
+        <version>0.9.12</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -67,16 +67,16 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:0.9.11") // Linux or Windows
-    implementation("com.caoccao.javet:javet-macos:0.9.11") // Mac OS (x86_64 Only)
+    implementation("com.caoccao.javet:javet:0.9.12") // Linux or Windows
+    implementation("com.caoccao.javet:javet-macos:0.9.12") // Mac OS (x86_64 Only)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:0.9.11' // Linux or Windows
-    implementation 'com.caoccao.javet:javet-macos:0.9.11' // Mac OS (x86_64 Only)
+    implementation 'com.caoccao.javet:javet:0.9.12' // Linux or Windows
+    implementation 'com.caoccao.javet:javet-macos:0.9.12' // Mac OS (x86_64 Only)
 
 Hello Javet
 -----------
@@ -93,17 +93,13 @@ Hello Javet
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
     }
 
-Documents
-=========
-
-* `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
-* `Tutorial <docs/tutorial/index.rst>`_
-* `Reference <docs/reference/index.rst>`_
-* `Release Notes <docs/release_notes.rst>`_
-* `FAQ <docs/faq/index.rst>`_
-* `Development <docs/development/index.rst>`_
-
 License
 =======
 
 `APACHE LICENSE, VERSION 2.0 <LICENSE>`_.
+
+Documents
+=========
+
+* `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
+* `Javet Document Portal <https://www.caoccao.com/Javet/>`_

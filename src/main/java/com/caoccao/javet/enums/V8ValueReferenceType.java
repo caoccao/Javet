@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.enums;
 
+import java.util.stream.Stream;
+
 public enum V8ValueReferenceType {
     Invalid(0, "Invalid"),
     Object(1, "Object"),
@@ -38,24 +40,23 @@ public enum V8ValueReferenceType {
     Module(21, "Module"),
     DataView(30, "DataView"),
     ArrayBuffer(31, "ArrayBuffer"),
-    Int8Array(32, "Int8Array"), // -128 to 127 	1 	8-bit two's complement signed integer 	byte 	int8_t
-    Uint8Array(33, "Uint8Array"), // 0 to 255 	1 	8-bit unsigned integer 	octet 	uint8_t
-    Uint8ClampedArray(34, "Uint8ClampedArray"), // 0 to 255 	1 	8-bit unsigned integer (clamped) 	octet 	uint8_t
-    Int16Array(35, "Int16Array"), // -32768 to 32767 	2 	16-bit two's complement signed integer 	short 	int16_t
-    Uint16Array(36, "Uint16Array"), //  	0 to 65535 	2 	16-bit unsigned integer 	unsigned short 	uint16_t
-    Int32Array(37, "Int32Array"), // -2147483648 to 2147483647 	4 	32-bit two's complement signed integer 	long 	int32_t
-    Uint32Array(38, "Uint32Array"), // 0 to 4294967295 	4 	32-bit unsigned integer 	unsigned long 	uint32_t
-    Float32Array(39, "Float32Array"), // 1.2×10^-38 to 3.4×10^38 	4 	32-bit IEEE floating point number (7 significant digits e.g., 1.234567) 	unrestricted float 	float
-    Float64Array(40, "Float64Array"), // 5.0×10^-324 to 1.8×10^308 	8 	64-bit IEEE floating point number (16 significant digits e.g., 1.23456789012345) 	unrestricted double 	double
-    BigInt64Array(41, "BigInt64Array"), // -2^63 to 2^63-1 	8 	64-bit two's complement signed integer 	bigint 	int64_t (signed long long)
-    BigUint64Array(42, "BigUint64Array"); // 0 to 2^64-1 	8 	64-bit unsigned integer 	bigint 	uint64_t (unsigned long long)
+    SharedArrayBuffer(32, "SharedArrayBuffer"),
+    Int8Array(33, "Int8Array"), // -128 to 127 	1 	8-bit two's complement signed integer 	byte 	int8_t
+    Uint8Array(34, "Uint8Array"), // 0 to 255 	1 	8-bit unsigned integer 	octet 	uint8_t
+    Uint8ClampedArray(35, "Uint8ClampedArray"), // 0 to 255 	1 	8-bit unsigned integer (clamped) 	octet 	uint8_t
+    Int16Array(36, "Int16Array"), // -32768 to 32767 	2 	16-bit two's complement signed integer 	short 	int16_t
+    Uint16Array(37, "Uint16Array"), //  	0 to 65535 	2 	16-bit unsigned integer 	unsigned short 	uint16_t
+    Int32Array(38, "Int32Array"), // -2147483648 to 2147483647 	4 	32-bit two's complement signed integer 	long 	int32_t
+    Uint32Array(39, "Uint32Array"), // 0 to 4294967295 	4 	32-bit unsigned integer 	unsigned long 	uint32_t
+    Float32Array(40, "Float32Array"), // 1.2×10^-38 to 3.4×10^38 	4 	32-bit IEEE floating point number (7 significant digits e.g., 1.234567) 	unrestricted float 	float
+    Float64Array(41, "Float64Array"), // 5.0×10^-324 to 1.8×10^308 	8 	64-bit IEEE floating point number (16 significant digits e.g., 1.23456789012345) 	unrestricted double 	double
+    BigInt64Array(42, "BigInt64Array"), // -2^63 to 2^63-1 	8 	64-bit two's complement signed integer 	bigint 	int64_t (signed long long)
+    BigUint64Array(43, "BigUint64Array"); // 0 to 2^64-1 	8 	64-bit unsigned integer 	bigint 	uint64_t (unsigned long long)
 
-    private static final V8ValueReferenceType[] ALL_TYPES = new V8ValueReferenceType[43];
+    private static final V8ValueReferenceType[] ALL_TYPES = new V8ValueReferenceType[44];
 
     static {
-        for (V8ValueReferenceType type : values()) {
-            ALL_TYPES[type.getId()] = type;
-        }
+        Stream.of(values()).forEach(t -> ALL_TYPES[t.getId()] = t);
     }
 
     private final int id;

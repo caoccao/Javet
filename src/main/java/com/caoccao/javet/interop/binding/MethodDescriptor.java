@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.interop.binding;
 
+import com.caoccao.javet.enums.V8ValueSymbolType;
+
 import java.lang.reflect.Method;
 
 /**
@@ -32,11 +34,11 @@ public class MethodDescriptor {
      */
     protected Method method;
     /**
-     * The Symbol.
+     * The Symbol type.
      *
      * @since 0.9.11
      */
-    protected boolean symbol;
+    protected V8ValueSymbolType symbolType;
     /**
      * The This object required.
      *
@@ -52,7 +54,7 @@ public class MethodDescriptor {
      * @since 0.9.2
      */
     public MethodDescriptor(Method method, boolean thisObjectRequired) {
-        this(method, thisObjectRequired, false);
+        this(method, thisObjectRequired, V8ValueSymbolType.None);
     }
 
     /**
@@ -60,12 +62,12 @@ public class MethodDescriptor {
      *
      * @param method             the method
      * @param thisObjectRequired the this object required
-     * @param symbol             the symbol
+     * @param symbolType         the symbol type
      * @since 0.9.11
      */
-    public MethodDescriptor(Method method, boolean thisObjectRequired, boolean symbol) {
+    public MethodDescriptor(Method method, boolean thisObjectRequired, V8ValueSymbolType symbolType) {
         this.method = method;
-        this.symbol = symbol;
+        this.symbolType = symbolType;
         this.thisObjectRequired = thisObjectRequired;
     }
 
@@ -80,13 +82,13 @@ public class MethodDescriptor {
     }
 
     /**
-     * Is symbol.
+     * Gets symbol type.
      *
-     * @return the boolean
+     * @return the symbol type
      * @since 0.9.11
      */
-    public boolean isSymbol() {
-        return symbol;
+    public V8ValueSymbolType getSymbolType() {
+        return symbolType;
     }
 
     /**
