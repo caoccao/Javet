@@ -39,10 +39,10 @@ public @interface V8Property {
     String name() default "";
 
     /**
-     * Symbol V8 value symbol type.
+     * Symbol V8 value symbol type. Default: None.
      *
      * @return the V8 value symbol type
-     * @since 0.9.11
+     * @since 0.9.12
      */
     V8ValueSymbolType symbolType() default V8ValueSymbolType.None;
 

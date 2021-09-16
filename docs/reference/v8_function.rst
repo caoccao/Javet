@@ -161,16 +161,20 @@ This feature is especially useful when ``this`` needs to be returned. Just simpl
 Can Symbol Properties be Intercepted?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Yes, ``@V8Property`` supports ``symbol``. Just set it to ``true``.
+Yes, ``@V8Property`` supports ``symbolType``.
+
+* None: Not a symbol. (default)
+* Built-in: ES built-in symbol type.
+* Custom: User defined symbol type.
 
 .. code-block:: java
 
-    @V8Property(symbol = true)
+    @V8Property(symbolType = V8ValueSymbolType.Custom)
     public String getValue() {
         return value;
     }
 
-    @V8Property(symbol = true)
+    @V8Property(symbolType = V8ValueSymbolType.Custom)
     public void setValue(String value) {
         this.value = value;
     }

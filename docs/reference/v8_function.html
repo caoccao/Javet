@@ -449,13 +449,18 @@
 </div>
 <div class="section" id="can-symbol-properties-be-intercepted">
 <h4>Can Symbol Properties be Intercepted?<a class="headerlink" href="#can-symbol-properties-be-intercepted" title="Permalink to this headline">¶</a></h4>
-<p>Yes, <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> supports <code class="docutils literal notranslate"><span class="pre">symbol</span></code>. Just set it to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbol</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
+<p>Yes, <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> supports <code class="docutils literal notranslate"><span class="pre">symbolType</span></code>.</p>
+<ul class="simple">
+<li><p>None: Not a symbol. (default)</p></li>
+<li><p>Built-in: ES built-in symbol type.</p></li>
+<li><p>Custom: User defined symbol type.</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbolType</span> <span class="o">=</span> <span class="n">V8ValueSymbolType</span><span class="p">.</span><span class="na">Custom</span><span class="p">)</span>
 <span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbol</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
+<span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbolType</span> <span class="o">=</span> <span class="n">V8ValueSymbolType</span><span class="p">.</span><span class="na">Custom</span><span class="p">)</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="p">(</span><span class="n">String</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">this</span><span class="p">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
 <span class="p">}</span>
