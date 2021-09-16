@@ -148,6 +148,20 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGeneratorObject() throws JavetException {
+        try (V8ValueIterator<V8ValueInteger> v8ValueIterator = v8Runtime.getExecutor(
+                "function* generator() {\n" +
+                        "  yield 1;\n" +
+                        "  yield 2;\n" +
+                        "}; generator();").execute()) {
+            assertNotNull(v8ValueIterator);
+            assertEquals(1, v8ValueIterator.getNext().getValue());
+            assertEquals(2, v8ValueIterator.getNext().getValue());
+            assertNull(v8ValueIterator.getNext());
+        }
+    }
+
+    @Test
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {

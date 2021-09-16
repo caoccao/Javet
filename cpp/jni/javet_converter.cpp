@@ -301,7 +301,7 @@ namespace Javet {
             if (v8Value->IsSet()) {
                 return jniEnv->NewObject(jclassV8ValueSet, jmethodIDV8ValueSetConstructor, ToV8PersistentValueReference(v8Context, v8Value));
             }
-            if (v8Value->IsMapIterator() || v8Value->IsSetIterator()) {
+            if (v8Value->IsMapIterator() || v8Value->IsSetIterator() || v8Value->IsGeneratorObject()) {
                 return jniEnv->NewObject(jclassV8ValueIterator, jmethodIDV8ValueIteratorConstructor, ToV8PersistentValueReference(v8Context, v8Value));
             }
             if (v8Value->IsArgumentsObject()) {
@@ -312,9 +312,6 @@ namespace Javet {
             }
             if (v8Value->IsRegExp()) {
                 return jniEnv->NewObject(jclassV8ValueRegExp, jmethodIDV8ValueRegExpConstructor, ToV8PersistentValueReference(v8Context, v8Value));
-            }
-            if (v8Value->IsGeneratorObject()) {
-                // It defaults to V8ValueObject.
             }
             if (v8Value->IsAsyncFunction()) {
                 // It defaults to V8ValueFunction.

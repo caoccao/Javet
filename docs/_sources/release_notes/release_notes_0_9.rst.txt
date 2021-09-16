@@ -2,6 +2,11 @@
 Release Notes 0.9.x
 ===================
 
+0.9.13
+------
+
+* Added support to generator object
+
 0.9.12 Private Properties
 -------------------------
 
@@ -11,7 +16,7 @@ Release Notes 0.9.x
 * Added ``registerCustomObject()`` and ``unregisterCustomObject()`` to ``JavetObjectConverter``
 * Added private property support to ``IV8ValueObject``
 * Fixed potential core dump issue in V8 runtime close.
-* Added Javadoc.
+* Added Javadoc
 
 0.9.11 V8 v9.3
 --------------
