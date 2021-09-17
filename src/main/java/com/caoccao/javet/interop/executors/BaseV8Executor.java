@@ -39,7 +39,7 @@ public abstract class BaseV8Executor implements IV8Executor {
 
     @Override
     @CheckReturnValue
-    public abstract V8Script compileScript(boolean resultRequired) throws JavetException;
+    public abstract V8Script compileV8Script(boolean resultRequired) throws JavetException;
 
     @Override
     @CheckReturnValue

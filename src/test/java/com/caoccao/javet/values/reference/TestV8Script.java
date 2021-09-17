@@ -30,7 +30,7 @@ public class TestV8Script extends BaseTestJavetRuntime {
     public void testExecute() throws JavetException {
         IV8Executor iV8Executor = v8Runtime.getExecutor(
                 "const a = 1; a;").setResourceName("./test.js");
-        try (V8Script v8Script = iV8Executor.compileScript()) {
+        try (V8Script v8Script = iV8Executor.compileV8Script()) {
             assertNotNull(v8Script);
             assertEquals(1, v8Script.executeInteger());
         }
@@ -38,7 +38,7 @@ public class TestV8Script extends BaseTestJavetRuntime {
 
     @Test
     public void testUnexpectedIdentifier() throws JavetException {
-        try (V8Script v8Script = v8Runtime.getExecutor("a b c").compileScript()) {
+        try (V8Script v8Script = v8Runtime.getExecutor("a b c").compileV8Script()) {
             fail("Failed to report error.");
         } catch (JavetCompilationException e) {
             assertEquals("SyntaxError: Unexpected identifier", e.getScriptingError().getMessage());

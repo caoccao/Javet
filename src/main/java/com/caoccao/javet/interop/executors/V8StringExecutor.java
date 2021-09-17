@@ -38,14 +38,14 @@ public class V8StringExecutor extends BaseV8Executor {
 
     @Override
     @CheckReturnValue
-    public V8Script compileScript(boolean resultRequired) throws JavetException {
-        return v8Runtime.compileScript(getScriptString(), v8ScriptOrigin, resultRequired);
+    public V8Module compileV8Module(boolean resultRequired) throws JavetException {
+        return v8Runtime.compileV8Module(getScriptString(), v8ScriptOrigin, resultRequired);
     }
 
     @Override
     @CheckReturnValue
-    public V8Module compileV8Module(boolean resultRequired) throws JavetException {
-        return v8Runtime.compileV8Module(getScriptString(), v8ScriptOrigin, resultRequired);
+    public V8Script compileV8Script(boolean resultRequired) throws JavetException {
+        return v8Runtime.compileV8Script(getScriptString(), v8ScriptOrigin, resultRequired);
     }
 
     @Override

@@ -193,16 +193,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @CheckReturnValue
-    public V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
-            throws JavetException {
-        v8ScriptOrigin.setModule(false);
-        return decorateV8Value((V8Script) v8Native.compile(
-                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
-                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
-                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
-    }
-
-    @CheckReturnValue
     public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(true);
@@ -220,6 +210,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             addV8Module(v8Module);
         }
         return v8Module;
+    }
+
+    @CheckReturnValue
+    public V8Script compileV8Script(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
+            throws JavetException {
+        v8ScriptOrigin.setModule(false);
+        return decorateV8Value((V8Script) v8Native.compile(
+                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
+                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
     public boolean containsV8Module(String resourceName) {

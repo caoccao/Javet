@@ -327,14 +327,14 @@ implements <a href="../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Runtime.html#close-boolean-">close</a></span>(boolean&nbsp;forceClose)</code>&nbsp;</td>
 </tr>
 <tr id="i11" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Runtime.html#compileScript-java.lang.String-com.caoccao.javet.interop.V8ScriptOrigin-boolean-">compileScript</a></span>(java.lang.String&nbsp;scriptString,
-             <a href="../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a>&nbsp;v8ScriptOrigin,
-             boolean&nbsp;resultRequired)</code>&nbsp;</td>
-</tr>
-<tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/caoccao/javet/values/reference/V8Module.html" title="class in com.caoccao.javet.values.reference">V8Module</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Runtime.html#compileV8Module-java.lang.String-com.caoccao.javet.interop.V8ScriptOrigin-boolean-">compileV8Module</a></span>(java.lang.String&nbsp;scriptString,
+               <a href="../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a>&nbsp;v8ScriptOrigin,
+               boolean&nbsp;resultRequired)</code>&nbsp;</td>
+</tr>
+<tr id="i12" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Runtime.html#compileV8Script-java.lang.String-com.caoccao.javet.interop.V8ScriptOrigin-boolean-">compileV8Script</a></span>(java.lang.String&nbsp;scriptString,
                <a href="../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a>&nbsp;v8ScriptOrigin,
                boolean&nbsp;resultRequired)</code>&nbsp;</td>
 </tr>
@@ -1431,23 +1431,6 @@ public&nbsp;&lt;T extends <a href="../../../../com/caoccao/javet/values/V8Value.
 </dl>
 </li>
 </ul>
-<a name="compileScript-java.lang.String-com.caoccao.javet.interop.V8ScriptOrigin-boolean-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>compileScript</h4>
-<pre><a href="../../../../com/caoccao/javet/annotations/CheckReturnValue.html" title="annotation in com.caoccao.javet.annotations">@CheckReturnValue</a>
-public&nbsp;<a href="../../../../com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a>&nbsp;compileScript(java.lang.String&nbsp;scriptString,
-                                                 <a href="../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a>&nbsp;v8ScriptOrigin,
-                                                 boolean&nbsp;resultRequired)
-                                          throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
-<dl>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></dd>
-</dl>
-</li>
-</ul>
 <a name="compileV8Module-java.lang.String-com.caoccao.javet.interop.V8ScriptOrigin-boolean-">
 <!--   -->
 </a>
@@ -1456,6 +1439,23 @@ public&nbsp;<a href="../../../../com/caoccao/javet/values/reference/V8Script.htm
 <h4>compileV8Module</h4>
 <pre><a href="../../../../com/caoccao/javet/annotations/CheckReturnValue.html" title="annotation in com.caoccao.javet.annotations">@CheckReturnValue</a>
 public&nbsp;<a href="../../../../com/caoccao/javet/values/reference/V8Module.html" title="class in com.caoccao.javet.values.reference">V8Module</a>&nbsp;compileV8Module(java.lang.String&nbsp;scriptString,
+                                                   <a href="../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a>&nbsp;v8ScriptOrigin,
+                                                   boolean&nbsp;resultRequired)
+                                            throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></dd>
+</dl>
+</li>
+</ul>
+<a name="compileV8Script-java.lang.String-com.caoccao.javet.interop.V8ScriptOrigin-boolean-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>compileV8Script</h4>
+<pre><a href="../../../../com/caoccao/javet/annotations/CheckReturnValue.html" title="annotation in com.caoccao.javet.annotations">@CheckReturnValue</a>
+public&nbsp;<a href="../../../../com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a>&nbsp;compileV8Script(java.lang.String&nbsp;scriptString,
                                                    <a href="../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a>&nbsp;v8ScriptOrigin,
                                                    boolean&nbsp;resultRequired)
                                             throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
