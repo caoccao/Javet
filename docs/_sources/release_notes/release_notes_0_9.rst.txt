@@ -6,6 +6,8 @@ Release Notes 0.9.x
 ------
 
 * Added support to generator object
+* Added ``hasInternalType()`` and ``isGeneratorObject()`` to ``IV8ValueObject``
+* Added ``isGeneratorFunction()`` and ``isAsyncFunction()`` to ``IV8ValueFunction``
 
 0.9.12 Private Properties
 -------------------------

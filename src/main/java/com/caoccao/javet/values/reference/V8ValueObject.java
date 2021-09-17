@@ -18,6 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.*;
+import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetError;
@@ -415,11 +416,16 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean has(Object value) throws JavetException {
-        Objects.requireNonNull(value);
         checkV8Runtime();
-        try (V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, value)) {
+        try (V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, Objects.requireNonNull(value))) {
             return v8Runtime.has(this, virtualValue.get());
         }
+    }
+
+    @Override
+    public boolean hasInternalType(V8ValueInternalType internalType) throws JavetException {
+        checkV8Runtime();
+        return v8Runtime.hasInternalType(this, Objects.requireNonNull(internalType));
     }
 
     @Override

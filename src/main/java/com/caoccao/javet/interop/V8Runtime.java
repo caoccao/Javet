@@ -650,6 +650,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.has(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), value);
     }
 
+    public boolean hasInternalType(IV8ValueObject iV8ValueObject, V8ValueInternalType internalType) {
+        return v8Native.hasInternalType(
+                handle, iV8ValueObject.getHandle(), Objects.requireNonNull(internalType).getId());
+    }
+
     public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         decorateV8Value(key);
         return v8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);

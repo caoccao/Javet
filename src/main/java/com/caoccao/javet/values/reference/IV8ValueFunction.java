@@ -20,12 +20,15 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
+import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 /**
  * The interface V8 value function.
+ *
+ * @since 0.7.0
  */
 @SuppressWarnings("unchecked")
 public interface IV8ValueFunction extends IV8ValueObject {
@@ -37,6 +40,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     @CheckReturnValue
     default <T extends V8Value> T call(IV8ValueObject receiver, Object... objects) throws JavetException {
@@ -51,6 +55,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param v8Values the V8 values
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     @CheckReturnValue
     default <T extends V8Value> T call(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
@@ -64,6 +69,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects the objects
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     @CheckReturnValue
     <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException;
@@ -75,6 +81,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param v8Values the V8 values
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     @CheckReturnValue
     <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException;
@@ -86,6 +93,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default Boolean callBoolean(IV8ValueObject receiver, Object... objects) throws JavetException {
         return callPrimitive(receiver, objects);
@@ -98,6 +106,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the double
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default Double callDouble(IV8ValueObject receiver, Object... objects) throws JavetException {
         return callPrimitive(receiver, objects);
@@ -112,6 +121,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects      the objects
      * @return the t
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     @CheckReturnValue
     <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, Object... objects)
@@ -126,6 +136,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param v8Values     the v 8 values
      * @return the t
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     @CheckReturnValue
     <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
@@ -139,6 +150,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the float
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default Float callFloat(IV8ValueObject receiver, Object... objects) throws JavetException {
         Double result = callDouble(receiver, objects);
@@ -152,6 +164,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the integer
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default Integer callInteger(IV8ValueObject receiver, Object... objects) throws JavetException {
         return callPrimitive(receiver, objects);
@@ -164,6 +177,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the long
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default Long callLong(IV8ValueObject receiver, Object... objects) throws JavetException {
         return callPrimitive(receiver, objects);
@@ -177,6 +191,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the object
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default <T> T callObject(IV8ValueObject receiver, Object... objects) throws JavetException {
         try {
@@ -197,6 +212,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the primitive object
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default <R, T extends V8ValuePrimitive<R>> R callPrimitive(
             IV8ValueObject receiver, Object... objects) throws JavetException {
@@ -216,6 +232,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param objects  the objects
      * @return the string
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default String callString(IV8ValueObject receiver, Object... objects) throws JavetException {
         return callPrimitive(receiver, objects);
@@ -227,6 +244,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param receiver the receiver
      * @param objects  the objects
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void callVoid(IV8ValueObject receiver, Object... objects) throws JavetException {
@@ -239,6 +257,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param receiver the receiver
      * @param v8Values the V8 values
      * @throws JavetException the javet exception
+     * @since 0.7.0
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void callVoid(IV8ValueObject receiver, V8Value... v8Values) throws JavetException {
@@ -250,6 +269,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      *
      * @return the internal properties
      * @throws JavetException the javet exception
+     * @since 0.8.8
      */
     @CheckReturnValue
     IV8ValueArray getInternalProperties() throws JavetException;
@@ -259,6 +279,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      *
      * @return the JS function type
      * @throws JavetException the javet exception
+     * @since 0.8.8
      */
     JSFunctionType getJSFunctionType() throws JavetException;
 
@@ -267,6 +288,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      *
      * @return the JS scope type
      * @throws JavetException the javet exception
+     * @since 0.8.8
      */
     JSScopeType getJSScopeType() throws JavetException;
 
@@ -275,8 +297,31 @@ public interface IV8ValueFunction extends IV8ValueObject {
      *
      * @return the source code
      * @throws JavetException the javet exception
+     * @since 0.8.8
      */
     String getSourceCode() throws JavetException;
+
+    /**
+     * Is async function.
+     *
+     * @return true: yes, false: no
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
+    default boolean isAsyncFunction() throws JavetException {
+        return hasInternalType(V8ValueInternalType.AsyncFunction);
+    }
+
+    /**
+     * Is generator function.
+     *
+     * @return true: yes, false: no
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
+    default boolean isGeneratorFunction() throws JavetException {
+        return hasInternalType(V8ValueInternalType.GeneratorFunction);
+    }
 
     /**
      * Sets source code.
@@ -289,6 +334,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param sourceCode the source code
      * @return the source code
      * @throws JavetException the javet exception
+     * @since 0.8.8
      */
     boolean setSourceCode(String sourceCode) throws JavetException;
 }

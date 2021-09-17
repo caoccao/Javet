@@ -145,6 +145,9 @@ class V8Native implements IV8Native {
     public native boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     @Override
+    public native boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
+
+    @Override
     public native boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
     @Override

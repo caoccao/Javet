@@ -724,6 +724,16 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_has
     return false;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalType
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueInternalType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (v8ValueInternalType >= 0 && v8ValueInternalType < Javet::Enums::V8ValueInternalType::InternalTypeCheckCount) {
+        auto check = Javet::Enums::V8ValueInternalType::InternalTypeChecks[v8ValueInternalType];
+        return ((*v8LocalValue)->*check)();
+    }
+    return false;
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnProperty
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

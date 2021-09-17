@@ -155,6 +155,10 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                         "  yield 2;\n" +
                         "}; generator();").execute()) {
             assertNotNull(v8ValueIterator);
+            assertTrue(v8ValueIterator.isGeneratorObject());
+            try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get("generator")) {
+                assertTrue(v8ValueFunction.isGeneratorFunction());
+            }
             assertEquals(1, v8ValueIterator.getNext().getValue());
             assertEquals(2, v8ValueIterator.getNext().getValue());
             assertNull(v8ValueIterator.getNext());

@@ -192,6 +192,16 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testAsyncFunction() throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("() => {}")) {
+            assertFalse(v8ValueFunction.isAsyncFunction());
+        }
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("async () => {Promise.resolve(0);}")) {
+            assertTrue(v8ValueFunction.isAsyncFunction());
+        }
+    }
+
+    @Test
     public void testCallObject() throws JavetException {
         String prefixString = "const x = 1; ";
         String functionName = "function a";
@@ -544,6 +554,16 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             fail(e.getScriptingError().toString());
         }
         v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testGeneratorFunction() throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("() => {}")) {
+            assertFalse(v8ValueFunction.isGeneratorFunction());
+        }
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor("function *a() {yield 0;}; a;").execute()) {
+            assertTrue(v8ValueFunction.isGeneratorFunction());
+        }
     }
 
     /**

@@ -95,6 +95,8 @@ public interface IV8Native {
 
     boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
+    boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
+
     boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
     boolean hasPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int type, String propertyName);
