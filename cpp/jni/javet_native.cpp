@@ -39,7 +39,6 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
     }
     GlobalJavaVM = javaVM;
     Javet::V8Native::Initialize(jniEnv);
-    Javet::Enums::V8ValueInternalType::Initialize();
 #ifdef ENABLE_NODE
     Javet::NodeNative::Initialize(jniEnv);
 #endif

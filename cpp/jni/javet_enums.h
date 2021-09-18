@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "javet_v8.h"
-
 #define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
 #define IS_V8_ARRAY_BUFFER(type) (type == Javet::Enums::V8ValueReferenceType::ArrayBuffer)
 #define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
@@ -99,12 +97,6 @@ namespace Javet {
                 WasmModuleObject = 52,
                 ModuleNamespaceObject = 53,
             };
-
-            const int InternalTypeCheckCount = 54;
-            using InternalTypeCheck = bool (v8::Value::*)() const;
-            static InternalTypeCheck InternalTypeChecks[InternalTypeCheckCount];
-
-            void Initialize();
         };
 
         namespace V8ValueReferenceType {

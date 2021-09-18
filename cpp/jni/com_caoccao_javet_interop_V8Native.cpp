@@ -41,6 +41,8 @@
 #define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::V8Native::jmethodIDV8ValueIntegerToPrimitive)
 #define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::V8Native::jmethodIDV8ValueStringToPrimitive)
 
+#define HAS_INTERNAL_TYPE(v8LocalValue, internalType) case Javet::Enums::V8ValueInternalType::##internalType: return v8LocalValue->Is##internalType();
+
 namespace Javet {
 #ifdef ENABLE_NODE
     namespace NodeNative {
@@ -727,9 +729,64 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_has
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalType
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueInternalType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (v8ValueInternalType >= 0 && v8ValueInternalType < Javet::Enums::V8ValueInternalType::InternalTypeCheckCount) {
-        auto check = Javet::Enums::V8ValueInternalType::InternalTypeChecks[v8ValueInternalType];
-        return ((*v8LocalValue)->*check)();
+    switch (v8ValueInternalType)
+    {
+        HAS_INTERNAL_TYPE(v8LocalValue, Undefined); // 0
+        HAS_INTERNAL_TYPE(v8LocalValue, Null); // 1
+        HAS_INTERNAL_TYPE(v8LocalValue, NullOrUndefined); // 2
+        HAS_INTERNAL_TYPE(v8LocalValue, True); // 3
+        HAS_INTERNAL_TYPE(v8LocalValue, False); // 4
+        HAS_INTERNAL_TYPE(v8LocalValue, Name); // 5
+        HAS_INTERNAL_TYPE(v8LocalValue, String); // 6
+        HAS_INTERNAL_TYPE(v8LocalValue, Symbol); // 7
+        HAS_INTERNAL_TYPE(v8LocalValue, Function); // 8
+        HAS_INTERNAL_TYPE(v8LocalValue, Array); // 9
+        HAS_INTERNAL_TYPE(v8LocalValue, Object); // 10
+        HAS_INTERNAL_TYPE(v8LocalValue, BigInt); // 11
+        HAS_INTERNAL_TYPE(v8LocalValue, Boolean); // 12
+        HAS_INTERNAL_TYPE(v8LocalValue, Number); // 13
+        HAS_INTERNAL_TYPE(v8LocalValue, External); // 14
+        HAS_INTERNAL_TYPE(v8LocalValue, Int32); // 15
+        HAS_INTERNAL_TYPE(v8LocalValue, Date); // 16
+        HAS_INTERNAL_TYPE(v8LocalValue, ArgumentsObject); // 17
+        HAS_INTERNAL_TYPE(v8LocalValue, BigIntObject); // 18
+        HAS_INTERNAL_TYPE(v8LocalValue, BooleanObject); // 19
+        HAS_INTERNAL_TYPE(v8LocalValue, NumberObject); // 20
+        HAS_INTERNAL_TYPE(v8LocalValue, StringObject); // 21
+        HAS_INTERNAL_TYPE(v8LocalValue, SymbolObject); // 22
+        HAS_INTERNAL_TYPE(v8LocalValue, NativeError); // 23
+        HAS_INTERNAL_TYPE(v8LocalValue, RegExp); // 24
+        HAS_INTERNAL_TYPE(v8LocalValue, AsyncFunction); // 25
+        HAS_INTERNAL_TYPE(v8LocalValue, GeneratorFunction); // 26
+        HAS_INTERNAL_TYPE(v8LocalValue, GeneratorObject); // 27
+        HAS_INTERNAL_TYPE(v8LocalValue, Promise); // 28
+        HAS_INTERNAL_TYPE(v8LocalValue, Map); // 29
+        HAS_INTERNAL_TYPE(v8LocalValue, Set); // 30
+        HAS_INTERNAL_TYPE(v8LocalValue, MapIterator); // 31
+        HAS_INTERNAL_TYPE(v8LocalValue, SetIterator); // 32
+        HAS_INTERNAL_TYPE(v8LocalValue, WeakMap); // 33
+        HAS_INTERNAL_TYPE(v8LocalValue, WeakSet); // 34
+        HAS_INTERNAL_TYPE(v8LocalValue, ArrayBuffer); // 35
+        HAS_INTERNAL_TYPE(v8LocalValue, ArrayBufferView); // 36
+        HAS_INTERNAL_TYPE(v8LocalValue, TypedArray); // 37
+        HAS_INTERNAL_TYPE(v8LocalValue, Uint8Array); // 38
+        HAS_INTERNAL_TYPE(v8LocalValue, Uint8ClampedArray); // 39
+        HAS_INTERNAL_TYPE(v8LocalValue, Int8Array); // 40
+        HAS_INTERNAL_TYPE(v8LocalValue, Uint16Array); // 41
+        HAS_INTERNAL_TYPE(v8LocalValue, Int16Array); // 42
+        HAS_INTERNAL_TYPE(v8LocalValue, Uint32Array); // 43
+        HAS_INTERNAL_TYPE(v8LocalValue, Int32Array); // 44
+        HAS_INTERNAL_TYPE(v8LocalValue, Float32Array); // 45
+        HAS_INTERNAL_TYPE(v8LocalValue, Float64Array); // 46
+        HAS_INTERNAL_TYPE(v8LocalValue, BigInt64Array); // 47
+        HAS_INTERNAL_TYPE(v8LocalValue, BigUint64Array); // 48
+        HAS_INTERNAL_TYPE(v8LocalValue, DataView); // 49
+        HAS_INTERNAL_TYPE(v8LocalValue, SharedArrayBuffer); // 50
+        HAS_INTERNAL_TYPE(v8LocalValue, Proxy); // 51
+        HAS_INTERNAL_TYPE(v8LocalValue, WasmModuleObject); // 52
+        HAS_INTERNAL_TYPE(v8LocalValue, ModuleNamespaceObject); // 53
+    default:
+        break;
     }
     return false;
 }
