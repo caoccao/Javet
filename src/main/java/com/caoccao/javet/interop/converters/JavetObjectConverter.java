@@ -39,8 +39,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.BaseStream;
 
 /**
  * The type Javet object converter.
@@ -407,10 +406,11 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 }
             }
             v8Value = v8ValueArray;
-        } else if (object instanceof Stream) {
+        } else if (object instanceof BaseStream) {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (Object item : ((Stream<?>) object).collect(Collectors.toList())) {
-                try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
+            Iterator iterator = ((BaseStream) object).iterator();
+            while (iterator.hasNext()) {
+                try (V8Value childV8Value = toV8Value(v8Runtime, iterator.next(), depth + 1)) {
                     v8ValueArray.push(childV8Value);
                 }
             }
@@ -427,62 +427,70 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (object instanceof JavetEntitySymbol) {
             JavetEntitySymbol javetEntitySymbol = (JavetEntitySymbol) object;
             v8Value = v8Runtime.createV8ValueSymbol(javetEntitySymbol.getDescription(), true);
-        } else if (object instanceof boolean[]) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (boolean item : (boolean[]) object) {
-                v8ValueArray.push(v8Runtime.createV8ValueBoolean(item));
-            }
-            v8Value = v8ValueArray;
-        } else if (object instanceof byte[]) {
-            byte[] bytes = (byte[]) object;
-            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                    V8ValueReferenceType.Int8Array, bytes.length);
-            v8ValueTypedArray.fromBytes(bytes);
-            v8Value = v8ValueTypedArray;
-        } else if (object instanceof double[]) {
-            double[] doubles = (double[]) object;
-            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                    V8ValueReferenceType.Float64Array, doubles.length);
-            v8ValueTypedArray.fromDoubles(doubles);
-            v8Value = v8ValueTypedArray;
-        } else if (object instanceof float[]) {
-            float[] floats = (float[]) object;
-            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                    V8ValueReferenceType.Float32Array, floats.length);
-            v8ValueTypedArray.fromFloats(floats);
-            v8Value = v8ValueTypedArray;
-        } else if (object instanceof int[]) {
-            int[] integers = (int[]) object;
-            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                    V8ValueReferenceType.Int32Array, integers.length);
-            v8ValueTypedArray.fromIntegers(integers);
-            v8Value = v8ValueTypedArray;
-        } else if (object instanceof long[]) {
-            long[] longs = (long[]) object;
-            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                    V8ValueReferenceType.BigInt64Array, longs.length);
-            v8ValueTypedArray.fromLongs(longs);
-            v8Value = v8ValueTypedArray;
-        } else if (object instanceof short[]) {
-            short[] shorts = (short[]) object;
-            V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                    V8ValueReferenceType.Int16Array, shorts.length);
-            v8ValueTypedArray.fromShorts(shorts);
-            v8Value = v8ValueTypedArray;
-        } else if (object instanceof String[]) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (String item : (String[]) object) {
-                v8ValueArray.push(v8Runtime.createV8ValueString(item));
-            }
-            v8Value = v8ValueArray;
         } else if (object.getClass().isArray()) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (Object item : (Object[]) object) {
-                try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                    v8ValueArray.push(childV8Value);
+            if (object instanceof boolean[]) {
+                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
+                for (boolean item : (boolean[]) object) {
+                    v8ValueArray.push(v8Runtime.createV8ValueBoolean(item));
                 }
+                v8Value = v8ValueArray;
+            } else if (object instanceof byte[]) {
+                byte[] bytes = (byte[]) object;
+                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                        V8ValueReferenceType.Int8Array, bytes.length);
+                v8ValueTypedArray.fromBytes(bytes);
+                v8Value = v8ValueTypedArray;
+            } else if (object instanceof char[]) {
+                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
+                for (char c : (char[]) object) {
+                    v8ValueArray.push(Character.toString(c));
+                }
+                v8Value = v8ValueArray;
+            } else if (object instanceof double[]) {
+                double[] doubles = (double[]) object;
+                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                        V8ValueReferenceType.Float64Array, doubles.length);
+                v8ValueTypedArray.fromDoubles(doubles);
+                v8Value = v8ValueTypedArray;
+            } else if (object instanceof float[]) {
+                float[] floats = (float[]) object;
+                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                        V8ValueReferenceType.Float32Array, floats.length);
+                v8ValueTypedArray.fromFloats(floats);
+                v8Value = v8ValueTypedArray;
+            } else if (object instanceof int[]) {
+                int[] integers = (int[]) object;
+                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                        V8ValueReferenceType.Int32Array, integers.length);
+                v8ValueTypedArray.fromIntegers(integers);
+                v8Value = v8ValueTypedArray;
+            } else if (object instanceof long[]) {
+                long[] longs = (long[]) object;
+                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                        V8ValueReferenceType.BigInt64Array, longs.length);
+                v8ValueTypedArray.fromLongs(longs);
+                v8Value = v8ValueTypedArray;
+            } else if (object instanceof short[]) {
+                short[] shorts = (short[]) object;
+                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
+                        V8ValueReferenceType.Int16Array, shorts.length);
+                v8ValueTypedArray.fromShorts(shorts);
+                v8Value = v8ValueTypedArray;
+            } else if (object instanceof String[]) {
+                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
+                for (String item : (String[]) object) {
+                    v8ValueArray.push(v8Runtime.createV8ValueString(item));
+                }
+                v8Value = v8ValueArray;
+            } else {
+                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
+                for (Object item : (Object[]) object) {
+                    try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
+                        v8ValueArray.push(childV8Value);
+                    }
+                }
+                v8Value = v8ValueArray;
             }
-            v8Value = v8ValueArray;
         } else if (!customObjectMap.isEmpty()) {
             String customObjectClassName = object.getClass().getName();
             Lock readLock = customObjectLock.readLock();

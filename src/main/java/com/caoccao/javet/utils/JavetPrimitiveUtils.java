@@ -17,7 +17,27 @@
 
 package com.caoccao.javet.utils;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
+
+@SuppressWarnings("unchecked")
 public final class JavetPrimitiveUtils {
+    public static DoubleStream toDoubleStream(Object object) {
+        if (object instanceof double[]) {
+            return DoubleStream.of((double[]) object);
+        } else if (object instanceof Collection) {
+            Collection collection = (Collection) object;
+            if (collection.stream().allMatch(i -> i instanceof Double)) {
+                return collection.stream().mapToDouble(i -> (Double) i);
+            }
+        }
+        return null;
+    }
+
     public static Object toExactPrimitive(Class<?> expectedClass, Object object) {
         if (expectedClass == int.class && object instanceof Integer) {
             return ((Integer) object).intValue();
@@ -42,6 +62,82 @@ public final class JavetPrimitiveUtils {
         }
         if (expectedClass == char.class && object instanceof Character) {
             return ((Character) object).charValue();
+        }
+        return null;
+    }
+
+    public static IntStream toIntStream(Object object) {
+        if (object instanceof int[]) {
+            return IntStream.of((int[]) object);
+        } else if (object instanceof Collection) {
+            Collection collection = (Collection) object;
+            if (collection.stream().allMatch(i -> i instanceof Integer)) {
+                return collection.stream().mapToInt(i -> (Integer) i);
+            }
+        }
+        return null;
+    }
+
+    public static LongStream toLongStream(Object object) {
+        if (object instanceof long[]) {
+            return LongStream.of((long[]) object);
+        } else if (object instanceof Collection) {
+            Collection collection = (Collection) object;
+            if (collection.stream().allMatch(i -> i instanceof Long)) {
+                return collection.stream().mapToLong(i -> (Long) i);
+            }
+        }
+        return null;
+    }
+
+    public static Stream toStream(Object object) {
+        if (object.getClass().isArray()) {
+            if (object instanceof int[]) {
+                return Arrays.stream((int[]) object).boxed();
+            } else if (object instanceof long[]) {
+                return Arrays.stream((long[]) object).boxed();
+            } else if (object instanceof double[]) {
+                return Arrays.stream((double[]) object).boxed();
+            } else if (object instanceof boolean[]) {
+                boolean[] booleanArray = (boolean[]) object;
+                Object[] objects = new Object[booleanArray.length];
+                for (int i = 0; i < booleanArray.length; ++i) {
+                    objects[i] = booleanArray[i];
+                }
+                return Stream.of(objects);
+            } else if (object instanceof float[]) {
+                float[] floatArray = (float[]) object;
+                Object[] objects = new Object[floatArray.length];
+                for (int i = 0; i < floatArray.length; ++i) {
+                    objects[i] = floatArray[i];
+                }
+                return Stream.of(objects);
+            } else if (object instanceof byte[]) {
+                byte[] byteArray = (byte[]) object;
+                Object[] objects = new Object[byteArray.length];
+                for (int i = 0; i < byteArray.length; ++i) {
+                    objects[i] = byteArray[i];
+                }
+                return Stream.of(objects);
+            } else if (object instanceof short[]) {
+                short[] shortArray = (short[]) object;
+                Object[] objects = new Object[shortArray.length];
+                for (int i = 0; i < shortArray.length; ++i) {
+                    objects[i] = shortArray[i];
+                }
+                return Stream.of(objects);
+            } else if (object instanceof char[]) {
+                char[] charArray = (char[]) object;
+                Object[] objects = new Object[charArray.length];
+                for (int i = 0; i < charArray.length; ++i) {
+                    objects[i] = charArray[i];
+                }
+                return Stream.of(objects);
+            } else {
+                return Stream.of((Object[]) object);
+            }
+        } else if (object instanceof Collection) {
+            return ((Collection) object).stream();
         }
         return null;
     }

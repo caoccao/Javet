@@ -8,7 +8,7 @@ Release Notes 0.9.x
 * Added support to generator object
 * Added ``hasInternalType()`` and ``isGeneratorObject()`` to ``IV8ValueObject``
 * Added ``isGeneratorFunction()`` and ``isAsyncFunction()`` to ``IV8ValueFunction``
-* Added support to ``JavetPrimitiveConverter`` and ``JavetObjectConverter`` for ``Optional`` and ``Stream``
+* Added support to ``Optional`` and ``Stream`` in converters and callbacks
 
 0.9.12 Private Properties
 -------------------------
