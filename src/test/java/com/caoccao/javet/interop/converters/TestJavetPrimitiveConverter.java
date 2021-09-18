@@ -27,6 +27,9 @@ import org.junit.jupiter.api.Test;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -103,6 +106,18 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
         assertEquals(
                 zonedDateTime.toInstant().toEpochMilli(),
                 ((V8ValueZonedDateTime) v8Value).getValue().toInstant().toEpochMilli());
+        // int
+        v8Value = converter.toV8Value(v8Runtime, OptionalInt.of(1));
+        assertTrue(v8Value instanceof V8ValueInteger);
+        assertEquals(1, ((V8ValueInteger) v8Value).getValue());
+        // double
+        v8Value = converter.toV8Value(v8Runtime, OptionalDouble.of(1.23D));
+        assertTrue(v8Value instanceof V8ValueDouble);
+        assertEquals(1.23D, ((V8ValueDouble) v8Value).getValue(), 0.0001D);
+        // long
+        v8Value = converter.toV8Value(v8Runtime, OptionalLong.of(1L));
+        assertTrue(v8Value instanceof V8ValueLong);
+        assertEquals(1L, ((V8ValueLong) v8Value).getValue());
     }
 
     @Test
