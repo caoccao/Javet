@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -234,6 +235,16 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertTrue(v8ValueSet.has("a"));
             assertTrue(v8ValueSet.has("b"));
             assertTrue(v8ValueSet.has("c"));
+        }
+    }
+
+    @Test
+    public void testStream() throws JavetException {
+        IJavetConverter converter = new JavetObjectConverter();
+        try (V8ValueArray v8ValueArray = converter.toV8Value(v8Runtime, Stream.of(1, "a"))) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals(1, v8ValueArray.getInteger(0));
+            assertEquals("a", v8ValueArray.getString(1));
         }
     }
 

@@ -39,6 +39,8 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The type Javet object converter.
@@ -400,6 +402,14 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (object instanceof Collection) {
             V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
             for (Object item : (Collection<?>) object) {
+                try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
+                    v8ValueArray.push(childV8Value);
+                }
+            }
+            v8Value = v8ValueArray;
+        } else if (object instanceof Stream) {
+            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
+            for (Object item : ((Stream<?>) object).collect(Collectors.toList())) {
                 try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
                     v8ValueArray.push(childV8Value);
                 }

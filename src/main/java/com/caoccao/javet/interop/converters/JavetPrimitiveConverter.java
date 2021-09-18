@@ -26,6 +26,7 @@ import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The type Javet primitive converter.
@@ -162,6 +163,13 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             v8Value = v8Runtime.createV8ValueInteger((Byte) object);
         } else if (object instanceof Character) {
             v8Value = v8Runtime.createV8ValueString(((Character) object).toString());
+        } else if (object instanceof Optional) {
+            Optional optional = (Optional) object;
+            if (optional.isPresent()) {
+                v8Value = toV8Value(v8Runtime, optional.get(), depth);
+            } else {
+                v8Value = v8Runtime.createV8ValueNull();
+            }
         } else {
             v8Value = v8Runtime.createV8ValueUndefined();
         }
