@@ -41,8 +41,6 @@
 #define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::V8Native::jmethodIDV8ValueIntegerToPrimitive)
 #define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::V8Native::jmethodIDV8ValueStringToPrimitive)
 
-#define HAS_INTERNAL_TYPE(v8LocalValue, internalType) case Javet::Enums::V8ValueInternalType::##internalType: return v8LocalValue->Is##internalType();
-
 namespace Javet {
 #ifdef ENABLE_NODE
     namespace NodeNative {
@@ -731,60 +729,60 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalTy
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     switch (v8ValueInternalType)
     {
-        HAS_INTERNAL_TYPE(v8LocalValue, Undefined); // 0
-        HAS_INTERNAL_TYPE(v8LocalValue, Null); // 1
-        HAS_INTERNAL_TYPE(v8LocalValue, NullOrUndefined); // 2
-        HAS_INTERNAL_TYPE(v8LocalValue, True); // 3
-        HAS_INTERNAL_TYPE(v8LocalValue, False); // 4
-        HAS_INTERNAL_TYPE(v8LocalValue, Name); // 5
-        HAS_INTERNAL_TYPE(v8LocalValue, String); // 6
-        HAS_INTERNAL_TYPE(v8LocalValue, Symbol); // 7
-        HAS_INTERNAL_TYPE(v8LocalValue, Function); // 8
-        HAS_INTERNAL_TYPE(v8LocalValue, Array); // 9
-        HAS_INTERNAL_TYPE(v8LocalValue, Object); // 10
-        HAS_INTERNAL_TYPE(v8LocalValue, BigInt); // 11
-        HAS_INTERNAL_TYPE(v8LocalValue, Boolean); // 12
-        HAS_INTERNAL_TYPE(v8LocalValue, Number); // 13
-        HAS_INTERNAL_TYPE(v8LocalValue, External); // 14
-        HAS_INTERNAL_TYPE(v8LocalValue, Int32); // 15
-        HAS_INTERNAL_TYPE(v8LocalValue, Date); // 16
-        HAS_INTERNAL_TYPE(v8LocalValue, ArgumentsObject); // 17
-        HAS_INTERNAL_TYPE(v8LocalValue, BigIntObject); // 18
-        HAS_INTERNAL_TYPE(v8LocalValue, BooleanObject); // 19
-        HAS_INTERNAL_TYPE(v8LocalValue, NumberObject); // 20
-        HAS_INTERNAL_TYPE(v8LocalValue, StringObject); // 21
-        HAS_INTERNAL_TYPE(v8LocalValue, SymbolObject); // 22
-        HAS_INTERNAL_TYPE(v8LocalValue, NativeError); // 23
-        HAS_INTERNAL_TYPE(v8LocalValue, RegExp); // 24
-        HAS_INTERNAL_TYPE(v8LocalValue, AsyncFunction); // 25
-        HAS_INTERNAL_TYPE(v8LocalValue, GeneratorFunction); // 26
-        HAS_INTERNAL_TYPE(v8LocalValue, GeneratorObject); // 27
-        HAS_INTERNAL_TYPE(v8LocalValue, Promise); // 28
-        HAS_INTERNAL_TYPE(v8LocalValue, Map); // 29
-        HAS_INTERNAL_TYPE(v8LocalValue, Set); // 30
-        HAS_INTERNAL_TYPE(v8LocalValue, MapIterator); // 31
-        HAS_INTERNAL_TYPE(v8LocalValue, SetIterator); // 32
-        HAS_INTERNAL_TYPE(v8LocalValue, WeakMap); // 33
-        HAS_INTERNAL_TYPE(v8LocalValue, WeakSet); // 34
-        HAS_INTERNAL_TYPE(v8LocalValue, ArrayBuffer); // 35
-        HAS_INTERNAL_TYPE(v8LocalValue, ArrayBufferView); // 36
-        HAS_INTERNAL_TYPE(v8LocalValue, TypedArray); // 37
-        HAS_INTERNAL_TYPE(v8LocalValue, Uint8Array); // 38
-        HAS_INTERNAL_TYPE(v8LocalValue, Uint8ClampedArray); // 39
-        HAS_INTERNAL_TYPE(v8LocalValue, Int8Array); // 40
-        HAS_INTERNAL_TYPE(v8LocalValue, Uint16Array); // 41
-        HAS_INTERNAL_TYPE(v8LocalValue, Int16Array); // 42
-        HAS_INTERNAL_TYPE(v8LocalValue, Uint32Array); // 43
-        HAS_INTERNAL_TYPE(v8LocalValue, Int32Array); // 44
-        HAS_INTERNAL_TYPE(v8LocalValue, Float32Array); // 45
-        HAS_INTERNAL_TYPE(v8LocalValue, Float64Array); // 46
-        HAS_INTERNAL_TYPE(v8LocalValue, BigInt64Array); // 47
-        HAS_INTERNAL_TYPE(v8LocalValue, BigUint64Array); // 48
-        HAS_INTERNAL_TYPE(v8LocalValue, DataView); // 49
-        HAS_INTERNAL_TYPE(v8LocalValue, SharedArrayBuffer); // 50
-        HAS_INTERNAL_TYPE(v8LocalValue, Proxy); // 51
-        HAS_INTERNAL_TYPE(v8LocalValue, WasmModuleObject); // 52
-        HAS_INTERNAL_TYPE(v8LocalValue, ModuleNamespaceObject); // 53
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Undefined: return v8LocalValue->IsUndefined(); // 0
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Null: return v8LocalValue->IsNull(); // 1
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::NullOrUndefined: return v8LocalValue->IsNullOrUndefined(); // 2
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::True: return v8LocalValue->IsTrue(); // 3
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::False: return v8LocalValue->IsFalse(); // 4
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Name: return v8LocalValue->IsName(); // 5
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::String: return v8LocalValue->IsString(); // 6
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Symbol: return v8LocalValue->IsSymbol(); // 7
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Function: return v8LocalValue->IsFunction(); // 8
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Array: return v8LocalValue->IsArray(); // 9
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Object: return v8LocalValue->IsObject(); // 10
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::BigInt: return v8LocalValue->IsBigInt(); // 11
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Boolean: return v8LocalValue->IsBoolean(); // 12
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Number: return v8LocalValue->IsNumber(); // 13
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::External: return v8LocalValue->IsExternal(); // 14
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Int32: return v8LocalValue->IsInt32(); // 15
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Date: return v8LocalValue->IsDate(); // 16
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::ArgumentsObject: return v8LocalValue->IsArgumentsObject(); // 17
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::BigIntObject: return v8LocalValue->IsBigIntObject(); // 18
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::BooleanObject: return v8LocalValue->IsBooleanObject(); // 19
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::NumberObject: return v8LocalValue->IsNumberObject(); // 20
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::StringObject: return v8LocalValue->IsStringObject(); // 21
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::SymbolObject: return v8LocalValue->IsSymbolObject(); // 22
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::NativeError: return v8LocalValue->IsNativeError(); // 23
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::RegExp: return v8LocalValue->IsRegExp(); // 24
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::AsyncFunction: return v8LocalValue->IsAsyncFunction(); // 25
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::GeneratorFunction: return v8LocalValue->IsGeneratorFunction(); // 26
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::GeneratorObject: return v8LocalValue->IsGeneratorObject(); // 27
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Promise: return v8LocalValue->IsPromise(); // 28
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Map: return v8LocalValue->IsMap(); // 29
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Set: return v8LocalValue->IsSet(); // 30
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::MapIterator: return v8LocalValue->IsMapIterator(); // 31
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::SetIterator: return v8LocalValue->IsSetIterator(); // 32
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::WeakMap: return v8LocalValue->IsWeakMap(); // 33
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::WeakSet: return v8LocalValue->IsWeakSet(); // 34
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::ArrayBuffer: return v8LocalValue->IsArrayBuffer(); // 35
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::ArrayBufferView: return v8LocalValue->IsArrayBufferView(); // 36
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::TypedArray: return v8LocalValue->IsTypedArray(); // 37
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Uint8Array: return v8LocalValue->IsUint8Array(); // 38
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Uint8ClampedArray: return v8LocalValue->IsUint8ClampedArray(); // 39
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Int8Array: return v8LocalValue->IsInt8Array(); // 40
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Uint16Array: return v8LocalValue->IsUint16Array(); // 41
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Int16Array: return v8LocalValue->IsInt16Array(); // 42
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Uint32Array: return v8LocalValue->IsUint32Array(); // 43
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Int32Array: return v8LocalValue->IsInt32Array(); // 44
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Float32Array: return v8LocalValue->IsFloat32Array(); // 45
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Float64Array: return v8LocalValue->IsFloat64Array(); // 46
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::BigInt64Array: return v8LocalValue->IsBigInt64Array(); // 47
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::BigUint64Array: return v8LocalValue->IsBigUint64Array(); // 48
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::DataView: return v8LocalValue->IsDataView(); // 49
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::SharedArrayBuffer: return v8LocalValue->IsSharedArrayBuffer(); // 50
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::Proxy: return v8LocalValue->IsProxy(); // 51
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::WasmModuleObject: return v8LocalValue->IsWasmModuleObject(); // 52
+    case Javet::Enums::V8ValueInternalType::V8ValueInternalType::ModuleNamespaceObject: return v8LocalValue->IsModuleNamespaceObject(); // 53
     default:
         break;
     }
