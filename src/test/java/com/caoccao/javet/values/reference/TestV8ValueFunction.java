@@ -195,9 +195,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testAsyncFunction() throws JavetException {
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("() => {}")) {
             assertFalse(v8ValueFunction.isAsyncFunction());
+            assertFalse(v8ValueFunction.isGeneratorFunction());
         }
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("async () => {Promise.resolve(0);}")) {
             assertTrue(v8ValueFunction.isAsyncFunction());
+            assertFalse(v8ValueFunction.isGeneratorFunction());
         }
     }
 
@@ -560,9 +562,22 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testGeneratorFunction() throws JavetException {
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("() => {}")) {
             assertFalse(v8ValueFunction.isGeneratorFunction());
+            assertFalse(v8ValueFunction.isAsyncFunction());
         }
-        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor("function *a() {yield 0;}; a;").execute()) {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                "function* a() {yield 0;}; a;").execute()) {
             assertTrue(v8ValueFunction.isGeneratorFunction());
+            assertFalse(v8ValueFunction.isAsyncFunction());
+        }
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                "async function* b() {\n" +
+                        "  let i = 0;\n" +
+                        "  while (i < 3) {\n" +
+                        "    yield i++;\n" +
+                        "  }\n" +
+                        "}; b;").execute()) {
+            assertTrue(v8ValueFunction.isGeneratorFunction());
+            assertTrue(v8ValueFunction.isAsyncFunction());
         }
     }
 
