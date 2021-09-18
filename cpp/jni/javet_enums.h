@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "javet_v8.h"
+
 #define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
 #define IS_V8_ARRAY_BUFFER(type) (type == Javet::Enums::V8ValueReferenceType::ArrayBuffer)
 #define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
@@ -99,62 +101,10 @@ namespace Javet {
             };
 
             const int InternalTypeCheckCount = 54;
-            static bool (v8::Value::* InternalTypeChecks[InternalTypeCheckCount])() const {
-                &(v8::Value::IsUndefined), // Undefined 0
-                    & (v8::Value::IsNull), // Null 1
-                    & (v8::Value::IsNullOrUndefined), // NullOrUndefined 2
-                    & (v8::Value::IsTrue), // True 3
-                    & (v8::Value::IsFalse), // False 4
-                    & (v8::Value::IsName), // Name 5
-                    & (v8::Value::IsString), // String 6
-                    & (v8::Value::IsSymbol), // Symbol 7
-                    & (v8::Value::IsFunction), // Function 8
-                    & (v8::Value::IsArray), // Array 9
-                    & (v8::Value::IsObject), // Object 10
-                    & (v8::Value::IsBigInt), // BigInt 11
-                    & (v8::Value::IsBoolean), // Boolean 12
-                    & (v8::Value::IsNumber), // Number 13
-                    & (v8::Value::IsExternal), // External 14
-                    & (v8::Value::IsInt32), // Int32 15
-                    & (v8::Value::IsDate), // Date 16
-                    & (v8::Value::IsArgumentsObject), // ArgumentsObject 17
-                    & (v8::Value::IsBigIntObject), // BigIntObject 18
-                    & (v8::Value::IsBooleanObject), // BooleanObject 19
-                    & (v8::Value::IsNumberObject), // NumberObject 20
-                    & (v8::Value::IsStringObject), // StringObject 21
-                    & (v8::Value::IsSymbolObject), // SymbolObject 22
-                    & (v8::Value::IsNativeError), // NativeError 23
-                    & (v8::Value::IsRegExp), // RegExp 24
-                    & (v8::Value::IsAsyncFunction), // AsyncFunction 25
-                    & (v8::Value::IsGeneratorFunction), // GeneratorFunction 26
-                    & (v8::Value::IsGeneratorObject), // GeneratorObject 27
-                    & (v8::Value::IsPromise), // Promise 28
-                    & (v8::Value::IsMap), // Map 29
-                    & (v8::Value::IsSet), // Set 30
-                    & (v8::Value::IsMapIterator), // MapIterator 31
-                    & (v8::Value::IsSetIterator), // SetIterator 32
-                    & (v8::Value::IsWeakMap), // WeakMap 33
-                    & (v8::Value::IsWeakSet), // WeakSet 34
-                    & (v8::Value::IsArrayBuffer), // ArrayBuffer 35
-                    & (v8::Value::IsArrayBufferView), // ArrayBufferView 36
-                    & (v8::Value::IsTypedArray), // TypedArray 37
-                    & (v8::Value::IsUint8Array), // Uint8Array 38
-                    & (v8::Value::IsUint8ClampedArray), // Uint8ClampedArray 39
-                    & (v8::Value::IsInt8Array), // Int8Array 40
-                    & (v8::Value::IsUint16Array), // Uint16Array 41
-                    & (v8::Value::IsInt16Array), // Int16Array 42
-                    & (v8::Value::IsUint32Array), // Uint32Array 43
-                    & (v8::Value::IsInt32Array), // Int32Array 44
-                    & (v8::Value::IsFloat32Array), // Float32Array 45
-                    & (v8::Value::IsFloat64Array), // Float64Array 46
-                    & (v8::Value::IsBigInt64Array), // BigInt64Array 47
-                    & (v8::Value::IsBigUint64Array), // BigUint64Array 48
-                    & (v8::Value::IsDataView), // DataView 49
-                    & (v8::Value::IsSharedArrayBuffer), // SharedArrayBuffer 50
-                    & (v8::Value::IsProxy), // Proxy 51
-                    & (v8::Value::IsWasmModuleObject), // WasmModuleObject 52
-                    & (v8::Value::IsModuleNamespaceObject), // ModuleNamespaceObject 53
-            };
+            using InternalTypeCheck = bool (v8::Value::*)() const;
+            static InternalTypeCheck InternalTypeChecks[InternalTypeCheckCount];
+
+            void Initialize();
         };
 
         namespace V8ValueReferenceType {

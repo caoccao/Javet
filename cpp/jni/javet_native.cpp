@@ -18,6 +18,7 @@
 #include "javet_callbacks.h"
 #include "javet_constants.h"
 #include "javet_converter.h"
+#include "javet_enums.h"
 #include "javet_exceptions.h"
 #include "javet_inspector.h"
 #include "javet_logging.h"
@@ -38,6 +39,7 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
     }
     GlobalJavaVM = javaVM;
     Javet::V8Native::Initialize(jniEnv);
+    Javet::Enums::V8ValueInternalType::Initialize();
 #ifdef ENABLE_NODE
     Javet::NodeNative::Initialize(jniEnv);
 #endif
