@@ -115,6 +115,10 @@ var activeTableTab = "activeTableTab";
 extends java.lang.Object
 implements java.lang.AutoCloseable</pre>
 <div class="block">The type V8 host.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.0</dd>
+</dl>
 </li>
 </ul>
 </div>
@@ -180,13 +184,13 @@ implements java.lang.AutoCloseable</pre>
 <td class="colFirst"><code>&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;<br>R</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#createV8Runtime-boolean-java.lang.String-">createV8Runtime</a></span>(boolean&nbsp;pooled,
                java.lang.String&nbsp;globalName)</code>
-<div class="block">Create V8 runtime.</div>
+<div class="block">Create V8 runtime by pooled flag and custom global name.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;<br>R</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#createV8Runtime-java.lang.String-">createV8Runtime</a></span>(java.lang.String&nbsp;globalName)</code>
-<div class="block">Create V8 runtime.</div>
+<div class="block">Create V8 runtime by custom global name.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
@@ -216,7 +220,7 @@ implements java.lang.AutoCloseable</pre>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>long[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getInternalStatistic--">getInternalStatistic</a></span>()</code>
-<div class="block">Get internal statistic internal for test purpose.</div>
+<div class="block">Get internal statistic for test purpose.</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
@@ -346,6 +350,8 @@ implements java.lang.AutoCloseable</pre>
 <pre>public static final&nbsp;java.lang.String GLOBAL_THIS</pre>
 <div class="block">The constant GLOBAL_THIS.</div>
 <dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.0</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../constant-values.html#com.caoccao.javet.interop.V8Host.GLOBAL_THIS">Constant Field Values</a></dd>
 </dl>
@@ -439,7 +445,7 @@ implements java.lang.AutoCloseable</pre>
 <div class="block">Determines whether the JNI library is reloadable or not.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true: reloadable, false: not reloadable, default: false</dd>
+<dd>true : reloadable, false: not reloadable, default: false</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.9.1</dd>
 </dl>
@@ -488,6 +494,10 @@ implements java.lang.AutoCloseable</pre>
 <h4>clearInternalStatistic</h4>
 <pre>public&nbsp;void&nbsp;clearInternalStatistic()</pre>
 <div class="block">Clear internal statistic for internal test purpose.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.8.3</dd>
+</dl>
 </li>
 </ul>
 <a name="close--">
@@ -551,7 +561,7 @@ implements java.lang.AutoCloseable</pre>
 <h4>createV8Runtime</h4>
 <pre>public&nbsp;&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;&nbsp;R&nbsp;createV8Runtime(java.lang.String&nbsp;globalName)
                                         throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
-<div class="block">Create V8 runtime.</div>
+<div class="block">Create V8 runtime by custom global name.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the type parameter</dd>
@@ -575,7 +585,7 @@ implements java.lang.AutoCloseable</pre>
 <pre>public&nbsp;&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;&nbsp;R&nbsp;createV8Runtime(boolean&nbsp;pooled,
                                                java.lang.String&nbsp;globalName)
                                         throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
-<div class="block">Create V8 runtime.</div>
+<div class="block">Create V8 runtime by pooled flag and custom global name.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the type parameter</dd>
@@ -646,10 +656,10 @@ implements java.lang.AutoCloseable</pre>
 <li class="blockList">
 <h4>getInternalStatistic</h4>
 <pre>public&nbsp;long[]&nbsp;getInternalStatistic()</pre>
-<div class="block">Get internal statistic internal for test purpose.</div>
+<div class="block">Get internal statistic for test purpose.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the long [ ]</dd>
+<dd>the internal statistic</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.8.3</dd>
 </dl>
@@ -745,7 +755,7 @@ implements java.lang.AutoCloseable</pre>
 <div class="block">Is isolate created.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true: created, false: not created</dd>
+<dd>true : created, false: not created</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.8.0</dd>
 </dl>
@@ -761,7 +771,7 @@ implements java.lang.AutoCloseable</pre>
 <div class="block">Is library loaded.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true: loaded, false: not loaded</dd>
+<dd>true : loaded, false: not loaded</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.8.0</dd>
 </dl>
@@ -779,7 +789,7 @@ implements java.lang.AutoCloseable</pre>
  Note: setLibraryReloadable(true) must be called, otherwise, JVM will crash.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true: library is loaded, false: library is not loaded</dd>
+<dd>true : library is loaded, false: library is not loaded</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.9.1</dd>
 </dl>
@@ -795,7 +805,7 @@ implements java.lang.AutoCloseable</pre>
 <div class="block">Sets flags.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true: flags are set, false: flags are not set</dd>
+<dd>true : flags are set, false: flags are not set</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.7.0</dd>
 </dl>
@@ -813,7 +823,7 @@ implements java.lang.AutoCloseable</pre>
  Note: setLibraryReloadable(true) must be called, otherwise, JVM will crash.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true: library is unloaded, false: library is loaded</dd>
+<dd>true : library is unloaded, false: library is loaded</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.9.1</dd>
 </dl>

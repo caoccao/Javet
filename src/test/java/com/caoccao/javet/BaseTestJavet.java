@@ -77,8 +77,10 @@ public abstract class BaseTestJavet {
             V8Flags flags = v8Host.getFlags();
             if (!flags.isSealed()) {
                 flags.setAllowNativesSyntax(true);
-                flags.setExposeGC(true);
+                flags.setExposeGC(false);
                 flags.setExposeInspectorScripts(true);
+                flags.setMaxHeapSize(768);
+                flags.setMaxOldSpaceSize(512);
                 flags.setUseStrict(true);
                 flags.setTrackRetainingPath(true);
             }

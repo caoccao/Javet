@@ -710,11 +710,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#createV8Runtime-java.lang.String-">createV8Runtime(String)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
-<div class="block">Create V8 runtime.</div>
+<div class="block">Create V8 runtime by custom global name.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#createV8Runtime-boolean-java.lang.String-">createV8Runtime(boolean, String)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
-<div class="block">Create V8 runtime.</div>
+<div class="block">Create V8 runtime by pooled flag and custom global name.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#createV8Value-long-int-java.lang.Object-">createV8Value(long, int, Object)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
@@ -1158,6 +1158,38 @@
 <dd>
 <div class="block">The Field map.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_ALLOW_NATIVES_SYNTAX">FLAG_ALLOW_NATIVES_SYNTAX</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">The constant FLAG_ALLOW_NATIVES_SYNTAX.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_EXPOSE_GC">FLAG_EXPOSE_GC</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">The constant FLAG_EXPOSE_GC.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_EXPOSE_INSPECTOR_SCRIPTS">FLAG_EXPOSE_INSPECTOR_SCRIPTS</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">The constant FLAG_EXPOSE_INSPECTOR_SCRIPTS.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_INITIAL_HEAP_SIZE">FLAG_INITIAL_HEAP_SIZE</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">The constant FLAG_INITIAL_HEAP_SIZE.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_MAX_HEAP_SIZE">FLAG_MAX_HEAP_SIZE</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">The constant FLAG_MAX_HEAP_SIZE.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_MAX_OLD_SPACE_SIZE">FLAG_MAX_OLD_SPACE_SIZE</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">The constant FLAG_MAX_OLD_SPACE_SIZE.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_TRACK_RETAINING_PATH">FLAG_TRACK_RETAINING_PATH</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">The constant FLAG_TRACK_RETAINING_PATH.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_USE_STRICT">FLAG_USE_STRICT</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">The constant FLAG_USE_STRICT.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8InspectorListener.html#flushProtocolNotifications--">flushProtocolNotifications()</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8InspectorListener.html" title="interface in com.caoccao.javet.interop">IV8InspectorListener</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Inspector.html#flushProtocolNotifications--">flushProtocolNotifications()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Inspector.html" title="class in com.caoccao.javet.interop">V8Inspector</a></dt>
@@ -1494,6 +1526,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetOSUtils.html#getCPUCount--">getCPUCount()</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetOSUtils.html" title="class in com.caoccao.javet.utils">JavetOSUtils</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#getCustomFlags--">getCustomFlags()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">Gets custom flags.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/logging/JavetStandardConsoleInterceptor.html#getDebug--">getDebug()</a></span> - Method in class com.caoccao.javet.interception.logging.<a href="com/caoccao/javet/interception/logging/JavetStandardConsoleInterceptor.html" title="class in com.caoccao.javet.interception.logging">JavetStandardConsoleInterceptor</a></dt>
 <dd>
 <div class="block">Gets debug.</div>
@@ -1668,6 +1704,10 @@
 <dd>
 <div class="block">Gets info.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#getInitialHeapSize--">getInitialHeapSize()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">Gets initial heap size.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#getInstance-com.caoccao.javet.enums.JSRuntimeType-">getInstance(JSRuntimeType)</a></span> - Static method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
 <div class="block">Gets instance by JS runtime type.</div>
@@ -1700,7 +1740,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#getInternalStatistic--">getInternalStatistic()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
-<div class="block">Get internal statistic internal for test purpose.</div>
+<div class="block">Get internal statistic for test purpose.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html#getIsConcatSpreadable--">getIsConcatSpreadable()</a></span> - Method in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInSymbol</a></dt>
 <dd>&nbsp;</dd>
@@ -1811,6 +1851,14 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html#getMaxDepth--">getMaxDepth()</a></span> - Method in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html" title="class in com.caoccao.javet.interop.converters">JavetConverterConfig</a></dt>
 <dd>
 <div class="block">Gets max depth.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#getMaxHeapSize--">getMaxHeapSize()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">Gets max heap size.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#getMaxOldSpaceSize--">getMaxOldSpaceSize()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">Gets max old space size.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#getMemoryUsageThresholdRatio--">getMemoryUsageThresholdRatio()</a></span> - Static method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
@@ -2749,7 +2797,9 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#isAllowEval--">isAllowEval()</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#isAllowNativesSyntax--">isAllowNativesSyntax()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Is allow natives syntax.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/JSFunctionType.html#isAPI--">isAPI()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/JSFunctionType.html" title="enum in com.caoccao.javet.enums">JSFunctionType</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/IV8ValueFunction.html#isAsyncFunction--">isAsyncFunction()</a></span> - Method in interface com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/IV8ValueFunction.html" title="interface in com.caoccao.javet.values.reference">IV8ValueFunction</a></dt>
@@ -2821,9 +2871,13 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/JSScopeType.html#isEval--">isEval()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/JSScopeType.html" title="enum in com.caoccao.javet.enums">JSScopeType</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#isExposeGC--">isExposeGC()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Is expose gc.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#isExposeInspectorScripts--">isExposeInspectorScripts()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Is expose inspector scripts.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/IJavetProxyHandler.html#isExtensible-com.caoccao.javet.values.V8Value-">isExtensible(V8Value)</a></span> - Method in interface com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/IJavetProxyHandler.html" title="interface in com.caoccao.javet.interop.proxy">IJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Is extensible.</div>
@@ -2945,7 +2999,9 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/JSScopeType.html#isScript--">isScript()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/JSScopeType.html" title="enum in com.caoccao.javet.enums">JSScopeType</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#isSealed--">isSealed()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Is sealed.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html#isSkipFunctionInObject--">isSkipFunctionInObject()</a></span> - Method in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html" title="class in com.caoccao.javet.interop.converters">JavetConverterConfig</a></dt>
 <dd>
 <div class="block">Is skip functions boolean.</div>
@@ -2967,7 +3023,9 @@
 <div class="block">Is this object required.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#isTrackRetainingPath--">isTrackRetainingPath()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Is track retaining path.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/IV8Value.html#isUndefined--">isUndefined()</a></span> - Method in interface com.caoccao.javet.values.<a href="com/caoccao/javet/values/IV8Value.html" title="interface in com.caoccao.javet.values">IV8Value</a></dt>
 <dd>
 <div class="block">Is undefined.</div>
@@ -2975,7 +3033,9 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/JSFunctionType.html#isUserDefined--">isUserDefined()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/JSFunctionType.html" title="enum in com.caoccao.javet.enums">JSFunctionType</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#isUseStrict--">isUseStrict()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Is use strict.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/JSRuntimeType.html#isV8--">isV8()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isV8BindEnabled-java.lang.String-">isV8BindEnabled(String)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
@@ -4170,7 +4230,9 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/executors/V8StringExecutor.html#scriptString">scriptString</a></span> - Variable in class com.caoccao.javet.interop.executors.<a href="com/caoccao/javet/interop/executors/V8StringExecutor.html" title="class in com.caoccao.javet.interop.executors">V8StringExecutor</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#seal--">seal()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Seal the V8 flags so that it is read-only.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/IJavetEngine.html#sendGCNotification--">sendGCNotification()</a></span> - Method in interface com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/IJavetEngine.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngine</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngine.html#sendGCNotification--">sendGCNotification()</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngine.html" title="class in com.caoccao.javet.interop.engine">JavetEngine</a></dt>
@@ -4206,7 +4268,9 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#setAllowEval-boolean-">setAllowEval(boolean)</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setAllowNativesSyntax-boolean-">setAllowNativesSyntax(boolean)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets allow natives syntax.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#setAutoSendGCNotification-boolean-">setAutoSendGCNotification(boolean)</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueDataView.html#setBigInt64-int-long-">setBigInt64(int, long)</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueDataView.html" title="class in com.caoccao.javet.values.reference">V8ValueDataView</a></dt>
@@ -4221,6 +4285,10 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#setConverter-com.caoccao.javet.interop.converters.IJavetConverter-">setConverter(IJavetConverter)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setCustomFlags-java.lang.String-">setCustomFlags(String)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">Sets custom flags (space separated).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/logging/JavetStandardConsoleInterceptor.html#setDebug-java.io.PrintStream-">setDebug(PrintStream)</a></span> - Method in class com.caoccao.javet.interception.logging.<a href="com/caoccao/javet/interception/logging/JavetStandardConsoleInterceptor.html" title="class in com.caoccao.javet.interception.logging">JavetStandardConsoleInterceptor</a></dt>
 <dd>
 <div class="block">Sets debug.</div>
@@ -4270,9 +4338,13 @@
 <div class="block">Sets error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setExposeGC-boolean-">setExposeGC(boolean)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets expose gc.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setExposeInspectorScripts-boolean-">setExposeInspectorScripts(boolean)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets expose inspector scripts.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html#setExtractFunctionSourceCode-boolean-">setExtractFunctionSourceCode(boolean)</a></span> - Method in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html" title="class in com.caoccao.javet.interop.converters">JavetConverterConfig</a></dt>
 <dd>
 <div class="block">Sets extract function source code.</div>
@@ -4308,6 +4380,10 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/logging/JavetStandardConsoleInterceptor.html#setInfo-java.io.PrintStream-">setInfo(PrintStream)</a></span> - Method in class com.caoccao.javet.interception.logging.<a href="com/caoccao/javet/interception/logging/JavetStandardConsoleInterceptor.html" title="class in com.caoccao.javet.interception.logging">JavetStandardConsoleInterceptor</a></dt>
 <dd>
 <div class="block">Sets info.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setInitialHeapSize-int-">setInitialHeapSize(int)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">Sets initial heap size.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueDataView.html#setInt16-int-short-">setInt16(int, short)</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueDataView.html" title="class in com.caoccao.javet.values.reference">V8ValueDataView</a></dt>
 <dd>&nbsp;</dd>
@@ -4348,6 +4424,14 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html#setMaxDepth-int-">setMaxDepth(int)</a></span> - Method in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html" title="class in com.caoccao.javet.interop.converters">JavetConverterConfig</a></dt>
 <dd>
 <div class="block">Sets max depth.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setMaxHeapSize-int-">setMaxHeapSize(int)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">Sets max heap size.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setMaxOldSpaceSize-int-">setMaxOldSpaceSize(int)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>
+<div class="block">Sets max old space size.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#setMemoryUsageThresholdRatio-double-">setMemoryUsageThresholdRatio(double)</a></span> - Static method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
@@ -4502,7 +4586,9 @@
 <div class="block">Sets trace.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setTrackRetainingPath-boolean-">setTrackRetainingPath(boolean)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets track retaining path.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueTypedArray.html#setType-com.caoccao.javet.enums.V8ValueReferenceType-">setType(V8ValueReferenceType)</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueTypedArray.html" title="class in com.caoccao.javet.values.reference">V8ValueTypedArray</a></dt>
 <dd>
 <div class="block">Sets type.</div>
@@ -4512,7 +4598,9 @@
 <div class="block">Sets undefined.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#setUseStrict-boolean-">setUseStrict(boolean)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets use strict.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/BindingContext.html#setV8BindEnabler-java.lang.reflect.Method-">setV8BindEnabler(Method)</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding">BindingContext</a></dt>
 <dd>
 <div class="block">Sets V8 bind enabler.</div>
@@ -4849,6 +4937,8 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#toString-long-long-int-">toString(long, long, int)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#toString--">toString()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#toString-com.caoccao.javet.values.reference.IV8ValueReference-">toString(IV8ValueReference)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueNull.html#toString--">toString()</a></span> - Method in class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueNull.html" title="class in com.caoccao.javet.values.primitive">V8ValueNull</a></dt>
@@ -5020,7 +5110,9 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/V8Data.html#V8Data--">V8Data()</a></span> - Constructor for class com.caoccao.javet.values.<a href="com/caoccao/javet/values/V8Data.html" title="class in com.caoccao.javet.values">V8Data</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop"><span class="typeNameLink">V8Flags</span></a> - Class in <a href="com/caoccao/javet/interop/package-summary.html">com.caoccao.javet.interop</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The type V8 flags defines some built-in V8 flags.</div>
+</dd>
 <dt><a href="com/caoccao/javet/annotations/V8Function.html" title="annotation in com.caoccao.javet.annotations"><span class="typeNameLink">V8Function</span></a> - Annotation Type in <a href="com/caoccao/javet/annotations/package-summary.html">com.caoccao.javet.annotations</a></dt>
 <dd>
 <div class="block">The annotation V8 function is for auto-registering JS function interception.</div>
