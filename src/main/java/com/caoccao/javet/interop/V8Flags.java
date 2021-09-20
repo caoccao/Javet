@@ -360,10 +360,10 @@ public final class V8Flags {
             tokens.add(fromInteger(FLAG_INITIAL_HEAP_SIZE, initialHeapSize));
         }
         if (maxHeapSize > 0) {
-            tokens.add(fromInteger(FLAG_MAX_OLD_SPACE_SIZE, maxHeapSize));
+            tokens.add(fromInteger(FLAG_MAX_HEAP_SIZE, maxHeapSize));
         }
         if (maxOldSpaceSize > 0) {
-            tokens.add(fromInteger(FLAG_MAX_HEAP_SIZE, maxOldSpaceSize));
+            tokens.add(fromInteger(FLAG_MAX_OLD_SPACE_SIZE, maxOldSpaceSize));
         }
         if (useStrict) {
             tokens.add(FLAG_USE_STRICT);

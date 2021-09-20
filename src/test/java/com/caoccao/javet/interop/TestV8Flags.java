@@ -61,10 +61,10 @@ public class TestV8Flags {
     public void testToString() {
         V8Flags v8Flags = new V8Flags();
         assertEquals(
-                "--max-heap-size=2048 --use-strict",
+                "--max-old-space-size=2048 --use-strict",
                 v8Flags.setMaxOldSpaceSize(2048).toString());
         assertEquals(
-                "--allow-natives-syntax --max-heap-size=2048 --use-strict",
+                "--allow-natives-syntax --max-old-space-size=2048 --use-strict",
                 v8Flags.setAllowNativesSyntax(true).toString());
     }
 }
