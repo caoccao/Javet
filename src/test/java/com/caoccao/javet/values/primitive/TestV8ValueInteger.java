@@ -42,6 +42,9 @@ public class TestV8ValueInteger extends BaseTestJavetRuntime {
             assertEquals(v8Runtime, v8ValueInteger.getV8Runtime());
         }
         assertEquals(-1, v8Runtime.getExecutor("1 - 2").executeInteger());
+        for (int i = 0; i < 100; ++i) {
+            assertEquals(1 << i, v8Runtime.getExecutor("1 << " + i).executeInteger());
+        }
     }
 
     @Test

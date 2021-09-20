@@ -21,6 +21,8 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueDouble extends BaseTestJavetRuntime {
@@ -58,6 +60,10 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
         }
         assertEquals(-0.5, v8Runtime.getExecutor("-0.5").executeDouble(), DELTA);
         assertEquals(0, v8Runtime.getExecutor("-0.0").executeDouble(), DELTA);
+        assertEquals(2147483648D, v8Runtime.getExecutor("-(1 << -1)").executeDouble(), DELTA);
+        assertEquals("2147483648", new BigDecimal(
+                v8Runtime.getExecutor("-(1 << -1)").executeDouble()).toPlainString());
+        assertTrue(v8Runtime.getExecutor("-(1 << -1) == 2147483648").executeBoolean());
     }
 
     @Test
