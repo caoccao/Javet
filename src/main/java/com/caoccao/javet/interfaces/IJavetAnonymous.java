@@ -17,9 +17,9 @@
 package com.caoccao.javet.interfaces;
 
 /**
- * The interface Javet empty is for creating ad-hoc annotation based callback receiver.
+ * The interface Javet anonymous is for creating ad-hoc annotation based callback receiver.
  *
  * @since 0.9.13
  */
-public interface IJavetEmpty {
+public interface IJavetAnonymous {
 }

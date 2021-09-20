@@ -22,7 +22,7 @@ import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
-import com.caoccao.javet.interfaces.IJavetEmpty;
+import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
@@ -564,7 +564,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testDoubleStream() throws JavetException {
-        IJavetEmpty iJavetEmpty = new IJavetEmpty() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public DoubleStream test(DoubleStream doubleStream) {
                 return doubleStream.map(i -> i + 1);
@@ -572,7 +572,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         };
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            v8ValueObject.bind(iJavetEmpty);
+            v8ValueObject.bind(anonymous);
             try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.test([1.23,2.34]);").execute()) {
                 assertEquals(2, v8ValueArray.getLength());
                 assertEquals(2.23D, v8ValueArray.getDouble(0), 0.001D);
@@ -664,7 +664,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testIntStream() throws JavetException {
-        IJavetEmpty iJavetEmpty = new IJavetEmpty() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public IntStream test(IntStream intStream) {
                 return intStream.map(i -> i + 1);
@@ -672,7 +672,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         };
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            v8ValueObject.bind(iJavetEmpty);
+            v8ValueObject.bind(anonymous);
             try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.test([1,2]);").execute()) {
                 assertEquals(2, v8ValueArray.getLength());
                 assertEquals(2, v8ValueArray.getInteger(0));
@@ -686,7 +686,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testLongStream() throws JavetException {
-        IJavetEmpty iJavetEmpty = new IJavetEmpty() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public LongStream test(LongStream longStream) {
                 return longStream.map(i -> i + 1);
@@ -694,7 +694,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         };
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            v8ValueObject.bind(iJavetEmpty);
+            v8ValueObject.bind(anonymous);
             try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.test([1n,2n]);").execute()) {
                 assertEquals(2, v8ValueArray.getLength());
                 assertEquals(2L, v8ValueArray.getLong(0));
@@ -708,7 +708,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testOptional() throws JavetException {
-        IJavetEmpty iJavetEmpty = new IJavetEmpty() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public Optional<String> test(Optional<String> optionalString) {
                 if (optionalString.isPresent()) {
@@ -722,7 +722,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         };
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            v8ValueObject.bind(iJavetEmpty);
+            v8ValueObject.bind(anonymous);
             assertTrue(v8Runtime.getExecutor("a.test('ab') == 'b';").executeBoolean());
             assertTrue(v8Runtime.getExecutor("a.test('a') == '';").executeBoolean());
             assertTrue(v8Runtime.getExecutor("a.test(null) === null;").executeBoolean());
@@ -734,7 +734,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testOptionalDouble() throws JavetException {
-        IJavetEmpty iJavetEmpty = new IJavetEmpty() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public OptionalDouble test(OptionalDouble optionalDouble) {
                 if (optionalDouble.isPresent()) {
@@ -746,7 +746,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         };
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            v8ValueObject.bind(iJavetEmpty);
+            v8ValueObject.bind(anonymous);
             assertTrue(v8Runtime.getExecutor("Math.abs(a.test(1.2) - 2.2) < 0.001;").executeBoolean());
             assertTrue(v8Runtime.getExecutor("a.test(null) === null;").executeBoolean());
             v8Runtime.getGlobalObject().delete("a");
@@ -757,7 +757,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testOptionalInt() throws JavetException {
-        IJavetEmpty iJavetEmpty = new IJavetEmpty() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public OptionalInt test(OptionalInt optionalInt) {
                 if (optionalInt.isPresent()) {
@@ -769,7 +769,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         };
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            v8ValueObject.bind(iJavetEmpty);
+            v8ValueObject.bind(anonymous);
             assertTrue(v8Runtime.getExecutor("a.test(1) == 2;").executeBoolean());
             assertTrue(v8Runtime.getExecutor("a.test(null) === null;").executeBoolean());
             v8Runtime.getGlobalObject().delete("a");
@@ -780,7 +780,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testOptionalLong() throws JavetException {
-        IJavetEmpty iJavetEmpty = new IJavetEmpty() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public OptionalLong test(OptionalLong optionalLong) {
                 if (optionalLong.isPresent()) {
@@ -792,7 +792,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         };
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            v8ValueObject.bind(iJavetEmpty);
+            v8ValueObject.bind(anonymous);
             assertTrue(v8Runtime.getExecutor("a.test(1n) == 2n;").executeBoolean());
             assertTrue(v8Runtime.getExecutor("a.test(null) === null;").executeBoolean());
             v8Runtime.getGlobalObject().delete("a");
@@ -866,7 +866,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testStream() throws JavetException {
-        IJavetEmpty iJavetEmpty = new IJavetEmpty() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public Stream test(Stream stream) {
                 return stream.filter(o -> o instanceof String);
@@ -875,7 +875,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
-            v8ValueObject.bind(iJavetEmpty);
+            v8ValueObject.bind(anonymous);
             try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.test(['a',1,'b']);").execute()) {
                 assertEquals(2, v8ValueArray.getLength());
                 assertEquals("a", v8ValueArray.getString(0));

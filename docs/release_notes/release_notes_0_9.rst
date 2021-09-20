@@ -9,6 +9,7 @@ Release Notes 0.9.x
 * Added ``hasInternalType()`` and ``isGeneratorObject()`` to ``IV8ValueObject``
 * Added ``isGeneratorFunction()`` and ``isAsyncFunction()`` to ``IV8ValueFunction``
 * Added support to ``Optional`` and ``Stream`` in converters and callbacks
+* Added ``IJavetAnonymous`` creating ad-hoc annotation based callback receiver
 
 0.9.12 Private Properties
 -------------------------

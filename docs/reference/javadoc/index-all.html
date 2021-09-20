@@ -2536,6 +2536,10 @@
 <dd>
 <div class="block">Idle notification deadline.</div>
 </dd>
+<dt><a href="com/caoccao/javet/interfaces/IJavetAnonymous.html" title="interface in com.caoccao.javet.interfaces"><span class="typeNameLink">IJavetAnonymous</span></a> - Interface in <a href="com/caoccao/javet/interfaces/package-summary.html">com.caoccao.javet.interfaces</a></dt>
+<dd>
+<div class="block">The interface Javet anonymous is for creating ad-hoc annotation based callback receiver.</div>
+</dd>
 <dt><a href="com/caoccao/javet/interfaces/IJavetBiConsumer.html" title="interface in com.caoccao.javet.interfaces"><span class="typeNameLink">IJavetBiConsumer</span></a>&lt;<a href="com/caoccao/javet/interfaces/IJavetBiConsumer.html" title="type parameter in IJavetBiConsumer">T1</a> extends <a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>,<a href="com/caoccao/javet/interfaces/IJavetBiConsumer.html" title="type parameter in IJavetBiConsumer">T2</a> extends <a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>,<a href="com/caoccao/javet/interfaces/IJavetBiConsumer.html" title="type parameter in IJavetBiConsumer">E</a> extends java.lang.Throwable&gt; - Interface in <a href="com/caoccao/javet/interfaces/package-summary.html">com.caoccao.javet.interfaces</a></dt>
 <dd>
 <div class="block">The interface Javet bi-consumer.</div>
@@ -3269,10 +3273,6 @@
 <dd>
 <div class="block">Instantiates a new Javet primitive converter.</div>
 </dd>
-<dt><a href="com/caoccao/javet/utils/JavetPrimitiveUtils.html" title="class in com.caoccao.javet.utils"><span class="typeNameLink">JavetPrimitiveUtils</span></a> - Class in <a href="com/caoccao/javet/utils/package-summary.html">com.caoccao.javet.utils</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetPrimitiveUtils.html#JavetPrimitiveUtils--">JavetPrimitiveUtils()</a></span> - Constructor for class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetPrimitiveUtils.html" title="class in com.caoccao.javet.utils">JavetPrimitiveUtils</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/utils/JavetPromiseRejectCallback.html" title="class in com.caoccao.javet.utils"><span class="typeNameLink">JavetPromiseRejectCallback</span></a> - Class in <a href="com/caoccao/javet/utils/package-summary.html">com.caoccao.javet.utils</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetPromiseRejectCallback.html#JavetPromiseRejectCallback-com.caoccao.javet.interfaces.IJavetLogger-">JavetPromiseRejectCallback(IJavetLogger)</a></span> - Constructor for class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetPromiseRejectCallback.html" title="class in com.caoccao.javet.utils">JavetPromiseRejectCallback</a></dt>
@@ -3312,6 +3312,12 @@
 <dt><a href="com/caoccao/javet/exceptions/JavetTerminatedException.html" title="class in com.caoccao.javet.exceptions"><span class="typeNameLink">JavetTerminatedException</span></a> - Exception in <a href="com/caoccao/javet/exceptions/package-summary.html">com.caoccao.javet.exceptions</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetTerminatedException.html#JavetTerminatedException-boolean-">JavetTerminatedException(boolean)</a></span> - Constructor for exception com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetTerminatedException.html" title="class in com.caoccao.javet.exceptions">JavetTerminatedException</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/caoccao/javet/utils/JavetTypeUtils.html" title="class in com.caoccao.javet.utils"><span class="typeNameLink">JavetTypeUtils</span></a> - Class in <a href="com/caoccao/javet/utils/package-summary.html">com.caoccao.javet.utils</a></dt>
+<dd>
+<div class="block">The type Javet type utils.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetTypeUtils.html#JavetTypeUtils--">JavetTypeUtils()</a></span> - Constructor for class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetTypeUtils.html" title="class in com.caoccao.javet.utils">JavetTypeUtils</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#JavetUniversalInterceptor-com.caoccao.javet.interop.V8Runtime-java.lang.Object-java.lang.String-java.util.List-">JavetUniversalInterceptor(V8Runtime, Object, String, List&lt;Method&gt;)</a></span> - Constructor for class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.JavetUniversalInterceptor</a></dt>
 <dd>
@@ -4735,8 +4741,14 @@
 <dd>
 <div class="block">To double array.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetPrimitiveUtils.html#toExactPrimitive-java.lang.Class-java.lang.Object-">toExactPrimitive(Class&lt;?&gt;, Object)</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetPrimitiveUtils.html" title="class in com.caoccao.javet.utils">JavetPrimitiveUtils</a></dt>
-<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetTypeUtils.html#toDoubleStream-java.lang.Object-">toDoubleStream(Object)</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetTypeUtils.html" title="class in com.caoccao.javet.utils">JavetTypeUtils</a></dt>
+<dd>
+<div class="block">Convert object to double stream.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetTypeUtils.html#toExactPrimitive-java.lang.Class-java.lang.Object-">toExactPrimitive(Class&lt;?&gt;, Object)</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetTypeUtils.html" title="class in com.caoccao.javet.utils">JavetTypeUtils</a></dt>
+<dd>
+<div class="block">To exact primitive object.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueArrayBuffer.html#toFloats--">toFloats()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueArrayBuffer.html" title="class in com.caoccao.javet.values.reference">V8ValueArrayBuffer</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueTypedArray.html#toFloats--">toFloats()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueTypedArray.html" title="class in com.caoccao.javet.values.reference">V8ValueTypedArray</a></dt>
@@ -4749,6 +4761,10 @@
 <dd>
 <div class="block">To int array.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetTypeUtils.html#toIntStream-java.lang.Object-">toIntStream(Object)</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetTypeUtils.html" title="class in com.caoccao.javet.utils">JavetTypeUtils</a></dt>
+<dd>
+<div class="block">Convert object to int stream.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/IV8ValueObject.html#toJsonString--">toJsonString()</a></span> - Method in interface com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/IV8ValueObject.html" title="interface in com.caoccao.javet.values.reference">IV8ValueObject</a></dt>
 <dd>
 <div class="block">To json string.</div>
@@ -4760,6 +4776,10 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueTypedArray.html#toLongs--">toLongs()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueTypedArray.html" title="class in com.caoccao.javet.values.reference">V8ValueTypedArray</a></dt>
 <dd>
 <div class="block">To long array.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetTypeUtils.html#toLongStream-java.lang.Object-">toLongStream(Object)</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetTypeUtils.html" title="class in com.caoccao.javet.utils">JavetTypeUtils</a></dt>
+<dd>
+<div class="block">Convert object to long stream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/IJavetConverter.html#toObject-com.caoccao.javet.values.V8Value-">toObject(V8Value)</a></span> - Method in interface com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/IJavetConverter.html" title="interface in com.caoccao.javet.interop.converters">IJavetConverter</a></dt>
 <dd>
@@ -4820,6 +4840,10 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueTypedArray.html#toShorts--">toShorts()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueTypedArray.html" title="class in com.caoccao.javet.values.reference">V8ValueTypedArray</a></dt>
 <dd>
 <div class="block">To short array.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetTypeUtils.html#toStream-java.lang.Object-">toStream(Object)</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetTypeUtils.html" title="class in com.caoccao.javet.utils">JavetTypeUtils</a></dt>
+<dd>
+<div class="block">Convert object to stream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetScriptingError.html#toString--">toString()</a></span> - Method in class com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetScriptingError.html" title="class in com.caoccao.javet.exceptions">JavetScriptingError</a></dt>
 <dd>&nbsp;</dd>

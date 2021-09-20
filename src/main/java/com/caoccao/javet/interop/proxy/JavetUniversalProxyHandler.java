@@ -318,7 +318,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         Object key = propertyObject;
                         boolean isCallable = parameterType.isAssignableFrom(propertyObject.getClass());
                         if (!isCallable && parameterType.isPrimitive()) {
-                            key = JavetPrimitiveUtils.toExactPrimitive(parameterType, propertyObject);
+                            key = JavetTypeUtils.toExactPrimitive(parameterType, propertyObject);
                             isCallable = key != null;
                         }
                         if (isCallable) {
@@ -419,7 +419,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         Object parameter = propertyObject;
                         boolean isCallable = parameterType.isAssignableFrom(propertyObject.getClass());
                         if (!isCallable && parameterType.isPrimitive()) {
-                            parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, propertyObject);
+                            parameter = JavetTypeUtils.toExactPrimitive(parameterType, propertyObject);
                             isCallable = parameter != null;
                         }
                         if (isCallable) {
@@ -683,13 +683,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         Object value = valueObject;
                         boolean isCallable = keyParameterType.isAssignableFrom(propertyObject.getClass());
                         if (!isCallable && keyParameterType.isPrimitive()) {
-                            key = JavetPrimitiveUtils.toExactPrimitive(keyParameterType, propertyObject);
+                            key = JavetTypeUtils.toExactPrimitive(keyParameterType, propertyObject);
                             isCallable = key != null;
                         }
                         if (isCallable) {
                             isCallable = valueParameterType.isAssignableFrom(valueObject.getClass());
                             if (!isCallable && valueParameterType.isPrimitive()) {
-                                value = JavetPrimitiveUtils.toExactPrimitive(valueParameterType, valueObject);
+                                value = JavetTypeUtils.toExactPrimitive(valueParameterType, valueObject);
                                 isCallable = value != null;
                             }
                         }
@@ -906,7 +906,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         } else if (parameterType.isAssignableFrom(object.getClass())) {
                             totalScore += 0.9;
                         } else if (parameterType.isPrimitive()
-                                && JavetPrimitiveUtils.toExactPrimitive(parameterType, object) != null) {
+                                && JavetTypeUtils.toExactPrimitive(parameterType, object) != null) {
                             totalScore += 0.8;
                         } else {
                             totalScore = 0;
@@ -944,7 +944,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             } else if (componentType.isAssignableFrom(object.getClass())) {
                                 totalScore += 0.85;
                             } else if (componentType.isPrimitive()
-                                    && JavetPrimitiveUtils.toExactPrimitive(componentType, object) != null) {
+                                    && JavetTypeUtils.toExactPrimitive(componentType, object) != null) {
                                 totalScore += 0.75;
                             } else {
                                 totalScore = 0;
@@ -1023,7 +1023,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         }
                     } else if (object != null && !parameterType.isAssignableFrom(object.getClass())
                             && parameterType.isPrimitive()) {
-                        parameter = JavetPrimitiveUtils.toExactPrimitive(parameterType, object);
+                        parameter = JavetTypeUtils.toExactPrimitive(parameterType, object);
                     }
                     parameters.add(parameter);
                 }
@@ -1058,7 +1058,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             }
                         } else if (object != null && !componentType.isAssignableFrom(object.getClass())
                                 && componentType.isPrimitive()) {
-                            parameter = JavetPrimitiveUtils.toExactPrimitive(componentType, object);
+                            parameter = JavetTypeUtils.toExactPrimitive(componentType, object);
                         }
                         Array.set(varObject, i - fixedParameterCount, parameter);
                     }

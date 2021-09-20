@@ -24,8 +24,20 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+/**
+ * The type Javet type utils.
+ *
+ * @since 0.9.13
+ */
 @SuppressWarnings("unchecked")
-public final class JavetPrimitiveUtils {
+public final class JavetTypeUtils {
+    /**
+     * Convert object to double stream.
+     *
+     * @param object the object
+     * @return the double stream
+     * @since 0.9.13
+     */
     public static DoubleStream toDoubleStream(Object object) {
         if (object instanceof double[]) {
             return DoubleStream.of((double[]) object);
@@ -38,6 +50,14 @@ public final class JavetPrimitiveUtils {
         return null;
     }
 
+    /**
+     * To exact primitive object.
+     *
+     * @param expectedClass the expected class
+     * @param object        the object
+     * @return the object
+     * @since 0.9.13
+     */
     public static Object toExactPrimitive(Class<?> expectedClass, Object object) {
         if (expectedClass == int.class && object instanceof Integer) {
             return ((Integer) object).intValue();
@@ -66,6 +86,13 @@ public final class JavetPrimitiveUtils {
         return null;
     }
 
+    /**
+     * Convert object to int stream.
+     *
+     * @param object the object
+     * @return the int stream
+     * @since 0.9.13
+     */
     public static IntStream toIntStream(Object object) {
         if (object instanceof int[]) {
             return IntStream.of((int[]) object);
@@ -78,6 +105,13 @@ public final class JavetPrimitiveUtils {
         return null;
     }
 
+    /**
+     * Convert object to long stream.
+     *
+     * @param object the object
+     * @return the long stream
+     * @since 0.9.13
+     */
     public static LongStream toLongStream(Object object) {
         if (object instanceof long[]) {
             return LongStream.of((long[]) object);
@@ -90,6 +124,13 @@ public final class JavetPrimitiveUtils {
         return null;
     }
 
+    /**
+     * Convert object to stream.
+     *
+     * @param object the object
+     * @return the stream
+     * @since 0.9.13
+     */
     public static Stream toStream(Object object) {
         if (object.getClass().isArray()) {
             if (object instanceof int[]) {

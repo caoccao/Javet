@@ -144,6 +144,23 @@ The second step is to call the functions or properties.
         v8Runtime.getGlobalObject().delete("a");
     }
 
+How about ``Optional`` and ``Stream``? The built-in converter knows these 2 special types and handles the conversion transparently.
+
+.. code-block:: java
+
+    v8ValueObject.bind(new IJavetAnonymous() {
+        @V8Function
+        public Optional<String> testOptional(Optional<String> optionalString) {
+            // Do whatever you want to do.
+            return Optional.of("abc");
+        }
+        @V8Function
+        public Stream testStream(Stream stream) {
+            // Do whatever you want to do.
+            return stream.filter(o -> o instanceof String);
+        }
+    });
+
 Can **this** be Passed in?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

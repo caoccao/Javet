@@ -22,7 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetConverterConfig;
-import com.caoccao.javet.utils.JavetPrimitiveUtils;
+import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
@@ -208,22 +208,22 @@ public final class V8FunctionCallback {
                             return OptionalLong.of((Long) convertedObject);
                         }
                     } else if (expectedClass == Stream.class) {
-                        Stream stream = JavetPrimitiveUtils.toStream(convertedObject);
+                        Stream stream = JavetTypeUtils.toStream(convertedObject);
                         if (stream != null) {
                             return stream;
                         }
                     } else if (expectedClass == IntStream.class) {
-                        IntStream intStream = JavetPrimitiveUtils.toIntStream(convertedObject);
+                        IntStream intStream = JavetTypeUtils.toIntStream(convertedObject);
                         if (intStream != null) {
                             return intStream;
                         }
                     } else if (expectedClass == LongStream.class) {
-                        LongStream longStream = JavetPrimitiveUtils.toLongStream(convertedObject);
+                        LongStream longStream = JavetTypeUtils.toLongStream(convertedObject);
                         if (longStream != null) {
                             return longStream;
                         }
                     } else if (expectedClass == DoubleStream.class) {
-                        DoubleStream doubleStream = JavetPrimitiveUtils.toDoubleStream(convertedObject);
+                        DoubleStream doubleStream = JavetTypeUtils.toDoubleStream(convertedObject);
                         if (doubleStream != null) {
                             return doubleStream;
                         }

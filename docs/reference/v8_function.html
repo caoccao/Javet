@@ -435,6 +435,21 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>How about <code class="docutils literal notranslate"><span class="pre">Optional</span></code> and <code class="docutils literal notranslate"><span class="pre">Stream</span></code>? The built-in converter knows these 2 special types and handles the conversion transparently.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@V8Function</span>
+    <span class="kd">public</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">testOptional</span><span class="p">(</span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">optionalString</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Do whatever you want to do.</span>
+        <span class="k">return</span> <span class="n">Optional</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"abc"</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nd">@V8Function</span>
+    <span class="kd">public</span> <span class="n">Stream</span> <span class="nf">testStream</span><span class="p">(</span><span class="n">Stream</span> <span class="n">stream</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Do whatever you want to do.</span>
+        <span class="k">return</span> <span class="n">stream</span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">String</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="can-this-be-passed-in">
 <h4>Can <strong>this</strong> be Passed in?<a class="headerlink" href="#can-this-be-passed-in" title="Permalink to this headline">¶</a></h4>
