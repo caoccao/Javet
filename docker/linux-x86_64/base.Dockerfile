@@ -21,7 +21,7 @@ WORKDIR /
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack
+RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack cmake
 RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
 RUN apt-get upgrade -y
 RUN pip3 install coloredlogs
@@ -31,7 +31,7 @@ RUN mkdir google
 WORKDIR /google
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 WORKDIR /google/depot_tools
-RUN git checkout remotes/origin/master
+RUN git checkout remotes/origin/main
 ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
@@ -76,7 +76,6 @@ ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
 RUN curl -s https://get.sdkman.io | bash
 RUN source ${SDKMAN_HOME}/bin/sdkman-init.sh && sdk install gradle 7.2
 ENV PATH=$GRADLE_HOME/bin:$PATH
-RUN apt-get install --upgrade -qq -y --no-install-recommends cmake
 
 # Shrink
 RUN rm -rf ${SDKMAN_HOME}/archives/*

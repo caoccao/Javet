@@ -54,7 +54,7 @@ RUN mkdir google
 WORKDIR /google
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 WORKDIR /google/depot_tools
-RUN git checkout remotes/origin/master
+RUN git checkout remotes/origin/main
 RUN setx /M PATH "C:\google\depot_tools;%PATH%"
 ENV DEPOT_TOOLS_WIN_TOOLCHAIN=0
 WORKDIR /google

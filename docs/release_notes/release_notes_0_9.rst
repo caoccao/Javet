@@ -2,8 +2,8 @@
 Release Notes 0.9.x
 ===================
 
-0.9.13
-------
+0.9.13 V8 v9.4
+--------------
 
 * Upgraded V8 to ``v9.4.146.16`` `(2021-09-14) <https://v8.dev/blog/v8-release-94>`_
 * Added support to generator object
