@@ -512,6 +512,54 @@
 <p><code class="docutils literal notranslate"><span class="pre">unbind()</span></code> follows the same way that <code class="docutils literal notranslate"><span class="pre">bind()</span></code> goes to unregister both properties and functions.</p>
 <p><code class="docutils literal notranslate"><span class="pre">unbindProperty()</span></code> and <code class="docutils literal notranslate"><span class="pre">unbindFunction()</span></code> provide precise way of unregistering single property or function.</p>
 </div>
+<div class="section" id="can-both-javascript-function-and-property-map-to-one-java-function">
+<h4>Can Both JavaScript Function and Property Map to One Java Function?<a class="headerlink" href="#can-both-javascript-function-and-property-map-to-one-java-function" title="Permalink to this headline">¶</a></h4>
+<p>Yes, just simply decorate the Java function with both <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span> <span class="n">iJavetAnonymous1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"testFunction"</span><span class="p">)</span>
+    <span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"testProperty"</span><span class="p">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"abc"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">v8ValueObject</span><span class="p">);</span>
+    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">iJavetAnonymous1</span><span class="p">);</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a['testProperty']"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.testFunction()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">unbind</span><span class="p">(</span><span class="n">iJavetAnonymous1</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="can-2-java-functions-map-to-one-javascript-function-and-property">
+<h4>Can 2 Java Functions Map to One JavaScript Function and Property?<a class="headerlink" href="#can-2-java-functions-map-to-one-javascript-function-and-property" title="Permalink to this headline">¶</a></h4>
+<p>Yes, just simply give 2 Java functions the same name.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span> <span class="n">iJavetAnonymous2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"test"</span><span class="p">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">testFunction</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"abc"</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"test"</span><span class="p">)</span>
+    <span class="kd">public</span> <span class="n">JavetEntityFunction</span> <span class="nf">testProperty</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">JavetEntityFunction</span><span class="p">(</span><span class="s">"() =&gt; 'abc'"</span><span class="p">,</span> <span class="n">JSFunctionType</span><span class="p">.</span><span class="na">UserDefined</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">v8ValueObject</span><span class="p">);</span>
+    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">iJavetAnonymous2</span><span class="p">);</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a['test']()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.test()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">unbind</span><span class="p">(</span><span class="n">iJavetAnonymous2</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="manual-registration">
 <h3>Manual Registration<a class="headerlink" href="#manual-registration" title="Permalink to this headline">¶</a></h3>
@@ -821,6 +869,8 @@
 <li><a class="reference internal" href="#can-symbol-properties-be-intercepted">Can Symbol Properties be Intercepted?</a></li>
 <li><a class="reference internal" href="#how-to-disable-properties-or-functions">How to Disable Properties or Functions?</a></li>
 <li><a class="reference internal" href="#how-to-unregister-properties-or-functions">How to Unregister Properties or Functions?</a></li>
+<li><a class="reference internal" href="#can-both-javascript-function-and-property-map-to-one-java-function">Can Both JavaScript Function and Property Map to One Java Function?</a></li>
+<li><a class="reference internal" href="#can-2-java-functions-map-to-one-javascript-function-and-property">Can 2 Java Functions Map to One JavaScript Function and Property?</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#manual-registration">Manual Registration</a><ul>

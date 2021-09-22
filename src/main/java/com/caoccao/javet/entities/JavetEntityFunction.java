@@ -20,6 +20,8 @@ package com.caoccao.javet.entities;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.interfaces.IJavetEntityFunction;
 
+import java.util.Objects;
+
 /**
  * The type Javet entity function is for converting JS function
  * to or from Java object.
@@ -52,12 +54,23 @@ public class JavetEntityFunction implements IJavetEntityFunction {
     /**
      * Instantiates a new Javet entity function.
      *
+     * @param sourceCode     the source code
+     * @param jsFunctionType the js function type
+     * @since 0.9.13
+     */
+    public JavetEntityFunction(String sourceCode, JSFunctionType jsFunctionType) {
+        setJSFunctionType(jsFunctionType);
+        setSourceCode(sourceCode);
+    }
+
+    /**
+     * Instantiates a new Javet entity function.
+     *
      * @param sourceCode the source code
      * @since 0.9.4
      */
     public JavetEntityFunction(String sourceCode) {
-        jsFunctionType = JSFunctionType.Unknown;
-        setSourceCode(sourceCode);
+        this(sourceCode, JSFunctionType.Unknown);
     }
 
     @Override
@@ -72,7 +85,7 @@ public class JavetEntityFunction implements IJavetEntityFunction {
 
     @Override
     public void setJSFunctionType(JSFunctionType jsFunctionType) {
-        this.jsFunctionType = jsFunctionType;
+        this.jsFunctionType = Objects.requireNonNull(jsFunctionType);
     }
 
     @Override

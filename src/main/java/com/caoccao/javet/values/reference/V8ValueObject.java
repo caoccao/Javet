@@ -275,6 +275,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
             Map<String, MethodDescriptor> propertySetterMap = bindingContext.getPropertySetterMap();
             Map<String, MethodDescriptor> functionMap = bindingContext.getFunctionMap();
             for (Method method : callbackReceiverClass.getMethods()) {
+                boolean methodHandled = false;
                 if (method.isAnnotationPresent(V8Property.class)) {
                     V8Property v8Property = method.getAnnotation(V8Property.class);
                     String propertyName = v8Property.name();
@@ -300,6 +301,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                 propertyGetterMap.put(
                                         propertyName,
                                         new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbolType()));
+                                methodHandled = true;
                             }
                         } else if (method.getParameterCount() == expectedSetterParameterCount) {
                             // Duplicated property name will be dropped.
@@ -307,6 +309,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                 propertySetterMap.put(
                                         propertyName,
                                         new MethodDescriptor(method, v8Property.thisObjectRequired(), v8Property.symbolType()));
+                                methodHandled = true;
                             }
                         } else {
                             throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
@@ -316,7 +319,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                             JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
                         }
                     }
-                } else if (method.isAnnotationPresent(V8Function.class)) {
+                }
+                if (method.isAnnotationPresent(V8Function.class)) {
                     V8Function v8Function = method.getAnnotation(V8Function.class);
                     String functionName = v8Function.name();
                     if (functionName.length() == 0) {
@@ -327,39 +331,43 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         functionMap.put(
                                 functionName,
                                 new MethodDescriptor(method, v8Function.thisObjectRequired()));
+                        methodHandled = true;
                     }
-                } else if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
-                    if (method.getParameterCount() != 1) {
-                        throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
-                                SimpleMap.of(
-                                        JavetError.PARAMETER_METHOD_NAME, method.getName(),
-                                        JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
-                                        JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
+                }
+                if (!methodHandled) {
+                    if (method.isAnnotationPresent(V8RuntimeSetter.class)) {
+                        if (method.getParameterCount() != 1) {
+                            throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                    SimpleMap.of(
+                                            JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                            JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
+                                            JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
+                        }
+                        if (!V8Runtime.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                            throw new JavetException(
+                                    JavetError.CallbackSignatureParameterTypeMismatch,
+                                    SimpleMap.of(
+                                            JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, V8Runtime.class,
+                                            JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
+                        }
+                        bindingContext.setV8RuntimeSetter(method);
+                    } else if (method.isAnnotationPresent(V8BindEnabler.class)) {
+                        if (method.getParameterCount() != 1) {
+                            throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                    SimpleMap.of(
+                                            JavetError.PARAMETER_METHOD_NAME, method.getName(),
+                                            JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
+                                            JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
+                        }
+                        if (!String.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                            throw new JavetException(
+                                    JavetError.CallbackSignatureParameterTypeMismatch,
+                                    SimpleMap.of(
+                                            JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, String.class,
+                                            JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
+                        }
+                        bindingContext.setV8BindEnabler(method);
                     }
-                    if (!V8Runtime.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        throw new JavetException(
-                                JavetError.CallbackSignatureParameterTypeMismatch,
-                                SimpleMap.of(
-                                        JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, V8Runtime.class,
-                                        JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
-                    }
-                    bindingContext.setV8RuntimeSetter(method);
-                } else if (method.isAnnotationPresent(V8BindEnabler.class)) {
-                    if (method.getParameterCount() != 1) {
-                        throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
-                                SimpleMap.of(
-                                        JavetError.PARAMETER_METHOD_NAME, method.getName(),
-                                        JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
-                                        JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
-                    }
-                    if (!String.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        throw new JavetException(
-                                JavetError.CallbackSignatureParameterTypeMismatch,
-                                SimpleMap.of(
-                                        JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, String.class,
-                                        JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
-                    }
-                    bindingContext.setV8BindEnabler(method);
                 }
             }
             bindingContextWeakHashMap.put(callbackReceiverClass, bindingContext);
