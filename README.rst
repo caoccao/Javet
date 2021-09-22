@@ -27,7 +27,7 @@ Major Features
 ==============
 
 * Linux + Mac OS + ️Windows (x86_64)
-* Node.js ``v14.17.6`` + V8 ``v9.3.345.16``
+* Node.js ``v14.17.6`` + V8 ``v9.4.146.16``
 * Dynamic switch between Node.js and V8 mode
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * Exposure of the majority of V8 API in JVM
