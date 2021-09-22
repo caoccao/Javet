@@ -31,6 +31,7 @@ import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
 import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
+import com.caoccao.javet.values.virtual.V8VirtualEscapableValue;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -215,17 +216,17 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         }
         if (v8Value instanceof V8ValueArray) {
             V8ValueArray v8ValueArray = (V8ValueArray) v8Value;
-            List<Object> list = new ArrayList<>();
+            final List<Object> list = new ArrayList<>();
             v8ValueArray.forEach(value -> list.add(toObject(value, depth + 1)));
             return list;
         } else if (v8Value instanceof V8ValueSet) {
             V8ValueSet v8ValueSet = (V8ValueSet) v8Value;
-            HashSet<Object> set = new HashSet<>();
+            final HashSet<Object> set = new HashSet<>();
             v8ValueSet.forEach(key -> set.add(toObject(key, depth + 1)));
             return set;
         } else if (v8Value instanceof V8ValueMap) {
             V8ValueMap v8ValueMap = (V8ValueMap) v8Value;
-            Map<String, Object> map = createEntityMap();
+            final Map<String, Object> map = createEntityMap();
             v8ValueMap.forEach((V8Value key, V8Value value) -> map.put(key.toString(), toObject(value, depth + 1)));
             return map;
         } else if (v8Value instanceof V8ValueTypedArray) {
@@ -252,7 +253,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     break;
             }
         } else if (v8Value instanceof V8ValueFunction) {
-            IJavetEntityFunction javetEntityFunction = createEntityFunction();
+            final IJavetEntityFunction javetEntityFunction = createEntityFunction();
             if (config.isExtractFunctionSourceCode()) {
                 V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
                 javetEntityFunction.setJSFunctionType(v8ValueFunction.getJSFunctionType());
@@ -270,11 +271,11 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
             return javetEntityFunction;
         } else if (v8Value instanceof V8ValueSymbol) {
-            V8ValueSymbol v8ValueSymbol = (V8ValueSymbol) v8Value;
+            final V8ValueSymbol v8ValueSymbol = (V8ValueSymbol) v8Value;
             return new JavetEntitySymbol(v8ValueSymbol.getDescription());
         } else if (v8Value instanceof V8ValueObject) {
             if (v8Value instanceof V8ValueProxy) {
-                V8ValueProxy v8ValueProxy = (V8ValueProxy) v8Value;
+                final V8ValueProxy v8ValueProxy = (V8ValueProxy) v8Value;
                 try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
                     Long handle = iV8ValueObjectHandler.getPrivatePropertyLong(PRIVATE_PROPERTY_PROXY_TARGET);
                     if (handle != null) {
@@ -291,7 +292,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 }
             }
             V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
-            Map<String, Object> map = new HashMap<>();
+            final Map<String, Object> map = new HashMap<>();
             v8ValueObject.forEach((V8Value key, V8Value value) -> {
                 String keyString = key.toString();
                 if (PUBLIC_PROPERTY_CONSTRUCTOR.equals(keyString)) {
@@ -347,7 +348,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         }
         if (object instanceof IJavetEntityMap) {
             V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap();
-            Map<?, ?> mapObject = (Map<?, ?>) object;
+            final Map<?, ?> mapObject = (Map<?, ?>) object;
             for (Object key : mapObject.keySet()) {
                 try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
                     String childStringKey = key instanceof String ? (String) key : key.toString();
@@ -368,7 +369,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueProxy;
             } else {
                 V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
-                Map<?, ?> mapObject = (Map<?, ?>) object;
+                final Map<?, ?> mapObject = (Map<?, ?>) object;
                 for (Object key : mapObject.keySet()) {
                     try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
                         String childStringKey = key instanceof String ? (String) key : key.toString();
@@ -390,7 +391,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueProxy;
             } else {
                 V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet();
-                Set<?> setObject = (Set<?>) object;
+                final Set<?> setObject = (Set<?>) object;
                 for (Object item : setObject) {
                     try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
                         v8ValueSet.add(childV8Value);
@@ -399,24 +400,28 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueSet;
             }
         } else if (object instanceof Collection) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            for (Object item : (Collection<?>) object) {
-                try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                    v8ValueArray.push(childV8Value);
+            try (V8VirtualEscapableValue<V8ValueArray> v8VirtualEscapableValueArray =
+                         new V8VirtualEscapableValue<>(v8Runtime.createV8ValueArray())) {
+                for (Object item : (Collection<?>) object) {
+                    try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
+                        v8VirtualEscapableValueArray.get().push(childV8Value);
+                    }
                 }
+                v8Value = v8VirtualEscapableValueArray.setEscapable().get();
             }
-            v8Value = v8ValueArray;
         } else if (object instanceof BaseStream) {
-            V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-            Iterator iterator = ((BaseStream) object).iterator();
-            while (iterator.hasNext()) {
-                try (V8Value childV8Value = toV8Value(v8Runtime, iterator.next(), depth + 1)) {
-                    v8ValueArray.push(childV8Value);
+            try (V8VirtualEscapableValue<V8ValueArray> v8VirtualEscapableValueArray =
+                         new V8VirtualEscapableValue<>(v8Runtime.createV8ValueArray())) {
+                final Iterator iterator = ((BaseStream) object).iterator();
+                while (iterator.hasNext()) {
+                    try (V8Value childV8Value = toV8Value(v8Runtime, iterator.next(), depth + 1)) {
+                        v8VirtualEscapableValueArray.get().push(childV8Value);
+                    }
                 }
+                v8Value = v8VirtualEscapableValueArray.setEscapable().get();
             }
-            v8Value = v8ValueArray;
         } else if (object instanceof IJavetEntityFunction) {
-            IJavetEntityFunction javetEntityFunction = (IJavetEntityFunction) object;
+            final IJavetEntityFunction javetEntityFunction = (IJavetEntityFunction) object;
             String sourceCode = javetEntityFunction.getJSFunctionType().isUserDefined() ?
                     javetEntityFunction.getSourceCode() : null;
             if (sourceCode == null || sourceCode.length() == 0) {
@@ -425,7 +430,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8Runtime.getExecutor(sourceCode).execute();
             }
         } else if (object instanceof JavetEntitySymbol) {
-            JavetEntitySymbol javetEntitySymbol = (JavetEntitySymbol) object;
+            final JavetEntitySymbol javetEntitySymbol = (JavetEntitySymbol) object;
             v8Value = v8Runtime.createV8ValueSymbol(javetEntitySymbol.getDescription(), true);
         } else if (object.getClass().isArray()) {
             if (object instanceof boolean[]) {
@@ -483,13 +488,15 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 }
                 v8Value = v8ValueArray;
             } else {
-                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-                for (Object item : (Object[]) object) {
-                    try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                        v8ValueArray.push(childV8Value);
+                try (V8VirtualEscapableValue<V8ValueArray> v8VirtualEscapableValueArray =
+                             new V8VirtualEscapableValue<>(v8Runtime.createV8ValueArray())) {
+                    for (Object item : (Object[]) object) {
+                        try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
+                            v8VirtualEscapableValueArray.get().push(childV8Value);
+                        }
                     }
+                    v8Value = v8VirtualEscapableValueArray.setEscapable().get();
                 }
-                v8Value = v8ValueArray;
             }
         } else if (!customObjectMap.isEmpty()) {
             String customObjectClassName = object.getClass().getName();
@@ -507,7 +514,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             if (methodToMap != null) {
                 try {
                     Map map = (Map) methodToMap.invoke(object);
-                    v8Value = toV8Value(v8Runtime, map);
+                    v8Value = toV8Value(v8Runtime, map, depth + 1);
                     ((V8ValueObject) v8Value).setPrivateProperty(
                             PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME, customObjectClassName);
                 } catch (Throwable t) {

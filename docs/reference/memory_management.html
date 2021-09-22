@@ -322,6 +322,24 @@
 </div>
 <p>Note: V8 does not recycle objects that are referenced by other objects. Please make sure the object chain is broken so that GC can work as expected. <code class="docutils literal notranslate"><span class="pre">com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor</span></code> is a good sample showing how to deal with that.</p>
 </div>
+<div class="section" id="how-to-escape-from-try-with-resource">
+<h3>How to Escape from try-with-resource?<a class="headerlink" href="#how-to-escape-from-try-with-resource" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes V8 objects to be returned to V8 cannot be closed, but if there is an exception thrown between V8 object creation and return, that V8 object is not closed. In that case, memory leak will take place. So, how to escape from that case? Javet introduces <code class="docutils literal notranslate"><span class="pre">V8VirtualEscapableValue</span></code> to prevent memory leak when exception is thrown.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>It needs to be used by try-with-resource.</p></li>
+<li><p>By default, escapable is set to false so that the internal value can be close when exception is thrown.</p></li>
+<li><p>If there is no exception, escapable needs to be set to true before try-with-resource is closed.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">(</span><span class="n">V8VirtualEscapableValue</span><span class="o">&lt;</span><span class="n">V8ValueObject</span><span class="o">&gt;</span> <span class="n">v8VirtualEscapableValueObject</span> <span class="o">=</span>
+        <span class="k">new</span> <span class="n">V8VirtualEscapableValue</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">()))</span> <span class="p">{</span>
+    <span class="c1">// Do whatever.</span>
+    <span class="k">return</span> <span class="n">v8VirtualEscapableValueObject</span><span class="p">.</span><span class="na">setEscapable</span><span class="p">().</span><span class="na">get</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="alternative-option-arraybuffer">
 <h2>Alternative Option: ArrayBuffer<a class="headerlink" href="#alternative-option-arraybuffer" title="Permalink to this headline">¶</a></h2>
@@ -542,6 +560,7 @@
 <li><a class="reference internal" href="#recommended-options">Recommended Options</a><ul>
 <li><a class="reference internal" href="#automatic-management-with-try-with-resource">Automatic Management with try-with-resource</a></li>
 <li><a class="reference internal" href="#automatically-manage-with-weak-reference">Automatically Manage with Weak Reference</a></li>
+<li><a class="reference internal" href="#how-to-escape-from-try-with-resource">How to Escape from try-with-resource?</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#alternative-option-arraybuffer">Alternative Option: ArrayBuffer</a></li>

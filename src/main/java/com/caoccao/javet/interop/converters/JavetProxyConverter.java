@@ -26,6 +26,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueProxy;
+import com.caoccao.javet.values.virtual.V8VirtualEscapableValue;
 
 import java.util.List;
 
@@ -76,11 +77,13 @@ public class JavetProxyConverter extends JavetObjectConverter {
         } else {
             v8ValueProxy = v8Runtime.createV8ValueProxy();
         }
-        try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+        try (V8VirtualEscapableValue<V8ValueProxy> v8VirtualEscapableValueProxy = new V8VirtualEscapableValue<>(v8ValueProxy);
+             IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
             JavetUniversalProxyHandler<Object> javetUniversalProxyHandler =
                     new JavetUniversalProxyHandler<>(v8Runtime, object);
             List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
             iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+            v8VirtualEscapableValueProxy.setEscapable();
         }
         v8Value = v8ValueProxy;
         return (T) v8Runtime.decorateV8Value(v8Value);

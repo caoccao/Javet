@@ -164,16 +164,16 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             v8Value = v8Runtime.createV8ValueString(((Character) object).toString());
         } else if (object instanceof Optional) {
             Optional optional = (Optional) object;
-            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.get()) : v8Runtime.createV8ValueNull();
+            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.get(), depth) : v8Runtime.createV8ValueNull();
         } else if (object instanceof OptionalInt) {
             OptionalInt optional = (OptionalInt) object;
-            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsInt()) : v8Runtime.createV8ValueNull();
+            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsInt(), depth) : v8Runtime.createV8ValueNull();
         } else if (object instanceof OptionalDouble) {
             OptionalDouble optional = (OptionalDouble) object;
-            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsDouble()) : v8Runtime.createV8ValueNull();
+            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsDouble(), depth) : v8Runtime.createV8ValueNull();
         } else if (object instanceof OptionalLong) {
             OptionalLong optional = (OptionalLong) object;
-            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsLong()) : v8Runtime.createV8ValueNull();
+            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsLong(), depth) : v8Runtime.createV8ValueNull();
         } else {
             v8Value = v8Runtime.createV8ValueUndefined();
         }

@@ -29,6 +29,7 @@ Resource Management
 * Always prohibit calling ``close()`` of Javet objects if they will be returned to Javet. 
 * If the lifecycle of V8 objects is uncertain, calling ``setWeak()`` is the only way so that calling ``close()`` is no longer required. Be careful, calling ``close()`` after calling ``setWeak()`` may lead to V8 core dump immediately.
 * In performance sensitive scenarios, please explicitly acquire ``V8Locker``.
+* Use ``V8VirtualEscapableValue`` for preventing memory leak when exception is thrown.
 
 Security
 ========

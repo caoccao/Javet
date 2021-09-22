@@ -305,6 +305,7 @@
 <li><p>Always prohibit calling <code class="docutils literal notranslate"><span class="pre">close()</span></code> of Javet objects if they will be returned to Javet.</p></li>
 <li><p>If the lifecycle of V8 objects is uncertain, calling <code class="docutils literal notranslate"><span class="pre">setWeak()</span></code> is the only way so that calling <code class="docutils literal notranslate"><span class="pre">close()</span></code> is no longer required. Be careful, calling <code class="docutils literal notranslate"><span class="pre">close()</span></code> after calling <code class="docutils literal notranslate"><span class="pre">setWeak()</span></code> may lead to V8 core dump immediately.</p></li>
 <li><p>In performance sensitive scenarios, please explicitly acquire <code class="docutils literal notranslate"><span class="pre">V8Locker</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">V8VirtualEscapableValue</span></code> for preventing memory leak when exception is thrown.</p></li>
 </ul>
 </div>
 <div class="section" id="security">
