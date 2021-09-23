@@ -12,6 +12,7 @@ Release Notes 0.9.x
 * Added support to ``Optional`` and ``Stream`` in converters and callbacks
 * Added ``IJavetAnonymous`` creating ad-hoc annotation based callback receiver
 * Added ``V8VirtualEscapableValue``
+* Added ``getMethodNameFromLambda`` and ``getMethodNameSetFromLambdas`` to ``JavetReflectionUtils``
 * Enabled decorating a function with both ``@V8Function`` and ``@V8Property``
 * Enhanced ``V8Flags`` to accept custom flags
 

@@ -505,6 +505,31 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>The problem is if the function names are refactored to some other names, this string based solution will be broken. So, is there an IDE refactor friendly solution? Yes, <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameFromLambda()</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameSetFromLambdas()</span></code> are able to convert lambda functions to string and string set.</p>
+<ul class="simple">
+<li><p>Firstly, prepare a set of to be disabled function names.</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Option 1 with JavetReflectionUtils.getMethodNameFromLambda()</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">disabledFunctionSet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span>
+        <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameFromLambda</span><span class="p">((</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledFunction</span><span class="p">),</span>
+        <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameFromLambda</span><span class="p">((</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledProperty</span><span class="p">)));</span>
+
+<span class="c1">// Option 2 with JavetReflectionUtils.getMethodNameSetFromLambdas()</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">disabledFunctionSet</span> <span class="o">=</span> <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameSetFromLambdas</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledFunction</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledProperty</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Secondly, just test whether the method name is in the set or not.</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8BindEnabler</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isV8BindEnabled</span><span class="p">(</span><span class="n">String</span> <span class="n">methodName</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="n">disabledFunctionSet</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">methodName</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>C'est très bien. Now, the set of to be disabled function names can be updated automatically by the IDE refactor.</p>
 <p><code class="docutils literal notranslate"><span class="pre">@V8BindEnabler</span></code> can be used to decorate a method with signature <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">arbitraryMethod(String</span> <span class="pre">methodName)</span></code>. Javet calls that method by each method name for whether each method is enabled or not.</p>
 </div>
 <div class="section" id="how-to-unregister-properties-or-functions">

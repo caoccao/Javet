@@ -17,7 +17,14 @@
 
 package com.caoccao.javet.utils;
 
+import java.io.Serializable;
+import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The type Javet reflection utils.
@@ -26,7 +33,41 @@ import java.lang.reflect.AccessibleObject;
  */
 public final class JavetReflectionUtils {
 
+    private static final String METHOD_NAME_WRITE_REPLACE = "writeReplace";
+
     private JavetReflectionUtils() {
+    }
+
+    /**
+     * Gets method name from lambda.
+     *
+     * @param lambda the lambda
+     * @return the method name from lambda
+     * @since 0.9.13
+     */
+    public static String getMethodNameFromLambda(Serializable lambda) {
+        Objects.requireNonNull(lambda);
+        try {
+            Method method = lambda.getClass().getDeclaredMethod(METHOD_NAME_WRITE_REPLACE);
+            method.setAccessible(true);
+            SerializedLambda serializedLambda = (SerializedLambda) method.invoke(lambda);
+            return serializedLambda.getImplMethodName();
+        } catch (Throwable t) {
+        }
+        return null;
+    }
+
+    /**
+     * Gets method name set from lambdas.
+     *
+     * @param lambdas the lambdas
+     * @return the method name set
+     */
+    public static Set<String> getMethodNameSetFromLambdas(Serializable... lambdas) {
+        return Stream.of(Objects.requireNonNull(lambdas))
+                .filter(Objects::nonNull)
+                .map(JavetReflectionUtils::getMethodNameFromLambda)
+                .collect(Collectors.toSet());
     }
 
     /**
