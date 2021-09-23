@@ -2,10 +2,10 @@
 <html class="no-js" lang="en, zh-CN">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Development" href="../development/index.html" /><link rel="prev" title="What is the Motivation?" href="what_is_the_motivation.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Environment" href="../environment/index.html" /><link rel="prev" title="Where are ES6 API in V8 Mode?" href="where_are_es6_api_in_v8_mode.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>History with J2V8 - Javet 0.9.13 documentation</title>
+        <title>Where are the Examples? - Javet 0.9.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -135,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -207,15 +207,15 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">FAQ</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Background</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="what_is_the_motivation.html">What is the Motivation?</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">History with J2V8</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../background/what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../background/history_with_j2v8.html">History with J2V8</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../development/where_are_the_examples.html">Where are the Examples?</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Development</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Where are the Examples?</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -264,92 +264,21 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <div class="section" id="history-with-j2v8">
-<h1>History with J2V8<a class="headerlink" href="#history-with-j2v8" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="j2v8-issues">
-<h2>J2V8 Issues<a class="headerlink" href="#j2v8-issues" title="Permalink to this headline">¶</a></h2>
-<p>J2V8 is an excellent project on embedding V8 in Java. However, J2V8 community hasn't been active since 2017.</p>
-<p>The last Windows version 4.6.0 was released in 2016 and the last Linux version 4.8.0 was released in 2017. The V8 in Windows v4.6.0 doesn't even fully support ES6.</p>
-<p>The latest community activities were around Android versions. The Node.js API was dropped. The Windows build has been seriously broken for years. The Linux build is nearly broken. There are serious memory leak issues which are hard to be fixed under the current architecture.</p>
-<p>Its API has stopped evolving for years. Many new features I expect just don't get any chances to be implemented. Obviously, if the build system was broken and couldn't be easily fixed, almost no one would like to contribute. That includes me. When I was trying to fix the build system for Windows and Linux, I had to admit that's so, so, so, challenging. Why is that? I think it's not merely J2V8 community's problem because in the meanwhile V8, Node.js and ECMAScript move forward rapidly causing many unexpected challenges. Someone or some team needs to look after J2V8 from time to time. Unfortunately, the reality is cruel.</p>
-</div>
-<div class="section" id="j2v8-latest-version">
-<h2>J2V8 Latest Version<a class="headerlink" href="#j2v8-latest-version" title="Permalink to this headline">¶</a></h2>
-<p>I managed to unofficially build the latest <a class="reference external" href="https://github.com/caoccao/Javet/releases/tag/0.6.2.0">J2V8 v6.2.0</a>.</p>
+          <div class="section" id="where-are-the-examples">
+<h1>Where are the Examples?<a class="headerlink" href="#where-are-the-examples" title="Permalink to this headline">¶</a></h1>
+<p>The best official example is project <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a> from which you may learn the following.</p>
 <ul class="simple">
-<li><p>V8 is upgraded to v8.3.110.9 which was released in May, 2020.</p></li>
-<li><p>Windows and Linux are supported.</p></li>
-<li><p>Node.js is dropped temporarily.</p></li>
+<li><p><a class="reference internal" href="how_to_think_in_javet.html"><span class="doc">How to Think in Javet?</span></a></p></li>
+<li><p>What are the Javet Flavored Design Patterns</p></li>
+<li><p>How to Manage the Resource / Memory Efficiently</p></li>
 </ul>
-<p>I've tested the performance between <code class="docutils literal notranslate"><span class="pre">j2v8_win32_x86_64-4.6.0.jar</span></code> and <code class="docutils literal notranslate"><span class="pre">j2v8_win32_x86_64-6.2.0.jar</span></code> on a Windows machine with CPU i7 10700K. The test code is just <code class="docutils literal notranslate"><span class="pre">1+1</span> <span class="pre">-&gt;</span> <span class="pre">2</span></code>. Here are the comparisons.</p>
-<div class="table-wrapper"><table class="docutils align-default">
-<colgroup>
-<col style="width: 53%"/>
-<col style="width: 24%"/>
-<col style="width: 22%"/>
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Case</p></th>
-<th class="head"><p>4.6.0 (TPS)</p></th>
-<th class="head"><p>6.2.0 (TPS)</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Single Session with 1 Thread</p></td>
-<td><p>1,003,009</p></td>
-<td><p>1,338,688</p></td>
-</tr>
-<tr class="row-odd"><td><p>Ad-hoc Session with 1 Thread</p></td>
-<td><p>35</p></td>
-<td><p>299</p></td>
-</tr>
-<tr class="row-even"><td><p>4 Sessions with 4 threads</p></td>
-<td><p>2,274,019</p></td>
-<td><p>4,571,428</p></td>
-</tr>
-</tbody>
-</table></div>
-<p>With this kind of performance improvement, what are the reasons of sticking to <code class="docutils literal notranslate"><span class="pre">v4.6.0</span></code>?</p>
-</div>
-<div class="section" id="why-windows-and-linux-only">
-<h2>Why Windows and Linux only?<a class="headerlink" href="#why-windows-and-linux-only" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>I don't own a decent Mac device. To be more precisely, I have Mac Mini and MacBook Air, but they are too old (building V8 would take many hours). And I have no plan on buying a new one in the near future. Call for donation? Don't be joking. So there's no MacOS release.</p></li>
-<li><p>I don't intend to support Android for now.</p></li>
-</ul>
-</div>
-<div class="section" id="why-not-automate-the-j2v8-build-system">
-<h2>Why not Automate the J2V8 Build System?<a class="headerlink" href="#why-not-automate-the-j2v8-build-system" title="Permalink to this headline">¶</a></h2>
-<p>TL;DR: It's too hard.</p>
-<ul class="simple">
-<li><p>V8 is evolving rapidly. v8.3.110.9 is a relatively easy one to be mastered. I didn't move forward well with v8.9.213 which placed a different set of <em>solvable</em> challenges to me. I plan to revisit the latest V8 in near future.</p></li>
-<li><p>Node.js was removed early. I haven't got time reviving it in J2V8.</p></li>
-<li><p>J2V8 build system is too old.</p>
-<ul>
-<li><p>Gradle v2.14.1 is far from the lowest supported gradle version in my latest IntelliJ IDEA. And I don't have interest in installing a legacy Eclipse to play with that version of gradle. Hey, why not upgrade gradle to satisfy IDEA? I tried, but all was bad luck. You may take a try, then understand what I have suffered from.</p></li>
-<li><p>CMake is old and seriously broken on Windows. Nowadays, V8 only supports VS 2017 or 2019, but <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> is still at the VS 2015 age. No surprise, it doesn't work at all.</p></li>
-<li><p>Docker build is deeply broken as well. The dependent docker image was gone. There are many errors in many steps. Sitting there, watching the docker build breaks made me full of frustration because I thought it would take me a few months fixing the problems, but I don't have a few months. No one pays me to do that.</p></li>
-<li><p>Python2 scripts form the outer layer of the build system, also hide the actual building logic from someone who tries to fix the build system. I don't want to spend my precious time fixing Python2 scripts, because I've been on Python3 for many years. I wish my hair could be as much as Guido van Rossum's. Obviously, I am not, so no more Python2.</p></li>
-<li><p>Maven is old but the least problematic. At least it allows me to package the jar files with my hack to the <code class="docutils literal notranslate"><span class="pre">pom.xml</span></code>.</p></li>
-</ul>
-</li>
-</ul>
-<p>With these uncertainties, to me, automating the build system is something with ROI closing to 0. Supposing I achieved it in a particular version of V8, let's say <code class="docutils literal notranslate"><span class="pre">v8.3.110.9</span></code>, it would for sure break in <code class="docutils literal notranslate"><span class="pre">v8.9.x</span></code>. Later, I managed to build <code class="docutils literal notranslate"><span class="pre">v8.9.255</span></code> which has been embeded into Javet.</p>
-</div>
-<div class="section" id="why-not-deploy-j2v8-to-maven-repository">
-<h2>Why not Deploy J2V8 to Maven Repository?<a class="headerlink" href="#why-not-deploy-j2v8-to-maven-repository" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>I don't have the permission to its official repository.</p></li>
-<li><p>There has been no Windows / Linux releases deployed since 2016 / 2017. I really don't know who to contact with.</p></li>
-<li><p>You may easily integrate the jar files in your local maven repository.</p></li>
-</ul>
-</div>
+<p>The second best official example is the Javet unit test cases.</p>
 </div>
 
         </article>
@@ -357,23 +286,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../development/index.html">
+          <a class="next-page" href="../environment/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Development</div>
+                <div class="title">Environment</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="what_is_the_motivation.html">
+          <a class="prev-page" href="where_are_es6_api_in_v8_mode.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">What is the Motivation?</div>
+                <div class="title">Where are ES6 API in V8 Mode?</div>
                 
               </div>
             </a>
@@ -385,7 +314,7 @@
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="../../_sources/faq/background/history_with_j2v8.rst.txt"
+            <a class="muted-link" href="../../_sources/faq/development/where_are_the_examples.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -393,31 +322,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">History with J2V8</a><ul>
-<li><a class="reference internal" href="#j2v8-issues">J2V8 Issues</a></li>
-<li><a class="reference internal" href="#j2v8-latest-version">J2V8 Latest Version</a></li>
-<li><a class="reference internal" href="#why-windows-and-linux-only">Why Windows and Linux only?</a></li>
-<li><a class="reference internal" href="#why-not-automate-the-j2v8-build-system">Why not Automate the J2V8 Build System?</a></li>
-<li><a class="reference internal" href="#why-not-deploy-j2v8-to-maven-repository">Why not Deploy J2V8 to Maven Repository?</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
