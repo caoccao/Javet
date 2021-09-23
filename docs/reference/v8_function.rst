@@ -223,6 +223,8 @@ As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way 
         return true;
     }
 
+``@V8BindEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
+
 The problem is if the function names are refactored to some other names, this string based solution will be broken. So, is there an IDE refactor friendly solution? Yes, ``JavetReflectionUtils.getMethodNameFromLambda()`` and ``JavetReflectionUtils.getMethodNameSetFromLambdas()`` are able to convert lambda functions to string and string set.
 
 * Firstly, prepare a set of to be disabled function names.
@@ -249,8 +251,6 @@ The problem is if the function names are refactored to some other names, this st
     }
 
 C'est très bien. Now, the set of to be disabled function names can be updated automatically by the IDE refactor.
-
-``@V8BindEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
 
 How to Unregister Properties or Functions?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

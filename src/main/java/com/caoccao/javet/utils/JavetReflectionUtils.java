@@ -42,7 +42,7 @@ public final class JavetReflectionUtils {
      * Gets method name from lambda.
      *
      * @param lambda the lambda
-     * @return the method name from lambda
+     * @return the method name
      * @since 0.9.13
      */
     public static String getMethodNameFromLambda(Serializable lambda) {
@@ -62,6 +62,7 @@ public final class JavetReflectionUtils {
      *
      * @param lambdas the lambdas
      * @return the method name set
+     * @since 0.9.13
      */
     public static Set<String> getMethodNameSetFromLambdas(Serializable... lambdas) {
         return Stream.of(Objects.requireNonNull(lambdas))

@@ -505,6 +505,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">@V8BindEnabler</span></code> can be used to decorate a method with signature <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">arbitraryMethod(String</span> <span class="pre">methodName)</span></code>. Javet calls that method by each method name for whether each method is enabled or not.</p>
 <p>The problem is if the function names are refactored to some other names, this string based solution will be broken. So, is there an IDE refactor friendly solution? Yes, <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameFromLambda()</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameSetFromLambdas()</span></code> are able to convert lambda functions to string and string set.</p>
 <ul class="simple">
 <li><p>Firstly, prepare a set of to be disabled function names.</p></li>
@@ -530,7 +531,6 @@
 </pre></div>
 </div>
 <p>C'est très bien. Now, the set of to be disabled function names can be updated automatically by the IDE refactor.</p>
-<p><code class="docutils literal notranslate"><span class="pre">@V8BindEnabler</span></code> can be used to decorate a method with signature <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">arbitraryMethod(String</span> <span class="pre">methodName)</span></code>. Javet calls that method by each method name for whether each method is enabled or not.</p>
 </div>
 <div class="section" id="how-to-unregister-properties-or-functions">
 <h4>How to Unregister Properties or Functions?<a class="headerlink" href="#how-to-unregister-properties-or-functions" title="Permalink to this headline">¶</a></h4>
