@@ -179,7 +179,18 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getMethodNameFromLambda</h4>
 <pre>public static&nbsp;java.lang.String&nbsp;getMethodNameFromLambda(java.io.Serializable&nbsp;lambda)</pre>
-<div class="block">Gets method name from lambda.</div>
+<div class="block">Gets method name from lambda.
+ <p>
+ Usage:
+ <p>
+ Suppose there is a test() method.
+ <pre>
+ public String test() { ... }
+ </pre>
+ Let's convert the lambda of test() to string which represents the method name.
+ <pre>
+ String methodName = JavetReflectionUtils.getMethodNameFromLambda((Supplier &amp; Serializable) this::test);
+ </pre></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>lambda</code> - the lambda</dd>
@@ -197,7 +208,21 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getMethodNameSetFromLambdas</h4>
 <pre>public static&nbsp;java.util.Set&lt;java.lang.String&gt;&nbsp;getMethodNameSetFromLambdas(java.io.Serializable...&nbsp;lambdas)</pre>
-<div class="block">Gets method name set from lambdas.</div>
+<div class="block">Gets method name set from lambdas.
+ <p>
+ Usage:
+ <p>
+ Suppose there are a few methods.
+ <pre>
+ public String abc() { ... }
+ public int def() { ... }
+ </pre>
+ Let's convert the lambda of these methods to a set which contains the method names.
+ <pre>
+ Set&lt;String&gt; methodNameSet = JavetReflectionUtils.getMethodNameSetFromLambdas(
+         (Supplier &amp; Serializable) this::abc,
+         (Supplier &amp; Serializable) this::def);
+ </pre></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>lambdas</code> - the lambdas</dd>
