@@ -121,8 +121,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             } catch (JavetExecutionException e) {
                 assertEquals("TypeError: a.echo is not a function", e.getMessage());
             }
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -154,8 +155,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertTrue(v8Value.isUndefined());
             }
             v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -169,14 +171,15 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(codeString, v8ValueFunction.toString());
             assertEquals(codeString, v8ValueFunction.getSourceCode());
             assertEquals("123測試", v8ValueFunction.callString(null));
+            v8Runtime.getGlobalObject().bindFunction("a", codeString);
+            assertEquals("123測試", v8Runtime.getExecutor("a();").executeString());
+            v8Runtime.getGlobalObject().bindFunction("b", "(x) => x + 1;");
+            assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
+            v8Runtime.getGlobalObject().delete("a");
+            v8Runtime.getGlobalObject().delete("b");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.getGlobalObject().bindFunction("a", codeString);
-        assertEquals("123測試", v8Runtime.getExecutor("a();").executeString());
-        v8Runtime.getGlobalObject().bindFunction("b", "(x) => x + 1;");
-        assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
-        v8Runtime.getGlobalObject().delete("a");
-        v8Runtime.getGlobalObject().delete("b");
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -191,8 +194,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             }
             assertEquals(1, v8ValueArray.getLength());
             assertEquals("x", v8ValueArray.toString());
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -306,8 +310,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(globalObject.hasOwnProperty("a"));
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("echoThis");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -330,8 +335,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(globalObject.hasOwnProperty("a"));
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("echo");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -558,8 +564,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         } catch (JavetExecutionException e) {
             e.printStackTrace();
             fail(e.getScriptingError().toString());
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -824,8 +831,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
