@@ -18,9 +18,11 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
@@ -32,9 +34,11 @@ import org.junit.jupiter.api.Test;
 
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -117,8 +121,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             } catch (JavetExecutionException e) {
                 assertEquals("TypeError: a.echo is not a function", e.getMessage());
             }
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -150,8 +155,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertTrue(v8Value.isUndefined());
             }
             v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -165,14 +171,15 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(codeString, v8ValueFunction.toString());
             assertEquals(codeString, v8ValueFunction.getSourceCode());
             assertEquals("123測試", v8ValueFunction.callString(null));
+            v8Runtime.getGlobalObject().bindFunction("a", codeString);
+            assertEquals("123測試", v8Runtime.getExecutor("a();").executeString());
+            v8Runtime.getGlobalObject().bindFunction("b", "(x) => x + 1;");
+            assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
+            v8Runtime.getGlobalObject().delete("a");
+            v8Runtime.getGlobalObject().delete("b");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.getGlobalObject().bindFunction("a", codeString);
-        assertEquals("123測試", v8Runtime.getExecutor("a();").executeString());
-        v8Runtime.getGlobalObject().bindFunction("b", "(x) => x + 1;");
-        assertEquals(2, v8Runtime.getExecutor("b(1);").executeInteger());
-        v8Runtime.getGlobalObject().delete("a");
-        v8Runtime.getGlobalObject().delete("b");
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -187,8 +194,21 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             }
             assertEquals(1, v8ValueArray.getLength());
             assertEquals("x", v8ValueArray.toString());
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testAsyncFunction() throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("() => {}")) {
+            assertFalse(v8ValueFunction.isAsyncFunction());
+            assertFalse(v8ValueFunction.isGeneratorFunction());
+        }
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("async () => {Promise.resolve(0);}")) {
+            assertTrue(v8ValueFunction.isAsyncFunction());
+            assertFalse(v8ValueFunction.isGeneratorFunction());
+        }
     }
 
     @Test
@@ -290,8 +310,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(globalObject.hasOwnProperty("a"));
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("echoThis");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -314,8 +335,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(globalObject.hasOwnProperty("a"));
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("echo");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -542,8 +564,54 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         } catch (JavetExecutionException e) {
             e.printStackTrace();
             fail(e.getScriptingError().toString());
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testDoubleStream() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public DoubleStream test(DoubleStream doubleStream) {
+                return doubleStream.map(i -> i + 1);
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(anonymous);
+            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.test([1.23,2.34]);").execute()) {
+                assertEquals(2, v8ValueArray.getLength());
+                assertEquals(2.23D, v8ValueArray.getDouble(0), 0.001D);
+                assertEquals(3.34D, v8ValueArray.getDouble(1), 0.001D);
+            }
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testGeneratorFunction() throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("() => {}")) {
+            assertFalse(v8ValueFunction.isGeneratorFunction());
+            assertFalse(v8ValueFunction.isAsyncFunction());
+        }
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                "function* a() {yield 0;}; a;").execute()) {
+            assertTrue(v8ValueFunction.isGeneratorFunction());
+            assertFalse(v8ValueFunction.isAsyncFunction());
+        }
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                "async function* b() {\n" +
+                        "  let i = 0;\n" +
+                        "  while (i < 3) {\n" +
+                        "    yield i++;\n" +
+                        "  }\n" +
+                        "}; b;").execute()) {
+            assertTrue(v8ValueFunction.isGeneratorFunction());
+            assertTrue(v8ValueFunction.isAsyncFunction());
+        }
     }
 
     /**
@@ -602,6 +670,145 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testIntStream() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public IntStream test(IntStream intStream) {
+                return intStream.map(i -> i + 1);
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(anonymous);
+            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.test([1,2]);").execute()) {
+                assertEquals(2, v8ValueArray.getLength());
+                assertEquals(2, v8ValueArray.getInteger(0));
+                assertEquals(3, v8ValueArray.getInteger(1));
+            }
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testLongStream() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public LongStream test(LongStream longStream) {
+                return longStream.map(i -> i + 1);
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(anonymous);
+            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.test([1n,2n]);").execute()) {
+                assertEquals(2, v8ValueArray.getLength());
+                assertEquals(2L, v8ValueArray.getLong(0));
+                assertEquals(3L, v8ValueArray.getLong(1));
+            }
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testOptional() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public Optional<String> test(Optional<String> optionalString) {
+                if (optionalString.isPresent()) {
+                    String str = optionalString.get();
+                    if (str.length() > 0) {
+                        return Optional.of(str.substring(1));
+                    }
+                }
+                return Optional.empty();
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(anonymous);
+            assertTrue(v8Runtime.getExecutor("a.test('ab') == 'b';").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("a.test('a') == '';").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("a.test(null) === null;").executeBoolean());
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testOptionalDouble() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public OptionalDouble test(OptionalDouble optionalDouble) {
+                if (optionalDouble.isPresent()) {
+                    double d = optionalDouble.getAsDouble();
+                    return OptionalDouble.of(d + 1);
+                }
+                return OptionalDouble.empty();
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(anonymous);
+            assertTrue(v8Runtime.getExecutor("Math.abs(a.test(1.2) - 2.2) < 0.001;").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("a.test(null) === null;").executeBoolean());
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testOptionalInt() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public OptionalInt test(OptionalInt optionalInt) {
+                if (optionalInt.isPresent()) {
+                    int i = optionalInt.getAsInt();
+                    return OptionalInt.of(i + 1);
+                }
+                return OptionalInt.empty();
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(anonymous);
+            assertTrue(v8Runtime.getExecutor("a.test(1) == 2;").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("a.test(null) === null;").executeBoolean());
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testOptionalLong() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public OptionalLong test(OptionalLong optionalLong) {
+                if (optionalLong.isPresent()) {
+                    long l = optionalLong.getAsLong();
+                    return OptionalLong.of(l + 1);
+                }
+                return OptionalLong.empty();
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(anonymous);
+            assertTrue(v8Runtime.getExecutor("a.test(1n) == 2n;").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("a.test(null) === null;").executeBoolean());
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
     public void testPropertyGetter() throws NoSuchMethodException, JavetException {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
@@ -624,8 +831,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -659,7 +867,31 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals("{\"test\":\"abc\"}", v8ValueObject.toJsonString());
             assertTrue(mockCallbackReceiver.isCalled());
             globalObject.delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testStream() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public Stream test(Stream stream) {
+                return stream.filter(o -> o instanceof String);
+            }
+        };
+
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(anonymous);
+            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("a.test(['a',1,'b']);").execute()) {
+                assertEquals(2, v8ValueArray.getLength());
+                assertEquals("a", v8ValueArray.getString(0));
+                assertEquals("b", v8ValueArray.getString(1));
+            }
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
     }
 }

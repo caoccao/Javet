@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetConverterConfig;
+import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
@@ -32,8 +33,11 @@ import com.caoccao.javet.values.reference.V8ValueArray;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 /**
  * The type V8 function callback.
@@ -69,110 +73,163 @@ public final class V8FunctionCallback {
                 } else if (expectedClass == char.class) {
                     return config.getDefaultChar();
                 }
+            } else if (expectedClass == Optional.class) {
+                return Optional.empty();
+            } else if (expectedClass == OptionalInt.class) {
+                return OptionalInt.empty();
+            } else if (expectedClass == OptionalDouble.class) {
+                return OptionalDouble.empty();
+            } else if (expectedClass == OptionalLong.class) {
+                return OptionalLong.empty();
+            } else if (expectedClass == Stream.class) {
+                return Stream.empty();
+            } else if (expectedClass == IntStream.class) {
+                return IntStream.empty();
+            } else if (expectedClass == DoubleStream.class) {
+                return DoubleStream.empty();
+            } else if (expectedClass == LongStream.class) {
+                return LongStream.empty();
             }
         } else if (expectedClass.isAssignableFrom(v8Value.getClass())) {
             // Skip assignable
         } else {
             Object convertedObject = converter.toObject(v8Value);
-            if (convertedObject == null) {
-                return convert(converter, expectedClass, null);
-            } else {
-                Class<?> convertedObjectClass = convertedObject.getClass();
-                if (expectedClass.isAssignableFrom(convertedObjectClass)) {
-                    return convertedObject;
-                } else if (expectedClass.isPrimitive()) {
-                    /*
-                     * The following test is based on statistical analysis
-                     * so that the performance can be maximized.
-                     */
-                    if (expectedClass == int.class) {
-                        if (convertedObjectClass == Integer.class) {
+            try {
+                if (convertedObject == null) {
+                    return convert(converter, expectedClass, null);
+                } else {
+                    Class<?> convertedObjectClass = convertedObject.getClass();
+                    if (expectedClass.isAssignableFrom(convertedObjectClass)) {
+                        return convertedObject;
+                    } else if (expectedClass.isPrimitive()) {
+                        /*
+                         * The following test is based on statistical analysis
+                         * so that the performance can be maximized.
+                         */
+                        if (expectedClass == int.class) {
+                            if (convertedObjectClass == Integer.class) {
+                                //noinspection UnnecessaryUnboxing
+                                return ((Integer) convertedObject).intValue();
+                            } else if (convertedObjectClass == Long.class) {
+                                return ((Long) convertedObject).intValue();
+                            } else if (convertedObjectClass == Short.class) {
+                                return ((Short) convertedObject).intValue();
+                            } else if (convertedObjectClass == Byte.class) {
+                                return ((Byte) convertedObject).intValue();
+                            }
+                        } else if (expectedClass == boolean.class && convertedObjectClass == Boolean.class) {
                             //noinspection UnnecessaryUnboxing
-                            return ((Integer) convertedObject).intValue();
-                        } else if (convertedObjectClass == Long.class) {
-                            return ((Long) convertedObject).intValue();
-                        } else if (convertedObjectClass == Short.class) {
-                            return ((Short) convertedObject).intValue();
-                        } else if (convertedObjectClass == Byte.class) {
-                            return ((Byte) convertedObject).intValue();
+                            return ((Boolean) convertedObject).booleanValue();
+                        } else if (expectedClass == double.class) {
+                            if (convertedObjectClass == Double.class) {
+                                //noinspection UnnecessaryUnboxing
+                                return ((Double) convertedObject).doubleValue();
+                            } else if (convertedObjectClass == Float.class) {
+                                return ((Float) convertedObject).doubleValue();
+                            } else if (convertedObjectClass == Integer.class) {
+                                return ((Integer) convertedObject).doubleValue();
+                            } else if (convertedObjectClass == Long.class) {
+                                return ((Long) convertedObject).doubleValue();
+                            } else if (convertedObjectClass == Short.class) {
+                                return ((Short) convertedObject).doubleValue();
+                            } else if (convertedObjectClass == Byte.class) {
+                                return ((Byte) convertedObject).doubleValue();
+                            }
+                        } else if (expectedClass == float.class) {
+                            if (convertedObjectClass == Double.class) {
+                                return ((Double) convertedObject).floatValue();
+                            } else if (convertedObjectClass == Float.class) {
+                                //noinspection UnnecessaryUnboxing
+                                return ((Float) convertedObject).floatValue();
+                            } else if (convertedObjectClass == Integer.class) {
+                                return ((Integer) convertedObject).floatValue();
+                            } else if (convertedObjectClass == Long.class) {
+                                return ((Long) convertedObject).floatValue();
+                            } else if (convertedObjectClass == Short.class) {
+                                return ((Short) convertedObject).floatValue();
+                            } else if (convertedObjectClass == Byte.class) {
+                                return ((Byte) convertedObject).floatValue();
+                            }
+                        } else if (expectedClass == long.class) {
+                            if (convertedObjectClass == Long.class) {
+                                //noinspection UnnecessaryUnboxing
+                                return ((Long) convertedObject).longValue();
+                            } else if (convertedObjectClass == Integer.class) {
+                                return ((Integer) convertedObject).longValue();
+                            } else if (convertedObjectClass == Short.class) {
+                                return ((Short) convertedObject).longValue();
+                            } else if (convertedObjectClass == Byte.class) {
+                                return ((Byte) convertedObject).longValue();
+                            }
+                        } else if (expectedClass == short.class) {
+                            if (convertedObjectClass == Short.class) {
+                                //noinspection UnnecessaryUnboxing
+                                return ((Short) convertedObject).shortValue();
+                            } else if (convertedObjectClass == Integer.class) {
+                                return ((Integer) convertedObject).shortValue();
+                            } else if (convertedObjectClass == Long.class) {
+                                return ((Long) convertedObject).shortValue();
+                            } else if (convertedObjectClass == Byte.class) {
+                                return ((Byte) convertedObject).shortValue();
+                            }
+                        } else if (expectedClass == byte.class) {
+                            if (convertedObjectClass == Byte.class) {
+                                //noinspection UnnecessaryUnboxing
+                                return ((Byte) convertedObject).byteValue();
+                            } else if (convertedObjectClass == Integer.class) {
+                                return ((Integer) convertedObject).byteValue();
+                            } else if (convertedObjectClass == Long.class) {
+                                return ((Long) convertedObject).byteValue();
+                            } else if (convertedObjectClass == Short.class) {
+                                return ((Short) convertedObject).byteValue();
+                            }
+                        } else if (expectedClass == char.class) {
+                            if (convertedObjectClass == Character.class) {
+                                //noinspection UnnecessaryUnboxing
+                                return ((Character) convertedObject).charValue();
+                            } else if (convertedObjectClass == String.class) {
+                                String convertedString = (String) convertedObject;
+                                return convertedString.length() > 0 ?
+                                        convertedString.charAt(0) : converter.getConfig().getDefaultChar();
+                            }
                         }
-                    } else if (expectedClass == boolean.class && convertedObjectClass == Boolean.class) {
-                        //noinspection UnnecessaryUnboxing
-                        return ((Boolean) convertedObject).booleanValue();
-                    } else if (expectedClass == double.class) {
-                        if (convertedObjectClass == Double.class) {
-                            //noinspection UnnecessaryUnboxing
-                            return ((Double) convertedObject).doubleValue();
-                        } else if (convertedObjectClass == Float.class) {
-                            return ((Float) convertedObject).doubleValue();
-                        } else if (convertedObjectClass == Integer.class) {
-                            return ((Integer) convertedObject).doubleValue();
-                        } else if (convertedObjectClass == Long.class) {
-                            return ((Long) convertedObject).doubleValue();
-                        } else if (convertedObjectClass == Short.class) {
-                            return ((Short) convertedObject).doubleValue();
-                        } else if (convertedObjectClass == Byte.class) {
-                            return ((Byte) convertedObject).doubleValue();
+                    } else if (expectedClass == Optional.class) {
+                        return Optional.of(convertedObject);
+                    } else if (expectedClass == OptionalInt.class) {
+                        if (convertedObject instanceof Integer) {
+                            return OptionalInt.of((Integer) convertedObject);
                         }
-                    } else if (expectedClass == float.class) {
-                        if (convertedObjectClass == Double.class) {
-                            return ((Double) convertedObject).floatValue();
-                        } else if (convertedObjectClass == Float.class) {
-                            //noinspection UnnecessaryUnboxing
-                            return ((Float) convertedObject).floatValue();
-                        } else if (convertedObjectClass == Integer.class) {
-                            return ((Integer) convertedObject).floatValue();
-                        } else if (convertedObjectClass == Long.class) {
-                            return ((Long) convertedObject).floatValue();
-                        } else if (convertedObjectClass == Short.class) {
-                            return ((Short) convertedObject).floatValue();
-                        } else if (convertedObjectClass == Byte.class) {
-                            return ((Byte) convertedObject).floatValue();
+                    } else if (expectedClass == OptionalDouble.class) {
+                        if (convertedObject instanceof Double) {
+                            return OptionalDouble.of((Double) convertedObject);
                         }
-                    } else if (expectedClass == long.class) {
-                        if (convertedObjectClass == Long.class) {
-                            //noinspection UnnecessaryUnboxing
-                            return ((Long) convertedObject).longValue();
-                        } else if (convertedObjectClass == Integer.class) {
-                            return ((Integer) convertedObject).longValue();
-                        } else if (convertedObjectClass == Short.class) {
-                            return ((Short) convertedObject).longValue();
-                        } else if (convertedObjectClass == Byte.class) {
-                            return ((Byte) convertedObject).longValue();
+                    } else if (expectedClass == OptionalLong.class) {
+                        if (convertedObject instanceof Long) {
+                            return OptionalLong.of((Long) convertedObject);
                         }
-                    } else if (expectedClass == short.class) {
-                        if (convertedObjectClass == Short.class) {
-                            //noinspection UnnecessaryUnboxing
-                            return ((Short) convertedObject).shortValue();
-                        } else if (convertedObjectClass == Integer.class) {
-                            return ((Integer) convertedObject).shortValue();
-                        } else if (convertedObjectClass == Long.class) {
-                            return ((Long) convertedObject).shortValue();
-                        } else if (convertedObjectClass == Byte.class) {
-                            return ((Byte) convertedObject).shortValue();
+                    } else if (expectedClass == Stream.class) {
+                        Stream stream = JavetTypeUtils.toStream(convertedObject);
+                        if (stream != null) {
+                            return stream;
                         }
-                    } else if (expectedClass == byte.class) {
-                        if (convertedObjectClass == Byte.class) {
-                            //noinspection UnnecessaryUnboxing
-                            return ((Byte) convertedObject).byteValue();
-                        } else if (convertedObjectClass == Integer.class) {
-                            return ((Integer) convertedObject).byteValue();
-                        } else if (convertedObjectClass == Long.class) {
-                            return ((Long) convertedObject).byteValue();
-                        } else if (convertedObjectClass == Short.class) {
-                            return ((Short) convertedObject).byteValue();
+                    } else if (expectedClass == IntStream.class) {
+                        IntStream intStream = JavetTypeUtils.toIntStream(convertedObject);
+                        if (intStream != null) {
+                            return intStream;
                         }
-                    } else if (expectedClass == char.class) {
-                        if (convertedObjectClass == Character.class) {
-                            //noinspection UnnecessaryUnboxing
-                            return ((Character) convertedObject).charValue();
-                        } else if (convertedObjectClass == String.class) {
-                            String convertedString = (String) convertedObject;
-                            return convertedString.length() > 0 ?
-                                    convertedString.charAt(0) : converter.getConfig().getDefaultChar();
+                    } else if (expectedClass == LongStream.class) {
+                        LongStream longStream = JavetTypeUtils.toLongStream(convertedObject);
+                        if (longStream != null) {
+                            return longStream;
+                        }
+                    } else if (expectedClass == DoubleStream.class) {
+                        DoubleStream doubleStream = JavetTypeUtils.toDoubleStream(convertedObject);
+                        if (doubleStream != null) {
+                            return doubleStream;
                         }
                     }
                 }
+            } catch (Throwable t) {
             }
             throw new JavetException(
                     JavetError.CallbackSignatureParameterTypeMismatch,

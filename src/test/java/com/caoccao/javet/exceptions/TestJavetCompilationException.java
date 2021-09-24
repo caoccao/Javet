@@ -74,7 +74,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
     @Test
     public void testUnexpectedIdentifier() {
         try {
-            v8Runtime.getExecutor("const a = 1;\na a a a;").compileScript();
+            v8Runtime.getExecutor("const a = 1;\na a a a;").compileV8Script();
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
             assertEquals(JavetError.CompilationFailure, e.getError());

@@ -1,18 +1,17 @@
 /*
- *    Copyright 2021. caoccao.com Sam Cao
+ * Copyright (c) 2021. caoccao.com Sam Cao
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.caoccao.javet.interop;
@@ -27,28 +26,24 @@ import com.caoccao.javet.utils.SimpleMap;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type V8 host.
+ *
+ * @since 0.7.0
  */
 @SuppressWarnings("unchecked")
 public final class V8Host implements AutoCloseable {
     /**
      * The constant GLOBAL_THIS.
+     *
+     * @since 0.7.0
      */
     public static final String GLOBAL_THIS = "globalThis";
-    private static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
-    private static final String FLAG_EXPOSE_GC = "--expose-gc";
-    private static final String FLAG_EXPOSE_INSPECTOR_SCRIPTS = "--expose-inspector-scripts";
-    private static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
-    private static final String FLAG_USE_STRICT = "--use-strict";
     private static final long INVALID_HANDLE = 0L;
-    private static final String SPACE = " ";
     private static boolean libraryReloadable = false;
     private static volatile double memoryUsageThresholdRatio = 0.7;
     private final V8Flags flags;
@@ -131,7 +126,7 @@ public final class V8Host implements AutoCloseable {
     /**
      * Determines whether the JNI library is reloadable or not.
      *
-     * @return true: reloadable, false: not reloadable, default: false
+     * @return true : reloadable, false: not reloadable, default: false
      * @since 0.9.1
      */
     public static boolean isLibraryReloadable() {
@@ -181,6 +176,8 @@ public final class V8Host implements AutoCloseable {
 
     /**
      * Clear internal statistic for internal test purpose.
+     *
+     * @since 0.8.3
      */
     public void clearInternalStatistic() {
         v8Native.clearInternalStatistic();
@@ -229,7 +226,7 @@ public final class V8Host implements AutoCloseable {
     }
 
     /**
-     * Create V8 runtime.
+     * Create V8 runtime by custom global name.
      *
      * @param <R>        the type parameter
      * @param globalName the global name
@@ -242,7 +239,7 @@ public final class V8Host implements AutoCloseable {
     }
 
     /**
-     * Create V8 runtime.
+     * Create V8 runtime by pooled flag and custom global name.
      *
      * @param <R>        the type parameter
      * @param pooled     the pooled
@@ -311,9 +308,9 @@ public final class V8Host implements AutoCloseable {
     }
 
     /**
-     * Get internal statistic internal for test purpose.
+     * Get internal statistic for test purpose.
      *
-     * @return the long [ ]
+     * @return the internal statistic
      * @since 0.8.3
      */
     public long[] getInternalStatistic() {
@@ -383,7 +380,7 @@ public final class V8Host implements AutoCloseable {
     /**
      * Is isolate created.
      *
-     * @return true: created, false: not created
+     * @return true : created, false: not created
      * @since 0.8.0
      */
     public boolean isIsolateCreated() {
@@ -393,7 +390,7 @@ public final class V8Host implements AutoCloseable {
     /**
      * Is library loaded.
      *
-     * @return true: loaded, false: not loaded
+     * @return true : loaded, false: not loaded
      * @since 0.8.0
      */
     public boolean isLibraryLoaded() {
@@ -405,12 +402,15 @@ public final class V8Host implements AutoCloseable {
      * <p>
      * Note: setLibraryReloadable(true) must be called, otherwise, JVM will crash.
      *
-     * @return true: library is loaded, false: library is not loaded
+     * @return true : library is loaded, false: library is not loaded
      * @since 0.9.1
      */
     public synchronized boolean loadLibrary() {
         if (!libraryLoaded) {
             try {
+                logger.logDebug(
+                        "[{0}] Loading library.",
+                        jsRuntimeType.getName());
                 javetClassLoader = new JavetClassLoader(getClass().getClassLoader(), jsRuntimeType);
                 javetClassLoader.load();
                 v8Native = javetClassLoader.getNative();
@@ -427,29 +427,18 @@ public final class V8Host implements AutoCloseable {
     /**
      * Sets flags.
      *
-     * @return true: flags are set, false: flags are not set
+     * @return true : flags are set, false: flags are not set
      * @since 0.7.0
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean setFlags() {
         if (libraryLoaded && !isolateCreated) {
-            List<String> flags = new ArrayList<>();
-            if (this.flags.isAllowNativesSyntax()) {
-                flags.add(FLAG_ALLOW_NATIVES_SYNTAX);
-            }
-            if (this.flags.isExposeGC()) {
-                flags.add(FLAG_EXPOSE_GC);
-            }
-            if (this.flags.isExposeInspectorScripts()) {
-                flags.add(FLAG_EXPOSE_INSPECTOR_SCRIPTS);
-            }
-            if (this.flags.isUseStrict()) {
-                flags.add(FLAG_USE_STRICT);
-            }
-            if (this.flags.isTrackRetainingPath()) {
-                flags.add(FLAG_TRACK_RETAINING_PATH);
-            }
-            v8Native.setFlags(String.join(SPACE, flags));
+            String v8FlagsString = flags.toString();
+            logger.logDebug(
+                    "[{0}] Setting V8 flags: {1}.",
+                    jsRuntimeType.getName(),
+                    v8FlagsString);
+            v8Native.setFlags(v8FlagsString);
             return true;
         }
         return false;
@@ -460,11 +449,14 @@ public final class V8Host implements AutoCloseable {
      * <p>
      * Note: setLibraryReloadable(true) must be called, otherwise, JVM will crash.
      *
-     * @return true: library is unloaded, false: library is loaded
+     * @return true : library is unloaded, false: library is loaded
      * @since 0.9.1
      */
     public synchronized boolean unloadLibrary() {
         if (libraryLoaded && v8RuntimeMap.isEmpty()) {
+            logger.logDebug(
+                    "[{0}] Unloading library.",
+                    jsRuntimeType.getName());
             isolateCreated = false;
             v8Native = null;
             javetClassLoader = null;

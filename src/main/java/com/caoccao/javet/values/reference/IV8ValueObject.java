@@ -18,6 +18,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
@@ -41,6 +42,7 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+
     /**
      * Bind both functions via @V8Function and properties via @V8Property.
      *
@@ -795,6 +797,16 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean has(Object value) throws JavetException;
 
     /**
+     * Has internal type.
+     *
+     * @param internalType the internal type
+     * @return true : yes, false: no
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
+    boolean hasInternalType(V8ValueInternalType internalType) throws JavetException;
+
+    /**
      * Has null property key.
      *
      * @return true : yes, false: no
@@ -1041,6 +1053,17 @@ public interface IV8ValueObject extends IV8ValueReference {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void invokeVoid(String functionName, V8Value... v8Values) throws JavetException {
         invokeExtended(functionName, false, v8Values);
+    }
+
+    /**
+     * Is generator object.
+     *
+     * @return true: yes, false: no
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
+    default boolean isGeneratorObject() throws JavetException {
+        return hasInternalType(V8ValueInternalType.GeneratorObject);
     }
 
     /**

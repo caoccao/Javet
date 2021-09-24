@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Know the Lock" href="lock.html" /><link rel="prev" title="Modularization" href="modularization.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Memory Management - Javet 0.9.12 documentation</title>
+        <title>Memory Management - Javet 0.9.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 0.9.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  <span class="sidebar-brand-text">Javet 0.9.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -215,6 +215,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/development/where_are_the_examples.html">Where are the Examples?</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -321,6 +322,24 @@
 </pre></div>
 </div>
 <p>Note: V8 does not recycle objects that are referenced by other objects. Please make sure the object chain is broken so that GC can work as expected. <code class="docutils literal notranslate"><span class="pre">com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor</span></code> is a good sample showing how to deal with that.</p>
+</div>
+<div class="section" id="how-to-escape-from-try-with-resource">
+<h3>How to Escape from try-with-resource?<a class="headerlink" href="#how-to-escape-from-try-with-resource" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes V8 objects to be returned to V8 cannot be closed, but if there is an exception thrown between V8 object creation and return, that V8 object is not closed. In that case, memory leak will take place. So, how to escape from that case? Javet introduces <code class="docutils literal notranslate"><span class="pre">V8VirtualEscapableValue</span></code> to prevent memory leak when exception is thrown.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>It needs to be used by try-with-resource.</p></li>
+<li><p>By default, escapable is set to false so that the internal value can be close when exception is thrown.</p></li>
+<li><p>If there is no exception, escapable needs to be set to true before try-with-resource is closed.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">(</span><span class="n">V8VirtualEscapableValue</span><span class="o">&lt;</span><span class="n">V8ValueObject</span><span class="o">&gt;</span> <span class="n">v8VirtualEscapableValueObject</span> <span class="o">=</span>
+        <span class="k">new</span> <span class="n">V8VirtualEscapableValue</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">()))</span> <span class="p">{</span>
+    <span class="c1">// Do whatever.</span>
+    <span class="k">return</span> <span class="n">v8VirtualEscapableValueObject</span><span class="p">.</span><span class="na">setEscapable</span><span class="p">().</span><span class="na">get</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="alternative-option-arraybuffer">
@@ -542,6 +561,7 @@
 <li><a class="reference internal" href="#recommended-options">Recommended Options</a><ul>
 <li><a class="reference internal" href="#automatic-management-with-try-with-resource">Automatic Management with try-with-resource</a></li>
 <li><a class="reference internal" href="#automatically-manage-with-weak-reference">Automatically Manage with Weak Reference</a></li>
+<li><a class="reference internal" href="#how-to-escape-from-try-with-resource">How to Escape from try-with-resource?</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#alternative-option-arraybuffer">Alternative Option: ArrayBuffer</a></li>

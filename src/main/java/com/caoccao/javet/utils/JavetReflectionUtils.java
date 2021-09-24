@@ -17,7 +17,14 @@
 
 package com.caoccao.javet.utils;
 
+import java.io.Serializable;
+import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The type Javet reflection utils.
@@ -26,7 +33,68 @@ import java.lang.reflect.AccessibleObject;
  */
 public final class JavetReflectionUtils {
 
+    private static final String METHOD_NAME_WRITE_REPLACE = "writeReplace";
+
     private JavetReflectionUtils() {
+    }
+
+    /**
+     * Gets method name from lambda.
+     * <p>
+     * Usage:
+     * <p>
+     * Suppose there is a test() method.
+     * <pre>
+     * public String test() { ... }
+     * </pre>
+     * Let's convert the lambda of test() to string which represents the method name.
+     * <pre>
+     * String methodName = JavetReflectionUtils.getMethodNameFromLambda((Supplier &amp; Serializable) this::test);
+     * </pre>
+     *
+     * @param lambda the lambda
+     * @return the method name
+     * @since 0.9.13
+     */
+    public static String getMethodNameFromLambda(Serializable lambda) {
+        Objects.requireNonNull(lambda);
+        try {
+            Method method = lambda.getClass().getDeclaredMethod(METHOD_NAME_WRITE_REPLACE);
+            method.setAccessible(true);
+            SerializedLambda serializedLambda = (SerializedLambda) method.invoke(lambda);
+            return serializedLambda.getImplMethodName();
+        } catch (Throwable t) {
+        }
+        return null;
+    }
+
+    /**
+     * Gets method name set from lambdas.
+     * <p>
+     * Usage:
+     * <p>
+     * Suppose there are a few methods.
+     * <pre>
+     * public String abc() { ... }
+     * public int def() { ... }
+     * </pre>
+     * Let's convert the lambda of these methods to a set which contains the method names.
+     * <pre>
+     * Set&lt;String&gt; methodNameSet = JavetReflectionUtils.getMethodNameSetFromLambdas(
+     *         (Supplier &amp; Serializable) this::abc,
+     *         (Supplier &amp; Serializable) this::def);
+     * </pre>
+     *
+     * @param lambdas the lambdas
+     * @return the method name set
+     * @since 0.9.13
+     */
+    public static Set<String> getMethodNameSetFromLambdas(Serializable... lambdas) {
+        return Stream.of(Objects.requireNonNull(lambdas))
+                .filter(Objects::nonNull)
+                .map(JavetReflectionUtils::getMethodNameFromLambda)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     /**

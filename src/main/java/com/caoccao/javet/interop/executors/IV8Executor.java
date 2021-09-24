@@ -34,19 +34,6 @@ import java.nio.file.Path;
 
 public interface IV8Executor extends IV8Executable {
     @CheckReturnValue
-    default V8Script compileScript() throws JavetException {
-        return compileScript(true);
-    }
-
-    @CheckReturnValue
-    V8Script compileScript(boolean resultRequired) throws JavetException;
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    default void compileScriptVoid() throws JavetException {
-        compileScript(false);
-    }
-
-    @CheckReturnValue
     default V8Module compileV8Module() throws JavetException {
         return compileV8Module(true);
     }
@@ -57,6 +44,19 @@ public interface IV8Executor extends IV8Executable {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void compileV8ModuleVoid() throws JavetException {
         compileV8Module(false);
+    }
+
+    @CheckReturnValue
+    default V8Script compileV8Script() throws JavetException {
+        return compileV8Script(true);
+    }
+
+    @CheckReturnValue
+    V8Script compileV8Script(boolean resultRequired) throws JavetException;
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    default void compileV8ScriptVoid() throws JavetException {
+        compileV8Script(false);
     }
 
     default String getResourceName() {

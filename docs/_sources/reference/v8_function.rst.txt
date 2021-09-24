@@ -144,6 +144,23 @@ The second step is to call the functions or properties.
         v8Runtime.getGlobalObject().delete("a");
     }
 
+How about ``Optional`` and ``Stream``? The built-in converter knows these 2 special types and handles the conversion transparently.
+
+.. code-block:: java
+
+    v8ValueObject.bind(new IJavetAnonymous() {
+        @V8Function
+        public Optional<String> testOptional(Optional<String> optionalString) {
+            // Do whatever you want to do.
+            return Optional.of("abc");
+        }
+        @V8Function
+        public Stream testStream(Stream stream) {
+            // Do whatever you want to do.
+            return stream.filter(o -> o instanceof String);
+        }
+    });
+
 Can **this** be Passed in?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -161,16 +178,20 @@ This feature is especially useful when ``this`` needs to be returned. Just simpl
 Can Symbol Properties be Intercepted?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Yes, ``@V8Property`` supports ``symbol``. Just set it to ``true``.
+Yes, ``@V8Property`` supports ``symbolType``.
+
+* None: Not a symbol. (default)
+* Built-in: ES built-in symbol type.
+* Custom: User defined symbol type.
 
 .. code-block:: java
 
-    @V8Property(symbol = true)
+    @V8Property(symbolType = V8ValueSymbolType.Custom)
     public String getValue() {
         return value;
     }
 
-    @V8Property(symbol = true)
+    @V8Property(symbolType = V8ValueSymbolType.Custom)
     public void setValue(String value) {
         this.value = value;
     }
@@ -204,12 +225,91 @@ As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way 
 
 ``@V8BindEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
 
+The problem is if the function names are refactored to some other names, this string based solution will be broken. So, is there an IDE refactor friendly solution? Yes, ``JavetReflectionUtils.getMethodNameFromLambda()`` and ``JavetReflectionUtils.getMethodNameSetFromLambdas()`` are able to convert lambda functions to string and string set.
+
+* Firstly, prepare a set of to be disabled function names.
+
+.. code-block:: java
+
+    // Option 1 with JavetReflectionUtils.getMethodNameFromLambda()
+    Set<String> disabledFunctionSet = new HashSet<String>(Arrays.asList(
+            JavetReflectionUtils.getMethodNameFromLambda((Supplier & Serializable) this::disabledFunction),
+            JavetReflectionUtils.getMethodNameFromLambda((Supplier & Serializable) this::disabledProperty)));
+
+    // Option 2 with JavetReflectionUtils.getMethodNameSetFromLambdas()
+    Set<String> disabledFunctionSet = JavetReflectionUtils.getMethodNameSetFromLambdas(
+            (Supplier & Serializable) this::disabledFunction,
+            (Supplier & Serializable) this::disabledProperty);
+
+* Secondly, just test whether the method name is in the set or not.
+
+.. code-block:: java
+
+    @V8BindEnabler
+    public boolean isV8BindEnabled(String methodName) {
+        return !disabledFunctionSet.contains(methodName);
+    }
+
+C'est très bien. Now, the set of to be disabled function names can be updated automatically by the IDE refactor.
+
 How to Unregister Properties or Functions?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``unbind()`` follows the same way that ``bind()`` goes to unregister both properties and functions.
 
 ``unbindProperty()`` and ``unbindFunction()`` provide precise way of unregistering single property or function.
+
+Can Both JavaScript Function and Property Map to One Java Function?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Yes, just simply decorate the Java function with both ``@V8Function`` and ``@V8Property``.
+
+.. code-block:: java
+
+    IJavetAnonymous iJavetAnonymous1 = new IJavetAnonymous() {
+        @V8Function(name = "testFunction")
+        @V8Property(name = "testProperty")
+        public String test() {
+            return "abc";
+        }
+    };
+    try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+        v8Runtime.getGlobalObject().set("a", v8ValueObject);
+        v8ValueObject.bind(iJavetAnonymous1);
+        assertEquals("abc", v8Runtime.getExecutor("a['testProperty']").executeString());
+        assertEquals("abc", v8Runtime.getExecutor("a.testFunction()").executeString());
+        v8ValueObject.unbind(iJavetAnonymous1);
+    } finally {
+        v8Runtime.lowMemoryNotification();
+    }
+
+Can 2 Java Functions Map to One JavaScript Function and Property?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Yes, just simply give 2 Java functions the same name.
+
+.. code-block:: java
+
+    IJavetAnonymous iJavetAnonymous2 = new IJavetAnonymous() {
+        @V8Function(name = "test")
+        public String testFunction() {
+            return "abc";
+        }
+
+        @V8Property(name = "test")
+        public JavetEntityFunction testProperty() {
+            return new JavetEntityFunction("() => 'abc'", JSFunctionType.UserDefined);
+        }
+    };
+    try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+        v8Runtime.getGlobalObject().set("a", v8ValueObject);
+        v8ValueObject.bind(iJavetAnonymous2);
+        assertEquals("abc", v8Runtime.getExecutor("a['test']()").executeString());
+        assertEquals("abc", v8Runtime.getExecutor("a.test()").executeString());
+        v8ValueObject.unbind(iJavetAnonymous2);
+    } finally {
+        v8Runtime.lowMemoryNotification();
+    }
 
 Manual Registration
 -------------------

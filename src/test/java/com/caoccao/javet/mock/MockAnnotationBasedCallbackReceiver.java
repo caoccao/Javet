@@ -24,22 +24,30 @@ import com.caoccao.javet.annotations.V8RuntimeSetter;
 import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
+import java.io.Serializable;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MockAnnotationBasedCallbackReceiver {
     private AtomicInteger count;
+    private Set<String> disabledFunctionSet;
     private String stringValue;
     private String symbolValue;
     private V8Runtime v8Runtime;
 
     public MockAnnotationBasedCallbackReceiver() {
         count = new AtomicInteger(0);
+        disabledFunctionSet = JavetReflectionUtils.getMethodNameSetFromLambdas(
+                (Supplier & Serializable) this::disabledFunction,
+                (Supplier & Serializable) this::disabledProperty);
         stringValue = null;
         symbolValue = null;
         v8Runtime = null;
@@ -128,10 +136,7 @@ public class MockAnnotationBasedCallbackReceiver {
 
     @V8BindEnabler
     public boolean isV8BindEnabled(String methodName) {
-        if ("disabledFunction".equals(methodName) || "disabledProperty".equals(methodName)) {
-            return false;
-        }
-        return true;
+        return !disabledFunctionSet.contains(methodName);
     }
 
     // Instance method with different name and same signature.

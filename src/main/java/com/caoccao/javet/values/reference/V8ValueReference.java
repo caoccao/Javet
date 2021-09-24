@@ -43,7 +43,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     @Override
     public void checkV8Runtime() throws JavetException {
         if (isClosed()) {
-            throw new JavetException(JavetError.RuntimeAlreadyRegistered);
+            throw new JavetException(JavetError.RuntimeAlreadyClosed);
         }
         super.checkV8Runtime();
     }

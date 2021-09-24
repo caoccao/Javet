@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="V8 Promise" href="v8_promise.html" /><link rel="prev" title="V8 Collection" href="v8_collection.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>V8 Function - Javet 0.9.12 documentation</title>
+        <title>V8 Function - Javet 0.9.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 0.9.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  <span class="sidebar-brand-text">Javet 0.9.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -215,6 +215,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/development/where_are_the_examples.html">Where are the Examples?</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -435,6 +436,21 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>How about <code class="docutils literal notranslate"><span class="pre">Optional</span></code> and <code class="docutils literal notranslate"><span class="pre">Stream</span></code>? The built-in converter knows these 2 special types and handles the conversion transparently.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@V8Function</span>
+    <span class="kd">public</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">testOptional</span><span class="p">(</span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">optionalString</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Do whatever you want to do.</span>
+        <span class="k">return</span> <span class="n">Optional</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"abc"</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nd">@V8Function</span>
+    <span class="kd">public</span> <span class="n">Stream</span> <span class="nf">testStream</span><span class="p">(</span><span class="n">Stream</span> <span class="n">stream</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Do whatever you want to do.</span>
+        <span class="k">return</span> <span class="n">stream</span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">String</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="can-this-be-passed-in">
 <h4>Can <strong>this</strong> be Passed in?<a class="headerlink" href="#can-this-be-passed-in" title="Permalink to this headline">¶</a></h4>
@@ -449,13 +465,18 @@
 </div>
 <div class="section" id="can-symbol-properties-be-intercepted">
 <h4>Can Symbol Properties be Intercepted?<a class="headerlink" href="#can-symbol-properties-be-intercepted" title="Permalink to this headline">¶</a></h4>
-<p>Yes, <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> supports <code class="docutils literal notranslate"><span class="pre">symbol</span></code>. Just set it to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbol</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
+<p>Yes, <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> supports <code class="docutils literal notranslate"><span class="pre">symbolType</span></code>.</p>
+<ul class="simple">
+<li><p>None: Not a symbol. (default)</p></li>
+<li><p>Built-in: ES built-in symbol type.</p></li>
+<li><p>Custom: User defined symbol type.</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbolType</span> <span class="o">=</span> <span class="n">V8ValueSymbolType</span><span class="p">.</span><span class="na">Custom</span><span class="p">)</span>
 <span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbol</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
+<span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbolType</span> <span class="o">=</span> <span class="n">V8ValueSymbolType</span><span class="p">.</span><span class="na">Custom</span><span class="p">)</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="p">(</span><span class="n">String</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">this</span><span class="p">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
 <span class="p">}</span>
@@ -486,11 +507,84 @@
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">@V8BindEnabler</span></code> can be used to decorate a method with signature <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">arbitraryMethod(String</span> <span class="pre">methodName)</span></code>. Javet calls that method by each method name for whether each method is enabled or not.</p>
+<p>The problem is if the function names are refactored to some other names, this string based solution will be broken. So, is there an IDE refactor friendly solution? Yes, <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameFromLambda()</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameSetFromLambdas()</span></code> are able to convert lambda functions to string and string set.</p>
+<ul class="simple">
+<li><p>Firstly, prepare a set of to be disabled function names.</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Option 1 with JavetReflectionUtils.getMethodNameFromLambda()</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">disabledFunctionSet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span>
+        <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameFromLambda</span><span class="p">((</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledFunction</span><span class="p">),</span>
+        <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameFromLambda</span><span class="p">((</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledProperty</span><span class="p">)));</span>
+
+<span class="c1">// Option 2 with JavetReflectionUtils.getMethodNameSetFromLambdas()</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">disabledFunctionSet</span> <span class="o">=</span> <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameSetFromLambdas</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledFunction</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledProperty</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Secondly, just test whether the method name is in the set or not.</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8BindEnabler</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isV8BindEnabled</span><span class="p">(</span><span class="n">String</span> <span class="n">methodName</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="n">disabledFunctionSet</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">methodName</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>C'est très bien. Now, the set of to be disabled function names can be updated automatically by the IDE refactor.</p>
 </div>
 <div class="section" id="how-to-unregister-properties-or-functions">
 <h4>How to Unregister Properties or Functions?<a class="headerlink" href="#how-to-unregister-properties-or-functions" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">unbind()</span></code> follows the same way that <code class="docutils literal notranslate"><span class="pre">bind()</span></code> goes to unregister both properties and functions.</p>
 <p><code class="docutils literal notranslate"><span class="pre">unbindProperty()</span></code> and <code class="docutils literal notranslate"><span class="pre">unbindFunction()</span></code> provide precise way of unregistering single property or function.</p>
+</div>
+<div class="section" id="can-both-javascript-function-and-property-map-to-one-java-function">
+<h4>Can Both JavaScript Function and Property Map to One Java Function?<a class="headerlink" href="#can-both-javascript-function-and-property-map-to-one-java-function" title="Permalink to this headline">¶</a></h4>
+<p>Yes, just simply decorate the Java function with both <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span> <span class="n">iJavetAnonymous1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"testFunction"</span><span class="p">)</span>
+    <span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"testProperty"</span><span class="p">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"abc"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">v8ValueObject</span><span class="p">);</span>
+    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">iJavetAnonymous1</span><span class="p">);</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a['testProperty']"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.testFunction()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">unbind</span><span class="p">(</span><span class="n">iJavetAnonymous1</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="can-2-java-functions-map-to-one-javascript-function-and-property">
+<h4>Can 2 Java Functions Map to One JavaScript Function and Property?<a class="headerlink" href="#can-2-java-functions-map-to-one-javascript-function-and-property" title="Permalink to this headline">¶</a></h4>
+<p>Yes, just simply give 2 Java functions the same name.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span> <span class="n">iJavetAnonymous2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"test"</span><span class="p">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">testFunction</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"abc"</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"test"</span><span class="p">)</span>
+    <span class="kd">public</span> <span class="n">JavetEntityFunction</span> <span class="nf">testProperty</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">JavetEntityFunction</span><span class="p">(</span><span class="s">"() =&gt; 'abc'"</span><span class="p">,</span> <span class="n">JSFunctionType</span><span class="p">.</span><span class="na">UserDefined</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">try</span> <span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">v8ValueObject</span><span class="p">);</span>
+    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">iJavetAnonymous2</span><span class="p">);</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a['test']()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.test()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">unbind</span><span class="p">(</span><span class="n">iJavetAnonymous2</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="manual-registration">
@@ -801,6 +895,8 @@
 <li><a class="reference internal" href="#can-symbol-properties-be-intercepted">Can Symbol Properties be Intercepted?</a></li>
 <li><a class="reference internal" href="#how-to-disable-properties-or-functions">How to Disable Properties or Functions?</a></li>
 <li><a class="reference internal" href="#how-to-unregister-properties-or-functions">How to Unregister Properties or Functions?</a></li>
+<li><a class="reference internal" href="#can-both-javascript-function-and-property-map-to-one-java-function">Can Both JavaScript Function and Property Map to One Java Function?</a></li>
+<li><a class="reference internal" href="#can-2-java-functions-map-to-one-javascript-function-and-property">Can 2 Java Functions Map to One JavaScript Function and Property?</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#manual-registration">Manual Registration</a><ul>

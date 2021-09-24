@@ -55,7 +55,7 @@ Build Javet for Windows on Windows
 3. Restart docker
 4. Clone Javet.
 5. Navigate to the root directory of the Javet repository.
-6. Execute ``docker build -t sjtucaocao/javet-windows:x.x.x -m 4G -f docker/windows-x86_64/base.Dockerfile .`` (Be careful, please include the last ``.``).
+6. Execute ``docker build -m 4G -f docker/windows-x86_64/base.Dockerfile .`` (Be careful, please include the last ``.``).
 7. Execute ``docker build -f docker/windows-x86_64/build.Dockerfile .`` (Be careful, please include the last ``.``).
 
 Note:

@@ -20,10 +20,16 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,6 +72,52 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
         assertNull(converter.toObject(null));
         assertNull(converter.toObject(v8Runtime.createV8ValueNull()));
         assertTrue(converter.toV8Value(v8Runtime, null).isNull());
+    }
+
+    @Test
+    public void testOptional() throws JavetException {
+        assertTrue(converter.toV8Value(v8Runtime, Optional.empty()).isNull());
+        assertTrue(converter.toV8Value(v8Runtime, Optional.ofNullable(null)).isNull());
+        V8Value v8Value;
+        // Boolean
+        v8Value = converter.toV8Value(v8Runtime, Optional.of(true));
+        assertTrue(v8Value instanceof V8ValueBoolean);
+        assertTrue(((V8ValueBoolean) v8Value).getValue());
+        // Double
+        v8Value = converter.toV8Value(v8Runtime, Optional.of(1.23D));
+        assertTrue(v8Value instanceof V8ValueDouble);
+        assertEquals(1.23D, ((V8ValueDouble) v8Value).getValue(), 0.0001D);
+        // Integer
+        v8Value = converter.toV8Value(v8Runtime, Optional.of(1));
+        assertTrue(v8Value instanceof V8ValueInteger);
+        assertEquals(1, ((V8ValueInteger) v8Value).getValue());
+        // Long
+        v8Value = converter.toV8Value(v8Runtime, Optional.of(Long.MAX_VALUE));
+        assertTrue(v8Value instanceof V8ValueLong);
+        assertEquals(Long.MAX_VALUE, ((V8ValueLong) v8Value).getValue());
+        // String
+        v8Value = converter.toV8Value(v8Runtime, Optional.of("a"));
+        assertTrue(v8Value instanceof V8ValueString);
+        assertEquals("a", ((V8ValueString) v8Value).getValue());
+        // ZonedDateTime
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        v8Value = converter.toV8Value(v8Runtime, Optional.of(zonedDateTime));
+        assertTrue(v8Value instanceof V8ValueZonedDateTime);
+        assertEquals(
+                zonedDateTime.toInstant().toEpochMilli(),
+                ((V8ValueZonedDateTime) v8Value).getValue().toInstant().toEpochMilli());
+        // int
+        v8Value = converter.toV8Value(v8Runtime, OptionalInt.of(1));
+        assertTrue(v8Value instanceof V8ValueInteger);
+        assertEquals(1, ((V8ValueInteger) v8Value).getValue());
+        // double
+        v8Value = converter.toV8Value(v8Runtime, OptionalDouble.of(1.23D));
+        assertTrue(v8Value instanceof V8ValueDouble);
+        assertEquals(1.23D, ((V8ValueDouble) v8Value).getValue(), 0.0001D);
+        // long
+        v8Value = converter.toV8Value(v8Runtime, OptionalLong.of(1L));
+        assertTrue(v8Value instanceof V8ValueLong);
+        assertEquals(1L, ((V8ValueLong) v8Value).getValue());
     }
 
     @Test

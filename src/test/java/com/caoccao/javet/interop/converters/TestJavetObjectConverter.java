@@ -33,6 +33,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -234,6 +238,31 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertTrue(v8ValueSet.has("a"));
             assertTrue(v8ValueSet.has("b"));
             assertTrue(v8ValueSet.has("c"));
+        }
+    }
+
+    @Test
+    public void testStream() throws JavetException {
+        IJavetConverter converter = new JavetObjectConverter();
+        try (V8ValueArray v8ValueArray = converter.toV8Value(v8Runtime, Stream.of(1, "a"))) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals(1, v8ValueArray.getInteger(0));
+            assertEquals("a", v8ValueArray.getString(1));
+        }
+        try (V8ValueArray v8ValueArray = converter.toV8Value(v8Runtime, IntStream.of(1, 2))) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals(1, v8ValueArray.getInteger(0));
+            assertEquals(2, v8ValueArray.getInteger(1));
+        }
+        try (V8ValueArray v8ValueArray = converter.toV8Value(v8Runtime, DoubleStream.of(1.23D, 2.34D))) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals(1.23D, v8ValueArray.getDouble(0), 0.0001D);
+            assertEquals(2.34D, v8ValueArray.getDouble(1), 0.0001D);
+        }
+        try (V8ValueArray v8ValueArray = converter.toV8Value(v8Runtime, LongStream.of(1L, 2L))) {
+            assertEquals(2, v8ValueArray.getLength());
+            assertEquals(1L, v8ValueArray.getLong(0));
+            assertEquals(2L, v8ValueArray.getLong(1));
         }
     }
 

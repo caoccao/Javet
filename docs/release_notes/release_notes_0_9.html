@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Release Notes 0.8.x" href="release_notes_0_8.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Release Notes 0.9.x - Javet 0.9.12 documentation</title>
+        <title>Release Notes 0.9.x - Javet 0.9.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 0.9.12 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 0.9.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 0.9.12 documentation</span>
+  <span class="sidebar-brand-text">Javet 0.9.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -215,6 +215,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/development/where_are_the_examples.html">Where are the Examples?</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -271,6 +272,21 @@
         <article role="main">
           <div class="section" id="release-notes-0-9-x">
 <h1>Release Notes 0.9.x<a class="headerlink" href="#release-notes-0-9-x" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v8-v9-4">
+<h2>0.9.13 V8 v9.4<a class="headerlink" href="#v8-v9-4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v9.4.146.16</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-94">(2021-09-14)</a></p></li>
+<li><p>Added support to generator object</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">hasInternalType()</span></code> and <code class="docutils literal notranslate"><span class="pre">isGeneratorObject()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">isGeneratorFunction()</span></code> and <code class="docutils literal notranslate"><span class="pre">isAsyncFunction()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueFunction</span></code></p></li>
+<li><p>Added support to <code class="docutils literal notranslate"><span class="pre">Optional</span></code> and <code class="docutils literal notranslate"><span class="pre">Stream</span></code> in converters and callbacks</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">IJavetAnonymous</span></code> creating ad-hoc annotation based callback receiver</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8VirtualEscapableValue</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">getMethodNameFromLambda</span></code> and <code class="docutils literal notranslate"><span class="pre">getMethodNameSetFromLambdas</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils</span></code></p></li>
+<li><p>Enabled decorating a function with both <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code></p></li>
+<li><p>Enhanced <code class="docutils literal notranslate"><span class="pre">V8Flags</span></code> to accept custom flags</p></li>
+</ul>
+</div>
 <div class="section" id="private-properties">
 <h2>0.9.12 Private Properties<a class="headerlink" href="#private-properties" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -280,7 +296,7 @@
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">registerCustomObject()</span></code> and <code class="docutils literal notranslate"><span class="pre">unregisterCustomObject()</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code></p></li>
 <li><p>Added private property support to <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
 <li><p>Fixed potential core dump issue in V8 runtime close.</p></li>
-<li><p>Added Javadoc.</p></li>
+<li><p>Added Javadoc</p></li>
 </ul>
 </div>
 <div class="section" id="v8-v9-3">
@@ -447,6 +463,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Release Notes 0.9.x</a><ul>
+<li><a class="reference internal" href="#v8-v9-4">0.9.13 V8 v9.4</a></li>
 <li><a class="reference internal" href="#private-properties">0.9.12 Private Properties</a></li>
 <li><a class="reference internal" href="#v8-v9-3">0.9.11 V8 v9.3</a></li>
 <li><a class="reference internal" href="#polyfill-java-interfaces">0.9.10 Polyfill Java Interfaces</a></li>

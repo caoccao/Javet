@@ -25,7 +25,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.time.ZonedDateTime;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * The type Javet primitive converter.
@@ -162,6 +162,18 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             v8Value = v8Runtime.createV8ValueInteger((Byte) object);
         } else if (object instanceof Character) {
             v8Value = v8Runtime.createV8ValueString(((Character) object).toString());
+        } else if (object instanceof Optional) {
+            Optional optional = (Optional) object;
+            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.get(), depth) : v8Runtime.createV8ValueNull();
+        } else if (object instanceof OptionalInt) {
+            OptionalInt optional = (OptionalInt) object;
+            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsInt(), depth) : v8Runtime.createV8ValueNull();
+        } else if (object instanceof OptionalDouble) {
+            OptionalDouble optional = (OptionalDouble) object;
+            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsDouble(), depth) : v8Runtime.createV8ValueNull();
+        } else if (object instanceof OptionalLong) {
+            OptionalLong optional = (OptionalLong) object;
+            v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsLong(), depth) : v8Runtime.createV8ValueNull();
         } else {
             v8Value = v8Runtime.createV8ValueUndefined();
         }

@@ -18,6 +18,7 @@
 #include "javet_callbacks.h"
 #include "javet_constants.h"
 #include "javet_converter.h"
+#include "javet_enums.h"
 #include "javet_exceptions.h"
 #include "javet_inspector.h"
 #include "javet_logging.h"

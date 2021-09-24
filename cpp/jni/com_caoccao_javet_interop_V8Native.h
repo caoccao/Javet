@@ -281,6 +281,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_has
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    hasInternalType
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalType
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    hasOwnProperty
  * Signature: (JJILjava/lang/Object;)Z
  */

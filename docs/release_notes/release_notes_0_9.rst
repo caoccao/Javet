@@ -2,6 +2,20 @@
 Release Notes 0.9.x
 ===================
 
+0.9.13 V8 v9.4
+--------------
+
+* Upgraded V8 to ``v9.4.146.16`` `(2021-09-14) <https://v8.dev/blog/v8-release-94>`_
+* Added support to generator object
+* Added ``hasInternalType()`` and ``isGeneratorObject()`` to ``IV8ValueObject``
+* Added ``isGeneratorFunction()`` and ``isAsyncFunction()`` to ``IV8ValueFunction``
+* Added support to ``Optional`` and ``Stream`` in converters and callbacks
+* Added ``IJavetAnonymous`` creating ad-hoc annotation based callback receiver
+* Added ``V8VirtualEscapableValue``
+* Added ``getMethodNameFromLambda`` and ``getMethodNameSetFromLambdas`` to ``JavetReflectionUtils``
+* Enabled decorating a function with both ``@V8Function`` and ``@V8Property``
+* Enhanced ``V8Flags`` to accept custom flags
+
 0.9.12 Private Properties
 -------------------------
 
@@ -11,7 +25,7 @@ Release Notes 0.9.x
 * Added ``registerCustomObject()`` and ``unregisterCustomObject()`` to ``JavetObjectConverter``
 * Added private property support to ``IV8ValueObject``
 * Fixed potential core dump issue in V8 runtime close.
-* Added Javadoc.
+* Added Javadoc
 
 0.9.11 V8 v9.3
 --------------

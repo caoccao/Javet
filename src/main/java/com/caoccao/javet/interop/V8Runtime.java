@@ -193,16 +193,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @CheckReturnValue
-    public V8Script compileScript(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
-            throws JavetException {
-        v8ScriptOrigin.setModule(false);
-        return decorateV8Value((V8Script) v8Native.compile(
-                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
-                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
-                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
-    }
-
-    @CheckReturnValue
     public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(true);
@@ -220,6 +210,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             addV8Module(v8Module);
         }
         return v8Module;
+    }
+
+    @CheckReturnValue
+    public V8Script compileV8Script(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
+            throws JavetException {
+        v8ScriptOrigin.setModule(false);
+        return decorateV8Value((V8Script) v8Native.compile(
+                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
+                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
     public boolean containsV8Module(String resourceName) {
@@ -648,6 +648,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
         decorateV8Value(value);
         return v8Native.has(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), value);
+    }
+
+    public boolean hasInternalType(IV8ValueObject iV8ValueObject, V8ValueInternalType internalType) {
+        return v8Native.hasInternalType(
+                handle, iV8ValueObject.getHandle(), Objects.requireNonNull(internalType).getId());
     }
 
     public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {

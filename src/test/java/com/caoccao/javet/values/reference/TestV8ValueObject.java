@@ -18,7 +18,12 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.annotations.V8Property;
+import com.caoccao.javet.entities.JavetEntityFunction;
+import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
@@ -76,8 +81,51 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(20, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
             assertNull(v8Runtime.getExecutor("a['stringValue']").executeString());
             assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testAnnotationBasedPropertyAndFunction() throws JavetException {
+        // 2 JS functions => 1 Java function
+        IJavetAnonymous iJavetAnonymous1 = new IJavetAnonymous() {
+            @V8Function(name = "testFunction")
+            @V8Property(name = "testProperty")
+            public String test() {
+                return "abc";
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(iJavetAnonymous1);
+            assertEquals("abc", v8Runtime.getExecutor("a['testProperty']").executeString());
+            assertEquals("abc", v8Runtime.getExecutor("a.testFunction()").executeString());
+            v8ValueObject.unbind(iJavetAnonymous1);
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+        // 1 JS function => 2 Java functions
+        IJavetAnonymous iJavetAnonymous2 = new IJavetAnonymous() {
+            @V8Function(name = "test")
+            public String testFunction() {
+                return "abc";
+            }
+
+            @V8Property(name = "test")
+            public JavetEntityFunction testProperty() {
+                return new JavetEntityFunction("() => 'abc'", JSFunctionType.UserDefined);
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8ValueObject.bind(iJavetAnonymous2);
+            assertEquals("abc", v8Runtime.getExecutor("a['test']()").executeString());
+            assertEquals("abc", v8Runtime.getExecutor("a.test()").executeString());
+            v8ValueObject.unbind(iJavetAnonymous2);
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
     }
 
     @Test
@@ -144,6 +192,24 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 assertEquals("A" + Integer.toString(index), key.getValue());
                 assertEquals(index, value.getValue());
             }));
+        }
+    }
+
+    @Test
+    public void testGeneratorObject() throws JavetException {
+        try (V8ValueIterator<V8ValueInteger> v8ValueIterator = v8Runtime.getExecutor(
+                "function* generator() {\n" +
+                        "  yield 1;\n" +
+                        "  yield 2;\n" +
+                        "}; generator();").execute()) {
+            assertNotNull(v8ValueIterator);
+            assertTrue(v8ValueIterator.isGeneratorObject());
+            try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get("generator")) {
+                assertTrue(v8ValueFunction.isGeneratorFunction());
+            }
+            assertEquals(1, v8ValueIterator.getNext().getValue());
+            assertEquals(2, v8ValueIterator.getNext().getValue());
+            assertNull(v8ValueIterator.getNext());
         }
     }
 
