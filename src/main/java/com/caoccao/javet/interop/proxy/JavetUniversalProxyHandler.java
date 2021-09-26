@@ -492,7 +492,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 uniqueKeySet.addAll((Set) targetObject);
             }
         }
-        while (true) {
+        do {
             if (classMode) {
                 for (Constructor constructor : currentClass.getConstructors()) {
                     constructors.add(constructor);
@@ -562,10 +562,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 break;
             }
             currentClass = currentClass.getSuperclass();
-            if (currentClass == null) {
-                break;
-            }
-        }
+        } while (currentClass != null);
     }
 
     /**

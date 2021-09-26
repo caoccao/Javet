@@ -22,6 +22,8 @@ Register Custom Objects
 * Method with signature ``void fromMap(Map<String, Object> map)``
 * Method with signature ``Map<String, Object> toMap()``
 
+Note: If the target custom object is touchable, having it implement ``IJavetMappable`` can make things easier.
+
 Enhance the Custom Object
 -------------------------
 

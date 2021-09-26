@@ -19,7 +19,22 @@ package com.caoccao.javet.interfaces;
 
 import com.caoccao.javet.exceptions.JavetException;
 
+/**
+ * The interface Javet supplier.
+ *
+ * @param <T> the type parameter
+ * @param <E> the type parameter
+ * @since 0.9.12
+ */
 @FunctionalInterface
 public interface IJavetSupplier<T, E extends Throwable> {
+    /**
+     * Get the value
+     *
+     * @return the value
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 0.9.12
+     */
     T get() throws JavetException, E;
 }
