@@ -201,7 +201,7 @@ Be careful, Javet only supports symbols that are registered as global symbols in
 How to Disable Properties or Functions?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way of selectively disabling them. ``@V8BindEnabler`` is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.
+As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way of selectively disabling them. ``@V8BindingEnabler`` is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.
 
 .. code-block:: java
 
@@ -215,15 +215,15 @@ As ``@V8Function`` and ``@V8Property`` are statically declared, there is no way 
         return "I am a disabled property.";
     }
 
-    @V8BindEnabler
-    public boolean isV8BindEnabled(String methodName) {
+    @V8BindingEnabler
+    public boolean isV8BindingEnabled(String methodName) {
         if ("disabledFunction".equals(methodName) || "disabledProperty".equals(methodName)) {
             return false;
         }
         return true;
     }
 
-``@V8BindEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
+``@V8BindingEnabler`` can be used to decorate a method with signature ``boolean arbitraryMethod(String methodName)``. Javet calls that method by each method name for whether each method is enabled or not.
 
 The problem is if the function names are refactored to some other names, this string based solution will be broken. So, is there an IDE refactor friendly solution? Yes, ``JavetReflectionUtils.getMethodNameFromLambda()`` and ``JavetReflectionUtils.getMethodNameSetFromLambdas()`` are able to convert lambda functions to string and string set.
 
@@ -245,8 +245,8 @@ The problem is if the function names are refactored to some other names, this st
 
 .. code-block:: java
 
-    @V8BindEnabler
-    public boolean isV8BindEnabled(String methodName) {
+    @V8BindingEnabler
+    public boolean isV8BindingEnabled(String methodName) {
         return !disabledFunctionSet.contains(methodName);
     }
 

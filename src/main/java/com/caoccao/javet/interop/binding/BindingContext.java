@@ -46,11 +46,11 @@ public class BindingContext {
      */
     protected Map<String, MethodDescriptor> propertySetterMap;
     /**
-     * The V8 bind enabler.
+     * The V8 binding enabler.
      *
      * @since 0.9.3
      */
-    protected Method v8BindEnabler;
+    protected Method v8BindingEnabler;
     /**
      * The V8 runtime setter.
      *
@@ -67,7 +67,7 @@ public class BindingContext {
         functionMap = new HashMap<>();
         propertyGetterMap = new HashMap<>();
         propertySetterMap = new HashMap<>();
-        v8BindEnabler = null;
+        v8BindingEnabler = null;
         v8RuntimeSetter = null;
     }
 
@@ -107,8 +107,8 @@ public class BindingContext {
      * @return the V8 bind enabler
      * @since 0.9.3
      */
-    public Method getV8BindEnabler() {
-        return v8BindEnabler;
+    public Method getV8BindingEnabler() {
+        return v8BindingEnabler;
     }
 
     /**
@@ -124,11 +124,11 @@ public class BindingContext {
     /**
      * Sets V8 bind enabler.
      *
-     * @param v8BindEnabler the V8 bind enabler
+     * @param v8BindingEnabler the V8 bind enabler
      * @since 0.9.3
      */
-    public void setV8BindEnabler(Method v8BindEnabler) {
-        this.v8BindEnabler = v8BindEnabler;
+    public void setV8BindingEnabler(Method v8BindingEnabler) {
+        this.v8BindingEnabler = v8BindingEnabler;
     }
 
     /**

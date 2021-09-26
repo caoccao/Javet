@@ -66,7 +66,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         Map<String, MethodDescriptor> propertyGetterMap = bindingContext.getPropertyGetterMap();
         Map<String, MethodDescriptor> propertySetterMap = bindingContext.getPropertySetterMap();
         Map<String, MethodDescriptor> functionMap = bindingContext.getFunctionMap();
-        Method v8BindEnabler = bindingContext.getV8BindEnabler();
+        Method v8BindingEnabler = bindingContext.getV8BindingEnabler();
         Method v8RuntimeSetter = bindingContext.getV8RuntimeSetter();
         if (v8RuntimeSetter != null) {
             try {
@@ -84,7 +84,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 String propertyName = entry.getKey();
                 final MethodDescriptor getterMethodDescriptor = entry.getValue();
                 try {
-                    if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
+                    if (v8BindingEnabler != null && !(boolean) v8BindingEnabler.invoke(
                             callbackReceiver, getterMethodDescriptor.getMethod().getName())) {
                         continue;
                     }
@@ -96,7 +96,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     JavetCallbackContext javetCallbackContextSetter = null;
                     if (propertySetterMap.containsKey(propertyName)) {
                         MethodDescriptor setterMethodDescriptor = propertySetterMap.get(propertyName);
-                        if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
+                        if (v8BindingEnabler != null && !(boolean) v8BindingEnabler.invoke(
                                 callbackReceiver, setterMethodDescriptor.getMethod().getName())) {
                             continue;
                         }
@@ -138,7 +138,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 String functionName = entry.getKey();
                 final MethodDescriptor functionMethodDescriptor = entry.getValue();
                 try {
-                    if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
+                    if (v8BindingEnabler != null && !(boolean) v8BindingEnabler.invoke(
                             callbackReceiver, functionMethodDescriptor.getMethod().getName())) {
                         continue;
                     }
@@ -294,7 +294,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                     if (propertyName.length() > 0) {
                         final int expectedGetterParameterCount = v8Property.thisObjectRequired() ? 1 : 0;
-                        final int expectedSetterParameterCount = v8Property.thisObjectRequired() ? 2 : 1;
+                        final int expectedSetterParameterCount = expectedGetterParameterCount + 1;
                         if (method.getParameterCount() == expectedGetterParameterCount) {
                             // Duplicated property name will be dropped.
                             if (!propertyGetterMap.containsKey(propertyName)) {
@@ -351,7 +351,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                             JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
                         }
                         bindingContext.setV8RuntimeSetter(method);
-                    } else if (method.isAnnotationPresent(V8BindEnabler.class)) {
+                    } else if (method.isAnnotationPresent(V8BindingEnabler.class)) {
                         if (method.getParameterCount() != 1) {
                             throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                     SimpleMap.of(
@@ -366,7 +366,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                             JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, String.class,
                                             JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, method.getParameterTypes()[0]));
                         }
-                        bindingContext.setV8BindEnabler(method);
+                        bindingContext.setV8BindingEnabler(method);
                     }
                 }
             }
@@ -566,14 +566,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         Map<String, MethodDescriptor> propertyGetterMap = bindingContext.getPropertyGetterMap();
         Map<String, MethodDescriptor> propertySetterMap = bindingContext.getPropertySetterMap();
         Map<String, MethodDescriptor> functionMap = bindingContext.getFunctionMap();
-        Method v8BindEnabler = bindingContext.getV8BindEnabler();
+        Method v8BindingEnabler = bindingContext.getV8BindingEnabler();
         int unbindCount = 0;
         if (!propertyGetterMap.isEmpty()) {
             for (Map.Entry<String, MethodDescriptor> entry : propertyGetterMap.entrySet()) {
                 String propertyName = entry.getKey();
                 final MethodDescriptor getterMethodDescriptor = entry.getValue();
                 try {
-                    if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
+                    if (v8BindingEnabler != null && !(boolean) v8BindingEnabler.invoke(
                             callbackReceiver, getterMethodDescriptor.getMethod().getName())) {
                         continue;
                     }
@@ -615,7 +615,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 String functionName = entry.getKey();
                 final MethodDescriptor functionMethodDescriptor = entry.getValue();
                 try {
-                    if (v8BindEnabler != null && !(boolean) v8BindEnabler.invoke(
+                    if (v8BindingEnabler != null && !(boolean) v8BindingEnabler.invoke(
                             callbackReceiver, functionMethodDescriptor.getMethod().getName())) {
                         continue;
                     }

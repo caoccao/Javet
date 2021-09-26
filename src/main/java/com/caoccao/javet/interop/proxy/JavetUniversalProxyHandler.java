@@ -17,7 +17,7 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.annotations.V8BindEnabler;
+import com.caoccao.javet.annotations.V8BindingEnabler;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -610,13 +610,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is V8 bind enabled.
+     * Is V8 binding enabled.
      *
      * @param methodName the method name
      * @return the boolean
      */
-    @V8BindEnabler
-    public boolean isV8BindEnabled(String methodName) {
+    @V8BindingEnabler
+    public boolean isV8BindingEnabled(String methodName) {
         if (JavetUniversalProxyHandler.METHOD_NAME_CONSTRUCT.equals(methodName)) {
             return hasConstructors();
         }

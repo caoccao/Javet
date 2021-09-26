@@ -7,6 +7,7 @@ Release Notes 0.9.x
 
 * Added ``IJavetMappable``
 * Enhanced ``JavetObjectConverter`` to look up custom objects recursively
+* Renamed ``V8BindEnabler`` to ``V8BindingEnabler``
 
 0.9.13 V8 v9.4
 --------------

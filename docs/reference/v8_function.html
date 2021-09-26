@@ -486,7 +486,7 @@
 </div>
 <div class="section" id="how-to-disable-properties-or-functions">
 <h4>How to Disable Properties or Functions?<a class="headerlink" href="#how-to-disable-properties-or-functions" title="Permalink to this headline">¶</a></h4>
-<p>As <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> are statically declared, there is no way of selectively disabling them. <code class="docutils literal notranslate"><span class="pre">@V8BindEnabler</span></code> is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.</p>
+<p>As <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> are statically declared, there is no way of selectively disabling them. <code class="docutils literal notranslate"><span class="pre">@V8BindingEnabler</span></code> is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Function</span>
 <span class="kd">public</span> <span class="n">String</span> <span class="nf">disabledFunction</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">return</span> <span class="s">"I am a disabled function."</span><span class="p">;</span>
@@ -497,8 +497,8 @@
     <span class="k">return</span> <span class="s">"I am a disabled property."</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="nd">@V8BindEnabler</span>
-<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isV8BindEnabled</span><span class="p">(</span><span class="n">String</span> <span class="n">methodName</span><span class="p">)</span> <span class="p">{</span>
+<span class="nd">@V8BindingEnabler</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isV8BindingEnabled</span><span class="p">(</span><span class="n">String</span> <span class="n">methodName</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="s">"disabledFunction"</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">methodName</span><span class="p">)</span> <span class="o">||</span> <span class="s">"disabledProperty"</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">methodName</span><span class="p">))</span> <span class="p">{</span>
         <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
     <span class="p">}</span>
@@ -506,7 +506,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">@V8BindEnabler</span></code> can be used to decorate a method with signature <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">arbitraryMethod(String</span> <span class="pre">methodName)</span></code>. Javet calls that method by each method name for whether each method is enabled or not.</p>
+<p><code class="docutils literal notranslate"><span class="pre">@V8BindingEnabler</span></code> can be used to decorate a method with signature <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">arbitraryMethod(String</span> <span class="pre">methodName)</span></code>. Javet calls that method by each method name for whether each method is enabled or not.</p>
 <p>The problem is if the function names are refactored to some other names, this string based solution will be broken. So, is there an IDE refactor friendly solution? Yes, <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameFromLambda()</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameSetFromLambdas()</span></code> are able to convert lambda functions to string and string set.</p>
 <ul class="simple">
 <li><p>Firstly, prepare a set of to be disabled function names.</p></li>
@@ -525,8 +525,8 @@
 <ul class="simple">
 <li><p>Secondly, just test whether the method name is in the set or not.</p></li>
 </ul>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8BindEnabler</span>
-<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isV8BindEnabled</span><span class="p">(</span><span class="n">String</span> <span class="n">methodName</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8BindingEnabler</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isV8BindingEnabled</span><span class="p">(</span><span class="n">String</span> <span class="n">methodName</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="o">!</span><span class="n">disabledFunctionSet</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">methodName</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
