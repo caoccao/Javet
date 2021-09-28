@@ -64,20 +64,21 @@ Note: V8 does not recycle objects that are referenced by other objects. Please m
 How to Escape from try-with-resource?
 -------------------------------------
 
-Sometimes V8 objects to be returned to V8 cannot be closed, but if there is an exception thrown between V8 object creation and return, that V8 object is not closed. In that case, memory leak will take place. So, how to escape from that case? Javet introduces ``V8VirtualEscapableValue`` to prevent memory leak when exception is thrown.
+Sometimes V8 objects to be returned to V8 cannot be closed, but if there is an exception thrown between V8 object creation and return, those V8 objects are not closed. In that case, memory leak will take place. So, how to escape from that case? Javet introduces ``V8Scope`` to prevent memory leak when exception is thrown.
 
  * It needs to be used by try-with-resource.
- * By default, escapable is set to false so that the internal value can be close when exception is thrown.
+ * By default, escapable is set to false so that the internal values can be close when exception is thrown.
  * If there is no exception, escapable needs to be set to true before try-with-resource is closed.
 
 .. code-block:: java
 
-    try (V8VirtualEscapableValue<V8ValueObject> v8VirtualEscapableValueObject =
-            new V8VirtualEscapableValue<>(v8Runtime.createV8ValueObject())) {
-        // Do whatever.
-        return v8VirtualEscapableValueObject.setEscapable().get();
-    }
-
+   try (V8Scope v8Scope = new V8Scope()) {
+       V8ValueObject v8ValueObject = v8Scope.add(v8Runtime.createV8ValueObject());
+       // v8ValueObject will be closed automatically if there is an exception thrown.
+       v8Scope.setEscapable();
+       // v8ValueObject will not be closed.
+       return v8ValueObject;
+   }
 
 Alternative Option: ArrayBuffer
 ===============================

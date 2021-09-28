@@ -29,9 +29,9 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
 import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
+import com.caoccao.javet.utils.V8Scope;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
-import com.caoccao.javet.values.virtual.V8VirtualEscapableValue;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -361,78 +361,95 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             return (T) v8Value;
         }
         if (object instanceof IJavetEntityMap) {
-            V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap();
-            final Map<?, ?> mapObject = (Map<?, ?>) object;
-            for (Object key : mapObject.keySet()) {
-                try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
-                    String childStringKey = key instanceof String ? (String) key : key.toString();
-                    v8ValueMap.set(childStringKey, childV8Value);
-                }
-            }
-            v8Value = v8ValueMap;
-        } else if (object instanceof Map) {
-            if (config.isProxyMapEnabled()) {
-                V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy();
-                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                    JavetUniversalProxyHandler<Map> javetUniversalProxyHandler =
-                            new JavetUniversalProxyHandler<>(v8Runtime, (Map) object);
-                    List<JavetCallbackContext> javetCallbackContexts =
-                            iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                    iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
-                }
-                v8Value = v8ValueProxy;
-            } else {
-                V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
+            try (V8Scope v8Scope = new V8Scope()) {
+                V8ValueMap v8ValueMap = v8Scope.add(v8Runtime.createV8ValueMap());
                 final Map<?, ?> mapObject = (Map<?, ?>) object;
                 for (Object key : mapObject.keySet()) {
                     try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
                         String childStringKey = key instanceof String ? (String) key : key.toString();
-                        v8ValueObject.set(childStringKey, childV8Value);
+                        v8ValueMap.set(childStringKey, childV8Value);
                     }
                 }
-                v8Value = v8ValueObject;
+                v8Value = v8ValueMap;
+                v8Scope.setEscapable();
+            }
+        } else if (object instanceof Map) {
+            if (config.isProxyMapEnabled()) {
+                try (V8Scope v8Scope = new V8Scope()) {
+                    V8ValueProxy v8ValueProxy = v8Scope.add(v8Runtime.createV8ValueProxy());
+                    try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                        JavetUniversalProxyHandler<Map> javetUniversalProxyHandler =
+                                new JavetUniversalProxyHandler<>(v8Runtime, (Map) object);
+                        List<JavetCallbackContext> javetCallbackContexts =
+                                iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
+                        iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+                    }
+                    v8Value = v8ValueProxy;
+                    v8Scope.setEscapable();
+                }
+            } else {
+                try (V8Scope v8Scope = new V8Scope()) {
+                    V8ValueObject v8ValueObject = v8Scope.add(v8Runtime.createV8ValueObject());
+                    final Map<?, ?> mapObject = (Map<?, ?>) object;
+                    for (Object key : mapObject.keySet()) {
+                        try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
+                            String childStringKey = key instanceof String ? (String) key : key.toString();
+                            v8ValueObject.set(childStringKey, childV8Value);
+                        }
+                    }
+                    v8Value = v8ValueObject;
+                    v8Scope.setEscapable();
+                }
             }
         } else if (object instanceof Set) {
             if (config.isProxySetEnabled()) {
-                V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy();
-                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                    JavetUniversalProxyHandler<Set> javetUniversalProxyHandler =
-                            new JavetUniversalProxyHandler<>(v8Runtime, (Set) object);
-                    List<JavetCallbackContext> javetCallbackContexts =
-                            iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                    iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
-                }
-                v8Value = v8ValueProxy;
-            } else {
-                V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet();
-                final Set<?> setObject = (Set<?>) object;
-                for (Object item : setObject) {
-                    try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                        v8ValueSet.add(childV8Value);
+                try (V8Scope v8Scope = new V8Scope()) {
+                    V8ValueProxy v8ValueProxy = v8Scope.add(v8Runtime.createV8ValueProxy());
+                    try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                        JavetUniversalProxyHandler<Set> javetUniversalProxyHandler =
+                                new JavetUniversalProxyHandler<>(v8Runtime, (Set) object);
+                        List<JavetCallbackContext> javetCallbackContexts =
+                                iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
+                        iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                     }
+                    v8Value = v8ValueProxy;
+                    v8Scope.setEscapable();
                 }
-                v8Value = v8ValueSet;
+            } else {
+                try (V8Scope v8Scope = new V8Scope()) {
+                    V8ValueSet v8ValueSet = v8Scope.add(v8Runtime.createV8ValueSet());
+                    final Set<?> setObject = (Set<?>) object;
+                    for (Object item : setObject) {
+                        try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
+                            v8ValueSet.add(childV8Value);
+                        }
+                    }
+                    v8Value = v8ValueSet;
+                    v8Scope.setEscapable();
+                }
             }
         } else if (object instanceof Collection) {
-            try (V8VirtualEscapableValue<V8ValueArray> v8VirtualEscapableValueArray =
-                         new V8VirtualEscapableValue<>(v8Runtime.createV8ValueArray())) {
+            try (V8Scope v8Scope = new V8Scope()) {
+                V8ValueArray v8ValueArray = v8Scope.add(v8Runtime.createV8ValueArray());
                 for (Object item : (Collection<?>) object) {
                     try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                        v8VirtualEscapableValueArray.get().push(childV8Value);
+                        v8ValueArray.push(childV8Value);
                     }
                 }
-                v8Value = v8VirtualEscapableValueArray.setEscapable().get();
+                v8Value = v8ValueArray;
+                v8Scope.setEscapable();
             }
         } else if (object instanceof BaseStream) {
-            try (V8VirtualEscapableValue<V8ValueArray> v8VirtualEscapableValueArray =
-                         new V8VirtualEscapableValue<>(v8Runtime.createV8ValueArray())) {
+            try (V8Scope v8Scope = new V8Scope()) {
+                V8ValueArray v8ValueArray = v8Scope.add(v8Runtime.createV8ValueArray());
                 final Iterator iterator = ((BaseStream) object).iterator();
                 while (iterator.hasNext()) {
                     try (V8Value childV8Value = toV8Value(v8Runtime, iterator.next(), depth + 1)) {
-                        v8VirtualEscapableValueArray.get().push(childV8Value);
+                        v8ValueArray.push(childV8Value);
                     }
                 }
-                v8Value = v8VirtualEscapableValueArray.setEscapable().get();
+                v8Value = v8ValueArray;
+                v8Scope.setEscapable();
             }
         } else if (object instanceof IJavetEntityFunction) {
             final IJavetEntityFunction javetEntityFunction = (IJavetEntityFunction) object;
@@ -447,70 +464,71 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             final JavetEntitySymbol javetEntitySymbol = (JavetEntitySymbol) object;
             v8Value = v8Runtime.createV8ValueSymbol(javetEntitySymbol.getDescription(), true);
         } else if (object.getClass().isArray()) {
-            if (object instanceof boolean[]) {
-                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-                for (boolean item : (boolean[]) object) {
-                    v8ValueArray.push(v8Runtime.createV8ValueBoolean(item));
-                }
-                v8Value = v8ValueArray;
-            } else if (object instanceof byte[]) {
-                byte[] bytes = (byte[]) object;
-                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                        V8ValueReferenceType.Int8Array, bytes.length);
-                v8ValueTypedArray.fromBytes(bytes);
-                v8Value = v8ValueTypedArray;
-            } else if (object instanceof char[]) {
-                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-                for (char c : (char[]) object) {
-                    v8ValueArray.push(Character.toString(c));
-                }
-                v8Value = v8ValueArray;
-            } else if (object instanceof double[]) {
-                double[] doubles = (double[]) object;
-                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                        V8ValueReferenceType.Float64Array, doubles.length);
-                v8ValueTypedArray.fromDoubles(doubles);
-                v8Value = v8ValueTypedArray;
-            } else if (object instanceof float[]) {
-                float[] floats = (float[]) object;
-                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                        V8ValueReferenceType.Float32Array, floats.length);
-                v8ValueTypedArray.fromFloats(floats);
-                v8Value = v8ValueTypedArray;
-            } else if (object instanceof int[]) {
-                int[] integers = (int[]) object;
-                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                        V8ValueReferenceType.Int32Array, integers.length);
-                v8ValueTypedArray.fromIntegers(integers);
-                v8Value = v8ValueTypedArray;
-            } else if (object instanceof long[]) {
-                long[] longs = (long[]) object;
-                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                        V8ValueReferenceType.BigInt64Array, longs.length);
-                v8ValueTypedArray.fromLongs(longs);
-                v8Value = v8ValueTypedArray;
-            } else if (object instanceof short[]) {
-                short[] shorts = (short[]) object;
-                V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-                        V8ValueReferenceType.Int16Array, shorts.length);
-                v8ValueTypedArray.fromShorts(shorts);
-                v8Value = v8ValueTypedArray;
-            } else if (object instanceof String[]) {
-                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-                for (String item : (String[]) object) {
-                    v8ValueArray.push(v8Runtime.createV8ValueString(item));
-                }
-                v8Value = v8ValueArray;
-            } else {
-                try (V8VirtualEscapableValue<V8ValueArray> v8VirtualEscapableValueArray =
-                             new V8VirtualEscapableValue<>(v8Runtime.createV8ValueArray())) {
+            try (V8Scope v8Scope = new V8Scope()) {
+                if (object instanceof boolean[]) {
+                    V8ValueArray v8ValueArray = v8Scope.add(v8Runtime.createV8ValueArray());
+                    for (boolean item : (boolean[]) object) {
+                        v8ValueArray.push(v8Runtime.createV8ValueBoolean(item));
+                    }
+                    v8Value = v8ValueArray;
+                } else if (object instanceof byte[]) {
+                    byte[] bytes = (byte[]) object;
+                    V8ValueTypedArray v8ValueTypedArray = v8Scope.add(v8Runtime.createV8ValueTypedArray(
+                            V8ValueReferenceType.Int8Array, bytes.length));
+                    v8ValueTypedArray.fromBytes(bytes);
+                    v8Value = v8ValueTypedArray;
+                } else if (object instanceof char[]) {
+                    V8ValueArray v8ValueArray = v8Scope.add(v8Runtime.createV8ValueArray());
+                    for (char c : (char[]) object) {
+                        v8ValueArray.push(Character.toString(c));
+                    }
+                    v8Value = v8ValueArray;
+                } else if (object instanceof double[]) {
+                    double[] doubles = (double[]) object;
+                    V8ValueTypedArray v8ValueTypedArray = v8Scope.add(v8Runtime.createV8ValueTypedArray(
+                            V8ValueReferenceType.Float64Array, doubles.length));
+                    v8ValueTypedArray.fromDoubles(doubles);
+                    v8Value = v8ValueTypedArray;
+                } else if (object instanceof float[]) {
+                    float[] floats = (float[]) object;
+                    V8ValueTypedArray v8ValueTypedArray = v8Scope.add(v8Runtime.createV8ValueTypedArray(
+                            V8ValueReferenceType.Float32Array, floats.length));
+                    v8ValueTypedArray.fromFloats(floats);
+                    v8Value = v8ValueTypedArray;
+                } else if (object instanceof int[]) {
+                    int[] integers = (int[]) object;
+                    V8ValueTypedArray v8ValueTypedArray = v8Scope.add(v8Runtime.createV8ValueTypedArray(
+                            V8ValueReferenceType.Int32Array, integers.length));
+                    v8ValueTypedArray.fromIntegers(integers);
+                    v8Value = v8ValueTypedArray;
+                } else if (object instanceof long[]) {
+                    long[] longs = (long[]) object;
+                    V8ValueTypedArray v8ValueTypedArray = v8Scope.add(v8Runtime.createV8ValueTypedArray(
+                            V8ValueReferenceType.BigInt64Array, longs.length));
+                    v8ValueTypedArray.fromLongs(longs);
+                    v8Value = v8ValueTypedArray;
+                } else if (object instanceof short[]) {
+                    short[] shorts = (short[]) object;
+                    V8ValueTypedArray v8ValueTypedArray = v8Scope.add(v8Runtime.createV8ValueTypedArray(
+                            V8ValueReferenceType.Int16Array, shorts.length));
+                    v8ValueTypedArray.fromShorts(shorts);
+                    v8Value = v8ValueTypedArray;
+                } else if (object instanceof String[]) {
+                    V8ValueArray v8ValueArray = v8Scope.add(v8Runtime.createV8ValueArray());
+                    for (String item : (String[]) object) {
+                        v8ValueArray.push(v8Runtime.createV8ValueString(item));
+                    }
+                    v8Value = v8ValueArray;
+                } else {
+                    V8ValueArray v8ValueArray = v8Scope.add(v8Runtime.createV8ValueArray());
                     for (Object item : (Object[]) object) {
                         try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8VirtualEscapableValueArray.get().push(childV8Value);
+                            v8ValueArray.push(childV8Value);
                         }
                     }
-                    v8Value = v8VirtualEscapableValueArray.setEscapable().get();
+                    v8Value = v8ValueArray;
                 }
+                v8Scope.setEscapable();
             }
         } else if (!customObjectMap.isEmpty()) {
             String customObjectClassName = object.getClass().getName();
@@ -527,7 +545,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
             if (methodHandleToMap != null) {
                 try {
-                    Map map = (Map) methodHandleToMap.invoke(object);
+                    Map<?, ?> map = (Map<?, ?>) methodHandleToMap.invoke(object);
                     v8Value = toV8Value(v8Runtime, map, depth + 1);
                     ((V8ValueObject) v8Value).setPrivateProperty(
                             PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME, customObjectClassName);
