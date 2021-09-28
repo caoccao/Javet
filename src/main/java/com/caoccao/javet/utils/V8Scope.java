@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The type V8 virtual escapable value is for preventing memory leak when exception is thrown.
+ * The type V8 scope is for preventing memory leak when exception is thrown.
  * It needs to be used by try-with-resource.
  * By default, escapable is set to false so that the internal value can be close when exception is thrown.
  * If there is no exception, escapable needs to be set to true before try-with-resource is closed.
