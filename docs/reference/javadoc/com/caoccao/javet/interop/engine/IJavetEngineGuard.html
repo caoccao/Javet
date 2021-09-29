@@ -112,13 +112,16 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <div class="block">The interface Javet engine guard is the one guarding the script execution with a timeout.
  <p>
  Usage:
-
- <code>
+ <pre>
  try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(5000)) {
- v8Runtime.getExecutor("while (true) {}").executeVoid();
- // That infinite loop will be terminated in 5 seconds by the guard.
+     v8Runtime.getExecutor("while (true) {}").executeVoid();
+     // That infinite loop will be terminated in 5 seconds by the guard.
  }
- </code></div>
+ </pre></div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.2</dd>
+</dl>
 </li>
 </ul>
 </div>
@@ -204,6 +207,10 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <h4>cancel</h4>
 <pre>void&nbsp;cancel()</pre>
 <div class="block">Cancel.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.2</dd>
+</dl>
 </li>
 </ul>
 <a name="disableInDebugMode--">
@@ -214,6 +221,10 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <h4>disableInDebugMode</h4>
 <pre>void&nbsp;disableInDebugMode()</pre>
 <div class="block">Disable in debug mode.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.8.9</dd>
+</dl>
 </li>
 </ul>
 <a name="enableInDebugMode--">
@@ -224,6 +235,10 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <h4>enableInDebugMode</h4>
 <pre>void&nbsp;enableInDebugMode()</pre>
 <div class="block">Enable in debug mode.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.8.9</dd>
+</dl>
 </li>
 </ul>
 <a name="getTimeoutMillis--">
@@ -237,6 +252,8 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the timeout millis</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.2</dd>
 </dl>
 </li>
 </ul>
@@ -251,6 +268,8 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeoutMillis</code> - the timeout millis</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.2</dd>
 </dl>
 </li>
 </ul>

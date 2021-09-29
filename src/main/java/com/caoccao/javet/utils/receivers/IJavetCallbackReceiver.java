@@ -55,7 +55,7 @@ public interface IJavetCallbackReceiver {
      * Gets method.
      *
      * @param methodName         the method name
-     * @param thisObjectRequired the this object required
+     * @param thisObjectRequired this object required
      * @return the method
      * @throws NoSuchMethodException the no such method exception
      */
@@ -67,7 +67,7 @@ public interface IJavetCallbackReceiver {
      * Gets method that takes given number of arguments by method name.
      *
      * @param methodName         the method name
-     * @param thisObjectRequired the this object required
+     * @param thisObjectRequired this object required
      * @param argCount           the arg count
      * @return the method
      * @throws NoSuchMethodException the no such method exception
@@ -87,7 +87,7 @@ public interface IJavetCallbackReceiver {
                 return getClass().getMethod(methodName);
             }
         } else {
-            Class[] classes = new Class[thisObjectRequired ? argCount + 1 : argCount];
+            Class<?>[] classes = new Class[thisObjectRequired ? argCount + 1 : argCount];
             Arrays.fill(classes, V8Value.class);
             return getClass().getMethod(methodName, classes);
         }
@@ -120,7 +120,7 @@ public interface IJavetCallbackReceiver {
      * Gets method that takes an arbitrary number of arguments by method name.
      *
      * @param methodName         the method name
-     * @param thisObjectRequired the this object required
+     * @param thisObjectRequired this object required
      * @return the method varargs
      * @throws NoSuchMethodException the no such method exception
      */

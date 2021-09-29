@@ -19,6 +19,11 @@ package com.caoccao.javet.exceptions;
 
 import java.text.MessageFormat;
 
+/**
+ * The type Javet scripting error.
+ *
+ * @since 0.7.0
+ */
 public final class JavetScriptingError {
     private int endColumn;
     private int endPosition;
@@ -29,6 +34,19 @@ public final class JavetScriptingError {
     private int startColumn;
     private int startPosition;
 
+    /**
+     * Instantiates a new Javet scripting error.
+     *
+     * @param message       the message
+     * @param resourceName  the resource name
+     * @param sourceLine    the source line
+     * @param lineNumber    the line number
+     * @param startColumn   the start column
+     * @param endColumn     the end column
+     * @param startPosition the start position
+     * @param endPosition   the end position
+     * @since 0.7.0
+     */
     public JavetScriptingError(
             String message, String resourceName, String sourceLine,
             int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
@@ -42,68 +60,179 @@ public final class JavetScriptingError {
         this.endPosition = endPosition;
     }
 
+    /**
+     * Gets end column.
+     *
+     * @return the end column
+     * @since 0.9.1
+     */
     public int getEndColumn() {
         return endColumn;
     }
 
+    /**
+     * Gets end position.
+     *
+     * @return the end position
+     * @since 0.9.1
+     */
     public int getEndPosition() {
         return endPosition;
     }
 
+    /**
+     * Gets line number.
+     *
+     * @return the line number
+     * @since 0.9.1
+     */
     public int getLineNumber() {
         return lineNumber;
     }
 
+    /**
+     * Gets message.
+     *
+     * @return the message
+     * @since 0.9.1
+     */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * Gets resource name.
+     *
+     * @return the resource name
+     * @since 0.9.1
+     */
     public String getResourceName() {
         return resourceName;
     }
 
+    /**
+     * Gets source line.
+     *
+     * @return the source line
+     */
     public String getSourceLine() {
         return sourceLine;
     }
 
+    /**
+     * Gets start column.
+     *
+     * @return the start column
+     * @since 0.9.1
+     */
     public int getStartColumn() {
         return startColumn;
     }
 
+    /**
+     * Gets start position.
+     *
+     * @return the start position
+     * @since 0.9.1
+     */
     public int getStartPosition() {
         return startPosition;
     }
 
-    public void setEndColumn(int endColumn) {
+    /**
+     * Sets end column.
+     *
+     * @param endColumn the end column
+     * @return the self
+     * @since 0.9.1
+     */
+    public JavetScriptingError setEndColumn(int endColumn) {
         this.endColumn = endColumn;
+        return this;
     }
 
-    public void setEndPosition(int endPosition) {
+    /**
+     * Sets end position.
+     *
+     * @param endPosition the end position
+     * @return the self
+     * @since 0.9.1
+     */
+    public JavetScriptingError setEndPosition(int endPosition) {
         this.endPosition = endPosition;
+        return this;
     }
 
-    public void setLineNumber(int lineNumber) {
+    /**
+     * Sets line number.
+     *
+     * @param lineNumber the line number
+     * @return the self
+     * @since 0.9.1
+     */
+    public JavetScriptingError setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
+        return this;
     }
 
-    public void setMessage(String message) {
+    /**
+     * Sets message.
+     *
+     * @param message the message
+     * @return the self
+     * @since 0.9.1
+     */
+    public JavetScriptingError setMessage(String message) {
         this.message = message;
+        return this;
     }
 
-    public void setResourceName(String resourceName) {
+    /**
+     * Sets resource name.
+     *
+     * @param resourceName the resource name
+     * @return the self
+     * @since 0.9.1
+     */
+    public JavetScriptingError setResourceName(String resourceName) {
         this.resourceName = resourceName;
+        return this;
     }
 
-    public void setSourceLine(String sourceLine) {
+    /**
+     * Sets source line.
+     *
+     * @param sourceLine the source line
+     * @return the self
+     * @since 0.9.1
+     */
+    public JavetScriptingError setSourceLine(String sourceLine) {
         this.sourceLine = sourceLine;
+        return this;
     }
 
-    public void setStartColumn(int startColumn) {
+    /**
+     * Sets start column.
+     *
+     * @param startColumn the start column
+     * @return the self
+     * @since 0.9.1
+     */
+    public JavetScriptingError setStartColumn(int startColumn) {
         this.startColumn = startColumn;
+        return this;
     }
 
-    public void setStartPosition(int startPosition) {
+    /**
+     * Sets start position.
+     *
+     * @param startPosition the start position
+     * @return the self
+     * @since 0.9.1
+     */
+    public JavetScriptingError setStartPosition(int startPosition) {
         this.startPosition = startPosition;
+        return this;
     }
 
     @Override

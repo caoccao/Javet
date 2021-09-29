@@ -33,7 +33,7 @@ import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 @SuppressWarnings("unchecked")
 public interface IV8ValueFunction extends IV8ValueObject {
     /**
-     * Call function by objects and return V8 value.
+     * Call a function by objects and return V8 value.
      *
      * @param <T>      the type parameter
      * @param receiver the receiver
@@ -48,7 +48,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by V8 values and return V8 value.
+     * Call a function by V8 values and return V8 value.
      *
      * @param <T>      the type parameter
      * @param receiver the receiver
@@ -63,7 +63,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function as constructor by objects.
+     * Call a function as constructor by objects.
      *
      * @param <T>     the type parameter
      * @param objects the objects
@@ -75,7 +75,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException;
 
     /**
-     * Call function as constructor by V8 values.
+     * Call a function as constructor by V8 values.
      *
      * @param <T>      the type parameter
      * @param v8Values the V8 values
@@ -87,7 +87,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException;
 
     /**
-     * Call function by objects and return boolean.
+     * Call a function by objects and return boolean.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -100,7 +100,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by objects and return double.
+     * Call a function by objects and return double.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -113,7 +113,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by objects and return V8 value.
+     * Call a function by objects and return V8 value.
      *
      * @param <T>          the type parameter
      * @param receiver     the receiver
@@ -128,7 +128,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
             throws JavetException;
 
     /**
-     * Call function by V8 values and return V8 value.
+     * Call a function by V8 values and return V8 value.
      *
      * @param <T>          the type parameter
      * @param receiver     the receiver
@@ -144,7 +144,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
 
 
     /**
-     * Call function by objects and return float.
+     * Call a function by objects and return float.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -158,7 +158,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by objects and return integer.
+     * Call a function by objects and return integer.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -171,7 +171,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by objects and return long.
+     * Call a function by objects and return long.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -184,7 +184,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by objects and return object.
+     * Call a function by objects and return object.
      *
      * @param <T>      the type parameter
      * @param receiver the receiver
@@ -204,7 +204,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by objects and return primitive object.
+     * Call a function by objects and return primitive object.
      *
      * @param <R>      the type parameter
      * @param <T>      the type parameter
@@ -226,7 +226,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by objects and return string.
+     * Call a function by objects and return string.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -239,7 +239,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by objects without return.
+     * Call a function by objects without return.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -252,7 +252,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Call function by V8 values without return.
+     * Call a function by V8 values without return.
      *
      * @param receiver the receiver
      * @param v8Values the V8 values

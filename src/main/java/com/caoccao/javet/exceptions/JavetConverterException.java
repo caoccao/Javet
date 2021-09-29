@@ -23,6 +23,8 @@ import java.util.Map;
 
 /**
  * The type Javet converter exception is for JNI.
+ *
+ * @since 0.7.0
  */
 public class JavetConverterException extends JavetException {
     /**
@@ -30,6 +32,7 @@ public class JavetConverterException extends JavetException {
      *
      * @param error      the error
      * @param parameters the parameters
+     * @since 0.9.3
      */
     protected JavetConverterException(JavetError error, Map<String, Object> parameters) {
         super(error, parameters);
@@ -39,6 +42,7 @@ public class JavetConverterException extends JavetException {
      * Instantiates a new Javet converter exception.
      *
      * @param message the message
+     * @since 0.9.3
      */
     public JavetConverterException(String message) {
         this(JavetError.ConverterFailure, SimpleMap.of(JavetError.PARAMETER_MESSAGE, message));
@@ -49,6 +53,7 @@ public class JavetConverterException extends JavetException {
      *
      * @param maxDepth the max depth
      * @return the javet converter exception
+     * @since 0.9.3
      */
     public static JavetConverterException circularStructure(int maxDepth) {
         return new JavetConverterException(

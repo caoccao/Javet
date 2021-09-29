@@ -67,7 +67,7 @@ public class JavetProxyConverter extends JavetObjectConverter {
         }
         boolean classMode = false;
         if (object instanceof Class) {
-            classMode = JavetUniversalProxyHandler.isClassMode((Class) object);
+            classMode = JavetUniversalProxyHandler.isClassMode((Class<?>) object);
         }
         try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
             V8ValueProxy v8ValueProxy;

@@ -40,7 +40,7 @@ public class MethodDescriptor {
      */
     protected V8ValueSymbolType symbolType;
     /**
-     * The This object required.
+     * This object required.
      *
      * @since 0.9.2
      */
@@ -50,7 +50,7 @@ public class MethodDescriptor {
      * Instantiates a new Method descriptor.
      *
      * @param method             the method
-     * @param thisObjectRequired the this object required
+     * @param thisObjectRequired this object required
      * @since 0.9.2
      */
     public MethodDescriptor(Method method, boolean thisObjectRequired) {
@@ -61,7 +61,7 @@ public class MethodDescriptor {
      * Instantiates a new Method descriptor.
      *
      * @param method             the method
-     * @param thisObjectRequired the this object required
+     * @param thisObjectRequired this object required
      * @param symbolType         the symbol type
      * @since 0.9.11
      */

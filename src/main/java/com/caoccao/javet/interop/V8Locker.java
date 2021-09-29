@@ -27,13 +27,14 @@ import java.util.Objects;
 /**
  * The type V8 locker.
  * It's designed for performance sensitive scenarios.
+ *
  * @since 0.7.3
  */
 public final class V8Locker implements IJavetClosable {
     private final long threadId;
     private final IV8Native v8Native;
     private final V8Runtime v8Runtime;
-    private boolean locked;
+    private volatile boolean locked;
 
     /**
      * Instantiates a new V8 locker.

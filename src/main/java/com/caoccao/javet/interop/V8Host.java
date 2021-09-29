@@ -469,10 +469,10 @@ public final class V8Host implements AutoCloseable {
     }
 
     private static class NodeInstanceHolder {
-        private static V8Host INSTANCE = new V8Host(JSRuntimeType.Node);
+        private static final V8Host INSTANCE = new V8Host(JSRuntimeType.Node);
     }
 
     private static class V8InstanceHolder {
-        private static V8Host INSTANCE = new V8Host(JSRuntimeType.V8);
+        private static final V8Host INSTANCE = new V8Host(JSRuntimeType.V8);
     }
 }

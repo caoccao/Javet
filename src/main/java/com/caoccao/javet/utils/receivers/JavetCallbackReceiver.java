@@ -82,7 +82,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
     }
 
     /**
-     * Echo string from input string.
+     * Echo the input string.
      *
      * @param str the str
      * @return the string
@@ -92,7 +92,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
     }
 
     /**
-     * Echo string from input V8 value.
+     * Echo the input V8 value.
      *
      * @param arg the arg
      * @return the string
@@ -102,7 +102,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
     }
 
     /**
-     * Echo string from the given V8 value array.
+     * Echo the input V8 value array.
      * <p>
      * Note: Lifecycle of the input and return arrays is managed by the caller.
      *

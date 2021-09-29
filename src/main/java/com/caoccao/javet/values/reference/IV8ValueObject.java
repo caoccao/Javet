@@ -64,6 +64,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException;
 
     /**
@@ -82,6 +83,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
+    @SuppressWarnings("UnusedReturnValue")
     default boolean bindFunction(String functionName, String codeString) throws JavetException {
         Objects.requireNonNull(functionName);
         Objects.requireNonNull(codeString);
@@ -849,7 +851,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
-     * Invoke function with return V8 value by name and objects as arguments.
+     * Invoke function with the return V8 value by name and objects as arguments.
      *
      * @param <T>          the type parameter
      * @param functionName the function name
@@ -864,7 +866,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
-     * Invoke function with return V8 value by name and V8 values as arguments.
+     * Invoke function with the return V8 value by name and V8 values as arguments.
      *
      * @param <T>          the type parameter
      * @param functionName the function name
@@ -1168,6 +1170,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.9.4
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setPrototype(IV8ValueObject v8ValueObject) throws JavetException;
 
     /**

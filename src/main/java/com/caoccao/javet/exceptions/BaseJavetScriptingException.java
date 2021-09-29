@@ -19,9 +19,33 @@ package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.utils.SimpleMap;
 
+/**
+ * The type Base javet scripting exception.
+ *
+ * @since 0.7.0
+ */
 public abstract class BaseJavetScriptingException extends JavetException {
+    /**
+     * The Scripting error.
+     *
+     * @since 0.8.5
+     */
     protected JavetScriptingError scriptingError;
 
+    /**
+     * Instantiates a new Base javet scripting exception.
+     *
+     * @param error         the error
+     * @param message       the message
+     * @param resourceName  the resource name
+     * @param sourceLine    the source line
+     * @param lineNumber    the line number
+     * @param startColumn   the start column
+     * @param endColumn     the end column
+     * @param startPosition the start position
+     * @param endPosition   the end position
+     * @since 0.8.5
+     */
     protected BaseJavetScriptingException(
             JavetError error,
             String message, String resourceName, String sourceLine,
@@ -39,6 +63,12 @@ public abstract class BaseJavetScriptingException extends JavetException {
                 lineNumber, startColumn, endColumn, startPosition, endPosition);
     }
 
+    /**
+     * Gets scripting error.
+     *
+     * @return the scripting error
+     * @since 0.8.5
+     */
     public JavetScriptingError getScriptingError() {
         return scriptingError;
     }

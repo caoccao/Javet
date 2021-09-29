@@ -26,6 +26,8 @@ package com.caoccao.javet.interop;
  * 2. Please make sure V8Native does not reference any other types so that JNI code generation is quick and clean.
  * 3. Please keep the methods in ascending order so that the generated .h file keeps the same order.
  * 4. Please do not inject any other non-public native code.
+ *
+ * @since 0.7.0
  */
 class V8Native implements IV8Native {
     V8Native() {

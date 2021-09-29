@@ -63,7 +63,7 @@ public final class JavetReflectionUtils {
             method.setAccessible(true);
             SerializedLambda serializedLambda = (SerializedLambda) method.invoke(lambda);
             return serializedLambda.getImplMethodName();
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
         }
         return null;
     }
@@ -106,7 +106,7 @@ public final class JavetReflectionUtils {
     public static void safeSetAccessible(AccessibleObject accessibleObject) {
         try {
             accessibleObject.setAccessible(true);
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
         }
     }
 }

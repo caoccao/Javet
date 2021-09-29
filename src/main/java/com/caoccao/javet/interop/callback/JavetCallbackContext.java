@@ -29,6 +29,8 @@ import java.util.Objects;
 public final class JavetCallbackContext {
     /**
      * The constant INVALID_HANDLE.
+     *
+     * @since 0.9.11
      */
     public static final long INVALID_HANDLE = 0L;
     private static final String ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID =

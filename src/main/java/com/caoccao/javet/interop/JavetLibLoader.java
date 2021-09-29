@@ -27,7 +27,6 @@ import com.caoccao.javet.utils.SimpleMap;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -40,6 +39,7 @@ public final class JavetLibLoader {
     private static final String LIB_FILE_EXTENSION_MACOS = "dylib";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
+    private static final IJavetLogger LOGGER = new JavetDefaultLogger(JavetLibLoader.class.getName());
     private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 60L * 1000L; // 1 minute
     private static final String OS_LINUX = "linux";
     private static final String OS_MACOS = "macos";
@@ -47,7 +47,6 @@ public final class JavetLibLoader {
     private static final String RESOURCE_NAME_FORMAT = "/{0}";
     private static final String TEMP_ROOT_NAME = "javet";
     private static final String XRR = "755";
-    private static IJavetLogger LOGGER = new JavetDefaultLogger(JavetLibLoader.class.getName());
 
     static {
         purgeLegacyLibraries();
@@ -67,34 +66,42 @@ public final class JavetLibLoader {
         try {
             if (tempRootPath.exists()) {
                 if (tempRootPath.isDirectory()) {
-                    for (File tempProcessIDPath : tempRootPath.listFiles()) {
-                        if (tempProcessIDPath.isDirectory() &&
-                                tempProcessIDPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS < System.currentTimeMillis()) {
-                            try {
-                                boolean isLocked = false;
-                                for (File libFile : tempProcessIDPath.listFiles()) {
-                                    if (libFile.delete()) {
-                                        LOGGER.logDebug("Deleted {0}.", libFile.getAbsolutePath());
-                                    } else {
-                                        LOGGER.logDebug("{0} is locked.", libFile.getAbsolutePath());
-                                        isLocked = true;
-                                        break;
+                    File[] files = tempRootPath.listFiles();
+                    if (files != null && files.length > 0) {
+                        for (File tempProcessIDPath : files) {
+                            if (tempProcessIDPath.isDirectory() &&
+                                    tempProcessIDPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS < System.currentTimeMillis()) {
+                                try {
+                                    boolean isLocked = false;
+                                    File[] libFiles = tempProcessIDPath.listFiles();
+                                    if (libFiles != null && libFiles.length > 0) {
+                                        for (File libFile : libFiles) {
+                                            if (libFile.delete()) {
+                                                LOGGER.logDebug("Deleted {0}.", libFile.getAbsolutePath());
+                                            } else {
+                                                LOGGER.logDebug("{0} is locked.", libFile.getAbsolutePath());
+                                                isLocked = true;
+                                                break;
+                                            }
+                                        }
                                     }
-                                }
-                                if (!isLocked) {
-                                    if (tempProcessIDPath.delete()) {
-                                        LOGGER.logDebug("Deleted {0}.", tempProcessIDPath.getAbsolutePath());
-                                    } else {
-                                        LOGGER.logDebug("{0} is locked.", tempProcessIDPath.getAbsolutePath());
+                                    if (!isLocked) {
+                                        if (tempProcessIDPath.delete()) {
+                                            LOGGER.logDebug("Deleted {0}.", tempProcessIDPath.getAbsolutePath());
+                                        } else {
+                                            LOGGER.logDebug("{0} is locked.", tempProcessIDPath.getAbsolutePath());
+                                        }
                                     }
+                                } catch (Throwable t) {
+                                    LOGGER.logError(t, "Failed to delete {0}.", tempProcessIDPath.getAbsolutePath());
                                 }
-                            } catch (Throwable t) {
-                                LOGGER.logError(t, "Failed to delete {0}.", tempProcessIDPath.getAbsolutePath());
                             }
                         }
                     }
                 } else {
-                    tempRootPath.delete();
+                    if (!tempRootPath.delete()) {
+                        LOGGER.logError("Failed to delete {0}.", tempRootPath.getAbsolutePath());
+                    }
                 }
             }
         } catch (Throwable t) {
@@ -173,13 +180,15 @@ public final class JavetLibLoader {
         return loaded;
     }
 
-    public void load() throws JavetException, IOException {
+    public void load() throws JavetException {
         if (!loaded) {
             String resourceFileName = getResourceFileName();
             File tempRootPath = new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME);
             File tempProcessIDPath = new File(tempRootPath, Long.toString(JavetOSUtils.PROCESS_ID));
             if (!tempProcessIDPath.exists()) {
-                tempProcessIDPath.mkdirs();
+                if (!tempProcessIDPath.mkdirs()) {
+                    LOGGER.logError("Failed to create {0}.", tempProcessIDPath.getAbsolutePath());
+                }
             }
             File libFile = new File(tempProcessIDPath, resourceFileName).getAbsoluteFile();
             try {

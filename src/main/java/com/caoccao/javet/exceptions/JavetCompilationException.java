@@ -17,7 +17,25 @@
 
 package com.caoccao.javet.exceptions;
 
+/**
+ * The type Javet compilation exception.
+ *
+ * @since 0.7.0
+ */
 public class JavetCompilationException extends BaseJavetScriptingException {
+    /**
+     * Instantiates a new Javet compilation exception.
+     *
+     * @param message       the message
+     * @param resourceName  the resource name
+     * @param sourceLine    the source line
+     * @param lineNumber    the line number
+     * @param startColumn   the start column
+     * @param endColumn     the end column
+     * @param startPosition the start position
+     * @param endPosition   the end position
+     * @since 0.7.0
+     */
     public JavetCompilationException(
             String message, String resourceName, String sourceLine,
             int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {

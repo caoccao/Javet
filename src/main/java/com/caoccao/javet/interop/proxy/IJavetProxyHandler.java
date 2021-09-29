@@ -30,13 +30,12 @@ import com.caoccao.javet.values.reference.V8ValueArray;
  * @param <T> the type parameter
  * @since 0.9.6
  */
-@SuppressWarnings("unchecked")
 public interface IJavetProxyHandler<T> {
     /**
      * Apply to object
      *
      * @param target     the target
-     * @param thisObject the this object
+     * @param thisObject this object
      * @param arguments  the arguments
      * @return the V8 value
      * @throws JavetException the javet exception

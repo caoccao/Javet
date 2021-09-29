@@ -29,7 +29,6 @@ import java.util.stream.Stream;
  *
  * @since 0.9.13
  */
-@SuppressWarnings("unchecked")
 public final class JavetTypeUtils {
     /**
      * Convert object to double stream.
@@ -42,7 +41,7 @@ public final class JavetTypeUtils {
         if (object instanceof double[]) {
             return DoubleStream.of((double[]) object);
         } else if (object instanceof Collection) {
-            Collection collection = (Collection) object;
+            Collection<?> collection = (Collection<?>) object;
             if (collection.stream().allMatch(i -> i instanceof Double)) {
                 return collection.stream().mapToDouble(i -> (Double) i);
             }
@@ -97,7 +96,7 @@ public final class JavetTypeUtils {
         if (object instanceof int[]) {
             return IntStream.of((int[]) object);
         } else if (object instanceof Collection) {
-            Collection collection = (Collection) object;
+            Collection<?> collection = (Collection<?>) object;
             if (collection.stream().allMatch(i -> i instanceof Integer)) {
                 return collection.stream().mapToInt(i -> (Integer) i);
             }
@@ -116,7 +115,7 @@ public final class JavetTypeUtils {
         if (object instanceof long[]) {
             return LongStream.of((long[]) object);
         } else if (object instanceof Collection) {
-            Collection collection = (Collection) object;
+            Collection<?> collection = (Collection<?>) object;
             if (collection.stream().allMatch(i -> i instanceof Long)) {
                 return collection.stream().mapToLong(i -> (Long) i);
             }
@@ -131,7 +130,7 @@ public final class JavetTypeUtils {
      * @return the stream
      * @since 0.9.13
      */
-    public static Stream toStream(Object object) {
+    public static Stream<?> toStream(Object object) {
         if (object.getClass().isArray()) {
             if (object instanceof int[]) {
                 return Arrays.stream((int[]) object).boxed();
@@ -178,7 +177,7 @@ public final class JavetTypeUtils {
                 return Stream.of((Object[]) object);
             }
         } else if (object instanceof Collection) {
-            return ((Collection) object).stream();
+            return ((Collection<?>) object).stream();
         }
         return null;
     }
