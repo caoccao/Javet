@@ -70,10 +70,26 @@ Sometimes V8 objects to be returned to V8 cannot be closed, but if there is an e
  * By default, escapable is set to false so that the internal values can be close when exception is thrown.
  * If there is no exception, escapable needs to be set to true before try-with-resource is closed.
 
+Usage 1 without V8 Runtime
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. code-block:: java
 
    try (V8Scope v8Scope = new V8Scope()) {
        V8ValueObject v8ValueObject = v8Scope.add(v8Runtime.createV8ValueObject());
+       // v8ValueObject will be closed automatically if there is an exception thrown.
+       v8Scope.setEscapable();
+       // v8ValueObject will not be closed.
+       return v8ValueObject;
+   }
+
+Usage 2 with V8 Runtime
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: java
+
+   try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+       V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();
        // v8ValueObject will be closed automatically if there is an exception thrown.
        v8Scope.setEscapable();
        // v8ValueObject will not be closed.

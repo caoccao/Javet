@@ -333,6 +333,8 @@
 <li><p>If there is no exception, escapable needs to be set to true before try-with-resource is closed.</p></li>
 </ul>
 </div></blockquote>
+<div class="section" id="usage-1-without-v8-runtime">
+<h4>Usage 1 without V8 Runtime<a class="headerlink" href="#usage-1-without-v8-runtime" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">(</span><span class="n">V8Scope</span> <span class="n">v8Scope</span> <span class="o">=</span> <span class="k">new</span> <span class="n">V8Scope</span><span class="p">())</span> <span class="p">{</span>
     <span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Scope</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">());</span>
     <span class="c1">// v8ValueObject will be closed automatically if there is an exception thrown.</span>
@@ -341,6 +343,19 @@
     <span class="k">return</span> <span class="n">v8ValueObject</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="usage-2-with-v8-runtime">
+<h4>Usage 2 with V8 Runtime<a class="headerlink" href="#usage-2-with-v8-runtime" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">(</span><span class="n">V8Scope</span> <span class="n">v8Scope</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getV8Scope</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Scope</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">();</span>
+    <span class="c1">// v8ValueObject will be closed automatically if there is an exception thrown.</span>
+    <span class="n">v8Scope</span><span class="p">.</span><span class="na">setEscapable</span><span class="p">();</span>
+    <span class="c1">// v8ValueObject will not be closed.</span>
+    <span class="k">return</span> <span class="n">v8ValueObject</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -555,7 +570,11 @@
 <li><a class="reference internal" href="#recommended-options">Recommended Options</a><ul>
 <li><a class="reference internal" href="#automatic-management-with-try-with-resource">Automatic Management with try-with-resource</a></li>
 <li><a class="reference internal" href="#automatically-manage-with-weak-reference">Automatically Manage with Weak Reference</a></li>
-<li><a class="reference internal" href="#how-to-escape-from-try-with-resource">How to Escape from try-with-resource?</a></li>
+<li><a class="reference internal" href="#how-to-escape-from-try-with-resource">How to Escape from try-with-resource?</a><ul>
+<li><a class="reference internal" href="#usage-1-without-v8-runtime">Usage 1 without V8 Runtime</a></li>
+<li><a class="reference internal" href="#usage-2-with-v8-runtime">Usage 2 with V8 Runtime</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#alternative-option-arraybuffer">Alternative Option: ArrayBuffer</a></li>

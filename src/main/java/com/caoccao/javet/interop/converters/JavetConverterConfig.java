@@ -24,7 +24,7 @@ package com.caoccao.javet.interop.converters;
  * @since 0.9.4
  */
 @SuppressWarnings("unchecked")
-public class JavetConverterConfig<T extends JavetConverterConfig> {
+public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     /**
      * The constant DEFAULT_MAX_DEPTH.
      *
@@ -363,6 +363,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
      * @return the self
      * @since 0.9.4
      */
+    @SuppressWarnings("UnusedReturnValue")
     public T setExtractFunctionSourceCode(boolean extractFunctionSourceCode) {
         this.extractFunctionSourceCode = extractFunctionSourceCode;
         return (T) this;
@@ -387,6 +388,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
      * @return the self
      * @since 0.9.6
      */
+    @SuppressWarnings("UnusedReturnValue")
     public T setProxyMapEnabled(boolean proxyMapEnabled) {
         this.proxyMapEnabled = proxyMapEnabled;
         return (T) this;
@@ -399,6 +401,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig> {
      * @return the self
      * @since 0.9.8
      */
+    @SuppressWarnings("UnusedReturnValue")
     public T setProxySetEnabled(boolean proxySetEnabled) {
         this.proxySetEnabled = proxySetEnabled;
         return (T) this;

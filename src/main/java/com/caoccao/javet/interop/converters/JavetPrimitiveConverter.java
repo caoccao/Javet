@@ -39,7 +39,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
      *
      * @since 0.9.4
      */
-    protected JavetConverterConfig config;
+    protected JavetConverterConfig<?> config;
 
     /**
      * Instantiates a new Javet primitive converter.
@@ -47,11 +47,11 @@ public class JavetPrimitiveConverter implements IJavetConverter {
      * @since 0.7.1
      */
     public JavetPrimitiveConverter() {
-        config = new JavetConverterConfig();
+        config = new JavetConverterConfig<>();
     }
 
     @Override
-    public JavetConverterConfig getConfig() {
+    public JavetConverterConfig<?> getConfig() {
         return config;
     }
 
@@ -61,7 +61,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
      * @param config the config
      * @since 0.9.4
      */
-    public void setConfig(JavetConverterConfig config) {
+    public void setConfig(JavetConverterConfig<?> config) {
         this.config = Objects.requireNonNull(config);
     }
 
@@ -89,7 +89,6 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         return v8Value;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     @CheckReturnValue
     public final <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
@@ -163,7 +162,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         } else if (object instanceof Character) {
             v8Value = v8Runtime.createV8ValueString(((Character) object).toString());
         } else if (object instanceof Optional) {
-            Optional optional = (Optional) object;
+            Optional<?> optional = (Optional<?>) object;
             v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.get(), depth) : v8Runtime.createV8ValueNull();
         } else if (object instanceof OptionalInt) {
             OptionalInt optional = (OptionalInt) object;

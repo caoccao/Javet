@@ -72,7 +72,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * The Callback context map.
      * <p>
      * V8 may not make final callback when V8 context is being recycled.
-     * That may results in memory leak.
+     * That may result in memory leak.
      * Callback context map is designed for closing that memory leak issue.
      *
      * @since 0.8.3
@@ -390,7 +390,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return decorateV8Value(new V8ValueZonedDateTime(zonedDateTime));
     }
 
-    @CheckReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public <T extends IV8Value> T decorateV8Value(T v8Value) throws JavetException {
         if (v8Value != null) {
             if (v8Value.getV8Runtime() == null) {
@@ -639,6 +639,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public IV8ModuleResolver getV8ModuleResolver() {
         return v8ModuleResolver;
+    }
+
+    public V8Scope getV8Scope() {
+        return new V8Scope(this);
     }
 
     public String getVersion() {
