@@ -2,7 +2,7 @@
 
 # Usage for V8: sh build-linux.sh -DV8_DIR=${HOME}/v8
 # Usage for Node: sh build-linux.sh -DNODE_DIR=${HOME}/node
-JAVET_VERSION=0.9.14
+JAVET_VERSION=1.0.0
 rm -rf build
 mkdir build
 cd build
