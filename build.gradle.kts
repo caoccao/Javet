@@ -25,7 +25,7 @@ repositories {
 }
 
 group = "com.caoccao.javet"
-version = "0.9.14"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
