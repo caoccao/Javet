@@ -2,8 +2,8 @@
 Release Notes 0.9.x
 ===================
 
-0.9.14
-------
+0.9.14 V8 Scope
+---------------
 
 * Added ``IJavetMappable``
 * Enhanced ``JavetObjectConverter`` to look up custom objects recursively
