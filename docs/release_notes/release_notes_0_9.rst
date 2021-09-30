@@ -2,6 +2,14 @@
 Release Notes 0.9.x
 ===================
 
+0.9.14 V8 Scope
+---------------
+
+* Added ``IJavetMappable``
+* Enhanced ``JavetObjectConverter`` to look up custom objects recursively
+* Renamed ``V8BindEnabler`` to ``V8BindingEnabler``
+* Renamed ``V8VirtualEscapableValue`` to ``V8Scope`` and enhanced ``V8Scope`` to support multiple values
+
 0.9.13 V8 v9.4
 --------------
 

@@ -29,34 +29,50 @@ import java.util.List;
 public final class V8Flags {
     /**
      * The constant FLAG_ALLOW_NATIVES_SYNTAX.
+     *
+     * @since 0.9.13
      */
     public static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
     /**
      * The constant FLAG_EXPOSE_GC.
+     *
+     * @since 0.9.13
      */
     public static final String FLAG_EXPOSE_GC = "--expose-gc";
     /**
      * The constant FLAG_EXPOSE_INSPECTOR_SCRIPTS.
+     *
+     * @since 0.9.13
      */
     public static final String FLAG_EXPOSE_INSPECTOR_SCRIPTS = "--expose-inspector-scripts";
     /**
      * The constant FLAG_INITIAL_HEAP_SIZE.
+     *
+     * @since 0.9.13
      */
     public static final String FLAG_INITIAL_HEAP_SIZE = "--initial-heap-size";
     /**
      * The constant FLAG_MAX_OLD_SPACE_SIZE.
+     *
+     * @since 0.9.13
      */
     public static final String FLAG_MAX_OLD_SPACE_SIZE = "--max-old-space-size";
     /**
      * The constant FLAG_MAX_HEAP_SIZE.
+     *
+     * @since 0.9.13
      */
     public static final String FLAG_MAX_HEAP_SIZE = "--max-heap-size";
     /**
      * The constant FLAG_TRACK_RETAINING_PATH.
+     *
+     * @since 0.9.13
      */
     public static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
     /**
      * The constant FLAG_USE_STRICT.
+     *
+     * @since 0.9.13
      */
     public static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";

@@ -26,6 +26,7 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetMappable;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
@@ -390,7 +391,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         }
     }
 
-    static final class CustomObject {
+    static final class CustomObject implements IJavetMappable {
         private String name;
         private int value;
 
@@ -403,6 +404,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             this(null, 0);
         }
 
+        @Override
         public void fromMap(Map<String, Object> map) {
             setName((String) map.get("name"));
             setValue((Integer) map.get("value"));
@@ -424,6 +426,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             this.value = value;
         }
 
+        @Override
         public Map<String, Object> toMap() {
             return new HashMap<String, Object>() {
                 {

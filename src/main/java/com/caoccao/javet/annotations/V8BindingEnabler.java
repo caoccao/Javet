@@ -20,12 +20,13 @@ package com.caoccao.javet.annotations;
 import java.lang.annotation.*;
 
 /**
- * The interface V8 bind config is for determining whether certain injection is enabled or not.
+ * The interface V8 binding enabler is for determining
+ * whether certain V8 binding function is enabled or not.
  *
  * @since 0.9.3
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface V8BindEnabler {
+public @interface V8BindingEnabler {
 }

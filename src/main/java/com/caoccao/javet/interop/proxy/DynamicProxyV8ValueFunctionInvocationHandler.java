@@ -27,6 +27,8 @@ import java.lang.reflect.Method;
 
 /**
  * The type Dynamic proxy V8 value function invocation handler.
+ *
+ * @since 0.9.10
  */
 public class DynamicProxyV8ValueFunctionInvocationHandler implements InvocationHandler, IJavetClosable {
     private static final String METHOD_NAME_CLOSE = "close";

@@ -22,7 +22,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 
-@SuppressWarnings("unchecked")
 public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     int getActiveEngineCount();
 

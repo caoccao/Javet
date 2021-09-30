@@ -22,9 +22,9 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetConverterConfig;
-import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.IV8Value;
 import com.caoccao.javet.values.V8Value;
@@ -46,6 +46,8 @@ import java.util.stream.Stream;
  */
 public final class V8FunctionCallback {
 
+    private static final String NULL = "null";
+
     private static Object convert(IJavetConverter converter, Class<?> expectedClass, V8Value v8Value)
             throws JavetException {
         if (v8Value == null) {
@@ -55,7 +57,7 @@ public final class V8FunctionCallback {
                  * The following test is based on statistical analysis
                  * so that the performance can be maximized.
                  */
-                JavetConverterConfig config = converter.getConfig();
+                JavetConverterConfig<?> config = converter.getConfig();
                 if (expectedClass == int.class) {
                     return config.getDefaultInt();
                 } else if (expectedClass == boolean.class) {
@@ -208,7 +210,7 @@ public final class V8FunctionCallback {
                             return OptionalLong.of((Long) convertedObject);
                         }
                     } else if (expectedClass == Stream.class) {
-                        Stream stream = JavetTypeUtils.toStream(convertedObject);
+                        Stream<?> stream = JavetTypeUtils.toStream(convertedObject);
                         if (stream != null) {
                             return stream;
                         }
@@ -229,13 +231,13 @@ public final class V8FunctionCallback {
                         }
                     }
                 }
-            } catch (Throwable t) {
+            } catch (Throwable ignored) {
             }
             throw new JavetException(
                     JavetError.CallbackSignatureParameterTypeMismatch,
                     SimpleMap.of(
                             JavetError.PARAMETER_EXPECTED_PARAMETER_TYPE, expectedClass,
-                            JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, convertedObject.getClass()));
+                            JavetError.PARAMETER_ACTUAL_PARAMETER_TYPE, convertedObject == null ? NULL : convertedObject.getClass()));
         }
         return v8Value;
     }
@@ -245,7 +247,7 @@ public final class V8FunctionCallback {
      *
      * @param v8Runtime            the V8 runtime
      * @param javetCallbackContext the javet callback context
-     * @param thisObject           the this object
+     * @param thisObject           this object
      * @param args                 the args
      * @return the V8 value
      * @throws Throwable the throwable
@@ -341,8 +343,6 @@ public final class V8FunctionCallback {
                 }
             } catch (InvocationTargetException e) {
                 throw e.getCause();
-            } catch (Throwable t) {
-                throw t;
             } finally {
                 // Result object must be excluded because it will be closed in JNI.
                 if (!javetCallbackContext.isThisObjectRequired()) {

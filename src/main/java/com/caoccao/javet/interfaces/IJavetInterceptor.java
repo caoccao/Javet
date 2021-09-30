@@ -34,6 +34,7 @@ public interface IJavetInterceptor {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean register(IV8ValueObject... iV8ValueObjects) throws JavetException;
 
     /**
@@ -44,5 +45,6 @@ public interface IJavetInterceptor {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean unregister(IV8ValueObject... iV8ValueObjects) throws JavetException;
 }

@@ -28,7 +28,6 @@ import com.caoccao.javet.values.V8Value;
  *
  * @since 0.7.1
  */
-@SuppressWarnings("unchecked")
 public interface IJavetConverter {
     /**
      * Gets config.
@@ -36,7 +35,7 @@ public interface IJavetConverter {
      * @return the config
      * @since 0.9.4
      */
-    JavetConverterConfig getConfig();
+    JavetConverterConfig<?> getConfig();
 
     /**
      * To object from V8 value.

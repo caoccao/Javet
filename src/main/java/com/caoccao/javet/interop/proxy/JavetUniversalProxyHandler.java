@@ -17,7 +17,7 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.annotations.V8BindEnabler;
+import com.caoccao.javet.annotations.V8BindingEnabler;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -111,7 +111,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      *
      * @since 0.9.8
      */
-    protected List<Constructor> constructors;
+    protected List<Constructor<?>> constructors;
     /**
      * The Field map.
      *
@@ -203,7 +203,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             throws Throwable {
         List<ScoredExecutable<E>> scoredExecutables = new ArrayList<>();
         for (E executable : executables) {
-            ScoredExecutable scoredExecutable = new ScoredExecutable(
+            ScoredExecutable<E> scoredExecutable = new ScoredExecutable<>(
                     v8Runtime, targetObject, executable, javetVirtualObjects);
             scoredExecutable.calculateScore();
             double score = scoredExecutable.getScore();
@@ -221,7 +221,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     lastException = t;
                 }
             }
-            throw lastException;
+            if (lastException != null) {
+                throw lastException;
+            }
         }
         return null;
     }
@@ -232,7 +234,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @param objectClass the object class
      * @return the boolean
      */
-    public static boolean isClassMode(Class objectClass) {
+    public static boolean isClassMode(Class<?> objectClass) {
         return !(objectClass.isPrimitive() || objectClass.isAnnotation()
                 || objectClass.isInterface() || objectClass.isArray());
     }
@@ -283,7 +285,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             JavetError.PARAMETER_METHOD_NAME, METHOD_NAME_CONSTRUCTOR,
                             JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
         } finally {
-            JavetResourceUtils.safeClose((Object[]) v8Values);
+            if (v8Values != null) {
+                JavetResourceUtils.safeClose((Object[]) v8Values);
+            }
         }
     }
 
@@ -397,9 +401,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         boolean isFound = false;
         if (!classMode) {
             if (isTargetTypeMap) {
-                isFound = ((Map) targetObject).containsKey(v8Runtime.toObject(property));
+                isFound = ((Map<?, ?>) targetObject).containsKey(v8Runtime.toObject(property));
             } else if (isTargetTypeSet) {
-                isFound = ((Set) targetObject).contains(v8Runtime.toObject(property));
+                isFound = ((Set<?>) targetObject).contains(v8Runtime.toObject(property));
             }
         }
         if (!isFound && (property instanceof V8ValueString)) {
@@ -429,14 +433,14 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                 if (isFound) {
                                     break;
                                 }
-                            } catch (Throwable t) {
+                            } catch (Throwable ignored) {
                             }
                         }
                     }
                 }
             } catch (JavetException e) {
                 throw e;
-            } catch (Throwable t) {
+            } catch (Throwable ignored) {
             }
         }
         return v8Runtime.createV8ValueBoolean(isFound);
@@ -470,7 +474,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         isTargetTypeSet = Set.class.isAssignableFrom(targetClass);
         classMode = false;
         if (targetObject instanceof Class) {
-            Class objectClass = (Class) targetObject;
+            Class<?> objectClass = (Class<?>) targetObject;
             classMode = isClassMode(objectClass);
             initializeFieldsAndMethods(objectClass, true);
         }
@@ -484,19 +488,17 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @param staticMode   the static mode
      * @since 0.9.6
      */
-    protected void initializeFieldsAndMethods(Class currentClass, boolean staticMode) {
+    protected void initializeFieldsAndMethods(Class<?> currentClass, boolean staticMode) {
         if (!classMode) {
             if (isTargetTypeMap) {
-                uniqueKeySet.addAll(((Map) targetObject).keySet());
+                uniqueKeySet.addAll(((Map<String, ?>) targetObject).keySet());
             } else if (isTargetTypeSet) {
-                uniqueKeySet.addAll((Set) targetObject);
+                uniqueKeySet.addAll((Set<String>) targetObject);
             }
         }
-        while (true) {
+        do {
             if (classMode) {
-                for (Constructor constructor : currentClass.getConstructors()) {
-                    constructors.add(constructor);
-                }
+                constructors.addAll(Arrays.asList(currentClass.getConstructors()));
             }
             // All public fields are in the scope.
             for (Field field : currentClass.getFields()) {
@@ -562,10 +564,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 break;
             }
             currentClass = currentClass.getSuperclass();
-            if (currentClass == null) {
-                break;
-            }
-        }
+        } while (currentClass != null);
     }
 
     /**
@@ -613,13 +612,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is V8 bind enabled.
+     * Is V8 binding enabled.
      *
      * @param methodName the method name
      * @return the boolean
      */
-    @V8BindEnabler
-    public boolean isV8BindEnabled(String methodName) {
+    @V8BindingEnabler
+    public boolean isV8BindingEnabled(String methodName) {
         if (JavetUniversalProxyHandler.METHOD_NAME_CONSTRUCT.equals(methodName)) {
             return hasConstructors();
         }
@@ -631,9 +630,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     public V8Value ownKeys(V8Value target) throws JavetException {
         if (!classMode) {
             if (isTargetTypeMap) {
-                return v8Runtime.toV8Value(((Map) targetObject).keySet().toArray());
+                return v8Runtime.toV8Value(((Map<?, ?>) targetObject).keySet().toArray());
             } else if (isTargetTypeSet) {
-                return v8Runtime.toV8Value(((Set) targetObject).toArray());
+                return v8Runtime.toV8Value(((Set<?>) targetObject).toArray());
             }
         }
         return v8Runtime.toV8Value(uniqueKeySet.toArray());
@@ -726,10 +725,10 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     public static class JavetUniversalInterceptor {
         private static final String METHOD_NAME_INVOKE = "invoke";
-        private String jsMethodName;
-        private List<Method> methods;
-        private Object targetObject;
-        private V8Runtime v8Runtime;
+        private final String jsMethodName;
+        private final List<Method> methods;
+        private final Object targetObject;
+        private final V8Runtime v8Runtime;
 
         /**
          * Instantiates a new Javet universal interceptor.
@@ -760,7 +759,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 return new JavetCallbackContext(
                         this,
                         getClass().getMethod(METHOD_NAME_INVOKE, V8Value[].class));
-            } catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException ignored) {
             }
             return null;
         }
@@ -824,11 +823,10 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     public static class ScoredExecutable<E extends Executable> {
-        private E executable;
-        private JavetVirtualObject[] javetVirtualObjects;
+        private final E executable;
+        private final JavetVirtualObject[] javetVirtualObjects;
+        private final Object targetObject;
         private double score;
-        private Object targetObject;
-        private V8Runtime v8Runtime;
 
         /**
          * Instantiates a new Scored executable.
@@ -845,7 +843,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             this.javetVirtualObjects = javetVirtualObjects;
             this.score = 0;
             this.targetObject = targetObject;
-            this.v8Runtime = v8Runtime;
         }
 
         /**
@@ -980,13 +977,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     Class<?> componentType = parameterTypes[parameterCount - 1];
                     Object varObject = Array.newInstance(componentType, 0);
                     if (executable instanceof Constructor) {
-                        return ((Constructor) executable).newInstance(varObject);
+                        return ((Constructor<?>) executable).newInstance(varObject);
                     } else {
                         return ((Method) executable).invoke(callee, varObject);
                     }
                 } else {
                     if (executable instanceof Constructor) {
-                        return ((Constructor) executable).newInstance();
+                        return ((Constructor<?>) executable).newInstance();
                     } else {
                         return ((Method) executable).invoke(callee);
                     }
@@ -1065,7 +1062,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     parameters.add(varObject);
                 }
                 if (executable instanceof Constructor) {
-                    return ((Constructor) executable).newInstance(parameters.toArray());
+                    return ((Constructor<?>) executable).newInstance(parameters.toArray());
                 } else {
                     return ((Method) executable).invoke(callee, parameters.toArray());
                 }

@@ -82,7 +82,9 @@ public class V8ValueBuiltInSymbol extends V8ValueFunction {
         if (iJavetSupplier != null) {
             try {
                 return iJavetSupplier.get();
-            } catch (Throwable e) {
+            } catch (JavetException e) {
+                throw e;
+            } catch (Throwable ignored) {
             }
         }
         return null;

@@ -19,14 +19,36 @@ package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.utils.SimpleMap;
 
+/**
+ * The type Javet terminated exception.
+ *
+ * @since 0.7.2
+ */
 public class JavetTerminatedException extends JavetException {
+    /**
+     * The Continuable.
+     *
+     * @since 0.7.2
+     */
     protected boolean continuable;
 
+    /**
+     * Instantiates a new Javet terminated exception.
+     *
+     * @param continuable the continuable
+     * @since 0.7.2
+     */
     public JavetTerminatedException(boolean continuable) {
         super(JavetError.ExecutionTerminated, SimpleMap.of(JavetError.PARAMETER_CONTINUABLE, continuable));
         this.continuable = continuable;
     }
 
+    /**
+     * Is continuable.
+     *
+     * @return the boolean
+     * @since 0.7.2
+     */
     public boolean isContinuable() {
         return continuable;
     }

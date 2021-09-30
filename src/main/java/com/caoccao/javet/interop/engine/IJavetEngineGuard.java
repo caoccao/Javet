@@ -23,27 +23,34 @@ import com.caoccao.javet.interfaces.IJavetClosable;
  * The interface Javet engine guard is the one guarding the script execution with a timeout.
  * <p>
  * Usage:
- *
- * <code>
+ * <pre>
  * try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(5000)) {
- * v8Runtime.getExecutor("while (true) {}").executeVoid();
- * // That infinite loop will be terminated in 5 seconds by the guard.
+ *     v8Runtime.getExecutor("while (true) {}").executeVoid();
+ *     // That infinite loop will be terminated in 5 seconds by the guard.
  * }
- * </code>
+ * </pre>
+ *
+ * @since 0.7.2
  */
 public interface IJavetEngineGuard extends IJavetClosable, Runnable {
     /**
      * Cancel.
+     *
+     * @since 0.7.2
      */
     void cancel();
 
     /**
      * Disable in debug mode.
+     *
+     * @since 0.8.9
      */
     void disableInDebugMode();
 
     /**
      * Enable in debug mode.
+     *
+     * @since 0.8.9
      */
     void enableInDebugMode();
 
@@ -51,6 +58,7 @@ public interface IJavetEngineGuard extends IJavetClosable, Runnable {
      * Gets timeout millis.
      *
      * @return the timeout millis
+     * @since 0.7.2
      */
     long getTimeoutMillis();
 
@@ -58,6 +66,7 @@ public interface IJavetEngineGuard extends IJavetClosable, Runnable {
      * Sets timeout millis.
      *
      * @param timeoutMillis the timeout millis
+     * @since 0.7.2
      */
     void setTimeoutMillis(long timeoutMillis);
 }

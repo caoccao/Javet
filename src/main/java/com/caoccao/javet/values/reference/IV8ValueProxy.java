@@ -25,7 +25,6 @@ import com.caoccao.javet.exceptions.JavetException;
  *
  * @since 0.9.6
  */
-@SuppressWarnings("unchecked")
 public interface IV8ValueProxy extends IV8ValueObject {
     /**
      * Gets handler.

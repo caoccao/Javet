@@ -22,13 +22,35 @@ import com.caoccao.javet.interfaces.IJavetInterceptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 
+/**
+ * The type Base javet interceptor.
+ *
+ * @since 0.7.0
+ */
 public abstract class BaseJavetInterceptor implements IJavetInterceptor {
+    /**
+     * The V8 runtime.
+     *
+     * @since 0.7.0
+     */
     protected V8Runtime v8Runtime;
 
+    /**
+     * Instantiates a new Base javet interceptor.
+     *
+     * @param v8Runtime the V8 runtime
+     * @since 0.7.0
+     */
     public BaseJavetInterceptor(V8Runtime v8Runtime) {
         this.v8Runtime = v8Runtime;
     }
 
+    /**
+     * Gets V8 runtime.
+     *
+     * @return the V8 runtime
+     * @since 0.7.0
+     */
     public V8Runtime getV8Runtime() {
         return v8Runtime;
     }

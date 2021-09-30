@@ -17,7 +17,7 @@
 
 package com.caoccao.javet.mock;
 
-import com.caoccao.javet.annotations.V8BindEnabler;
+import com.caoccao.javet.annotations.V8BindingEnabler;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.annotations.V8Property;
 import com.caoccao.javet.annotations.V8RuntimeSetter;
@@ -76,7 +76,7 @@ public class MockAnnotationBasedCallbackReceiver {
         return "I am a disabled function.";
     }
 
-    @V8Property
+    @V8Property(name = "disabledProperty")
     public String disabledProperty() {
         return "I am a disabled property.";
     }
@@ -134,8 +134,8 @@ public class MockAnnotationBasedCallbackReceiver {
         return symbolValue;
     }
 
-    @V8BindEnabler
-    public boolean isV8BindEnabled(String methodName) {
+    @V8BindingEnabler
+    public boolean isV8BindingEnabled(String methodName) {
         return !disabledFunctionSet.contains(methodName);
     }
 

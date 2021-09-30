@@ -22,7 +22,7 @@ copyright = '2021. caoccao.com Sam Cao'
 author = 'Sam Cao'
 
 # The full version, including alpha/beta/rc tags
-release = '0.9.13'
+release = '0.9.14'
 
 
 # -- General configuration ---------------------------------------------------
@@ -69,6 +69,8 @@ exclude_patterns = [
 # a list of builtin themes.
 #
 html_theme = 'furo'
+html_show_sphinx = False
+html_copy_source = False
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
