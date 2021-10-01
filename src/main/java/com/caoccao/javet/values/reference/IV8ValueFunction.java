@@ -326,10 +326,14 @@ public interface IV8ValueFunction extends IV8ValueObject {
     /**
      * Sets source code.
      * <p>
-     * Note: The source is shared among all function objects.
+     * Note 1: The source code is shared among all function objects.
      * So the caller is responsible for restoring the original source code,
      * otherwise the next function call will likely fail because the source code
      * of the next function call is incorrect.
+     * Note 2: The source code must be verified by compile(). Malformed source
+     * code will crash V8.
+     * Note 3: The source code must not end with any of ' ', ';', '\n',
+     * though technically the source code is valid. Otherwise, V8 will crash.
      *
      * @param sourceCode the source code
      * @return the source code

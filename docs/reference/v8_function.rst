@@ -461,6 +461,18 @@ Why does ``setSourceCode()`` sometimes return ``false``? Usually, that means the
     v8ValueFunction.call(...)
     v8ValueFunction.setSourceCode(originalSourceCode)
 
+.. caution:: Source Code is Shared
+
+    The source code is shared among all function objects. So the caller is responsible for restoring the original source code, otherwise the next function call will likely fail because the source code of the next function call is incorrect.
+
+.. caution:: Compile the Source Code
+
+    The source code must be verified by compile(). Malformed source code will crash V8.
+
+.. caution:: Trim the Source Code
+
+    The source code must not end with any of ' ', ';', '\n', though technically the source code is valid. Otherwise, V8 will crash.
+
 The rough lifecycle of a V8 function is as following.
 
 .. image:: ../resources/images/lifecycle_of_v8_function.png

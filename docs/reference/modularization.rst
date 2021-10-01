@@ -102,11 +102,9 @@ The rebuild script actually replaces ``node.lib`` with ``libjavet....lib`` durin
 
 Javet calls for someone who can voluntarily host the Javet libraries and Javet compatible node modules so that major Javet users don't need to go through these. For now, it has to be a pretty manual work.
 
-Caution!
-^^^^^^^^
+.. caution:: Make Backups
 
-* Once the node modules are patched or rebuilt, they can only be loaded by that particular version of Javet and they cannot be loaded by Node.js any more.
-* Make backups.
+    Once the node modules are patched or rebuilt, they can only be loaded by that particular version of Javet and they cannot be loaded by Node.js any more.
 
 V8 Mode
 =======

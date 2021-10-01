@@ -336,14 +336,10 @@
 ninja -C out.gn/x64.release v8_monolith
 </pre></div>
 </div>
-<p>⚠️ In V8 v9.3, the following file needs to be patched.</p>
-<div class="section" id="include-cppgc-allocation-h">
-<h4>./include/cppgc/allocation.h<a class="headerlink" href="#include-cppgc-allocation-h" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;cstdint&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;utility&gt;</span><span class="c1"> // This line needs to be added.</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;new&gt;</span><span class="cp"></span>
 </pre></div>
-</div>
 </div>
 </div>
 <div class="section" id="build-v8-on-windows">
@@ -469,10 +465,7 @@ make -j4
 </li>
 <li><a class="reference internal" href="#build-v8">Build V8</a><ul>
 <li><a class="reference internal" href="#prepare-v8">Prepare V8</a></li>
-<li><a class="reference internal" href="#build-v8-on-linux-and-mac-os">Build V8 on Linux and Mac OS</a><ul>
-<li><a class="reference internal" href="#include-cppgc-allocation-h">./include/cppgc/allocation.h</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#build-v8-on-linux-and-mac-os">Build V8 on Linux and Mac OS</a></li>
 <li><a class="reference internal" href="#build-v8-on-windows">Build V8 on Windows</a></li>
 </ul>
 </li>
