@@ -27,7 +27,7 @@ Windows Environment
 Docker Hub and Github
 ---------------------
 
-Please make sure the network connection to the Docker Hub and Github is up and running. The Docker repository of the Javet images are available at https://hub.docker.com/repository/docker/sjtucaocao.
+Please make sure the network connection to the Docker Hub and Github is up and running. The Docker repository of the Javet images are available at https://hub.docker.com/r/docker/sjtucaocao.
 
 Build Javet for Linux on Linux or Windows
 =========================================

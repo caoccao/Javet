@@ -17,8 +17,23 @@
 
 package com.caoccao.javet.enums;
 
+/**
+ * The enum JS runtime type.
+ *
+ * @since 0.8.0
+ */
 public enum JSRuntimeType {
+    /**
+     * Node.js.
+     *
+     * @since 0.8.0
+     */
     Node("node", "9.3.345.19-node.14"),
+    /**
+     * V8.
+     *
+     * @since 0.8.0
+     */
     V8("v8", "9.4.146.16");
 
     private final String name;
@@ -29,18 +44,42 @@ public enum JSRuntimeType {
         this.version = version;
     }
 
+    /**
+     * Gets name.
+     *
+     * @return the name
+     * @since 0.8.0
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets version.
+     *
+     * @return the version
+     * @since 0.8.0
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     * Is Node.js.
+     *
+     * @return the boolean
+     * @since 0.8.0
+     */
     public boolean isNode() {
         return this == Node;
     }
 
+    /**
+     * Is V8.
+     *
+     * @return the boolean
+     * @since 0.8.0
+     */
     public boolean isV8() {
         return this == V8;
     }
