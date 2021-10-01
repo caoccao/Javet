@@ -18,7 +18,7 @@
 package com.caoccao.javet.enums;
 
 public enum JSRuntimeType {
-    Node("node", "8.4.371.23-node.76"),
+    Node("node", "9.3.345.19-node.14"),
     V8("v8", "9.4.146.16");
 
     private final String name;

@@ -25,7 +25,7 @@
 #   2. Restart WSL2
 #   3. Restart docker
 
-# Usage: docker build -t sjtucaocao/javet-windows:0.9.13 -m 4G -f docker/windows-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-windows:1.0.0 -m 4G -f docker/windows-x86_64/base.Dockerfile .
 
 # https://hub.docker.com/_/microsoft-windows
 FROM mcr.microsoft.com/windows:20H2-amd64
@@ -97,13 +97,13 @@ RUN ninja -C out.gn/x64.release v8_monolith
 RUN del patch_v8_build.py
 RUN echo V8 build is completed.
 
-# Prepare Node.js
+# Prepare Node.js v16
 WORKDIR /
 RUN powershell -ExecutionPolicy Bypass -c "iex(New-Object Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')"
 RUN choco install -y nasm
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v14.17.6
+RUN git checkout v16.10.0
 RUN echo Node.js preparation is completed.
 
 # Build Node.js

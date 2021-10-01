@@ -122,8 +122,8 @@ namespace Javet {
                 std::vector<std::string> args{ "" };
                 std::vector<std::string> execArgs{ "" };
                 std::vector<std::string> errors;
-                int errorCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
-                if (errorCode != 0) {
+                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
+                if (exitCode != 0) {
                     LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
                 }
                 Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
@@ -937,11 +937,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNames
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetScriptId
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-#ifdef ENABLE_NODE
-    return 0;
-#else
     return (jint)v8LocalModule->ScriptId();
-#endif
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetStatus
@@ -1362,11 +1358,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                 // Discard compiled data and set lazy compile.
                 if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
                     V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-#ifdef ENABLE_NODE
-                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->builtin(V8InternalBuiltins::kCompileLazy));
-#else
                     v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy));
-#endif
                 }
 
                 /*

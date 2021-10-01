@@ -2,10 +2,10 @@
 <html class="no-js" lang="en, zh-CN">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Release Notes 0.8.x" href="release_notes_0_8.html" /><link rel="prev" title="Release Notes 1.0.x" href="release_notes_1_0.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Release Notes 0.9.x" href="release_notes_0_9.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Release Notes 0.9.x - Javet 1.0.0 documentation</title>
+        <title>Release Notes 1.0.x - Javet 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -201,8 +201,8 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="release_notes_1_0.html">Release Notes 1.0.x</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release Notes 0.9.x</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release Notes 1.0.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes_0_9.html">Release Notes 0.9.x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0_8.html">Release Notes 0.8.x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0_7.html">Release Notes 0.7.x</a></li>
 </ul>
@@ -271,150 +271,12 @@
           </label>
         </div>
         <article role="main">
-          <div class="section" id="release-notes-0-9-x">
-<h1>Release Notes 0.9.x<a class="headerlink" href="#release-notes-0-9-x" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="v8-scope">
-<h2>0.9.14 V8 Scope<a class="headerlink" href="#v8-scope" title="Permalink to this headline">¶</a></h2>
+          <div class="section" id="release-notes-1-0-x">
+<h1>Release Notes 1.0.x<a class="headerlink" href="#release-notes-1-0-x" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="first-time-with-node-js-v16">
+<h2>1.0.0 First Time with Node.js v16<a class="headerlink" href="#first-time-with-node-js-v16" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">IJavetMappable</span></code></p></li>
-<li><p>Enhanced <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> to look up custom objects recursively</p></li>
-<li><p>Renamed <code class="docutils literal notranslate"><span class="pre">V8BindEnabler</span></code> to <code class="docutils literal notranslate"><span class="pre">V8BindingEnabler</span></code></p></li>
-<li><p>Renamed <code class="docutils literal notranslate"><span class="pre">V8VirtualEscapableValue</span></code> to <code class="docutils literal notranslate"><span class="pre">V8Scope</span></code> and enhanced <code class="docutils literal notranslate"><span class="pre">V8Scope</span></code> to support multiple values</p></li>
-</ul>
-</div>
-<div class="section" id="v8-v9-4">
-<h2>0.9.13 V8 v9.4<a class="headerlink" href="#v8-v9-4" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v9.4.146.16</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-94">(2021-09-14)</a></p></li>
-<li><p>Added support to generator object</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">hasInternalType()</span></code> and <code class="docutils literal notranslate"><span class="pre">isGeneratorObject()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">isGeneratorFunction()</span></code> and <code class="docutils literal notranslate"><span class="pre">isAsyncFunction()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueFunction</span></code></p></li>
-<li><p>Added support to <code class="docutils literal notranslate"><span class="pre">Optional</span></code> and <code class="docutils literal notranslate"><span class="pre">Stream</span></code> in converters and callbacks</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">IJavetAnonymous</span></code> creating ad-hoc annotation based callback receiver</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8VirtualEscapableValue</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">getMethodNameFromLambda</span></code> and <code class="docutils literal notranslate"><span class="pre">getMethodNameSetFromLambdas</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils</span></code></p></li>
-<li><p>Enabled decorating a function with both <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code></p></li>
-<li><p>Enhanced <code class="docutils literal notranslate"><span class="pre">V8Flags</span></code> to accept custom flags</p></li>
-</ul>
-</div>
-<div class="section" id="private-properties">
-<h2>0.9.12 Private Properties<a class="headerlink" href="#private-properties" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Added error code 503</p></li>
-<li><p>Enhanced <code class="docutils literal notranslate"><span class="pre">V8Property</span></code> to support built-in symbols</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8ValueSharedArrayBuffer</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">registerCustomObject()</span></code> and <code class="docutils literal notranslate"><span class="pre">unregisterCustomObject()</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code></p></li>
-<li><p>Added private property support to <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
-<li><p>Fixed potential core dump issue in V8 runtime close.</p></li>
-<li><p>Added Javadoc</p></li>
-</ul>
-</div>
-<div class="section" id="v8-v9-3">
-<h2>0.9.11 V8 v9.3<a class="headerlink" href="#v8-v9-3" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v14.17.6</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.6">(2021-08-31)</a></p></li>
-<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v9.3.345.16</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-93">(2021-08-17)</a></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">unbind()</span></code>, <code class="docutils literal notranslate"><span class="pre">unbindProperty()</span></code>, <code class="docutils literal notranslate"><span class="pre">unbindFunction()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> to be completely thread-safe</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8ValueBuiltInSymbol</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">getOwnPropertySymbols()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8ValueBuiltInObject</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">createV8ValueSymbol()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">symbol</span></code> to <code class="docutils literal notranslate"><span class="pre">V8Property</span></code> to enable getter and setter on symbol</p></li>
-<li><p>Added error code 407 and 805</p></li>
-</ul>
-</div>
-<div class="section" id="polyfill-java-interfaces">
-<h2>0.9.10 Polyfill Java Interfaces<a class="headerlink" href="#polyfill-java-interfaces" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">JavetVirtualObject</span></code></p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">JavetUniversalProxyHandler</span></code> to allow passing <code class="docutils literal notranslate"><span class="pre">V8Value</span></code></p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">JavetUniversalProxyHandler</span></code> to allow passing <code class="docutils literal notranslate"><span class="pre">V8ValueFunction</span></code> as anonymous function</p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">JavetUniversalProxyHandler</span></code> to allow passing <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> as anonymous object</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">isClosed()</span></code> to <code class="docutils literal notranslate"><span class="pre">IJavetClosable</span></code></p></li>
-<li><p>Added error code 602 and 603</p></li>
-</ul>
-</div>
-<div class="section" id="mac-os-x86-64">
-<h2>0.9.9 Mac OS x86_64<a class="headerlink" href="#mac-os-x86-64" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v14.17.4</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.4">(2021-07-29)</a></p></li>
-<li><p>Added support to Mac OS x86_64</p></li>
-<li><p>Removed <code class="docutils literal notranslate"><span class="pre">staticClassEnabled</span></code> from <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="empower-the-promise">
-<h2>0.9.8 Empower the Promise<a class="headerlink" href="#empower-the-promise" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">resolve()</span></code> and <code class="docutils literal notranslate"><span class="pre">reject()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8ValuePromise</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">staticClassEnabled</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">construct()</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetUniversalProxyHandler</span></code></p></li>
-<li><p>Added Dockerfile for Linux x86-64</p></li>
-<li><p>Refactored document for how to build Javet</p></li>
-</ul>
-</div>
-<div class="section" id="proxy-converter-v2">
-<h2>0.9.7 Proxy Converter v2<a class="headerlink" href="#proxy-converter-v2" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Added static mode to <code class="docutils literal notranslate"><span class="pre">JavetUniversalProxyHandler</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">ownKeys()</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetUniversalProxyHandler</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="proxy-converter-v1">
-<h2>0.9.6 Proxy Converter v1<a class="headerlink" href="#proxy-converter-v1" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">IV8ValueProxy</span></code> and <code class="docutils literal notranslate"><span class="pre">V8ValueProxy</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">getTarget()</span></code>, <code class="docutils literal notranslate"><span class="pre">getHandler()</span></code>, <code class="docutils literal notranslate"><span class="pre">isRevoked()</span></code> and <code class="docutils literal notranslate"><span class="pre">revoke()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueProxy</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">createV8ValueProxy()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">JavetUniversalProxyHandler</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="v8-v9-2">
-<h2>0.9.5 V8 v9.2<a class="headerlink" href="#v8-v9-2" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v9.2.230.21</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-92">(2021-07-19)</a></p></li>
-</ul>
-</div>
-<div class="section" id="multi-process-safe">
-<h2>0.9.4 Multi-process Safe<a class="headerlink" href="#multi-process-safe" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">JavetEntityFunction</span></code> for <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code></p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> to allow skipping functions</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">getPrototype()</span></code> and <code class="docutils literal notranslate"><span class="pre">setPrototype()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
-<li><p>Changed the way that Javet libraries are deployed to be multi-process safe</p></li>
-</ul>
-</div>
-<div class="section" id="module-resolver">
-<h2>0.9.3 Module Resolver<a class="headerlink" href="#module-resolver" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v14.17.2</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.2">(2021-07-01)</a></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">IV8ModuleResolver</span></code> to allow intercepting module resolving callback</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8BindEnabler</span></code> to determine whether certain injection is enabled or not</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">NodeModuleProcess#getVersion</span></code></p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">JavetPrimitiveConverter</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> to check recursion depth for circular structure detection</p></li>
-</ul>
-</div>
-<div class="section" id="anonymous-functions-in-converter">
-<h2>0.9.2 Anonymous Functions in Converter<a class="headerlink" href="#anonymous-functions-in-converter" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v14.17.1</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.1">(2021-06-15)</a></p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> to handle anonymous functions more efficiently</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8ValueBuiltInObject#assign</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="v8-in-classloader">
-<h2>0.9.1 V8 in Classloader<a class="headerlink" href="#v8-in-classloader" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Moved V8 to a custom classloader</p></li>
-<li><p>Enabled <code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code> and <code class="docutils literal notranslate"><span class="pre">loadLibrary()</span></code> in <code class="docutils literal notranslate"><span class="pre">V8Host</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="v8-v9-1">
-<h2>0.9.0 V8 v9.1<a class="headerlink" href="#v8-v9-1" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v14.17.0</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.17.0">(2021-05-11)</a></p></li>
-<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v9.1.269.28</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-91">(2021-05-10)</a></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">thisObjectRequired</span></code> to <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code></p></li>
+<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v16.10.0</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.10.0">(2021-09-22)</a></p></li>
 </ul>
 </div>
 </div>
@@ -424,23 +286,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="release_notes_0_8.html">
+          <a class="next-page" href="release_notes_0_9.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Release Notes 0.8.x</div>
+                <div class="title">Release Notes 0.9.x</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="release_notes_1_0.html">
+          <a class="prev-page" href="index.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Release Notes 1.0.x</div>
+                <div class="title">Release Notes</div>
                 
               </div>
             </a>
@@ -464,22 +326,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Release Notes 0.9.x</a><ul>
-<li><a class="reference internal" href="#v8-scope">0.9.14 V8 Scope</a></li>
-<li><a class="reference internal" href="#v8-v9-4">0.9.13 V8 v9.4</a></li>
-<li><a class="reference internal" href="#private-properties">0.9.12 Private Properties</a></li>
-<li><a class="reference internal" href="#v8-v9-3">0.9.11 V8 v9.3</a></li>
-<li><a class="reference internal" href="#polyfill-java-interfaces">0.9.10 Polyfill Java Interfaces</a></li>
-<li><a class="reference internal" href="#mac-os-x86-64">0.9.9 Mac OS x86_64</a></li>
-<li><a class="reference internal" href="#empower-the-promise">0.9.8 Empower the Promise</a></li>
-<li><a class="reference internal" href="#proxy-converter-v2">0.9.7 Proxy Converter v2</a></li>
-<li><a class="reference internal" href="#proxy-converter-v1">0.9.6 Proxy Converter v1</a></li>
-<li><a class="reference internal" href="#v8-v9-2">0.9.5 V8 v9.2</a></li>
-<li><a class="reference internal" href="#multi-process-safe">0.9.4 Multi-process Safe</a></li>
-<li><a class="reference internal" href="#module-resolver">0.9.3 Module Resolver</a></li>
-<li><a class="reference internal" href="#anonymous-functions-in-converter">0.9.2 Anonymous Functions in Converter</a></li>
-<li><a class="reference internal" href="#v8-in-classloader">0.9.1 V8 in Classloader</a></li>
-<li><a class="reference internal" href="#v8-v9-1">0.9.0 V8 v9.1</a></li>
+<li><a class="reference internal" href="#">Release Notes 1.0.x</a><ul>
+<li><a class="reference internal" href="#first-time-with-node-js-v16">1.0.0 First Time with Node.js v16</a></li>
 </ul>
 </li>
 </ul>
