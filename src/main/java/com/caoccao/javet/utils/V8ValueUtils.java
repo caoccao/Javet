@@ -65,4 +65,32 @@ public final class V8ValueUtils {
         }
         return javetVirtualObjects;
     }
+
+    public static String trimAnonymousFunction(String anonymousFunctionSourceCode) {
+        if (anonymousFunctionSourceCode != null) {
+            final int length = anonymousFunctionSourceCode.length();
+            if (length > 0) {
+                int endPosition = length;
+                boolean completed = false;
+                while (!completed && endPosition > 0) {
+                    switch (anonymousFunctionSourceCode.charAt(endPosition - 1)) {
+                        case ' ':
+                        case '\n':
+                        case ';':
+                            endPosition--;
+                            break;
+                        default:
+                            completed = true;
+                            break;
+                    }
+                }
+                if (endPosition == length) {
+                    return anonymousFunctionSourceCode;
+                } else {
+                    return anonymousFunctionSourceCode.substring(0, endPosition);
+                }
+            }
+        }
+        return null;
+    }
 }
