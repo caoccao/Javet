@@ -104,9 +104,7 @@ namespace Javet {
         V8MaybeLocalModule JavetModuleResolveCallback(
             V8LocalContext v8Context,
             V8LocalString specifier,
-#ifndef ENABLE_NODE
             V8LocalFixedArray importAssertions,
-#endif
             V8LocalModule referrer) {
             V8MaybeLocalModule resolvedV8MaybeLocalModule = V8MaybeLocalModule();
             if (v8Context.IsEmpty()) {

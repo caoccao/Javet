@@ -42,9 +42,7 @@ using V8LocalBigInt = v8::Local<v8::BigInt>;
 using V8LocalBoolean = v8::Local<v8::Boolean>;
 using V8LocalContext = v8::Local<v8::Context>;
 using V8LocalData = v8::Local<v8::Data>;
-#ifndef ENABLE_NODE
 using V8LocalFixedArray = v8::Local<v8::FixedArray>;
-#endif
 using V8LocalInteger = v8::Local<v8::Integer>;
 using V8LocalMap = v8::Local<v8::Map>;
 using V8LocalModule = v8::Local<v8::Module>;

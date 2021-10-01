@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:0.9.13 -f docker/linux-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:1.0.0 -f docker/linux-x86_64/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
@@ -50,11 +50,11 @@ RUN python tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_
 RUN ninja -C out.gn/x64.release v8_monolith
 RUN echo V8 build is completed.
 
-# Prepare Node.js
+# Prepare Node.js v16
 WORKDIR /
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v14.17.6
+RUN git checkout v16.10.0
 RUN echo Node.js preparation is completed.
 
 # Build Node.js

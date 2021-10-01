@@ -361,11 +361,9 @@ namespace Javet {
                  * This block should not be entered.
                  */
             }
-#ifndef ENABLE_NODE
             if (v8Value->IsModule()) {
                 return jniEnv->NewObject(jclassV8Module, jmethodIDV8ModuleConstructor, ToV8PersistentDataReference(v8Context, v8Value));
             }
-#endif
             // Object needs to be the last one.
             if (v8Value->IsObject()) {
                 return jniEnv->NewObject(jclassV8ValueObject, jmethodIDV8ValueObjectConstructor, ToV8PersistentValueReference(v8Context, v8Value));

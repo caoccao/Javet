@@ -72,8 +72,8 @@ namespace Javet {
                 V8HandleScope v8HandleScope(v8Isolate);
                 auto v8Context = GetV8LocalContext();
                 auto v8ContextScope = GetV8ContextScope(v8Context);
-                // node::EmitBeforeExit is thread-safe.
-                node::EmitBeforeExit(nodeEnvironment.get());
+                // node::EmitProcessBeforeExit is thread-safe.
+                node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
             }
         } while (hasMoreTasks == true);
@@ -101,15 +101,15 @@ namespace Javet {
                 v8PlatformPointer->DrainTasks(v8Isolate);
                 hasMoreTasks = uv_loop_alive(&uvLoop);
                 if (!hasMoreTasks) {
-                    // node::EmitBeforeExit is thread-safe.
-                    node::EmitBeforeExit(nodeEnvironment.get());
+                    // node::EmitProcessBeforeExit is thread-safe.
+                    node::EmitProcessBeforeExit(nodeEnvironment.get());
                     hasMoreTasks = uv_loop_alive(&uvLoop);
                 }
             } while (hasMoreTasks == true);
         }
         int errorCode = 0;
         // node::EmitExit is thread-safe.
-        errorCode = node::EmitExit(nodeEnvironment.get());
+        errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(1);
         if (errorCode != 0) {
             LOG_ERROR("node::EmitExit() returns " << errorCode << ".");
         }
