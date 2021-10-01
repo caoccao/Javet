@@ -614,6 +614,35 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
     }
 
+    @Test
+    public void testGetAndSetMalformedSourceCode() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public String test(V8ValueFunction v8ValueFunction) throws JavetException {
+                v8ValueFunction.callString(null);
+                String originalSourceCode = v8ValueFunction.getSourceCode();
+                v8ValueFunction.setSourceCode("() => 'a' \n ;\n  ");
+                String resultString = v8ValueFunction.callString(null);
+                assertEquals("a", resultString);
+                v8ValueFunction.setSourceCode(originalSourceCode);
+                return resultString;
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8Runtime.getExecutor(
+                    "// comment\n" +
+                            "a.test(\n" +
+                            "  () => \n'abc'              \n);\n" +
+                            "// comment\n" +
+                            "   ").executeVoid();
+            v8ValueObject.unbind(anonymous);
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
     /**
      * V8 stores source code in either one byte or two bytes in internal storage.
      * This test is to validate both of them.
@@ -621,15 +650,27 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
      * @throws JavetException the javet exception
      */
     @Test
-    public void testGetAndSetSourceCode() throws JavetException {
+    public void testGetAndSetRegularSourceCode() throws JavetException {
         final int functionCount = 5;
         String functionStatementTemplate = "var {0} = {1};\n";
         String functionNameTemplate = "f{0}";
         String[][] functionBodyTemplates = new String[][]{
+                // Increase the length
                 new String[]{
                         "() => /* One Byte */ a[{0}]",
                         "() => /* One Byte */ a[{0}] + 1",
                 },
+                // Decrease the length
+                new String[]{
+                        "() => /* One Byte I am longer */ a[{0}]",
+                        "() => /* One Byte */ a[{0}] + 1",
+                },
+                // Increase the length
+                new String[]{
+                        "() => /* Two Bytes 简体 繁體 にほんご français Español I am longer */ a[{0}]",
+                        "() => /* Two Bytes 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                },
+                // Decrease the length
                 new String[]{
                         "() => /* Two Bytes 简体 繁體 にほんご français Español */ a[{0}]",
                         "() => /* Two Bytes 简体 繁體 にほんご français Español */ a[{0}] + 1",
