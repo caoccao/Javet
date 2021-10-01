@@ -717,6 +717,21 @@
 <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">setSourceCode</span><span class="p">(</span><span class="n">originalSourceCode</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Source Code is Shared</p>
+<p>The source code is shared among all function objects. So the caller is responsible for restoring the original source code, otherwise the next function call will likely fail because the source code of the next function call is incorrect.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Compile the Source Code</p>
+<p>The source code must be verified by compile(). Malformed source code will crash V8.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Trim the Source Code</p>
+<p>The source code must not end with any of ' ', ';', 'n', though technically the source code is valid. Otherwise, V8 will crash.</p>
+</div>
 <p>The rough lifecycle of a V8 function is as following.</p>
 <img alt="Lifecycle of V8 Function" src="../_images/lifecycle_of_v8_function.png"/>
 </div>

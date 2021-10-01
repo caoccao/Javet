@@ -24,10 +24,14 @@ import java.util.stream.Collectors;
 
 /**
  * The type V8 value utils.
+ *
+ * @since 0.7.1
  */
 public final class V8ValueUtils {
     /**
      * The constant EMPTY.
+     *
+     * @since 0.7.1
      */
     public static final String EMPTY = "";
 
@@ -40,6 +44,7 @@ public final class V8ValueUtils {
      * @param delimiter the delimiter
      * @param v8Values  the V8 values
      * @return the string
+     * @since 0.7.1
      */
     public static String concat(String delimiter, V8Value... v8Values) {
         if (v8Values == null || v8Values.length == 0) {
@@ -56,6 +61,7 @@ public final class V8ValueUtils {
      *
      * @param v8Values the V8 values
      * @return the javet virtual objects
+     * @since 0.9.10
      */
     public static JavetVirtualObject[] convertToVirtualObjects(V8Value... v8Values) {
         final int length = v8Values.length;
@@ -66,14 +72,21 @@ public final class V8ValueUtils {
         return javetVirtualObjects;
     }
 
-    public static String trimAnonymousFunction(String anonymousFunctionSourceCode) {
-        if (anonymousFunctionSourceCode != null) {
-            final int length = anonymousFunctionSourceCode.length();
+    /**
+     * Trim anonymous function source code.
+     *
+     * @param sourceCode the source code
+     * @return the trimmed source code
+     * @since 1.0.0
+     */
+    public static String trimAnonymousFunction(String sourceCode) {
+        if (sourceCode != null) {
+            final int length = sourceCode.length();
             if (length > 0) {
                 int endPosition = length;
                 boolean completed = false;
                 while (!completed && endPosition > 0) {
-                    switch (anonymousFunctionSourceCode.charAt(endPosition - 1)) {
+                    switch (sourceCode.charAt(endPosition - 1)) {
                         case ' ':
                         case '\n':
                         case ';':
@@ -85,9 +98,9 @@ public final class V8ValueUtils {
                     }
                 }
                 if (endPosition == length) {
-                    return anonymousFunctionSourceCode;
+                    return sourceCode;
                 } else {
-                    return anonymousFunctionSourceCode.substring(0, endPosition);
+                    return sourceCode.substring(0, endPosition);
                 }
             }
         }

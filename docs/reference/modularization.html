@@ -382,13 +382,11 @@ npm install
 </ul>
 <p>The rebuild script actually replaces <code class="docutils literal notranslate"><span class="pre">node.lib</span></code> with <code class="docutils literal notranslate"><span class="pre">libjavet....lib</span></code> during the rebuild so that the new node modules can tell <code class="docutils literal notranslate"><span class="pre">LoadLibraryExW</span></code> to look for Javet instead of Node.js.</p>
 <p>Javet calls for someone who can voluntarily host the Javet libraries and Javet compatible node modules so that major Javet users don't need to go through these. For now, it has to be a pretty manual work.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Make Backups</p>
+<p>Once the node modules are patched or rebuilt, they can only be loaded by that particular version of Javet and they cannot be loaded by Node.js any more.</p>
 </div>
-<div class="section" id="caution">
-<h4>Caution!<a class="headerlink" href="#caution" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li><p>Once the node modules are patched or rebuilt, they can only be loaded by that particular version of Javet and they cannot be loaded by Node.js any more.</p></li>
-<li><p>Make backups.</p></li>
-</ul>
 </div>
 </div>
 </div>
@@ -527,7 +525,6 @@ npm install
 <li><a class="reference internal" href="#deal-with-native-modules">Deal with Native Modules</a><ul>
 <li><a class="reference internal" href="#patch-elf-native-modules-on-linux">Patch ELF Native Modules on Linux</a></li>
 <li><a class="reference internal" href="#rebuild-native-modules-on-windows">Rebuild Native Modules on Windows</a></li>
-<li><a class="reference internal" href="#caution">Caution!</a></li>
 </ul>
 </li>
 </ul>
