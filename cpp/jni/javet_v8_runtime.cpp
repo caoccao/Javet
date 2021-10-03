@@ -195,9 +195,13 @@ namespace Javet {
         );
 #else
         auto v8ObjectTemplate = v8::ObjectTemplate::New(v8Isolate);
-        jstring mGlobalName = (jstring)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodV8RuntimeOptionsGetGlobalName);
-        auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8::Context::New(v8Isolate), mGlobalName);
-        v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
+        if (mRuntimeOptions != nullptr) {
+            jstring mGlobalName = (jstring)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodV8RuntimeOptionsGetGlobalName);
+            if (mGlobalName != nullptr) {
+                auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8::Context::New(v8Isolate), mGlobalName);
+                v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
+            }
+        }
         auto v8LocalContext = v8::Context::New(v8Isolate, nullptr, v8ObjectTemplate);
 #endif
         Register(v8LocalContext);

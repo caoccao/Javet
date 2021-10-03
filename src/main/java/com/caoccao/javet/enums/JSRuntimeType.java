@@ -42,12 +42,12 @@ public enum JSRuntimeType {
      */
     V8("v8", "9.4.146.16", V8RuntimeOptions::new);
 
-    private final Supplier<V8RuntimeOptions<?>> defaultOptionsConstructor;
     private final String name;
+    private final Supplier<V8RuntimeOptions<?>> runtimeOptionsConstructor;
     private final String version;
 
-    JSRuntimeType(String name, String version, Supplier<V8RuntimeOptions<?>> defaultOptionsConstructor) {
-        this.defaultOptionsConstructor = Objects.requireNonNull(defaultOptionsConstructor);
+    JSRuntimeType(String name, String version, Supplier<V8RuntimeOptions<?>> runtimeOptionsConstructor) {
+        this.runtimeOptionsConstructor = Objects.requireNonNull(runtimeOptionsConstructor);
         this.name = name;
         this.version = version;
     }
@@ -69,7 +69,7 @@ public enum JSRuntimeType {
      * @since 1.0.0
      */
     public V8RuntimeOptions<?> getRuntimeOptions() {
-        return defaultOptionsConstructor.get();
+        return runtimeOptionsConstructor.get();
     }
 
     /**
@@ -90,6 +90,23 @@ public enum JSRuntimeType {
      */
     public boolean isNode() {
         return this == Node;
+    }
+
+    /**
+     * Is runtime options valid.
+     *
+     * @param runtimeOptions the runtime options
+     * @return the boolean
+     * @since 1.0.0
+     */
+    public boolean isRuntimeOptionsValid(V8RuntimeOptions<?> runtimeOptions) {
+        if (isV8()) {
+            return runtimeOptions instanceof V8RuntimeOptions<?>;
+        }
+        if (isNode()) {
+            return runtimeOptions instanceof NodeRuntimeOptions;
+        }
+        return false;
     }
 
     /**
