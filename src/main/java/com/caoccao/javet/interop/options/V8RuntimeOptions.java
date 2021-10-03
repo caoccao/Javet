@@ -16,8 +16,6 @@
 
 package com.caoccao.javet.interop.options;
 
-import java.util.Objects;
-
 /**
  * The type V8 runtime options.
  *
@@ -66,7 +64,7 @@ public class V8RuntimeOptions<Options extends V8RuntimeOptions<?>> {
      * @since 1.0.0
      */
     public Options setGlobalName(String globalName) {
-        this.globalName = Objects.requireNonNull(globalName);
+        this.globalName = globalName == null || globalName.length() == 0 ? null : globalName;
         return (Options) this;
     }
 }

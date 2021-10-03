@@ -245,6 +245,7 @@ public final class V8Host implements AutoCloseable {
      */
     public <R extends V8Runtime> R createV8Runtime(
             boolean pooled, V8RuntimeOptions<?> runtimeOptions) throws JavetException {
+        assert getJSRuntimeType().isRuntimeOptionsValid(runtimeOptions);
         if (!libraryLoaded) {
             if (lastException == null) {
                 throw new JavetException(

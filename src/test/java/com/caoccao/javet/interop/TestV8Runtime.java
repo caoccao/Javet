@@ -85,16 +85,25 @@ public class TestV8Runtime extends BaseTestJavet {
             V8RuntimeOptions<?> runtimeOptions = v8Host.getJSRuntimeType().getRuntimeOptions();
             runtimeOptions.setGlobalName("window");
             try (V8Runtime v8Runtime = v8Host.createV8Runtime(runtimeOptions)) {
+                assertFalse(v8Runtime.getExecutor("typeof window == 'undefined';").executeBoolean());
+                assertFalse(v8Runtime.getExecutor("typeof globalThis == 'undefined';").executeBoolean());
                 v8Runtime.getExecutor("var a = 1;").executeVoid();
                 assertEquals(1, v8Runtime.getExecutor("window.a;").executeInteger());
                 v8Runtime.getExecutor("window.b = 2").executeVoid();
+                v8Runtime.getExecutor("globalThis.b = 2").executeVoid();
                 assertEquals(2, v8Runtime.getGlobalObject().getInteger("b"));
                 runtimeOptions.setGlobalName("globalThis");
                 v8Runtime.resetContext();
+                assertFalse(v8Runtime.getExecutor("typeof globalThis == 'undefined';").executeBoolean());
                 v8Runtime.getExecutor("var a = 1;").executeVoid();
                 assertEquals(1, v8Runtime.getExecutor("globalThis.a;").executeInteger());
                 v8Runtime.getExecutor("globalThis.b = 2").executeVoid();
                 assertEquals(2, v8Runtime.getGlobalObject().getInteger("b"));
+                runtimeOptions.setGlobalName(null);
+                v8Runtime.resetContext();
+                assertTrue(v8Runtime.getExecutor("typeof window == 'undefined';").executeBoolean());
+                assertTrue(v8Runtime.getExecutor("typeof global == 'undefined';").executeBoolean());
+                assertFalse(v8Runtime.getExecutor("typeof globalThis == 'undefined';").executeBoolean());
             }
         }
     }
