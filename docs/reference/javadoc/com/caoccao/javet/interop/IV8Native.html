@@ -104,6 +104,11 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public interface <span class="typeNameLabel">IV8Native</span></pre>
+<div class="block">The interface V8 native.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.8.0</dd>
+</dl>
 </li>
 </ul>
 </div>
@@ -193,7 +198,7 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>long</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#createV8Runtime-java.lang.String-">createV8Runtime</a></span>(java.lang.String&nbsp;globalName)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#createV8Runtime-java.lang.Object-">createV8Runtime</a></span>(java.lang.Object&nbsp;runtimeOptions)</code>&nbsp;</td>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
@@ -530,13 +535,13 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i67" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#resetV8Context-long-java.lang.String-">resetV8Context</a></span>(long&nbsp;v8RuntimeHandle,
-              java.lang.String&nbsp;globalName)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#resetV8Context-long-java.lang.Object-">resetV8Context</a></span>(long&nbsp;v8RuntimeHandle,
+              java.lang.Object&nbsp;runtimeOptions)</code>&nbsp;</td>
 </tr>
 <tr id="i68" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#resetV8Isolate-long-java.lang.String-">resetV8Isolate</a></span>(long&nbsp;v8RuntimeHandle,
-              java.lang.String&nbsp;globalName)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#resetV8Isolate-long-java.lang.Object-">resetV8Isolate</a></span>(long&nbsp;v8RuntimeHandle,
+              java.lang.Object&nbsp;runtimeOptions)</code>&nbsp;</td>
 </tr>
 <tr id="i69" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
@@ -781,13 +786,13 @@ var activeTableTab = "activeTableTab";
                        java.lang.Object&nbsp;v8Inspector)</pre>
 </li>
 </ul>
-<a name="createV8Runtime-java.lang.String-">
+<a name="createV8Runtime-java.lang.Object-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>createV8Runtime</h4>
-<pre>long&nbsp;createV8Runtime(java.lang.String&nbsp;globalName)</pre>
+<pre>long&nbsp;createV8Runtime(java.lang.Object&nbsp;runtimeOptions)</pre>
 </li>
 </ul>
 <a name="createV8Value-long-int-java.lang.Object-">
@@ -1398,24 +1403,24 @@ var activeTableTab = "activeTableTab";
                                         boolean&nbsp;fullGC)</pre>
 </li>
 </ul>
-<a name="resetV8Context-long-java.lang.String-">
+<a name="resetV8Context-long-java.lang.Object-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>resetV8Context</h4>
 <pre>void&nbsp;resetV8Context(long&nbsp;v8RuntimeHandle,
-                    java.lang.String&nbsp;globalName)</pre>
+                    java.lang.Object&nbsp;runtimeOptions)</pre>
 </li>
 </ul>
-<a name="resetV8Isolate-long-java.lang.String-">
+<a name="resetV8Isolate-long-java.lang.Object-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>resetV8Isolate</h4>
 <pre>void&nbsp;resetV8Isolate(long&nbsp;v8RuntimeHandle,
-                    java.lang.String&nbsp;globalName)</pre>
+                    java.lang.Object&nbsp;runtimeOptions)</pre>
 </li>
 </ul>
 <a name="sameValue-long-long-long-">

@@ -73,13 +73,13 @@ var activeTableTab = "activeTableTab";
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
@@ -125,27 +125,6 @@ implements java.lang.AutoCloseable</pre>
 <div class="summary">
 <ul class="blockList">
 <li class="blockList">
-<!-- =========== FIELD SUMMARY =========== -->
-<ul class="blockList">
-<li class="blockList"><a name="field.summary">
-<!--   -->
-</a>
-<h3>Field Summary</h3>
-<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
-<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colLast" scope="col">Field and Description</th>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static java.lang.String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#GLOBAL_THIS">GLOBAL_THIS</a></span></code>
-<div class="block">The constant GLOBAL_THIS.</div>
-</td>
-</tr>
-</table>
-</li>
-</ul>
 <!-- ========== METHOD SUMMARY =========== -->
 <ul class="blockList">
 <li class="blockList"><a name="method.summary">
@@ -182,14 +161,14 @@ implements java.lang.AutoCloseable</pre>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;<br>R</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#createV8Runtime-boolean-java.lang.String-">createV8Runtime</a></span>(boolean&nbsp;pooled,
-               java.lang.String&nbsp;globalName)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#createV8Runtime-boolean-com.caoccao.javet.interop.options.V8RuntimeOptions-">createV8Runtime</a></span>(boolean&nbsp;pooled,
+               <a href="../../../../com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;&nbsp;runtimeOptions)</code>
 <div class="block">Create V8 runtime by pooled flag and custom global name.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;<br>R</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#createV8Runtime-java.lang.String-">createV8Runtime</a></span>(java.lang.String&nbsp;globalName)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#createV8Runtime-com.caoccao.javet.interop.options.V8RuntimeOptions-">createV8Runtime</a></span>(<a href="../../../../com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;&nbsp;runtimeOptions)</code>
 <div class="block">Create V8 runtime by custom global name.</div>
 </td>
 </tr>
@@ -335,30 +314,6 @@ implements java.lang.AutoCloseable</pre>
 <div class="details">
 <ul class="blockList">
 <li class="blockList">
-<!-- ============ FIELD DETAIL =========== -->
-<ul class="blockList">
-<li class="blockList"><a name="field.detail">
-<!--   -->
-</a>
-<h3>Field Detail</h3>
-<a name="GLOBAL_THIS">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>GLOBAL_THIS</h4>
-<pre>public static final&nbsp;java.lang.String GLOBAL_THIS</pre>
-<div class="block">The constant GLOBAL_THIS.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.7.0</dd>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../constant-values.html#com.caoccao.javet.interop.V8Host.GLOBAL_THIS">Constant Field Values</a></dd>
-</dl>
-</li>
-</ul>
-</li>
-</ul>
 <!-- ============ METHOD DETAIL ========== -->
 <ul class="blockList">
 <li class="blockList"><a name="method.detail">
@@ -553,20 +508,20 @@ implements java.lang.AutoCloseable</pre>
 </dl>
 </li>
 </ul>
-<a name="createV8Runtime-java.lang.String-">
+<a name="createV8Runtime-com.caoccao.javet.interop.options.V8RuntimeOptions-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>createV8Runtime</h4>
-<pre>public&nbsp;&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;&nbsp;R&nbsp;createV8Runtime(java.lang.String&nbsp;globalName)
+<pre>public&nbsp;&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;&nbsp;R&nbsp;createV8Runtime(<a href="../../../../com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;&nbsp;runtimeOptions)
                                         throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <div class="block">Create V8 runtime by custom global name.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the type parameter</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>globalName</code> - the global name</dd>
+<dd><code>runtimeOptions</code> - the runtime options</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the V8 runtime</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -576,14 +531,14 @@ implements java.lang.AutoCloseable</pre>
 </dl>
 </li>
 </ul>
-<a name="createV8Runtime-boolean-java.lang.String-">
+<a name="createV8Runtime-boolean-com.caoccao.javet.interop.options.V8RuntimeOptions-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>createV8Runtime</h4>
 <pre>public&nbsp;&lt;R extends <a href="../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;&nbsp;R&nbsp;createV8Runtime(boolean&nbsp;pooled,
-                                               java.lang.String&nbsp;globalName)
+                                               <a href="../../../../com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;&nbsp;runtimeOptions)
                                         throws <a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <div class="block">Create V8 runtime by pooled flag and custom global name.</div>
 <dl>
@@ -591,7 +546,7 @@ implements java.lang.AutoCloseable</pre>
 <dd><code>R</code> - the type parameter</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>pooled</code> - the pooled</dd>
-<dd><code>globalName</code> - the global name</dd>
+<dd><code>runtimeOptions</code> - the runtime options</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the V8 runtime</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -882,13 +837,13 @@ implements java.lang.AutoCloseable</pre>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>

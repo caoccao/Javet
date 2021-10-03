@@ -74,7 +74,7 @@ class V8Native implements IV8Native {
     public native void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
 
     @Override
-    public native long createV8Runtime(String globalName);
+    public native long createV8Runtime(Object runtimeOptions);
 
     @Override
     public native Object createV8Value(long v8RuntimeHandle, int v8ValueType, Object context);
@@ -250,10 +250,10 @@ class V8Native implements IV8Native {
     public native void requestGarbageCollectionForTesting(long v8RuntimeHandle, boolean fullGC);
 
     @Override
-    public native void resetV8Context(long v8RuntimeHandle, String globalName);
+    public native void resetV8Context(long v8RuntimeHandle, Object runtimeOptions);
 
     @Override
-    public native void resetV8Isolate(long v8RuntimeHandle, String globalName);
+    public native void resetV8Isolate(long v8RuntimeHandle, Object runtimeOptions);
 
     @Override
     public native boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);

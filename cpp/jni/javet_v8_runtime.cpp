@@ -27,8 +27,17 @@ namespace Javet {
     static auto oneMillisecond = std::chrono::milliseconds(1);
 #endif
 
+    void Initialize(JNIEnv* jniEnv) {
+#ifdef ENABLE_NODE
+        jclassV8RuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions"));
+#else
+        jclassV8RuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions"));
+#endif
+        jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassV8RuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
+    }
+
     void GlobalAccessorGetterCallback(
-        V8LocalString propertyName,
+        V8LocalName propertyName,
         const v8::PropertyCallbackInfo<v8::Value>& args) {
         args.GetReturnValue().Set(args.GetIsolate()->GetCurrentContext()->Global());
     }
@@ -75,8 +84,8 @@ namespace Javet {
                 // node::EmitProcessBeforeExit is thread-safe.
                 node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
-            }
-        } while (hasMoreTasks == true);
+    }
+    } while (hasMoreTasks == true);
 #else
         // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
         v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
@@ -119,7 +128,7 @@ namespace Javet {
             if (errorCode != 0) {
                 LOG_ERROR("node::Stop() returns " << errorCode << ".");
             }
-        }
+    }
         {
             // node::FreeEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
@@ -127,13 +136,13 @@ namespace Javet {
         }
 #endif
         v8PersistentContext.Reset();
-    }
+}
 
     void V8Runtime::CloseV8Isolate() {
         if (v8Inspector) {
             auto internalV8Locker = GetSharedV8Locker();
             v8Inspector.reset();
-        }
+    }
         v8GlobalObject.Reset();
         v8PersistentContext.Reset();
 #ifdef ENABLE_NODE
@@ -166,7 +175,7 @@ namespace Javet {
         }
     }
 
-    void V8Runtime::CreateV8Context(JNIEnv * jniEnv, jstring mGlobalName) {
+    void V8Runtime::CreateV8Context(JNIEnv * jniEnv, const jobject & mRuntimeOptions) {
         auto internalV8Locker = GetSharedV8Locker();
         auto v8IsolateScope = GetV8IsolateScope();
         V8HandleScope v8HandleScope(v8Isolate);
@@ -186,11 +195,10 @@ namespace Javet {
         );
 #else
         auto v8ObjectTemplate = v8::ObjectTemplate::New(v8Isolate);
+        jstring mGlobalName = (jstring)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodV8RuntimeOptionsGetGlobalName);
+        auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8::Context::New(v8Isolate), mGlobalName);
+        v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
         auto v8LocalContext = v8::Context::New(v8Isolate, nullptr, v8ObjectTemplate);
-        if (mGlobalName != nullptr) {
-            auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8LocalContext, mGlobalName);
-            v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
-        }
 #endif
         Register(v8LocalContext);
         v8PersistentContext.Reset(v8Isolate, v8LocalContext);

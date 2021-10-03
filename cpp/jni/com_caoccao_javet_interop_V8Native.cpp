@@ -296,7 +296,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
 Creating multiple isolates allows running JavaScript code in multiple threads, truly parallel.
 */
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
-(JNIEnv* jniEnv, jobject caller, jstring mGlobalName) {
+(JNIEnv* jniEnv, jobject caller, jobject mRuntimeOptions) {
 #ifdef ENABLE_NODE
     auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get(), Javet::NodeNative::GlobalNodeArrayBufferAllocator);
 #else
@@ -304,7 +304,7 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 #endif
     INCREASE_COUNTER(Javet::Monitor::CounterType::NewV8Runtime);
     v8Runtime->CreateV8Isolate();
-    v8Runtime->CreateV8Context(jniEnv, mGlobalName);
+    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
     return TO_JAVA_LONG(v8Runtime);
 }
 
@@ -1132,19 +1132,19 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCol
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mGlobalName) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mRuntimeOptions) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     v8Runtime->CloseV8Context();
-    v8Runtime->CreateV8Context(jniEnv, mGlobalName);
+    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mGlobalName) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mRuntimeOptions) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     v8Runtime->CloseV8Context();
     v8Runtime->CloseV8Isolate();
     v8Runtime->CreateV8Isolate();
-    v8Runtime->CreateV8Context(jniEnv, mGlobalName);
+    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue

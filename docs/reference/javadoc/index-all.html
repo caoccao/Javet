@@ -570,6 +570,10 @@
 <dd>
 <div class="block">Executors and interface.</div>
 </dd>
+<dt><a href="com/caoccao/javet/interop/options/package-summary.html">com.caoccao.javet.interop.options</a> - package com.caoccao.javet.interop.options</dt>
+<dd>
+<div class="block">Runtime options for Node.js mode or V8 mode.</div>
+</dd>
 <dt><a href="com/caoccao/javet/interop/proxy/package-summary.html">com.caoccao.javet.interop.proxy</a> - package com.caoccao.javet.interop.proxy</dt>
 <dd>
 <div class="block">Dynamic proxy handlers for polyfilling Java interfaces with JS functions or objects.</div>
@@ -746,17 +750,17 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#createV8Inspector-long-java.lang.Object-">createV8Inspector(long, Object)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#createV8Runtime-java.lang.String-">createV8Runtime(String)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#createV8Runtime-java.lang.Object-">createV8Runtime(Object)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#createV8Runtime--">createV8Runtime()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
 <div class="block">Create V8 runtime.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#createV8Runtime-java.lang.String-">createV8Runtime(String)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#createV8Runtime-com.caoccao.javet.interop.options.V8RuntimeOptions-">createV8Runtime(V8RuntimeOptions&lt;?&gt;)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
 <div class="block">Create V8 runtime by custom global name.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#createV8Runtime-boolean-java.lang.String-">createV8Runtime(boolean, String)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#createV8Runtime-boolean-com.caoccao.javet.interop.options.V8RuntimeOptions-">createV8Runtime(boolean, V8RuntimeOptions&lt;?&gt;)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
 <div class="block">Create V8 runtime by pooled flag and custom global name.</div>
 </dd>
@@ -929,8 +933,6 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS">DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS</a></span> - Static variable in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS">DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS</a></span> - Static variable in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#DEFAULT_GLOBAL_NAME">DEFAULT_GLOBAL_NAME</a></span> - Static variable in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#DEFAULT_JAVET_LOGGER">DEFAULT_JAVET_LOGGER</a></span> - Static variable in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>&nbsp;</dd>
@@ -1455,7 +1457,9 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html#FUNCTION_REJECT">FUNCTION_REJECT</a></span> - Static variable in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInPromise</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#FUNCTION_REQUIRE">FUNCTION_REQUIRE</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The constant FUNCTION_REQUIRE.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html#FUNCTION_RESOLVE">FUNCTION_RESOLVE</a></span> - Static variable in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInPromise</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueObject.html#FUNCTION_SET">FUNCTION_SET</a></span> - Static variable in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueObject.html" title="class in com.caoccao.javet.values.reference">V8ValueObject</a></dt>
@@ -1770,8 +1774,10 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#getGlobalName--">getGlobalName()</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#getGlobalName--">getGlobalName()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
-<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html#getGlobalName--">getGlobalName()</a></span> - Method in class com.caoccao.javet.interop.options.<a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a></dt>
+<dd>
+<div class="block">Gets global name.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#getGlobalObject-long-">getGlobalObject(long)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#getGlobalObject--">getGlobalObject()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
@@ -2091,11 +2097,17 @@
 <div class="block">Gets Node instance.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#getNodeModule-java.lang.Class-">getNodeModule(Class&lt;Module&gt;)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#getNodeModule-java.lang.String-java.lang.Class-">getNodeModule(String, Class&lt;NM&gt;)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Gets node module.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#getNodeModule-java.lang.String-java.lang.Class-">getNodeModule(String, Class&lt;Module&gt;)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
+<dd>
+<div class="block">Gets node module.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#getNodeModuleCount--">getNodeModuleCount()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Gets node module count.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/IV8ValueObject.html#getNull-java.lang.Object-">getNull(Object)</a></span> - Method in interface com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/IV8ValueObject.html" title="interface in com.caoccao.javet.values.reference">IV8ValueObject</a></dt>
 <dd>
 <div class="block">Gets null.</div>
@@ -2346,6 +2358,12 @@
 <dd>
 <div class="block">Gets result zoned date time.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/JSRuntimeType.html#getRuntimeOptions--">getRuntimeOptions()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a></dt>
+<dd>
+<div class="block">Gets runtime options.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#getRuntimeOptions--">getRuntimeOptions()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html#getScore--">getScore()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.ScoredExecutable</a></dt>
 <dd>
 <div class="block">Gets score.</div>
@@ -2646,12 +2664,14 @@
 <dd>
 <div class="block">Gets zoned date time.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#GLOBAL_THIS">GLOBAL_THIS</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html#GLOBAL_THIS">GLOBAL_THIS</a></span> - Static variable in class com.caoccao.javet.interop.options.<a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a></dt>
 <dd>
 <div class="block">The constant GLOBAL_THIS.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#globalName">globalName</a></span> - Variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
-<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html#globalName">globalName</a></span> - Variable in class com.caoccao.javet.interop.options.<a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a></dt>
+<dd>
+<div class="block">The Global name.</div>
+</dd>
 </dl>
 <a name="I:H">
 <!--   -->
@@ -2855,7 +2875,9 @@
 <dt><a href="com/caoccao/javet/node/modules/INodeModule.html" title="interface in com.caoccao.javet.node.modules"><span class="typeNameLink">INodeModule</span></a> - Interface in <a href="com/caoccao/javet/node/modules/package-summary.html">com.caoccao.javet.node.modules</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/interop/INodeNative.html" title="interface in com.caoccao.javet.interop"><span class="typeNameLink">INodeNative</span></a> - Interface in <a href="com/caoccao/javet/interop/package-summary.html">com.caoccao.javet.interop</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The interface Node native.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/IV8Module.html#instantiate--">instantiate()</a></span> - Method in interface com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/IV8Module.html" title="interface in com.caoccao.javet.values.reference">IV8Module</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8Module.html#instantiate--">instantiate()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8Module.html" title="class in com.caoccao.javet.values.reference">V8Module</a></dt>
@@ -3279,7 +3301,9 @@
 <div class="block">The interface V8 module resolver is for resolving V8 module look-up in dynamic import.</div>
 </dd>
 <dt><a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop"><span class="typeNameLink">IV8Native</span></a> - Interface in <a href="com/caoccao/javet/interop/package-summary.html">com.caoccao.javet.interop</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The interface V8 native.</div>
+</dd>
 <dt><a href="com/caoccao/javet/values/reference/IV8Script.html" title="interface in com.caoccao.javet.values.reference"><span class="typeNameLink">IV8Script</span></a> - Interface in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/IV8Value.html" title="interface in com.caoccao.javet.values"><span class="typeNameLink">IV8Value</span></a> - Interface in <a href="com/caoccao/javet/values/package-summary.html">com.caoccao.javet.values</a></dt>
@@ -3878,7 +3902,9 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/node/modules/NodeModuleAny.html#NodeModuleAny-com.caoccao.javet.values.reference.V8ValueObject-java.lang.String-">NodeModuleAny(V8ValueObject, String)</a></span> - Constructor for class com.caoccao.javet.node.modules.<a href="com/caoccao/javet/node/modules/NodeModuleAny.html" title="class in com.caoccao.javet.node.modules">NodeModuleAny</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#nodeModuleMap">nodeModuleMap</a></span> - Variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The Node module map.</div>
+</dd>
 <dt><a href="com/caoccao/javet/node/modules/NodeModuleModule.html" title="class in com.caoccao.javet.node.modules"><span class="typeNameLink">NodeModuleModule</span></a> - Class in <a href="com/caoccao/javet/node/modules/package-summary.html">com.caoccao.javet.node.modules</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/node/modules/NodeModuleModule.html#NodeModuleModule-com.caoccao.javet.values.reference.V8ValueObject-java.lang.String-">NodeModuleModule(V8ValueObject, String)</a></span> - Constructor for class com.caoccao.javet.node.modules.<a href="com/caoccao/javet/node/modules/NodeModuleModule.html" title="class in com.caoccao.javet.node.modules">NodeModuleModule</a></dt>
@@ -3890,6 +3916,14 @@
 <dt><a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop"><span class="typeNameLink">NodeRuntime</span></a> - Class in <a href="com/caoccao/javet/interop/package-summary.html">com.caoccao.javet.interop</a></dt>
 <dd>
 <div class="block">Node runtime is a thin wrapper over V8 runtime.</div>
+</dd>
+<dt><a href="com/caoccao/javet/interop/options/NodeRuntimeOptions.html" title="class in com.caoccao.javet.interop.options"><span class="typeNameLink">NodeRuntimeOptions</span></a> - Class in <a href="com/caoccao/javet/interop/options/package-summary.html">com.caoccao.javet.interop.options</a></dt>
+<dd>
+<div class="block">The type Node runtime options.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/options/NodeRuntimeOptions.html#NodeRuntimeOptions--">NodeRuntimeOptions()</a></span> - Constructor for class com.caoccao.javet.interop.options.<a href="com/caoccao/javet/interop/options/NodeRuntimeOptions.html" title="class in com.caoccao.javet.interop.options">NodeRuntimeOptions</a></dt>
+<dd>
+<div class="block">Instantiates a new Node runtime options.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetError.html#NotSupported">NotSupported</a></span> - Static variable in class com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetError.html" title="class in com.caoccao.javet.exceptions">JavetError</a></dt>
 <dd>
@@ -4178,13 +4212,17 @@
 <div class="block">The constant PROPERTY_DESCRIPTION.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#PROPERTY_DIRNAME">PROPERTY_DIRNAME</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The constant PROPERTY_DIRNAME.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueArray.html#PROPERTY_DONE">PROPERTY_DONE</a></span> - Static variable in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueArray.html" title="class in com.caoccao.javet.values.reference">V8ValueArray</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueIterator.html#PROPERTY_DONE">PROPERTY_DONE</a></span> - Static variable in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueIterator.html" title="class in com.caoccao.javet.values.reference">V8ValueIterator</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#PROPERTY_FILENAME">PROPERTY_FILENAME</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The constant PROPERTY_FILENAME.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html#PROPERTY_HAS_INSTANCE">PROPERTY_HAS_INSTANCE</a></span> - Static variable in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInSymbol</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html#PROPERTY_IS_CONCAT_SPREADABLE">PROPERTY_IS_CONCAT_SPREADABLE</a></span> - Static variable in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInSymbol</a></dt>
@@ -4378,9 +4416,13 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Inspector.html#removeListeners-com.caoccao.javet.interop.IV8InspectorListener...-">removeListeners(IV8InspectorListener...)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Inspector.html" title="class in com.caoccao.javet.interop">V8Inspector</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#removeNodeModule-com.caoccao.javet.node.modules.INodeModule-">removeNodeModule(INodeModule)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Remove node module.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/NodeRuntime.html#removeNodeModules--">removeNodeModules()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop">NodeRuntime</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Remove node modules.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#removeReference-com.caoccao.javet.values.reference.IV8ValueReference-">removeReference(IV8ValueReference)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueGlobalObject.html#removeReference--">removeReference()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueGlobalObject.html" title="class in com.caoccao.javet.values.reference">V8ValueGlobalObject</a></dt>
@@ -4433,9 +4475,9 @@
 <dd>
 <div class="block">Reset V8 isolate.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#resetV8Context-long-java.lang.String-">resetV8Context(long, String)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#resetV8Context-long-java.lang.Object-">resetV8Context(long, Object)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#resetV8Isolate-long-java.lang.String-">resetV8Isolate(long, String)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#resetV8Isolate-long-java.lang.Object-">resetV8Isolate(long, Object)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interfaces/IV8ModuleResolver.html#resolve-com.caoccao.javet.interop.V8Runtime-java.lang.String-com.caoccao.javet.values.reference.IV8Module-">resolve(V8Runtime, String, IV8Module)</a></span> - Method in interface com.caoccao.javet.interfaces.<a href="com/caoccao/javet/interfaces/IV8ModuleResolver.html" title="interface in com.caoccao.javet.interfaces">IV8ModuleResolver</a></dt>
 <dd>
@@ -4493,6 +4535,8 @@
 <dd>
 <div class="block">The constant RuntimeNotRegistered.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#runtimeOptions">runtimeOptions</a></span> - Variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <a name="I:S">
 <!--   -->
@@ -4701,8 +4745,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#setGlobalName-java.lang.String-">setGlobalName(String)</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#setGlobalName-java.lang.String-">setGlobalName(String)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
-<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html#setGlobalName-java.lang.String-">setGlobalName(String)</a></span> - Method in class com.caoccao.javet.interop.options.<a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a></dt>
+<dd>
+<div class="block">Sets global name.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/callback/JavetCallbackContext.html#setHandle-long-">setHandle(long)</a></span> - Method in class com.caoccao.javet.interop.callback.<a href="com/caoccao/javet/interop/callback/JavetCallbackContext.html" title="class in com.caoccao.javet.interop.callback">JavetCallbackContext</a></dt>
 <dd>
 <div class="block">Sets handle.</div>
@@ -5544,6 +5590,14 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/V8Value.html#v8Runtime">v8Runtime</a></span> - Variable in class com.caoccao.javet.values.<a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options"><span class="typeNameLink">V8RuntimeOptions</span></a>&lt;<a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="type parameter in V8RuntimeOptions">Options</a> extends <a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;&gt; - Class in <a href="com/caoccao/javet/interop/options/package-summary.html">com.caoccao.javet.interop.options</a></dt>
+<dd>
+<div class="block">The type V8 runtime options.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html#V8RuntimeOptions--">V8RuntimeOptions()</a></span> - Constructor for class com.caoccao.javet.interop.options.<a href="com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a></dt>
+<dd>
+<div class="block">Instantiates a new V8 runtime options.</div>
+</dd>
 <dt><a href="com/caoccao/javet/annotations/V8RuntimeSetter.html" title="annotation in com.caoccao.javet.annotations"><span class="typeNameLink">V8RuntimeSetter</span></a> - Annotation Type in <a href="com/caoccao/javet/annotations/package-summary.html">com.caoccao.javet.annotations</a></dt>
 <dd>
 <div class="block">The interface V8 runtime setter.</div>

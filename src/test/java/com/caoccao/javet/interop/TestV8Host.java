@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetOSUtils;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,9 @@ public class TestV8Host extends BaseTestJavet {
 
     @Test
     public void testCreateV8RuntimeWithGlobalName() throws JavetException {
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+        V8RuntimeOptions<?> runtimeOptions = v8Host.getJSRuntimeType().getRuntimeOptions();
+        runtimeOptions.setGlobalName("window");
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime(runtimeOptions)) {
             assertNotNull(v8Runtime);
             assertTrue(v8Host.isIsolateCreated());
         }
