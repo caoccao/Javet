@@ -84,8 +84,8 @@ namespace Javet {
                 // node::EmitProcessBeforeExit is thread-safe.
                 node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
-    }
-    } while (hasMoreTasks == true);
+            }
+        } while (hasMoreTasks == true);
 #else
         // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
         v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
@@ -128,7 +128,7 @@ namespace Javet {
             if (errorCode != 0) {
                 LOG_ERROR("node::Stop() returns " << errorCode << ".");
             }
-    }
+        }
         {
             // node::FreeEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
@@ -136,13 +136,13 @@ namespace Javet {
         }
 #endif
         v8PersistentContext.Reset();
-}
+    }
 
     void V8Runtime::CloseV8Isolate() {
         if (v8Inspector) {
             auto internalV8Locker = GetSharedV8Locker();
             v8Inspector.reset();
-    }
+        }
         v8GlobalObject.Reset();
         v8PersistentContext.Reset();
 #ifdef ENABLE_NODE
