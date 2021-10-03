@@ -21,6 +21,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.node.modules.INodeModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -34,23 +35,48 @@ import java.util.Objects;
 
 /**
  * Node runtime is a thin wrapper over V8 runtime.
+ *
+ * @since 0.8.0
  */
 @SuppressWarnings("unchecked")
 public class NodeRuntime extends V8Runtime {
+    /**
+     * The constant FUNCTION_REQUIRE.
+     *
+     * @since 0.8.4
+     */
     public static final String FUNCTION_REQUIRE = "require";
+    /**
+     * The constant PROPERTY_DIRNAME.
+     *
+     * @since 0.8.4
+     */
     public static final String PROPERTY_DIRNAME = "__dirname";
+    /**
+     * The constant PROPERTY_FILENAME.
+     *
+     * @since 0.8.4
+     */
     public static final String PROPERTY_FILENAME = "__filename";
+    /**
+     * The Node module map.
+     *
+     * @since 0.8.1
+     */
     protected Map<String, INodeModule> nodeModuleMap;
 
     /**
      * Instantiates a new Node runtime.
      *
-     * @param v8Host the V8 host
-     * @param handle the handle
-     * @param pooled the pooled
+     * @param v8Host         the V8 host
+     * @param handle         the handle
+     * @param pooled         the pooled
+     * @param v8Native       the V8 native
+     * @param runtimeOptions the runtime options
+     * @since 0.8.0
      */
-    NodeRuntime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native) {
-        super(v8Host, handle, pooled, v8Native, null);
+    NodeRuntime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, V8RuntimeOptions<?> runtimeOptions) {
+        super(v8Host, handle, pooled, v8Native, runtimeOptions);
         nodeModuleMap = new HashMap<>();
     }
 
@@ -59,6 +85,15 @@ public class NodeRuntime extends V8Runtime {
         return JSRuntimeType.Node;
     }
 
+    /**
+     * Gets node module.
+     *
+     * @param <Module>        the type parameter
+     * @param nodeModuleClass the node module class
+     * @return the node module
+     * @throws JavetException the javet exception
+     * @since 0.8.1
+     */
     @CheckReturnValue
     public <Module extends INodeModule> Module getNodeModule(
             Class<Module> nodeModuleClass) throws JavetException {
@@ -69,9 +104,19 @@ public class NodeRuntime extends V8Runtime {
         return getNodeModule(nodeModule.name(), nodeModuleClass);
     }
 
+    /**
+     * Gets node module.
+     *
+     * @param <Module>        the type parameter
+     * @param name            the name
+     * @param nodeModuleClass the node module class
+     * @return the node module
+     * @throws JavetException the javet exception
+     * @since 0.8.1
+     */
     @CheckReturnValue
-    public <NM extends INodeModule> NM getNodeModule(
-            String name, Class<NM> nodeModuleClass) throws JavetException {
+    public <Module extends INodeModule> Module getNodeModule(
+            String name, Class<Module> nodeModuleClass) throws JavetException {
         Objects.requireNonNull(name);
         INodeModule nodeModule = null;
         if (nodeModuleMap.containsKey(name)) {
@@ -86,7 +131,7 @@ public class NodeRuntime extends V8Runtime {
                 }
             }
             try {
-                Constructor<NM> constructor = nodeModuleClass.getConstructor(
+                Constructor<Module> constructor = nodeModuleClass.getConstructor(
                         V8ValueObject.class, String.class);
                 nodeModule = constructor.newInstance(moduleObject, name);
                 nodeModuleMap.put(name, nodeModule);
@@ -94,9 +139,15 @@ public class NodeRuntime extends V8Runtime {
                 getLogger().logError(e, "Failed to create node module {0}.", name);
             }
         }
-        return (NM) nodeModule;
+        return (Module) nodeModule;
     }
 
+    /**
+     * Gets node module count.
+     *
+     * @return the node module count
+     * @since 0.8.1
+     */
     public int getNodeModuleCount() {
         return nodeModuleMap.size();
     }
@@ -107,6 +158,13 @@ public class NodeRuntime extends V8Runtime {
         super.removeAllReferences();
     }
 
+    /**
+     * Remove node module.
+     *
+     * @param iNodeModule the node module
+     * @throws JavetException the javet exception
+     * @since 0.8.1
+     */
     public void removeNodeModule(INodeModule iNodeModule) throws JavetException {
         Objects.requireNonNull(iNodeModule);
         if (nodeModuleMap.containsKey(iNodeModule.getName())) {
@@ -115,6 +173,11 @@ public class NodeRuntime extends V8Runtime {
         }
     }
 
+    /**
+     * Remove node modules.
+     *
+     * @since 0.8.1
+     */
     protected void removeNodeModules() {
         if (!nodeModuleMap.isEmpty()) {
             JavetResourceUtils.safeClose(nodeModuleMap.values());

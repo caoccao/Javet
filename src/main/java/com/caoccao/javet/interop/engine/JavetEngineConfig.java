@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
@@ -33,7 +34,6 @@ public final class JavetEngineConfig {
     public static final int DEFAULT_POOL_IDLE_TIMEOUT_SECONDS = 60;
     public static final int DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1000;
     public static final int DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS = 3600;
-    public static final String DEFAULT_GLOBAL_NAME = "window";
     public static final int DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS = 5;
     public static IJavetLogger DEFAULT_JAVET_LOGGER = new JavetDefaultLogger(JavetEnginePool.class.getName());
     private boolean allowEval;
@@ -119,7 +119,7 @@ public final class JavetEngineConfig {
     @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig reset() {
         javetLogger = DEFAULT_JAVET_LOGGER;
-        globalName = DEFAULT_GLOBAL_NAME;
+        globalName = V8RuntimeOptions.GLOBAL_THIS;
         allowEval = false;
         autoSendGCNotification = true;
         defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;

@@ -23,6 +23,7 @@
 #include "javet_inspector.h"
 #include "javet_logging.h"
 #include "javet_native.h"
+#include "javet_v8_runtime.h"
 
 JavaVM* GlobalJavaVM;
 
@@ -38,6 +39,7 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
         return ERROR_JNI_ON_LOAD;
     }
     GlobalJavaVM = javaVM;
+    Javet::Initialize(jniEnv);
     Javet::V8Native::Initialize(jniEnv);
 #ifdef ENABLE_NODE
     Javet::NodeNative::Initialize(jniEnv);

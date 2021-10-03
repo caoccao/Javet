@@ -17,5 +17,10 @@
 
 package com.caoccao.javet.interop;
 
-public interface INodeNative extends IV8Native{
+/**
+ * The interface Node native.
+ *
+ * @since 0.8.0
+ */
+public interface INodeNative extends IV8Native {
 }

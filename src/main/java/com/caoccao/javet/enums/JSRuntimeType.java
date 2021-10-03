@@ -17,6 +17,12 @@
 
 package com.caoccao.javet.enums;
 
+import com.caoccao.javet.interop.options.NodeRuntimeOptions;
+import com.caoccao.javet.interop.options.V8RuntimeOptions;
+
+import java.util.Objects;
+import java.util.function.Supplier;
+
 /**
  * The enum JS runtime type.
  *
@@ -28,18 +34,20 @@ public enum JSRuntimeType {
      *
      * @since 0.8.0
      */
-    Node("node", "9.3.345.19-node.14"),
+    Node("node", "9.3.345.19-node.14", NodeRuntimeOptions::new),
     /**
      * V8.
      *
      * @since 0.8.0
      */
-    V8("v8", "9.4.146.16");
+    V8("v8", "9.4.146.16", V8RuntimeOptions::new);
 
+    private final Supplier<V8RuntimeOptions<?>> defaultOptionsConstructor;
     private final String name;
     private final String version;
 
-    JSRuntimeType(String name, String version) {
+    JSRuntimeType(String name, String version, Supplier<V8RuntimeOptions<?>> defaultOptionsConstructor) {
+        this.defaultOptionsConstructor = Objects.requireNonNull(defaultOptionsConstructor);
         this.name = name;
         this.version = version;
     }
@@ -52,6 +60,16 @@ public enum JSRuntimeType {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets runtime options.
+     *
+     * @return the runtime options
+     * @since 1.0.0
+     */
+    public V8RuntimeOptions<?> getRuntimeOptions() {
+        return defaultOptionsConstructor.get();
     }
 
     /**

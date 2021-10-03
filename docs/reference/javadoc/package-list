@@ -11,6 +11,7 @@ com.caoccao.javet.interop.callback
 com.caoccao.javet.interop.converters
 com.caoccao.javet.interop.engine
 com.caoccao.javet.interop.executors
+com.caoccao.javet.interop.options
 com.caoccao.javet.interop.proxy
 com.caoccao.javet.node.modules
 com.caoccao.javet.utils

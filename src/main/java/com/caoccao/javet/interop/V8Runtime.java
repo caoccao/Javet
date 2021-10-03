@@ -32,6 +32,7 @@ import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
+import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPromiseRejectCallback;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -80,13 +81,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected Map<Long, JavetCallbackContext> callbackContextMap;
     protected IJavetConverter converter;
     protected boolean gcScheduled;
-    protected String globalName;
     protected long handle;
     protected IJavetLogger logger;
     protected boolean pooled;
     protected IJavetPromiseRejectCallback promiseRejectCallback;
     protected ReadWriteLock referenceLock;
     protected Map<Long, IV8ValueReference> referenceMap;
+    protected V8RuntimeOptions<?> runtimeOptions;
     protected V8Host v8Host;
     protected V8Inspector v8Inspector;
     protected ReadWriteLock v8ModuleLock;
@@ -94,23 +95,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected IV8ModuleResolver v8ModuleResolver;
     protected IV8Native v8Native;
 
-    V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, String globalName) {
+    V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, V8RuntimeOptions<?> runtimeOptions) {
         assert handle != 0;
         bindingContextWeakHashMap = Collections.synchronizedMap(new WeakHashMap<>());
         callbackContextLock = new ReentrantReadWriteLock();
         callbackContextMap = new HashMap<>();
         converter = DEFAULT_CONVERTER;
         gcScheduled = false;
-        this.globalName = globalName;
+        this.runtimeOptions = Objects.requireNonNull(runtimeOptions);
         this.handle = handle;
         logger = new JavetDefaultLogger(getClass().getName());
         this.pooled = pooled;
         promiseRejectCallback = new JavetPromiseRejectCallback(logger);
         referenceLock = new ReentrantReadWriteLock();
         referenceMap = new HashMap<>();
-        this.v8Host = v8Host;
+        this.v8Host = Objects.requireNonNull(v8Host);
         v8Inspector = null;
-        this.v8Native = v8Native;
+        this.v8Native = Objects.requireNonNull(v8Native);
         v8ModuleLock = new ReentrantReadWriteLock();
         v8ModuleMap = new HashMap<>();
         v8ModuleResolver = null;
@@ -484,10 +485,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return new V8StringExecutor(this, scriptString);
     }
 
-    public String getGlobalName() {
-        return globalName;
-    }
-
     public V8ValueGlobalObject getGlobalObject() throws JavetException {
         return decorateV8Value((V8ValueGlobalObject) v8Native.getGlobalObject(handle));
     }
@@ -580,6 +577,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         } finally {
             readLock.unlock();
         }
+    }
+
+    public V8RuntimeOptions<?> getRuntimeOptions() {
+        return runtimeOptions;
     }
 
     public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
@@ -1031,7 +1032,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public V8Runtime resetContext() throws JavetException {
         removeAllReferences();
-        v8Native.resetV8Context(handle, globalName);
+        v8Native.resetV8Context(handle, runtimeOptions);
         return this;
     }
 
@@ -1046,7 +1047,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("UnusedReturnValue")
     public V8Runtime resetIsolate() throws JavetException {
         removeAllReferences();
-        v8Native.resetV8Isolate(handle, globalName);
+        v8Native.resetV8Isolate(handle, runtimeOptions);
         return this;
     }
 
@@ -1097,10 +1098,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public void setGCScheduled(boolean gcScheduled) {
         this.gcScheduled = gcScheduled;
-    }
-
-    public void setGlobalName(String globalName) {
-        this.globalName = globalName;
     }
 
     public void setLogger(IJavetLogger logger) {

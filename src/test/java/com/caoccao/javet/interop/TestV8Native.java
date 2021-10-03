@@ -48,7 +48,7 @@ public class TestV8Native extends BaseTestJavet {
 
     @Test
     public void testLockAndUnlock() {
-        final long handle = v8Native.createV8Runtime(null);
+        final long handle = v8Native.createV8Runtime(JSRuntimeType.V8.getRuntimeOptions());
         try {
             final int iterations = 3;
             for (int i = 0; i < iterations; ++i) {
