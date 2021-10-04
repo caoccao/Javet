@@ -21,6 +21,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.node.modules.INodeModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
@@ -75,7 +76,7 @@ public class NodeRuntime extends V8Runtime {
      * @param runtimeOptions the runtime options
      * @since 0.8.0
      */
-    NodeRuntime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, V8RuntimeOptions<?> runtimeOptions) {
+    NodeRuntime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
         super(v8Host, handle, pooled, v8Native, runtimeOptions);
         nodeModuleMap = new HashMap<>();
     }

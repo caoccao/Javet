@@ -17,17 +17,15 @@
 package com.caoccao.javet.interop.options;
 
 /**
- * The type Node runtime options.
+ * The type Runtime options.
  *
+ * @param <Options> the type parameter
  * @since 1.0.0
  */
-public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions> {
+public abstract class RuntimeOptions<Options extends RuntimeOptions> {
     /**
-     * Instantiates a new Node runtime options.
-     *
-     * @since 1.0.0
+     * Instantiates a new Runtime options.
      */
-    public NodeRuntimeOptions() {
-        super();
+    public RuntimeOptions() {
     }
 }

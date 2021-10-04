@@ -119,7 +119,7 @@ public final class JavetEngineConfig {
     @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig reset() {
         javetLogger = DEFAULT_JAVET_LOGGER;
-        globalName = V8RuntimeOptions.GLOBAL_THIS;
+        globalName = null;
         allowEval = false;
         autoSendGCNotification = true;
         defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;

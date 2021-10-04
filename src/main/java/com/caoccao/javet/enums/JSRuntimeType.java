@@ -18,9 +18,11 @@
 package com.caoccao.javet.enums;
 
 import com.caoccao.javet.interop.options.NodeRuntimeOptions;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -34,20 +36,34 @@ public enum JSRuntimeType {
      *
      * @since 0.8.0
      */
-    Node("node", "9.3.345.19-node.14", NodeRuntimeOptions::new),
+    Node(
+            "node",
+            "9.3.345.19-node.14",
+            NodeRuntimeOptions::new,
+            o -> o instanceof NodeRuntimeOptions),
     /**
      * V8.
      *
      * @since 0.8.0
      */
-    V8("v8", "9.4.146.16", V8RuntimeOptions::new);
+    V8(
+            "v8",
+            "9.4.146.16",
+            V8RuntimeOptions::new,
+            o -> o instanceof V8RuntimeOptions);
 
     private final String name;
-    private final Supplier<V8RuntimeOptions<?>> runtimeOptionsConstructor;
+    private final Supplier<RuntimeOptions<?>> runtimeOptionsConstructor;
+    private final Function<RuntimeOptions<?>, Boolean> runtimeOptionsValidator;
     private final String version;
 
-    JSRuntimeType(String name, String version, Supplier<V8RuntimeOptions<?>> runtimeOptionsConstructor) {
+    JSRuntimeType(
+            String name,
+            String version,
+            Supplier<RuntimeOptions<?>> runtimeOptionsConstructor,
+            Function<RuntimeOptions<?>, Boolean> runtimeOptionsValidator) {
         this.runtimeOptionsConstructor = Objects.requireNonNull(runtimeOptionsConstructor);
+        this.runtimeOptionsValidator = Objects.requireNonNull(runtimeOptionsValidator);
         this.name = name;
         this.version = version;
     }
@@ -65,11 +81,12 @@ public enum JSRuntimeType {
     /**
      * Gets runtime options.
      *
+     * @param <Options> the type parameter
      * @return the runtime options
      * @since 1.0.0
      */
-    public V8RuntimeOptions<?> getRuntimeOptions() {
-        return runtimeOptionsConstructor.get();
+    public <Options extends RuntimeOptions<?>> Options getRuntimeOptions() {
+        return (Options) runtimeOptionsConstructor.get();
     }
 
     /**
@@ -99,14 +116,8 @@ public enum JSRuntimeType {
      * @return the boolean
      * @since 1.0.0
      */
-    public boolean isRuntimeOptionsValid(V8RuntimeOptions<?> runtimeOptions) {
-        if (isV8()) {
-            return runtimeOptions instanceof V8RuntimeOptions<?>;
-        }
-        if (isNode()) {
-            return runtimeOptions instanceof NodeRuntimeOptions;
-        }
-        return false;
+    public boolean isRuntimeOptionsValid(RuntimeOptions<?> runtimeOptions) {
+        return runtimeOptionsValidator.apply(runtimeOptions);
     }
 
     /**
