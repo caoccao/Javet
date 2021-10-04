@@ -37,4 +37,6 @@
 #pragma comment(lib, "Winmm.lib")
 #pragma comment(lib, "Ws2_32.lib")
 
+#define DEFAULT_SCRIPT_NAME "javet.js"
+
 #endif

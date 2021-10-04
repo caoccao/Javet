@@ -36,6 +36,7 @@ namespace Javet {
 
     static jclass jclassRuntimeOptions;
 #ifdef ENABLE_NODE
+    static jmethodID jmethodNodeRuntimeOptionsGetConsoleArguments;
 #else
     static jmethodID jmethodV8RuntimeOptionsGetGlobalName;
 #endif

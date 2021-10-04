@@ -21,6 +21,7 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.options.NodeRuntimeOptions;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
@@ -79,6 +80,14 @@ public class TestNodeRuntime extends BaseTestJavet {
         try (V8ValueArray v8ValueArray = nodeRuntime.getExecutor(getScriptFile(
                 fileName)).execute()) {
             assertEquals(expectedJsonString, v8ValueArray.toJsonString());
+        }
+    }
+
+    @Test
+    public void testConsoleArguments() throws JavetException {
+        NodeRuntimeOptions runtimeOptions = new NodeRuntimeOptions();
+        runtimeOptions.setConsoleArguments(new String[]{"--version"});
+        try (NodeRuntime testNodeRuntime = v8Host.createV8Runtime(runtimeOptions)) {
         }
     }
 

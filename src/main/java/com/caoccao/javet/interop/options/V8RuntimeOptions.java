@@ -21,7 +21,6 @@ package com.caoccao.javet.interop.options;
  *
  * @since 1.0.0
  */
-@SuppressWarnings("unchecked")
 public final class V8RuntimeOptions extends RuntimeOptions<V8RuntimeOptions> {
     /**
      * The constant GLOBAL_THIS.

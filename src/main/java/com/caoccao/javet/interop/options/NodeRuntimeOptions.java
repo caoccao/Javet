@@ -22,6 +22,8 @@ package com.caoccao.javet.interop.options;
  * @since 1.0.0
  */
 public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions> {
+    private String[] consoleArguments;
+
     /**
      * Instantiates a new Node runtime options.
      *
@@ -29,5 +31,28 @@ public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions>
      */
     public NodeRuntimeOptions() {
         super();
+        consoleArguments = null;
+    }
+
+    /**
+     * Get console arguments.
+     *
+     * @return the console arguments
+     * @since 1.0.0
+     */
+    public String[] getConsoleArguments() {
+        return consoleArguments;
+    }
+
+    /**
+     * Sets console arguments.
+     *
+     * @param consoleArguments the console arguments
+     * @return the self
+     * @since 1.0.0
+     */
+    public NodeRuntimeOptions setConsoleArguments(String[] consoleArguments) {
+        this.consoleArguments = consoleArguments;
+        return this;
     }
 }
