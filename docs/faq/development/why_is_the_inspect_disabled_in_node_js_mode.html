@@ -2,10 +2,10 @@
 <html class="no-js" lang="en, zh-CN">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Node.js Mode and V8 Mode" href="node_js_mode_and_v8_mode.html" /><link rel="prev" title="Interception" href="interception.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Environment" href="../environment/index.html" /><link rel="prev" title="Where are the Examples?" href="where_are_the_examples.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Javet Shell - Javet 1.0.0 documentation</title>
+        <title>Why is the Inspector Disabled in Node.js Mode? - Javet 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -159,26 +159,26 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Tutorial</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Basic</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="hello_javet.html">Hello Javet</a></li>
-<li class="toctree-l3"><a class="reference internal" href="engine_pool.html">Javet Engine Pool</a></li>
-<li class="toctree-l3"><a class="reference internal" href="interception.html">Interception</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Javet Shell</a></li>
-<li class="toctree-l3"><a class="reference internal" href="node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="spring_integration.html">Spring Integration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="polyfill.html">Polyfill</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/hello_javet.html">Hello Javet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/engine_pool.html">Javet Engine Pool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/interception.html">Interception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/polyfill.html">Polyfill</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../advanced/object_converter.html">Object Converter</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../advanced/interact_with_node_js.html">Interact with Node.js</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/object_converter.html">Object Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/interact_with_node_js.html">Interact with Node.js</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../migration_guides/index.html">Migration Guides</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../migration_guides/migrate_from_j2v8.html">Migrate from J2V8</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/migration_guides/index.html">Migration Guides</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/migration_guides/migrate_from_j2v8.html">Migrate from J2V8</a></li>
 </ul>
 </li>
 </ul>
@@ -207,28 +207,28 @@
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0_7.html">Release Notes 0.7.x</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/background/what_is_the_motivation.html">What is the Motivation?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/background/history_with_j2v8.html">History with J2V8</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">FAQ</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../background/what_is_the_motivation.html">What is the Motivation?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../background/history_with_j2v8.html">History with J2V8</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_the_examples.html">Where are the Examples?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/development/why_is_the_inspect_disabled_in_node_js_mode.html">Why is the Inspector Disabled in Node.js Mode?</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Development</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="where_are_the_examples.html">Where are the Examples?</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Why is the Inspector Disabled in Node.js Mode?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../environment/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
 </ul>
 </li>
 </ul>
@@ -272,47 +272,13 @@
           </label>
         </div>
         <article role="main">
-          <div class="section" id="javet-shell">
-<h1>Javet Shell<a class="headerlink" href="#javet-shell" title="Permalink to this headline">¶</a></h1>
-<p>It is very easy to create a node flavored interactive shell application with a few lines of code.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 1: Create a V8 runtime from V8 host in try resource.</span>
-<span class="k">try</span> <span class="p">(</span><span class="n">V8Runtime</span> <span class="n">v8Runtime</span> <span class="o">=</span> <span class="n">V8Host</span><span class="p">.</span><span class="na">getV8Instance</span><span class="p">().</span><span class="na">createV8Runtime</span><span class="p">())</span> <span class="p">{</span>
-    <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Welcome to CDT Shell!"</span><span class="p">);</span>
-    <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Input the script or '.exit' to exit."</span><span class="p">);</span>
-    <span class="c1">// Step 2: Create a scanner to take console input line by line.</span>
-    <span class="k">try</span> <span class="p">(</span><span class="n">Scanner</span> <span class="n">scanner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Scanner</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">in</span><span class="p">))</span> <span class="p">{</span>
-        <span class="c1">// Step 3: Create an infinite loop.</span>
-        <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="s">"&gt; "</span><span class="p">);</span>
-            <span class="n">String</span> <span class="n">command</span> <span class="o">=</span> <span class="n">scanner</span><span class="p">.</span><span class="na">nextLine</span><span class="p">();</span>
-            <span class="c1">// Step 4: If the command is ".exit", exit the loop.</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s">".exit"</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">command</span><span class="p">))</span> <span class="p">{</span>
-                <span class="k">break</span><span class="p">;</span>
-            <span class="p">}</span>
-            <span class="c1">// Step 5: Execute the command and capture the result.</span>
-            <span class="k">try</span> <span class="p">(</span><span class="n">V8Value</span> <span class="n">v8Value</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="n">command</span><span class="p">).</span><span class="na">execute</span><span class="p">())</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">v8Value</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="c1">// Step 6: Print the result as string.</span>
-                    <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">v8Value</span><span class="p">.</span><span class="na">toString</span><span class="p">());</span>
-                <span class="p">}</span>
-            <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Throwable</span> <span class="n">t</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>The user experience is very much like the one in node.</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kd">let</span> <span class="nx">a</span> <span class="o">=</span> <span class="mf">3</span>
-<span class="kc">undefined</span>
-<span class="o">&gt;</span> <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="mf">4</span>
-<span class="kc">undefined</span>
-<span class="o">&gt;</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span>
-<span class="mf">7</span>
-</pre></div>
-</div>
-<p>Please refer to the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/tutorial/cdt/CDTShell.java">source code</a> for more detail.</p>
+          <div class="section" id="why-is-the-inspector-disabled-in-node-js-mode">
+<h1>Why is the Inspector Disabled in Node.js Mode?<a class="headerlink" href="#why-is-the-inspector-disabled-in-node-js-mode" title="Permalink to this headline">¶</a></h1>
+<p>Javet does not support Node.js <code class="docutils literal notranslate"><span class="pre">--inspect</span></code> because <strong>Node.js is designed to be singleton.</strong></p>
+<p>It is fine to create and close the NodeRuntime one by one (I have tested). But if applications create multiple NodeRuntime instances at the same time, Javet will crash immediately. Why?</p>
+<p>Node.js has only one IO thread serving the inspector agent. In side the function <code class="docutils literal notranslate"><span class="pre">Agent::Start(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">CHECK_EQ(start_io_thread_async_initialized.exchange(true),</span> <span class="pre">false);</span></code> makes sure that <code class="docutils literal notranslate"><span class="pre">static</span> <span class="pre">std::atomic_bool</span> <span class="pre">start_io_thread_async_initialized;</span></code> is flipped from <code class="docutils literal notranslate"><span class="pre">false</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>, then crashes if <code class="docutils literal notranslate"><span class="pre">Agent::Start(...)</span></code> is called again. Creating a NodeRuntime instance triggers that call and there is no workaround. The crash is inevitable.</p>
+<p>The hacky option is to change the Node.js source code. But that scope would be too large because that implies changing the fundamental design of the inspector. I don't think the Node.js community would accept that.</p>
+<p>So, please debug the JavaScript applications in Node.js with the inspector. Or... contact the maintainer for a private build with the inspector enabled.</p>
 </div>
 
         </article>
@@ -320,23 +286,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="node_js_mode_and_v8_mode.html">
+          <a class="next-page" href="../environment/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Node.js Mode and V8 Mode</div>
+                <div class="title">Environment</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="interception.html">
+          <a class="prev-page" href="where_are_the_examples.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Interception</div>
+                <div class="title">Where are the Examples?</div>
                 
               </div>
             </a>
