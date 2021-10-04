@@ -119,7 +119,7 @@ namespace Javet {
             else {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
-                std::vector<std::string> args{ "" };
+                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
                 std::vector<std::string> execArgs;
                 std::vector<std::string> errors;
                 int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);

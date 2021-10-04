@@ -53,7 +53,7 @@ public enum JSRuntimeType {
             o -> o instanceof V8RuntimeOptions);
 
     private final String name;
-    private final Supplier<RuntimeOptions<?>> runtimeOptionsConstructor;
+    private final Supplier<? extends RuntimeOptions<?>> runtimeOptionsConstructor;
     private final Function<RuntimeOptions<?>, Boolean> runtimeOptionsValidator;
     private final String version;
 
@@ -85,6 +85,7 @@ public enum JSRuntimeType {
      * @return the runtime options
      * @since 1.0.0
      */
+    @SuppressWarnings("unchecked")
     public <Options extends RuntimeOptions<?>> Options getRuntimeOptions() {
         return (Options) runtimeOptionsConstructor.get();
     }

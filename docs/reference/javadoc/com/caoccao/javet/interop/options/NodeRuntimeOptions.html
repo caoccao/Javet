@@ -17,6 +17,12 @@
     catch(err) {
     }
 //-->
+var methods = {"i0":10,"i1":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
 </script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -69,13 +75,13 @@
 <li>Nested&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
-<li><a href="#methods.inherited.from.class.java.lang.Object">Method</a></li>
+<li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 <a name="skip.navbar.top">
@@ -144,6 +150,25 @@ extends <a href="../../../../../com/caoccao/javet/interop/options/RuntimeOptions
 <!--   -->
 </a>
 <h3>Method Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr id="i0" class="altColor">
+<td class="colFirst"><code>java.lang.String[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/options/NodeRuntimeOptions.html#getConsoleArguments--">getConsoleArguments</a></span>()</code>
+<div class="block">Get console arguments.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/options/NodeRuntimeOptions.html" title="class in com.caoccao.javet.interop.options">NodeRuntimeOptions</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/options/NodeRuntimeOptions.html#setConsoleArguments-java.lang.String:A-">setConsoleArguments</a></span>(java.lang.String[]&nbsp;consoleArguments)</code>
+<div class="block">Sets console arguments.</div>
+</td>
+</tr>
+</table>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
@@ -174,6 +199,48 @@ extends <a href="../../../../../com/caoccao/javet/interop/options/RuntimeOptions
 <pre>public&nbsp;NodeRuntimeOptions()</pre>
 <div class="block">Instantiates a new Node runtime options.</div>
 <dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.0</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ============ METHOD DETAIL ========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method.detail">
+<!--   -->
+</a>
+<h3>Method Detail</h3>
+<a name="getConsoleArguments--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getConsoleArguments</h4>
+<pre>public&nbsp;java.lang.String[]&nbsp;getConsoleArguments()</pre>
+<div class="block">Get console arguments.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the console arguments</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.0</dd>
+</dl>
+</li>
+</ul>
+<a name="setConsoleArguments-java.lang.String:A-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>setConsoleArguments</h4>
+<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/options/NodeRuntimeOptions.html" title="class in com.caoccao.javet.interop.options">NodeRuntimeOptions</a>&nbsp;setConsoleArguments(java.lang.String[]&nbsp;consoleArguments)</pre>
+<div class="block">Sets console arguments.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>consoleArguments</code> - the console arguments</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the self</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0.0</dd>
 </dl>
@@ -234,13 +301,13 @@ extends <a href="../../../../../com/caoccao/javet/interop/options/RuntimeOptions
 <li>Nested&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
-<li><a href="#methods.inherited.from.class.java.lang.Object">Method</a></li>
+<li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 <a name="skip.navbar.bottom">

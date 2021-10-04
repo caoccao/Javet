@@ -30,6 +30,7 @@ namespace Javet {
     void Initialize(JNIEnv* jniEnv) {
 #ifdef ENABLE_NODE
         jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions"));
+        jmethodNodeRuntimeOptionsGetConsoleArguments = jniEnv->GetMethodID(jclassRuntimeOptions, "getConsoleArguments", "()[Ljava/lang/String;");
 #else
         jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions"));
         jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
@@ -183,8 +184,25 @@ namespace Javet {
         // node::NewContext is thread-safe.
         V8LocalContext v8LocalContext = node::NewContext(v8Isolate);
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-        std::vector<std::string> args{ "" };
+        std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
         std::vector<std::string> execArgs;
+        if (mRuntimeOptions != nullptr) {
+            jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
+            if (mConsoleArguments != nullptr) {
+                int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
+                LOG_DEBUG("Node.js console argument count is " << consoleArgumentCount);
+                for (int i = 0; i < consoleArgumentCount; ++i) {
+                    jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
+                    auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                    auto umConsoleArgument = *consoleArgumentPointer.get();
+                    LOG_DEBUG("    " << i << ": " << umConsoleArgument);
+                    if (umConsoleArgument == "-v" || umConsoleArgument == "--version") {
+                        LOG(NODE_VERSION);
+                    }
+                    args.push_back(umConsoleArgument);
+                }
+            }
+        }
         // node::CreateEnvironment is thread-safe.
         nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
         // node::LoadEnvironment is thread-safe.
