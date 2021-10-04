@@ -34,8 +34,11 @@ namespace Javet {
     class V8Runtime;
     class V8Scope;
 
-    static jclass jclassV8RuntimeOptions;
+    static jclass jclassRuntimeOptions;
+#ifdef ENABLE_NODE
+#else
     static jmethodID jmethodV8RuntimeOptionsGetGlobalName;
+#endif
 
     void Initialize(JNIEnv* jniEnv);
 

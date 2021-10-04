@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 
@@ -127,8 +128,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      */
     protected JavetEngine<R> createEngine() throws JavetException {
         V8Host v8Host = V8Host.getInstance(config.getJSRuntimeType());
-        V8RuntimeOptions<?> runtimeOptions = config.getJSRuntimeType().getRuntimeOptions();
-        runtimeOptions.setGlobalName(config.getGlobalName());
+        RuntimeOptions<?> runtimeOptions = config.getJSRuntimeType().getRuntimeOptions();
+        if (runtimeOptions instanceof V8RuntimeOptions) {
+            V8RuntimeOptions v8RuntimeOptions = (V8RuntimeOptions) runtimeOptions;
+            v8RuntimeOptions.setGlobalName(config.getGlobalName());
+        }
         @SuppressWarnings("ConstantConditions")
         R v8Runtime = v8Host.createV8Runtime(true, runtimeOptions);
         v8Runtime.allowEval(config.isAllowEval());

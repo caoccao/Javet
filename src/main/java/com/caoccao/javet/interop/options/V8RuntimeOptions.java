@@ -19,11 +19,10 @@ package com.caoccao.javet.interop.options;
 /**
  * The type V8 runtime options.
  *
- * @param <Options> the type parameter
  * @since 1.0.0
  */
 @SuppressWarnings("unchecked")
-public class V8RuntimeOptions<Options extends V8RuntimeOptions<?>> {
+public final class V8RuntimeOptions extends RuntimeOptions<V8RuntimeOptions> {
     /**
      * The constant GLOBAL_THIS.
      *
@@ -43,7 +42,8 @@ public class V8RuntimeOptions<Options extends V8RuntimeOptions<?>> {
      * @since 1.0.0
      */
     public V8RuntimeOptions() {
-        setGlobalName(GLOBAL_THIS);
+        super();
+        setGlobalName(null);
     }
 
     /**
@@ -60,11 +60,11 @@ public class V8RuntimeOptions<Options extends V8RuntimeOptions<?>> {
      * Sets global name.
      *
      * @param globalName the global name
-     * @return the global name
+     * @return the self
      * @since 1.0.0
      */
-    public Options setGlobalName(String globalName) {
+    public V8RuntimeOptions setGlobalName(String globalName) {
         this.globalName = globalName == null || globalName.length() == 0 ? null : globalName;
-        return (Options) this;
+        return this;
     }
 }

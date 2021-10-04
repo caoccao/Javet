@@ -32,6 +32,7 @@ import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPromiseRejectCallback;
@@ -87,7 +88,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected IJavetPromiseRejectCallback promiseRejectCallback;
     protected ReadWriteLock referenceLock;
     protected Map<Long, IV8ValueReference> referenceMap;
-    protected V8RuntimeOptions<?> runtimeOptions;
+    protected RuntimeOptions<?> runtimeOptions;
     protected V8Host v8Host;
     protected V8Inspector v8Inspector;
     protected ReadWriteLock v8ModuleLock;
@@ -95,7 +96,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected IV8ModuleResolver v8ModuleResolver;
     protected IV8Native v8Native;
 
-    V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, V8RuntimeOptions<?> runtimeOptions) {
+    V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
         assert handle != 0;
         bindingContextWeakHashMap = Collections.synchronizedMap(new WeakHashMap<>());
         callbackContextLock = new ReentrantReadWriteLock();
@@ -579,7 +580,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
-    public V8RuntimeOptions<?> getRuntimeOptions() {
+    public RuntimeOptions<?> getRuntimeOptions() {
         return runtimeOptions;
     }
 

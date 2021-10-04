@@ -172,7 +172,7 @@ extends java.lang.Enum&lt;<a href="../../../../com/caoccao/javet/enums/JSRuntime
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;</code></td>
+<td class="colFirst"><code>&lt;Options extends <a href="../../../../com/caoccao/javet/interop/options/RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">RuntimeOptions</a>&lt;?&gt;&gt;<br>Options</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/enums/JSRuntimeType.html#getRuntimeOptions--">getRuntimeOptions</a></span>()</code>
 <div class="block">Gets runtime options.</div>
 </td>
@@ -191,7 +191,7 @@ extends java.lang.Enum&lt;<a href="../../../../com/caoccao/javet/enums/JSRuntime
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/enums/JSRuntimeType.html#isRuntimeOptionsValid-com.caoccao.javet.interop.options.V8RuntimeOptions-">isRuntimeOptionsValid</a></span>(<a href="../../../../com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;&nbsp;runtimeOptions)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/enums/JSRuntimeType.html#isRuntimeOptionsValid-com.caoccao.javet.interop.options.RuntimeOptions-">isRuntimeOptionsValid</a></span>(<a href="../../../../com/caoccao/javet/interop/options/RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">RuntimeOptions</a>&lt;?&gt;&nbsp;runtimeOptions)</code>
 <div class="block">Is runtime options valid.</div>
 </td>
 </tr>
@@ -343,9 +343,11 @@ not permitted.)</div>
 <ul class="blockList">
 <li class="blockList">
 <h4>getRuntimeOptions</h4>
-<pre>public&nbsp;<a href="../../../../com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;&nbsp;getRuntimeOptions()</pre>
+<pre>public&nbsp;&lt;Options extends <a href="../../../../com/caoccao/javet/interop/options/RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">RuntimeOptions</a>&lt;?&gt;&gt;&nbsp;Options&nbsp;getRuntimeOptions()</pre>
 <div class="block">Gets runtime options.</div>
 <dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>Options</code> - the type parameter</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the runtime options</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -385,13 +387,13 @@ not permitted.)</div>
 </dl>
 </li>
 </ul>
-<a name="isRuntimeOptionsValid-com.caoccao.javet.interop.options.V8RuntimeOptions-">
+<a name="isRuntimeOptionsValid-com.caoccao.javet.interop.options.RuntimeOptions-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>isRuntimeOptionsValid</h4>
-<pre>public&nbsp;boolean&nbsp;isRuntimeOptionsValid(<a href="../../../../com/caoccao/javet/interop/options/V8RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">V8RuntimeOptions</a>&lt;?&gt;&nbsp;runtimeOptions)</pre>
+<pre>public&nbsp;boolean&nbsp;isRuntimeOptionsValid(<a href="../../../../com/caoccao/javet/interop/options/RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">RuntimeOptions</a>&lt;?&gt;&nbsp;runtimeOptions)</pre>
 <div class="block">Is runtime options valid.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

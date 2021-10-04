@@ -20,6 +20,7 @@ import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.SimpleMap;
@@ -229,7 +230,7 @@ public final class V8Host implements AutoCloseable {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    public <R extends V8Runtime> R createV8Runtime(V8RuntimeOptions<?> runtimeOptions) throws JavetException {
+    public <R extends V8Runtime> R createV8Runtime(RuntimeOptions<?> runtimeOptions) throws JavetException {
         return createV8Runtime(false, runtimeOptions);
     }
 
@@ -244,7 +245,7 @@ public final class V8Host implements AutoCloseable {
      * @since 0.7.0
      */
     public <R extends V8Runtime> R createV8Runtime(
-            boolean pooled, V8RuntimeOptions<?> runtimeOptions) throws JavetException {
+            boolean pooled, RuntimeOptions<?> runtimeOptions) throws JavetException {
         assert getJSRuntimeType().isRuntimeOptionsValid(runtimeOptions);
         if (!libraryLoaded) {
             if (lastException == null) {

@@ -29,11 +29,11 @@ namespace Javet {
 
     void Initialize(JNIEnv* jniEnv) {
 #ifdef ENABLE_NODE
-        jclassV8RuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions"));
+        jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions"));
 #else
-        jclassV8RuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions"));
+        jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions"));
+        jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
 #endif
-        jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassV8RuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
     }
 
     void GlobalAccessorGetterCallback(
@@ -184,7 +184,7 @@ namespace Javet {
         V8LocalContext v8LocalContext = node::NewContext(v8Isolate);
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
         std::vector<std::string> args{ "" };
-        std::vector<std::string> execArgs{ "" };
+        std::vector<std::string> execArgs;
         // node::CreateEnvironment is thread-safe.
         nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
         // node::LoadEnvironment is thread-safe.
