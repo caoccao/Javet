@@ -3,5 +3,6 @@ h4, h5, h6 {
 }
 
 code.literal {
+    color: #eee;
     background-color: lightgray;
 }
