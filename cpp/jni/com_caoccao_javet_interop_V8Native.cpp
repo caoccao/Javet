@@ -1058,7 +1058,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseResolv
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_PROMISE(v8ValueType)) {
         auto v8LocalPromiseResolver = v8LocalValue.As<v8::Promise::Resolver>();
-        return v8LocalPromiseResolver->Resolve(v8Context, Javet::Converter::ToV8Value(jniEnv, v8Context, value)).ToChecked();
+        auto v8MaybeBool = v8LocalPromiseResolver->Resolve(v8Context, Javet::Converter::ToV8Value(jniEnv, v8Context, value));
+        return v8MaybeBool.FromMaybe(false);
     }
     return false;
 }
