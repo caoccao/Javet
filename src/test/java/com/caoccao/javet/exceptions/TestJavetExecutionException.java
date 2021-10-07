@@ -42,7 +42,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             assertEquals(15, javetScriptingError.getStartPosition());
             assertEquals(16, javetScriptingError.getEndPosition());
             assertEquals(
-                    "Error: TypeError: Assignment to constant variable.\n" +
+                    "TypeError: Assignment to constant variable.\n" +
                             "Resource: undefined\n" +
                             "Source Code: const a = 1; a = 2;\n" +
                             "Line Number: 1\n" +
@@ -108,7 +108,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             assertEquals(20, javetScriptingError.getStartPosition());
             assertEquals(21, javetScriptingError.getEndPosition());
             assertEquals(
-                    "Error: TypeError: Object.getPPP is not a function\n" +
+                    "TypeError: Object.getPPP is not a function\n" +
                             "Resource: undefined\n" +
                             "Source Code: Object.getPPP(a);\n" +
                             "Line Number: 2\n" +
@@ -137,7 +137,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             assertEquals(7, javetScriptingError.getStartPosition());
             assertEquals(8, javetScriptingError.getEndPosition());
             assertEquals(
-                    "Error: ReferenceError: abc is not defined\n" +
+                    "ReferenceError: abc is not defined\n" +
                             "Resource: undefined\n" +
                             "Source Code: Symbol(abc);\n" +
                             "Line Number: 1\n" +
