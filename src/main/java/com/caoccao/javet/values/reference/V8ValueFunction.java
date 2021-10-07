@@ -22,7 +22,6 @@ import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
@@ -110,11 +109,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public boolean setSourceCode(String sourceCodeString) throws JavetException {
         checkV8Runtime();
-        if (getJSFunctionType().isUserDefined()) {
-            String trimmedSourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
-            if (trimmedSourceCodeString != null) {
-                return v8Runtime.setSourceCode(this, trimmedSourceCodeString);
-            }
+        if (getJSFunctionType().isUserDefined()
+                && sourceCodeString != null && sourceCodeString.length() > 0) {
+            return v8Runtime.setSourceCode(this, sourceCodeString);
         }
         return false;
     }
