@@ -103,3 +103,4 @@ Documents
 
 * `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
 * `Javet Document Portal <https://www.caoccao.com/Javet/>`_
+* `Javet Javadocs <https://www.caoccao.com/Javet/reference/javadoc/index.html/>`_
