@@ -238,7 +238,7 @@ public final class JavetScriptingError {
     @Override
     public String toString() {
         return MessageFormat.format(
-                "Error: {0}\nResource: {1}\nSource Code: {2}\nLine Number: {3}\nColumn: {4}, {5}\nPosition: {6}, {7}",
+                "{0}\nResource: {1}\nSource Code: {2}\nLine Number: {3}\nColumn: {4}, {5}\nPosition: {6}, {7}",
                 message, resourceName, sourceLine, Integer.toString(lineNumber),
                 Integer.toString(startColumn), Integer.toString(endColumn),
                 Integer.toString(startPosition), Integer.toString(endPosition));
