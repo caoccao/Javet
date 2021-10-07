@@ -89,6 +89,8 @@ public final class V8ValueUtils {
                     switch (sourceCode.charAt(endPosition - 1)) {
                         case ' ':
                         case '\n':
+                        case '\r':
+                        case '\t':
                         case ';':
                             endPosition--;
                             break;

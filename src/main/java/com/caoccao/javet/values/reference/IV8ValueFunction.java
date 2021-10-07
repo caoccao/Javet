@@ -22,6 +22,7 @@ import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
@@ -304,7 +305,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     /**
      * Is async function.
      *
-     * @return true: yes, false: no
+     * @return true : yes, false: no
      * @throws JavetException the javet exception
      * @since 0.9.13
      */
@@ -315,7 +316,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
     /**
      * Is generator function.
      *
-     * @return true: yes, false: no
+     * @return true : yes, false: no
      * @throws JavetException the javet exception
      * @since 0.9.13
      */
@@ -335,10 +336,30 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * Note 3: The source code must not end with any of ' ', ';', '\n',
      * though technically the source code is valid. Otherwise, V8 will crash.
      *
-     * @param sourceCode the source code
+     * @param sourceCodeString the source code string
      * @return the source code
      * @throws JavetException the javet exception
      * @since 0.8.8
      */
-    boolean setSourceCode(String sourceCode) throws JavetException;
+    boolean setSourceCode(String sourceCodeString) throws JavetException;
+
+    /**
+     * Sets source code with invalid tailing characters trimmed or not.
+     * <p>
+     * The source code must not end with ' ', '\n', '\r', 't', ';',
+     * otherwise, V8 will crash immediately.
+     *
+     * @param sourceCodeString      the source code string
+     * @param trimTailingCharacters the trim tailing characters
+     * @return the source code
+     * @throws JavetException the javet exception
+     * @since 1.0.0
+     */
+    default boolean setSourceCode(
+            String sourceCodeString, boolean trimTailingCharacters) throws JavetException {
+        if (trimTailingCharacters) {
+            sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
+        }
+        return setSourceCode(sourceCodeString);
+    }
 }

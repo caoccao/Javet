@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":18,"i1":18,"i2":6,"i3":6,"i4":18,"i5":18,"i6":6,"i7":6,"i8":18,"i9":18,"i10":18,"i11":18,"i12":18,"i13":18,"i14":18,"i15":18,"i16":6,"i17":6,"i18":6,"i19":6,"i20":18,"i21":18,"i22":6};
+var methods = {"i0":18,"i1":18,"i2":6,"i3":6,"i4":18,"i5":18,"i6":6,"i7":6,"i8":18,"i9":18,"i10":18,"i11":18,"i12":18,"i13":18,"i14":18,"i15":18,"i16":6,"i17":6,"i18":6,"i19":6,"i20":18,"i21":18,"i22":6,"i23":18};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -282,8 +282,15 @@ extends <a href="../../../../../com/caoccao/javet/values/reference/IV8ValueObjec
 </tr>
 <tr id="i22" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/reference/IV8ValueFunction.html#setSourceCode-java.lang.String-">setSourceCode</a></span>(java.lang.String&nbsp;sourceCode)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/reference/IV8ValueFunction.html#setSourceCode-java.lang.String-">setSourceCode</a></span>(java.lang.String&nbsp;sourceCodeString)</code>
 <div class="block">Sets source code.</div>
+</td>
+</tr>
+<tr id="i23" class="rowColor">
+<td class="colFirst"><code>default boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/reference/IV8ValueFunction.html#setSourceCode-java.lang.String-boolean-">setSourceCode</a></span>(java.lang.String&nbsp;sourceCodeString,
+             boolean&nbsp;trimTailingCharacters)</code>
+<div class="block">Sets source code with invalid tailing characters trimmed or not.</div>
 </td>
 </tr>
 </table>
@@ -811,7 +818,7 @@ default&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Va
 <div class="block">Is async function.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true: yes, false: no</dd>
+<dd>true : yes, false: no</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -830,7 +837,7 @@ default&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Va
 <div class="block">Is generator function.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true: yes, false: no</dd>
+<dd>true : yes, false: no</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -841,10 +848,10 @@ default&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Va
 <a name="setSourceCode-java.lang.String-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>setSourceCode</h4>
-<pre>boolean&nbsp;setSourceCode(java.lang.String&nbsp;sourceCode)
+<pre>boolean&nbsp;setSourceCode(java.lang.String&nbsp;sourceCodeString)
                throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <div class="block">Sets source code.
  <p>
@@ -858,13 +865,39 @@ default&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Va
  though technically the source code is valid. Otherwise, V8 will crash.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>sourceCode</code> - the source code</dd>
+<dd><code>sourceCodeString</code> - the source code string</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the source code</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.8.8</dd>
+</dl>
+</li>
+</ul>
+<a name="setSourceCode-java.lang.String-boolean-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>setSourceCode</h4>
+<pre>default&nbsp;boolean&nbsp;setSourceCode(java.lang.String&nbsp;sourceCodeString,
+                              boolean&nbsp;trimTailingCharacters)
+                       throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<div class="block">Sets source code with invalid tailing characters trimmed or not.
+ <p>
+ The source code must not end with ' ', '\n', '\r', 't', ';',
+ otherwise, V8 will crash immediately.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>sourceCodeString</code> - the source code string</dd>
+<dd><code>trimTailingCharacters</code> - the trim tailing characters</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the source code</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.0</dd>
 </dl>
 </li>
 </ul>

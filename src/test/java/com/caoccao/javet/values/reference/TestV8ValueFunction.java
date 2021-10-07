@@ -621,7 +621,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             public String test(V8ValueFunction v8ValueFunction) throws JavetException {
                 v8ValueFunction.callString(null);
                 String originalSourceCode = v8ValueFunction.getSourceCode();
-                v8ValueFunction.setSourceCode("() => 'a' \n ;\n  ");
+                v8ValueFunction.setSourceCode("() => 'a' \n ;\n  ", true);
                 String resultString = v8ValueFunction.callString(null);
                 assertEquals("a", resultString);
                 v8ValueFunction.setSourceCode(originalSourceCode);
