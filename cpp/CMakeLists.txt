@@ -65,9 +65,9 @@ if(DEFINED NODE_DIR)
         ${NODE_DIR}/deps/v8/include
         ${NODE_DIR}/src)
     list(APPEND importLibraries
-        brotli cares histogram llhttp nghttp2 openssl torque_base uvwasi
+        brotli cares histogram llhttp nghttp2 nghttp3 ngtcp2 openssl torque_base uvwasi
         v8_base_without_compiler v8_compiler v8_init v8_initializers
-        v8_libbase v8_libplatform v8_libsampler v8_snapshot v8_zlib zlib)
+        v8_libbase v8_libplatform v8_snapshot v8_zlib zlib)
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND importLibraries libnode libuv)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -86,6 +86,9 @@ endforeach(importLibrary)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(JAVET_LIB_PREFIX "libjavet")
     set(JAVET_LIB_SYSTEM "windows")
+    # Generate PDB file
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
     add_definitions(-D_ITERATOR_DEBUG_LEVEL=0 -D_WIN32)
     list(APPEND includeDirs $ENV{JAVA_HOME}/include/win32)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -100,7 +103,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND includeDirs
             ${NODE_DIR}/out/Release/obj/global_intermediate/generate-bytecode-output-root
             ${NODE_DIR}/out/Release/obj/global_intermediate/inspector-generated-output-root
-            ${NODE_DIR}/out/Release/obj/global_intermediate/torque-output-root)
+            ${NODE_DIR}/out/Release/obj/global_intermediate)
         foreach(importLibrary ${importLibraries})
             set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/release/lib/${importLibrary}.lib)
         endforeach(importLibrary)
@@ -136,7 +139,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"
             list(APPEND includeDirs
                 ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root
                 ${NODE_DIR}/out/Release/obj/gen/inspector-generated-output-root
-                ${NODE_DIR}/out/Release/obj/gen/torque-output-root)
+                ${NODE_DIR}/out/Release/obj/gen)
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/lib${importLibrary}.a)
             endforeach(importLibrary)
@@ -164,7 +167,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"
             list(APPEND includeDirs
                 ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root
                 ${NODE_DIR}/out/Release/obj/gen/inspector-generated-output-root
-                ${NODE_DIR}/out/Release/obj/gen/torque-output-root)
+                ${NODE_DIR}/out/Release/obj/gen)
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/lib${importLibrary}.a)
             endforeach(importLibrary)

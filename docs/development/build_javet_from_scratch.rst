@@ -68,11 +68,6 @@ Build V8 on Linux and Mac OS
     cd root_path_to_v8
     ninja -C out.gn/x64.release v8_monolith
 
-⚠️ In V8 v9.3, the following file needs to be patched.
-
-./include/cppgc/allocation.h
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. code-block:: cpp
 
     #include <cstdint>

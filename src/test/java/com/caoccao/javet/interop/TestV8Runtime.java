@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
+import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.values.reference.V8ValueGlobalObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ public class TestV8Runtime extends BaseTestJavet {
     @Test
     public void testClose() throws JavetException {
         V8Runtime danglingV8Runtime;
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertFalse(v8Runtime.isClosed());
             danglingV8Runtime = v8Runtime;
         }
@@ -64,14 +65,42 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.getExecutor("var a = 1;").executeVoid();
             assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
         }
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.getExecutor("var a = 1;").executeVoid();
             assertEquals(2, v8Runtime.getExecutor("a + 1").executeInteger());
             try (V8ValueObject window = v8Runtime.createV8ValueObject()) {
                 v8Runtime.getGlobalObject().set("window", window);
                 window.set("x", "1");
             }
-            assertEquals("1", v8Runtime.getExecutor("window.x;").executeString());
+        }
+    }
+
+    @Test
+    public void testGlobalName() throws JavetException {
+        if (v8Host.getJSRuntimeType().isV8()) {
+            V8RuntimeOptions runtimeOptions = v8Host.getJSRuntimeType().getRuntimeOptions();
+            runtimeOptions.setGlobalName("window");
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(runtimeOptions)) {
+                assertFalse(v8Runtime.getExecutor("typeof window == 'undefined';").executeBoolean());
+                assertFalse(v8Runtime.getExecutor("typeof globalThis == 'undefined';").executeBoolean());
+                v8Runtime.getExecutor("var a = 1;").executeVoid();
+                assertEquals(1, v8Runtime.getExecutor("window.a;").executeInteger());
+                v8Runtime.getExecutor("window.b = 2").executeVoid();
+                v8Runtime.getExecutor("globalThis.b = 2").executeVoid();
+                assertEquals(2, v8Runtime.getGlobalObject().getInteger("b"));
+                runtimeOptions.setGlobalName("globalThis");
+                v8Runtime.resetContext();
+                assertFalse(v8Runtime.getExecutor("typeof globalThis == 'undefined';").executeBoolean());
+                v8Runtime.getExecutor("var a = 1;").executeVoid();
+                assertEquals(1, v8Runtime.getExecutor("globalThis.a;").executeInteger());
+                v8Runtime.getExecutor("globalThis.b = 2").executeVoid();
+                assertEquals(2, v8Runtime.getGlobalObject().getInteger("b"));
+                runtimeOptions.setGlobalName(null);
+                v8Runtime.resetContext();
+                assertTrue(v8Runtime.getExecutor("typeof window == 'undefined';").executeBoolean());
+                assertTrue(v8Runtime.getExecutor("typeof global == 'undefined';").executeBoolean());
+                assertFalse(v8Runtime.getExecutor("typeof globalThis == 'undefined';").executeBoolean());
+            }
         }
     }
 
@@ -91,7 +120,7 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testResetContext() throws JavetException {
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", "1");
             v8Runtime.resetContext();
@@ -102,7 +131,7 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testResetIsolate() throws JavetException {
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime("window")) {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.getGlobalObject().set("a", "1");
             v8Runtime.resetIsolate();

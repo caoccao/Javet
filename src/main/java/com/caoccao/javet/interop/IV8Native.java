@@ -17,6 +17,11 @@
 
 package com.caoccao.javet.interop;
 
+/**
+ * The interface V8 native.
+ *
+ * @since 0.8.0
+ */
 public interface IV8Native {
 
     void add(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
@@ -46,7 +51,7 @@ public interface IV8Native {
 
     void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
 
-    long createV8Runtime(String globalName);
+    long createV8Runtime(Object runtimeOptions);
 
     Object createV8Value(long v8RuntimeHandle, int v8ValueType, Object context);
 
@@ -90,6 +95,12 @@ public interface IV8Native {
     int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    int[] getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
+
+    int[] getV8HeapStatistics(long v8RuntimeHandle);
+
+    int[] getV8SharedMemoryStatistics();
 
     String getVersion();
 
@@ -165,9 +176,9 @@ public interface IV8Native {
 
     void requestGarbageCollectionForTesting(long v8RuntimeHandle, boolean fullGC);
 
-    void resetV8Context(long v8RuntimeHandle, String globalName);
+    void resetV8Context(long v8RuntimeHandle, Object runtimeOptions);
 
-    void resetV8Isolate(long v8RuntimeHandle, String globalName);
+    void resetV8Isolate(long v8RuntimeHandle, Object runtimeOptions);
 
     boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 

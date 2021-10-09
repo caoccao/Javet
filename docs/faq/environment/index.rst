@@ -4,6 +4,6 @@ Environment
 
 .. toctree::
     :maxdepth: 1
+    :glob:
 
-    can_javet_support_mac
-    can_javet_support_legacy_linux
+    *

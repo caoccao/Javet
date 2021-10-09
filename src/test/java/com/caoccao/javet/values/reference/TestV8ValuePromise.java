@@ -18,18 +18,82 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.annotations.V8Property;
 import com.caoccao.javet.enums.JavetPromiseRejectEvent;
+import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockFS;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValuePromise extends BaseTestJavetRuntime {
+    @Test
+    public void testAsyncGenerator() throws JavetException {
+        if (v8Runtime.getJSRuntimeType().isV8()) {
+            try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                v8ValueObject.bind(new IJavetAnonymous() {
+                    @V8Property(symbolType = V8ValueSymbolType.BuiltIn)
+                    public V8ValueFunction asyncIterator() throws JavetException, NoSuchMethodException {
+                        IJavetAnonymous anonymous = new IJavetAnonymous() {
+                            public V8ValueObject get() throws JavetException {
+                                AtomicInteger count = new AtomicInteger(0);
+                                V8ValueObject v8ValueObjectAsyncGenerator = v8Runtime.createV8ValueObject();
+                                v8ValueObjectAsyncGenerator.bind(
+                                        new IJavetAnonymous() {
+                                            @V8Function
+                                            public V8ValuePromise next() throws JavetException {
+                                                try (V8ValueObject v8ValueObjectResult = v8Runtime.createV8ValueObject();
+                                                     V8ValueBuiltInPromise v8ValueBuiltInPromise =
+                                                             v8Runtime.getGlobalObject().getBuiltInPromise()) {
+                                                    if (count.get() > 3) {
+                                                        v8ValueObjectResult.set("done", true);
+                                                    } else {
+                                                        v8ValueObjectResult.set("value", count.getAndIncrement());
+                                                        v8ValueObjectResult.set("done", false);
+                                                    }
+                                                    return v8ValueBuiltInPromise.resolve(v8ValueObjectResult);
+                                                } catch (JavetException e) {
+                                                    fail(e.getMessage());
+                                                    throw e;
+                                                }
+                                            }
+                                        }
+                                );
+                                return v8ValueObjectAsyncGenerator;
+                            }
+                        };
+                        JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                                anonymous, anonymous.getClass().getMethod("get"));
+                        return v8Runtime.createV8ValueFunction(javetCallbackContext);
+                    }
+                });
+                v8Runtime.getGlobalObject().set("a", v8ValueObject);
+                v8Runtime.getExecutor(
+                        "const x = [];\n" +
+                                "let count = 0;\n" +
+                                "for await (const i of a) {\n" +
+                                "  x.push(i);\n" +
+                                "  if (count > 3) { break; } else { ++count; }\n" +
+                                "}\n" +
+                                "globalThis.x = x;").setModule(true).executeVoid();
+                assertEquals("[0,1,2,3]", v8Runtime.getExecutor("JSON.stringify(x);").executeString());
+                v8Runtime.getGlobalObject().delete("a");
+            } finally {
+                v8Runtime.lowMemoryNotification();
+            }
+        }
+    }
+
     @Test
     public void testFulfilled() throws JavetException {
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
@@ -156,8 +220,9 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
             }
             assertEquals("[1,2,4]", v8Runtime.getExecutor("JSON.stringify(logs);").executeString());
             v8Runtime.getGlobalObject().delete("fs");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -189,7 +254,8 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
             }
             assertEquals("[1,2,3]", v8Runtime.getExecutor("JSON.stringify(logs);").executeString());
             v8Runtime.getGlobalObject().delete("fs");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
-        v8Runtime.lowMemoryNotification();
     }
 }

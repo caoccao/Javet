@@ -6,16 +6,8 @@ Reference
     :maxdepth: 1
 
     javadoc/index
-    v8_collection
-    v8_function
-    v8_promise
-    modularization
-    memory_management
-    lock
-    termination
-    logging
-    load_and_unload
-    best_practices
-    performance
-    error_codes
+    v8_values/index
+    resource_management/index
+    troubleshooting/index
+    tips/index
     todo_list

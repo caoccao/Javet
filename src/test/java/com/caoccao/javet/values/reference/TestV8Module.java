@@ -198,7 +198,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             fail("Failed to report SyntaxError.");
         } catch (JavetCompilationException e) {
             assertEquals(
-                    "Error: SyntaxError: Unexpected identifier\n" +
+                    "SyntaxError: Unexpected identifier\n" +
                             "Resource: ./test.js\n" +
                             "Source Code: a b c\n" +
                             "Line Number: 1\n" +

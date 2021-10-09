@@ -27,9 +27,25 @@ import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
 import java.util.Optional;
 
+/**
+ * The type V8 value function.
+ *
+ * @since 0.7.0
+ */
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
+    /**
+     * The JS function type.
+     *
+     * @since 0.8.8
+     */
     protected Optional<JSFunctionType> jsFunctionType;
 
+    /**
+     * Instantiates a new V8 value function.
+     *
+     * @param handle the handle
+     * @since 0.7.0
+     */
     protected V8ValueFunction(long handle) {
         super(handle);
         jsFunctionType = Optional.empty();
@@ -109,11 +125,12 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public boolean setSourceCode(String sourceCodeString) throws JavetException {
         checkV8Runtime();
-        if (getJSFunctionType().isUserDefined()) {
-            if (sourceCodeString != null && sourceCodeString.length() > 0) {
-                return v8Runtime.setSourceCode(this, sourceCodeString);
-            }
+        boolean success = false;
+        if (getJSFunctionType().isUserDefined()
+                && sourceCodeString != null && sourceCodeString.length() > 0) {
+            success = v8Runtime.setSourceCode(this, sourceCodeString);
+            v8Runtime.lowMemoryNotification();
         }
-        return false;
+        return success;
     }
 }

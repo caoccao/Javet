@@ -28,18 +28,14 @@
 #pragma warning(disable: 4291)
 #pragma warning(disable: 4819)
 #pragma warning(disable: 4996)
-#ifndef ENABLE_NODE
-// Starting from V8 v9.1, some internal V8 API diverged from their public representatives.
+
 #define V8_ENABLE_WEBASSEMBLY 1
-#endif
+#include <src/objects/objects.h>
 #include <src/objects/objects-inl.h>
 #include <src/api/api-inl.h>
-#ifdef ENABLE_NODE
-#include <src/objects/js-objects-inl.h>
-#else
 #include <src/objects/js-function-inl.h>
-#endif
 #include <src/objects/shared-function-info-inl.h>
+#include <src/strings/string-builder-inl.h>
 #include <src/handles/handles-inl.h>
 #include <src/inspector/v8-debugger.h>
 #include <src/inspector/v8-inspector-impl.h>
@@ -53,11 +49,7 @@
 #define IS_USER_DEFINED_FUNCTION(v8InternalShared) (!v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript())
 
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
-#ifdef ENABLE_NODE
-using V8InternalBuiltins = v8::internal::Builtins;
-#else
 using V8InternalBuiltin = v8::internal::Builtin;
-#endif
 using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilder;
 using V8InternalIsolate = v8::internal::Isolate;
 using V8InternalJSFunction = v8::internal::JSFunction;

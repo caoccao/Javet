@@ -59,7 +59,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             assertEquals(0, javetScriptingError.getStartPosition());
             assertEquals(1, javetScriptingError.getEndPosition());
             assertEquals(
-                    "Error: SyntaxError: Invalid or unexpected token\n" +
+                    "SyntaxError: Invalid or unexpected token\n" +
                             "Resource: undefined\n" +
                             "Source Code: 1a2b\n" +
                             "Line Number: 1\n" +
@@ -89,7 +89,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             assertEquals(15, javetScriptingError.getStartPosition());
             assertEquals(16, javetScriptingError.getEndPosition());
             assertEquals(
-                    "Error: SyntaxError: Unexpected identifier\n" +
+                    "SyntaxError: Unexpected identifier\n" +
                             "Resource: undefined\n" +
                             "Source Code: a a a a;\n" +
                             "Line Number: 2\n" +
@@ -118,7 +118,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             assertEquals(18, javetScriptingError.getStartPosition());
             assertEquals(19, javetScriptingError.getEndPosition());
             assertEquals(
-                    "Error: SyntaxError: Unexpected token '='\n" +
+                    "SyntaxError: Unexpected token '='\n" +
                             "Resource: undefined\n" +
                             "Source Code: a ==== 2;\n" +
                             "Line Number: 2\n" +

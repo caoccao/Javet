@@ -119,11 +119,11 @@ namespace Javet {
             else {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
-                std::vector<std::string> args{ "" };
-                std::vector<std::string> execArgs{ "" };
+                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
+                std::vector<std::string> execArgs;
                 std::vector<std::string> errors;
-                int errorCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
-                if (errorCode != 0) {
+                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
+                if (exitCode != 0) {
                     LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
                 }
                 Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
@@ -296,7 +296,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
 Creating multiple isolates allows running JavaScript code in multiple threads, truly parallel.
 */
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
-(JNIEnv* jniEnv, jobject caller, jstring mGlobalName) {
+(JNIEnv* jniEnv, jobject caller, jobject mRuntimeOptions) {
 #ifdef ENABLE_NODE
     auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get(), Javet::NodeNative::GlobalNodeArrayBufferAllocator);
 #else
@@ -304,7 +304,7 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 #endif
     INCREASE_COUNTER(Javet::Monitor::CounterType::NewV8Runtime);
     v8Runtime->CreateV8Isolate();
-    v8Runtime->CreateV8Context(jniEnv, mGlobalName);
+    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
     return TO_JAVA_LONG(v8Runtime);
 }
 
@@ -695,6 +695,23 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
     return nullptr;
 }
 
+JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint allocationSpace) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return Javet::Monitor::GetHeapSpaceStatistics(jniEnv, v8Runtime->v8Isolate, allocationSpace);
+}
+
+JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapStatistics
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return Javet::Monitor::GetHeapStatistics(jniEnv, v8Runtime->v8Isolate);
+}
+
+JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8SharedMemoryStatistics
+(JNIEnv* jniEnv, jobject caller) {
+    return Javet::Monitor::GetV8SharedMemoryStatistics(jniEnv);
+}
+
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 (JNIEnv* jniEnv, jobject caller) {
     return Javet::Converter::ToJavaString(jniEnv, v8::V8::GetVersion());
@@ -937,11 +954,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNames
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetScriptId
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-#ifdef ENABLE_NODE
-    return 0;
-#else
     return (jint)v8LocalModule->ScriptId();
-#endif
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetStatus
@@ -1062,7 +1075,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseResolv
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_PROMISE(v8ValueType)) {
         auto v8LocalPromiseResolver = v8LocalValue.As<v8::Promise::Resolver>();
-        return v8LocalPromiseResolver->Resolve(v8Context, Javet::Converter::ToV8Value(jniEnv, v8Context, value)).ToChecked();
+        auto v8MaybeBool = v8LocalPromiseResolver->Resolve(v8Context, Javet::Converter::ToV8Value(jniEnv, v8Context, value));
+        return v8MaybeBool.FromMaybe(false);
     }
     return false;
 }
@@ -1136,19 +1150,19 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCol
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mGlobalName) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mRuntimeOptions) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     v8Runtime->CloseV8Context();
-    v8Runtime->CreateV8Context(jniEnv, mGlobalName);
+    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mGlobalName) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mRuntimeOptions) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     v8Runtime->CloseV8Context();
     v8Runtime->CloseV8Isolate();
     v8Runtime->CreateV8Isolate();
-    v8Runtime->CreateV8Context(jniEnv, mGlobalName);
+    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
@@ -1328,6 +1342,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
 
                 // Build the new source code.
                 auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
+
                 V8LocalString newSourceCode;
                 if (startPosition > 0) {
                     int utf8Length = 0;
@@ -1348,7 +1363,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                     int utf8Length = 0;
                     auto stdStringFooter(v8InternalSource.ToCString(
                         V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-                        endPosition, sourceLength, &utf8Length));
+                        endPosition, sourceLength - endPosition, &utf8Length));
                     auto v8LocalStringFooter = v8::String::NewFromUtf8(
                         v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length).ToLocalChecked();
                     if (newSourceCode.IsEmpty()) {
@@ -1362,11 +1377,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                 // Discard compiled data and set lazy compile.
                 if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
                     V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-#ifdef ENABLE_NODE
-                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->builtin(V8InternalBuiltins::kCompileLazy));
-#else
-                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy));
-#endif
+                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
                 }
 
                 /*
@@ -1376,8 +1387,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                  * otherwise the next script execution will likely fail because the position info
                  * of the next script is incorrect.
                  */
+                const int newSourceLength = umSourceCode->Length();
+                const int newEndPosition = startPosition + newSourceLength;
                 v8InternalScript.set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                const int newEndPosition = startPosition + umSourceCode->Length();
                 v8InternalShared.scope_info().SetPositionInfo(startPosition, newEndPosition);
                 return true;
             }

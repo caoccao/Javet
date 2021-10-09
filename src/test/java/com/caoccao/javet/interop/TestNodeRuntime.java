@@ -21,6 +21,7 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.options.NodeRuntimeOptions;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
@@ -83,6 +84,14 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @Test
+    public void testConsoleArguments() throws JavetException {
+        NodeRuntimeOptions runtimeOptions = new NodeRuntimeOptions();
+        runtimeOptions.setConsoleArguments(new String[]{"--version"});
+        try (NodeRuntime testNodeRuntime = v8Host.createV8Runtime(runtimeOptions)) {
+        }
+    }
+
+    @Test
     public void testModuleAny() throws JavetException {
         NodeModuleAny nodeModuleFS = nodeRuntime.getNodeModule("fs", NodeModuleAny.class);
         assertTrue(nodeModuleFS.getModuleObject().invokeBoolean(
@@ -107,7 +116,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         Path path4 = nodeModuleProcess.getWorkingDirectory();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
-        assertEquals("v14.17.6", nodeModuleProcess.getVersion());
+        assertEquals("v16.10.0", nodeModuleProcess.getVersion());
     }
 
     @Test

@@ -19,6 +19,7 @@
 
 #include <atomic>
 #include <jni.h>
+#include "javet_v8.h"
 
 #ifdef ENABLE_MONITOR
 #define INCREASE_COUNTER(counterType) GlobalJavetNativeMonitor.IncreaseCounter(counterType)
@@ -26,9 +27,13 @@
 #define INCREASE_COUNTER(counterType)
 #endif
 
-#ifdef ENABLE_MONITOR
 namespace Javet {
     namespace Monitor {
+        jintArray GetHeapSpaceStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jint allocationSpace);
+        jintArray GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate);
+        jintArray GetV8SharedMemoryStatistics(JNIEnv* jniEnv);
+
+#ifdef ENABLE_MONITOR
         namespace CounterType {
             enum CounterType {
                 Reserved = 0,
@@ -67,9 +72,12 @@ namespace Javet {
         private:
             std::atomic<jlong> counters[CounterType::Max];
         };
+#endif
 
     }
 }
 
+#ifdef ENABLE_MONITOR
 extern Javet::Monitor::JavetNativeMonitor GlobalJavetNativeMonitor;
 #endif
+

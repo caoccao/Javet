@@ -36,7 +36,11 @@ namespace node {
         return nullptr;
     }
 
-    const std::vector<size_t>* NodeMainInstance::GetIsolateDataIndexes() {
+    const std::vector<size_t>* NodeMainInstance::GetIsolateDataIndices() {
+        return nullptr;
+    }
+
+    const EnvSerializeInfo* NodeMainInstance::GetEnvSerializeInfo() {
         return nullptr;
     }
 

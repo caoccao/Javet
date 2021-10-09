@@ -27,8 +27,18 @@ namespace Javet {
     static auto oneMillisecond = std::chrono::milliseconds(1);
 #endif
 
+    void Initialize(JNIEnv* jniEnv) {
+#ifdef ENABLE_NODE
+        jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions"));
+        jmethodNodeRuntimeOptionsGetConsoleArguments = jniEnv->GetMethodID(jclassRuntimeOptions, "getConsoleArguments", "()[Ljava/lang/String;");
+#else
+        jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions"));
+        jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
+#endif
+    }
+
     void GlobalAccessorGetterCallback(
-        V8LocalString propertyName,
+        V8LocalName propertyName,
         const v8::PropertyCallbackInfo<v8::Value>& args) {
         args.GetReturnValue().Set(args.GetIsolate()->GetCurrentContext()->Global());
     }
@@ -72,8 +82,8 @@ namespace Javet {
                 V8HandleScope v8HandleScope(v8Isolate);
                 auto v8Context = GetV8LocalContext();
                 auto v8ContextScope = GetV8ContextScope(v8Context);
-                // node::EmitBeforeExit is thread-safe.
-                node::EmitBeforeExit(nodeEnvironment.get());
+                // node::EmitProcessBeforeExit is thread-safe.
+                node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
             }
         } while (hasMoreTasks == true);
@@ -101,15 +111,15 @@ namespace Javet {
                 v8PlatformPointer->DrainTasks(v8Isolate);
                 hasMoreTasks = uv_loop_alive(&uvLoop);
                 if (!hasMoreTasks) {
-                    // node::EmitBeforeExit is thread-safe.
-                    node::EmitBeforeExit(nodeEnvironment.get());
+                    // node::EmitProcessBeforeExit is thread-safe.
+                    node::EmitProcessBeforeExit(nodeEnvironment.get());
                     hasMoreTasks = uv_loop_alive(&uvLoop);
                 }
             } while (hasMoreTasks == true);
         }
         int errorCode = 0;
         // node::EmitExit is thread-safe.
-        errorCode = node::EmitExit(nodeEnvironment.get());
+        errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(1);
         if (errorCode != 0) {
             LOG_ERROR("node::EmitExit() returns " << errorCode << ".");
         }
@@ -166,7 +176,7 @@ namespace Javet {
         }
     }
 
-    void V8Runtime::CreateV8Context(JNIEnv * jniEnv, jstring mGlobalName) {
+    void V8Runtime::CreateV8Context(JNIEnv * jniEnv, const jobject & mRuntimeOptions) {
         auto internalV8Locker = GetSharedV8Locker();
         auto v8IsolateScope = GetV8IsolateScope();
         V8HandleScope v8HandleScope(v8Isolate);
@@ -174,8 +184,25 @@ namespace Javet {
         // node::NewContext is thread-safe.
         V8LocalContext v8LocalContext = node::NewContext(v8Isolate);
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-        std::vector<std::string> args{ "" };
-        std::vector<std::string> execArgs{ "" };
+        std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
+        std::vector<std::string> execArgs;
+        if (mRuntimeOptions != nullptr) {
+            jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
+            if (mConsoleArguments != nullptr) {
+                int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
+                LOG_DEBUG("Node.js console argument count is " << consoleArgumentCount);
+                for (int i = 0; i < consoleArgumentCount; ++i) {
+                    jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
+                    auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                    auto umConsoleArgument = *consoleArgumentPointer.get();
+                    LOG_DEBUG("    " << i << ": " << umConsoleArgument);
+                    if (umConsoleArgument == "-v" || umConsoleArgument == "--version") {
+                        LOG_DIRECT(NODE_VERSION);
+                    }
+                    args.push_back(umConsoleArgument);
+                }
+            }
+        }
         // node::CreateEnvironment is thread-safe.
         nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
         // node::LoadEnvironment is thread-safe.
@@ -186,11 +213,14 @@ namespace Javet {
         );
 #else
         auto v8ObjectTemplate = v8::ObjectTemplate::New(v8Isolate);
-        auto v8LocalContext = v8::Context::New(v8Isolate, nullptr, v8ObjectTemplate);
-        if (mGlobalName != nullptr) {
-            auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8LocalContext, mGlobalName);
-            v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
+        if (mRuntimeOptions != nullptr) {
+            jstring mGlobalName = (jstring)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodV8RuntimeOptionsGetGlobalName);
+            if (mGlobalName != nullptr) {
+                auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8::Context::New(v8Isolate), mGlobalName);
+                v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
+            }
         }
+        auto v8LocalContext = v8::Context::New(v8Isolate, nullptr, v8ObjectTemplate);
 #endif
         Register(v8LocalContext);
         v8PersistentContext.Reset(v8Isolate, v8LocalContext);

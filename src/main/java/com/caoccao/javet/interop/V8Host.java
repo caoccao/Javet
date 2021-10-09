@@ -20,6 +20,8 @@ import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.options.RuntimeOptions;
+import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.SimpleMap;
 
@@ -37,12 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @SuppressWarnings("unchecked")
 public final class V8Host implements AutoCloseable {
-    /**
-     * The constant GLOBAL_THIS.
-     *
-     * @since 0.7.0
-     */
-    public static final String GLOBAL_THIS = "globalThis";
     private static final long INVALID_HANDLE = 0L;
     private static boolean libraryReloadable = false;
     private static volatile double memoryUsageThresholdRatio = 0.7;
@@ -222,33 +218,35 @@ public final class V8Host implements AutoCloseable {
      * @since 0.7.0
      */
     public <R extends V8Runtime> R createV8Runtime() throws JavetException {
-        return createV8Runtime(GLOBAL_THIS);
+        return createV8Runtime(getJSRuntimeType().getRuntimeOptions());
     }
 
     /**
      * Create V8 runtime by custom global name.
      *
-     * @param <R>        the type parameter
-     * @param globalName the global name
+     * @param <R>            the type parameter
+     * @param runtimeOptions the runtime options
      * @return the V8 runtime
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    public <R extends V8Runtime> R createV8Runtime(String globalName) throws JavetException {
-        return createV8Runtime(false, globalName);
+    public <R extends V8Runtime> R createV8Runtime(RuntimeOptions<?> runtimeOptions) throws JavetException {
+        return createV8Runtime(false, runtimeOptions);
     }
 
     /**
      * Create V8 runtime by pooled flag and custom global name.
      *
-     * @param <R>        the type parameter
-     * @param pooled     the pooled
-     * @param globalName the global name
+     * @param <R>            the type parameter
+     * @param pooled         the pooled
+     * @param runtimeOptions the runtime options
      * @return the V8 runtime
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    public <R extends V8Runtime> R createV8Runtime(boolean pooled, String globalName) throws JavetException {
+    public <R extends V8Runtime> R createV8Runtime(
+            boolean pooled, RuntimeOptions<?> runtimeOptions) throws JavetException {
+        assert getJSRuntimeType().isRuntimeOptionsValid(runtimeOptions);
         if (!libraryLoaded) {
             if (lastException == null) {
                 throw new JavetException(
@@ -258,14 +256,14 @@ public final class V8Host implements AutoCloseable {
                 throw lastException;
             }
         }
-        final long handle = v8Native.createV8Runtime(globalName);
+        final long handle = v8Native.createV8Runtime(runtimeOptions);
         isolateCreated = true;
         flags.seal();
         V8Runtime v8Runtime;
         if (jsRuntimeType.isNode()) {
-            v8Runtime = new NodeRuntime(this, handle, pooled, v8Native);
+            v8Runtime = new NodeRuntime(this, handle, pooled, v8Native, runtimeOptions);
         } else {
-            v8Runtime = new V8Runtime(this, handle, pooled, v8Native, globalName);
+            v8Runtime = new V8Runtime(this, handle, pooled, v8Native, runtimeOptions);
         }
         v8Native.registerV8Runtime(handle, v8Runtime);
         v8RuntimeMap.put(handle, v8Runtime);

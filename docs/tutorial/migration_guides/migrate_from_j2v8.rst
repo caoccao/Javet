@@ -37,7 +37,7 @@ registerJavaMethod() ⟶ @V8Function
 * In addition, Javet provides ``@V8Property`` which allows registering getters and setters in the same manner. That feature has never been delivered by J2V8.
 * Javet also allows unbinding the registration. Just call ``V8ValueObject.unbind(javaObject)``.
 
-Please refer to :doc:`../../reference/v8_function` for more details.
+Please refer to :doc:`../../reference/v8_values/v8_function` for more details.
 
 V8Locker
 --------
@@ -45,7 +45,7 @@ V8Locker
 * Javet introduced **Implicit Mode** which allows applications to eliminate ``V8Locker`` from the code base and still be able to share the same ``V8Runtime`` among multiple threads, because Javet does the synchronization automatically. That frees application developers from the tedious ``acquire()`` and ``release()`` calls, and gets the rid of the runtime exceptions caused by multiple threads.
 * Javet also has **Explicit Mode** for performance sensitive scenarios.
 
-Please refer to :doc:`../../reference/lock` for more details.
+Please refer to :doc:`../../reference/resource_management/lock` for more details.
 
 Type Conversion
 ---------------
@@ -59,7 +59,7 @@ Node.js and V8
 --------------
 
 * Javet provides both Node.js mode and V8 mode for various usages. Each mode stays at a dedicated classloader so that both modes don't cross each other, and are completely isolated. If the application only uses one mode, it doesn't need to pay extra amount of memory for the other mode because the other mode is not loaded at all. Of course, both modes can be unloaded as well without shutting down the JVM.
-* In Node.js mode, all node modules can be directly used including the native modules. Please refer to :doc:`../../reference/modularization` for more detail.
+* In Node.js mode, all node modules can be directly used including the native modules. Please refer to :doc:`../../reference/resource_management/modularization` for more detail.
 * In V8 mode, it is much more secure than the Node.js mode is, but lacks of some basic ES API, e.g. ``setTimeout()``. Project `Javenode <https://github.com/caoccao/Javenode>`_ is the one that aims at simulating Node.js with Java in Javet V8 mode.
 
 Please refer to :doc:`../../development/design` for more details.
@@ -69,7 +69,7 @@ ES6 Module
 
 * Javet supports ``import { *** } from '***.js'`` and exposes module resolve event for applications to specify where to locate the modules.
 
-Please refer to :doc:`../../reference/modularization` for more detail.
+Please refer to :doc:`../../reference/resource_management/modularization` for more detail.
 
 Blessing
 ========

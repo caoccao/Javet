@@ -62,6 +62,8 @@ class PatchNodeBuild(object):
       'out/deps/uv/libuv.target.mk',
       'out/deps/openssl/openssl.target.mk',
       'out/deps/nghttp2/nghttp2.target.mk',
+      'out/deps/ngtcp2/nghttp3.target.mk',
+      'out/deps/ngtcp2/ngtcp2.target.mk',
       'out/tools/icu/icutools.host.mk',
       'out/tools/v8_gypfiles/v8_compiler.target.mk',
       'out/tools/v8_gypfiles/v8_libbase.target.mk',

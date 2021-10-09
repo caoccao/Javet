@@ -34,6 +34,15 @@ namespace Javet {
     class V8Runtime;
     class V8Scope;
 
+    static jclass jclassRuntimeOptions;
+#ifdef ENABLE_NODE
+    static jmethodID jmethodNodeRuntimeOptionsGetConsoleArguments;
+#else
+    static jmethodID jmethodV8RuntimeOptionsGetGlobalName;
+#endif
+
+    void Initialize(JNIEnv* jniEnv);
+
     class V8Runtime {
     public:
 #ifdef ENABLE_NODE
@@ -57,7 +66,7 @@ namespace Javet {
         void CloseV8Context();
         void CloseV8Isolate();
 
-        void CreateV8Context(JNIEnv* jniEnv, jstring mGlobalName);
+        void CreateV8Context(JNIEnv* jniEnv, const jobject& mRuntimeOptions);
         void CreateV8Isolate();
 
         static inline V8Runtime* FromHandle(jlong handle) {

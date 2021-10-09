@@ -33,6 +33,7 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
 
 import java.text.MessageFormat;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.DoubleStream;
@@ -52,7 +53,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
                     v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
-            assertEquals(23, javetCallbackContexts.size());
+            assertEquals(22, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -114,7 +115,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(1, v8Runtime.getExecutor("a.primitiveAddShort(1, undefined)").executeInteger());
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(null)").executeString());
             assertEquals(String.valueOf((char) 1), v8Runtime.getExecutor("a.primitiveIncreaseChar(undefined)").executeString());
-            assertEquals(20, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
+            assertEquals(19, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
             try {
                 v8Runtime.getExecutor("a.echo('test')").executeVoid();
                 fail("Failed to throw an exception");
@@ -134,7 +135,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     new MockAnnotationBasedCallbackReceiver();
             List<JavetCallbackContext> javetCallbackContexts =
                     v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
-            assertEquals(23, javetCallbackContexts.size());
+            assertEquals(22, javetCallbackContexts.size());
             assertEquals(0, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(123, v8Runtime.getExecutor("a.integerValue").executeInteger());
             assertEquals(1, mockAnnotationBasedCallbackReceiver.getCount());
@@ -541,6 +542,19 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testContextScope() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
+                assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
+                assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                if (v8ValueFunction.setSourceCode("() => a + 2")) {
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                    return v8ValueFunction.callInteger(null);
+                } else {
+                    return 0;
+                }
+            }
+        };
         v8Runtime.getExecutor("var c = {};" +
                 "var x = {\n" +
                 "  contextScope: function(anonymousFunction) {\n" +
@@ -556,11 +570,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         IV8Executor iV8Executor = v8Runtime.getExecutor("outerFunction()");
         assertEquals(1, iV8Executor.executeInteger());
         try (V8ValueObject v8ValueObject = v8Runtime.getGlobalObject().get("x")) {
-            MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
-                    new MockAnnotationBasedCallbackReceiver();
-            v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
+            v8ValueObject.bind(anonymous);
             assertEquals(3, iV8Executor.executeInteger());
-            v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver);
+            v8ValueObject.unbind(anonymous);
         } catch (JavetExecutionException e) {
             e.printStackTrace();
             fail(e.getScriptingError().toString());
@@ -614,6 +626,95 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
     }
 
+    @Test
+    public void testGetAndSetExtraLongSourceCode() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            private int callCount = 0;
+
+            @V8Function
+            public Integer intercept(V8ValueFunction v8ValueFunction) throws JavetException {
+                assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
+                if (v8ValueFunction.getJSScopeType().isClass()) {
+                    v8ValueFunction.callInteger(null, 0);
+                }
+                assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                String originalCodeString = v8ValueFunction.getSourceCode();
+                String newCodeString = originalCodeString + " /*\n測試\nI am longer\n*/ + 1";
+                v8ValueFunction.setSourceCode(newCodeString);
+                int result = v8ValueFunction.callInteger(null, 1);
+                assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                v8ValueFunction.setSourceCode(originalCodeString);
+                ++callCount;
+                return result;
+            }
+        };
+        String placeholder = "/*\n" + String.join("\n", ZoneId.getAvailableZoneIds()) + "\n*/";
+        try {
+            final int copyCount = 10;
+            v8Runtime.getGlobalObject().bind(anonymous);
+            StringBuilder sb = new StringBuilder();
+            sb.append("// Header x\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("const a = [];\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("for (let i = 0; i < 5; ++i) {\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("  a.push(intercept( x => /* comment */ x + i + 0 /* comment */));\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("  a.push(intercept( x => /* comment */ x + i + 1 /* comment */));\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("  a.push(intercept( x => /* comment */ x + i + 2 /* comment */));\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("  a.push(intercept( x => /* comment */ x + i + 3 /* comment */));\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("  a.push(intercept( x => /* comment */ x + i + 4 /* comment */));\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("}\n");
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            sb.append("// Footer");
+            String sourceCode = sb.toString();
+            v8Runtime.getExecutor(sourceCode).executeVoid();
+            assertEquals(
+                    "[2,3,4,5,6,3,4,5,6,7,4,5,6,7,8,5,6,7,8,9,6,7,8,9,10]",
+                    v8Runtime.getExecutor("JSON.stringify(a);").executeString());
+            v8Runtime.getGlobalObject().unbind(anonymous);
+        } catch (JavetExecutionException e) {
+            e.printStackTrace();
+            fail(e.getScriptingError().toString());
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testGetAndSetMalformedSourceCode() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public String test(V8ValueFunction v8ValueFunction) throws JavetException {
+                v8ValueFunction.callString(null);
+                String originalSourceCode = v8ValueFunction.getSourceCode();
+                v8ValueFunction.setSourceCode("() => 'a' \n ;\n  ", true);
+                String resultString = v8ValueFunction.callString(null);
+                assertEquals("a", resultString);
+                v8ValueFunction.setSourceCode(originalSourceCode);
+                return resultString;
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            v8Runtime.getExecutor(
+                    "// comment\n" +
+                            "a.test(\n" +
+                            "  () => \n'abc'              \n// comment\n);\n" +
+                            "// comment\n" +
+                            "   ").executeVoid();
+            v8ValueObject.unbind(anonymous);
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
     /**
      * V8 stores source code in either one byte or two bytes in internal storage.
      * This test is to validate both of them.
@@ -621,18 +722,50 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
      * @throws JavetException the javet exception
      */
     @Test
-    public void testGetAndSetSourceCode() throws JavetException {
+    public void testGetAndSetRegularSourceCode() throws JavetException {
         final int functionCount = 5;
         String functionStatementTemplate = "var {0} = {1};\n";
         String functionNameTemplate = "f{0}";
         String[][] functionBodyTemplates = new String[][]{
+                // One Byte (0): Increase the length
                 new String[]{
-                        "() => /* One Byte */ a[{0}]",
-                        "() => /* One Byte */ a[{0}] + 1",
+                        "() => /* One Byte (0) */ a[{0}]",
+                        "() => /* One Byte (0) */ a[{0}] + 1",
                 },
+                // One Byte (1): Decrease the length
                 new String[]{
-                        "() => /* Two Bytes 简体 繁體 にほんご français Español */ a[{0}]",
-                        "() => /* Two Bytes 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                        "() => /* One Byte (1) I am longer */ a[{0}]",
+                        "() => /* One Byte (1) */ a[{0}] + 1",
+                },
+                // Two Bytes (2): Increase the length
+                new String[]{
+                        "() => /* Two Bytes (2) 简体 繁體 にほんご français Español I am longer */ a[{0}]",
+                        "() => /* Two Bytes (2) 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                },
+                // Two Bytes (3): Decrease the length
+                new String[]{
+                        "() => /* Two Bytes (3) 简体 繁體 にほんご français Español */ a[{0}]",
+                        "() => /* Two Bytes (3) 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                },
+                // One Byte => Two Bytes (4): Increase the length
+                new String[]{
+                        "() => /* One Byte => Two Bytes (4) */ a[{0}]",
+                        "() => /* One Byte => Two Bytes (4) 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                },
+                // One Byte => Two Bytes (5): Decrease the length
+                new String[]{
+                        "() => /* One Byte => Two Bytes (5) I am longer I am longer I am longer I am longer */ a[{0}]",
+                        "() => /* One Byte => Two Bytes (5) 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                },
+                // Two Bytes => One Byte (6): Increase the length
+                new String[]{
+                        "() => /* Two Bytes => One Byte (6) 简体 繁體 にほんご français Español */ a[{0}]",
+                        "() => /* Two Bytes => One Byte (6) I am longer I am longer I am longer I am longer */ a[{0}] + 1",
+                },
+                // Two Bytes => One Byte (7): Decrease the length
+                new String[]{
+                        "() => /* Two Bytes => One Byte (7) 简体 繁體 にほんご français Español */ a[{0}]",
+                        "() => /* Two Bytes => One Byte (7) */ a[{0}] + 1",
                 },
         };
         for (String[] functionBodyTemplate : functionBodyTemplates) {
@@ -651,18 +784,37 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             String codeString = sb.toString();
             v8Runtime.getExecutor(codeString).executeVoid();
             for (int i = 0; i < functionCount; ++i) {
+                // Get, update and restore the source code.
                 try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
-                    assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
-                    assertTrue(v8ValueFunction.getJSScopeType().isClass());
-                    assertEquals(functionBodies.get(i), v8ValueFunction.getSourceCode());
-                    assertTrue(v8ValueFunction.getJSScopeType().isClass());
-                    assertEquals(i, v8ValueFunction.callInteger(null));
-                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                    assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i)));
-                    assertEquals(i + 1, v8ValueFunction.callInteger(null));
-                    // Restore the original script, otherwise next round will fail.
-                    assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i)));
-                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                    assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
+                            "Function type should be user defined.");
+                    assertTrue(v8ValueFunction.getJSScopeType().isClass(),
+                            "The cache is not ready and the scope type should be [Class].");
+                    assertEquals(functionBodies.get(i), v8ValueFunction.getSourceCode(),
+                            "The source code should match.");
+                    assertTrue(v8ValueFunction.getJSScopeType().isClass(),
+                            "The cache is not ready and the scope type should be [Class].");
+                    assertEquals(i, v8ValueFunction.callInteger(null),
+                            "Calling the function to build the cache and the result should match.");
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                            "The cache is ready and the scope type should be [Function].");
+                    assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i)),
+                            "Updating the source code should pass.");
+                    assertEquals(i + 1, v8ValueFunction.callInteger(null),
+                            "Calling the new function and the result should match.");
+                    assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i)),
+                            "Restoring the source code should pass.");
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                            "The cache is refreshed and the scope type should be [Function].");
+                }
+                // Verify the cache.
+                try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
+                    assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
+                            "Function type should be user defined.");
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                            "The cache is restored and the scope type should be [Function].");
+                    assertEquals(i, v8ValueFunction.callInteger(null),
+                            "Calling the function from the cache and the result should match.");
                 }
             }
             v8Runtime.resetContext();

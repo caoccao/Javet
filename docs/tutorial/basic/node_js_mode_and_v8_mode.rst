@@ -52,4 +52,6 @@ Pool
         }
     }
 
-Note: The default mode in pool is V8 mode. More technical detail is available at :doc:`../../development/design`.
+.. note::
+
+    The default mode in pool is V8 mode. More technical detail is available at :doc:`../../development/design`.
