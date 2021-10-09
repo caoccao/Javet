@@ -1325,6 +1325,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
 
                 // Build the new source code.
                 auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
+
                 V8LocalString newSourceCode;
                 if (startPosition > 0) {
                     int utf8Length = 0;
@@ -1345,7 +1346,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                     int utf8Length = 0;
                     auto stdStringFooter(v8InternalSource.ToCString(
                         V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-                        endPosition, sourceLength, &utf8Length));
+                        endPosition, sourceLength - endPosition, &utf8Length));
                     auto v8LocalStringFooter = v8::String::NewFromUtf8(
                         v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length).ToLocalChecked();
                     if (newSourceCode.IsEmpty()) {
@@ -1359,7 +1360,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                 // Discard compiled data and set lazy compile.
                 if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
                     V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy));
+                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
                 }
 
                 /*
@@ -1369,8 +1370,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                  * otherwise the next script execution will likely fail because the position info
                  * of the next script is incorrect.
                  */
+                const int newSourceLength = umSourceCode->Length();
+                const int newEndPosition = startPosition + newSourceLength;
                 v8InternalScript.set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                const int newEndPosition = startPosition + umSourceCode->Length();
                 v8InternalShared.scope_info().SetPositionInfo(startPosition, newEndPosition);
                 return true;
             }

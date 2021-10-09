@@ -30,10 +30,12 @@
 #pragma warning(disable: 4996)
 
 #define V8_ENABLE_WEBASSEMBLY 1
+#include <src/objects/objects.h>
 #include <src/objects/objects-inl.h>
 #include <src/api/api-inl.h>
 #include <src/objects/js-function-inl.h>
 #include <src/objects/shared-function-info-inl.h>
+#include <src/strings/string-builder-inl.h>
 #include <src/handles/handles-inl.h>
 #include <src/inspector/v8-debugger.h>
 #include <src/inspector/v8-inspector-impl.h>

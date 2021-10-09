@@ -21,6 +21,7 @@
 #include <jni.h>
 #include "javet_constants.h"
 #include "javet_monitor.h"
+#include "javet_native.h"
 #include "javet_v8.h"
 
 namespace Javet {

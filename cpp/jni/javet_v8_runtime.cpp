@@ -197,7 +197,7 @@ namespace Javet {
                     auto umConsoleArgument = *consoleArgumentPointer.get();
                     LOG_DEBUG("    " << i << ": " << umConsoleArgument);
                     if (umConsoleArgument == "-v" || umConsoleArgument == "--version") {
-                        LOG(NODE_VERSION);
+                        LOG_DIRECT(NODE_VERSION);
                     }
                     args.push_back(umConsoleArgument);
                 }

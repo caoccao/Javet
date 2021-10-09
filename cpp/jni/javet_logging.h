@@ -19,7 +19,7 @@
 
 #include <iostream>
 
-#define LOG(x) do { std::cout << x << std::endl; } while (0)
+#define LOG_DIRECT(x) do { std::cout << x << std::endl; } while (0)
 
 #ifndef JAVET_DEBUG
 #define LOG_DEBUG(x) 

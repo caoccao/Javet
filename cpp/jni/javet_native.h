@@ -100,6 +100,11 @@ extern JavaVM* GlobalJavaVM;
 
 namespace Javet {
 
+    namespace Config {
+        // Do not copy chars from JVM for performance.
+        static jboolean COPY_CHAR = false;
+    }
+
 #ifdef ENABLE_NODE
     namespace NodeNative {
         void Dispose(JNIEnv* jniEnv);

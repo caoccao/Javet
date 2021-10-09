@@ -60,18 +60,6 @@ public class MockAnnotationBasedCallbackReceiver {
     }
 
     @V8Function
-    public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
-        assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
-        assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-        if (v8ValueFunction.setSourceCode("() => a + 2")) {
-            assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-            return v8ValueFunction.callInteger(null);
-        } else {
-            return 0;
-        }
-    }
-
-    @V8Function
     public String disabledFunction() {
         return "I am a disabled function.";
     }
