@@ -707,6 +707,11 @@ JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSta
     return Javet::Monitor::GetHeapStatistics(jniEnv, v8Runtime->v8Isolate);
 }
 
+JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8SharedMemoryStatistics
+(JNIEnv* jniEnv, jobject caller) {
+    return Javet::Monitor::GetV8SharedMemoryStatistics(jniEnv);
+}
+
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 (JNIEnv* jniEnv, jobject caller) {
     return Javet::Converter::ToJavaString(jniEnv, v8::V8::GetVersion());

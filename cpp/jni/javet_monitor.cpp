@@ -58,6 +58,19 @@ namespace Javet {
             return intArray;
         }
 
+        jintArray GetV8SharedMemoryStatistics(JNIEnv* jniEnv) {
+            v8::SharedMemoryStatistics sharedMemoryStatistics;
+            v8::V8::GetSharedMemoryStatistics(&sharedMemoryStatistics);
+            jintArray intArray = jniEnv->NewIntArray(3);
+            jboolean copy = false;
+            jint* intArrayPointer = jniEnv->GetIntArrayElements(intArray, &copy);
+            intArrayPointer[0] = static_cast<jint>(sharedMemoryStatistics.read_only_space_physical_size());
+            intArrayPointer[1] = static_cast<jint>(sharedMemoryStatistics.read_only_space_size());
+            intArrayPointer[2] = static_cast<jint>(sharedMemoryStatistics.read_only_space_used_size());
+            jniEnv->ReleaseIntArrayElements(intArray, intArrayPointer, 0);
+            return intArray;
+        }
+
 #ifdef ENABLE_MONITOR
         JavetNativeMonitor::JavetNativeMonitor() {
             Clear();

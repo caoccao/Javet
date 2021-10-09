@@ -34,6 +34,7 @@ import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
+import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPromiseRejectCallback;
@@ -598,6 +599,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         Objects.requireNonNull(allocationSpace.getIndex());
         return new V8HeapSpaceStatistics(allocationSpace,
                 v8Native.getV8HeapSpaceStatistics(handle, allocationSpace.getIndex()));
+    }
+
+    public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
+        return new V8SharedMemoryStatistics(v8Native.getV8SharedMemoryStatistics());
     }
 
     public V8HeapStatistics getV8HeapStatistics() {

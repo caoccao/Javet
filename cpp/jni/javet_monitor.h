@@ -31,6 +31,7 @@ namespace Javet {
     namespace Monitor {
         jintArray GetHeapSpaceStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jint allocationSpace);
         jintArray GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate);
+        jintArray GetV8SharedMemoryStatistics(JNIEnv* jniEnv);
 
 #ifdef ENABLE_MONITOR
         namespace CounterType {

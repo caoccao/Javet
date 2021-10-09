@@ -100,6 +100,8 @@ public interface IV8Native {
 
     int[] getV8HeapStatistics(long v8RuntimeHandle);
 
+    int[] getV8SharedMemoryStatistics();
+
     String getVersion();
 
     boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
