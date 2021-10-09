@@ -20,6 +20,20 @@
 
 namespace Javet {
     namespace Monitor {
+        jintArray GetHeapSpaceStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jint allocationSpace) {
+            v8::HeapSpaceStatistics heapSpaceStatistics;
+            v8Isolate->GetHeapSpaceStatistics(&heapSpaceStatistics, static_cast<size_t>(allocationSpace));
+            jintArray intArray = jniEnv->NewIntArray(4);
+            jboolean copy = false;
+            jint* intArrayPointer = jniEnv->GetIntArrayElements(intArray, &copy);
+            intArrayPointer[0] = static_cast<jint>(heapSpaceStatistics.physical_space_size());
+            intArrayPointer[1] = static_cast<jint>(heapSpaceStatistics.space_available_size());
+            intArrayPointer[2] = static_cast<jint>(heapSpaceStatistics.space_size());
+            intArrayPointer[3] = static_cast<jint>(heapSpaceStatistics.space_used_size());
+            jniEnv->ReleaseIntArrayElements(intArray, intArrayPointer, 0);
+            return intArray;
+        }
+
         jintArray GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate) {
             v8::HeapStatistics heapStatistics;
             v8Isolate->GetHeapStatistics(&heapStatistics);

@@ -695,6 +695,12 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
     return nullptr;
 }
 
+JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint allocationSpace) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return Javet::Monitor::GetHeapSpaceStatistics(jniEnv, v8Runtime->v8Isolate, allocationSpace);
+}
+
 JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapStatistics
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);

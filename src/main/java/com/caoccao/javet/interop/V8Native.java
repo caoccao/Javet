@@ -141,6 +141,9 @@ class V8Native implements IV8Native {
     public native String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native int[] getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
+
+    @Override
     public native int[] getV8HeapStatistics(long v8RuntimeHandle);
 
     @Override

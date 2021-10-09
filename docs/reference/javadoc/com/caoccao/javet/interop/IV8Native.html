@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":6,"i27":6,"i28":6,"i29":6,"i30":6,"i31":6,"i32":6,"i33":6,"i34":6,"i35":6,"i36":6,"i37":6,"i38":6,"i39":6,"i40":6,"i41":6,"i42":6,"i43":6,"i44":6,"i45":6,"i46":6,"i47":6,"i48":6,"i49":6,"i50":6,"i51":6,"i52":6,"i53":6,"i54":6,"i55":6,"i56":6,"i57":6,"i58":6,"i59":6,"i60":6,"i61":6,"i62":6,"i63":6,"i64":6,"i65":6,"i66":6,"i67":6,"i68":6,"i69":6,"i70":6,"i71":6,"i72":6,"i73":6,"i74":6,"i75":6,"i76":6,"i77":6,"i78":6,"i79":6,"i80":6,"i81":6,"i82":6,"i83":6,"i84":6,"i85":6};
+var methods = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":6,"i27":6,"i28":6,"i29":6,"i30":6,"i31":6,"i32":6,"i33":6,"i34":6,"i35":6,"i36":6,"i37":6,"i38":6,"i39":6,"i40":6,"i41":6,"i42":6,"i43":6,"i44":6,"i45":6,"i46":6,"i47":6,"i48":6,"i49":6,"i50":6,"i51":6,"i52":6,"i53":6,"i54":6,"i55":6,"i56":6,"i57":6,"i58":6,"i59":6,"i60":6,"i61":6,"i62":6,"i63":6,"i64":6,"i65":6,"i66":6,"i67":6,"i68":6,"i69":6,"i70":6,"i71":6,"i72":6,"i73":6,"i74":6,"i75":6,"i76":6,"i77":6,"i78":6,"i79":6,"i80":6,"i81":6,"i82":6,"i83":6,"i84":6,"i85":6,"i86":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -329,45 +329,50 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i32" class="altColor">
 <td class="colFirst"><code>int[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#getV8HeapStatistics-long-">getV8HeapStatistics</a></span>(long&nbsp;v8RuntimeHandle)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#getV8HeapSpaceStatistics-long-int-">getV8HeapSpaceStatistics</a></span>(long&nbsp;v8RuntimeHandle,
+                        int&nbsp;allocationSpace)</code>&nbsp;</td>
 </tr>
 <tr id="i33" class="rowColor">
+<td class="colFirst"><code>int[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#getV8HeapStatistics-long-">getV8HeapStatistics</a></span>(long&nbsp;v8RuntimeHandle)</code>&nbsp;</td>
+</tr>
+<tr id="i34" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#getVersion--">getVersion</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i34" class="altColor">
+<tr id="i35" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#has-long-long-int-java.lang.Object-">has</a></span>(long&nbsp;v8RuntimeHandle,
    long&nbsp;v8ValueHandle,
    int&nbsp;v8ValueType,
    java.lang.Object&nbsp;value)</code>&nbsp;</td>
 </tr>
-<tr id="i35" class="rowColor">
+<tr id="i36" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#hasInternalType-long-long-int-">hasInternalType</a></span>(long&nbsp;v8RuntimeHandle,
                long&nbsp;v8ValueHandle,
                int&nbsp;internalTypeId)</code>&nbsp;</td>
 </tr>
-<tr id="i36" class="altColor">
+<tr id="i37" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#hasOwnProperty-long-long-int-java.lang.Object-">hasOwnProperty</a></span>(long&nbsp;v8RuntimeHandle,
               long&nbsp;v8ValueHandle,
               int&nbsp;type,
               java.lang.Object&nbsp;key)</code>&nbsp;</td>
 </tr>
-<tr id="i37" class="rowColor">
+<tr id="i38" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#hasPrivateProperty-long-long-int-java.lang.String-">hasPrivateProperty</a></span>(long&nbsp;v8RuntimeHandle,
                   long&nbsp;v8ValueHandle,
                   int&nbsp;type,
                   java.lang.String&nbsp;propertyName)</code>&nbsp;</td>
 </tr>
-<tr id="i38" class="altColor">
+<tr id="i39" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#idleNotificationDeadline-long-long-">idleNotificationDeadline</a></span>(long&nbsp;v8RuntimeHandle,
                         long&nbsp;deadlineInMillis)</code>&nbsp;</td>
 </tr>
-<tr id="i39" class="rowColor">
+<tr id="i40" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#invoke-long-long-int-java.lang.String-boolean-java.lang.Object:A-">invoke</a></span>(long&nbsp;v8RuntimeHandle,
       long&nbsp;v8ValueHandle,
@@ -376,117 +381,117 @@ var activeTableTab = "activeTableTab";
       boolean&nbsp;returnResult,
       java.lang.Object[]&nbsp;values)</code>&nbsp;</td>
 </tr>
-<tr id="i40" class="altColor">
+<tr id="i41" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#isDead-long-">isDead</a></span>(long&nbsp;v8RuntimeHandle)</code>&nbsp;</td>
 </tr>
-<tr id="i41" class="rowColor">
+<tr id="i42" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#isInUse-long-">isInUse</a></span>(long&nbsp;v8RuntimeHandle)</code>&nbsp;</td>
 </tr>
-<tr id="i42" class="altColor">
+<tr id="i43" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#isWeak-long-long-int-">isWeak</a></span>(long&nbsp;v8RuntimeHandle,
       long&nbsp;v8ValueHandle,
       int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i43" class="rowColor">
+<tr id="i44" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#lockV8Runtime-long-">lockV8Runtime</a></span>(long&nbsp;v8RuntimeHandle)</code>&nbsp;</td>
 </tr>
-<tr id="i44" class="altColor">
+<tr id="i45" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#lowMemoryNotification-long-">lowMemoryNotification</a></span>(long&nbsp;v8RuntimeHandle)</code>&nbsp;</td>
 </tr>
-<tr id="i45" class="rowColor">
+<tr id="i46" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#moduleEvaluate-long-long-int-boolean-">moduleEvaluate</a></span>(long&nbsp;v8RuntimeHandle,
               long&nbsp;v8ValueHandle,
               int&nbsp;v8ValueType,
               boolean&nbsp;resultRequired)</code>&nbsp;</td>
 </tr>
-<tr id="i46" class="altColor">
+<tr id="i47" class="rowColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#moduleGetException-long-long-int-">moduleGetException</a></span>(long&nbsp;v8RuntimeHandle,
                   long&nbsp;v8ValueHandle,
                   int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i47" class="rowColor">
+<tr id="i48" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#moduleGetNamespace-long-long-int-">moduleGetNamespace</a></span>(long&nbsp;v8RuntimeHandle,
                   long&nbsp;v8ValueHandle,
                   int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i48" class="altColor">
+<tr id="i49" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#moduleGetScriptId-long-long-int-">moduleGetScriptId</a></span>(long&nbsp;v8RuntimeHandle,
                  long&nbsp;v8ValueHandle,
                  int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i49" class="rowColor">
+<tr id="i50" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#moduleGetStatus-long-long-int-">moduleGetStatus</a></span>(long&nbsp;v8RuntimeHandle,
                long&nbsp;v8ValueHandle,
                int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i50" class="altColor">
+<tr id="i51" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#moduleInstantiate-long-long-int-">moduleInstantiate</a></span>(long&nbsp;v8RuntimeHandle,
                  long&nbsp;v8ValueHandle,
                  int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i51" class="rowColor">
+<tr id="i52" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseCatch-long-long-int-long-">promiseCatch</a></span>(long&nbsp;v8RuntimeHandle,
             long&nbsp;v8ValueHandle,
             int&nbsp;v8ValueType,
             long&nbsp;v8ValueFunctionHandle)</code>&nbsp;</td>
 </tr>
-<tr id="i52" class="altColor">
+<tr id="i53" class="rowColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseGetPromise-long-long-int-">promiseGetPromise</a></span>(long&nbsp;v8RuntimeHandle,
                  long&nbsp;v8ValueHandle,
                  int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i53" class="rowColor">
+<tr id="i54" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseGetResult-long-long-int-">promiseGetResult</a></span>(long&nbsp;v8RuntimeHandle,
                 long&nbsp;v8ValueHandle,
                 int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i54" class="altColor">
+<tr id="i55" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseGetState-long-long-int-">promiseGetState</a></span>(long&nbsp;v8RuntimeHandle,
                long&nbsp;v8ValueHandle,
                int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i55" class="rowColor">
+<tr id="i56" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseHasHandler-long-long-int-">promiseHasHandler</a></span>(long&nbsp;v8RuntimeHandle,
                  long&nbsp;v8ValueHandle,
                  int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i56" class="altColor">
+<tr id="i57" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseMarkAsHandled-long-long-int-">promiseMarkAsHandled</a></span>(long&nbsp;v8RuntimeHandle,
                     long&nbsp;v8ValueHandle,
                     int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i57" class="rowColor">
+<tr id="i58" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseReject-long-long-int-java.lang.Object-">promiseReject</a></span>(long&nbsp;v8RuntimeHandle,
              long&nbsp;v8ValueHandle,
              int&nbsp;v8ValueType,
              java.lang.Object&nbsp;value)</code>&nbsp;</td>
 </tr>
-<tr id="i58" class="altColor">
+<tr id="i59" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseResolve-long-long-int-java.lang.Object-">promiseResolve</a></span>(long&nbsp;v8RuntimeHandle,
               long&nbsp;v8ValueHandle,
               int&nbsp;v8ValueType,
               java.lang.Object&nbsp;value)</code>&nbsp;</td>
 </tr>
-<tr id="i59" class="rowColor">
+<tr id="i60" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#promiseThen-long-long-int-long-long-">promiseThen</a></span>(long&nbsp;v8RuntimeHandle,
            long&nbsp;v8ValueHandle,
@@ -494,73 +499,73 @@ var activeTableTab = "activeTableTab";
            long&nbsp;v8ValueFunctionFulfilledHandle,
            long&nbsp;v8ValueFunctionRejectedHandle)</code>&nbsp;</td>
 </tr>
-<tr id="i60" class="altColor">
+<tr id="i61" class="rowColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#proxyGetHandler-long-long-int-">proxyGetHandler</a></span>(long&nbsp;v8RuntimeHandle,
                long&nbsp;v8ValueHandle,
                int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i61" class="rowColor">
+<tr id="i62" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#proxyGetTarget-long-long-int-">proxyGetTarget</a></span>(long&nbsp;v8RuntimeHandle,
               long&nbsp;v8ValueHandle,
               int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i62" class="altColor">
+<tr id="i63" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#proxyIsRevoked-long-long-int-">proxyIsRevoked</a></span>(long&nbsp;v8RuntimeHandle,
               long&nbsp;v8ValueHandle,
               int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i63" class="rowColor">
+<tr id="i64" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#proxyRevoke-long-long-int-">proxyRevoke</a></span>(long&nbsp;v8RuntimeHandle,
            long&nbsp;v8ValueHandle,
            int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i64" class="altColor">
+<tr id="i65" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#registerV8Runtime-long-java.lang.Object-">registerV8Runtime</a></span>(long&nbsp;v8RuntimeHandle,
                  java.lang.Object&nbsp;v8Runtime)</code>&nbsp;</td>
 </tr>
-<tr id="i65" class="rowColor">
+<tr id="i66" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#removeJNIGlobalRef-long-">removeJNIGlobalRef</a></span>(long&nbsp;handle)</code>&nbsp;</td>
 </tr>
-<tr id="i66" class="altColor">
+<tr id="i67" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#removeReferenceHandle-long-int-">removeReferenceHandle</a></span>(long&nbsp;referenceHandle,
                      int&nbsp;referenceType)</code>&nbsp;</td>
 </tr>
-<tr id="i67" class="rowColor">
+<tr id="i68" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#requestGarbageCollectionForTesting-long-boolean-">requestGarbageCollectionForTesting</a></span>(long&nbsp;v8RuntimeHandle,
                                   boolean&nbsp;fullGC)</code>&nbsp;</td>
 </tr>
-<tr id="i68" class="altColor">
+<tr id="i69" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#resetV8Context-long-java.lang.Object-">resetV8Context</a></span>(long&nbsp;v8RuntimeHandle,
               java.lang.Object&nbsp;runtimeOptions)</code>&nbsp;</td>
 </tr>
-<tr id="i69" class="rowColor">
+<tr id="i70" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#resetV8Isolate-long-java.lang.Object-">resetV8Isolate</a></span>(long&nbsp;v8RuntimeHandle,
               java.lang.Object&nbsp;runtimeOptions)</code>&nbsp;</td>
 </tr>
-<tr id="i70" class="altColor">
+<tr id="i71" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#sameValue-long-long-long-">sameValue</a></span>(long&nbsp;v8RuntimeHandle,
          long&nbsp;v8ValueHandle1,
          long&nbsp;v8ValueHandle2)</code>&nbsp;</td>
 </tr>
-<tr id="i71" class="rowColor">
+<tr id="i72" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#scriptRun-long-long-int-boolean-">scriptRun</a></span>(long&nbsp;v8RuntimeHandle,
          long&nbsp;v8ValueHandle,
          int&nbsp;v8ValueType,
          boolean&nbsp;resultRequired)</code>&nbsp;</td>
 </tr>
-<tr id="i72" class="altColor">
+<tr id="i73" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#set-long-long-int-java.lang.Object-java.lang.Object-">set</a></span>(long&nbsp;v8RuntimeHandle,
    long&nbsp;v8ValueHandle,
@@ -568,7 +573,7 @@ var activeTableTab = "activeTableTab";
    java.lang.Object&nbsp;key,
    java.lang.Object&nbsp;value)</code>&nbsp;</td>
 </tr>
-<tr id="i73" class="rowColor">
+<tr id="i74" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#setAccessor-long-long-int-java.lang.Object-java.lang.Object-java.lang.Object-">setAccessor</a></span>(long&nbsp;v8RuntimeHandle,
            long&nbsp;v8ValueHandle,
@@ -577,13 +582,13 @@ var activeTableTab = "activeTableTab";
            java.lang.Object&nbsp;getter,
            java.lang.Object&nbsp;setter)</code>&nbsp;</td>
 </tr>
-<tr id="i74" class="altColor">
+<tr id="i75" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#setFlags-java.lang.String-">setFlags</a></span>(java.lang.String&nbsp;flags)</code>
 <div class="block">Sets flags.</div>
 </td>
 </tr>
-<tr id="i75" class="rowColor">
+<tr id="i76" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#setPrivateProperty-long-long-int-java.lang.String-java.lang.Object-">setPrivateProperty</a></span>(long&nbsp;v8RuntimeHandle,
                   long&nbsp;v8ValueHandle,
@@ -591,7 +596,7 @@ var activeTableTab = "activeTableTab";
                   java.lang.String&nbsp;key,
                   java.lang.Object&nbsp;value)</code>&nbsp;</td>
 </tr>
-<tr id="i76" class="altColor">
+<tr id="i77" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#setProperty-long-long-int-java.lang.Object-java.lang.Object-">setProperty</a></span>(long&nbsp;v8RuntimeHandle,
            long&nbsp;v8ValueHandle,
@@ -599,54 +604,54 @@ var activeTableTab = "activeTableTab";
            java.lang.Object&nbsp;key,
            java.lang.Object&nbsp;value)</code>&nbsp;</td>
 </tr>
-<tr id="i77" class="rowColor">
+<tr id="i78" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#setPrototype-long-long-int-long-">setPrototype</a></span>(long&nbsp;v8RuntimeHandle,
             long&nbsp;v8ValueHandle,
             int&nbsp;v8ValueType,
             long&nbsp;v8ValueHandlePrototype)</code>&nbsp;</td>
 </tr>
-<tr id="i78" class="altColor">
+<tr id="i79" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#setSourceCode-long-long-int-java.lang.String-">setSourceCode</a></span>(long&nbsp;v8RuntimeHandle,
              long&nbsp;v8ValueHandle,
              int&nbsp;v8ValueType,
              java.lang.String&nbsp;sourceCode)</code>&nbsp;</td>
 </tr>
-<tr id="i79" class="rowColor">
+<tr id="i80" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#setWeak-long-long-int-java.lang.Object-">setWeak</a></span>(long&nbsp;v8RuntimeHandle,
        long&nbsp;v8ValueHandle,
        int&nbsp;v8ValueType,
        java.lang.Object&nbsp;objectReference)</code>&nbsp;</td>
 </tr>
-<tr id="i80" class="altColor">
+<tr id="i81" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#strictEquals-long-long-long-">strictEquals</a></span>(long&nbsp;v8RuntimeHandle,
             long&nbsp;v8ValueHandle1,
             long&nbsp;v8ValueHandle2)</code>&nbsp;</td>
 </tr>
-<tr id="i81" class="rowColor">
+<tr id="i82" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#terminateExecution-long-">terminateExecution</a></span>(long&nbsp;v8RuntimeHandle)</code>&nbsp;</td>
 </tr>
-<tr id="i82" class="altColor">
+<tr id="i83" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#toProtoString-long-long-int-">toProtoString</a></span>(long&nbsp;v8RuntimeHandle,
              long&nbsp;v8ValueHandle,
              int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i83" class="rowColor">
+<tr id="i84" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#toString-long-long-int-">toString</a></span>(long&nbsp;v8RuntimeHandle,
         long&nbsp;v8ValueHandle,
         int&nbsp;v8ValueType)</code>&nbsp;</td>
 </tr>
-<tr id="i84" class="altColor">
+<tr id="i85" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#unlockV8Runtime-long-">unlockV8Runtime</a></span>(long&nbsp;v8RuntimeHandle)</code>&nbsp;</td>
 </tr>
-<tr id="i85" class="rowColor">
+<tr id="i86" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/IV8Native.html#v8InspectorSend-long-java.lang.String-">v8InspectorSend</a></span>(long&nbsp;v8RuntimeHandle,
                java.lang.String&nbsp;message)</code>&nbsp;</td>
@@ -1024,6 +1029,16 @@ var activeTableTab = "activeTableTab";
 <pre>java.lang.String&nbsp;getSourceCode(long&nbsp;v8RuntimeHandle,
                                long&nbsp;v8ValueHandle,
                                int&nbsp;v8ValueType)</pre>
+</li>
+</ul>
+<a name="getV8HeapSpaceStatistics-long-int-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getV8HeapSpaceStatistics</h4>
+<pre>int[]&nbsp;getV8HeapSpaceStatistics(long&nbsp;v8RuntimeHandle,
+                               int&nbsp;allocationSpace)</pre>
 </li>
 </ul>
 <a name="getV8HeapStatistics-long-">

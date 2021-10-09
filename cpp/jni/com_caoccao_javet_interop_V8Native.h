@@ -265,6 +265,14 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getV8HeapSpaceStatistics
+ * Signature: (JI)[I
+ */
+JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getV8HeapStatistics
  * Signature: (J)[I
  */

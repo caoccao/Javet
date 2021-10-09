@@ -32,9 +32,9 @@ import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
+import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
-import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetPromiseRejectCallback;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -594,6 +594,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.getSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
+    public V8HeapSpaceStatistics getV8HeapSpaceStatistics(V8HeapSpaceStatistics.AllocationSpace allocationSpace) {
+        Objects.requireNonNull(allocationSpace.getIndex());
+        return new V8HeapSpaceStatistics(allocationSpace,
+                v8Native.getV8HeapSpaceStatistics(handle, allocationSpace.getIndex()));
+    }
+
+    public V8HeapStatistics getV8HeapStatistics() {
+        return new V8HeapStatistics(v8Native.getV8HeapStatistics(handle));
+    }
+
     public V8Inspector getV8Inspector() {
         return getV8Inspector(MessageFormat.format(DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR, Long.toString(handle)));
     }
@@ -646,10 +656,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public V8Scope getV8Scope() {
         return new V8Scope(this);
-    }
-
-    public V8HeapStatistics getV8HeapStatistics() {
-        return new V8HeapStatistics(v8Native.getV8HeapStatistics(handle));
     }
 
     public String getVersion() {
