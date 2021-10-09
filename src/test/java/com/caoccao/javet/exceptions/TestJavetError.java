@@ -42,7 +42,7 @@ public class TestJavetError {
     public void generateDocument() throws IllegalAccessException, IOException {
         String startSign = "\n.. Error Codes Begin\n\n\n";
         String endSign = "\n.. Error Codes End\n";
-        File file = new File(JavetOSUtils.WORKING_DIRECTORY, "docs/reference/error_codes.rst");
+        File file = new File(JavetOSUtils.WORKING_DIRECTORY, "docs/reference/troubleshooting/error_codes.rst");
         assertTrue(file.exists());
         assertTrue(file.canRead());
         assertTrue(file.canWrite());
