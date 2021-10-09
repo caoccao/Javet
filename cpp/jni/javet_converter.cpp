@@ -399,17 +399,15 @@ namespace Javet {
             if (managedString == nullptr) {
                 return V8LocalString();
             }
-            const uint16_t* unmanagedString = jniEnv->GetStringChars(managedString, &Javet::Config::COPY_CHAR);
+            const uint16_t* unmanagedString = jniEnv->GetStringChars(managedString, nullptr);
             int length = jniEnv->GetStringLength(managedString);
             auto twoByteString = v8::String::NewFromTwoByte(
                 v8Context->GetIsolate(), unmanagedString, v8::NewStringType::kNormal, length);
+            jniEnv->ReleaseStringChars(managedString, unmanagedString);
             if (twoByteString.IsEmpty()) {
                 return V8LocalString();
             }
             auto localV8String = twoByteString.ToLocalChecked();
-            if (Javet::Config::COPY_CHAR) {
-                jniEnv->ReleaseStringChars(managedString, unmanagedString);
-            }
             return localV8String;
         }
 
