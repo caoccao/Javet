@@ -32,6 +32,7 @@ import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
+import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
@@ -645,6 +646,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public V8Scope getV8Scope() {
         return new V8Scope(this);
+    }
+
+    public V8HeapStatistics getV8HeapStatistics() {
+        return new V8HeapStatistics(v8Native.getV8HeapStatistics(handle));
     }
 
     public String getVersion() {
