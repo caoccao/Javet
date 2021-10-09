@@ -601,10 +601,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 v8Native.getV8HeapSpaceStatistics(handle, allocationSpace.getIndex()));
     }
 
-    public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
-        return new V8SharedMemoryStatistics(v8Native.getV8SharedMemoryStatistics());
-    }
-
     public V8HeapStatistics getV8HeapStatistics() {
         return new V8HeapStatistics(v8Native.getV8HeapStatistics(handle));
     }
@@ -661,6 +657,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     public V8Scope getV8Scope() {
         return new V8Scope(this);
+    }
+
+    public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
+        return new V8SharedMemoryStatistics(v8Native.getV8SharedMemoryStatistics());
     }
 
     public String getVersion() {

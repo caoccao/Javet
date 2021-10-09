@@ -15,7 +15,7 @@ Backward Compatibility
 
 Once the error codes are released, they are likely not changed any more for backward compatibility.
 
-The following error codes are generated automatically from the :extsource2:`source code <../../src/main/java/com/caoccao/javet/exceptions/JavetError.java>`.
+The following error codes are generated automatically from the :extsource3:`source code <../../../src/main/java/com/caoccao/javet/exceptions/JavetError.java>`.
 
 .. Error Codes Begin
 

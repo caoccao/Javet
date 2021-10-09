@@ -1,6 +1,12 @@
+:orphan:
+
 ===================
 Release Notes 0.7.x
 ===================
+
+.. caution::
+
+    v0.7.x are deprecated.
 
 0.7.4 Live Debug
 ----------------

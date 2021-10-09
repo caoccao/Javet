@@ -59,7 +59,9 @@ Automatically Manage with Weak Reference
      This is quite useful when the lifecycle is not determined, E.g. V8 function.
      */
 
-Note: V8 does not recycle objects that are referenced by other objects. Please make sure the object chain is broken so that GC can work as expected. ``com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor`` is a good sample showing how to deal with that.
+.. note::
+
+    V8 does not recycle objects that are referenced by other objects. Please make sure the object chain is broken so that GC can work as expected. ``com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor`` is a good sample showing how to deal with that.
 
 How to Escape from try-with-resource?
 -------------------------------------
@@ -131,7 +133,7 @@ Javet offers complete support to all the typed arrays as well as ``DataView`` as
 | BigUint64Array    | 0 to 264-1                  | 8             | 64-bit unsigned integer                                                            | bigint              | uint64_t (unsigned long long) |
 +-------------------+-----------------------------+---------------+------------------------------------------------------------------------------------+---------------------+-------------------------------+
 
-Please refer to :extsource2:`TestV8ValueTypedArray <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java>` and :extsource2:`TestV8ValueDataView <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueDataView.java>` for sample code snippets.
+Please refer to :extsource3:`TestV8ValueTypedArray <../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java>` and :extsource3:`TestV8ValueDataView <../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueDataView.java>` for sample code snippets.
 
 GC
 ==
@@ -151,7 +153,7 @@ So, how to notify V8 GC that Java heap memory pool is running out of space? Jave
 
 Here is a sample heap memory usage with default memory usage threshold ration and ``-Xms64m -Xmx64m``. Please note that in this sample, application is under high pressure of creating and destroying V8 objects. In normal cases, the curve is much smoother.
 
-.. image:: ../resources/images/javet_memory_management_passive_gc.png
+.. image:: ../../resources/images/javet_memory_management_passive_gc.png
     :alt: Javet Memory Management Passive GC
 
 What happens internally is as following.
@@ -190,3 +192,16 @@ V8Runtime.lowMemoryNotification()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It is also used in automatic GC aforementioned.
+
+Statistics
+==========
+
+V8 exposes quite a few statistics for applications to analyze the memory usage, performance, etc. Javet selectively exposes some of those statistics via ``V8Runtime``.
+
+* `getV8HeapSpaceStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace->`_
+* `getV8HeapStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapStatistics-->`_
+* `getV8SharedMemoryStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8SharedMemoryStatistics-->`_
+
+.. note::
+
+    More statistics will be exposed in new releases. Please file issues if you need more of them.

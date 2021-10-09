@@ -23,7 +23,7 @@ In explicit mode, application just needs to surround the code block with a ``V8L
         // Do whatever you want to do.
     }
 
-Be careful, ``V8Locker`` cannot be nested, otherwise checked exception will be thrown reporting lock conflict. Also, if the JS runtime type is Node.js, calling ``resetContext()`` or ``resetIsolate()`` may trigger core dump. Please refer to the :extsource2:`source code <../../src/test/java/com/caoccao/javet/interop/engine/TestPerformance.java>` for detail.
+Be careful, ``V8Locker`` cannot be nested, otherwise checked exception will be thrown reporting lock conflict. Also, if the JS runtime type is Node.js, calling ``resetContext()`` or ``resetIsolate()`` may trigger core dump. Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/interop/engine/TestPerformance.java>` for detail.
 
 Comparisons
 ===========

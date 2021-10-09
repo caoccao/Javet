@@ -1,6 +1,12 @@
+:orphan:
+
 ===================
 Release Notes 0.8.x
 ===================
+
+.. caution::
+
+    v0.8.x are deprecated.
 
 0.8.10 Index in forEach
 -----------------------

@@ -22,7 +22,9 @@ Register Custom Objects
 * Method with signature ``void fromMap(Map<String, Object> map)``
 * Method with signature ``Map<String, Object> toMap()``
 
-Note: If the target custom object is touchable, having it implement ``IJavetMappable`` can make things easier.
+.. note::
+
+    If the target custom object is touchable, having it implement ``IJavetMappable`` can make things easier.
 
 Enhance the Custom Object
 -------------------------
@@ -444,7 +446,9 @@ This feature is quite special as it allows implementing Java interfaces in JavaS
 
 Voilà! It works.
 
-Note: The JavaScript implementation is backed up by ``V8ValueFunction`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoClosable`` as the sample shows so that the orphan ``V8ValueFunction`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueFunction`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
+.. note::
+
+    The JavaScript implementation is backed up by ``V8ValueFunction`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoClosable`` as the sample shows so that the orphan ``V8ValueFunction`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueFunction`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
 
 Dynamic: Anonymous Object
 -------------------------
@@ -514,7 +518,9 @@ This feature is similar to the dynamic anonymous function, but is an enhanced ve
 
 Voilà aussi! It works again.
 
-Note: The JavaScript implementation is backed up by ``V8ValueObject`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoClosable`` as the sample shows so that the orphan ``V8ValueObject`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueObject`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
+.. note::
+
+    The JavaScript implementation is backed up by ``V8ValueObject`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoClosable`` as the sample shows so that the orphan ``V8ValueObject`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueObject`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
 
 Features
 --------

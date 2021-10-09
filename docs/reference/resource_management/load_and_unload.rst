@@ -2,7 +2,7 @@
 Load and Unload
 ===============
 
-As documented in :doc:`../development/design`, Javet supports loading and unloading the JNI libraries during runtime in both Node.js and V8 modes.
+As documented in :doc:`../../development/design`, Javet supports loading and unloading the JNI libraries during runtime in both Node.js and V8 modes.
 
 How?
 ====

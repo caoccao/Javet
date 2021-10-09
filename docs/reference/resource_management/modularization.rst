@@ -80,7 +80,7 @@ The fix is very simple. Here is a sample sqlite3.
     export NODE_MODULE_FILE="../node_modules/sqlite3/lib/binding/napi-v3-linux-x64/node_sqlite3.node"
     ./rebuild.sh
 
-The `rebuild.sh <../../scripts/node/javet-rebuild/rebuild.sh>`_ actually calls `patchelf <https://github.com/NixOS/patchelf>`_ to add Javet to the node module's dependency.
+The `rebuild.sh <../../../scripts/node/javet-rebuild/rebuild.sh>`_ actually calls `patchelf <https://github.com/NixOS/patchelf>`_ to add Javet to the node module's dependency.
 
 Rebuild Native Modules on Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -91,11 +91,11 @@ The native modules on Windows don't know the existence of Javet. Windows dynamic
 
 The fix is a bit complicated.
 
-* Prepare the Windows build environment by following :doc:`../development/build`.
+* Prepare the Windows build environment by following :doc:`../../development/build`.
 * Install the node modules from source code ``npm install --build-from-source``.
 * Download the corresponding Javet library file from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_.
 * Unzip the Javet library file somewhere.
-* Create a rebuild script pointing to the Javet library file by referencing `rebuild-sqlite3.cmd <../../scripts/node/javet-rebuild/rebuild-sqlite3.cmd>`_ and `rebuild.cmd <../../scripts/node/javet-rebuild/rebuild.cmd>`_.
+* Create a rebuild script pointing to the Javet library file by referencing `rebuild-sqlite3.cmd <../../../scripts/node/javet-rebuild/rebuild-sqlite3.cmd>`_ and `rebuild.cmd <../../scripts/node/javet-rebuild/rebuild.cmd>`_.
 * Run the rebuild script.
 
 The rebuild script actually replaces ``node.lib`` with ``libjavet....lib`` during the rebuild so that the new node modules can tell ``LoadLibraryExW`` to look for Javet instead of Node.js.
@@ -194,9 +194,9 @@ It is V8 that performs the dependency analysis. Javet just relays the callback t
 Internals
 =========
 
-How Javet and V8 work internally for supporting modules can be found at :doc:`../development/design`.
+How Javet and V8 work internally for supporting modules can be found at :doc:`../../development/design`.
 
-.. image:: ../resources/images/javet_module_system.png
+.. image:: ../../resources/images/javet_module_system.png
     :alt: Javet Module System
 
 Please note that the way Javet handles dynamic import in V8 mode can be applied to Node.js mode. That means all Node.js modules can be virtualized by Javet.

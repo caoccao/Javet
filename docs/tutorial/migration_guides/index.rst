@@ -4,5 +4,6 @@ Migration Guides
 
 .. toctree::
     :maxdepth: 1
+    :glob:
 
-    migrate_from_j2v8
+    *

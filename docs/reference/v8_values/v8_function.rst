@@ -48,7 +48,7 @@ How about Object Type Conversion?
 
 As V8 only accepts data represented by its own format, Java objects need to be converted to native ``V8Value`` objects. Creating native ``V8Value`` objects is tricky in the callback receiver. There are typically 2 options.
 
-1. **Use Object Converter** - Enhance the :doc:`../tutorial/advanced/object_converter` and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
+1. **Use Object Converter** - Enhance the :doc:`../../tutorial/advanced/object_converter` and it just works as a charm. This is the recommended option. Please refer to ``generateArrayWithConverter()``.
 
 The beauty of the object converter is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.
 
@@ -433,7 +433,7 @@ How to Change a User Defined JavaScript Function on the Fly?
 
 Be careful, ``setSourceCode(String sourceCode)`` has radical impacts that may break the execution because all functions during one execution share the same source code but have their own positions. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.
 
-.. image:: ../resources/images/memory_layout_of_v8_function.png
+.. image:: ../../resources/images/memory_layout_of_v8_function.png
     :alt: Memory Layout of V8 Function
 
 Javet does not scan memory for all impacted function. So, it is caller's responsibility for restoring the original source code after invocation. The pseudo logic is as following.
@@ -475,7 +475,7 @@ Why does ``setSourceCode()`` sometimes return ``false``? Usually, that means the
 
 The rough lifecycle of a V8 function is as following.
 
-.. image:: ../resources/images/lifecycle_of_v8_function.png
+.. image:: ../../resources/images/lifecycle_of_v8_function.png
     :alt: Lifecycle of V8 Function
 
 What is the Source Code of a Function in V8?
@@ -552,7 +552,7 @@ For instance: The following 4 functions are all the same and valid.
         return i == null? 0: i.getValue();
     }
 
-Can the default values be changed in terms of null safety? Yes, :doc:`../tutorial/advanced/object_converter` allows overriding the default values.
+Can the default values be changed in terms of null safety? Yes, :doc:`../../tutorial/advanced/object_converter` allows overriding the default values.
 
 Call vs. Invoke
 ===============
@@ -599,4 +599,4 @@ How about Bind?
     // func.bind(object); func(a, b, c); without return
     object.set("func", func); object.invokeVoid("func", a, b, c);
 
-Please review the :extsource2:`test cases <../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>` for more detail.
+Please review the :extsource3:`test cases <../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>` for more detail.
