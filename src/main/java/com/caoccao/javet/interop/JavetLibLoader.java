@@ -32,7 +32,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class JavetLibLoader {
-    static final String LIB_VERSION = "1.0.0";
+    static final String LIB_VERSION = "1.0.1";
     private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
