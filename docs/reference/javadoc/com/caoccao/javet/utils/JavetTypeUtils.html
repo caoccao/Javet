@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9};
+var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -150,31 +150,38 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>static java.lang.Object</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/utils/JavetTypeUtils.html#toApproximatePrimitive-java.lang.Class-java.lang.Object-">toApproximatePrimitive</a></span>(java.lang.Class&lt;?&gt;&nbsp;expectedClass,
+                      java.lang.Object&nbsp;object)</code>
+<div class="block">To approximate primitive object.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>static java.util.stream.DoubleStream</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/utils/JavetTypeUtils.html#toDoubleStream-java.lang.Object-">toDoubleStream</a></span>(java.lang.Object&nbsp;object)</code>
 <div class="block">Convert object to double stream.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>static java.lang.Object</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/utils/JavetTypeUtils.html#toExactPrimitive-java.lang.Class-java.lang.Object-">toExactPrimitive</a></span>(java.lang.Class&lt;?&gt;&nbsp;expectedClass,
                 java.lang.Object&nbsp;object)</code>
 <div class="block">To exact primitive object.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>static java.util.stream.IntStream</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/utils/JavetTypeUtils.html#toIntStream-java.lang.Object-">toIntStream</a></span>(java.lang.Object&nbsp;object)</code>
 <div class="block">Convert object to int stream.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>static java.util.stream.LongStream</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/utils/JavetTypeUtils.html#toLongStream-java.lang.Object-">toLongStream</a></span>(java.lang.Object&nbsp;object)</code>
 <div class="block">Convert object to long stream.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>static java.util.stream.Stream&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/utils/JavetTypeUtils.html#toStream-java.lang.Object-">toStream</a></span>(java.lang.Object&nbsp;object)</code>
 <div class="block">Convert object to stream.</div>
@@ -219,6 +226,26 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a name="toApproximatePrimitive-java.lang.Class-java.lang.Object-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toApproximatePrimitive</h4>
+<pre>public static&nbsp;java.lang.Object&nbsp;toApproximatePrimitive(java.lang.Class&lt;?&gt;&nbsp;expectedClass,
+                                                      java.lang.Object&nbsp;object)</pre>
+<div class="block">To approximate primitive object.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>expectedClass</code> - the expected class</dd>
+<dd><code>object</code> - the object</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the object</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.1</dd>
+</dl>
+</li>
+</ul>
 <a name="toDoubleStream-java.lang.Object-">
 <!--   -->
 </a>

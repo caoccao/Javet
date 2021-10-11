@@ -7,7 +7,7 @@ Release Notes 1.0.x
 1.0.1
 ---------------------------------
 
-* Upgraded callback function to implicitly cast more primitive types
+* Upgraded callback function and proxy converter to implicitly cast more primitive types
 
 1.0.0 First Time with Node.js v16
 ---------------------------------

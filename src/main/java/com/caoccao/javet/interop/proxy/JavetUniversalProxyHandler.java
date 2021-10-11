@@ -325,6 +325,10 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             key = JavetTypeUtils.toExactPrimitive(parameterType, propertyObject);
                             isCallable = key != null;
                         }
+                        if (!isCallable) {
+                            key = JavetTypeUtils.toApproximatePrimitive(parameterType, propertyObject);
+                            isCallable = key != null;
+                        }
                         if (isCallable) {
                             Object callee = Modifier.isStatic(method.getModifiers()) ? null : targetObject;
                             Object value = method.invoke(callee, key);
@@ -424,6 +428,10 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         boolean isCallable = parameterType.isAssignableFrom(propertyObject.getClass());
                         if (!isCallable && parameterType.isPrimitive()) {
                             parameter = JavetTypeUtils.toExactPrimitive(parameterType, propertyObject);
+                            isCallable = parameter != null;
+                        }
+                        if (!isCallable) {
+                            parameter = JavetTypeUtils.toApproximatePrimitive(parameterType, propertyObject);
                             isCallable = parameter != null;
                         }
                         if (isCallable) {
@@ -685,10 +693,18 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             key = JavetTypeUtils.toExactPrimitive(keyParameterType, propertyObject);
                             isCallable = key != null;
                         }
+                        if (!isCallable) {
+                            key = JavetTypeUtils.toApproximatePrimitive(keyParameterType, propertyObject);
+                            isCallable = key != null;
+                        }
                         if (isCallable) {
                             isCallable = valueParameterType.isAssignableFrom(valueObject.getClass());
                             if (!isCallable && valueParameterType.isPrimitive()) {
                                 value = JavetTypeUtils.toExactPrimitive(valueParameterType, valueObject);
+                                isCallable = value != null;
+                            }
+                            if (!isCallable) {
+                                value = JavetTypeUtils.toApproximatePrimitive(valueParameterType, propertyObject);
                                 isCallable = value != null;
                             }
                         }
@@ -905,6 +921,8 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         } else if (parameterType.isPrimitive()
                                 && JavetTypeUtils.toExactPrimitive(parameterType, object) != null) {
                             totalScore += 0.8;
+                        } else if (JavetTypeUtils.toApproximatePrimitive(parameterType, object) != null) {
+                            totalScore += 0.7;
                         } else {
                             totalScore = 0;
                             break;
@@ -943,6 +961,8 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             } else if (componentType.isPrimitive()
                                     && JavetTypeUtils.toExactPrimitive(componentType, object) != null) {
                                 totalScore += 0.75;
+                            } else if (JavetTypeUtils.toApproximatePrimitive(componentType, object) != null) {
+                                totalScore += 0.65;
                             } else {
                                 totalScore = 0;
                                 break;
@@ -1018,9 +1038,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                         invocationHandler);
                             }
                         }
-                    } else if (object != null && !parameterType.isAssignableFrom(object.getClass())
-                            && parameterType.isPrimitive()) {
-                        parameter = JavetTypeUtils.toExactPrimitive(parameterType, object);
+                    } else if (object != null && !parameterType.isAssignableFrom(object.getClass())) {
+                        if (parameterType.isPrimitive()) {
+                            parameter = JavetTypeUtils.toExactPrimitive(parameterType, object);
+                        } else {
+                            Object approximatePrimitiveValue = JavetTypeUtils.toApproximatePrimitive(parameterType, object);
+                            if (approximatePrimitiveValue != null) {
+                                parameter = approximatePrimitiveValue;
+                            }
+                        }
                     }
                     parameters.add(parameter);
                 }
@@ -1053,9 +1079,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                             invocationHandler);
                                 }
                             }
-                        } else if (object != null && !componentType.isAssignableFrom(object.getClass())
-                                && componentType.isPrimitive()) {
-                            parameter = JavetTypeUtils.toExactPrimitive(componentType, object);
+                        } else if (object != null && !componentType.isAssignableFrom(object.getClass())) {
+                            if (componentType.isPrimitive()) {
+                                parameter = JavetTypeUtils.toExactPrimitive(componentType, object);
+                            } else {
+                                Object approximatePrimitiveValue = JavetTypeUtils.toApproximatePrimitive(componentType, object);
+                                if (approximatePrimitiveValue != null) {
+                                    parameter = approximatePrimitiveValue;
+                                }
+                            }
                         }
                         Array.set(varObject, i - fixedParameterCount, parameter);
                     }
