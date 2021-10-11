@@ -281,8 +281,9 @@
           <div class="section" id="load-and-unload">
 <h1>Load and Unload<a class="headerlink" href="#load-and-unload" title="Permalink to this headline">¶</a></h1>
 <p>As documented in <a class="reference internal" href="../../development/design.html"><span class="doc">Javet Design</span></a>, Javet supports loading and unloading the JNI libraries during runtime in both Node.js and V8 modes.</p>
-<div class="section" id="how">
-<h2>How?<a class="headerlink" href="#how" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="can-javet-native-library-be-loaded-or-unloaded-on-demand">
+<h2>Can Javet Native Library be Loaded or Unloaded On-demand?<a class="headerlink" href="#can-javet-native-library-be-loaded-or-unloaded-on-demand" title="Permalink to this headline">¶</a></h2>
+<p>Yes, Javet supports that.</p>
 <div class="section" id="unload">
 <h3>Unload<a class="headerlink" href="#unload" title="Permalink to this headline">¶</a></h3>
 <p>Assuming the JNI library per mode is already loaded, here are the step-by-step on how to unload it.</p>
@@ -307,15 +308,57 @@
 <span class="n">v8Host</span><span class="p">.</span><span class="na">loadLibrary</span><span class="p">();</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code> can only take effect after all references are garbage collectable.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">loadLibrary()</span></code> is internally called by Javet at the first time and only takes effect after <code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code> is called.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">loadLibrary()</span></code> and <code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code> are for experiment only. <strong>They may be unstable and crash JVM. Please use this feature at your own risk.</strong></p></li>
 </ul>
+</div>
+</div>
+</div>
+<div class="section" id="can-javet-native-library-be-deployed-to-a-custom-location">
+<h2>Can Javet Native Library be Deployed to a Custom Location?<a class="headerlink" href="#can-javet-native-library-be-deployed-to-a-custom-location" title="Permalink to this headline">¶</a></h2>
+<p>Yes. By default, the native library is deployed to system temp which might not be accessible in some cases. Here is a simple way of telling Javet where to deploy the library.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLibInSystemPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p>
+</div>
+</div>
+<div class="section" id="can-javet-native-library-deployment-be-skipped">
+<h2>Can Javet Native Library Deployment be Skipped?<a class="headerlink" href="#can-javet-native-library-deployment-be-skipped" title="Permalink to this headline">¶</a></h2>
+<p>Yes. In some cases, the native library can be directly deployed to system library path to avoid dynamic deployment. That brings better performance and less jar file size. Here is a sample way of telling Javet to skip the deployment.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// Javet skips the deployment if the lib path is null.</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLibInSystemPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p>
+</div>
 </div>
 </div>
 
@@ -365,12 +408,13 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Load and Unload</a><ul>
-<li><a class="reference internal" href="#how">How?</a><ul>
+<li><a class="reference internal" href="#can-javet-native-library-be-loaded-or-unloaded-on-demand">Can Javet Native Library be Loaded or Unloaded On-demand?</a><ul>
 <li><a class="reference internal" href="#unload">Unload</a></li>
 <li><a class="reference internal" href="#load">Load</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#can-javet-native-library-be-deployed-to-a-custom-location">Can Javet Native Library be Deployed to a Custom Location?</a></li>
+<li><a class="reference internal" href="#can-javet-native-library-deployment-be-skipped">Can Javet Native Library Deployment be Skipped?</a></li>
 </ul>
 </li>
 </ul>

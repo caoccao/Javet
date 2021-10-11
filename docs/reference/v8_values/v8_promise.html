@@ -333,11 +333,12 @@
 <span class="c1">// JavaScript application prints the file content in console afterwards.</span>
 </pre></div>
 </div>
-<div class="section" id="notes">
-<h3>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>Java application needs to have background thread(s) process async calls from V8.</p></li>
 <li><p>Node.js mode has its own event loop. So, sometimes, Java application has to call <code class="docutils literal notranslate"><span class="pre">await()</span></code> after <code class="docutils literal notranslate"><span class="pre">resolve()</span></code> or <code class="docutils literal notranslate"><span class="pre">reject()</span></code>.</p></li>
+<li><p>Please refer to project <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a> for detail.</p></li>
 </ul>
 </div>
 </div>
@@ -407,10 +408,7 @@
 <li><a class="reference internal" href="#">V8 Promise</a><ul>
 <li><a class="reference internal" href="#promise-and-resolver">Promise and Resolver</a></li>
 <li><a class="reference internal" href="#lifecycle">Lifecycle</a></li>
-<li><a class="reference internal" href="#example-fs-readfileasync">Example fs.readFileAsync()</a><ul>
-<li><a class="reference internal" href="#notes">Notes</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#example-fs-readfileasync">Example fs.readFileAsync()</a></li>
 <li><a class="reference internal" href="#unhandled-rejection">Unhandled Rejection</a></li>
 </ul>
 </li>

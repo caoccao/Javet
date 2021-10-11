@@ -8,6 +8,8 @@ Release Notes 1.0.x
 ---------------------------------
 
 * Upgraded callback function and proxy converter to implicitly cast more primitive types
+* Added ``IJavetLibLoadingListener`` and ``JavetLibLoadingListener`` to allow custom lib loading
+* Fixed a potential memory leak introduced mistakenly in v1.0.0
 
 1.0.0 First Time with Node.js v16
 ---------------------------------

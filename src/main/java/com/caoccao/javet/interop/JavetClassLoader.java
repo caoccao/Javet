@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.loader.JavetLibLoader;
 import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.SimpleMap;
 

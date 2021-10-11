@@ -4,8 +4,10 @@ Load and Unload
 
 As documented in :doc:`../../development/design`, Javet supports loading and unloading the JNI libraries during runtime in both Node.js and V8 modes.
 
-How?
-====
+Can Javet Native Library be Loaded or Unloaded On-demand?
+=========================================================
+
+Yes, Javet supports that.
 
 Unload
 ------
@@ -37,9 +39,54 @@ Assuming the JNI library per mode is already unloaded, here are the step-by-step
     // Step 2: Load the library.
     v8Host.loadLibrary();
 
-Notes
-=====
+.. note::
 
-* ``unloadLibrary()`` can only take effect after all references are garbage collectable.
-* ``loadLibrary()`` is internally called by Javet at the first time and only takes effect after ``unloadLibrary()`` is called.
-* ``loadLibrary()`` and ``unloadLibrary()`` are for experiment only. **They may be unstable and crash JVM. Please use this feature at your own risk.**
+    * ``unloadLibrary()`` can only take effect after all references are garbage collectable.
+    * ``loadLibrary()`` is internally called by Javet at the first time and only takes effect after ``unloadLibrary()`` is called.
+    * ``loadLibrary()`` and ``unloadLibrary()`` are for experiment only. **They may be unstable and crash JVM. Please use this feature at your own risk.**
+
+Can Javet Native Library be Deployed to a Custom Location?
+==========================================================
+
+Yes. By default, the native library is deployed to system temp which might not be accessible in some cases. Here is a simple way of telling Javet where to deploy the library.
+
+.. code-block:: java
+
+    JavetLibLoader.setLibLoadingListener(new IJavetLibLoadingListener() {
+        @Override
+        public Path getLibPath(JSRuntimeType jsRuntimeType) {
+            return Path.of("/../anywhere");
+        }
+
+        @Override
+        public boolean isLibInSystemPath(JSRuntimeType jsRuntimeType) {
+            return false;
+        }
+    });
+
+.. caution::
+
+    ``JavetLibLoader.setLibLoadingListener()`` must be called before ``V8Host`` is called, otherwise it won't take effect.
+
+Can Javet Native Library Deployment be Skipped?
+===============================================
+
+Yes. In some cases, the native library can be directly deployed to system library path to avoid dynamic deployment. That brings better performance and less jar file size. Here is a sample way of telling Javet to skip the deployment.
+
+.. code-block:: java
+
+    JavetLibLoader.setLibLoadingListener(new IJavetLibLoadingListener() {
+        @Override
+        public Path getLibPath(JSRuntimeType jsRuntimeType) {
+            return null; // Javet skips the deployment if the lib path is null.
+        }
+
+        @Override
+        public boolean isLibInSystemPath(JSRuntimeType jsRuntimeType) {
+            return true;
+        }
+    });
+
+.. caution::
+
+    ``JavetLibLoader.setLibLoadingListener()`` must be called before ``V8Host`` is called, otherwise it won't take effect.
