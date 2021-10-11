@@ -285,30 +285,33 @@
 <p>V8 runtime runs in an isolated and single-threaded environment so that there is no race condition issue. How about playing V8 runtime in JVM among multiple threads? Yes, that is possible in 2 modes.</p>
 <div class="section" id="implicit-mode">
 <h3>1. Implicit Mode<a class="headerlink" href="#implicit-mode" title="Permalink to this headline">¶</a></h3>
-<p>Javet automatically handles the <code class="docutils literal notranslate"><span class="pre">lock()</span></code> and <code class="docutils literal notranslate"><span class="pre">unlock()</span></code> regardless of thread context switch. So, in most of the cases, application just calls regular API without calling single line of locking API.</p>
+<p>Javet automatically handles the <code class="docutils literal notranslate"><span class="pre">lock()</span></code> and <code class="docutils literal notranslate"><span class="pre">unlock()</span></code> regardless of thread context switch. So, in most of the cases, applications just call regular API without calling a single line of locking API.</p>
 </div>
 <div class="section" id="explicit-mode">
 <h3>2. Explicit Mode<a class="headerlink" href="#explicit-mode" title="Permalink to this headline">¶</a></h3>
-<p>In explicit mode, application just needs to surround the code block with a <code class="docutils literal notranslate"><span class="pre">V8Locker</span></code> applied by <code class="docutils literal notranslate"><span class="pre">try-with-resource</span></code>. Internally, Javet allocates a long-live V8 locker instead of creating V8 locker per API call to achieve better performance.</p>
+<p>In the explicit mode, applications just need to surround the code block with a <code class="docutils literal notranslate"><span class="pre">V8Locker</span></code> protected by <code class="docutils literal notranslate"><span class="pre">try-with-resource</span></code>. Internally, Javet allocates a long-live V8 locker instead of creating ad-hoc V8 locker per API call to achieve better performance.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">(</span><span class="n">V8Locker</span> <span class="n">v8Locker</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getV8Locker</span><span class="p">())</span> <span class="p">{</span>
     <span class="c1">// Do whatever you want to do.</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Be careful, <code class="docutils literal notranslate"><span class="pre">V8Locker</span></code> cannot be nested, otherwise checked exception will be thrown reporting lock conflict. Also, if the JS runtime type is Node.js, calling <code class="docutils literal notranslate"><span class="pre">resetContext()</span></code> or <code class="docutils literal notranslate"><span class="pre">resetIsolate()</span></code> may trigger core dump. Please refer to the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/interop/engine/TestPerformance.java">source code</a> for detail.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><code class="docutils literal notranslate"><span class="pre">V8Locker</span></code> cannot be nested, otherwise a checked exception will be thrown reporting lock conflict. Also, if the JS runtime type is Node.js, calling <code class="docutils literal notranslate"><span class="pre">resetContext()</span></code> or <code class="docutils literal notranslate"><span class="pre">resetIsolate()</span></code> may trigger core dump. Please refer to the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/interop/engine/TestPerformance.java">source code</a> for detail.</p>
+</div>
 </div>
 </div>
 <div class="section" id="comparisons">
 <h2>Comparisons<a class="headerlink" href="#comparisons" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="performance">
 <h3>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h3>
-<p>Implicit mode comes with a slight performance overhead in V8 because every native call is protected by a new V8 locker.</p>
-<p>Explicit mode is designed for performance sensitive work. In extreme performance test cases, the performance improvement may be up to 150% compared to implicit mode.</p>
+<p>The implicit mode comes with a slight performance overhead in V8 because every native call is protected by a new V8 locker.</p>
+<p>The explicit mode is designed for performance sensitive work. In extreme performance test cases, the performance improvement may be up to 50% compared to the implicit mode.</p>
 </div>
 <div class="section" id="thread-safety">
 <h3>Thread-safety<a class="headerlink" href="#thread-safety" title="Permalink to this headline">¶</a></h3>
-<p>Implicit mode is thread-safe because its locking granularity is at API call level. Multiple threads are free to share the same V8 runtime in concurrent scenarios. Of course, be careful that JavaScript variables may be changed by other threads. It's better not to touch the same JavaScript variable among multiple threads, otherwise, Javet may crash. Yes, crash, because Javet doesn't perform this kind of check.</p>
-<p>Explicit mode is <strong>NOT</strong> thread-safe because it's designed to improve performance in single-threaded scenarios. Sharing V8 locker protected V8 runtime among multiple threads will result in Javet crash immediately.</p>
+<p>The implicit mode is thread-safe because its locking granularity is at API call level. Multiple threads are free to share the same V8 runtime in the concurrent scenarios. But, please be careful that JavaScript variables may be changed by other threads. It's better not to touch the same JavaScript variable among multiple threads, otherwise, Javet may crash. Yes, crash, because Javet doesn't perform this kind of check.</p>
+<p>The explicit mode is <strong>NOT</strong> thread-safe because it's designed for maximizing the performance in the single-threaded scenarios. Sharing V8 locker protected V8 runtime among multiple threads will result in Javet crash immediately.</p>
 </div>
 </div>
 </div>
