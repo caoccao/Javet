@@ -18,13 +18,16 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -34,11 +37,70 @@ import java.util.OptionalLong;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
+    protected IJavetAnonymous anonymous;
     protected JavetPrimitiveConverter converter;
 
     public TestJavetPrimitiveConverter() {
         super();
         converter = new JavetPrimitiveConverter();
+        anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void expectByte(Byte value1, byte value2) {
+                assertNotNull(value1);
+                assertEquals((byte) 1, value1);
+                assertEquals((byte) 1, value2);
+            }
+
+            @V8Function
+            public void expectCharacter(Character value1, char value2) {
+                assertNotNull(value1);
+                assertEquals('1', value1);
+                assertEquals('1', value2);
+            }
+
+            @V8Function
+            public void expectDouble(Double value1, double value2) {
+                assertNotNull(value1);
+                assertEquals(1, value1, 0.001D);
+                assertEquals(1, value2, 0.001D);
+            }
+
+            @V8Function
+            public void expectFloat(Float value1, float value2) {
+                assertNotNull(value1);
+                assertEquals(1, value1, 0.001F);
+                assertEquals(1, value2, 0.001F);
+            }
+
+            @V8Function
+            public void expectInteger(Integer value1, int value2) {
+                assertNotNull(value1);
+                assertEquals(1, value1);
+                assertEquals(1, value2);
+            }
+
+            @V8Function
+            public void expectLong(Long value1, long value2) {
+                assertNotNull(value1);
+                assertEquals(1, value1);
+                assertEquals(1, value2);
+            }
+        };
+    }
+
+    @AfterEach
+    @Override
+    public void afterEach() throws JavetException {
+        v8Runtime.getGlobalObject().unbind(anonymous);
+        v8Runtime.lowMemoryNotification();
+        super.afterEach();
+    }
+
+    @BeforeEach
+    @Override
+    public void beforeEach() throws JavetException {
+        super.beforeEach();
+        v8Runtime.getGlobalObject().bind(anonymous);
     }
 
     @Test
@@ -50,21 +112,60 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testByte() throws JavetException {
+        String codeString = String.join("\n",
+                "expectByte(1, 1); // int to byte",
+                "expectByte(1n, 1n); // long to byte");
+        v8Runtime.getExecutor(codeString).executeVoid();
+    }
+
+    @Test
+    public void testCharacter() throws JavetException {
+        String codeString = String.join("\n",
+                "expectCharacter('1', '1'); // string to char");
+        v8Runtime.getExecutor(codeString).executeVoid();
+    }
+
+    @Test
     public void testDouble() throws JavetException {
         assertEquals(1.23D, (double) converter.toObject(v8Runtime.createV8ValueDouble(1.23D)), 0.001);
         assertEquals(1.23D, ((V8ValueDouble) converter.toV8Value(v8Runtime, Double.valueOf(1.23D))).getValue(), 0.001);
+        String codeString = String.join("\n",
+                "expectDouble(1, 1); // int to double",
+                "expectDouble(1n, 1n); // long to double",
+                "expectDouble(1.0, 1.0); // double to double");
+        v8Runtime.getExecutor(codeString).executeVoid();
     }
 
     @Test
     public void testFloat() throws JavetException {
         assertEquals(1.23F, ((Double) converter.toObject(v8Runtime.createV8ValueDouble(1.23F))).floatValue(), 0.001);
         assertEquals(1.23F, ((V8ValueDouble) converter.toV8Value(v8Runtime, Float.valueOf(1.23F))).getValue(), 0.001);
+        String codeString = String.join("\n",
+                "expectFloat(1, 1); // int to float",
+                "expectFloat(1n, 1n); // long to float",
+                "expectFloat(1.0, 1.0); // double to float");
+        v8Runtime.getExecutor(codeString).executeVoid();
+    }
+
+    @Test
+    public void testInteger() throws JavetException {
+        assertEquals(123, converter.toObject(v8Runtime.createV8ValueInteger(123)));
+        assertEquals(123, ((V8ValueInteger) converter.toV8Value(v8Runtime, Integer.valueOf(123))).getValue());
+        String codeString = String.join("\n",
+                "expectInteger(1, 1); // int to int",
+                "expectInteger(1n, 1n); // long to int");
+        v8Runtime.getExecutor(codeString).executeVoid();
     }
 
     @Test
     public void testLong() throws JavetException {
-        assertEquals(123L, (long) converter.toObject(v8Runtime.createV8ValueLong(123L)));
+        assertEquals(123L, converter.toObject(v8Runtime.createV8ValueLong(123L)));
         assertEquals(123L, ((V8ValueLong) converter.toV8Value(v8Runtime, Long.valueOf(123L))).getValue());
+        String codeString = String.join("\n",
+                "expectLong(1, 1); // int to long",
+                "expectLong(1n, 1n); // long to long");
+        v8Runtime.getExecutor(codeString).executeVoid();
     }
 
     @Test
