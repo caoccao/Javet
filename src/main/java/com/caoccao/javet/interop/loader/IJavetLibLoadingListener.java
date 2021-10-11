@@ -28,7 +28,7 @@ import java.nio.file.Path;
 public interface IJavetLibLoadingListener {
     /**
      * Gets lib path.
-     * If the lib path is null, the lib deployment will be skipped.
+     * If the lib is in system path, this function will not be called.
      * <p>
      * Note: lib file name is decided by Javet.
      *
@@ -36,7 +36,19 @@ public interface IJavetLibLoadingListener {
      * @return the lib path
      * @since 1.0.1
      */
-    Path getLibPath(JSRuntimeType jsRuntimeType);
+    default Path getLibPath(JSRuntimeType jsRuntimeType) {
+        return null;
+    }
+
+    /**
+     * Is deploy.
+     *
+     * @param jsRuntimeType the JS runtime type
+     * @return true : yes, false : no
+     */
+    default boolean isDeploy(JSRuntimeType jsRuntimeType) {
+        return true;
+    }
 
     /**
      * Is lib in system path.
@@ -45,5 +57,7 @@ public interface IJavetLibLoadingListener {
      * @return true : yes, false : no
      * @since 1.0.1
      */
-    boolean isLibInSystemPath(JSRuntimeType jsRuntimeType);
+    default boolean isLibInSystemPath(JSRuntimeType jsRuntimeType) {
+        return false;
+    }
 }

@@ -57,16 +57,28 @@ Yes. By default, the native library is deployed to system temp which might not b
         public Path getLibPath(JSRuntimeType jsRuntimeType) {
             return Path.of("/../anywhere");
         }
+    });
+
+By default, the native library is deployed by Javet. To bypass the deployment, one more function is required to be overridden. That also means the applications are responsible for deploying the native library to the right location.
+
+.. code-block:: java
+
+    JavetLibLoader.setLibLoadingListener(new IJavetLibLoadingListener() {
+        @Override
+        public Path getLibPath(JSRuntimeType jsRuntimeType) {
+            return Path.of("/../anywhere");
+        }
 
         @Override
-        public boolean isLibInSystemPath(JSRuntimeType jsRuntimeType) {
+        boolean isDeploy(JSRuntimeType jsRuntimeType) {
             return false;
         }
     });
 
 .. caution::
 
-    ``JavetLibLoader.setLibLoadingListener()`` must be called before ``V8Host`` is called, otherwise it won't take effect.
+    * ``JavetLibLoader.setLibLoadingListener()`` must be called before ``V8Host`` is called, otherwise it won't take effect.
+    * The return path from ``getLibPath()`` does not include the library file name because Javet will prepare it.
 
 Can Javet Native Library Deployment be Skipped?
 ===============================================
@@ -76,11 +88,6 @@ Yes. In some cases, the native library can be directly deployed to system librar
 .. code-block:: java
 
     JavetLibLoader.setLibLoadingListener(new IJavetLibLoadingListener() {
-        @Override
-        public Path getLibPath(JSRuntimeType jsRuntimeType) {
-            return null; // Javet skips the deployment if the lib path is null.
-        }
-
         @Override
         public boolean isLibInSystemPath(JSRuntimeType jsRuntimeType) {
             return true;

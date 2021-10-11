@@ -202,10 +202,13 @@ public final class JavetLibLoader {
         if (!loaded) {
             String libFilePath = null;
             try {
-                Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
-                if (libPath == null) {
+                boolean isLibInSystemPath = libLoadingListener.isLibInSystemPath(jsRuntimeType);
+                boolean isDeploy = libLoadingListener.isDeploy(jsRuntimeType);
+                if (isLibInSystemPath) {
                     libFilePath = getLibFileName();
-                } else {
+                } else if (isDeploy) {
+                    Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
+                    Objects.requireNonNull(libPath, "Lib path cannot be null");
                     String resourceFileName = getResourceFileName();
                     File processIDPath = new File(libPath.toFile(), Long.toString(JavetOSUtils.PROCESS_ID));
                     if (!processIDPath.exists()) {
@@ -217,9 +220,13 @@ public final class JavetLibLoader {
                     File libFile = new File(processIDPath, getLibFileName()).getAbsoluteFile();
                     deployLibFile(resourceFileName, libFile);
                     libFilePath = libFile.getAbsolutePath();
+                } else {
+                    Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
+                    Objects.requireNonNull(libPath, "Lib path cannot be null");
+                    libFilePath = new File(libPath.toFile(), getLibFileName()).getAbsolutePath();
                 }
                 try {
-                    if (libLoadingListener.isLibInSystemPath(jsRuntimeType)) {
+                    if (isLibInSystemPath) {
                         System.loadLibrary(libFilePath);
                     } else {
                         System.load(libFilePath);

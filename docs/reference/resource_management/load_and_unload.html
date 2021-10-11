@@ -326,9 +326,18 @@
     <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
     <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>By default, the native library is deployed by Javet. To bypass the deployment, one more function is required to be overridden. That also means the applications are responsible for deploying the native library to the right location.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
+    <span class="p">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLibInSystemPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">boolean</span> <span class="nf">isDeploy</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">});</span>
@@ -336,18 +345,16 @@
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p></li>
+<li><p>The return path from <code class="docutils literal notranslate"><span class="pre">getLibPath()</span></code> does not include the library file name because Javet will prepare it.</p></li>
+</ul>
 </div>
 </div>
 <div class="section" id="can-javet-native-library-deployment-be-skipped">
 <h2>Can Javet Native Library Deployment be Skipped?<a class="headerlink" href="#can-javet-native-library-deployment-be-skipped" title="Permalink to this headline">¶</a></h2>
 <p>Yes. In some cases, the native library can be directly deployed to system library path to avoid dynamic deployment. That brings better performance and less jar file size. Here is a sample way of telling Javet to skip the deployment.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// Javet skips the deployment if the lib path is null.</span>
-    <span class="p">}</span>
-
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLibInSystemPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
