@@ -1016,10 +1016,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     final V8Value v8Value = javetVirtualObjects[i].getV8Value();
                     final Object object = javetVirtualObjects[i].getObject();
                     Object parameter = object;
+                    boolean conversionRequired = true;
                     if (v8Value != null) {
                         if (V8_VALUE_CLASS.isAssignableFrom(parameterType)
                                 && parameterType.isAssignableFrom(v8Value.getClass())) {
                             parameter = v8Value;
+                            conversionRequired = false;
                         } else if (parameterType.isInterface()) {
                             if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
                                 DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
@@ -1028,6 +1030,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                         getClass().getClassLoader(),
                                         new Class[]{parameterType, AutoCloseable.class},
                                         invocationHandler);
+                                conversionRequired = false;
                             } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
                                     && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
                                 DynamicProxyV8ValueObjectInvocationHandler invocationHandler =
@@ -1036,12 +1039,20 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                         getClass().getClassLoader(),
                                         new Class[]{parameterType, AutoCloseable.class},
                                         invocationHandler);
+                                conversionRequired = false;
                             }
                         }
-                    } else if (object != null && !parameterType.isAssignableFrom(object.getClass())) {
+                    }
+                    if (conversionRequired && object != null && !parameterType.isAssignableFrom(object.getClass())) {
+                        boolean primitiveFound = false;
                         if (parameterType.isPrimitive()) {
-                            parameter = JavetTypeUtils.toExactPrimitive(parameterType, object);
-                        } else {
+                            Object primitiveObject = JavetTypeUtils.toExactPrimitive(parameterType, object);
+                            if (primitiveObject != null) {
+                                parameter = primitiveObject;
+                                primitiveFound = true;
+                            }
+                        }
+                        if (!primitiveFound) {
                             Object approximatePrimitiveValue = JavetTypeUtils.toApproximatePrimitive(parameterType, object);
                             if (approximatePrimitiveValue != null) {
                                 parameter = approximatePrimitiveValue;
@@ -1057,10 +1068,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         final V8Value v8Value = javetVirtualObjects[i].getV8Value();
                         final Object object = javetVirtualObjects[i].getObject();
                         Object parameter = object;
+                        boolean conversionRequired = true;
                         if (v8Value != null) {
                             if (V8_VALUE_CLASS.isAssignableFrom(componentType)
                                     && componentType.isAssignableFrom(v8Value.getClass())) {
                                 parameter = v8Value;
+                                conversionRequired = false;
                             } else if (componentType.isInterface()) {
                                 if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
                                     DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
@@ -1069,6 +1082,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                             getClass().getClassLoader(),
                                             new Class[]{componentType, AutoCloseable.class},
                                             invocationHandler);
+                                    conversionRequired = false;
                                 } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
                                         && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
                                     DynamicProxyV8ValueObjectInvocationHandler invocationHandler =
@@ -1077,12 +1091,20 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                                             getClass().getClassLoader(),
                                             new Class[]{componentType, AutoCloseable.class},
                                             invocationHandler);
+                                    conversionRequired = false;
                                 }
                             }
-                        } else if (object != null && !componentType.isAssignableFrom(object.getClass())) {
+                        }
+                        if (conversionRequired && object != null && !componentType.isAssignableFrom(object.getClass())) {
+                            boolean primitiveFound = false;
                             if (componentType.isPrimitive()) {
-                                parameter = JavetTypeUtils.toExactPrimitive(componentType, object);
-                            } else {
+                                Object primitiveObject = JavetTypeUtils.toExactPrimitive(componentType, object);
+                                if (primitiveObject != null) {
+                                    parameter = primitiveObject;
+                                    primitiveFound = true;
+                                }
+                            }
+                            if (!primitiveFound) {
                                 Object approximatePrimitiveValue = JavetTypeUtils.toApproximatePrimitive(componentType, object);
                                 if (approximatePrimitiveValue != null) {
                                     parameter = approximatePrimitiveValue;

@@ -122,7 +122,8 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     @Test
     public void testCharacter() throws JavetException {
         String codeString = String.join("\n",
-                "expectCharacter('1', '1'); // string to char");
+                "expectCharacter('1', '1'); // 1-char string to char",
+                "expectCharacter('123', '123'); // 3-char string to char");
         v8Runtime.getExecutor(codeString).executeVoid();
     }
 
