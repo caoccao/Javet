@@ -210,10 +210,13 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8ValueObject.set("x", "abc");
             assertEquals("abc", v8ValueObject.getString("x"));
+            v8ValueObject.setUndefined("y");
+            v8ValueObject.setNull("z");
             Map<String, Object> map = (Map<String, Object>) converter.toObject(v8ValueObject);
             assertTrue(map instanceof HashMap);
-            assertEquals(1, map.size());
+            assertEquals(2, map.size());
             assertEquals("abc", map.get("x"));
+            assertNull(map.get("z"));
         }
         try (V8ValueObject v8ValueObject = converter.toV8Value(
                 v8Runtime, new HashMap<String, Object>() {{
