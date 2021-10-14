@@ -25,7 +25,7 @@
 #   2. Restart WSL2
 #   3. Restart docker
 
-# Usage: docker build -t sjtucaocao/javet-windows:1.0.0 -m 4G -f docker/windows-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-windows:1.0.2 -m 4G -f docker/windows-x86_64/base.Dockerfile .
 
 # https://hub.docker.com/_/microsoft-windows
 FROM mcr.microsoft.com/windows:20H2-amd64
@@ -60,7 +60,7 @@ ENV DEPOT_TOOLS_WIN_TOOLCHAIN=0
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.4.146.16
+RUN git checkout 9.4.146.19
 WORKDIR /google
 RUN gclient sync
 RUN echo V8 preparation is completed.
@@ -103,7 +103,7 @@ RUN powershell -ExecutionPolicy Bypass -c "iex(New-Object Net.WebClient).Downloa
 RUN choco install -y nasm
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v16.10.0
+RUN git checkout v16.11.1
 RUN echo Node.js preparation is completed.
 
 # Build Node.js
