@@ -109,7 +109,13 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public final class <span class="typeNameLabel">JavetLibLoader</span>
 extends java.lang.Object</pre>
-<div class="block">The type Javet lib loader.</div>
+<div class="block">The type Javet lib loader is the one that actually loads the JNI library based on JS runtime type.
+ It is managed by a dedicated classloader (not the default classloader) so that unload is possible.
+ It is not supposed to be called directly by the applications via the default classloader.
+ <p>
+ It accepts a listener which can specify:
+ (1) To deploy the JNI library to a custom location to work around the permission issues.
+ (2) To skip the JNI library deployment to improve the performance and reduce the jar file size.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.8.0</dd>

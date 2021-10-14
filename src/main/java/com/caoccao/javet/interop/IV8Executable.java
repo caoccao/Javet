@@ -26,15 +26,18 @@ import java.time.ZonedDateTime;
 
 /**
  * The interface V8 executable.
+ *
+ * @since 0.8.5
  */
 @SuppressWarnings("unchecked")
 public interface IV8Executable extends IV8Convertible {
     /**
-     * Execute t.
+     * Execute and return V8 value.
      *
      * @param <T> the type parameter
-     * @return the t
+     * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     @CheckReturnValue
     default <T extends V8Value> T execute() throws JavetException {
@@ -42,62 +45,68 @@ public interface IV8Executable extends IV8Convertible {
     }
 
     /**
-     * Execute t.
+     * Execute and return V8 value if required.
      *
      * @param <T>            the type parameter
      * @param resultRequired the result required
-     * @return the t
+     * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     @CheckReturnValue
     <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
 
     /**
-     * Execute boolean boolean.
+     * Execute and return boolean.
      *
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     default Boolean executeBoolean() throws JavetException {
         return executePrimitive();
     }
 
     /**
-     * Execute double double.
+     * Execute and return double.
      *
      * @return the double
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     default Double executeDouble() throws JavetException {
         return executePrimitive();
     }
 
     /**
-     * Execute integer integer.
+     * Execute and return integer.
      *
      * @return the integer
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     default Integer executeInteger() throws JavetException {
         return executePrimitive();
     }
 
     /**
-     * Execute long long.
+     * Execute and return long.
      *
      * @return the long
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     default Long executeLong() throws JavetException {
         return executePrimitive();
     }
 
     /**
-     * Execute object t.
+     * Execute and return a Java object.
      *
      * @param <T> the type parameter
-     * @return the t
+     * @return the Java object
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default <T> T executeObject() throws JavetException {
         try (V8Value v8Value = execute()) {
@@ -110,12 +119,13 @@ public interface IV8Executable extends IV8Convertible {
     }
 
     /**
-     * Execute primitive r.
+     * Execute and return a primitive.
      *
      * @param <R> the type parameter
      * @param <T> the type parameter
-     * @return the r
+     * @return the primitive
      * @throws JavetException the javet exception
+     * @since 0.8.10
      */
     default <R, T extends V8ValuePrimitive<R>> R executePrimitive() throws JavetException {
         try (V8Value v8Value = execute()) {
@@ -128,19 +138,21 @@ public interface IV8Executable extends IV8Convertible {
     }
 
     /**
-     * Execute string string.
+     * Execute and return string.
      *
      * @return the string
      * @throws JavetException the javet exception
+     * @since 0.8.10
      */
     default String executeString() throws JavetException {
         return executePrimitive();
     }
 
     /**
-     * Execute void.
+     * Execute without a return value.
      *
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void executeVoid() throws JavetException {
@@ -148,10 +160,11 @@ public interface IV8Executable extends IV8Convertible {
     }
 
     /**
-     * Execute zoned date time zoned date time.
+     * Execute and return zoned date time.
      *
      * @return the zoned date time
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     default ZonedDateTime executeZonedDateTime() throws JavetException {
         return executePrimitive();

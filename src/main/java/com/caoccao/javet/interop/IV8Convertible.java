@@ -24,6 +24,8 @@ import com.caoccao.javet.values.V8Value;
 
 /**
  * The interface V8 convertible.
+ *
+ * @since 0.8.5
  */
 public interface IV8Convertible {
     /**
@@ -35,6 +37,7 @@ public interface IV8Convertible {
      * @param v8Value the V8 value
      * @return the object
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     <T, V extends V8Value> T toObject(V v8Value) throws JavetException;
 
@@ -48,6 +51,7 @@ public interface IV8Convertible {
      * @param autoClose the auto close
      * @return the t
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     default <T, V extends V8Value> T toObject(V v8Value, boolean autoClose) throws JavetException {
         if (autoClose) {
@@ -69,6 +73,7 @@ public interface IV8Convertible {
      * @param object the object
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.8.5
      */
     @CheckReturnValue
     <T, V extends V8Value> V toV8Value(T object) throws JavetException;

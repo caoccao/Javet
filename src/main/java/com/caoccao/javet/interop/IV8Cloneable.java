@@ -21,7 +21,20 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * The interface V8 cloneable.
+ *
+ * @since 0.7.0
+ */
 public interface IV8Cloneable {
+    /**
+     * Get a clone of the current V8 value.
+     *
+     * @param <T> the type parameter
+     * @return the cloned V8 value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     <T extends V8Value> T toClone() throws JavetException;
 }

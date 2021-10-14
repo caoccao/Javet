@@ -149,7 +149,8 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetObject
 <tr class="altColor">
 <td class="colFirst"><code>protected static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html#DUMMY_FUNCTION_STRING">DUMMY_FUNCTION_STRING</a></span></code>
-<div class="block">The constant DUMMY_FUNCTION_STRING.</div>
+<div class="block">The constant DUMMY_FUNCTION_STRING contains a JS code snippet
+ which creates an empty anonymous function hidden in a closure.</div>
 </td>
 </tr>
 </table>
@@ -258,7 +259,11 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetObject
 <li class="blockList">
 <h4>DUMMY_FUNCTION_STRING</h4>
 <pre>protected static final&nbsp;java.lang.String DUMMY_FUNCTION_STRING</pre>
-<div class="block">The constant DUMMY_FUNCTION_STRING.</div>
+<div class="block">The constant DUMMY_FUNCTION_STRING contains a JS code snippet
+ which creates an empty anonymous function hidden in a closure.
+ The purpose is to avoid polluting the context because a
+ non-anonymous function can possibly conflict with a variable
+ with the same name in the same context.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.9.8</dd>

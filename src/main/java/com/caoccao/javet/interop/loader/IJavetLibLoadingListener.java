@@ -45,6 +45,7 @@ public interface IJavetLibLoadingListener {
      *
      * @param jsRuntimeType the JS runtime type
      * @return true : yes, false : no
+     * @since 1.0.1
      */
     default boolean isDeploy(JSRuntimeType jsRuntimeType) {
         return true;

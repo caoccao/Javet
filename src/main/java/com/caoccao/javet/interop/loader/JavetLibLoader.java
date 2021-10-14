@@ -32,7 +32,13 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 /**
- * The type Javet lib loader.
+ * The type Javet lib loader is the one that actually loads the JNI library based on JS runtime type.
+ * It is managed by a dedicated classloader (not the default classloader) so that unload is possible.
+ * It is not supposed to be called directly by the applications via the default classloader.
+ * <p>
+ * It accepts a listener which can specify:
+ * (1) To deploy the JNI library to a custom location to work around the permission issues.
+ * (2) To skip the JNI library deployment to improve the performance and reduce the jar file size.
  *
  * @since 0.8.0
  */

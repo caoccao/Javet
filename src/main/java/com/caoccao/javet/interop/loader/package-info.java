@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.options;
-
 /**
- * The type Runtime options.
+ * JNI library loader and listeners.
  *
- * @param <Options> the type parameter
- * @since 1.0.0
+ * @since 1.0.1
+ * @author Sam Cao
  */
-public abstract class RuntimeOptions<Options extends RuntimeOptions> {
-    /**
-     * Instantiates a new Runtime options.
-     *
-     * @since 1.0.0
-     */
-    public RuntimeOptions() {
-    }
-}
+package com.caoccao.javet.interop.loader;

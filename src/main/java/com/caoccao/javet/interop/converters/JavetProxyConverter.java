@@ -38,7 +38,11 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class JavetProxyConverter extends JavetObjectConverter {
     /**
-     * The constant DUMMY_FUNCTION_STRING.
+     * The constant DUMMY_FUNCTION_STRING contains a JS code snippet
+     * which creates an empty anonymous function hidden in a closure.
+     * The purpose is to avoid polluting the context because a
+     * non-anonymous function can possibly conflict with a variable
+     * with the same name in the same context.
      *
      * @since 0.9.8
      */
