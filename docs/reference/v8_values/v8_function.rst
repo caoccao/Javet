@@ -525,7 +525,7 @@ Primitive types can be in either primitive or object form in the method signatur
 
     * ``boolean``: ``boolean``, ``Boolean``, ``null`` ⟶️ ``false``, ``undefined`` ⟶️ ``false``.
     * ``byte``, ``integer``, ``long``, ``Short``: ``int``, ``Integer``, ``long``, ``Long``, ``short``, ``Short``, ``byte``, ``Byte``, ``null`` ⟶️ ``0``, ``undefined`` ⟶️ ``0``.
-    * ``char``: ``char``, ``Char``, ``null`` ⟶️ ``\\0``, ``undefined`` ⟶️ ``\\0``.
+    * ``char``: ``char``, ``Char``, ``null`` ⟶️ ``\0``, ``undefined`` ⟶️ ``\0``.
     * ``float``, ``double``: ``float``, ``Float``, ``double``, ``Double``, ``int``, ``Integer``, ``long``, ``Long``, ``short``, ``Short``, ``byte``, ``Byte``, ``null`` ⟶️ ``0``, ``undefined`` ⟶️ ``0``.
 
 For instance: The following 4 functions are all the same and valid.
