@@ -19,7 +19,7 @@ package com.caoccao.javet;
 
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interop.JavetLibLoader;
+import com.caoccao.javet.interop.loader.JavetLibLoader;
 import com.caoccao.javet.interop.V8Flags;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.utils.JavetDefaultLogger;

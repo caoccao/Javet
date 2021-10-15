@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="V8 Promise" href="v8_promise.html" /><link rel="prev" title="V8 Collection" href="v8_collection.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>V8 Function - Javet 1.0.0 documentation</title>
+        <title>V8 Function - Javet 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 1.0.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 1.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -161,14 +161,14 @@
   <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/engine_pool.html">Javet Engine Pool</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/hello_javet.html">Hello Javet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/installation.html">Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/interception.html">Interception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/hello_javet.html">Hello Javet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/interception.html">Interception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/engine_pool.html">Javet Engine Pool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/polyfill.html">Polyfill</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/polyfill.html">Polyfill</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -338,7 +338,7 @@
 <div class="section" id="function-interception">
 <h2>Function Interception<a class="headerlink" href="#function-interception" title="Permalink to this headline">¶</a></h2>
 <p>Functions can be intercepted via Javet API. This is equivalent to the capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interceptor. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.</p>
-<p><code class="docutils literal notranslate"><span class="pre">com.caoccao.javet.values.reference.IV8ValueObject</span></code> exposes a set of <code class="docutils literal notranslate"><span class="pre">bindFunction()</span></code> that allow caller to register function interceptors in automatic or manual ways.</p>
+<p><code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code> exposes a set of <code class="docutils literal notranslate"><span class="pre">bindFunction()</span></code> that allow caller to register function interceptors in automatic or manual ways.</p>
 <div class="section" id="automatic-registration">
 <h3>Automatic Registration<a class="headerlink" href="#automatic-registration" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="bind">
@@ -490,7 +490,10 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Be careful, Javet only supports symbols that are registered as global symbols in property interception.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Javet only supports symbols that are registered as global symbols in property interception.</p>
+</div>
 </div>
 <div class="section" id="how-to-disable-properties-or-functions">
 <h4>How to Disable Properties or Functions?<a class="headerlink" href="#how-to-disable-properties-or-functions" title="Permalink to this headline">¶</a></h4>
@@ -702,7 +705,10 @@
     <span class="n">v8Function</span><span class="o">.</span><span class="n">setPosition</span><span class="p">(</span><span class="n">startPosition</span><span class="p">,</span> <span class="n">startPosition</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">sourceCode</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Be careful, <code class="docutils literal notranslate"><span class="pre">setSourceCode(String</span> <span class="pre">sourceCode)</span></code> has radical impacts that may break the execution because all functions during one execution share the same source code but have their own positions. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><code class="docutils literal notranslate"><span class="pre">setSourceCode(String</span> <span class="pre">sourceCode)</span></code> has radical impacts that may break the execution because all functions during one execution share the same source code but have their own positions. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.</p>
+</div>
 <img alt="Memory Layout of V8 Function" src="../../_images/memory_layout_of_v8_function.png"/>
 <p>Javet does not scan memory for all impacted function. So, it is caller's responsibility for restoring the original source code after invocation. The pseudo logic is as following.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">originalSourceCode</span> <span class="o">=</span> <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">getSourceCode</span><span class="p">()</span>
@@ -727,18 +733,11 @@
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>Source Code is Shared</p>
-<p>The source code is shared among all function objects. So the caller is responsible for restoring the original source code, otherwise the next function call will likely fail because the source code of the next function call is incorrect.</p>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Compile the Source Code</p>
-<p>The source code must be verified by compile(). Malformed source code will crash V8.</p>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Trim the Source Code</p>
-<p>The source code must not end with any of ' ', ';', 'n', though technically the source code is valid. Otherwise, V8 will crash.</p>
+<ul class="simple">
+<li><p>The source code is shared among all function objects. So the caller is responsible for restoring the original source code, otherwise the next function call will likely fail because the source code of the next function call is incorrect.</p></li>
+<li><p>The source code must be verified by compile(). Malformed source code will crash V8.</p></li>
+<li><p>The source code must not end with any of ' ', ';', '\n', though technically the source code is valid. Otherwise, V8 will crash.</p></li>
+</ul>
 </div>
 <p>The rough lifecycle of a V8 function is as following.</p>
 <img alt="Lifecycle of V8 Function" src="../../_images/lifecycle_of_v8_function.png"/>
@@ -782,12 +781,15 @@
 </pre></div>
 </div>
 <p>Primitive types can be in either primitive or object form in the method signature. Javet just automatically handles the type conversion and it is null safe.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code>: <code class="docutils literal notranslate"><span class="pre">boolean</span></code>, <code class="docutils literal notranslate"><span class="pre">Boolean</span></code>, <code class="docutils literal notranslate"><span class="pre">null</span></code> ⟶️ <code class="docutils literal notranslate"><span class="pre">false</span></code>, <code class="docutils literal notranslate"><span class="pre">undefined</span></code> ⟶️ <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">byte</span></code>, <code class="docutils literal notranslate"><span class="pre">integer</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code>, <code class="docutils literal notranslate"><span class="pre">Short</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">Integer</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code>, <code class="docutils literal notranslate"><span class="pre">Long</span></code>, <code class="docutils literal notranslate"><span class="pre">short</span></code>, <code class="docutils literal notranslate"><span class="pre">Short</span></code>, <code class="docutils literal notranslate"><span class="pre">byte</span></code>, <code class="docutils literal notranslate"><span class="pre">Byte</span></code>, <code class="docutils literal notranslate"><span class="pre">null</span></code> ⟶️ <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">undefined</span></code> ⟶️ <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">char</span></code>: <code class="docutils literal notranslate"><span class="pre">char</span></code>, <code class="docutils literal notranslate"><span class="pre">Char</span></code>, <code class="docutils literal notranslate"><span class="pre">null</span></code> ⟶️ <code class="docutils literal notranslate"><span class="pre">\0</span></code>, <code class="docutils literal notranslate"><span class="pre">undefined</span></code> ⟶️ <code class="docutils literal notranslate"><span class="pre">\0</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code>: <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">Float</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code>, <code class="docutils literal notranslate"><span class="pre">Double</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">Integer</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code>, <code class="docutils literal notranslate"><span class="pre">Long</span></code>, <code class="docutils literal notranslate"><span class="pre">short</span></code>, <code class="docutils literal notranslate"><span class="pre">Short</span></code>, <code class="docutils literal notranslate"><span class="pre">byte</span></code>, <code class="docutils literal notranslate"><span class="pre">Byte</span></code>, <code class="docutils literal notranslate"><span class="pre">null</span></code> ⟶️ <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">undefined</span></code> ⟶️ <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
 </ul>
+</div>
 <p>For instance: The following 4 functions are all the same and valid.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Option 1</span>
 <span class="kd">public</span> <span class="kt">int</span> <span class="nf">echo</span><span class="p">(</span><span class="n">Integer</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
@@ -846,6 +848,33 @@
 <span class="c1">// func.bind(object); func(a, b, c); without return</span>
 <span class="n">object</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">func</span><span class="p">);</span> <span class="n">object</span><span class="p">.</span><span class="na">invokeVoid</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
 </pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="tips">
+<h2>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="how-to-avoid-argument-type-or-count-mismatches">
+<h3>How to Avoid Argument Type or Count Mismatches?<a class="headerlink" href="#how-to-avoid-argument-type-or-count-mismatches" title="Permalink to this headline">¶</a></h3>
+<p>JavaScript function tolerates argument type or count mismatches because of its nature as a dynamic scripting language. But, Java is a strongly typed and static language. In the function callback from JavaScript to Java, argument type and count must conform with the corresponding Java method. Otherwise, the Java reflection API throws an exception. Javet performs throughout checks against those mismatches. The Javet checks sometimes cause unexpected behaviors in the applications. So, how to achieve the JavaScript flavored variable arguments?</p>
+<p>The solution is very simple: Declare varargs in Java.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Function</span>
+<span class="kd">public</span> <span class="n">V8Value</span> <span class="nf">sampleWithoutThis</span><span class="p">(</span><span class="n">V8Value</span><span class="p">...</span> <span class="n">v8Values</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
+    <span class="c1">// Do whatever you want to do.</span>
+<span class="p">}</span>
+
+<span class="nd">@V8Function</span><span class="p">(</span><span class="n">thisObjectRequired</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
+<span class="kd">public</span> <span class="n">V8Value</span> <span class="nf">sampleWithThis</span><span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">thisObject</span><span class="p">,</span> <span class="n">V8Value</span><span class="p">...</span> <span class="n">v8Values</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
+    <span class="c1">// Do whatever you want to do.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Declaring <code class="docutils literal notranslate"><span class="pre">V8Value...</span> <span class="pre">v8Values</span></code> can bypass the Javet argument type and count checks so that applications take the full responsibility.</p></li>
+<li><p>Applications may check the argument count, throw excessive arguments, assign default arguments, etc.</p></li>
+<li><p>Applications may test the argument type, perform custom type conversion, etc.</p></li>
+</ul>
 </div>
 <p>Please review the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java">test cases</a> for more detail.</p>
 </div>
@@ -936,6 +965,10 @@
 <li><a class="reference internal" href="#call">Call</a></li>
 <li><a class="reference internal" href="#invoke">Invoke</a></li>
 <li><a class="reference internal" href="#how-about-bind">How about Bind?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tips">Tips</a><ul>
+<li><a class="reference internal" href="#how-to-avoid-argument-type-or-count-mismatches">How to Avoid Argument Type or Count Mismatches?</a></li>
 </ul>
 </li>
 </ul>

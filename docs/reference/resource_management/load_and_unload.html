@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Know the Lock" href="lock.html" /><link rel="prev" title="Resource Management" href="index.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Load and Unload - Javet 1.0.0 documentation</title>
+        <title>Load and Unload - Javet 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 1.0.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 1.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -161,14 +161,14 @@
   <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/engine_pool.html">Javet Engine Pool</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/hello_javet.html">Hello Javet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/installation.html">Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/interception.html">Interception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/hello_javet.html">Hello Javet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/interception.html">Interception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/engine_pool.html">Javet Engine Pool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/polyfill.html">Polyfill</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/polyfill.html">Polyfill</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -281,8 +281,9 @@
           <div class="section" id="load-and-unload">
 <h1>Load and Unload<a class="headerlink" href="#load-and-unload" title="Permalink to this headline">¶</a></h1>
 <p>As documented in <a class="reference internal" href="../../development/design.html"><span class="doc">Javet Design</span></a>, Javet supports loading and unloading the JNI libraries during runtime in both Node.js and V8 modes.</p>
-<div class="section" id="how">
-<h2>How?<a class="headerlink" href="#how" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="can-javet-native-library-be-loaded-or-unloaded-on-demand">
+<h2>Can Javet Native Library be Loaded or Unloaded On-demand?<a class="headerlink" href="#can-javet-native-library-be-loaded-or-unloaded-on-demand" title="Permalink to this headline">¶</a></h2>
+<p>Yes, Javet supports that.</p>
 <div class="section" id="unload">
 <h3>Unload<a class="headerlink" href="#unload" title="Permalink to this headline">¶</a></h3>
 <p>Assuming the JNI library per mode is already loaded, here are the step-by-step on how to unload it.</p>
@@ -307,15 +308,64 @@
 <span class="n">v8Host</span><span class="p">.</span><span class="na">loadLibrary</span><span class="p">();</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code> can only take effect after all references are garbage collectable.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">loadLibrary()</span></code> is internally called by Javet at the first time and only takes effect after <code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code> is called.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">loadLibrary()</span></code> and <code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code> are for experiment only. <strong>They may be unstable and crash JVM. Please use this feature at your own risk.</strong></p></li>
 </ul>
+</div>
+</div>
+</div>
+<div class="section" id="can-javet-native-library-be-deployed-to-a-custom-location">
+<h2>Can Javet Native Library be Deployed to a Custom Location?<a class="headerlink" href="#can-javet-native-library-be-deployed-to-a-custom-location" title="Permalink to this headline">¶</a></h2>
+<p>Yes. By default, the native library is deployed to system temp which might not be accessible in some cases. Here is a simple way of telling Javet where to deploy the library.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>By default, the native library is deployed by Javet. To bypass the deployment, one more function is required to be overridden. That also means the applications are responsible for deploying the native library to the right location.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kt">boolean</span> <span class="nf">isDeploy</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p></li>
+<li><p>The return path from <code class="docutils literal notranslate"><span class="pre">getLibPath()</span></code> does not include the library file name because Javet will prepare it.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="can-javet-native-library-deployment-be-skipped">
+<h2>Can Javet Native Library Deployment be Skipped?<a class="headerlink" href="#can-javet-native-library-deployment-be-skipped" title="Permalink to this headline">¶</a></h2>
+<p>Yes. In some cases, the native library can be directly deployed to system library path to avoid dynamic deployment. That brings better performance and less jar file size. Here is a sample way of telling Javet to skip the deployment.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLibInSystemPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p>
+</div>
 </div>
 </div>
 
@@ -365,12 +415,13 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Load and Unload</a><ul>
-<li><a class="reference internal" href="#how">How?</a><ul>
+<li><a class="reference internal" href="#can-javet-native-library-be-loaded-or-unloaded-on-demand">Can Javet Native Library be Loaded or Unloaded On-demand?</a><ul>
 <li><a class="reference internal" href="#unload">Unload</a></li>
 <li><a class="reference internal" href="#load">Load</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#can-javet-native-library-be-deployed-to-a-custom-location">Can Javet Native Library be Deployed to a Custom Location?</a></li>
+<li><a class="reference internal" href="#can-javet-native-library-deployment-be-skipped">Can Javet Native Library Deployment be Skipped?</a></li>
 </ul>
 </li>
 </ul>

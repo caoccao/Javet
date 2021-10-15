@@ -1272,9 +1272,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
 (JNIEnv* jniEnv, jobject caller, jstring flags) {
     if (flags) {
-        char const* str = jniEnv->GetStringUTFChars(flags, nullptr);
-        v8::V8::SetFlagsFromString(str, jniEnv->GetStringUTFLength(flags));
-        jniEnv->ReleaseStringUTFChars(flags, str);
+        char const* utfChars = jniEnv->GetStringUTFChars(flags, nullptr);
+        v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(flags));
+        jniEnv->ReleaseStringUTFChars(flags, utfChars);
         v8::V8::Initialize();
     }
 }

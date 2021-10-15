@@ -31,6 +31,107 @@ import java.util.stream.Stream;
  */
 public final class JavetTypeUtils {
     /**
+     * To approximate primitive object.
+     *
+     * @param expectedClass the expected class
+     * @param object        the object
+     * @return the object
+     * @since 1.0.1
+     */
+    public static Object toApproximatePrimitive(Class<?> expectedClass, Object object) {
+        if (expectedClass == int.class || expectedClass == Integer.class) {
+            if (object instanceof Integer) {
+                return object;
+            } else if (object instanceof Long) {
+                return ((Long) object).intValue();
+            } else if (object instanceof Short) {
+                return ((Short) object).intValue();
+            } else if (object instanceof Byte) {
+                return ((Byte) object).intValue();
+            }
+        }
+        if (expectedClass == boolean.class || expectedClass == Boolean.class) {
+            if (object instanceof Boolean) {
+                return object;
+            }
+        }
+        if (expectedClass == double.class || expectedClass == Double.class) {
+            if (object instanceof Double) {
+                return object;
+            } else if (object instanceof Float) {
+                return ((Float) object).doubleValue();
+            } else if (object instanceof Integer) {
+                return ((Integer) object).doubleValue();
+            } else if (object instanceof Long) {
+                return ((Long) object).doubleValue();
+            } else if (object instanceof Short) {
+                return ((Short) object).doubleValue();
+            } else if (object instanceof Byte) {
+                return ((Byte) object).doubleValue();
+            }
+        }
+        if (expectedClass == float.class || expectedClass == Float.class) {
+            if (object instanceof Float) {
+                return object;
+            } else if (object instanceof Double) {
+                return ((Double) object).floatValue();
+            } else if (object instanceof Integer) {
+                return ((Integer) object).floatValue();
+            } else if (object instanceof Long) {
+                return ((Long) object).floatValue();
+            } else if (object instanceof Short) {
+                return ((Short) object).floatValue();
+            } else if (object instanceof Byte) {
+                return ((Byte) object).floatValue();
+            }
+        }
+        if (expectedClass == long.class || expectedClass == Long.class) {
+            if (object instanceof Long) {
+                return object;
+            } else if (object instanceof Integer) {
+                return ((Integer) object).longValue();
+            } else if (object instanceof Short) {
+                return ((Short) object).longValue();
+            } else if (object instanceof Byte) {
+                return ((Byte) object).longValue();
+            }
+        }
+        if (expectedClass == short.class || expectedClass == Short.class) {
+            if (object instanceof Short) {
+                return object;
+            } else if (object instanceof Integer) {
+                return ((Integer) object).shortValue();
+            } else if (object instanceof Long) {
+                return ((Long) object).shortValue();
+            } else if (object instanceof Byte) {
+                return ((Byte) object).shortValue();
+            }
+        }
+        if (expectedClass == byte.class || expectedClass == Byte.class) {
+            if (object instanceof Byte) {
+                return object;
+            } else if (object instanceof Integer) {
+                return ((Integer) object).byteValue();
+            } else if (object instanceof Long) {
+                return ((Long) object).byteValue();
+            } else if (object instanceof Short) {
+                return ((Short) object).byteValue();
+            }
+        }
+        if (expectedClass == char.class || expectedClass == Character.class) {
+            if (object instanceof Character) {
+                return object;
+            } else if (object instanceof String) {
+                String objectString = (String) object;
+                if (objectString.length() > 0) {
+                    return objectString.charAt(0);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Convert object to double stream.
      *
      * @param object the object
@@ -61,23 +162,23 @@ public final class JavetTypeUtils {
         if (expectedClass == int.class && object instanceof Integer) {
             return ((Integer) object).intValue();
         }
-        if (expectedClass == long.class && object instanceof Long) {
-            return ((Long) object).longValue();
+        if (expectedClass == boolean.class && object instanceof Boolean) {
+            return ((Boolean) object).booleanValue();
         }
         if (expectedClass == double.class && object instanceof Double) {
             return ((Double) object).doubleValue();
         }
-        if (expectedClass == boolean.class && object instanceof Boolean) {
-            return ((Boolean) object).booleanValue();
-        }
         if (expectedClass == float.class && object instanceof Float) {
             return ((Float) object).floatValue();
         }
-        if (expectedClass == byte.class && object instanceof Byte) {
-            return ((Byte) object).byteValue();
+        if (expectedClass == long.class && object instanceof Long) {
+            return ((Long) object).longValue();
         }
         if (expectedClass == short.class && object instanceof Short) {
             return ((Short) object).shortValue();
+        }
+        if (expectedClass == byte.class && object instanceof Byte) {
+            return ((Byte) object).byteValue();
         }
         if (expectedClass == char.class && object instanceof Character) {
             return ((Character) object).charValue();

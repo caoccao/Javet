@@ -31,7 +31,6 @@ Please download the private builds from this `drive <https://drive.google.com/dr
       2            /usr/bin/gcc-8   80        manual mode
       3            /usr/bin/gcc-9   90        manual mode
 
-Notes
-=====
+.. caution::
 
-Private builds imply considerable additional effort, so there is no commitments. Please contact the maintainer for private builds wisely.
+    Private builds imply considerable additional effort, so there is no commitments. Please contact the maintainer for private builds wisely.

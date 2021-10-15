@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:1.0.0 -f docker/linux-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:1.0.2 -f docker/linux-x86_64/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
@@ -36,7 +36,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.4.146.16
+RUN git checkout 9.4.146.19
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
@@ -54,7 +54,7 @@ RUN echo V8 build is completed.
 WORKDIR /
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v16.10.0
+RUN git checkout v16.11.1
 RUN echo Node.js preparation is completed.
 
 # Build Node.js

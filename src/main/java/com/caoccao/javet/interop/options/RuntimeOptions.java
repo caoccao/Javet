@@ -25,6 +25,8 @@ package com.caoccao.javet.interop.options;
 public abstract class RuntimeOptions<Options extends RuntimeOptions> {
     /**
      * Instantiates a new Runtime options.
+     *
+     * @since 1.0.0
      */
     public RuntimeOptions() {
     }

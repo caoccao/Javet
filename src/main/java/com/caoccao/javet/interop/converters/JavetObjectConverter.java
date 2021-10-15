@@ -312,11 +312,13 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 String keyString = key.toString();
                 if (PUBLIC_PROPERTY_CONSTRUCTOR.equals(keyString)) {
                     map.put(PUBLIC_PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
+                } else if (value.isUndefined()) {
+                    return;
+                } else if (config.isSkipFunctionInObject() && value instanceof V8ValueFunction) {
+                    return;
                 } else {
                     Object object = toObject(value, depth + 1);
-                    if (!(config.isSkipFunctionInObject() && object instanceof JavetEntityFunction)) {
-                        map.put(keyString, object);
-                    }
+                    map.put(keyString, object);
                 }
             });
             if (!customObjectMap.isEmpty()

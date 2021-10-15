@@ -195,6 +195,68 @@ public final class V8FunctionCallback {
                                         convertedString.charAt(0) : converter.getConfig().getDefaultChar();
                             }
                         }
+                    } else if (expectedClass == Integer.class) {
+                        if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).intValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).intValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).intValue();
+                        }
+                    } else if (expectedClass == Double.class) {
+                        if (convertedObjectClass == Float.class) {
+                            return ((Float) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).doubleValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).doubleValue();
+                        }
+                    } else if (expectedClass == Float.class) {
+                        if (convertedObjectClass == Double.class) {
+                            return ((Double) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).floatValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).floatValue();
+                        }
+                    } else if (expectedClass == Long.class) {
+                        if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).longValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).longValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).longValue();
+                        }
+                    } else if (expectedClass == Short.class) {
+                        if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).shortValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).shortValue();
+                        } else if (convertedObjectClass == Byte.class) {
+                            return ((Byte) convertedObject).shortValue();
+                        }
+                    } else if (expectedClass == Byte.class) {
+                        if (convertedObjectClass == Integer.class) {
+                            return ((Integer) convertedObject).byteValue();
+                        } else if (convertedObjectClass == Long.class) {
+                            return ((Long) convertedObject).byteValue();
+                        } else if (convertedObjectClass == Short.class) {
+                            return ((Short) convertedObject).byteValue();
+                        }
+                    } else if (expectedClass == Character.class) {
+                        if (convertedObjectClass == String.class) {
+                            String convertedString = (String) convertedObject;
+                            return convertedString.length() > 0 ?
+                                    convertedString.charAt(0) : converter.getConfig().getDefaultChar();
+                        }
                     } else if (expectedClass == Optional.class) {
                         return Optional.of(convertedObject);
                     } else if (expectedClass == OptionalInt.class) {

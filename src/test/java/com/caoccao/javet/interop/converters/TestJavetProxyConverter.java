@@ -21,8 +21,10 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,13 +36,62 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetProxyConverter extends BaseTestJavetRuntime {
+    protected IJavetAnonymous anonymous;
     protected JavetProxyConverter javetProxyConverter;
+
+    public TestJavetProxyConverter() {
+        super();
+        javetProxyConverter = new JavetProxyConverter();
+        anonymous = new IJavetAnonymous() {
+            public void expectByte(Byte value1, byte value2) {
+                assertNotNull(value1);
+                assertEquals((byte) 1, value1);
+                assertEquals((byte) 1, value2);
+            }
+
+            public void expectCharacter(Character value1, char value2) {
+                assertNotNull(value1);
+                assertEquals('1', value1);
+                assertEquals('1', value2);
+            }
+
+            public void expectDouble(Double value1, double value2) {
+                assertNotNull(value1);
+                assertEquals(1, value1, 0.001D);
+                assertEquals(1, value2, 0.001D);
+            }
+
+            public void expectFloat(Float value1, float value2) {
+                assertNotNull(value1);
+                assertEquals(1, value1, 0.001F);
+                assertEquals(1, value2, 0.001F);
+            }
+
+            public void expectInteger(Integer value1, int value2) {
+                assertNotNull(value1);
+                assertEquals(1, value1);
+                assertEquals(1, value2);
+            }
+
+            public void expectLong(Long value1, long value2) {
+                assertNotNull(value1);
+                assertEquals(1, value1);
+                assertEquals(1, value2);
+            }
+        };
+    }
+
+    @AfterEach
+    @Override
+    public void afterEach() throws JavetException {
+        v8Runtime.lowMemoryNotification();
+        super.afterEach();
+    }
 
     @BeforeEach
     @Override
     public void beforeEach() throws JavetException {
         super.beforeEach();
-        javetProxyConverter = new JavetProxyConverter();
         v8Runtime.setConverter(javetProxyConverter);
     }
 
@@ -54,7 +105,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals("a,b,c", joiner.join(joiner.join("a", "b"), "c"));
             v8Runtime.getGlobalObject().delete("stringJoiner");
         }
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -76,7 +126,26 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     utils.split(",", "a,b,c").toArray(new String[0]));
             v8Runtime.getGlobalObject().delete("stringUtils");
         }
-        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testByte() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = String.join("\n",
+                "a.expectByte(1, 1); // int to byte",
+                "a.expectByte(1n, 1n); // long to byte");
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
+    public void testCharacter() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = String.join("\n",
+                "a.expectCharacter('1', '1'); // 1-char string to char",
+                "a.expectCharacter('123', '123'); // 3-char string to char");
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test
@@ -88,7 +157,17 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                         "}\n" +
                         "main();").executeString());
         v8Runtime.getGlobalObject().delete("StringBuilder");
-        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testDouble() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = String.join("\n",
+                "a.expectDouble(1, 1); // int to double",
+                "a.expectDouble(1n, 1n); // long to double",
+                "a.expectDouble(1.0, 1.0); // double to double");
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test
@@ -103,7 +182,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().set("Converter", JavetErrorType.Converter);
         assertEquals(JavetErrorType.Converter, v8Runtime.getGlobalObject().getObject("Converter"));
         v8Runtime.getGlobalObject().delete("Converter");
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -118,7 +196,27 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(file.canWrite(), v8Runtime.getExecutor("file.canWrite()").executeBoolean());
         assertEquals(file.canExecute(), v8Runtime.getExecutor("file.canExecute()").executeBoolean());
         v8Runtime.getGlobalObject().delete("file");
-        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testFloat() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = String.join("\n",
+                "a.expectFloat(1, 1); // int to float",
+                "a.expectFloat(1n, 1n); // long to float",
+                "a.expectFloat(1.0, 1.0); // double to float");
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
+    public void testInteger() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = String.join("\n",
+                "a.expectInteger(1, 1); // int to int",
+                "a.expectInteger(1n, 1n); // long to int");
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test
@@ -131,7 +229,16 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
         v8Runtime.getGlobalObject().delete("AutoCloseable");
         v8Runtime.getGlobalObject().delete("IJavetClosable");
-        v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testLong() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = String.join("\n",
+                "a.expectLong(1, 1); // int to long",
+                "a.expectLong(1n, 1n); // long to long");
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test
@@ -156,7 +263,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 "[\"x\",\"y\",\"z\"]",
                 v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
         v8Runtime.getGlobalObject().delete("map");
-        v8Runtime.lowMemoryNotification();
         javetProxyConverter.getConfig().setProxyMapEnabled(false);
     }
 
@@ -169,7 +275,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 "[\"abc\",\"def\"]",
                 v8Runtime.getExecutor("JSON.stringify(m.echo('abc', 'def'))").executeString());
         v8Runtime.getGlobalObject().delete("m");
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -185,7 +290,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 path.resolve("abc").toString(),
                 v8Runtime.getExecutor("path.resolve('abc').toString()").executeString());
         v8Runtime.getGlobalObject().delete("path");
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -196,7 +300,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
         v8Runtime.getGlobalObject().delete("Pattern");
         v8Runtime.getExecutor("p = undefined;").executeVoid();
-        v8Runtime.lowMemoryNotification();
     }
 
     @Test
@@ -217,7 +320,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 "[\"x\",\"y\",\"z\"]",
                 v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
         v8Runtime.getGlobalObject().delete("set");
-        v8Runtime.lowMemoryNotification();
         javetProxyConverter.getConfig().setProxySetEnabled(false);
     }
 

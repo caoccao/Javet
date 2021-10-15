@@ -31,7 +31,7 @@ Windows Environment
 * CMake 3.16+ (comes with Visual Studio)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
-* Gradle 7.0+
+* Gradle 7.2+
 
 Build V8
 ========
@@ -68,16 +68,12 @@ Build V8 on Linux and Mac OS
     cd root_path_to_v8
     ninja -C out.gn/x64.release v8_monolith
 
-.. code-block:: cpp
-
-    #include <cstdint>
-    #include <utility> // This line needs to be added.
-    #include <new>
-
 Build V8 on Windows
 -------------------
 
-⚠️ The patch script requires Python 3.
+.. caution::
+
+   ️ The patch script requires Python 3.
 
 .. code-block:: shell
 
@@ -107,7 +103,9 @@ Prepare Node.js
 Build Node.js on Linux
 ----------------------
 
-⚠️ The patch script requires Python 3.
+.. caution::
+
+   ️ The patch script requires Python 3.
 
 .. code-block:: shell
 

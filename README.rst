@@ -27,7 +27,7 @@ Major Features
 ==============
 
 * Linux + Mac OS + ️Windows (x86_64)
-* Node.js ``v16.10.0`` + V8 ``v9.4.146.16`` (`Which Node.js version do you prefer? <https://github.com/caoccao/Javet/issues/89>`_)
+* Node.js ``v16.11.1`` + V8 ``v9.4.146.19``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
@@ -52,14 +52,14 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
 
     <!-- Mac OS (x86_64 Only) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -67,16 +67,16 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:1.0.0") // Linux or Windows
-    implementation("com.caoccao.javet:javet-macos:1.0.0") // Mac OS (x86_64 Only)
+    implementation("com.caoccao.javet:javet:1.0.1") // Linux or Windows
+    implementation("com.caoccao.javet:javet-macos:1.0.1") // Mac OS (x86_64 Only)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:1.0.0' // Linux or Windows
-    implementation 'com.caoccao.javet:javet-macos:1.0.0' // Mac OS (x86_64 Only)
+    implementation 'com.caoccao.javet:javet:1.0.1' // Linux or Windows
+    implementation 'com.caoccao.javet:javet-macos:1.0.1' // Mac OS (x86_64 Only)
 
 Hello Javet
 -----------

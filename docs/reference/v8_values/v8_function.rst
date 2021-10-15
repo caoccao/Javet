@@ -29,7 +29,7 @@ Function Interception
 
 Functions can be intercepted via Javet API. This is equivalent to the capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interceptor. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.
 
-``com.caoccao.javet.values.reference.IV8ValueObject`` exposes a set of ``bindFunction()`` that allow caller to register function interceptors in automatic or manual ways.
+``IV8ValueObject`` exposes a set of ``bindFunction()`` that allow caller to register function interceptors in automatic or manual ways.
 
 Automatic Registration
 ----------------------
@@ -196,7 +196,9 @@ Yes, ``@V8Property`` supports ``symbolType``.
         this.value = value;
     }
 
-Be careful, Javet only supports symbols that are registered as global symbols in property interception.
+.. note::
+
+    Javet only supports symbols that are registered as global symbols in property interception.
 
 How to Disable Properties or Functions?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -431,7 +433,9 @@ How to Change a User Defined JavaScript Function on the Fly?
         v8Function.setSourceCode(newSourceCode)
         v8Function.setPosition(startPosition, startPosition + len(sourceCode))
 
-Be careful, ``setSourceCode(String sourceCode)`` has radical impacts that may break the execution because all functions during one execution share the same source code but have their own positions. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.
+.. caution::
+
+    ``setSourceCode(String sourceCode)`` has radical impacts that may break the execution because all functions during one execution share the same source code but have their own positions. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.
 
 .. image:: ../../resources/images/memory_layout_of_v8_function.png
     :alt: Memory Layout of V8 Function
@@ -461,17 +465,11 @@ Why does ``setSourceCode()`` sometimes return ``false``? Usually, that means the
     v8ValueFunction.call(...)
     v8ValueFunction.setSourceCode(originalSourceCode)
 
-.. caution:: Source Code is Shared
+.. caution::
 
-    The source code is shared among all function objects. So the caller is responsible for restoring the original source code, otherwise the next function call will likely fail because the source code of the next function call is incorrect.
-
-.. caution:: Compile the Source Code
-
-    The source code must be verified by compile(). Malformed source code will crash V8.
-
-.. caution:: Trim the Source Code
-
-    The source code must not end with any of ' ', ';', '\n', though technically the source code is valid. Otherwise, V8 will crash.
+    * The source code is shared among all function objects. So the caller is responsible for restoring the original source code, otherwise the next function call will likely fail because the source code of the next function call is incorrect.
+    * The source code must be verified by compile(). Malformed source code will crash V8.
+    * The source code must not end with any of ' ', ';', '\\n', though technically the source code is valid. Otherwise, V8 will crash.
 
 The rough lifecycle of a V8 function is as following.
 
@@ -523,10 +521,12 @@ Javet is capable of automatically converting its internal ``V8Value`` to primiti
 
 Primitive types can be in either primitive or object form in the method signature. Javet just automatically handles the type conversion and it is null safe.
 
-* ``boolean``: ``boolean``, ``Boolean``, ``null`` ⟶️ ``false``, ``undefined`` ⟶️ ``false``.
-* ``byte``, ``integer``, ``long``, ``Short``: ``int``, ``Integer``, ``long``, ``Long``, ``short``, ``Short``, ``byte``, ``Byte``, ``null`` ⟶️ ``0``, ``undefined`` ⟶️ ``0``.
-* ``char``: ``char``, ``Char``, ``null`` ⟶️ ``\0``, ``undefined`` ⟶️ ``\0``.
-* ``float``, ``double``: ``float``, ``Float``, ``double``, ``Double``, ``int``, ``Integer``, ``long``, ``Long``, ``short``, ``Short``, ``byte``, ``Byte``, ``null`` ⟶️ ``0``, ``undefined`` ⟶️ ``0``.
+.. note::
+
+    * ``boolean``: ``boolean``, ``Boolean``, ``null`` ⟶️ ``false``, ``undefined`` ⟶️ ``false``.
+    * ``byte``, ``integer``, ``long``, ``Short``: ``int``, ``Integer``, ``long``, ``Long``, ``short``, ``Short``, ``byte``, ``Byte``, ``null`` ⟶️ ``0``, ``undefined`` ⟶️ ``0``.
+    * ``char``: ``char``, ``Char``, ``null`` ⟶️ ``\0``, ``undefined`` ⟶️ ``\0``.
+    * ``float``, ``double``: ``float``, ``Float``, ``double``, ``Double``, ``int``, ``Integer``, ``long``, ``Long``, ``short``, ``Short``, ``byte``, ``Byte``, ``null`` ⟶️ ``0``, ``undefined`` ⟶️ ``0``.
 
 For instance: The following 4 functions are all the same and valid.
 
@@ -598,5 +598,33 @@ How about Bind?
 
     // func.bind(object); func(a, b, c); without return
     object.set("func", func); object.invokeVoid("func", a, b, c);
+
+Tips
+====
+
+How to Avoid Argument Type or Count Mismatches?
+-----------------------------------------------
+
+JavaScript function tolerates argument type or count mismatches because of its nature as a dynamic scripting language. But, Java is a strongly typed and static language. In the function callback from JavaScript to Java, argument type and count must conform with the corresponding Java method. Otherwise, the Java reflection API throws an exception. Javet performs throughout checks against those mismatches. The Javet checks sometimes cause unexpected behaviors in the applications. So, how to achieve the JavaScript flavored variable arguments?
+
+The solution is very simple: Declare varargs in Java.
+
+.. code-block:: java
+
+    @V8Function
+    public V8Value sampleWithoutThis(V8Value... v8Values) throws JavetException {
+        // Do whatever you want to do.
+    }
+
+    @V8Function(thisObjectRequired = true)
+    public V8Value sampleWithThis(V8ValueObject thisObject, V8Value... v8Values) throws JavetException {
+        // Do whatever you want to do.
+    }
+
+.. note::
+
+    * Declaring ``V8Value... v8Values`` can bypass the Javet argument type and count checks so that applications take the full responsibility.
+    * Applications may check the argument count, throw excessive arguments, assign default arguments, etc.
+    * Applications may test the argument type, perform custom type conversion, etc.
 
 Please review the :extsource3:`test cases <../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>` for more detail.

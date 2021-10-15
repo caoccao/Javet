@@ -181,8 +181,7 @@ namespace Javet {
         }
 
         static inline std::unique_ptr<std::string> ToStdString(JNIEnv* jniEnv, jstring mString) {
-            jboolean isCopy(false);
-            const char* utfChars = jniEnv->GetStringUTFChars(mString, &isCopy);
+            const char* utfChars = jniEnv->GetStringUTFChars(mString, nullptr);
             auto stdStringPointer = std::make_unique<std::string>(utfChars, jniEnv->GetStringUTFLength(mString));
             jniEnv->ReleaseStringUTFChars(mString, utfChars);
             return stdStringPointer;
