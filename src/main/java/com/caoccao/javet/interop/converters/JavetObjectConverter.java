@@ -316,9 +316,10 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     return;
                 } else if (config.isSkipFunctionInObject() && value instanceof V8ValueFunction) {
                     return;
+                } else {
+                    Object object = toObject(value, depth + 1);
+                    map.put(keyString, object);
                 }
-                Object object = toObject(value, depth + 1);
-                map.put(keyString, object);
             });
             if (!customObjectMap.isEmpty()
                     && v8ValueObject.hasPrivateProperty(PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME)) {
