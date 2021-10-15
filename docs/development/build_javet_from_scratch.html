@@ -310,7 +310,7 @@
 <li><p>CMake 3.16+ (comes with Visual Studio)</p></li>
 <li><p>Latest Windows 10 SDK with WinDbg</p></li>
 <li><p>JDK 8</p></li>
-<li><p>Gradle 7.0+</p></li>
+<li><p>Gradle 7.2+</p></li>
 </ul>
 </div>
 </div>
@@ -344,15 +344,13 @@
 ninja -C out.gn/x64.release v8_monolith
 </pre></div>
 </div>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;cstdint&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;utility&gt;</span><span class="c1"> // This line needs to be added.</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;new&gt;</span><span class="cp"></span>
-</pre></div>
-</div>
 </div>
 <div class="section" id="build-v8-on-windows">
 <h3>Build V8 on Windows<a class="headerlink" href="#build-v8-on-windows" title="Permalink to this headline">¶</a></h3>
-<p>⚠️ The patch script requires Python 3.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>️ The patch script requires Python 3.</p>
+</div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="nv">PATH</span><span class="o">=</span>path_to_depot_tools<span class="p">;</span>%PATH%
 <span class="nb">set</span> <span class="nv">DEPOT_TOOLS_WIN_TOOLCHAIN</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">cd</span> root_path_to_v8
@@ -378,7 +376,10 @@ gn gen --ide<span class="o">=</span>vs out.gn<span class="se">\x</span><span cla
 </div>
 <div class="section" id="build-node-js-on-linux">
 <h3>Build Node.js on Linux<a class="headerlink" href="#build-node-js-on-linux" title="Permalink to this headline">¶</a></h3>
-<p>⚠️ The patch script requires Python 3.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>️ The patch script requires Python 3.</p>
+</div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> root_path_to_node_js
 python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
 ./configure --enable-static --without-intl
