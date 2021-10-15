@@ -104,8 +104,9 @@ public final class JavetLibLoader {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 libFile.delete();
-            } catch (Exception e) {
+            } catch (Throwable t) {
                 isLibFileLocked = true;
+                LOGGER.logWarn("Failed to delete {0} because it is locked.", libFile.getAbsolutePath());
             }
         }
         if (!isLibFileLocked) {
@@ -127,8 +128,8 @@ public final class JavetLibLoader {
                         }
                     }
                 }
-            } catch (Exception e) {
-                // Lib file is locked.
+            } catch (Throwable t) {
+                LOGGER.logWarn("Failed to write to {0} because it is locked.", libFile.getAbsolutePath());
             }
         }
     }
@@ -231,16 +232,12 @@ public final class JavetLibLoader {
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
                     libFilePath = new File(libPath.toFile(), getLibFileName()).getAbsolutePath();
                 }
-                try {
-                    if (isLibInSystemPath) {
-                        System.loadLibrary(libFilePath);
-                    } else {
-                        System.load(libFilePath);
-                    }
-                    loaded = true;
-                } catch (UnsatisfiedLinkError e) {
-                    loaded = true;
+                if (isLibInSystemPath) {
+                    System.loadLibrary(libFilePath);
+                } else {
+                    System.load(libFilePath);
                 }
+                loaded = true;
             } catch (Throwable t) {
                 LOGGER.logError(t, t.getMessage());
                 throw new JavetException(
