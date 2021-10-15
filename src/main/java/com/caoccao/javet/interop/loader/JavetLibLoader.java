@@ -48,7 +48,7 @@ public final class JavetLibLoader {
      *
      * @since 0.8.0
      */
-    public static final String LIB_VERSION = "1.0.1";
+    public static final String LIB_VERSION = "1.0.2";
     private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";

@@ -62,7 +62,7 @@ class ChangeJavetVersion(object):
       'cpp/build-windows.cmd', '\r\n',
       re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      'src/main/java/com/caoccao/javet/interop/JavetLibLoader.java', '\n',
+      'src/main/java/com/caoccao/javet/interop/loader/JavetLibLoader.java', '\n',
       re.compile(r'LIB_VERSION = "(?P<version>\d+\.\d+\.\d+)";$'))
     self._update(
       'cpp/jni/javet_resource_node.rc', '\r\n',
@@ -113,7 +113,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('1.0.1')
+  change_javet_version = ChangeJavetVersion('1.0.2')
   change_javet_version.update()
   return 0
 
