@@ -59,11 +59,4 @@ public class V8ValueWeakSet extends V8ValueObject {
         }
         return invokeBoolean(FUNCTION_HAS, key);
     }
-
-    @Override
-    @CheckReturnValue
-    public V8ValueWeakSet toClone() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.cloneV8Value(this);
-    }
 }

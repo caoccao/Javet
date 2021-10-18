@@ -4,6 +4,12 @@
 Release Notes 1.0.x
 ===================
 
+1.0.2
+-----
+
+* Added ``V8Internal``
+* Cleaned up ``V8Runtime`` internal API
+
 1.0.1 Custom Library Loading
 ----------------------------
 

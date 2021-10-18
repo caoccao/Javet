@@ -154,7 +154,7 @@ public class NodeRuntime extends V8Runtime {
     }
 
     @Override
-    protected void removeAllReferences() throws JavetException {
+    void removeAllReferences() throws JavetException {
         removeNodeModules();
         super.removeAllReferences();
     }
@@ -179,7 +179,7 @@ public class NodeRuntime extends V8Runtime {
      *
      * @since 0.8.1
      */
-    protected void removeNodeModules() {
+    void removeNodeModules() {
         if (!nodeModuleMap.isEmpty()) {
             JavetResourceUtils.safeClose(nodeModuleMap.values());
             nodeModuleMap.clear();

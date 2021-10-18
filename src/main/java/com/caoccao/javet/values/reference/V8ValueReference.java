@@ -36,22 +36,20 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     }
 
     protected void addReference() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.addReference(this);
+        checkV8Runtime().getV8Internal().addReference(this);
     }
 
     @Override
-    public void checkV8Runtime() throws JavetException {
+    public V8Runtime checkV8Runtime() throws JavetException {
         if (isClosed()) {
             throw new JavetException(JavetError.RuntimeAlreadyClosed);
         }
-        super.checkV8Runtime();
+        return super.checkV8Runtime();
     }
 
     @Override
     public void clearWeak() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.clearWeak(this);
+        checkV8Runtime().getV8Internal().clearWeak(this);
         weak = false;
     }
 
@@ -85,7 +83,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         if (getHandle() == v8ValueReference.getHandle()) {
             return true;
         }
-        return v8Runtime.equals(this, v8ValueReference);
+        return checkV8Runtime().getV8Internal().equals(this, v8ValueReference);
     }
 
     @Override
@@ -109,14 +107,13 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     @Override
     public boolean isWeak(boolean force) throws JavetException {
         if (force) {
-            checkV8Runtime();
-            weak = v8Runtime.isWeak(this);
+            weak = checkV8Runtime().getV8Internal().isWeak(this);
         }
         return weak;
     }
 
     protected void removeReference() throws JavetException {
-        v8Runtime.removeReference(this);
+        checkV8Runtime().getV8Internal().removeReference(this);
     }
 
     @Override
@@ -135,8 +132,7 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     public void setWeak() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.setWeak(this);
+        checkV8Runtime().getV8Internal().setWeak(this);
         weak = true;
     }
 
@@ -148,15 +144,13 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     @Override
     @CheckReturnValue
     public <T extends V8Value> T toClone() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.cloneV8Value(this);
+        return checkV8Runtime().getV8Internal().cloneV8Value(this);
     }
 
     @Override
     public String toString() {
         try {
-            checkV8Runtime();
-            return v8Runtime.toString(this);
+            return checkV8Runtime().getV8Internal().toString(this);
         } catch (JavetException e) {
             return e.getMessage();
         }

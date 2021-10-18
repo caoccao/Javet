@@ -54,65 +54,55 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException {
-        checkV8Runtime();
-        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
-            return v8Runtime.callAsConstructor(this, virtualValueList.get());
+        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(checkV8Runtime(), objects)) {
+            return v8Runtime.getV8Internal().callAsConstructor(this, virtualValueList.get());
         }
     }
 
     @Override
     @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException {
-        checkV8Runtime();
-        v8Runtime.decorateV8Values(v8Values);
-        return v8Runtime.callAsConstructor(this, v8Values);
+        return checkV8Runtime().getV8Internal().callAsConstructor(this, v8Values);
     }
 
     @Override
     @CheckReturnValue
     public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, Object... objects)
             throws JavetException {
-        checkV8Runtime();
-        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(v8Runtime, objects)) {
-            return v8Runtime.call(this, receiver, returnResult, virtualValueList.get());
+        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(checkV8Runtime(), objects)) {
+            return v8Runtime.getV8Internal().call(this, receiver, returnResult, virtualValueList.get());
         }
     }
 
     @Override
     @CheckReturnValue
     public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values) throws JavetException {
-        checkV8Runtime();
-        v8Runtime.decorateV8Values(v8Values);
-        return v8Runtime.call(this, receiver, returnResult, v8Values);
+        return checkV8Runtime().getV8Internal().call(this, receiver, returnResult, v8Values);
     }
 
     @Override
     @CheckReturnValue
     public IV8ValueArray getInternalProperties() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.getInternalProperties(this);
+        return checkV8Runtime().getV8Internal().getInternalProperties(this);
     }
 
     @Override
     public JSFunctionType getJSFunctionType() throws JavetException {
         if (!jsFunctionType.isPresent()) {
-            checkV8Runtime();
-            jsFunctionType = Optional.of(v8Runtime.getJSFunctionType(this));
+            jsFunctionType = Optional.of(checkV8Runtime().getV8Internal().getJSFunctionType(this));
         }
         return jsFunctionType.get();
     }
 
     @Override
     public JSScopeType getJSScopeType() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.getJSScopeType(this);
+        return checkV8Runtime().getV8Internal().getJSScopeType(this);
     }
 
     @Override
     public String getSourceCode() throws JavetException {
-        checkV8Runtime();
         if (getJSFunctionType().isUserDefined()) {
-            return v8Runtime.getSourceCode(this);
+            return checkV8Runtime().getV8Internal().getSourceCode(this);
         }
         return null;
     }
@@ -124,11 +114,10 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     public boolean setSourceCode(String sourceCodeString) throws JavetException {
-        checkV8Runtime();
         boolean success = false;
         if (getJSFunctionType().isUserDefined()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
-            success = v8Runtime.setSourceCode(this, sourceCodeString);
+            success = checkV8Runtime().getV8Internal().setSourceCode(this, sourceCodeString);
             v8Runtime.lowMemoryNotification();
         }
         return success;

@@ -38,9 +38,8 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
 
     @Override
     public void add(Object key) throws JavetException {
-        checkV8Runtime();
-        try (V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, key)) {
-            v8Runtime.add(this, virtualValue.get());
+        try (V8VirtualValue virtualValue = new V8VirtualValue(checkV8Runtime(), key)) {
+            v8Runtime.getV8Internal().add(this, virtualValue.get());
         }
     }
 
@@ -85,21 +84,18 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     @Override
     @CheckReturnValue
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
-        checkV8Runtime();
         return invoke(FUNCTION_ENTRIES);
     }
 
     @Override
     @CheckReturnValue
     public IV8ValueIterator<V8Value> getKeys() throws JavetException {
-        checkV8Runtime();
         return invoke(FUNCTION_KEYS);
     }
 
     @Override
     public int getSize() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.getSize(this);
+        return checkV8Runtime().getV8Internal().getSize(this);
     }
 
     @Override

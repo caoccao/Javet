@@ -69,13 +69,11 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     @CheckReturnValue
     public <T extends V8Value> T get(int index) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.get(this, v8Runtime.createV8ValueInteger(index));
+        return checkV8Runtime().getV8Internal().get(this, v8Runtime.createV8ValueInteger(index));
     }
 
     @Override
     public List<Integer> getKeys() throws JavetException {
-        checkV8Runtime();
         try (V8ValueObject iterator = invoke(FUNCTION_KEYS)) {
             List<Integer> keys = new ArrayList<>();
             while (true) {
@@ -92,8 +90,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     @Override
     public int getLength() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.getLength(this);
+        return checkV8Runtime().getV8Internal().getLength(this);
     }
 
     @Override
@@ -104,13 +101,11 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     @CheckReturnValue
     public <T extends V8Value> T pop() throws JavetException {
-        checkV8Runtime();
         return invoke(FUNCTION_POP);
     }
 
     @Override
     public int push(Object value) throws JavetException {
-        checkV8Runtime();
         return invokeInteger(FUNCTION_PUSH, value);
     }
 }
