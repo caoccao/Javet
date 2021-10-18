@@ -48,6 +48,7 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
     Javet::Converter::Initialize(jniEnv);
     Javet::Exceptions::Initialize(jniEnv);
     Javet::Inspector::Initialize(jniEnv);
+    Javet::Monitor::Initialize(jniEnv);
     LOG_INFO("JNI_Onload() ends.");
     return JNI_VERSION_1_8;
 }

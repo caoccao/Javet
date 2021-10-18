@@ -96,11 +96,11 @@ public interface IV8Native {
 
     String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    int[] getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
+    Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
 
-    int[] getV8HeapStatistics(long v8RuntimeHandle);
+    Object getV8HeapStatistics(long v8RuntimeHandle);
 
-    int[] getV8SharedMemoryStatistics();
+    Object getV8SharedMemoryStatistics();
 
     String getVersion();
 

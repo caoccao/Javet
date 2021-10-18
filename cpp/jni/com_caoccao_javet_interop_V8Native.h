@@ -266,25 +266,25 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getSourceCode
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getV8HeapSpaceStatistics
- * Signature: (JI)[I
+ * Signature: (JI)Ljava/lang/Object;
  */
-JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
   (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getV8HeapStatistics
- * Signature: (J)[I
+ * Signature: (J)Ljava/lang/Object;
  */
-JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapStatistics
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapStatistics
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getV8SharedMemoryStatistics
- * Signature: ()[I
+ * Signature: ()Ljava/lang/Object;
  */
-JNIEXPORT jintArray JNICALL Java_com_caoccao_javet_interop_V8Native_getV8SharedMemoryStatistics
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8SharedMemoryStatistics
   (JNIEnv *, jobject);
 
 /*
