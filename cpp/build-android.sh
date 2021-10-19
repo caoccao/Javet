@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Usage for V8: sh build-android.sh -DV8_DIR=${HOME}/v8 -DCMAKE_ANDROID_NDK=${HOME}/android
+# Usage for Node: sh build-android.sh -DNODE_DIR=${HOME}/node -DCMAKE_ANDROID_NDK=${HOME}/android
+JAVET_VERSION=1.0.2
+rm -rf build
+mkdir build
+cd build
+mkdir -p ../../src/main/resources
+mkdir -p ../../build/libs
+cmake ../ -DCMAKE_SYSTEM_NAME=Android -DJAVET_VERSION=${JAVET_VERSION} "$@" \
+  && make -j4
+if [ $? -eq 0 ]; then
+  cp -f *.so ../../src/main/resources
+  cp -f *.a ../../build/libs
+  echo Build Completed
+else
+  echo Build Failed
+fi
+cd ../
+
