@@ -347,17 +347,17 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            List<Method> methods = gettersMap.get(propertyName);
-            if (methods != null) {
-                JavetUniversalInterceptor javetUniversalInterceptor =
-                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
-                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
-            }
-            methods = methodsMap.get(propertyName);
-            if (methods != null) {
+            List<Method> methods = methodsMap.get(propertyName);
+            if (methods != null && !methods.isEmpty()) {
                 JavetUniversalInterceptor javetUniversalInterceptor =
                         new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
                 return v8Runtime.createV8ValueFunction(javetUniversalInterceptor.getCallbackContext());
+            }
+            methods = gettersMap.get(propertyName);
+            if (methods != null && !methods.isEmpty()) {
+                JavetUniversalInterceptor javetUniversalInterceptor =
+                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
+                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
             }
         }
         return v8Runtime.createV8ValueUndefined();
