@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-android:1.1.0 -f docker/android-arm64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-android:1.1.0 -f docker/android/base.Dockerfile .
 
 # This is experimental and does not completely work.
 
@@ -27,9 +27,20 @@ RUN echo V8 preparation is completed.
 
 # Build V8
 WORKDIR /google/v8
+RUN python tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN ninja -C out.gn/arm.release v8_monolith
 RUN python tools/dev/v8gen.py arm64.release -- 'target_os="android"' 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
 RUN ninja -C out.gn/arm64.release v8_monolith
+RUN python tools/dev/v8gen.py ia32.release -- 'target_os="android"' 'target_cpu="x86"' 'v8_target_cpu="x86"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN ninja -C out.gn/ia32.release v8_monolith
+RUN python tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN ninja -C out.gn/x64.release v8_monolith
 RUN echo V8 build is completed.
+
+# Prepare Android NDK
+WORKDIR /
+RUN wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
+RUN unzip android-ndk-r21e-linux-x86_64.zip
 
 # Prepare Javet Build Environment
 RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-8-jdk

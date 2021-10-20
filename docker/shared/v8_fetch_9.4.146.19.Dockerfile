@@ -15,8 +15,6 @@
 
 # Usage: docker build -t sjtucaocao/v8_fetch:9.4.146.19 -f docker/shared/v8_fetch_9.4.146.19.Dockerfile .
 
-# This is experimental and does not completely work.
-
 FROM ubuntu:20.04
 WORKDIR /
 
