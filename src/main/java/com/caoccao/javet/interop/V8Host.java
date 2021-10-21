@@ -28,8 +28,8 @@ import com.caoccao.javet.utils.SimpleMap;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -144,14 +144,18 @@ public final class V8Host implements AutoCloseable {
          * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/management/MemoryPoolMXBean.html">Memory Usage Monitoring</a>
          */
         if (memoryUsageThresholdRatio > 0) {
-            Optional<MemoryPoolMXBean> optionalHeapMemoryPoolMXBean = ManagementFactory.getMemoryPoolMXBeans().stream()
-                    .filter(pool -> pool.getType() == MemoryType.HEAP)
-                    .filter(MemoryPoolMXBean::isUsageThresholdSupported)
-                    .findFirst();
-            if (optionalHeapMemoryPoolMXBean.isPresent()) {
+            MemoryPoolMXBean heapMemoryPoolMXBean = null;
+            List<MemoryPoolMXBean> memoryPoolMXBeans = ManagementFactory.getMemoryPoolMXBeans();
+            for (MemoryPoolMXBean memoryPoolMXBean : memoryPoolMXBeans) {
+                if (memoryPoolMXBean.getType() == MemoryType.HEAP && memoryPoolMXBean.isUsageThresholdSupported()) {
+                    heapMemoryPoolMXBean = memoryPoolMXBean;
+                    break;
+                }
+            }
+            if (heapMemoryPoolMXBean != null) {
                 final long memoryUsageThreshold = (long) Math.floor(
-                        optionalHeapMemoryPoolMXBean.get().getUsage().getMax() * memoryUsageThresholdRatio);
-                optionalHeapMemoryPoolMXBean.get().setUsageThreshold(memoryUsageThreshold);
+                        heapMemoryPoolMXBean.getUsage().getMax() * memoryUsageThresholdRatio);
+                heapMemoryPoolMXBean.setUsageThreshold(memoryUsageThreshold);
             }
         }
     }

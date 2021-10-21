@@ -5,12 +5,10 @@ SET JAVET_VERSION=1.0.2
 rd /s/q build
 mkdir build
 cd build
-mkdir ..\..\src\main\resources
 mkdir ..\..\build\libs
 cmake ..\ -G "Visual Studio 16 2019" -A x64 -DJAVET_VERSION=%JAVET_VERSION% %* ^
   && cmake --build . -- /p:CharacterSet=Unicode /p:Configuration=Release /p:Platform=x64
 IF %ERRORLEVEL% EQU 0 (
-copy /y Release\*.dll ..\..\src\main\resources
 copy /y Release\*.lib ..\..\build\libs
 echo Build Completed
 ) ELSE (

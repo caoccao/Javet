@@ -6,12 +6,10 @@ JAVET_VERSION=1.0.2
 rm -rf build
 mkdir build
 cd build
-mkdir -p ../../src/main/resources
 mkdir -p ../../build/libs
 cmake ../ -DCMAKE_SYSTEM_NAME=Android -DJAVET_VERSION=${JAVET_VERSION} "$@" \
   && make -j4
 if [ $? -eq 0 ]; then
-  cp -f *.so ../../src/main/resources
   cp -f *.a ../../build/libs
   echo Build Completed
 else

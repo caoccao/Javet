@@ -58,7 +58,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     endif()
     set(CMAKE_SYSTEM_VERSION 21) # API level
     set(CMAKE_ANDROID_STL_TYPE c++_static)
+    set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
+    set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../src/main/resources)
     set(JAVET_LIB_ARCH x86_64)
 endif()
 
@@ -247,3 +249,4 @@ endif()
 
 set_target_properties(Javet PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}-${JAVET_LIB_ARCH}.v.${JAVET_VERSION}")
 include_directories(${includeDirs})
+add_custom_command(TARGET Javet POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Javet> "${JAVA_RESOURCES_DIR}/$<TARGET_FILE_NAME:Javet>")
