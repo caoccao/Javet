@@ -49,6 +49,10 @@ public final class JavetLibLoader {
      * @since 0.8.0
      */
     public static final String LIB_VERSION = "1.0.2";
+    private static final String ANDROID_ABI_ARM = "armeabi-v7a";
+    private static final String ANDROID_ABI_ARM64 = "arm64-v8a";
+    private static final String ANDROID_ABI_X86 = "x86";
+    private static final String ANDROID_ABI_X86_64 = "x86_64";
     private static final String ARCH_ARM = "arm";
     private static final String ARCH_ARM64 = "arm64";
     private static final String ARCH_X86 = "x86";
@@ -140,6 +144,34 @@ public final class JavetLibLoader {
         }
     }
 
+    private String getAndroidABI() {
+        if (JavetOSUtils.IS_ANDROID) {
+            if (JavetOSUtils.IS_ARM) {
+                return ANDROID_ABI_ARM;
+            } else if (JavetOSUtils.IS_ARM64) {
+                return ANDROID_ABI_ARM64;
+            } else if (JavetOSUtils.IS_X86) {
+                return ANDROID_ABI_X86;
+            } else if (JavetOSUtils.IS_X86_64) {
+                return ANDROID_ABI_X86_64;
+            }
+        }
+        return null;
+    }
+
+    private String getFileExtension() {
+        if (JavetOSUtils.IS_WINDOWS) {
+            return LIB_FILE_EXTENSION_WINDOWS;
+        } else if (JavetOSUtils.IS_LINUX) {
+            return LIB_FILE_EXTENSION_LINUX;
+        } else if (JavetOSUtils.IS_MACOS) {
+            return LIB_FILE_EXTENSION_MACOS;
+        } else if (JavetOSUtils.IS_ANDROID) {
+            return LIB_FILE_EXTENSION_ANDROID;
+        }
+        return null;
+    }
+
     /**
      * Gets js runtime type.
      *
@@ -158,42 +190,60 @@ public final class JavetLibLoader {
      * @since 1.0.1
      */
     public String getLibFileName() throws JavetException {
-        String fileExtension, osArch, osName;
-        if (JavetOSUtils.IS_WINDOWS) {
-            fileExtension = LIB_FILE_EXTENSION_WINDOWS;
-            osArch = ARCH_X86_64;
-            osName = OS_WINDOWS;
-        } else if (JavetOSUtils.IS_LINUX) {
-            fileExtension = LIB_FILE_EXTENSION_LINUX;
-            osArch = ARCH_X86_64;
-            osName = OS_LINUX;
-        } else if (JavetOSUtils.IS_MACOS) {
-            fileExtension = LIB_FILE_EXTENSION_MACOS;
-            osArch = ARCH_X86_64;
-            osName = OS_MACOS;
-        } else if (JavetOSUtils.IS_ANDROID) {
-            fileExtension = LIB_FILE_EXTENSION_ANDROID;
-            if (JavetOSUtils.IS_ARM) {
-                osArch = ARCH_ARM;
-            } else if (JavetOSUtils.IS_ARM64) {
-                osArch = ARCH_ARM64;
-            } else if (JavetOSUtils.IS_X86) {
-                osArch = ARCH_X86;
-            } else if (JavetOSUtils.IS_X86_64) {
-                osArch = ARCH_X86_64;
-            } else {
-                throw new JavetException(
-                        JavetError.OSNotSupported,
-                        SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_ARCH));
-            }
-            osName = OS_ANDROID;
-        } else {
+        String fileExtension = getFileExtension();
+        String osArch = getOSArch();
+        String osName = getOSName();
+        if (fileExtension == null || osName == null) {
             throw new JavetException(
                     JavetError.OSNotSupported,
                     SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_NAME));
         }
-        return MessageFormat.format(LIB_FILE_NAME_FORMAT,
-                jsRuntimeType.getName(), osName, osArch, LIB_VERSION, fileExtension);
+        if (osArch == null) {
+            throw new JavetException(
+                    JavetError.OSNotSupported,
+                    SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_ARCH));
+        }
+        return MessageFormat.format(
+                LIB_FILE_NAME_FORMAT,
+                jsRuntimeType.getName(),
+                osName,
+                osArch,
+                LIB_VERSION,
+                fileExtension);
+    }
+
+    private String getOSArch() {
+        if (JavetOSUtils.IS_WINDOWS) {
+            return ARCH_X86_64;
+        } else if (JavetOSUtils.IS_LINUX) {
+            return ARCH_X86_64;
+        } else if (JavetOSUtils.IS_MACOS) {
+            return ARCH_X86_64;
+        } else if (JavetOSUtils.IS_ANDROID) {
+            if (JavetOSUtils.IS_ARM) {
+                return ARCH_ARM;
+            } else if (JavetOSUtils.IS_ARM64) {
+                return ARCH_ARM64;
+            } else if (JavetOSUtils.IS_X86) {
+                return ARCH_X86;
+            } else if (JavetOSUtils.IS_X86_64) {
+                return ARCH_X86_64;
+            }
+        }
+        return null;
+    }
+
+    private String getOSName() {
+        if (JavetOSUtils.IS_WINDOWS) {
+            return OS_WINDOWS;
+        } else if (JavetOSUtils.IS_LINUX) {
+            return OS_LINUX;
+        } else if (JavetOSUtils.IS_MACOS) {
+            return OS_MACOS;
+        } else if (JavetOSUtils.IS_ANDROID) {
+            return OS_ANDROID;
+        }
+        return null;
     }
 
     /**
@@ -242,9 +292,18 @@ public final class JavetLibLoader {
                     Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
                     String resourceFileName = getResourceFileName();
-                    File rootLibPath = new File(libPath.toFile(), JavetOSUtils.IS_ANDROID
-                            ? ""
-                            : Long.toString(JavetOSUtils.PROCESS_ID));
+                    File rootLibPath;
+                    if (JavetOSUtils.IS_ANDROID) {
+                        String androidABI = getAndroidABI();
+                        if (androidABI == null) {
+                            throw new JavetException(
+                                    JavetError.OSNotSupported,
+                                    SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_ARCH));
+                        }
+                        rootLibPath = new File(libPath.toFile(), androidABI);
+                    } else {
+                        rootLibPath = new File(libPath.toFile(), Long.toString(JavetOSUtils.PROCESS_ID));
+                    }
                     if (!rootLibPath.exists()) {
                         if (!rootLibPath.mkdirs()) {
                             LOGGER.logError("Failed to create {0}.", rootLibPath.getAbsolutePath());
