@@ -290,6 +290,7 @@
 <h1>Major Features<a class="headerlink" href="#major-features" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>Linux + Mac OS + ️Windows (x86_64)</p></li>
+<li><p>Android (Experimental)</p></li>
 <li><p>Node.js <code class="docutils literal notranslate"><span class="pre">v16.11.1</span></code> + V8 <code class="docutils literal notranslate"><span class="pre">v9.4.146.19</span></code></p></li>
 <li><p>Dynamic switch between Node.js and V8 mode (<a class="reference external" href="https://github.com/caoccao/Javet/discussions/92">Which mode do you prefer?</a>)</p></li>
 <li><p>Polyfill V8 mode with <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a></p></li>
@@ -320,6 +321,13 @@
     <span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
     <span class="nt">&lt;version&gt;</span>1.0.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
+
+<span class="c">&lt;!-- Android (arm, arm64, x86 and x86_64) --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>javet-android<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -327,6 +335,7 @@
 <h3>Gradle Kotlin DSL<a class="headerlink" href="#gradle-kotlin-dsl" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet:1.0.2"</span><span class="p">)</span> <span class="c1">// Linux or Windows</span>
 <span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-macos:1.0.2"</span><span class="p">)</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-android:1.0.2"</span><span class="p">)</span> <span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </div>
@@ -334,6 +343,7 @@
 <h3>Gradle Groovy DSL<a class="headerlink" href="#gradle-groovy-dsl" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet:1.0.2'</span> <span class="c1">// Linux or Windows</span>
 <span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-macos:1.0.2'</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-android:1.0.2'</span> <span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </div>

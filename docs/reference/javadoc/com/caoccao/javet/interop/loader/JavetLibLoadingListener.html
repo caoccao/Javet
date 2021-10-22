@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10};
+var methods = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -160,6 +160,18 @@ implements <a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoa
 <div class="block">Gets lib path.</div>
 </td>
 </tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/loader/JavetLibLoadingListener.html#isDeploy-com.caoccao.javet.enums.JSRuntimeType-">isDeploy</a></span>(<a href="../../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</code>
+<div class="block">Is deploy.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/loader/JavetLibLoadingListener.html#isLibInSystemPath-com.caoccao.javet.enums.JSRuntimeType-">isLibInSystemPath</a></span>(<a href="../../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</code>
+<div class="block">Is lib in system path.</div>
+</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -167,13 +179,6 @@ implements <a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoa
 </a>
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
-</ul>
-<ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.com.caoccao.javet.interop.loader.IJavetLibLoadingListener">
-<!--   -->
-</a>
-<h3>Methods inherited from interface&nbsp;com.caoccao.javet.interop.loader.<a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html" title="interface in com.caoccao.javet.interop.loader">IJavetLibLoadingListener</a></h3>
-<code><a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html#isDeploy-com.caoccao.javet.enums.JSRuntimeType-">isDeploy</a>, <a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html#isLibInSystemPath-com.caoccao.javet.enums.JSRuntimeType-">isLibInSystemPath</a></code></li>
 </ul>
 </li>
 </ul>
@@ -209,7 +214,7 @@ implements <a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoa
 <a name="getLibPath-com.caoccao.javet.enums.JSRuntimeType-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getLibPath</h4>
 <pre>public&nbsp;java.nio.file.Path&nbsp;getLibPath(<a href="../../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</pre>
@@ -225,6 +230,44 @@ implements <a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoa
 <dd><code>jsRuntimeType</code> - the JS runtime type</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the lib path</dd>
+</dl>
+</li>
+</ul>
+<a name="isDeploy-com.caoccao.javet.enums.JSRuntimeType-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isDeploy</h4>
+<pre>public&nbsp;boolean&nbsp;isDeploy(<a href="../../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html#isDeploy-com.caoccao.javet.enums.JSRuntimeType-">IJavetLibLoadingListener</a></code></span></div>
+<div class="block">Is deploy.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html#isDeploy-com.caoccao.javet.enums.JSRuntimeType-">isDeploy</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html" title="interface in com.caoccao.javet.interop.loader">IJavetLibLoadingListener</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>jsRuntimeType</code> - the JS runtime type</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>true : yes, false : no</dd>
+</dl>
+</li>
+</ul>
+<a name="isLibInSystemPath-com.caoccao.javet.enums.JSRuntimeType-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>isLibInSystemPath</h4>
+<pre>public&nbsp;boolean&nbsp;isLibInSystemPath(<a href="../../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html#isLibInSystemPath-com.caoccao.javet.enums.JSRuntimeType-">IJavetLibLoadingListener</a></code></span></div>
+<div class="block">Is lib in system path.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html#isLibInSystemPath-com.caoccao.javet.enums.JSRuntimeType-">isLibInSystemPath</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html" title="interface in com.caoccao.javet.interop.loader">IJavetLibLoadingListener</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>jsRuntimeType</code> - the JS runtime type</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>true : yes, false : no</dd>
 </dl>
 </li>
 </ul>
