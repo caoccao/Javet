@@ -21,9 +21,15 @@
 #include "javet_node.h"
 #include "javet_v8.h"
 
+#ifdef __ANDROID__
+#define SUPPORTED_JNI_VERSION JNI_VERSION_1_6
+#else
+#define SUPPORTED_JNI_VERSION JNI_VERSION_1_8
+#endif
+
 #define FETCH_JNI_ENV(javaVMPointer) \
     JNIEnv* jniEnv; \
-    javaVMPointer->GetEnv((void**)&jniEnv, JNI_VERSION_1_8); \
+    javaVMPointer->GetEnv((void**)&jniEnv, SUPPORTED_JNI_VERSION); \
     javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
 
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \

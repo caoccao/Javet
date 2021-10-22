@@ -26,7 +26,7 @@ android {
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 26
+        targetSdk = 30
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -47,8 +47,8 @@ android {
 
     sourceSets {
         getByName("main") {
-            java.srcDirs("${projectDir}/../../src/main/java")
-            jniLibs.srcDirs("${projectDir}/src/main/jniLibs")
+            java.srcDirs("${projectDir}/../../src/main/java", "src/main/java")
+            jniLibs.srcDirs("src/main/jniLibs")
         }
     }
 }
