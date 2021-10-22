@@ -22,10 +22,11 @@ import java.lang.management.ManagementFactory;
 public final class JavetOSUtils {
     public static final String OS_ARCH = System.getProperty("os.arch");
     public static final String OS_NAME = System.getProperty("os.name");
-    public static final boolean IS_ANDROID = OS_NAME.startsWith("Android");
-    public static final boolean IS_LINUX = OS_NAME.startsWith("Linux");
-    public static final boolean IS_MACOS = OS_NAME.startsWith("Mac OS");
-    public static final boolean IS_WINDOWS = OS_NAME.startsWith("Windows");
+    public static final String JAVA_VM_NAME = System.getProperty("java.vm.name");
+    public static final boolean IS_ANDROID = JAVA_VM_NAME.startsWith("Dalvik");
+    public static final boolean IS_LINUX = OS_NAME.startsWith("Linux") && !IS_ANDROID;
+    public static final boolean IS_MACOS = OS_NAME.startsWith("Mac OS") && !IS_ANDROID;
+    public static final boolean IS_WINDOWS = OS_NAME.startsWith("Windows") && !IS_ANDROID;
     public static final boolean IS_ARM =
             OS_ARCH.startsWith("armeabi") || OS_ARCH.startsWith("armv7") ||
                     OS_ARCH.startsWith("arm32") || OS_ARCH.equals("arm");

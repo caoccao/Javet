@@ -131,7 +131,7 @@ public final class JavetLibLoader {
                         }
                         outputStream.write(buffer, 0, length);
                     }
-                    if (JavetOSUtils.IS_LINUX || JavetOSUtils.IS_MACOS) {
+                    if (JavetOSUtils.IS_LINUX || JavetOSUtils.IS_MACOS || JavetOSUtils.IS_ANDROID) {
                         try {
                             Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
                         } catch (Throwable ignored) {
@@ -255,7 +255,9 @@ public final class JavetLibLoader {
      */
     public String getResourceFileName()
             throws JavetException {
-        String resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, getLibFileName());
+        String resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, JavetOSUtils.IS_ANDROID
+                ? String.join("/", "lib", getAndroidABI(), getLibFileName())
+                : getLibFileName());
         if (JavetLibLoader.class.getResource(resourceFileName) == null) {
             throw new JavetException(
                     JavetError.LibraryNotFound,
@@ -294,13 +296,7 @@ public final class JavetLibLoader {
                     String resourceFileName = getResourceFileName();
                     File rootLibPath;
                     if (JavetOSUtils.IS_ANDROID) {
-                        String androidABI = getAndroidABI();
-                        if (androidABI == null) {
-                            throw new JavetException(
-                                    JavetError.OSNotSupported,
-                                    SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_ARCH));
-                        }
-                        rootLibPath = new File(libPath.toFile(), androidABI);
+                        rootLibPath = libPath.toFile();
                     } else {
                         rootLibPath = new File(libPath.toFile(), Long.toString(JavetOSUtils.PROCESS_ID));
                     }

@@ -21,6 +21,7 @@ import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.loader.JavetLibLoader;
+import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.SimpleMap;
 
@@ -30,6 +31,7 @@ import java.lang.reflect.Constructor;
 import java.util.Objects;
 
 class JavetClassLoader extends ClassLoader {
+    protected static final String ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID = "Node.js is not supported on Android.";
     protected static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
     protected static final String METHOD_LOAD = "load";
     protected static final String NODE_NATIVE_CLASS_NAME = NodeNative.class.getName();
@@ -43,32 +45,51 @@ class JavetClassLoader extends ClassLoader {
     }
 
     IV8Native getNative() throws JavetException {
-        try {
-            Class<?> classNative = loadClass(jsRuntimeType.isNode() ? NODE_NATIVE_CLASS_NAME : V8_NATIVE_CLASS_NAME);
-            Constructor<?> constructor = classNative.getDeclaredConstructor();
-            JavetReflectionUtils.safeSetAccessible(constructor);
-            return (IV8Native) constructor.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            throw new JavetException(
-                    JavetError.LibraryNotLoaded,
-                    SimpleMap.of(JavetError.PARAMETER_REASON, e.getMessage()),
-                    e);
+        if (JavetOSUtils.IS_ANDROID) {
+            if (jsRuntimeType.isNode()) {
+                throw new JavetException(
+                        JavetError.LibraryNotLoaded,
+                        SimpleMap.of(JavetError.PARAMETER_REASON, ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID));
+            }
+            return new V8Native();
+        } else {
+            try {
+                Class<?> classNative = loadClass(jsRuntimeType.isNode() ? NODE_NATIVE_CLASS_NAME : V8_NATIVE_CLASS_NAME);
+                Constructor<?> constructor = classNative.getDeclaredConstructor();
+                JavetReflectionUtils.safeSetAccessible(constructor);
+                return (IV8Native) constructor.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                throw new JavetException(
+                        JavetError.LibraryNotLoaded,
+                        SimpleMap.of(JavetError.PARAMETER_REASON, e.getMessage()),
+                        e);
+            }
         }
     }
 
     void load() throws JavetException {
-        try {
-            Class<?> classJavetLibLoader = loadClass(JAVET_LIB_LOADER_CLASS_NAME);
-            Constructor<?> constructor = classJavetLibLoader.getConstructor(JSRuntimeType.class);
-            Object javetLibLoader = constructor.newInstance(jsRuntimeType);
-            classJavetLibLoader.getMethod(METHOD_LOAD).invoke(javetLibLoader);
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            throw new JavetException(
-                    JavetError.LibraryNotLoaded,
-                    SimpleMap.of(JavetError.PARAMETER_REASON, e.getMessage()),
-                    e);
+        if (JavetOSUtils.IS_ANDROID) {
+            if (jsRuntimeType.isNode()) {
+                throw new JavetException(
+                        JavetError.LibraryNotLoaded,
+                        SimpleMap.of(JavetError.PARAMETER_REASON, ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID));
+            }
+            JavetLibLoader javetLibLoader = new JavetLibLoader(jsRuntimeType);
+            javetLibLoader.load();
+        } else {
+            try {
+                Class<?> classJavetLibLoader = loadClass(JAVET_LIB_LOADER_CLASS_NAME);
+                Constructor<?> constructor = classJavetLibLoader.getConstructor(JSRuntimeType.class);
+                Object javetLibLoader = constructor.newInstance(jsRuntimeType);
+                classJavetLibLoader.getMethod(METHOD_LOAD).invoke(javetLibLoader);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                throw new JavetException(
+                        JavetError.LibraryNotLoaded,
+                        SimpleMap.of(JavetError.PARAMETER_REASON, e.getMessage()),
+                        e);
+            }
         }
     }
 
