@@ -34,4 +34,20 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
     public Path getLibPath(JSRuntimeType jsRuntimeType) {
         return new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME).toPath();
     }
+
+    @Override
+    public boolean isDeploy(JSRuntimeType jsRuntimeType) {
+        if (JavetOSUtils.IS_ANDROID) {
+            return false;
+        }
+        return IJavetLibLoadingListener.super.isDeploy(jsRuntimeType);
+    }
+
+    @Override
+    public boolean isLibInSystemPath(JSRuntimeType jsRuntimeType) {
+        if (JavetOSUtils.IS_ANDROID) {
+            return true;
+        }
+        return IJavetLibLoadingListener.super.isLibInSystemPath(jsRuntimeType);
+    }
 }

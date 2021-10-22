@@ -48,6 +48,7 @@ android {
     sourceSets {
         getByName("main") {
             java.srcDirs("${projectDir}/../../src/main/java")
+            jniLibs.srcDirs("${projectDir}/src/main/jniLibs")
         }
     }
 }

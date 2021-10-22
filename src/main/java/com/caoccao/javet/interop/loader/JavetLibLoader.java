@@ -59,11 +59,13 @@ public final class JavetLibLoader {
     private static final String ARCH_X86_64 = "x86_64";
     private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
+    private static final String DOT = ".";
     private static final String LIB_FILE_EXTENSION_ANDROID = "so";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
     private static final String LIB_FILE_EXTENSION_MACOS = "dylib";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-{2}.v.{3}.{4}";
+    private static final String LIB_FILE_NAME_PREFIX = "lib";
     private static final IJavetLogger LOGGER = new JavetDefaultLogger(JavetLibLoader.class.getName());
     private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 60L * 1000L; // 1 minute
     private static final String OS_ANDROID = "android";
@@ -212,6 +214,33 @@ public final class JavetLibLoader {
                 fileExtension);
     }
 
+    private String getNormalizedLibFilePath(String libFilePath) {
+        boolean prefixToBeNormalized = false;
+        if (JavetOSUtils.IS_LINUX) {
+            prefixToBeNormalized = true;
+            if (libFilePath.endsWith(DOT + LIB_FILE_EXTENSION_LINUX)) {
+                libFilePath = libFilePath.substring(
+                        0, libFilePath.length() - DOT.length() - LIB_FILE_EXTENSION_LINUX.length());
+            }
+        } else if (JavetOSUtils.IS_ANDROID) {
+            prefixToBeNormalized = true;
+            if (libFilePath.endsWith(DOT + LIB_FILE_EXTENSION_ANDROID)) {
+                libFilePath = libFilePath.substring(
+                        0, libFilePath.length() - DOT.length() - LIB_FILE_EXTENSION_ANDROID.length());
+            }
+        } else if (JavetOSUtils.IS_MACOS) {
+            prefixToBeNormalized = true;
+            if (libFilePath.endsWith(DOT + LIB_FILE_EXTENSION_MACOS)) {
+                libFilePath = libFilePath.substring(
+                        0, libFilePath.length() - DOT.length() - LIB_FILE_EXTENSION_MACOS.length());
+            }
+        }
+        if (prefixToBeNormalized && libFilePath.startsWith(LIB_FILE_NAME_PREFIX)) {
+            libFilePath = libFilePath.substring(LIB_FILE_NAME_PREFIX.length());
+        }
+        return libFilePath;
+    }
+
     private String getOSArch() {
         if (JavetOSUtils.IS_WINDOWS) {
             return ARCH_X86_64;
@@ -256,7 +285,7 @@ public final class JavetLibLoader {
     public String getResourceFileName()
             throws JavetException {
         String resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, JavetOSUtils.IS_ANDROID
-                ? String.join("/", "lib", getAndroidABI(), getLibFileName())
+                ? String.join("/", LIB_FILE_NAME_PREFIX, getAndroidABI(), getLibFileName())
                 : getLibFileName());
         if (JavetLibLoader.class.getResource(resourceFileName) == null) {
             throw new JavetException(
@@ -315,7 +344,7 @@ public final class JavetLibLoader {
                     libFilePath = new File(libPath.toFile(), getLibFileName()).getAbsolutePath();
                 }
                 if (isLibInSystemPath) {
-                    System.loadLibrary(libFilePath);
+                    System.loadLibrary(getNormalizedLibFilePath(libFilePath));
                 } else {
                     System.load(libFilePath);
                 }
