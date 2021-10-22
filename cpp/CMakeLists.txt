@@ -56,7 +56,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     else()
         message(FATAL_ERROR "CMAKE_ANDROID_ARCH must be one of arm, arm64, x86, x86_64.")
     endif()
-    set(CMAKE_SYSTEM_VERSION 21) # API level
+    # For now, the target ABI version is set to 26 because not all Java code is fully compatible with legacy SDK.
+    # In the future, more work will be done to lower the target ABI version.
+    set(CMAKE_SYSTEM_VERSION 26)
     set(CMAKE_ANDROID_STL_TYPE c++_static)
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
