@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This is for experiment only.
+
 # Usage: docker build -t sjtucaocao/javet-android:1.0.2 -f docker/android/base.Dockerfile .
 
 FROM ubuntu:20.04
@@ -46,6 +48,18 @@ RUN echo 'target_os = ["android"]' >> .gclient
 RUN gclient sync
 RUN echo V8 preparation is completed.
 
+# Prepare Android NDK
+WORKDIR /
+RUN wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
+RUN unzip android-ndk-r21e-linux-x86_64.zip
+RUN rm android-ndk-r21e-linux-x86_64.zip
+
+# Prepare Android SDK
+WORKDIR /google/v8/third_party/android_sdk/public/cmdline-tools/latest/bin
+RUN yes | ./sdkmanager --licenses
+RUN ./sdkmanager "build-tools;30.0.2" "platforms;android-30"
+ENV ANDROID_SDK_ROOT=/google/v8/third_party/android_sdk
+
 # Build V8
 WORKDIR /google/v8
 RUN python tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
@@ -57,11 +71,6 @@ RUN ninja -C out.gn/ia32.release v8_monolith
 RUN python tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
 RUN ninja -C out.gn/x64.release v8_monolith
 RUN echo V8 build is completed.
-
-# Prepare Android NDK
-WORKDIR /
-RUN wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
-RUN unzip android-ndk-r21e-linux-x86_64.zip
 
 # Prepare Javet Build Environment
 RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-8-jdk
