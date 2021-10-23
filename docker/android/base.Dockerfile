@@ -13,13 +13,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-android:1.1.0 -f docker/android/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-android:1.0.2 -f docker/android/base.Dockerfile .
 
-# This is experimental and does not completely work.
+FROM ubuntu:20.04
+WORKDIR /
 
-FROM sjtucaocao/v8_fetch:9.4.146.19
+# Update Ubuntu
+ENV DEBIAN_FRONTEND=noninteractive
+RUN echo Cache V1
+RUN apt-get update
+RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack cmake
+RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
+RUN apt-get upgrade -y
+RUN pip3 install coloredlogs
 
 # Prepare V8
+RUN mkdir google
+WORKDIR /google
+RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+WORKDIR /google/depot_tools
+RUN git checkout remotes/origin/main
+ENV PATH=/google/depot_tools:$PATH
+WORKDIR /google
+RUN fetch v8
+WORKDIR /google/v8
+RUN git checkout 9.5.172.22
+RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
+RUN ./build/install-build-deps.sh
+RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
 WORKDIR /google
 RUN echo 'target_os = ["android"]' >> .gclient
 RUN gclient sync

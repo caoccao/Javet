@@ -27,7 +27,7 @@ if hasattr(importlib, 'util') and importlib.util.find_spec('coloredlogs'):
   coloredlogs.install(level=logging.DEBUG, fmt='%(asctime)-15s %(name)s %(levelname)s: %(message)s')
 
 '''
-This Python script is for patching V8 on Windows.
+This Python script is for patching V8 on Linux and Windows.
 
 1. Clone V8.
 2. Checkout to proper version.
@@ -42,7 +42,11 @@ class PatchV8Build(object):
     self._escape = '\\'
     self._line_separator = '\n'
     self._common_ninja_line_cflags = 'cflags ='
-    self._common_ninja_cflags = ['-Wno-invalid-offsetof', '-Wno-range-loop-construct']
+    self._common_ninja_cflags = [
+      '-Wno-invalid-offsetof',
+      '-Wno-range-loop-construct',
+      '-Wno-deprecated-copy-with-user-provided-copy',
+    ]
     self._common_ninja_files = [
       'out.gn/x64.release/obj/v8_base_without_compiler.ninja',
       'out.gn/x64.release/obj/v8_compiler.ninja',
@@ -89,10 +93,10 @@ class PatchV8Build(object):
     return 0
 
 def main():
-  if platform.system().startswith('Windows'):
+  if platform.system().startswith('Windows') or platform.system().startswith('Linux'):
     return PatchV8Build().patch()
   else:
-    logging.error('This script is for Windows only.')
+    logging.error('This script is for Linux and Windows only.')
     return 1
 
 if __name__ == '__main__':

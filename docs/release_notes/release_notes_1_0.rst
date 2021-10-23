@@ -7,8 +7,12 @@ Release Notes 1.0.x
 1.0.2
 -----
 
+* Supported Android (arm, arm64, x86 and x86_64)
+* Upgraded Node.js to ``v16.12.0`` `(2021-10-20) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.12.0>`_
+* Upgraded V8 to ``v9.5.172.22`` `(2021-10-20) <https://v8.dev/blog/v8-release-95>`_
 * Added ``V8Internal``
 * Cleaned up ``V8Runtime`` internal API
+* Removed ``MethodHandle`` for Android compatibility
 
 1.0.1 Custom Library Loading
 ----------------------------

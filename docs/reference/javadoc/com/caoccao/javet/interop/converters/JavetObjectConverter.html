@@ -152,7 +152,7 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetPrimit
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.lang.invoke.MethodHandle[]&gt;</code></td>
+<td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.lang.reflect.Executable[]&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#customObjectMap">customObjectMap</a></span></code>
 <div class="block">The Custom object map.</div>
 </td>
@@ -188,42 +188,24 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetPrimit
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected static java.lang.invoke.MethodType</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#METHOD_TYPE_CONSTRUCTOR">METHOD_TYPE_CONSTRUCTOR</a></span></code>
-<div class="block">The constant METHOD_TYPE_CONSTRUCTOR.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>protected static java.lang.invoke.MethodType</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#METHOD_TYPE_FROM_MAP">METHOD_TYPE_FROM_MAP</a></span></code>
-<div class="block">The constant METHOD_TYPE_FROM_MAP.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected static java.lang.invoke.MethodType</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#METHOD_TYPE_TO_MAP">METHOD_TYPE_TO_MAP</a></span></code>
-<div class="block">The constant METHOD_TYPE_TO_MAP.</div>
-</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><code>protected static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME">PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME</a></span></code>
 <div class="block">The constant PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#PRIVATE_PROPERTY_PROXY_TARGET">PRIVATE_PROPERTY_PROXY_TARGET</a></span></code>
 <div class="block">The constant PRIVATE_PROPERTY_PROXY_TARGET.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#PROPERTY_NAME">PROPERTY_NAME</a></span></code>
 <div class="block">The constant PROPERTY_NAME.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#PUBLIC_PROPERTY_CONSTRUCTOR">PUBLIC_PROPERTY_CONSTRUCTOR</a></span></code>
 <div class="block">The constant PUBLIC_PROPERTY_CONSTRUCTOR.</div>
@@ -433,48 +415,6 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetPrimit
 </dl>
 </li>
 </ul>
-<a name="METHOD_TYPE_CONSTRUCTOR">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>METHOD_TYPE_CONSTRUCTOR</h4>
-<pre>protected static final&nbsp;java.lang.invoke.MethodType METHOD_TYPE_CONSTRUCTOR</pre>
-<div class="block">The constant METHOD_TYPE_CONSTRUCTOR.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.14</dd>
-</dl>
-</li>
-</ul>
-<a name="METHOD_TYPE_FROM_MAP">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>METHOD_TYPE_FROM_MAP</h4>
-<pre>protected static final&nbsp;java.lang.invoke.MethodType METHOD_TYPE_FROM_MAP</pre>
-<div class="block">The constant METHOD_TYPE_FROM_MAP.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.14</dd>
-</dl>
-</li>
-</ul>
-<a name="METHOD_TYPE_TO_MAP">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>METHOD_TYPE_TO_MAP</h4>
-<pre>protected static final&nbsp;java.lang.invoke.MethodType METHOD_TYPE_TO_MAP</pre>
-<div class="block">The constant METHOD_TYPE_TO_MAP.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.14</dd>
-</dl>
-</li>
-</ul>
 <a name="PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME">
 <!--   -->
 </a>
@@ -559,7 +499,7 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetPrimit
 <ul class="blockListLast">
 <li class="blockList">
 <h4>customObjectMap</h4>
-<pre>protected&nbsp;java.util.Map&lt;java.lang.String,java.lang.invoke.MethodHandle[]&gt; customObjectMap</pre>
+<pre>protected&nbsp;java.util.Map&lt;java.lang.String,java.lang.reflect.Executable[]&gt; customObjectMap</pre>
 <div class="block">The Custom object map.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>

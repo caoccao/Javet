@@ -68,6 +68,8 @@ Build V8 on Linux and Mac OS
     cd root_path_to_v8
     ninja -C out.gn/x64.release v8_monolith
 
+Recently, the Linux build requires patching as well. Please refer to the next section for detail.
+
 Build V8 on Windows
 -------------------
 

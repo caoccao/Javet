@@ -27,8 +27,8 @@ Major Features
 ==============
 
 * Linux + Mac OS + ️Windows (x86_64)
-* Android (Experimental)
-* Node.js ``v16.11.1`` + V8 ``v9.4.146.19``
+* Android (arm, arm64, x86 and x86_64)
+* Node.js ``v16.12.0`` + V8 ``v9.5.172.22``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
