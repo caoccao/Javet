@@ -42,16 +42,35 @@ class PatchV8Build(object):
     self._escape = '\\'
     self._line_separator = '\n'
     self._common_ninja_line_cflags = 'cflags ='
-    self._common_ninja_cflags = [
+    self._common_ninja_exclude_cflags = [
+      '-Werror',
+    ]
+    self._common_ninja_include_cflags = [
       '-Wno-invalid-offsetof',
       '-Wno-range-loop-construct',
       '-Wno-deprecated-copy-with-user-provided-copy',
     ]
     self._common_ninja_files = [
+      'out.gn/arm.release/obj/v8_base_without_compiler.ninja',
+      'out.gn/arm.release/obj/v8_compiler.ninja',
+      'out.gn/arm.release/obj/v8_initializers.ninja',
+      'out.gn/arm.release/obj/v8_init.ninja',
+      'out.gn/arm.release/clang_x86_v8_arm/obj/v8_base_without_compiler.ninja',
+      'out.gn/arm64.release/obj/v8_base_without_compiler.ninja',
+      'out.gn/arm64.release/obj/v8_compiler.ninja',
+      'out.gn/arm64.release/obj/v8_initializers.ninja',
+      'out.gn/arm64.release/obj/v8_init.ninja',
+      'out.gn/arm64.release/clang_x64_v8_arm64/obj/v8_base_without_compiler.ninja',
+      'out.gn/ia32.release/obj/v8_base_without_compiler.ninja',
+      'out.gn/ia32.release/obj/v8_compiler.ninja',
+      'out.gn/ia32.release/obj/v8_initializers.ninja',
+      'out.gn/ia32.release/obj/v8_init.ninja',
+      'out.gn/ia32.release/clang_x86/obj/v8_base_without_compiler.ninja',
       'out.gn/x64.release/obj/v8_base_without_compiler.ninja',
       'out.gn/x64.release/obj/v8_compiler.ninja',
       'out.gn/x64.release/obj/v8_initializers.ninja',
       'out.gn/x64.release/obj/v8_init.ninja',
+      'out.gn/x64.release/clang_x64/obj/v8_base_without_compiler.ninja',
     ]
 
     self._parse_args()
@@ -77,9 +96,13 @@ class PatchV8Build(object):
         for line in original_buffer.decode('utf-8').split(self._line_separator):
           if line.startswith(self._common_ninja_line_cflags):
             flags = line.split(' ')
-            for warning_flag in self._common_ninja_cflags:
-              if warning_flag not in flags:
-                line += ' ' + warning_flag
+            for include_flag in self._common_ninja_include_cflags:
+              if include_flag not in flags:
+                flags.append(include_flag)
+            for exclude_flag in self._common_ninja_exclude_cflags:
+              if exclude_flag in flags:
+                flags.remove(exclude_flag)
+            line = ' '.join(flags)
           lines.append(line)
         new_buffer = self._line_separator.join(lines).encode('utf-8')
         if original_buffer == new_buffer:
