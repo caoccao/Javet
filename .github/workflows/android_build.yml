@@ -27,7 +27,7 @@ jobs:
       run: docker build -t javet-android:local -f docker/android/build.Dockerfile .
 
     - name: Copy the artifact
-      run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet-android:local cp -rf /Javet/android/javet-android/build /output
+      run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet-android:local cp -rf /Javet/android/javet-android/build/outputs /output
 
     - name: Upload the artifact
       uses: actions/upload-artifact@v2

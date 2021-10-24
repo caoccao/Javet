@@ -40,7 +40,7 @@ Build Javet for Linux on Linux or Windows
 
 .. note::
 
-   * Docker will pull the corresponding image (~10GB) from Docker Hub.
+   * Docker will pull the corresponding image (~5GB) from Docker Hub.
    * The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.
 
 Build Javet for Windows on Windows
@@ -81,5 +81,5 @@ Build Javet for Android on Linux or Windows
 
 .. note::
 
-    * Docker will pull the corresponding image (~25GB) from Docker Hub.
+    * Docker will pull the corresponding image (~11GB) from Docker Hub.
     * The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.

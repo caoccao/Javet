@@ -1,7 +1,9 @@
 Javet
 =====
 
-|Maven Central| |Discord| |Donate| |Linux Build|
+|Maven Central| |Discord| |Donate|
+
+|Linux Build| |Android Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
@@ -14,6 +16,9 @@ Javet
 
 .. |Linux Build| image:: https://img.shields.io/github/workflow/status/caoccao/Javet/Linux%20Build?label=Linux%20Build&style=for-the-badge
     :target: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml
+
+.. |Android Build| image:: https://img.shields.io/github/workflow/status/caoccao/Javet/Android%20Build?label=Android%20Build&style=for-the-badge
+    :target: https://github.com/caoccao/Javet/actions/workflows/android_build.yml
 
 `Javet <https://github.com/caoccao/Javet/>`_ is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
