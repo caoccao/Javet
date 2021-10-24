@@ -2,37 +2,6 @@
 Build Javet from Scratch
 ========================
 
-Build Environment
-=================
-
-Linux Environment
------------------
-
-* Ubuntu 20.04
-* CMake 3.10+
-* JDK 8
-* Gradle 7.0+
-
-MacOS Environment
------------------
-
-* MacOS Catalina+
-* Latest Brew
-* Xcode 11.4.1+
-* Cmake 3.16+
-* JDK 8
-* Gradle 7.0+
-
-Windows Environment
--------------------
-
-* Latest Windows 10
-* Visual Studio 2019 Community
-* CMake 3.16+ (comes with Visual Studio)
-* Latest Windows 10 SDK with WinDbg
-* JDK 8
-* Gradle 7.2+
-
 Build V8
 ========
 
@@ -59,35 +28,69 @@ Also, please make sure ``args.gn`` file looks like the following.
     symbol_level = 0
     use_custom_libcxx = false
 
-Build V8 on Linux and Mac OS
-----------------------------
+Build V8 for Linux
+------------------
 
 .. code-block:: shell
 
-    export PATH=path_to_depot_tools:$PATH
-    cd root_path_to_v8
+    export PATH=${DEPOT_TOOLS_HOME}:$PATH
+    cd ${V8_HOME}
+    ninja -C out.gn/x64.release v8_monolith
+    python3 ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
     ninja -C out.gn/x64.release v8_monolith
 
-Recently, the Linux build requires patching as well. Please refer to the next section for detail.
-
-Build V8 on Windows
+Build V8 for Mac OS
 -------------------
+
+.. code-block:: shell
+
+    export PATH=${DEPOT_TOOLS_HOME}:$PATH
+    cd ${V8_HOME}
+    ninja -C out.gn/x64.release v8_monolith
+
+Build V8 for Windows
+--------------------
 
 .. caution::
 
-   ️ The patch script requires Python 3.
+    The patch script requires Python 3.
 
 .. code-block:: shell
 
-    set PATH=path_to_depot_tools;%PATH%
+    set PATH=%DEPOT_TOOLS_HOME%;%PATH%
     set DEPOT_TOOLS_WIN_TOOLCHAIN=0
-    cd root_path_to_v8
+    cd %V8_HOME%
     ninja -C out.gn/x64.release v8_monolith
-    python root_path_to_javet\scripts\python\patch_v8_build.py -p .\
+    python %JAVET_HOME%\scripts\python\patch_v8_build.py -p .\
     ninja -C out.gn/x64.release v8_monolith
     gn gen --ide=vs out.gn\x64.solution
 
-Why Patching?
+Build V8 for Android
+--------------------
+
+.. code-block:: shell
+
+    export PATH=${DEPOT_TOOLS_HOME}:$PATH
+    cd ${V8_HOME}
+    python tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+    ninja -C out.gn/arm.release v8_monolith
+    python ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
+    ninja -C out.gn/arm.release v8_monolith
+    python tools/dev/v8gen.py arm64.release -- 'target_os="android"' 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+    ninja -C out.gn/arm64.release v8_monolith
+    python ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
+    ninja -C out.gn/arm64.release v8_monolith
+    python tools/dev/v8gen.py ia32.release -- 'target_os="android"' 'target_cpu="x86"' 'v8_target_cpu="x86"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+    ninja -C out.gn/ia32.release v8_monolith
+    python ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
+    ninja -C out.gn/ia32.release v8_monolith
+    python tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+    ninja -C out.gn/x64.release v8_monolith
+    python ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
+    ninja -C out.gn/x64.release v8_monolith
+
+Why Patching V8?
+----------------
 
 A few ninja files set certain warnings as errors so that MSVC stops compilation. The patch is to turn off those errors.
 
@@ -107,17 +110,18 @@ Build Node.js on Linux
 
 .. caution::
 
-   ️ The patch script requires Python 3.
+    The patch script requires Python 3.
 
 .. code-block:: shell
 
-    cd root_path_to_node_js
-    python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
+    cd ${NODE_HOME}
+    python3 ${JAVET_HOME}/scripts/python/patch_node_build.py -p ${NODE_HOME}
     ./configure --enable-static --without-intl
-    python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
+    python3 ${JAVET_HOME}/scripts/python/patch_node_build.py -p ${NODE_HOME}
     make -j4
 
-Why Patching?
+Why Patching Node.js?
+---------------------
 
 * First patch: All static node libraries are ``<thin>`` libraries. The patch is to disable ``<thin>``.
 * Second patch: Many static node libraries are not compiled to `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ and link phase is broken with the following error. The patch is to set ``-fPIC`` to those make files.
@@ -132,6 +136,7 @@ Build Node.js on Mac OS
 
 .. code-block:: shell
 
+    cd ${NODE_HOME}
     ./configure --enable-static --without-intl
     make -j4
 
@@ -140,6 +145,7 @@ Build Node.js on Windows
 
 .. code-block:: shell
 
+    cd %NODE_HOME%
     vcbuild.bat static without-intl
 
 Build Javet

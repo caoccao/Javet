@@ -280,40 +280,6 @@
         <article role="main">
           <div class="section" id="build-javet-from-scratch">
 <h1>Build Javet from Scratch<a class="headerlink" href="#build-javet-from-scratch" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="build-environment">
-<h2>Build Environment<a class="headerlink" href="#build-environment" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="linux-environment">
-<h3>Linux Environment<a class="headerlink" href="#linux-environment" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>Ubuntu 20.04</p></li>
-<li><p>CMake 3.10+</p></li>
-<li><p>JDK 8</p></li>
-<li><p>Gradle 7.0+</p></li>
-</ul>
-</div>
-<div class="section" id="macos-environment">
-<h3>MacOS Environment<a class="headerlink" href="#macos-environment" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>MacOS Catalina+</p></li>
-<li><p>Latest Brew</p></li>
-<li><p>Xcode 11.4.1+</p></li>
-<li><p>Cmake 3.16+</p></li>
-<li><p>JDK 8</p></li>
-<li><p>Gradle 7.0+</p></li>
-</ul>
-</div>
-<div class="section" id="windows-environment">
-<h3>Windows Environment<a class="headerlink" href="#windows-environment" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>Latest Windows 10</p></li>
-<li><p>Visual Studio 2019 Community</p></li>
-<li><p>CMake 3.16+ (comes with Visual Studio)</p></li>
-<li><p>Latest Windows 10 SDK with WinDbg</p></li>
-<li><p>JDK 8</p></li>
-<li><p>Gradle 7.2+</p></li>
-</ul>
-</div>
-</div>
 <div class="section" id="build-v8">
 <h2>Build V8<a class="headerlink" href="#build-v8" title="Permalink to this headline">¶</a></h2>
 <p>Please follow the <a class="reference external" href="https://v8.dev/docs/build">official guide</a> to build V8. If you face any issues, you may contact <a class="reference external" href="https://twitter.com/sjtucaocao">@sjtucaocao</a>.</p>
@@ -337,31 +303,65 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="build-v8-on-linux-and-mac-os">
-<h3>Build V8 on Linux and Mac OS<a class="headerlink" href="#build-v8-on-linux-and-mac-os" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>path_to_depot_tools:<span class="nv">$PATH</span>
-<span class="nb">cd</span> root_path_to_v8
+<div class="section" id="build-v8-for-linux">
+<h3>Build V8 for Linux<a class="headerlink" href="#build-v8-for-linux" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
+<span class="nb">cd</span> <span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
+ninja -C out.gn/x64.release v8_monolith
+python3 <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
 ninja -C out.gn/x64.release v8_monolith
 </pre></div>
 </div>
-<p>Recently, the Linux build requires patching as well. Please refer to the next section for detail.</p>
 </div>
-<div class="section" id="build-v8-on-windows">
-<h3>Build V8 on Windows<a class="headerlink" href="#build-v8-on-windows" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="build-v8-for-mac-os">
+<h3>Build V8 for Mac OS<a class="headerlink" href="#build-v8-for-mac-os" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
+<span class="nb">cd</span> <span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
+ninja -C out.gn/x64.release v8_monolith
+</pre></div>
+</div>
+</div>
+<div class="section" id="build-v8-for-windows">
+<h3>Build V8 for Windows<a class="headerlink" href="#build-v8-for-windows" title="Permalink to this headline">¶</a></h3>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>️ The patch script requires Python 3.</p>
+<p>The patch script requires Python 3.</p>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="nv">PATH</span><span class="o">=</span>path_to_depot_tools<span class="p">;</span>%PATH%
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="nv">PATH</span><span class="o">=</span>%DEPOT_TOOLS_HOME%<span class="p">;</span>%PATH%
 <span class="nb">set</span> <span class="nv">DEPOT_TOOLS_WIN_TOOLCHAIN</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">cd</span> root_path_to_v8
+<span class="nb">cd</span> %V8_HOME%
 ninja -C out.gn/x64.release v8_monolith
-python root_path_to_javet<span class="se">\s</span>cripts<span class="se">\p</span>ython<span class="se">\p</span>atch_v8_build.py -p .<span class="se">\</span>
+python %JAVET_HOME%<span class="se">\s</span>cripts<span class="se">\p</span>ython<span class="se">\p</span>atch_v8_build.py -p .<span class="se">\</span>
 ninja -C out.gn/x64.release v8_monolith
 gn gen --ide<span class="o">=</span>vs out.gn<span class="se">\x</span><span class="m">64</span>.solution
 </pre></div>
 </div>
-<p>Why Patching?</p>
+</div>
+<div class="section" id="build-v8-for-android">
+<h3>Build V8 for Android<a class="headerlink" href="#build-v8-for-android" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
+<span class="nb">cd</span> <span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
+python tools/dev/v8gen.py arm.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="arm"'</span> <span class="s1">'v8_target_cpu="arm"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
+ninja -C out.gn/arm.release v8_monolith
+python <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
+ninja -C out.gn/arm.release v8_monolith
+python tools/dev/v8gen.py arm64.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="arm64"'</span> <span class="s1">'v8_target_cpu="arm64"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
+ninja -C out.gn/arm64.release v8_monolith
+python <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
+ninja -C out.gn/arm64.release v8_monolith
+python tools/dev/v8gen.py ia32.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="x86"'</span> <span class="s1">'v8_target_cpu="x86"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
+ninja -C out.gn/ia32.release v8_monolith
+python <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
+ninja -C out.gn/ia32.release v8_monolith
+python tools/dev/v8gen.py x64.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="x64"'</span> <span class="s1">'v8_target_cpu="x64"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
+ninja -C out.gn/x64.release v8_monolith
+python <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
+ninja -C out.gn/x64.release v8_monolith
+</pre></div>
+</div>
+</div>
+<div class="section" id="why-patching-v8">
+<h3>Why Patching V8?<a class="headerlink" href="#why-patching-v8" title="Permalink to this headline">¶</a></h3>
 <p>A few ninja files set certain warnings as errors so that MSVC stops compilation. The patch is to turn off those errors.</p>
 </div>
 </div>
@@ -379,16 +379,18 @@ gn gen --ide<span class="o">=</span>vs out.gn<span class="se">\x</span><span cla
 <h3>Build Node.js on Linux<a class="headerlink" href="#build-node-js-on-linux" title="Permalink to this headline">¶</a></h3>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>️ The patch script requires Python 3.</p>
+<p>The patch script requires Python 3.</p>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> root_path_to_node_js
-python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="si">${</span><span class="nv">NODE_HOME</span><span class="si">}</span>
+python3 <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_node_build.py -p <span class="si">${</span><span class="nv">NODE_HOME</span><span class="si">}</span>
 ./configure --enable-static --without-intl
-python3 root_path_to_javet/scripts/python/patch_node_build.py -p ./
+python3 <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_node_build.py -p <span class="si">${</span><span class="nv">NODE_HOME</span><span class="si">}</span>
 make -j4
 </pre></div>
 </div>
-<p>Why Patching?</p>
+</div>
+<div class="section" id="why-patching-node-js">
+<h3>Why Patching Node.js?<a class="headerlink" href="#why-patching-node-js" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p>First patch: All static node libraries are <code class="docutils literal notranslate"><span class="pre">&lt;thin&gt;</span></code> libraries. The patch is to disable <code class="docutils literal notranslate"><span class="pre">&lt;thin&gt;</span></code>.</p></li>
 <li><p>Second patch: Many static node libraries are not compiled to <a class="reference external" href="https://en.wikipedia.org/wiki/Position-independent_code">position independent code</a> and link phase is broken with the following error. The patch is to set <code class="docutils literal notranslate"><span class="pre">-fPIC</span></code> to those make files.</p>
@@ -403,14 +405,16 @@ recompile with -fPIC</p>
 </div>
 <div class="section" id="build-node-js-on-mac-os">
 <h3>Build Node.js on Mac OS<a class="headerlink" href="#build-node-js-on-mac-os" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./configure --enable-static --without-intl
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="si">${</span><span class="nv">NODE_HOME</span><span class="si">}</span>
+./configure --enable-static --without-intl
 make -j4
 </pre></div>
 </div>
 </div>
 <div class="section" id="build-node-js-on-windows">
 <h3>Build Node.js on Windows<a class="headerlink" href="#build-node-js-on-windows" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>vcbuild.bat static without-intl
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> %NODE_HOME%
+vcbuild.bat static without-intl
 </pre></div>
 </div>
 </div>
@@ -467,21 +471,19 @@ make -j4
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Build Javet from Scratch</a><ul>
-<li><a class="reference internal" href="#build-environment">Build Environment</a><ul>
-<li><a class="reference internal" href="#linux-environment">Linux Environment</a></li>
-<li><a class="reference internal" href="#macos-environment">MacOS Environment</a></li>
-<li><a class="reference internal" href="#windows-environment">Windows Environment</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#build-v8">Build V8</a><ul>
 <li><a class="reference internal" href="#prepare-v8">Prepare V8</a></li>
-<li><a class="reference internal" href="#build-v8-on-linux-and-mac-os">Build V8 on Linux and Mac OS</a></li>
-<li><a class="reference internal" href="#build-v8-on-windows">Build V8 on Windows</a></li>
+<li><a class="reference internal" href="#build-v8-for-linux">Build V8 for Linux</a></li>
+<li><a class="reference internal" href="#build-v8-for-mac-os">Build V8 for Mac OS</a></li>
+<li><a class="reference internal" href="#build-v8-for-windows">Build V8 for Windows</a></li>
+<li><a class="reference internal" href="#build-v8-for-android">Build V8 for Android</a></li>
+<li><a class="reference internal" href="#why-patching-v8">Why Patching V8?</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#build-node-js">Build Node.js</a><ul>
 <li><a class="reference internal" href="#prepare-node-js">Prepare Node.js</a></li>
 <li><a class="reference internal" href="#build-node-js-on-linux">Build Node.js on Linux</a></li>
+<li><a class="reference internal" href="#why-patching-node-js">Why Patching Node.js?</a></li>
 <li><a class="reference internal" href="#build-node-js-on-mac-os">Build Node.js on Mac OS</a></li>
 <li><a class="reference internal" href="#build-node-js-on-windows">Build Node.js on Windows</a></li>
 </ul>

@@ -2,82 +2,80 @@
 Build Javet with Pre-built Binaries
 ===================================
 
-Build Environment
-=================
-
-Linux Environment
------------------
-
-* Ubuntu 20.04
-* CMake 3.10+
-* JDK 8
-* Gradle 7.0+
-
-MacOS Environment
------------------
-
-* MacOS Catalina+
-* Latest Brew
-* Xcode 11.4.1+
-* Cmake 3.16+
-* JDK 8
-* Gradle 7.0+
-
-Windows Environment
--------------------
-
-* Latest Windows 10
-* Visual Studio 2019 Community
-* CMake 3.16+ (comes with Visual Studio)
-* Latest Windows 10 SDK with WinDbg
-* JDK 8
-* Gradle 7.0+
-
 Download Pre-built Node.js and V8
 =================================
 
-⚠️ As the docker builds are available, I have stopped publishing pre-built binaries. If you really need them, please contact the maintainer wisely. Legacy pre-built binaries are at this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_.
+.. note::
 
-Build Javet JNI Library
-=======================
+    As the docker builds are available, I have stopped publishing pre-built binaries. If you really need them, please contact the maintainer wisely. Legacy pre-built binaries are at this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_.
 
-Once Node.js and V8 are ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
+Build Javet JNI Library for Linux, Mac OS and Windows
+=====================================================
+
+Once Node.js and V8 are ready, please navigate to ``${JAVET_HOME}/cpp``, make sure CMake is accessible and execute corresponding build script.
 
 =========== =================================================================== ===================================================================
-OS          Node.js                                                             V8
+OS          Node.js Command                                                     V8 Command
 =========== =================================================================== ===================================================================
-Linux       ``sh build-linux.sh -DNODE_DIR=/absolute_path_to_node_js_build``    ``build-linux.sh -DV8_DIR=\absolute_path_to_v8_build``
-Mac OS      ``sh build-macos.sh -DNODE_DIR=/absolute_path_to_node_js_build``    ``build-macos.sh -DV8_DIR=\absolute_path_to_v8_build``
-Windows     ``sh build-windows.cmd -DNODE_DIR=/absolute_path_to_node_js_build`` ``build-windows.cmd -DV8_DIR=\absolute_path_to_v8_build``
+Linux       ``sh build-linux.sh -DNODE_DIR=${NODE_HOME}``                       ``sh build-linux.sh -DV8_DIR=${V8_HOME}``
+Mac OS      ``sh build-macos.sh -DNODE_DIR=${NODE_HOME}``                       ``sh build-macos.sh -DV8_DIR=${V8_HOME}``
+Windows     ``build-windows.cmd -DNODE_DIR=%NODE_HOME%``                        ``build-windows.cmd -DV8_DIR=%V8_HOME%``
 =========== =================================================================== ===================================================================
 
-After a while, the following libraries will be placed in folder ``src/main/resources``.
+After a while, the following libraries will be placed in folder ``${JAVET_HOME}/src/main/resources``.
 
 =========== =========================================================== ==========================================================
-OS          Node.js                                                     V8
+OS          Node.js Library                                             V8 Library
 =========== =========================================================== ==========================================================
 Linux       ``libjavet-node-linux-x86_64.v.*.*.*.so``                   ``libjavet-v8-linux-x86_64.v.*.*.*.so``
 Mac OS      ``libjavet-node-macos-x86_64.v.*.*.*.dylib``                ``libjavet-v8-macos-x86_64.v.*.*.*.dylib``
 Windows     ``libjavet-node-windows-x86_64.v.*.*.*.dll``                ``libjavet-v8-windows-x86_64.v.*.*.*.dll``
 =========== =========================================================== ==========================================================
 
-Build Javet Jar
-===============
+Build Javet JNI Library for Android
+===================================
 
-Once all these libraries are built, please put them altogether under ``src/main/resources`` then kick off ``gradle build test``.
+Once V8 are ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
 
-After a while, ``javet-*.*.*.jar`` will be placed in folder ``build/libs``.
+======= ==============================================================================================================
+Arch    Command
+======= ==============================================================================================================
+arm     sh ./build-android.sh -DV8_DIR=${V8_HOME} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME} -DCMAKE_ANDROID_ARCH=arm
+arm64   sh ./build-android.sh -DV8_DIR=${V8_HOME} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME} -DCMAKE_ANDROID_ARCH=arm64
+x86     sh ./build-android.sh -DV8_DIR=${V8_HOME} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME} -DCMAKE_ANDROID_ARCH=x86
+x86_64  sh ./build-android.sh -DV8_DIR=${V8_HOME} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME} -DCMAKE_ANDROID_ARCH=x86_64
+======= ==============================================================================================================
 
-Upload Javet to Maven Central (Optional)
-----------------------------------------
+After a while, the following libraries will be placed in folder ``${JAVET_HOME}/android/javet-android/src/main/jniLibs``.
 
-Package Jar files in Maven.
+======= ==============================================================================================================
+Arch    Library
+======= ==============================================================================================================
+arm     ``armeabi-v7a/libjavet-v8-android-arm.v.*.*.*.so``
+arm64   ``arm64-v8a/libjavet-v8-android-arm64.v.*.*.*.so``
+x86     ``x86/libjavet-v8-android-x86.v.*.*.*.so``
+x86_64  ``x86_64/libjavet-v8-android-x86_64.v.*.*.*.so``
+======= ==============================================================================================================
 
-.. code-block:: sh
+Build Javet
+===========
 
-    # mvn package
-    mvn clean
-    mvn release:prepare
-    mvn release:perform
+Build Javet for Linux, Mac OS and Windows
+-----------------------------------------
 
-Jar files are built under ``./target``.
+.. code-block:: shell
+
+    cd ${JAVET_HOME}
+    gradle build test
+
+After a while, ``javet-*.*.*.jar`` will be placed in folder ``${JAVET_HOME}/build/libs``.
+
+Build Javet for Android
+-----------------------
+
+.. code-block:: shell
+
+    cd ${JAVET_HOME}/android
+    gradle build
+
+After a while, ``javet-android-*.*.*-release.aar`` will be placed in folder ``${JAVET_HOME}/android/javet-android/build/outputs/aar``.

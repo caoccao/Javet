@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This is for experiment only.
-
 # Usage: docker build -t sjtucaocao/javet-android:1.0.2 -f docker/android/base.Dockerfile .
 
 FROM ubuntu:20.04
@@ -60,21 +58,30 @@ RUN yes | ./sdkmanager --licenses
 RUN ./sdkmanager "build-tools;30.0.2" "platforms;android-30"
 ENV ANDROID_SDK_ROOT=/google/v8/third_party/android_sdk
 
+# Patch Docker
+RUN apt-get install --upgrade -qq -y --no-install-recommends gcc-multilib
+
 # Build V8
 WORKDIR /google/v8
+COPY ./scripts/python/patch_v8_build.py .
 RUN python tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN ninja -C out.gn/arm.release v8_monolith || python3 patch_v8_build.py -p ./
 RUN ninja -C out.gn/arm.release v8_monolith
 RUN python tools/dev/v8gen.py arm64.release -- 'target_os="android"' 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN ninja -C out.gn/arm64.release v8_monolith || python3 patch_v8_build.py -p ./
 RUN ninja -C out.gn/arm64.release v8_monolith
 RUN python tools/dev/v8gen.py ia32.release -- 'target_os="android"' 'target_cpu="x86"' 'v8_target_cpu="x86"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN ninja -C out.gn/ia32.release v8_monolith || python3 patch_v8_build.py -p ./
 RUN ninja -C out.gn/ia32.release v8_monolith
 RUN python tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN ninja -C out.gn/x64.release v8_monolith || python3 patch_v8_build.py -p ./
 RUN ninja -C out.gn/x64.release v8_monolith
+RUN rm patch_v8_build.py
 RUN echo V8 build is completed.
 
 # Prepare Javet Build Environment
-RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-8-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-11-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 ENV SDKMAN_HOME="/root/.sdkman"
 ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
@@ -88,6 +95,15 @@ RUN rm -rf ${SDKMAN_HOME}/tmp/*
 RUN apt-get clean -y
 RUN rm -rf /var/lib/apt/lists/*
 WORKDIR /
+
+# Pre-cache Dependencies
+RUN mkdir Javet
+WORKDIR /Javet
+COPY . .
+WORKDIR /Javet/android
+RUN gradle dependencies
+WORKDIR /
+RUN rm -rf /Javet
 
 # Completed
 RUN echo Javet Android build base image is completed.

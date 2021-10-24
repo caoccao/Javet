@@ -135,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -272,7 +272,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -293,6 +293,64 @@
 <li class="toctree-l1"><a class="reference internal" href="build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="build_javet_from_scratch.html">Build Javet from Scratch</a></li>
 </ul>
+</div>
+<p>All of them share the same build environment in the next section.</p>
+<div class="section" id="build-environment">
+<h2>Build Environment<a class="headerlink" href="#build-environment" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="linux-environment">
+<h3>Linux Environment<a class="headerlink" href="#linux-environment" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Ubuntu 20.04</p></li>
+<li><p>CMake 3.10+</p></li>
+<li><p>JDK 8</p></li>
+<li><p>Gradle 7.2+</p></li>
+</ul>
+</div>
+<div class="section" id="macos-environment">
+<h3>MacOS Environment<a class="headerlink" href="#macos-environment" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>MacOS Catalina+</p></li>
+<li><p>Latest Brew</p></li>
+<li><p>Xcode 11.4.1+</p></li>
+<li><p>Cmake 3.16+</p></li>
+<li><p>JDK 8</p></li>
+<li><p>Gradle 7.2+</p></li>
+</ul>
+</div>
+<div class="section" id="windows-environment">
+<h3>Windows Environment<a class="headerlink" href="#windows-environment" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Latest Windows 10</p></li>
+<li><p>Visual Studio 2019 Community</p></li>
+<li><p>CMake 3.16+ (comes with Visual Studio)</p></li>
+<li><p>Latest Windows 10 SDK with WinDbg</p></li>
+<li><p>JDK 8</p></li>
+<li><p>Gradle 7.2+</p></li>
+</ul>
+</div>
+<div class="section" id="android-environment">
+<h3>Android Environment<a class="headerlink" href="#android-environment" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Ubuntu 20.04 or Ubuntu 20.04 in the WSL2 on the Latest Windows 10</p></li>
+<li><p>CMake 3.10+</p></li>
+<li><p>JDK 8</p></li>
+<li><p>Gradle 7.2+</p></li>
+<li><p>Latest Android Studio (Optional)</p></li>
+<li><p>Android NDK r21e</p></li>
+<li><p>Android SDK 30</p></li>
+</ul>
+</div>
+<div class="section" id="environment-variables">
+<h3>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">${JAVET_HOME}</span></code> is the home directory of Javet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">${NODE_HOME}</span></code> is the home directory of Node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">${V8_HOME}</span></code> is the home directory of V8.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">${DEPOT_TOOLS_HOME}</span></code> is the home directory of Google depot tools.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">${ANDROID_NDK_HOME}</span></code> is the home directory of Android NDK.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">${ANDROID_SDK_HOME}</span></code> is the home directory of Android SDK.</p></li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -329,8 +387,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Build Javet</a><ul>
+<li><a class="reference internal" href="#build-environment">Build Environment</a><ul>
+<li><a class="reference internal" href="#linux-environment">Linux Environment</a></li>
+<li><a class="reference internal" href="#macos-environment">MacOS Environment</a></li>
+<li><a class="reference internal" href="#windows-environment">Windows Environment</a></li>
+<li><a class="reference internal" href="#android-environment">Android Environment</a></li>
+<li><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
