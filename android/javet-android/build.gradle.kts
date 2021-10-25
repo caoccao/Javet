@@ -59,3 +59,14 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
+
+tasks.register<Jar>(name = "sourceJar") {
+    from(android.sourceSets["main"].java.srcDirs)
+    classifier = "sources"
+}
+
+tasks.register<Jar>(name = "javadocJar") {
+    from(android.sourceSets["main"].java.srcDirs)
+    classifier = "javadoc"
+}
+
