@@ -35,7 +35,7 @@ class ChangeJavetVersion(object):
     self._update(
       'README.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\']{1}'),
+      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\'@]{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'build.gradle.kts', '\n',
@@ -52,7 +52,7 @@ class ChangeJavetVersion(object):
     self._update(
       'docs/tutorial/basic/installation.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\']{1}'),
+      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\'@]{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'pom.xml', '\n',
