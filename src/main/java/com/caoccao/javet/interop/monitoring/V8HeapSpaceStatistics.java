@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interop.monitoring;
 
+import java.util.Objects;
+
 /**
  * The type V8 heap space statistics.
  *
@@ -25,22 +27,31 @@ public final class V8HeapSpaceStatistics {
     private AllocationSpace allocationSpace;
     private int physicalSpaceSize;
     private int spaceAvailableSize;
+    private String spaceName;
     private int spaceSize;
     private int spaceUsedSize;
 
     /**
      * Instantiates a new V8 heap space statistics.
      *
-     * @param allocationSpace the allocation space
-     * @param intArray        the int array
-     * @since 1.0.0
+     * @param spaceName          the space name
+     * @param physicalSpaceSize  the physical space size
+     * @param spaceAvailableSize the space available size
+     * @param spaceSize          the space size
+     * @param spaceUsedSize      the space used size
+     * @since 1.0.1
      */
-    public V8HeapSpaceStatistics(AllocationSpace allocationSpace, int[] intArray) {
-        this.allocationSpace = allocationSpace;
-        physicalSpaceSize = intArray[0];
-        spaceAvailableSize = intArray[1];
-        spaceSize = intArray[2];
-        spaceUsedSize = intArray[3];
+    V8HeapSpaceStatistics(
+            String spaceName,
+            int physicalSpaceSize,
+            int spaceAvailableSize,
+            int spaceSize,
+            int spaceUsedSize) {
+        this.spaceName = spaceName;
+        this.physicalSpaceSize = physicalSpaceSize;
+        this.spaceAvailableSize = spaceAvailableSize;
+        this.spaceSize = spaceSize;
+        this.spaceUsedSize = spaceUsedSize;
     }
 
     /**
@@ -74,6 +85,16 @@ public final class V8HeapSpaceStatistics {
     }
 
     /**
+     * Gets space name.
+     *
+     * @return the space name
+     * @since 1.0.1
+     */
+    public String getSpaceName() {
+        return spaceName;
+    }
+
+    /**
      * Gets space size.
      *
      * @return the space size
@@ -93,11 +114,23 @@ public final class V8HeapSpaceStatistics {
         return spaceUsedSize;
     }
 
+    /**
+     * Sets allocation space.
+     *
+     * @param allocationSpace the allocation space
+     * @return the self
+     * @since 1.0.1
+     */
+    public V8HeapSpaceStatistics setAllocationSpace(AllocationSpace allocationSpace) {
+        this.allocationSpace = Objects.requireNonNull(allocationSpace);
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("name = ").append(getClass().getSimpleName());
-        sb.append(", ").append("allocationSpace = ").append(allocationSpace.name());
+        sb.append(", ").append("spaceName = ").append(spaceName);
         sb.append(", ").append("physicalSpaceSize = ").append(physicalSpaceSize);
         sb.append(", ").append("spaceAvailableSize = ").append(spaceAvailableSize);
         sb.append(", ").append("spaceSize = ").append(spaceSize);
@@ -167,7 +200,6 @@ public final class V8HeapSpaceStatistics {
          * @since 1.0.0
          */
         NEW_SPACE(7),
-
         /**
          * First space allocation space.
          *

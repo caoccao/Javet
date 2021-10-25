@@ -36,15 +36,13 @@ public class V8Module extends V8ValueReference implements IV8Module {
     @Override
     @CheckReturnValue
     public <T extends V8Value> T evaluate(boolean resultRequired) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.moduleEvaluate(this, resultRequired);
+        return checkV8Runtime().getV8Internal().moduleEvaluate(this, resultRequired);
     }
 
     @Override
     @CheckReturnValue
     public V8ValueError getException() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.moduleGetException(this);
+        return checkV8Runtime().getV8Internal().moduleGetException(this);
     }
 
     /**
@@ -58,8 +56,7 @@ public class V8Module extends V8ValueReference implements IV8Module {
      */
     @CheckReturnValue
     public V8ValueObject getNamespace() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.moduleGetNamespace(this);
+        return checkV8Runtime().getV8Internal().moduleGetNamespace(this);
     }
 
     public String getResourceName() {
@@ -68,14 +65,12 @@ public class V8Module extends V8ValueReference implements IV8Module {
 
     @Override
     public int getScriptId() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.moduleGetScriptId(this);
+        return checkV8Runtime().getV8Internal().moduleGetScriptId(this);
     }
 
     @Override
     public int getStatus() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.moduleGetStatus(this);
+        return checkV8Runtime().getV8Internal().moduleGetStatus(this);
     }
 
     @Override
@@ -85,8 +80,7 @@ public class V8Module extends V8ValueReference implements IV8Module {
 
     @Override
     public boolean instantiate() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.moduleInstantiate(this);
+        return checkV8Runtime().getV8Internal().moduleInstantiate(this);
     }
 
     public void setResourceName(String resourceName) {

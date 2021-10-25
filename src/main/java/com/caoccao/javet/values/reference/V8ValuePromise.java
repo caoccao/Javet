@@ -42,27 +42,23 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
     @Override
     @CheckReturnValue
     public V8ValuePromise _catch(V8ValueFunction function) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.promiseCatch(this, function);
+        return checkV8Runtime().getV8Internal().promiseCatch(this, function);
     }
 
     @Override
     public V8ValuePromise getPromise() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.promiseGetPromise(this);
+        return checkV8Runtime().getV8Internal().promiseGetPromise(this);
     }
 
     @Override
     @CheckReturnValue
     public <Value extends V8Value> Value getResult() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.promiseGetResult(this);
+        return checkV8Runtime().getV8Internal().promiseGetResult(this);
     }
 
     @Override
     public int getState() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.promiseGetState(this);
+        return checkV8Runtime().getV8Internal().promiseGetState(this);
     }
 
     @Override
@@ -72,33 +68,28 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
 
     @Override
     public boolean hasHandler() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.promiseHasHandler(this);
+        return checkV8Runtime().getV8Internal().promiseHasHandler(this);
     }
 
     @Override
     public void markAsHandled() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.promiseMarkAsHandled(this);
+        checkV8Runtime().getV8Internal().promiseMarkAsHandled(this);
     }
 
     @Override
     public boolean reject(V8Value v8Value) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.promiseReject(this, v8Value);
+        return checkV8Runtime().getV8Internal().promiseReject(this, v8Value);
     }
 
     @Override
     public boolean resolve(V8Value v8Value) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.promiseResolve(this, v8Value);
+        return checkV8Runtime().getV8Internal().promiseResolve(this, v8Value);
     }
 
     @Override
     @CheckReturnValue
     public V8ValuePromise then(IV8ValueFunction functionFulfilled, IV8ValueFunction functionRejected)
             throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.promiseThen(this, functionFulfilled, functionRejected);
+        return checkV8Runtime().getV8Internal().promiseThen(this, functionFulfilled, functionRejected);
     }
 }

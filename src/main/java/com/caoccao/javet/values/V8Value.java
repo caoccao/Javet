@@ -31,10 +31,11 @@ public abstract class V8Value extends V8Data implements IV8Value {
         v8Runtime = null;
     }
 
-    protected void checkV8Runtime() throws JavetException {
+    protected V8Runtime checkV8Runtime() throws JavetException {
         if (v8Runtime == null) {
             throw new JavetException(JavetError.RuntimeNotRegistered);
         }
+        return v8Runtime;
     }
 
     @Override

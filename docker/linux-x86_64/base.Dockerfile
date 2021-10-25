@@ -13,13 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:1.0.2 -f docker/linux-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:1.0.2.1 -f docker/linux-x86_64/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
 
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
+RUN echo Cache V1
 RUN apt-get update
 RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack cmake
 RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
@@ -36,7 +37,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.4.146.19
+RUN git checkout 9.5.172.22
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
@@ -47,14 +48,18 @@ RUN echo V8 preparation is completed.
 # Build V8
 WORKDIR /google/v8
 RUN python tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+COPY ./scripts/python/patch_v8_build.py .
+RUN ninja -C out.gn/x64.release v8_monolith || echo Patch
+RUN python3 patch_v8_build.py -p ./
 RUN ninja -C out.gn/x64.release v8_monolith
+RUN rm patch_v8_build.py
 RUN echo V8 build is completed.
 
 # Prepare Node.js v16
 WORKDIR /
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v16.11.1
+RUN git checkout v16.12.0
 RUN echo Node.js preparation is completed.
 
 # Build Node.js

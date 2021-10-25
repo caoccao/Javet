@@ -30,6 +30,7 @@ public class TestV8HeapSpaceStatistics extends BaseTestJavetRuntime {
             String detailString = v8HeapSpaceStatistics.toString();
             assertNotNull(detailString);
             assertEquals(allocationSpace, v8HeapSpaceStatistics.getAllocationSpace());
+            assertTrue(v8HeapSpaceStatistics.getSpaceName().length() > 0);
             assertTrue(v8HeapSpaceStatistics.getPhysicalSpaceSize() >= 0);
             assertTrue(v8HeapSpaceStatistics.getSpaceAvailableSize() >= 0);
             assertTrue(v8HeapSpaceStatistics.getSpaceSize() >= 0);

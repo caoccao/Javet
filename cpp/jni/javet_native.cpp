@@ -30,7 +30,7 @@ JavaVM* GlobalJavaVM;
 jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
     LOG_INFO("JNI_Onload() begins.");
     JNIEnv* jniEnv;
-    if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
+    if (javaVM->GetEnv((void**)&jniEnv, SUPPORTED_JNI_VERSION) != JNI_OK) {
         LOG_ERROR("Failed to call JavaVM.GetEnv().");
         return ERROR_JNI_ON_LOAD;
     }
@@ -48,14 +48,15 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
     Javet::Converter::Initialize(jniEnv);
     Javet::Exceptions::Initialize(jniEnv);
     Javet::Inspector::Initialize(jniEnv);
+    Javet::Monitor::Initialize(jniEnv);
     LOG_INFO("JNI_Onload() ends.");
-    return JNI_VERSION_1_8;
+    return SUPPORTED_JNI_VERSION;
 }
 
 void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
     LOG_INFO("JNI_OnUnload() begins.");
     JNIEnv* jniEnv;
-    if (javaVM->GetEnv((void**)&jniEnv, JNI_VERSION_1_8) != JNI_OK) {
+    if (javaVM->GetEnv((void**)&jniEnv, SUPPORTED_JNI_VERSION) != JNI_OK) {
         LOG_ERROR("Failed to call JavaVM.GetEnv().");
     }
     if (jniEnv == nullptr) {

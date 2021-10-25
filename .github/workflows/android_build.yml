@@ -1,0 +1,36 @@
+name: Android Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - '**.rst'
+      - 'docs/**'
+  push:
+    paths-ignore:
+      - '**.rst'
+      - 'docs/**'
+
+jobs:
+
+  javet_android:
+
+    name: Javet Android
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v2
+
+    - name: Build docker image
+      run: docker build -t javet-android:local -f docker/android/build.Dockerfile .
+
+    - name: Copy the artifact
+      run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet-android:local cp -rf /Javet/android/javet-android/build/outputs /output
+
+    - name: Upload the artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: javet-android
+        path: build/outputs/aar/javet*release.aar

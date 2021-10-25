@@ -16,8 +16,6 @@
 
 package com.caoccao.javet.interop.monitoring;
 
-import java.util.Objects;
-
 /**
  * The type V8 shared memory statistics is a collection of shared per-process V8 memory information.
  *
@@ -31,14 +29,18 @@ public final class V8SharedMemoryStatistics {
     /**
      * Instantiates a new V8 shared memory statistics.
      *
-     * @param intArray the int array
-     * @since 1.0.0
+     * @param readOnlySpacePhysicalSize the read only space physical size
+     * @param readOnlySpaceSize         the read only space size
+     * @param readOnlySpaceUsedSize     the read only space used size
+     * @since 1.0.1
      */
-    public V8SharedMemoryStatistics(int[] intArray) {
-        Objects.requireNonNull(intArray);
-        readOnlySpacePhysicalSize = intArray[0];
-        readOnlySpaceSize = intArray[1];
-        readOnlySpaceUsedSize = intArray[2];
+    V8SharedMemoryStatistics(
+            int readOnlySpacePhysicalSize,
+            int readOnlySpaceSize,
+            int readOnlySpaceUsedSize) {
+        this.readOnlySpacePhysicalSize = readOnlySpacePhysicalSize;
+        this.readOnlySpaceSize = readOnlySpaceSize;
+        this.readOnlySpaceUsedSize = readOnlySpaceUsedSize;
     }
 
     /**

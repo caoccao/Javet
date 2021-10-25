@@ -39,14 +39,12 @@ public class V8ValueProxy extends V8ValueObject implements IV8ValueProxy {
 
     @Override
     public IV8ValueObject getHandler() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.proxyGetHandler(this);
+        return checkV8Runtime().getV8Internal().proxyGetHandler(this);
     }
 
     @Override
     public IV8ValueObject getTarget() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.proxyGetTarget(this);
+        return checkV8Runtime().getV8Internal().proxyGetTarget(this);
     }
 
     @Override
@@ -56,13 +54,11 @@ public class V8ValueProxy extends V8ValueObject implements IV8ValueProxy {
 
     @Override
     public boolean isRevoked() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.proxyIsRevoked(this);
+        return checkV8Runtime().getV8Internal().proxyIsRevoked(this);
     }
 
     @Override
     public void revoke() throws JavetException {
-        checkV8Runtime();
-        v8Runtime.proxyRevoke(this);
+        checkV8Runtime().getV8Internal().proxyRevoke(this);
     }
 }

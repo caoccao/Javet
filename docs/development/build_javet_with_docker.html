@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Build Javet with Pre-built Binaries" href="build_javet_with_pre_built_binaries.html" /><link rel="prev" title="Build Javet" href="build.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Build Javet with Docker - Javet 1.0.1 documentation</title>
+        <title>Build Javet with Docker - Javet 1.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 1.0.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 1.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.1 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -280,8 +280,8 @@
         <article role="main">
           <div class="section" id="build-javet-with-docker">
 <h1>Build Javet with Docker<a class="headerlink" href="#build-javet-with-docker" title="Permalink to this headline">¶</a></h1>
-<p>The Docker build supports building Javet for Linux and Windows. As Docker supports Linux and Windows with WSL2, Javet for Linux can also be built on Windows.</p>
-<p>Regarding Docker build for Mac OS, contributors are welcome if you are interested. Or, you will have to wait for a long while.</p>
+<p>The Docker build supports building Javet for Linux, Windows and Android. As Docker supports Linux and Windows with WSL2, Javet for Linux and Android can also be built on Windows.</p>
+<p>Regarding the Docker build for Mac OS, contributors are welcome if you are interested. Or, you will have to wait for a long while.</p>
 <div class="section" id="build-environment">
 <h2>Build Environment<a class="headerlink" href="#build-environment" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="linux-environment">
@@ -308,16 +308,18 @@
 </div>
 <div class="section" id="build-javet-for-linux-on-linux-or-windows">
 <h2>Build Javet for Linux on Linux or Windows<a class="headerlink" href="#build-javet-for-linux-on-linux-or-windows" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic simple">
-<li><p>Clone Javet.</p></li>
-<li><p>Navigate to the root directory of the Javet repository.</p></li>
-<li><p>Execute <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span> <span class="pre">-f</span> <span class="pre">docker/linux-x86_64/build.Dockerfile</span> <span class="pre">.</span></code> (Be careful, please include the last <code class="docutils literal notranslate"><span class="pre">.</span></code>).</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/caoccao/Javet.git
+<span class="nb">cd</span> Javet
+docker build -f docker/linux-x86_64/build.Dockerfile .
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>Docker will pull the corresponding image (~10GB) from Docker Hub.</p></li>
+<li><p>Docker will pull the corresponding image (~5GB) from Docker Hub.</p></li>
 <li><p>The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.</p></li>
 </ul>
-</li>
-</ol>
+</div>
 </div>
 <div class="section" id="build-javet-for-windows-on-windows">
 <h2>Build Javet for Windows on Windows<a class="headerlink" href="#build-javet-for-windows-on-windows" title="Permalink to this headline">¶</a></h2>
@@ -333,16 +335,35 @@
 <ol class="arabic simple" start="2">
 <li><p>Restart WSL2</p></li>
 <li><p>Restart docker</p></li>
-<li><p>Clone Javet.</p></li>
-<li><p>Navigate to the root directory of the Javet repository.</p></li>
-<li><p>Execute <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span> <span class="pre">-m</span> <span class="pre">4G</span> <span class="pre">-f</span> <span class="pre">docker/windows-x86_64/base.Dockerfile</span> <span class="pre">.</span></code> (Be careful, please include the last <code class="docutils literal notranslate"><span class="pre">.</span></code>).</p></li>
-<li><p>Execute <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span> <span class="pre">-f</span> <span class="pre">docker/windows-x86_64/build.Dockerfile</span> <span class="pre">.</span></code> (Be careful, please include the last <code class="docutils literal notranslate"><span class="pre">.</span></code>).</p></li>
 </ol>
-<p>Note:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/caoccao/Javet.git
+<span class="nb">cd</span> Javet
+docker build -m 4G -f docker/windows-x86_64/base.Dockerfile .
+docker build -f docker/windows-x86_64/build.Dockerfile .
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>The base image is so large (60+GB) that it's not efficient to push the base image to docker hub. Of course, without the base image at docker hub, it's not wise to enable the github workflow for Windows build.</p></li>
-<li><p>Building the base image takes many hours and may experience intermittent errors.</p></li>
+<li><p>It takes roughly 5-10 hours to build the base image successfully. If the internet connection is not that stable, it may take a few days or just fails <a class="reference external" href="https://www.youtube.com/watch?v=Y-rAi-2hZ6U">forever</a> 😭.</p></li>
+<li><p>The base image is so large (60+GB) 😭 that it's not efficient to push the base image to the docker hub. Of course, without the base image at the docker hub, it's not wise to enable the github workflow for the Windows build.</p></li>
 </ul>
+</div>
+</div>
+<div class="section" id="build-javet-for-android-on-linux-or-windows">
+<h2>Build Javet for Android on Linux or Windows<a class="headerlink" href="#build-javet-for-android-on-linux-or-windows" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/caoccao/Javet.git
+<span class="nb">cd</span> Javet
+docker build -f docker/android/build.Dockerfile .
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Docker will pull the corresponding image (~11GB) from Docker Hub.</p></li>
+<li><p>The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.</p></li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -400,6 +421,7 @@
 </li>
 <li><a class="reference internal" href="#build-javet-for-linux-on-linux-or-windows">Build Javet for Linux on Linux or Windows</a></li>
 <li><a class="reference internal" href="#build-javet-for-windows-on-windows">Build Javet for Windows on Windows</a></li>
+<li><a class="reference internal" href="#build-javet-for-android-on-linux-or-windows">Build Javet for Android on Linux or Windows</a></li>
 </ul>
 </li>
 </ul>

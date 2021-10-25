@@ -33,9 +33,10 @@ import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -80,24 +81,6 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      */
     protected static final String METHOD_NAME_TO_MAP = "toMap";
     /**
-     * The constant METHOD_TYPE_CONSTRUCTOR.
-     *
-     * @since 0.9.14
-     */
-    protected static final MethodType METHOD_TYPE_CONSTRUCTOR = MethodType.methodType(void.class);
-    /**
-     * The constant METHOD_TYPE_FROM_MAP.
-     *
-     * @since 0.9.14
-     */
-    protected static final MethodType METHOD_TYPE_FROM_MAP = MethodType.methodType(void.class, Map.class);
-    /**
-     * The constant METHOD_TYPE_TO_MAP.
-     *
-     * @since 0.9.14
-     */
-    protected static final MethodType METHOD_TYPE_TO_MAP = MethodType.methodType(Map.class);
-    /**
      * The constant PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME.
      *
      * @since 0.9.6
@@ -132,7 +115,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      *
      * @since 0.9.12
      */
-    protected Map<String, MethodHandle[]> customObjectMap;
+    protected Map<String, Executable[]> customObjectMap;
 
     /**
      * Instantiates a new Javet object converter.
@@ -204,15 +187,20 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             readLock.unlock();
         }
         try {
-            MethodHandles.Lookup lookup = MethodHandles.lookup();
-            MethodHandle[] methodHandles = new MethodHandle[]{
-                    lookup.findConstructor(customObjectClass, METHOD_TYPE_CONSTRUCTOR),
-                    lookup.findVirtual(customObjectClass, methodNameFromMap, METHOD_TYPE_FROM_MAP),
-                    lookup.findVirtual(customObjectClass, methodNameToMap, METHOD_TYPE_TO_MAP)};
+            Constructor defaultConstructor = customObjectClass.getConstructor();
+            Method methodFromMap = customObjectClass.getMethod(methodNameFromMap, Map.class);
+            if (Modifier.isStatic(methodFromMap.getModifiers())) {
+                return false;
+            }
+            Method methodToMap = customObjectClass.getMethod(methodNameToMap);
+            if (Modifier.isStatic(methodToMap.getModifiers())) {
+                return false;
+            }
+            Executable[] executables = new Executable[]{defaultConstructor, methodFromMap, methodToMap};
             Lock writeLock = customObjectLock.writeLock();
             try {
                 writeLock.lock();
-                customObjectMap.put(customObjectClassName, methodHandles);
+                customObjectMap.put(customObjectClass.getName(), executables);
             } finally {
                 writeLock.unlock();
             }
@@ -326,24 +314,24 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 String customObjectClassName =
                         v8ValueObject.getPrivatePropertyString(PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME);
                 Lock readLock = customObjectLock.readLock();
-                MethodHandle methodHandleConstructor = null;
-                MethodHandle methodHandleFromMap = null;
+                Constructor defaultConstructor = null;
+                Method methodFromMap = null;
                 try {
                     readLock.lock();
-                    MethodHandle[] methodHandles = customObjectMap.get(customObjectClassName);
-                    if (methodHandles != null) {
-                        methodHandleConstructor = methodHandles[EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR];
-                        methodHandleFromMap = methodHandles[EXECUTABLE_INDEX_FROM_MAP];
+                    Executable[] executables = customObjectMap.get(customObjectClassName);
+                    if (executables != null) {
+                        defaultConstructor = (Constructor) executables[EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR];
+                        methodFromMap = (Method) executables[EXECUTABLE_INDEX_FROM_MAP];
                     }
                 } catch (Throwable t) {
                     // Do nothing
                 } finally {
                     readLock.unlock();
                 }
-                if (methodHandleConstructor != null) {
+                if (defaultConstructor != null) {
                     try {
-                        Object customObject = methodHandleConstructor.invoke();
-                        methodHandleFromMap.invoke(customObject, map);
+                        Object customObject = defaultConstructor.newInstance();
+                        methodFromMap.invoke(customObject, map);
                         return customObject;
                     } catch (Throwable t) {
                         // Do nothing
@@ -536,23 +524,23 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (!customObjectMap.isEmpty()) {
             String customObjectClassName = object.getClass().getName();
             Lock readLock = customObjectLock.readLock();
-            MethodHandle methodHandleToMap = null;
+            Method methodToMap = null;
             try {
                 readLock.lock();
-                MethodHandle[] methodHandles = customObjectMap.get(customObjectClassName);
-                if (methodHandles != null) {
-                    methodHandleToMap = methodHandles[EXECUTABLE_INDEX_TO_MAP];
+                Executable[] executables = customObjectMap.get(customObjectClassName);
+                if (executables != null) {
+                    methodToMap = (Method) executables[EXECUTABLE_INDEX_TO_MAP];
                 }
             } finally {
                 readLock.unlock();
             }
-            if (methodHandleToMap != null) {
+            if (methodToMap != null) {
                 try {
-                    Map<?, ?> map = (Map<?, ?>) methodHandleToMap.invoke(object);
-                    v8Value = toV8Value(v8Runtime, map, depth + 1);
+                    Map map = (Map) methodToMap.invoke(object);
+                    v8Value = toV8Value(v8Runtime, map);
                     ((V8ValueObject) v8Value).setPrivateProperty(
                             PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME, customObjectClassName);
-                } catch (Throwable ignored) {
+                } catch (Throwable t) {
                 }
             }
         }

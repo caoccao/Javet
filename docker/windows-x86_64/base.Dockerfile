@@ -60,7 +60,7 @@ ENV DEPOT_TOOLS_WIN_TOOLCHAIN=0
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.4.146.19
+RUN git checkout 9.5.172.22
 WORKDIR /google
 RUN gclient sync
 RUN echo V8 preparation is completed.
@@ -103,7 +103,7 @@ RUN powershell -ExecutionPolicy Bypass -c "iex(New-Object Net.WebClient).Downloa
 RUN choco install -y nasm
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v16.11.1
+RUN git checkout v16.12.0
 RUN echo Node.js preparation is completed.
 
 # Build Node.js

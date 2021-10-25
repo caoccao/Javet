@@ -15,7 +15,7 @@
 
 # Usage: docker build -t javet:local -f docker/linux-x86_64/build.Dockerfile .
 
-FROM sjtucaocao/javet:1.0.2
+FROM sjtucaocao/javet:1.0.2.1
 WORKDIR /
 
 # Copy Javet

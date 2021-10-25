@@ -44,8 +44,7 @@ public class V8ValueWeakMap extends V8ValueObject {
 
     @CheckReturnValue
     public <T extends V8Value> T get(String key) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.get(this, v8Runtime.createV8ValueString(key));
+        return checkV8Runtime().getV8Internal().get(this, v8Runtime.createV8ValueString(key));
     }
 
     @Override
@@ -80,12 +79,5 @@ public class V8ValueWeakMap extends V8ValueObject {
         }
         invokeVoid(FUNCTION_SET, key, value);
         return true;
-    }
-
-    @Override
-    @CheckReturnValue
-    public V8ValueWeakMap toClone() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.cloneV8Value(this);
     }
 }

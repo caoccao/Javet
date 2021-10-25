@@ -16,8 +16,6 @@
 
 package com.caoccao.javet.interop.monitoring;
 
-import java.util.Objects;
-
 /**
  * The type V8 heap statistics is a collection of V8 heap information.
  *
@@ -42,25 +40,51 @@ public final class V8HeapStatistics {
     /**
      * Instantiates a new V8 heap statistics.
      *
-     * @param intArray the int array
-     * @since 1.0.0
+     * @param doesZapGarbage           the does zap garbage
+     * @param externalMemory           the external memory
+     * @param heapSizeLimit            the heap size limit
+     * @param mallocedMemory           the malloced memory
+     * @param numberOfDetachedContexts the number of detached contexts
+     * @param numberOfNativeContexts   the number of native contexts
+     * @param peakMallocedMemory       the peak malloced memory
+     * @param totalAvailableSize       the total available size
+     * @param totalGlobalHandlesSize   the total global handles size
+     * @param totalHeapSize            the total heap size
+     * @param totalHeapSizeExecutable  the total heap size executable
+     * @param totalPhysicalSize        the total physical size
+     * @param usedGlobalHandlesSize    the used global handles size
+     * @param usedHeapSize             the used heap size
+     * @since 1.0.1
      */
-    public V8HeapStatistics(int[] intArray) {
-        Objects.requireNonNull(intArray);
-        doesZapGarbage = intArray[0];
-        externalMemory = intArray[1];
-        heapSizeLimit = intArray[2];
-        mallocedMemory = intArray[3];
-        numberOfDetachedContexts = intArray[4];
-        numberOfNativeContexts = intArray[5];
-        peakMallocedMemory = intArray[6];
-        totalAvailableSize = intArray[7];
-        totalGlobalHandlesSize = intArray[8];
-        totalHeapSize = intArray[9];
-        totalHeapSizeExecutable = intArray[10];
-        totalPhysicalSize = intArray[11];
-        usedGlobalHandlesSize = intArray[12];
-        usedHeapSize = intArray[13];
+    V8HeapStatistics(
+            int doesZapGarbage,
+            int externalMemory,
+            int heapSizeLimit,
+            int mallocedMemory,
+            int numberOfDetachedContexts,
+            int numberOfNativeContexts,
+            int peakMallocedMemory,
+            int totalAvailableSize,
+            int totalGlobalHandlesSize,
+            int totalHeapSize,
+            int totalHeapSizeExecutable,
+            int totalPhysicalSize,
+            int usedGlobalHandlesSize,
+            int usedHeapSize) {
+        this.doesZapGarbage = doesZapGarbage;
+        this.externalMemory = externalMemory;
+        this.heapSizeLimit = heapSizeLimit;
+        this.mallocedMemory = mallocedMemory;
+        this.numberOfDetachedContexts = numberOfDetachedContexts;
+        this.numberOfNativeContexts = numberOfNativeContexts;
+        this.peakMallocedMemory = peakMallocedMemory;
+        this.totalAvailableSize = totalAvailableSize;
+        this.totalGlobalHandlesSize = totalGlobalHandlesSize;
+        this.totalHeapSize = totalHeapSize;
+        this.totalHeapSizeExecutable = totalHeapSizeExecutable;
+        this.totalPhysicalSize = totalPhysicalSize;
+        this.usedGlobalHandlesSize = usedGlobalHandlesSize;
+        this.usedHeapSize = usedHeapSize;
     }
 
     /**

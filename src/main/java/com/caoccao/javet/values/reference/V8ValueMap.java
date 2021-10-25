@@ -121,21 +121,18 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     @Override
     @CheckReturnValue
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
-        checkV8Runtime();
         return invoke(FUNCTION_ENTRIES);
     }
 
     @Override
     @CheckReturnValue
     public IV8ValueIterator<? extends V8Value> getKeys() throws JavetException {
-        checkV8Runtime();
         return invoke(FUNCTION_KEYS);
     }
 
     @Override
     public int getSize() throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.getSize(this);
+        return checkV8Runtime().getV8Internal().getSize(this);
     }
 
     @Override
@@ -146,7 +143,6 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     @Override
     @CheckReturnValue
     public IV8ValueIterator<? extends V8Value> getValues() throws JavetException {
-        checkV8Runtime();
         return invoke(FUNCTION_VALUES);
     }
 }

@@ -2,9 +2,9 @@
 Build Javet with Docker
 =======================
 
-The Docker build supports building Javet for Linux and Windows. As Docker supports Linux and Windows with WSL2, Javet for Linux can also be built on Windows.
+The Docker build supports building Javet for Linux, Windows and Android. As Docker supports Linux and Windows with WSL2, Javet for Linux and Android can also be built on Windows.
 
-Regarding Docker build for Mac OS, contributors are welcome if you are interested. Or, you will have to wait for a long while.
+Regarding the Docker build for Mac OS, contributors are welcome if you are interested. Or, you will have to wait for a long while.
 
 Build Environment
 =================
@@ -32,11 +32,15 @@ Please make sure the network connection to the Docker Hub and Github is up and r
 Build Javet for Linux on Linux or Windows
 =========================================
 
-1. Clone Javet.
-2. Navigate to the root directory of the Javet repository.
-3. Execute ``docker build -f docker/linux-x86_64/build.Dockerfile .`` (Be careful, please include the last ``.``).
+.. code-block:: shell
 
-   * Docker will pull the corresponding image (~10GB) from Docker Hub.
+    git clone https://github.com/caoccao/Javet.git
+    cd Javet
+    docker build -f docker/linux-x86_64/build.Dockerfile .
+
+.. note::
+
+   * Docker will pull the corresponding image (~5GB) from Docker Hub.
    * The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.
 
 Build Javet for Windows on Windows
@@ -53,12 +57,29 @@ Build Javet for Windows on Windows
 
 2. Restart WSL2
 3. Restart docker
-4. Clone Javet.
-5. Navigate to the root directory of the Javet repository.
-6. Execute ``docker build -m 4G -f docker/windows-x86_64/base.Dockerfile .`` (Be careful, please include the last ``.``).
-7. Execute ``docker build -f docker/windows-x86_64/build.Dockerfile .`` (Be careful, please include the last ``.``).
 
-Note:
+.. code-block:: shell
 
-* The base image is so large (60+GB) that it's not efficient to push the base image to docker hub. Of course, without the base image at docker hub, it's not wise to enable the github workflow for Windows build.
-* Building the base image takes many hours and may experience intermittent errors.
+    git clone https://github.com/caoccao/Javet.git
+    cd Javet
+    docker build -m 4G -f docker/windows-x86_64/base.Dockerfile .
+    docker build -f docker/windows-x86_64/build.Dockerfile .
+
+.. note::
+
+    * It takes roughly 5-10 hours to build the base image successfully. If the internet connection is not that stable, it may take a few days or just fails `forever <https://www.youtube.com/watch?v=Y-rAi-2hZ6U>`_ 😭.
+    * The base image is so large (60+GB) 😭 that it's not efficient to push the base image to the docker hub. Of course, without the base image at the docker hub, it's not wise to enable the github workflow for the Windows build.
+
+Build Javet for Android on Linux or Windows
+===========================================
+
+.. code-block:: shell
+
+    git clone https://github.com/caoccao/Javet.git
+    cd Javet
+    docker build -f docker/android/build.Dockerfile .
+
+.. note::
+
+    * Docker will pull the corresponding image (~11GB) from Docker Hub.
+    * The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.

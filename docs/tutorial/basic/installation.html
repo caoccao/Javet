@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Hello Javet" href="hello_javet.html" /><link rel="prev" title="Basic" href="index.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Installation - Javet 1.0.1 documentation</title>
+        <title>Installation - Javet 1.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 1.0.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 1.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.1 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -288,35 +288,46 @@
 <span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.0.1<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 
 <span class="c">&lt;!-- Mac OS (x86_64 Only) --&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.0.1<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+<span class="c">&lt;!-- Android (arm, arm64, x86 and x86_64) --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>javet-android<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="gradle-kotlin-dsl">
 <h3>Gradle Kotlin DSL<a class="headerlink" href="#gradle-kotlin-dsl" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet:1.0.1"</span><span class="p">)</span> <span class="c1">// Linux or Windows</span>
-<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-macos:1.0.1"</span><span class="p">)</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet:1.0.2"</span><span class="p">)</span> <span class="c1">// Linux or Windows</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-macos:1.0.2"</span><span class="p">)</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-android:1.0.2"</span><span class="p">)</span> <span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="gradle-groovy-dsl">
 <h3>Gradle Groovy DSL<a class="headerlink" href="#gradle-groovy-dsl" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet:1.0.1'</span> <span class="c1">// Linux or Windows</span>
-<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-macos:1.0.1'</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet:1.0.2'</span> <span class="c1">// Linux or Windows</span>
+<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-macos:1.0.2'</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-android:1.0.2'</span> <span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="os-compatibility">
 <h2>OS Compatibility<a class="headerlink" href="#os-compatibility" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
 <col style="width: 18%"/>
@@ -337,26 +348,114 @@
 <tr class="row-even"><td><p>Windows Server</p></td>
 <td><p>Not Tested</p></td>
 </tr>
-<tr class="row-odd"><td><p>Ubuntu 20.04</p></td>
+</tbody>
+</table></div>
+</div>
+<div class="section" id="linux">
+<h3>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h3>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 18%"/>
+<col style="width: 82%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>OS</p></th>
+<th class="head"><p>Compatible</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Ubuntu 20.04</p></td>
 <td><p>Yes</p></td>
 </tr>
-<tr class="row-even"><td><p>Ubuntu 18.04</p></td>
+<tr class="row-odd"><td><p>Ubuntu 18.04</p></td>
 <td><p>Yes (<a class="reference external" href="https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing">Private Build</a>)</p></td>
 </tr>
-<tr class="row-odd"><td><p>Ubuntu 16.04</p></td>
+<tr class="row-even"><td><p>Ubuntu 16.04</p></td>
 <td><p>Yes (<a class="reference external" href="https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing">Private Build</a>)</p></td>
 </tr>
-<tr class="row-even"><td><p>Other Linux Distributions</p></td>
+<tr class="row-odd"><td><p>Cent OS 8</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Cent OS 7</p></td>
+<td><p>Yes (<a class="reference external" href="https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing">Private Build</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Other Linux Distributions</p></td>
 <td><p>Not Tested</p></td>
 </tr>
-<tr class="row-odd"><td><p>MacOS x86_64</p></td>
+</tbody>
+</table></div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<ul class="simple">
+<li><p>Private builds imply considerable additional effort, so there is no commitments. Please contact the maintainer for private builds wisely.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="mac-os">
+<h3>Mac OS<a class="headerlink" href="#mac-os" title="Permalink to this headline">¶</a></h3>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 18%"/>
+<col style="width: 82%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>OS</p></th>
+<th class="head"><p>Compatible</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Mac OS x86_64</p></td>
 <td><p>Yes</p></td>
 </tr>
-<tr class="row-even"><td><p>MacOS arm64</p></td>
+<tr class="row-odd"><td><p>Mac OS arm64</p></td>
 <td><p>No (<a class="reference internal" href="../../faq/environment/can_javet_support_mac.html"><span class="doc">Can Javet Support Mac?</span></a>)</p></td>
 </tr>
 </tbody>
 </table></div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<ul class="simple">
+<li><p>The lowest supported version is Catalina.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="android">
+<h3>Android<a class="headerlink" href="#android" title="Permalink to this headline">¶</a></h3>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 18%"/>
+<col style="width: 82%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>OS</p></th>
+<th class="head"><p>Compatible</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Android arm</p></td>
+<td><p>Yes (ABI &gt;= 26)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Android arm64</p></td>
+<td><p>Yes (ABI &gt;= 26)</p></td>
+</tr>
+<tr class="row-even"><td><p>Android x86</p></td>
+<td><p>Yes (ABI &gt;= 26)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Android x86_64</p></td>
+<td><p>Yes (ABI &gt;= 26)</p></td>
+</tr>
+</tbody>
+</table></div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<ul class="simple">
+<li><p>Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.</p></li>
+<li><p>If you need Node.js features on Android, please refer to project <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a>.</p></li>
+<li><p>More Android ABI version support implies considerable effort. Please contact the maintainer for detail.</p></li>
+<li><p>More Android CPU arch support implies considerable effort. Please contact the maintainer for detail.</p></li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 
@@ -412,7 +511,13 @@
 <li><a class="reference internal" href="#gradle-groovy-dsl">Gradle Groovy DSL</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#os-compatibility">OS Compatibility</a></li>
+<li><a class="reference internal" href="#os-compatibility">OS Compatibility</a><ul>
+<li><a class="reference internal" href="#windows">Windows</a></li>
+<li><a class="reference internal" href="#linux">Linux</a></li>
+<li><a class="reference internal" href="#mac-os">Mac OS</a></li>
+<li><a class="reference internal" href="#android">Android</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -48,15 +48,27 @@ public final class JavetLibLoader {
      *
      * @since 0.8.0
      */
-    public static final String LIB_VERSION = "1.0.1";
+    public static final String LIB_VERSION = "1.0.2";
+    private static final String ANDROID_ABI_ARM = "armeabi-v7a";
+    private static final String ANDROID_ABI_ARM64 = "arm64-v8a";
+    private static final String ANDROID_ABI_X86 = "x86";
+    private static final String ANDROID_ABI_X86_64 = "x86_64";
+    private static final String ARCH_ARM = "arm";
+    private static final String ARCH_ARM64 = "arm64";
+    private static final String ARCH_X86 = "x86";
+    private static final String ARCH_X86_64 = "x86_64";
     private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
+    private static final String DOT = ".";
+    private static final String LIB_FILE_EXTENSION_ANDROID = "so";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
     private static final String LIB_FILE_EXTENSION_MACOS = "dylib";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
-    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-x86_64.v.{2}.{3}";
+    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-{2}.v.{3}.{4}";
+    private static final String LIB_FILE_NAME_PREFIX = "lib";
     private static final IJavetLogger LOGGER = new JavetDefaultLogger(JavetLibLoader.class.getName());
     private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 60L * 1000L; // 1 minute
+    private static final String OS_ANDROID = "android";
     private static final String OS_LINUX = "linux";
     private static final String OS_MACOS = "macos";
     private static final String OS_WINDOWS = "windows";
@@ -121,7 +133,7 @@ public final class JavetLibLoader {
                         }
                         outputStream.write(buffer, 0, length);
                     }
-                    if (JavetOSUtils.IS_LINUX || JavetOSUtils.IS_MACOS) {
+                    if (JavetOSUtils.IS_LINUX || JavetOSUtils.IS_MACOS || JavetOSUtils.IS_ANDROID) {
                         try {
                             Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
                         } catch (Throwable ignored) {
@@ -132,6 +144,34 @@ public final class JavetLibLoader {
                 LOGGER.logWarn("Failed to write to {0} because it is locked.", libFile.getAbsolutePath());
             }
         }
+    }
+
+    private String getAndroidABI() {
+        if (JavetOSUtils.IS_ANDROID) {
+            if (JavetOSUtils.IS_ARM) {
+                return ANDROID_ABI_ARM;
+            } else if (JavetOSUtils.IS_ARM64) {
+                return ANDROID_ABI_ARM64;
+            } else if (JavetOSUtils.IS_X86) {
+                return ANDROID_ABI_X86;
+            } else if (JavetOSUtils.IS_X86_64) {
+                return ANDROID_ABI_X86_64;
+            }
+        }
+        return null;
+    }
+
+    private String getFileExtension() {
+        if (JavetOSUtils.IS_WINDOWS) {
+            return LIB_FILE_EXTENSION_WINDOWS;
+        } else if (JavetOSUtils.IS_LINUX) {
+            return LIB_FILE_EXTENSION_LINUX;
+        } else if (JavetOSUtils.IS_MACOS) {
+            return LIB_FILE_EXTENSION_MACOS;
+        } else if (JavetOSUtils.IS_ANDROID) {
+            return LIB_FILE_EXTENSION_ANDROID;
+        }
+        return null;
     }
 
     /**
@@ -152,23 +192,87 @@ public final class JavetLibLoader {
      * @since 1.0.1
      */
     public String getLibFileName() throws JavetException {
-        String osName, fileExtension;
-        if (JavetOSUtils.IS_WINDOWS) {
-            fileExtension = LIB_FILE_EXTENSION_WINDOWS;
-            osName = OS_WINDOWS;
-        } else if (JavetOSUtils.IS_LINUX) {
-            fileExtension = LIB_FILE_EXTENSION_LINUX;
-            osName = OS_LINUX;
-        } else if (JavetOSUtils.IS_MACOS) {
-            fileExtension = LIB_FILE_EXTENSION_MACOS;
-            osName = OS_MACOS;
-        } else {
+        String fileExtension = getFileExtension();
+        String osArch = getOSArch();
+        String osName = getOSName();
+        if (fileExtension == null || osName == null) {
             throw new JavetException(
                     JavetError.OSNotSupported,
                     SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_NAME));
         }
-        return MessageFormat.format(LIB_FILE_NAME_FORMAT,
-                jsRuntimeType.getName(), osName, LIB_VERSION, fileExtension);
+        if (osArch == null) {
+            throw new JavetException(
+                    JavetError.OSNotSupported,
+                    SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_ARCH));
+        }
+        return MessageFormat.format(
+                LIB_FILE_NAME_FORMAT,
+                jsRuntimeType.getName(),
+                osName,
+                osArch,
+                LIB_VERSION,
+                fileExtension);
+    }
+
+    private String getNormalizedLibFilePath(String libFilePath) {
+        boolean prefixToBeNormalized = false;
+        if (JavetOSUtils.IS_LINUX) {
+            prefixToBeNormalized = true;
+            if (libFilePath.endsWith(DOT + LIB_FILE_EXTENSION_LINUX)) {
+                libFilePath = libFilePath.substring(
+                        0, libFilePath.length() - DOT.length() - LIB_FILE_EXTENSION_LINUX.length());
+            }
+        } else if (JavetOSUtils.IS_ANDROID) {
+            prefixToBeNormalized = true;
+            if (libFilePath.endsWith(DOT + LIB_FILE_EXTENSION_ANDROID)) {
+                libFilePath = libFilePath.substring(
+                        0, libFilePath.length() - DOT.length() - LIB_FILE_EXTENSION_ANDROID.length());
+            }
+        } else if (JavetOSUtils.IS_MACOS) {
+            prefixToBeNormalized = true;
+            if (libFilePath.endsWith(DOT + LIB_FILE_EXTENSION_MACOS)) {
+                libFilePath = libFilePath.substring(
+                        0, libFilePath.length() - DOT.length() - LIB_FILE_EXTENSION_MACOS.length());
+            }
+        }
+        if (prefixToBeNormalized && libFilePath.startsWith(LIB_FILE_NAME_PREFIX)) {
+            libFilePath = libFilePath.substring(LIB_FILE_NAME_PREFIX.length());
+        }
+        return libFilePath;
+    }
+
+    private String getOSArch() {
+        if (JavetOSUtils.IS_WINDOWS) {
+            return ARCH_X86_64;
+        } else if (JavetOSUtils.IS_LINUX) {
+            return ARCH_X86_64;
+        } else if (JavetOSUtils.IS_MACOS) {
+            return ARCH_X86_64;
+        } else if (JavetOSUtils.IS_ANDROID) {
+            if (JavetOSUtils.IS_ARM) {
+                return ARCH_ARM;
+            } else if (JavetOSUtils.IS_ARM64) {
+                return ARCH_ARM64;
+            } else if (JavetOSUtils.IS_X86) {
+                return ARCH_X86;
+            } else if (JavetOSUtils.IS_X86_64) {
+                return ARCH_X86_64;
+            }
+        }
+        return null;
+    }
+
+    private String getOSName() {
+        if (JavetOSUtils.IS_WINDOWS) {
+            return OS_WINDOWS;
+        } else if (JavetOSUtils.IS_LINUX) {
+            return OS_LINUX;
+        } else if (JavetOSUtils.IS_MACOS) {
+            return OS_MACOS;
+        } else if (JavetOSUtils.IS_ANDROID) {
+            return OS_ANDROID;
+        }
+        return null;
     }
 
     /**
@@ -180,7 +284,9 @@ public final class JavetLibLoader {
      */
     public String getResourceFileName()
             throws JavetException {
-        String resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, getLibFileName());
+        String resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, JavetOSUtils.IS_ANDROID
+                ? String.join("/", LIB_FILE_NAME_PREFIX, getAndroidABI(), getLibFileName())
+                : getLibFileName());
         if (JavetLibLoader.class.getResource(resourceFileName) == null) {
             throw new JavetException(
                     JavetError.LibraryNotFound,
@@ -217,14 +323,19 @@ public final class JavetLibLoader {
                     Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
                     String resourceFileName = getResourceFileName();
-                    File processIDPath = new File(libPath.toFile(), Long.toString(JavetOSUtils.PROCESS_ID));
-                    if (!processIDPath.exists()) {
-                        if (!processIDPath.mkdirs()) {
-                            LOGGER.logError("Failed to create {0}.", processIDPath.getAbsolutePath());
+                    File rootLibPath;
+                    if (JavetOSUtils.IS_ANDROID) {
+                        rootLibPath = libPath.toFile();
+                    } else {
+                        rootLibPath = new File(libPath.toFile(), Long.toString(JavetOSUtils.PROCESS_ID));
+                    }
+                    if (!rootLibPath.exists()) {
+                        if (!rootLibPath.mkdirs()) {
+                            LOGGER.logError("Failed to create {0}.", rootLibPath.getAbsolutePath());
                         }
                     }
-                    purge(processIDPath);
-                    File libFile = new File(processIDPath, getLibFileName()).getAbsoluteFile();
+                    purge(rootLibPath);
+                    File libFile = new File(rootLibPath, getLibFileName()).getAbsoluteFile();
                     deployLibFile(resourceFileName, libFile);
                     libFilePath = libFile.getAbsolutePath();
                 } else {
@@ -233,7 +344,7 @@ public final class JavetLibLoader {
                     libFilePath = new File(libPath.toFile(), getLibFileName()).getAbsolutePath();
                 }
                 if (isLibInSystemPath) {
-                    System.loadLibrary(libFilePath);
+                    System.loadLibrary(getNormalizedLibFilePath(libFilePath));
                 } else {
                     System.load(libFilePath);
                 }
@@ -248,50 +359,54 @@ public final class JavetLibLoader {
         }
     }
 
-    private void purge(File libPath) {
+    private void purge(File rootLibPath) {
         try {
-            if (libPath.exists()) {
-                if (libPath.isDirectory()) {
-                    File[] files = libPath.listFiles();
+            if (rootLibPath.exists()) {
+                if (rootLibPath.isDirectory()) {
+                    File[] files = rootLibPath.listFiles();
                     if (files != null && files.length > 0) {
-                        for (File tempProcessIDPath : files) {
-                            if (tempProcessIDPath.isDirectory() &&
-                                    tempProcessIDPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS < System.currentTimeMillis()) {
+                        for (File libFileOrPath : files) {
+                            if (libFileOrPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS > System.currentTimeMillis()) {
+                                continue;
+                            }
+                            boolean toBeDeleted = false;
+                            if (libFileOrPath.isDirectory()) {
                                 try {
-                                    boolean isLocked = false;
-                                    File[] libFiles = tempProcessIDPath.listFiles();
+                                    File[] libFiles = libFileOrPath.listFiles();
                                     if (libFiles != null && libFiles.length > 0) {
                                         for (File libFile : libFiles) {
                                             if (libFile.delete()) {
                                                 LOGGER.logDebug("Deleted {0}.", libFile.getAbsolutePath());
                                             } else {
                                                 LOGGER.logDebug("{0} is locked.", libFile.getAbsolutePath());
-                                                isLocked = true;
+                                                toBeDeleted = true;
                                                 break;
                                             }
                                         }
                                     }
-                                    if (!isLocked) {
-                                        if (tempProcessIDPath.delete()) {
-                                            LOGGER.logDebug("Deleted {0}.", tempProcessIDPath.getAbsolutePath());
-                                        } else {
-                                            LOGGER.logDebug("{0} is locked.", tempProcessIDPath.getAbsolutePath());
-                                        }
-                                    }
                                 } catch (Throwable t) {
-                                    LOGGER.logError(t, "Failed to delete {0}.", tempProcessIDPath.getAbsolutePath());
+                                    LOGGER.logError(t, "Failed to delete {0}.", libFileOrPath.getAbsolutePath());
+                                }
+                            } else if (libFileOrPath.isFile()) {
+                                toBeDeleted = true;
+                            }
+                            if (toBeDeleted) {
+                                if (libFileOrPath.delete()) {
+                                    LOGGER.logDebug("Deleted {0}.", libFileOrPath.getAbsolutePath());
+                                } else {
+                                    LOGGER.logDebug("{0} is locked.", libFileOrPath.getAbsolutePath());
                                 }
                             }
                         }
                     }
                 } else {
-                    if (!libPath.delete()) {
-                        LOGGER.logError("Failed to delete {0}.", libPath.getAbsolutePath());
+                    if (!rootLibPath.delete()) {
+                        LOGGER.logError("Failed to delete {0}.", rootLibPath.getAbsolutePath());
                     }
                 }
             }
         } catch (Throwable t) {
-            LOGGER.logError(t, "Failed to clean up {0}.", libPath.getAbsolutePath());
+            LOGGER.logError(t, "Failed to clean up {0}.", rootLibPath.getAbsolutePath());
         }
     }
 }

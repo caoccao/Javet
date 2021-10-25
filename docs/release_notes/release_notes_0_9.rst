@@ -4,6 +4,10 @@
 Release Notes 0.9.x
 ===================
 
+.. caution::
+
+    v0.9.x are in maintenance.
+
 0.9.14 V8 Scope
 ---------------
 

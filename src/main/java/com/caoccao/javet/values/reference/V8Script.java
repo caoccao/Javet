@@ -36,8 +36,7 @@ public class V8Script extends V8ValueReference implements IV8Script {
     @Override
     @CheckReturnValue
     public <T extends V8Value> T execute(boolean resultRequired) throws JavetException {
-        checkV8Runtime();
-        return v8Runtime.scriptRun(this, resultRequired);
+        return checkV8Runtime().getV8Internal().scriptRun(this, resultRequired);
     }
 
     public String getResourceName() {

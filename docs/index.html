@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tutorial" href="tutorial/index.html" />
 
     <link rel="shortcut icon" href="_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Javet 1.0.1 documentation</title>
+        <title>Javet 1.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Javet 1.0.1 documentation</div></a>
+      <a href="#"><div class="brand">Javet 1.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.1 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -280,7 +280,8 @@
         <article role="main">
           <div class="section" id="javet">
 <h1>Javet<a class="headerlink" href="#javet" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://search.maven.org/search?q=g:com.caoccao.javet"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge"/></a> <a class="reference external" href="https://discord.gg/R4vvKU96gw"><img alt="Discord" src="https://img.shields.io/discord/870518906115211305?label=join%20our%20Discord&amp;style=for-the-badge"/></a> <a class="reference external" href="https://paypal.me/caoccao?locale.x=en_US"><img alt="Donate" src="https://img.shields.io/badge/Donate-Paypal-green?style=for-the-badge"/></a> <a class="reference external" href="https://github.com/caoccao/Javet/actions/workflows/linux_build.yml"><img alt="Linux Build" src="https://img.shields.io/github/workflow/status/caoccao/Javet/Linux%20Build?label=Linux%20Build&amp;style=for-the-badge"/></a></p>
+<p><a class="reference external" href="https://search.maven.org/search?q=g:com.caoccao.javet"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge"/></a> <a class="reference external" href="https://discord.gg/R4vvKU96gw"><img alt="Discord" src="https://img.shields.io/discord/870518906115211305?label=join%20our%20Discord&amp;style=for-the-badge"/></a> <a class="reference external" href="https://paypal.me/caoccao?locale.x=en_US"><img alt="Donate" src="https://img.shields.io/badge/Donate-Paypal-green?style=for-the-badge"/></a></p>
+<p><a class="reference external" href="https://github.com/caoccao/Javet/actions/workflows/linux_build.yml"><img alt="Linux Build" src="https://img.shields.io/github/workflow/status/caoccao/Javet/Linux%20Build?label=Linux%20Build&amp;style=for-the-badge"/></a> <a class="reference external" href="https://github.com/caoccao/Javet/actions/workflows/android_build.yml"><img alt="Android Build" src="https://img.shields.io/github/workflow/status/caoccao/Javet/Android%20Build?label=Android%20Build&amp;style=for-the-badge"/></a></p>
 <p><a class="reference external" href="https://github.com/caoccao/Javet/">Javet</a> is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.</p>
 <p>If you like my work, please <strong>Star</strong> this project. And, you may follow me <a class="reference external" href="https://twitter.com/sjtucaocao">@sjtucaocao</a>, or visit <a class="reference external" href="http://caoccao.blogspot.com/">http://caoccao.blogspot.com/</a>. And the official support channel is at <a class="reference external" href="https://discord.gg/R4vvKU96gw">discord</a>.</p>
 <p>💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because my <a class="reference external" href="https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html">MacBook Air mid-2012</a> will be soon deprecated by new version of V8. Please <a class="reference external" href="https://paypal.me/caoccao?locale.x=en_US">donate</a> to support me purchasing a new Mac OS (x86_64) device. Or, if you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will also be great. Thank you for supporting Javet.</p>
@@ -290,7 +291,8 @@
 <h1>Major Features<a class="headerlink" href="#major-features" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>Linux + Mac OS + ️Windows (x86_64)</p></li>
-<li><p>Node.js <code class="docutils literal notranslate"><span class="pre">v16.11.1</span></code> + V8 <code class="docutils literal notranslate"><span class="pre">v9.4.146.19</span></code></p></li>
+<li><p>Android (arm, arm64, x86 and x86_64)</p></li>
+<li><p>Node.js <code class="docutils literal notranslate"><span class="pre">v16.12.0</span></code> + V8 <code class="docutils literal notranslate"><span class="pre">v9.5.172.22</span></code></p></li>
 <li><p>Dynamic switch between Node.js and V8 mode (<a class="reference external" href="https://github.com/caoccao/Javet/discussions/92">Which mode do you prefer?</a>)</p></li>
 <li><p>Polyfill V8 mode with <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a></p></li>
 <li><p>V8 API exposure in JVM</p></li>
@@ -311,29 +313,38 @@
 <span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.0.1<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 
 <span class="c">&lt;!-- Mac OS (x86_64 Only) --&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.0.1<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+<span class="c">&lt;!-- Android (arm, arm64, x86 and x86_64) --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>javet-android<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="gradle-kotlin-dsl">
 <h3>Gradle Kotlin DSL<a class="headerlink" href="#gradle-kotlin-dsl" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet:1.0.1"</span><span class="p">)</span> <span class="c1">// Linux or Windows</span>
-<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-macos:1.0.1"</span><span class="p">)</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet:1.0.2"</span><span class="p">)</span> <span class="c1">// Linux or Windows</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-macos:1.0.2"</span><span class="p">)</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-android:1.0.2"</span><span class="p">)</span> <span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="gradle-groovy-dsl">
 <h3>Gradle Groovy DSL<a class="headerlink" href="#gradle-groovy-dsl" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet:1.0.1'</span> <span class="c1">// Linux or Windows</span>
-<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-macos:1.0.1'</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet:1.0.2'</span> <span class="c1">// Linux or Windows</span>
+<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-macos:1.0.2'</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-android:1.0.2'</span> <span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </div>

@@ -29,9 +29,20 @@
 
 namespace Javet {
     namespace Monitor {
-        jintArray GetHeapSpaceStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jint allocationSpace);
-        jintArray GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate);
-        jintArray GetV8SharedMemoryStatistics(JNIEnv* jniEnv);
+        static jclass jclassV8HeapSpaceStatistics;
+        static jmethodID jmethodIDV8HeapSpaceStatisticsConstructor;
+
+        static jclass jclassV8HeapStatistics;
+        static jmethodID jmethodIDV8HeapStatisticsConstructor;
+
+        static jclass jclassV8SharedMemoryStatistics;
+        static jmethodID jmethodIDV8SharedMemoryStatisticsConstructor;
+
+        void Initialize(JNIEnv* jniEnv);
+
+        jobject GetHeapSpaceStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jint allocationSpaceIndex);
+        jobject GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate);
+        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv);
 
 #ifdef ENABLE_MONITOR
         namespace CounterType {
