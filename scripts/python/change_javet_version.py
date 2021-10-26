@@ -57,7 +57,11 @@ class ChangeJavetVersion(object):
     self._update(
       'pom.xml', '\n',
       re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'^        <tag>javet-(?P<version>\d+\.\d+\.\d+)</tag>$'))
+      re.compile(r'^        <tag>(?P<version>\d+\.\d+\.\d+)</tag>$'))
+    self._update(
+      'android/pom.xml', '\n',
+      re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
+      re.compile(r'^        <tag>(?P<version>\d+\.\d+\.\d+)</tag>$'))
     self._update(
       'cpp/build-android.sh', '\n',
       re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))

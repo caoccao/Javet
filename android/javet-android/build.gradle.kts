@@ -36,7 +36,6 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            setProperty("archivesBaseName", property("archivesBaseName") as String + "-" + version)
         }
     }
 
@@ -62,11 +61,5 @@ dependencies {
 
 tasks.register<Jar>(name = "sourceJar") {
     from(android.sourceSets["main"].java.srcDirs)
-    classifier = "sources"
+    archiveClassifier.set("sources")
 }
-
-tasks.register<Jar>(name = "javadocJar") {
-    from(android.sourceSets["main"].java.srcDirs)
-    classifier = "javadoc"
-}
-
