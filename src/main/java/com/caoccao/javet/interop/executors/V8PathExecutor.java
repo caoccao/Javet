@@ -27,15 +27,39 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * The type V8 path executor.
+ *
+ * @since 0.7.0
+ */
 public class V8PathExecutor extends V8StringExecutor {
+    /**
+     * The Script path.
+     *
+     * @since 0.7.0
+     */
     protected Path scriptPath;
 
+    /**
+     * Instantiates a new V8 path executor.
+     *
+     * @param v8Runtime  the V8 runtime
+     * @param scriptPath the script path
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) throws JavetException {
         super(v8Runtime);
         this.scriptPath = scriptPath;
         setResourceName(scriptPath.toFile().getAbsolutePath());
     }
 
+    /**
+     * Gets script path.
+     *
+     * @return the script path
+     * @since 0.9.1
+     */
     public Path getScriptPath() {
         return scriptPath;
     }

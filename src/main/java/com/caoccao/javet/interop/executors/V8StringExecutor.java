@@ -24,13 +24,36 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
 
+/**
+ * The type V8 string executor.
+ *
+ * @since 0.7.0
+ */
 public class V8StringExecutor extends BaseV8Executor {
+    /**
+     * The Script string.
+     *
+     * @since 0.7.0
+     */
     protected String scriptString;
 
+    /**
+     * Instantiates a new V8 string executor.
+     *
+     * @param v8Runtime the V8 runtime
+     * @since 0.7.0
+     */
     public V8StringExecutor(V8Runtime v8Runtime) {
         this(v8Runtime, null);
     }
 
+    /**
+     * Instantiates a new V8 string executor.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param scriptString the script string
+     * @since 0.7.0
+     */
     public V8StringExecutor(V8Runtime v8Runtime, String scriptString) {
         super(v8Runtime);
         this.scriptString = scriptString;

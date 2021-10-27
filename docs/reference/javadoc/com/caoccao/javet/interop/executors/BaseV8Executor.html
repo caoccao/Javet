@@ -118,6 +118,11 @@ var activeTableTab = "activeTableTab";
 <pre>public abstract class <span class="typeNameLabel">BaseV8Executor</span>
 extends java.lang.Object
 implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html" title="interface in com.caoccao.javet.interop.executors">IV8Executor</a></pre>
+<div class="block">The type Base V8 executor.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.0</dd>
+</dl>
 </li>
 </ul>
 </div>
@@ -138,11 +143,15 @@ implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Execut
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#v8Runtime">v8Runtime</a></span></code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#v8Runtime">v8Runtime</a></span></code>
+<div class="block">The V8 runtime.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#v8ScriptOrigin">v8ScriptOrigin</a></span></code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#v8ScriptOrigin">v8ScriptOrigin</a></span></code>
+<div class="block">The V8 script origin.</div>
+</td>
 </tr>
 </table>
 </li>
@@ -159,7 +168,9 @@ implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Execut
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#BaseV8Executor-com.caoccao.javet.interop.V8Runtime-">BaseV8Executor</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime)</code>&nbsp;</td>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#BaseV8Executor-com.caoccao.javet.interop.V8Runtime-">BaseV8Executor</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime)</code>
+<div class="block">Instantiates a new Base V8 executor.</div>
+</td>
 </tr>
 </table>
 </li>
@@ -178,11 +189,15 @@ implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Execut
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>abstract <a href="../../../../../com/caoccao/javet/values/reference/V8Module.html" title="class in com.caoccao.javet.values.reference">V8Module</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#compileV8Module-boolean-">compileV8Module</a></span>(boolean&nbsp;resultRequired)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#compileV8Module-boolean-">compileV8Module</a></span>(boolean&nbsp;resultRequired)</code>
+<div class="block">Compile V8 module.</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>abstract <a href="../../../../../com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#compileV8Script-boolean-">compileV8Script</a></span>(boolean&nbsp;resultRequired)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#compileV8Script-boolean-">compileV8Script</a></span>(boolean&nbsp;resultRequired)</code>
+<div class="block">Compile V8 script.</div>
+</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>abstract &lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&gt;<br>T</code></td>
@@ -192,15 +207,21 @@ implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Execut
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>abstract java.lang.String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#getScriptString--">getScriptString</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#getScriptString--">getScriptString</a></span>()</code>
+<div class="block">Gets script string.</div>
+</td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#getV8Runtime--">getV8Runtime</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#getV8Runtime--">getV8Runtime</a></span>()</code>
+<div class="block">Gets V8 runtime.</div>
+</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#getV8ScriptOrigin--">getV8ScriptOrigin</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/executors/BaseV8Executor.html#getV8ScriptOrigin--">getV8ScriptOrigin</a></span>()</code>
+<div class="block">Gets V8 script origin.</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -252,6 +273,11 @@ implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Execut
 <li class="blockList">
 <h4>v8Runtime</h4>
 <pre>protected&nbsp;<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a> v8Runtime</pre>
+<div class="block">The V8 runtime.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.0</dd>
+</dl>
 </li>
 </ul>
 <a name="v8ScriptOrigin">
@@ -261,6 +287,11 @@ implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Execut
 <li class="blockList">
 <h4>v8ScriptOrigin</h4>
 <pre>protected&nbsp;<a href="../../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a> v8ScriptOrigin</pre>
+<div class="block">The V8 script origin.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.0</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -278,6 +309,13 @@ implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Execut
 <li class="blockList">
 <h4>BaseV8Executor</h4>
 <pre>public&nbsp;BaseV8Executor(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime)</pre>
+<div class="block">Instantiates a new Base V8 executor.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>v8Runtime</code> - the V8 runtime</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>0.7.0</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -288,23 +326,6 @@ implements <a href="../../../../../com/caoccao/javet/interop/executors/IV8Execut
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="compileV8Script-boolean-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>compileV8Script</h4>
-<pre><a href="../../../../../com/caoccao/javet/annotations/CheckReturnValue.html" title="annotation in com.caoccao.javet.annotations">@CheckReturnValue</a>
-public abstract&nbsp;<a href="../../../../../com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a>&nbsp;compileV8Script(boolean&nbsp;resultRequired)
-                                                     throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#compileV8Script-boolean-">compileV8Script</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html" title="interface in com.caoccao.javet.interop.executors">IV8Executor</a></code></dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></dd>
-</dl>
-</li>
-</ul>
 <a name="compileV8Module-boolean-">
 <!--   -->
 </a>
@@ -314,11 +335,40 @@ public abstract&nbsp;<a href="../../../../../com/caoccao/javet/values/reference/
 <pre><a href="../../../../../com/caoccao/javet/annotations/CheckReturnValue.html" title="annotation in com.caoccao.javet.annotations">@CheckReturnValue</a>
 public abstract&nbsp;<a href="../../../../../com/caoccao/javet/values/reference/V8Module.html" title="class in com.caoccao.javet.values.reference">V8Module</a>&nbsp;compileV8Module(boolean&nbsp;resultRequired)
                                                      throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#compileV8Module-boolean-">IV8Executor</a></code></span></div>
+<div class="block">Compile V8 module.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#compileV8Module-boolean-">compileV8Module</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html" title="interface in com.caoccao.javet.interop.executors">IV8Executor</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>resultRequired</code> - the result required</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the V8 module</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></dd>
+<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
+</dl>
+</li>
+</ul>
+<a name="compileV8Script-boolean-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>compileV8Script</h4>
+<pre><a href="../../../../../com/caoccao/javet/annotations/CheckReturnValue.html" title="annotation in com.caoccao.javet.annotations">@CheckReturnValue</a>
+public abstract&nbsp;<a href="../../../../../com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a>&nbsp;compileV8Script(boolean&nbsp;resultRequired)
+                                                     throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#compileV8Script-boolean-">IV8Executor</a></code></span></div>
+<div class="block">Compile V8 script.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#compileV8Script-boolean-">compileV8Script</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html" title="interface in com.caoccao.javet.interop.executors">IV8Executor</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>resultRequired</code> - the result required</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the V8 script</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
 </dl>
 </li>
 </ul>
@@ -355,11 +405,15 @@ public abstract&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/val
 <h4>getScriptString</h4>
 <pre>public abstract&nbsp;java.lang.String&nbsp;getScriptString()
                                           throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#getScriptString--">IV8Executor</a></code></span></div>
+<div class="block">Gets script string.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#getScriptString--">getScriptString</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html" title="interface in com.caoccao.javet.interop.executors">IV8Executor</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the script string</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></dd>
+<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
 </dl>
 </li>
 </ul>
@@ -370,9 +424,13 @@ public abstract&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/val
 <li class="blockList">
 <h4>getV8Runtime</h4>
 <pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;getV8Runtime()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#getV8Runtime--">IV8Executor</a></code></span></div>
+<div class="block">Gets V8 runtime.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#getV8Runtime--">getV8Runtime</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html" title="interface in com.caoccao.javet.interop.executors">IV8Executor</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the V8 runtime</dd>
 </dl>
 </li>
 </ul>
@@ -383,9 +441,13 @@ public abstract&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/val
 <li class="blockList">
 <h4>getV8ScriptOrigin</h4>
 <pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/V8ScriptOrigin.html" title="class in com.caoccao.javet.interop">V8ScriptOrigin</a>&nbsp;getV8ScriptOrigin()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#getV8ScriptOrigin--">IV8Executor</a></code></span></div>
+<div class="block">Gets V8 script origin.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html#getV8ScriptOrigin--">getV8ScriptOrigin</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/executors/IV8Executor.html" title="interface in com.caoccao.javet.interop.executors">IV8Executor</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the V8 script origin</dd>
 </dl>
 </li>
 </ul>
