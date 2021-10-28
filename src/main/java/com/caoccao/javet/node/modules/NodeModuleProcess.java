@@ -42,19 +42,19 @@ public class NodeModuleProcess extends BaseNodeModule {
         return moduleObject.getString(PROPERTY_VERSION);
     }
 
-    public Path getWorkingDirectory() throws JavetException {
-        return new File(moduleObject.invokeString(FUNCTION_CWD)).toPath();
+    public File getWorkingDirectory() throws JavetException {
+        return new File(moduleObject.invokeString(FUNCTION_CWD));
     }
 
     public void on(String eventName, V8ValueFunction v8ValueFunction) throws JavetException {
         moduleObject.invokeVoid(FUNCTION_ON, new V8ValueString(eventName), v8ValueFunction);
     }
 
-    public void setWorkingDirectory(Path path) throws JavetException {
-        setWorkingDirectory(Objects.requireNonNull(path).toAbsolutePath().toString());
+    public void setWorkingDirectory(File workingDirectory) throws JavetException {
+        setWorkingDirectory(Objects.requireNonNull(workingDirectory).getAbsolutePath());
     }
 
-    public void setWorkingDirectory(String pathString) throws JavetException {
-        moduleObject.invokeVoid(FUNCTION_CHDIR, Objects.requireNonNull(pathString));
+    public void setWorkingDirectory(String workingDirectory) throws JavetException {
+        moduleObject.invokeVoid(FUNCTION_CHDIR, Objects.requireNonNull(workingDirectory));
     }
 }

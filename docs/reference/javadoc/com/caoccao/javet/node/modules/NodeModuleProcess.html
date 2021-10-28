@@ -198,7 +198,7 @@ extends <a href="../../../../../com/caoccao/javet/node/modules/BaseNodeModule.ht
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/node/modules/NodeModuleProcess.html#getVersion--">getVersion</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>java.nio.file.Path</code></td>
+<td class="colFirst"><code>java.io.File</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/node/modules/NodeModuleProcess.html#getWorkingDirectory--">getWorkingDirectory</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
@@ -208,11 +208,11 @@ extends <a href="../../../../../com/caoccao/javet/node/modules/BaseNodeModule.ht
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/node/modules/NodeModuleProcess.html#setWorkingDirectory-java.nio.file.Path-">setWorkingDirectory</a></span>(java.nio.file.Path&nbsp;path)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/node/modules/NodeModuleProcess.html#setWorkingDirectory-java.io.File-">setWorkingDirectory</a></span>(java.io.File&nbsp;workingDirectory)</code>&nbsp;</td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/node/modules/NodeModuleProcess.html#setWorkingDirectory-java.lang.String-">setWorkingDirectory</a></span>(java.lang.String&nbsp;pathString)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/node/modules/NodeModuleProcess.html#setWorkingDirectory-java.lang.String-">setWorkingDirectory</a></span>(java.lang.String&nbsp;workingDirectory)</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -341,8 +341,8 @@ extends <a href="../../../../../com/caoccao/javet/node/modules/BaseNodeModule.ht
 <ul class="blockList">
 <li class="blockList">
 <h4>getWorkingDirectory</h4>
-<pre>public&nbsp;java.nio.file.Path&nbsp;getWorkingDirectory()
-                                       throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<pre>public&nbsp;java.io.File&nbsp;getWorkingDirectory()
+                                 throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></dd>
@@ -364,13 +364,13 @@ extends <a href="../../../../../com/caoccao/javet/node/modules/BaseNodeModule.ht
 </dl>
 </li>
 </ul>
-<a name="setWorkingDirectory-java.nio.file.Path-">
+<a name="setWorkingDirectory-java.io.File-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setWorkingDirectory</h4>
-<pre>public&nbsp;void&nbsp;setWorkingDirectory(java.nio.file.Path&nbsp;path)
+<pre>public&nbsp;void&nbsp;setWorkingDirectory(java.io.File&nbsp;workingDirectory)
                          throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -384,7 +384,7 @@ extends <a href="../../../../../com/caoccao/javet/node/modules/BaseNodeModule.ht
 <ul class="blockListLast">
 <li class="blockList">
 <h4>setWorkingDirectory</h4>
-<pre>public&nbsp;void&nbsp;setWorkingDirectory(java.lang.String&nbsp;pathString)
+<pre>public&nbsp;void&nbsp;setWorkingDirectory(java.lang.String&nbsp;workingDirectory)
                          throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>

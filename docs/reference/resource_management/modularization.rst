@@ -16,7 +16,7 @@ In Node.js mode, Javet leaves Node.js with its own ways of handling modules. The
         javetEnginePool.getConfig().setJSRuntimeType(JSRuntimeType.Node);
         try (IJavetEngine<NodeRuntime> iJavetEngine = javetEnginePool.getEngine()) {
             NodeRuntime nodeRuntime = iJavetEngine.getV8Runtime();
-            Path workingDirectory = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node").toPath();
+            File workingDirectory = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node");
             // Set the require root directory so that Node.js is able to locate node_modules.
             nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(workingDirectory);
             getLogger().logInfo("1.23 + 2.34 = {0}", nodeRuntime.getExecutor(

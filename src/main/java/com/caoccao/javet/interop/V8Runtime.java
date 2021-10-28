@@ -30,6 +30,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
+import com.caoccao.javet.interop.executors.V8FileExecutor;
 import com.caoccao.javet.interop.executors.V8PathExecutor;
 import com.caoccao.javet.interop.executors.V8StringExecutor;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
@@ -478,7 +479,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     public IV8Executor getExecutor(File scriptFile) throws JavetException {
-        return getExecutor(scriptFile.toPath());
+        return new V8FileExecutor(this, scriptFile);
     }
 
     public IV8Executor getExecutor(Path scriptPath) throws JavetException {

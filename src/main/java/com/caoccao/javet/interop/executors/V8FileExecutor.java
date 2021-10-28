@@ -22,59 +22,59 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.SimpleMap;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 
 /**
- * The type V8 path executor.
+ * The type V8 file executor.
  *
- * @since 0.7.0
+ * @since 1.0.3
  */
-public class V8PathExecutor extends V8StringExecutor {
+public class V8FileExecutor extends V8StringExecutor {
     /**
-     * The Script path.
+     * The Script file.
      *
-     * @since 0.7.0
+     * @since 1.0.3
      */
-    protected Path scriptPath;
+    protected File scriptFile;
 
     /**
      * Instantiates a new V8 path executor.
      *
      * @param v8Runtime  the V8 runtime
-     * @param scriptPath the script path
+     * @param scriptFile the script file
      * @throws JavetException the javet exception
-     * @since 0.8.4
+     * @since 1.0.3
      */
-    public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) throws JavetException {
+    public V8FileExecutor(V8Runtime v8Runtime, File scriptFile) throws JavetException {
         super(v8Runtime);
-        this.scriptPath = scriptPath;
-        setResourceName(scriptPath.toString());
+        this.scriptFile = scriptFile;
+        setResourceName(scriptFile.getAbsolutePath());
     }
 
     /**
-     * Gets script path.
+     * Gets script file.
      *
-     * @return the script path
-     * @since 0.9.1
+     * @return the script file
+     * @since 1.0.3
      */
-    public Path getScriptPath() {
-        return scriptPath;
+    public File getScriptFile() {
+        return scriptFile;
     }
 
     @Override
     public String getScriptString() throws JavetException {
         if (scriptString == null) {
-            try (FileInputStream fileInputStream = new FileInputStream(scriptPath.toString())) {
+            try (FileInputStream fileInputStream = new FileInputStream(scriptFile)) {
                 byte[] buffer = new byte[fileInputStream.available()];
                 fileInputStream.read(buffer);
                 scriptString = new String(buffer, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new JavetException(
                         JavetError.FailedToReadPath,
-                        SimpleMap.of(JavetError.PARAMETER_PATH, scriptPath),
+                        SimpleMap.of(JavetError.PARAMETER_PATH, scriptFile),
                         e);
             }
         }

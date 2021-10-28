@@ -94,15 +94,16 @@ Android
 =========================== =======================================================================================================================
 OS                          Compatible
 =========================== =======================================================================================================================
-Android arm                 Yes (ABI >= 26)
-Android arm64               Yes (ABI >= 26)
-Android x86                 Yes (ABI >= 26)
-Android x86_64              Yes (ABI >= 26)
+Android arm                 Yes (ABI >= 24)
+Android arm64               Yes (ABI >= 24)
+Android x86                 Yes (ABI >= 24)
+Android x86_64              Yes (ABI >= 24)
 =========================== =======================================================================================================================
 
 .. caution::
 
     * Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.
     * If you need Node.js features on Android, please refer to project `Javenode <https://github.com/caoccao/Javenode>`_.
-    * The ABI version has to be >= 26 because the `ZonedDateTime <https://developer.android.com/reference/java/time/ZonedDateTime>`_ (since ABI 26) is inside the Javet core. Supporting ABI >= 21 implies serious breaking changes and considerable effort. Please contact the maintainer for detail.
+    * The ABI version >= 24. Supporting ABI >= 21 implies serious breaking changes and considerable effort. Please contact the maintainer for detail.
+    * `ZonedDateTime <https://developer.android.com/reference/java/time/ZonedDateTime>`_ (since ABI 26) is polyfilled by ``org.threeten.bp.ZonedDateTime`` so that Javet can work well with low ABI version.
     * More Android CPU arch support implies considerable effort. Please contact the maintainer for detail.

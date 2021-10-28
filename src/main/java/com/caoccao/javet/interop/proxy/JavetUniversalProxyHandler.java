@@ -198,7 +198,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @throws Throwable the throwable
      * @since 0.9.10
      */
-    protected static <E extends Executable> Object execute(
+    protected static <E extends AccessibleObject> Object execute(
             V8Runtime v8Runtime, Object targetObject, List<E> executables, JavetVirtualObject[] javetVirtualObjects)
             throws Throwable {
         List<ScoredExecutable<E>> scoredExecutables = new ArrayList<>();
@@ -838,7 +838,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @param <E> the type parameter
      * @since 0.9.6
      */
-    public static class ScoredExecutable<E extends Executable> {
+    public static class ScoredExecutable<E extends AccessibleObject> {
         private final E executable;
         private final JavetVirtualObject[] javetVirtualObjects;
         private final Object targetObject;
@@ -869,9 +869,11 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          */
         public void calculateScore() throws JavetException {
             // Max score is 1. Min score is 0.
-            final int parameterCount = executable.getParameterCount();
-            Class<?>[] parameterTypes = executable.getParameterTypes();
-            boolean isExecutableVarArgs = executable.isVarArgs();
+            Class<?>[] parameterTypes = executable instanceof Constructor ?
+                    ((Constructor) executable).getParameterTypes() : ((Method) executable).getParameterTypes();
+            final int parameterCount = parameterTypes.length;
+            boolean isExecutableVarArgs = executable instanceof Constructor ?
+                    ((Constructor) executable).isVarArgs() : ((Method) executable).isVarArgs();
             score = 0;
             final int length = javetVirtualObjects.length;
             if (length == 0) {
@@ -971,8 +973,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     }
                     if (totalScore > 0) {
                         score = totalScore / length;
-                        if (targetObject != null && executable.getDeclaringClass() != targetObject.getClass()) {
-                            score *= 0.9;
+                        if (executable instanceof Constructor) {
+                            if (targetObject != null &&
+                                    ((Constructor) executable).getDeclaringClass() != targetObject.getClass()) {
+                                score *= 0.9;
+                            }
+                        } else {
+                            if (targetObject != null &&
+                                    ((Method) executable).getDeclaringClass() != targetObject.getClass()) {
+                                score *= 0.9;
+                            }
                         }
                     }
                 }
@@ -988,10 +998,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          */
         public Object execute() throws Throwable {
             final int length = javetVirtualObjects.length;
-            Object callee = Modifier.isStatic(executable.getModifiers()) ? null : targetObject;
-            final int parameterCount = executable.getParameterCount();
-            Class<?>[] parameterTypes = executable.getParameterTypes();
-            boolean isExecutableVarArgs = executable.isVarArgs();
+            Object callee = Modifier.isStatic(((Member) executable).getModifiers()) ? null : targetObject;
+            Class<?>[] parameterTypes = executable instanceof Constructor ?
+                    ((Constructor) executable).getParameterTypes() : ((Method) executable).getParameterTypes();
+            final int parameterCount = parameterTypes.length;
+            boolean isExecutableVarArgs = executable instanceof Constructor ?
+                    ((Constructor) executable).isVarArgs() : ((Method) executable).isVarArgs();
             if (length == 0) {
                 if (isExecutableVarArgs) {
                     Class<?> componentType = parameterTypes[parameterCount - 1];

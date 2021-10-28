@@ -29,8 +29,10 @@ if hasattr(importlib, 'util') and importlib.util.find_spec('coloredlogs'):
 class PatchAndroidBuild(object):
   def __init__(self) -> None:
     self._line_separator = '\n'
-    self._package_java_time = 'java.time.'
-    self._package_bp = 'org.threeten.bp.'
+    self._patch_dict = {
+      'java.time.': 'org.threeten.bp.',
+      '.getParameterCount()': '.getParameterTypes().length',
+    }
     root_dir_path = pathlib.Path(__file__).parent.joinpath('../../').resolve().absolute()
     self._source_dir_path = root_dir_path.joinpath('src/main/java/com/caoccao/javet').resolve().absolute()
     self._target_dir_path = root_dir_path.joinpath('android/javet-android/src/main/java/com/caoccao/javet').resolve().absolute()
@@ -57,8 +59,9 @@ class PatchAndroidBuild(object):
           logging.info('%s is created.', target_file_path.parent)
         lines = []
         for line in source_file_path.read_bytes().decode('utf-8').split(self._line_separator):
-          if self._package_java_time in line:
-            line = line.replace(self._package_java_time, self._package_bp)
+          for (patch_key, patch_value) in self._patch_dict.items():
+            if patch_key in line:
+              line = line.replace(patch_key, patch_value)
           lines.append(line)
         buffer = self._line_separator.join(lines).encode('utf-8')
         to_be_copied = True
