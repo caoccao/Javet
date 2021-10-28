@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 @NodeModule(name = "module")
 public class NodeModuleModule extends BaseNodeModule {
@@ -32,10 +33,14 @@ public class NodeModuleModule extends BaseNodeModule {
         super(moduleObject, name);
     }
 
-    public void setRequireRootDirectory(Path path) throws JavetException {
+    public void setRequireRootDirectory(String pathString) throws JavetException {
         try (V8ValueObject v8ValueObject = moduleObject.invoke(
-                FUNCTION_CREATE_REQUIRE, path.toAbsolutePath().toString())) {
+                FUNCTION_CREATE_REQUIRE, Objects.requireNonNull(pathString))) {
             moduleObject.getV8Runtime().getGlobalObject().set(PROPERTY_REQUIRE, v8ValueObject);
         }
+    }
+
+    public void setRequireRootDirectory(Path path) throws JavetException {
+        setRequireRootDirectory(path.toAbsolutePath().toString());
     }
 }

@@ -25,6 +25,7 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Objects;
 
 @NodeModule(name = "process")
 public class NodeModuleProcess extends BaseNodeModule {
@@ -50,6 +51,10 @@ public class NodeModuleProcess extends BaseNodeModule {
     }
 
     public void setWorkingDirectory(Path path) throws JavetException {
-        moduleObject.invokeVoid(FUNCTION_CHDIR, new V8ValueString(path.toAbsolutePath().toString()));
+        setWorkingDirectory(Objects.requireNonNull(path).toAbsolutePath().toString());
+    }
+
+    public void setWorkingDirectory(String pathString) throws JavetException {
+        moduleObject.invokeVoid(FUNCTION_CHDIR, Objects.requireNonNull(pathString));
     }
 }

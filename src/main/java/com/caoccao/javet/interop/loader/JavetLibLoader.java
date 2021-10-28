@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.utils.JavetStringUtils;
 import com.caoccao.javet.utils.SimpleMap;
 
 import java.io.File;
@@ -285,7 +286,7 @@ public final class JavetLibLoader {
     public String getResourceFileName()
             throws JavetException {
         String resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, JavetOSUtils.IS_ANDROID
-                ? String.join("/", LIB_FILE_NAME_PREFIX, getAndroidABI(), getLibFileName())
+                ? JavetStringUtils.join("/", LIB_FILE_NAME_PREFIX, getAndroidABI(), getLibFileName())
                 : getLibFileName());
         if (JavetLibLoader.class.getResource(resourceFileName) == null) {
             throw new JavetException(

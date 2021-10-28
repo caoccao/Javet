@@ -142,10 +142,19 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html#allVoid-com.caoccao.javet.values.V8Value-">allVoid(V8Value)</a></span> - Method in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInPromise</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interfaces/IJavaFunction.html#andThen-com.caoccao.javet.interfaces.IJavaFunction-">andThen(IJavaFunction&lt;? super R, ? extends V&gt;)</a></span> - Method in interface com.caoccao.javet.interfaces.<a href="com/caoccao/javet/interfaces/IJavaFunction.html" title="interface in com.caoccao.javet.interfaces">IJavaFunction</a></dt>
+<dd>
+<div class="block">Returns a composed function that first applies this function to
+ its input, and then applies the <code>after</code> function to the result.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html#any-com.caoccao.javet.values.V8Value-">any(V8Value)</a></span> - Method in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInPromise</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html#anyVoid-com.caoccao.javet.values.V8Value-">anyVoid(V8Value)</a></span> - Method in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInPromise</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interfaces/IJavaFunction.html#apply-T-">apply(T)</a></span> - Method in interface com.caoccao.javet.interfaces.<a href="com/caoccao/javet/interfaces/IJavaFunction.html" title="interface in com.caoccao.javet.interfaces">IJavaFunction</a></dt>
+<dd>
+<div class="block">Applies this function to the given argument.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/IJavetProxyHandler.html#apply-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.reference.V8ValueArray-">apply(V8Value, V8Value, V8ValueArray)</a></span> - Method in interface com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/IJavetProxyHandler.html" title="interface in com.caoccao.javet.interop.proxy">IJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Apply to object</div>
@@ -633,7 +642,9 @@
 <div class="block">Classes for V8 virtual reference values.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/receivers/JavetCallbackReceiver.html#COMMA">COMMA</a></span> - Static variable in class com.caoccao.javet.utils.receivers.<a href="com/caoccao/javet/utils/receivers/JavetCallbackReceiver.html" title="class in com.caoccao.javet.utils.receivers">JavetCallbackReceiver</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The constant COMMA.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetError.html#CompilationFailure">CompilationFailure</a></span> - Static variable in class com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetError.html" title="class in com.caoccao.javet.exceptions">JavetError</a></dt>
 <dd>
 <div class="block">The constant CompilationFailure.</div>
@@ -675,6 +686,11 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/executors/IV8Executor.html#compileV8ScriptVoid--">compileV8ScriptVoid()</a></span> - Method in interface com.caoccao.javet.interop.executors.<a href="com/caoccao/javet/interop/executors/IV8Executor.html" title="interface in com.caoccao.javet.interop.executors">IV8Executor</a></dt>
 <dd>
 <div class="block">Compile V8 script.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interfaces/IJavaFunction.html#compose-com.caoccao.javet.interfaces.IJavaFunction-">compose(IJavaFunction&lt;? super V, ? extends T&gt;)</a></span> - Method in interface com.caoccao.javet.interfaces.<a href="com/caoccao/javet/interfaces/IJavaFunction.html" title="interface in com.caoccao.javet.interfaces">IJavaFunction</a></dt>
+<dd>
+<div class="block">Returns a composed function that first applies the <code>before</code>
+ function to its input, and then applies this function to the result.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/logging/BaseJavetConsoleInterceptor.html#concat-com.caoccao.javet.values.V8Value...-">concat(V8Value...)</a></span> - Method in class com.caoccao.javet.interception.logging.<a href="com/caoccao/javet/interception/logging/BaseJavetConsoleInterceptor.html" title="class in com.caoccao.javet.interception.logging">BaseJavetConsoleInterceptor</a></dt>
 <dd>
@@ -1592,6 +1608,10 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#genericSetters">genericSetters</a></span> - Variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
 <dd>
 <div class="block">The Generic setters.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interfaces/IJavaSupplier.html#get--">get()</a></span> - Method in interface com.caoccao.javet.interfaces.<a href="com/caoccao/javet/interfaces/IJavaSupplier.html" title="interface in com.caoccao.javet.interfaces">IJavaSupplier</a></dt>
+<dd>
+<div class="block">Gets a result.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interfaces/IJavetSupplier.html#get--">get()</a></span> - Method in interface com.caoccao.javet.interfaces.<a href="com/caoccao/javet/interfaces/IJavetSupplier.html" title="interface in com.caoccao.javet.interfaces">IJavetSupplier</a></dt>
 <dd>
@@ -2977,6 +2997,10 @@
 </a>
 <h2 class="title">I</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interfaces/IJavaFunction.html#identity--">identity()</a></span> - Static method in interface com.caoccao.javet.interfaces.<a href="com/caoccao/javet/interfaces/IJavaFunction.html" title="interface in com.caoccao.javet.interfaces">IJavaFunction</a></dt>
+<dd>
+<div class="block">Returns a function that always returns its input argument.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEnginePool.html#idleEngineList">idleEngineList</a></span> - Variable in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEnginePool.html" title="class in com.caoccao.javet.interop.engine">JavetEnginePool</a></dt>
 <dd>
 <div class="block">The Idle engine list.</div>
@@ -2986,6 +3010,14 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#idleNotificationDeadline-long-">idleNotificationDeadline(long)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
 <dd>
 <div class="block">Idle notification deadline.</div>
+</dd>
+<dt><a href="com/caoccao/javet/interfaces/IJavaFunction.html" title="interface in com.caoccao.javet.interfaces"><span class="typeNameLink">IJavaFunction</span></a>&lt;<a href="com/caoccao/javet/interfaces/IJavaFunction.html" title="type parameter in IJavaFunction">T</a>,<a href="com/caoccao/javet/interfaces/IJavaFunction.html" title="type parameter in IJavaFunction">R</a>&gt; - Interface in <a href="com/caoccao/javet/interfaces/package-summary.html">com.caoccao.javet.interfaces</a></dt>
+<dd>
+<div class="block">Represents a function that accepts one argument and produces a result.</div>
+</dd>
+<dt><a href="com/caoccao/javet/interfaces/IJavaSupplier.html" title="interface in com.caoccao.javet.interfaces"><span class="typeNameLink">IJavaSupplier</span></a>&lt;<a href="com/caoccao/javet/interfaces/IJavaSupplier.html" title="type parameter in IJavaSupplier">T</a>&gt; - Interface in <a href="com/caoccao/javet/interfaces/package-summary.html">com.caoccao.javet.interfaces</a></dt>
+<dd>
+<div class="block">Represents a supplier of results.</div>
 </dd>
 <dt><a href="com/caoccao/javet/interfaces/IJavetAnonymous.html" title="interface in com.caoccao.javet.interfaces"><span class="typeNameLink">IJavetAnonymous</span></a> - Interface in <a href="com/caoccao/javet/interfaces/package-summary.html">com.caoccao.javet.interfaces</a></dt>
 <dd>
@@ -3876,6 +3908,10 @@
 <dd>
 <div class="block">Instantiates a new Javet standard console interceptor.</div>
 </dd>
+<dt><a href="com/caoccao/javet/utils/JavetStringUtils.html" title="class in com.caoccao.javet.utils"><span class="typeNameLink">JavetStringUtils</span></a> - Class in <a href="com/caoccao/javet/utils/package-summary.html">com.caoccao.javet.utils</a></dt>
+<dd>
+<div class="block">The type Javet string utils.</div>
+</dd>
 <dt><a href="com/caoccao/javet/exceptions/JavetTerminatedException.html" title="class in com.caoccao.javet.exceptions"><span class="typeNameLink">JavetTerminatedException</span></a> - Exception in <a href="com/caoccao/javet/exceptions/package-summary.html">com.caoccao.javet.exceptions</a></dt>
 <dd>
 <div class="block">The type Javet terminated exception.</div>
@@ -3917,6 +3953,14 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetVirtualObject.html#JavetVirtualObject-com.caoccao.javet.values.V8Value-">JavetVirtualObject(V8Value)</a></span> - Constructor for class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetVirtualObject.html" title="class in com.caoccao.javet.utils">JavetVirtualObject</a></dt>
 <dd>
 <div class="block">Instantiates a new Javet virtual object.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetStringUtils.html#join-java.lang.CharSequence-java.lang.CharSequence...-">join(CharSequence, CharSequence...)</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetStringUtils.html" title="class in com.caoccao.javet.utils">JavetStringUtils</a></dt>
+<dd>
+<div class="block">Join string.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetStringUtils.html#join-java.lang.CharSequence-java.lang.Iterable-">join(CharSequence, Iterable&lt;? extends CharSequence&gt;)</a></span> - Static method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetStringUtils.html" title="class in com.caoccao.javet.utils">JavetStringUtils</a></dt>
+<dd>
+<div class="block">Join string.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/logging/BaseJavetConsoleInterceptor.html#JS_FUNCTION_DEBUG">JS_FUNCTION_DEBUG</a></span> - Static variable in class com.caoccao.javet.interception.logging.<a href="com/caoccao/javet/interception/logging/BaseJavetConsoleInterceptor.html" title="class in com.caoccao.javet.interception.logging">BaseJavetConsoleInterceptor</a></dt>
 <dd>
@@ -5172,6 +5216,8 @@
 <dd>
 <div class="block">Sets proxy set enabled.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/node/modules/NodeModuleModule.html#setRequireRootDirectory-java.lang.String-">setRequireRootDirectory(String)</a></span> - Method in class com.caoccao.javet.node.modules.<a href="com/caoccao/javet/node/modules/NodeModuleModule.html" title="class in com.caoccao.javet.node.modules">NodeModuleModule</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/node/modules/NodeModuleModule.html#setRequireRootDirectory-java.nio.file.Path-">setRequireRootDirectory(Path)</a></span> - Method in class com.caoccao.javet.node.modules.<a href="com/caoccao/javet/node/modules/NodeModuleModule.html" title="class in com.caoccao.javet.node.modules">NodeModuleModule</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#setResetEngineTimeoutSeconds-int-">setResetEngineTimeoutSeconds(int)</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
@@ -5305,6 +5351,8 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueReference.html#setWeak--">setWeak()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueReference.html" title="class in com.caoccao.javet.values.reference">V8ValueReference</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/node/modules/NodeModuleProcess.html#setWorkingDirectory-java.nio.file.Path-">setWorkingDirectory(Path)</a></span> - Method in class com.caoccao.javet.node.modules.<a href="com/caoccao/javet/node/modules/NodeModuleProcess.html" title="class in com.caoccao.javet.node.modules">NodeModuleProcess</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/node/modules/NodeModuleProcess.html#setWorkingDirectory-java.lang.String-">setWorkingDirectory(String)</a></span> - Method in class com.caoccao.javet.node.modules.<a href="com/caoccao/javet/node/modules/NodeModuleProcess.html" title="class in com.caoccao.javet.node.modules">NodeModuleProcess</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/utils/SimpleFreeMarkerFormat.html" title="class in com.caoccao.javet.utils"><span class="typeNameLink">SimpleFreeMarkerFormat</span></a> - Class in <a href="com/caoccao/javet/utils/package-summary.html">com.caoccao.javet.utils</a></dt>
 <dd>&nbsp;</dd>

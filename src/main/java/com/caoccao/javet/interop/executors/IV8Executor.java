@@ -176,11 +176,12 @@ public interface IV8Executor extends IV8Executable {
         V8Runtime v8Runtime = getV8Runtime();
         if (v8Runtime.getJSRuntimeType().isNode()) {
             NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
-            Path resourcePath = new File(resourceName).toPath();
-            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, resourcePath.getParent().toString());
-            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourcePath.toString());
-            nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(resourcePath.getParent());
-            nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(resourcePath.getParent());
+            File resourceFile = new File(resourceName);
+            File parentFile = resourceFile.getParentFile();
+            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, parentFile.getAbsolutePath());
+            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourceFile.getAbsolutePath());
+            nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(parentFile.getAbsolutePath());
+            nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(parentFile.getAbsolutePath());
         }
         return this;
     }

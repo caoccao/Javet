@@ -17,13 +17,13 @@
 
 package com.caoccao.javet.enums;
 
+import com.caoccao.javet.interfaces.IJavaFunction;
+import com.caoccao.javet.interfaces.IJavaSupplier;
 import com.caoccao.javet.interop.options.NodeRuntimeOptions;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * The enum JS runtime type.
@@ -53,15 +53,15 @@ public enum JSRuntimeType {
             o -> o instanceof V8RuntimeOptions);
 
     private final String name;
-    private final Supplier<? extends RuntimeOptions<?>> runtimeOptionsConstructor;
-    private final Function<RuntimeOptions<?>, Boolean> runtimeOptionsValidator;
+    private final IJavaSupplier<? extends RuntimeOptions<?>> runtimeOptionsConstructor;
+    private final IJavaFunction<RuntimeOptions<?>, Boolean> runtimeOptionsValidator;
     private final String version;
 
     JSRuntimeType(
             String name,
             String version,
-            Supplier<RuntimeOptions<?>> runtimeOptionsConstructor,
-            Function<RuntimeOptions<?>, Boolean> runtimeOptionsValidator) {
+            IJavaSupplier<RuntimeOptions<?>> runtimeOptionsConstructor,
+            IJavaFunction<RuntimeOptions<?>, Boolean> runtimeOptionsValidator) {
         this.runtimeOptionsConstructor = Objects.requireNonNull(runtimeOptionsConstructor);
         this.runtimeOptionsValidator = Objects.requireNonNull(runtimeOptionsValidator);
         this.name = name;
