@@ -297,14 +297,6 @@
     <span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
     <span class="nt">&lt;version&gt;</span>1.0.3<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
-
-<span class="c">&lt;!-- Android (arm, arm64, x86 and x86_64) --&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>javet-android<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.0.3<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;type&gt;</span>aar<span class="nt">&lt;/type&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -452,7 +444,7 @@
 <ul class="simple">
 <li><p>Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.</p></li>
 <li><p>If you need Node.js features on Android, please refer to project <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a>.</p></li>
-<li><p>More Android ABI version support implies considerable effort. Please contact the maintainer for detail.</p></li>
+<li><p>The ABI version has to be &gt;= 26 because the <a class="reference external" href="https://developer.android.com/reference/java/time/ZonedDateTime">ZonedDateTime</a> (since ABI 26) is inside the Javet core. Supporting ABI &gt;= 21 implies serious breaking changes and considerable effort. Please contact the maintainer for detail.</p></li>
 <li><p>More Android CPU arch support implies considerable effort. Please contact the maintainer for detail.</p></li>
 </ul>
 </div>

@@ -68,14 +68,6 @@ Maven
         <version>1.0.3</version>
     </dependency>
 
-    <!-- Android (arm, arm64, x86 and x86_64) -->
-    <dependency>
-        <groupId>com.caoccao.javet</groupId>
-        <artifactId>javet-android</artifactId>
-        <version>1.0.3</version>
-        <type>aar</type>
-    </dependency>
-
 Gradle Kotlin DSL
 ^^^^^^^^^^^^^^^^^
 

@@ -24,14 +24,6 @@ Maven
         <version>1.0.3</version>
     </dependency>
 
-    <!-- Android (arm, arm64, x86 and x86_64) -->
-    <dependency>
-        <groupId>com.caoccao.javet</groupId>
-        <artifactId>javet-android</artifactId>
-        <version>1.0.3</version>
-        <type>aar</type>
-    </dependency>
-
 Gradle Kotlin DSL
 -----------------
 
@@ -112,5 +104,5 @@ Android x86_64              Yes (ABI >= 26)
 
     * Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.
     * If you need Node.js features on Android, please refer to project `Javenode <https://github.com/caoccao/Javenode>`_.
-    * More Android ABI version support implies considerable effort. Please contact the maintainer for detail.
+    * The ABI version has to be >= 26 because the `ZonedDateTime <https://developer.android.com/reference/java/time/ZonedDateTime>`_ (since ABI 26) is inside the Javet core. Supporting ABI >= 21 implies serious breaking changes and considerable effort. Please contact the maintainer for detail.
     * More Android CPU arch support implies considerable effort. Please contact the maintainer for detail.
