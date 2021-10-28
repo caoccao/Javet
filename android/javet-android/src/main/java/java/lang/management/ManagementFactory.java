@@ -1,12 +1,11 @@
 package java.lang.management;
 
-import com.caoccao.javet.interop.V8Notifier;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.management.ListenerNotFoundException;
 import javax.management.NotificationEmitter;
+import javax.management.NotificationListener;
 
 public class ManagementFactory {
     public static List<MemoryPoolMXBean> getMemoryPoolMXBeans() {
@@ -16,12 +15,11 @@ public class ManagementFactory {
     public static NotificationEmitter getMemoryMXBean() {
         return new NotificationEmitter() {
             @Override
-            public void addNotificationListener(V8Notifier v8Notifier, Object o, Object o1) {
+            public void addNotificationListener(NotificationListener notificationListener, Object o, Object o1) {
             }
 
             @Override
-            public void removeNotificationListener(V8Notifier v8Notifier, Object o, Object o1)
-                    throws ListenerNotFoundException {
+            public void removeNotificationListener(NotificationListener notificationListener, Object o, Object o1) throws ListenerNotFoundException {
             }
         };
     }
