@@ -18,7 +18,7 @@ package com.caoccao.javet.interop.loader;
 
 import com.caoccao.javet.enums.JSRuntimeType;
 
-import java.nio.file.Path;
+import java.io.File;
 
 /**
  * The interface Javet lib loading listener.
@@ -36,7 +36,7 @@ public interface IJavetLibLoadingListener {
      * @return the lib path
      * @since 1.0.1
      */
-    default Path getLibPath(JSRuntimeType jsRuntimeType) {
+    default File getLibPath(JSRuntimeType jsRuntimeType) {
         return null;
     }
 

@@ -323,8 +323,8 @@
 <p>Yes. By default, the native library is deployed to system temp which might not be accessible in some cases. Here is a simple way of telling Javet where to deploy the library.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
+    <span class="kd">public</span> <span class="n">File</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">File</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">});</span>
 </pre></div>
@@ -332,8 +332,8 @@
 <p>By default, the native library is deployed by Javet. To bypass the deployment, one more function is required to be overridden. That also means the applications are responsible for deploying the native library to the right location.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Path</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
+    <span class="kd">public</span> <span class="n">File</span> <span class="nf">getLibPath</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">File</span><span class="p">(</span><span class="s">"/../anywhere"</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="nd">@Override</span>

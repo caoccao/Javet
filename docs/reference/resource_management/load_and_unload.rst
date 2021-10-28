@@ -54,8 +54,8 @@ Yes. By default, the native library is deployed to system temp which might not b
 
     JavetLibLoader.setLibLoadingListener(new IJavetLibLoadingListener() {
         @Override
-        public Path getLibPath(JSRuntimeType jsRuntimeType) {
-            return Path.of("/../anywhere");
+        public File getLibPath(JSRuntimeType jsRuntimeType) {
+            return new File("/../anywhere");
         }
     });
 
@@ -65,8 +65,8 @@ By default, the native library is deployed by Javet. To bypass the deployment, o
 
     JavetLibLoader.setLibLoadingListener(new IJavetLibLoadingListener() {
         @Override
-        public Path getLibPath(JSRuntimeType jsRuntimeType) {
-            return Path.of("/../anywhere");
+        public File getLibPath(JSRuntimeType jsRuntimeType) {
+            return new File("/../anywhere");
         }
 
         @Override

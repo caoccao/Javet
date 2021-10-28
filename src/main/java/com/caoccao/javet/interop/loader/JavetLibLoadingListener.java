@@ -20,7 +20,6 @@ import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.io.File;
-import java.nio.file.Path;
 
 /**
  * The type Javet lib loading listener is the default one.
@@ -31,8 +30,8 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
     private static final String TEMP_ROOT_NAME = "javet";
 
     @Override
-    public Path getLibPath(JSRuntimeType jsRuntimeType) {
-        return new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME).toPath();
+    public File getLibPath(JSRuntimeType jsRuntimeType) {
+        return new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME);
     }
 
     @Override

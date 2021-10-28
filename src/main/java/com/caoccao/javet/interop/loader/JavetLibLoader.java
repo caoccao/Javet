@@ -28,7 +28,6 @@ import com.caoccao.javet.utils.SimpleMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Objects;
 
@@ -321,14 +320,14 @@ public final class JavetLibLoader {
                 if (isLibInSystemPath) {
                     libFilePath = getLibFileName();
                 } else if (isDeploy) {
-                    Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
+                    File libPath = libLoadingListener.getLibPath(jsRuntimeType);
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
                     String resourceFileName = getResourceFileName();
                     File rootLibPath;
                     if (JavetOSUtils.IS_ANDROID) {
-                        rootLibPath = libPath.toFile();
+                        rootLibPath = libPath;
                     } else {
-                        rootLibPath = new File(libPath.toFile(), Long.toString(JavetOSUtils.PROCESS_ID));
+                        rootLibPath = new File(libPath, Long.toString(JavetOSUtils.PROCESS_ID));
                     }
                     if (!rootLibPath.exists()) {
                         if (!rootLibPath.mkdirs()) {
@@ -340,9 +339,9 @@ public final class JavetLibLoader {
                     deployLibFile(resourceFileName, libFile);
                     libFilePath = libFile.getAbsolutePath();
                 } else {
-                    Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
+                    File libPath = libLoadingListener.getLibPath(jsRuntimeType);
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
-                    libFilePath = new File(libPath.toFile(), getLibFileName()).getAbsolutePath();
+                    libFilePath = new File(libPath, getLibFileName()).getAbsolutePath();
                 }
                 if (isLibInSystemPath) {
                     System.loadLibrary(getNormalizedLibFilePath(libFilePath));
