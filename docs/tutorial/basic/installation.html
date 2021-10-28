@@ -426,16 +426,16 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Android arm</p></td>
-<td><p>Yes (ABI &gt;= 24)</p></td>
+<td><p>Yes (ABI &gt;= 21)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Android arm64</p></td>
-<td><p>Yes (ABI &gt;= 24)</p></td>
+<td><p>Yes (ABI &gt;= 21)</p></td>
 </tr>
 <tr class="row-even"><td><p>Android x86</p></td>
-<td><p>Yes (ABI &gt;= 24)</p></td>
+<td><p>Yes (ABI &gt;= 21)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Android x86_64</p></td>
-<td><p>Yes (ABI &gt;= 24)</p></td>
+<td><p>Yes (ABI &gt;= 21)</p></td>
 </tr>
 </tbody>
 </table></div>
@@ -444,8 +444,8 @@
 <ul class="simple">
 <li><p>Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.</p></li>
 <li><p>If you need Node.js features on Android, please refer to project <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a>.</p></li>
-<li><p>The ABI version &gt;= 24. Supporting ABI &gt;= 21 implies serious breaking changes and considerable effort. Please contact the maintainer for detail.</p></li>
 <li><p><a class="reference external" href="https://developer.android.com/reference/java/time/ZonedDateTime">ZonedDateTime</a> (since ABI 26) is polyfilled by <code class="docutils literal notranslate"><span class="pre">org.threeten.bp.ZonedDateTime</span></code> so that Javet can work well with low ABI version.</p></li>
+<li><p><cite>Stream</cite> and <cite>Optional</cite> are not supported because they are not available with ABI version 21-24.</p></li>
 <li><p>More Android CPU arch support implies considerable effort. Please contact the maintainer for detail.</p></li>
 </ul>
 </div>

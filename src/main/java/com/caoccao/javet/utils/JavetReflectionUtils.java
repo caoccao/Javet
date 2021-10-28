@@ -68,6 +68,8 @@ public final class JavetReflectionUtils {
         return null;
     }
 
+    // Javet Android Ignore Begin
+
     /**
      * Gets method name set from lambdas.
      * <p>
@@ -96,6 +98,7 @@ public final class JavetReflectionUtils {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
+    // Javet Android Ignore End
 
     /**
      * Safe set accessible.

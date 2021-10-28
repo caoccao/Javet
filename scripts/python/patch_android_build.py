@@ -32,7 +32,14 @@ class PatchAndroidBuild(object):
     self._patch_dict = {
       'java.time.': 'org.threeten.bp.',
       '.getParameterCount()': '.getParameterTypes().length',
+      'import java.util.stream.BaseStream;': '',
+      'import java.util.stream.DoubleStream;': '',
+      'import java.util.stream.IntStream;': '',
+      'import java.util.stream.LongStream;': '',
+      'import java.util.stream.Stream;': '',
     }
+    self._ignore_begin = '// Javet Android Ignore Begin'
+    self._ignore_end = '// Javet Android Ignore End'
     root_dir_path = pathlib.Path(__file__).parent.joinpath('../../').resolve().absolute()
     self._source_dir_path = root_dir_path.joinpath('src/main/java/com/caoccao/javet').resolve().absolute()
     self._target_dir_path = root_dir_path.joinpath('android/javet-android/src/main/java/com/caoccao/javet').resolve().absolute()
@@ -58,11 +65,17 @@ class PatchAndroidBuild(object):
           target_file_path.parent.mkdir(parents=True)
           logging.info('%s is created.', target_file_path.parent)
         lines = []
+        ignore = False
         for line in source_file_path.read_bytes().decode('utf-8').split(self._line_separator):
           for (patch_key, patch_value) in self._patch_dict.items():
             if patch_key in line:
               line = line.replace(patch_key, patch_value)
-          lines.append(line)
+          if self._ignore_begin in line:
+            ignore = True
+          if not ignore:
+            lines.append(line)
+          if self._ignore_end in line:
+            ignore = False
         buffer = self._line_separator.join(lines).encode('utf-8')
         to_be_copied = True
         if target_file_path.exists():

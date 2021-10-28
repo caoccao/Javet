@@ -17,8 +17,6 @@
 
 package com.caoccao.javet.enums;
 
-import java.util.stream.Stream;
-
 public enum V8ValueReferenceType {
     Invalid(0, "Invalid"),
     Object(1, "Object"),
@@ -56,7 +54,9 @@ public enum V8ValueReferenceType {
     private static final V8ValueReferenceType[] ALL_TYPES = new V8ValueReferenceType[44];
 
     static {
-        Stream.of(values()).forEach(t -> ALL_TYPES[t.getId()] = t);
+        for (V8ValueReferenceType type : values()) {
+            ALL_TYPES[type.getId()] = type;
+        }
     }
 
     private final int id;

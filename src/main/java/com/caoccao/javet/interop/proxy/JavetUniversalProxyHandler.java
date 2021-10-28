@@ -212,7 +212,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         if (!scoredExecutables.isEmpty()) {
-            scoredExecutables.sort((o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
+            Collections.sort(scoredExecutables, (o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
             Throwable lastException = null;
             for (ScoredExecutable<E> scoredExecutable : scoredExecutables) {
                 try {
@@ -256,16 +256,31 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             if (capitalizedPrefixLength == 1) {
                 aliasMethodName = methodName.substring(startIndex, startIndex + capitalizedPrefixLength).toLowerCase(Locale.ROOT)
                         + methodName.substring(startIndex + capitalizedPrefixLength);
-                map.computeIfAbsent(aliasMethodName, key -> new ArrayList<>()).add(method);
+                List<Method> methods = map.get(aliasMethodName);
+                if (methods == null) {
+                    methods = new ArrayList<>();
+                    map.put(aliasMethodName, methods);
+                }
+                methods.add(method);
             } else {
                 for (int i = 1; i < capitalizedPrefixLength; ++i) {
                     aliasMethodName = methodName.substring(startIndex, startIndex + i).toLowerCase(Locale.ROOT)
                             + methodName.substring(startIndex + i);
-                    map.computeIfAbsent(aliasMethodName, key -> new ArrayList<>()).add(method);
+                    List<Method> methods = map.get(aliasMethodName);
+                    if (methods == null) {
+                        methods = new ArrayList<>();
+                        map.put(aliasMethodName, methods);
+                    }
+                    methods.add(method);
                 }
             }
         } else {
-            map.computeIfAbsent(aliasMethodName, key -> new ArrayList<>()).add(method);
+            List<Method> methods = map.get(aliasMethodName);
+            if (methods == null) {
+                methods = new ArrayList<>();
+                map.put(aliasMethodName, methods);
+            }
+            methods.add(method);
         }
     }
 

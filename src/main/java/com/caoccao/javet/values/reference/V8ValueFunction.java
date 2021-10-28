@@ -25,8 +25,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
-import java.util.Optional;
-
 /**
  * The type V8 value function.
  *
@@ -38,7 +36,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
      *
      * @since 0.8.8
      */
-    protected Optional<JSFunctionType> jsFunctionType;
+    protected JSFunctionType jsFunctionType;
 
     /**
      * Instantiates a new V8 value function.
@@ -48,7 +46,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
      */
     protected V8ValueFunction(long handle) {
         super(handle);
-        jsFunctionType = Optional.empty();
+        jsFunctionType = null;
     }
 
     @Override
@@ -88,10 +86,10 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     public JSFunctionType getJSFunctionType() throws JavetException {
-        if (!jsFunctionType.isPresent()) {
-            jsFunctionType = Optional.of(checkV8Runtime().getV8Internal().getJSFunctionType(this));
+        if (jsFunctionType == null) {
+            jsFunctionType = checkV8Runtime().getV8Internal().getJSFunctionType(this);
         }
-        return jsFunctionType.get();
+        return jsFunctionType;
     }
 
     @Override

@@ -29,6 +29,7 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
         super(value);
     }
 
+    // Javet Android Ignore Begin
     public boolean isFinite() {
         return Double.isFinite(value);
     }
@@ -36,6 +37,7 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     public boolean isInfinite() {
         return Double.isInfinite(value);
     }
+    // Javet Android Ignore End
 
     public boolean isNaN() {
         return Double.isNaN(value);

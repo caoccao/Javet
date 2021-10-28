@@ -54,7 +54,6 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.IntStream;
 
 @SuppressWarnings("unchecked")
 public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
@@ -713,14 +712,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                     decorateV8Value(new V8ValueBoolean(true))};
             cachedV8ValueIntegers = new V8ValueInteger[V8_VALUE_NUMBER_UPPER_BOUND - V8_VALUE_NUMBER_LOWER_BOUND];
             cachedV8ValueLongs = new V8ValueLong[V8_VALUE_NUMBER_UPPER_BOUND - V8_VALUE_NUMBER_LOWER_BOUND];
-            IntStream.range(V8_VALUE_NUMBER_LOWER_BOUND, V8_VALUE_NUMBER_UPPER_BOUND).forEach(i -> {
+            for (int i = V8_VALUE_NUMBER_LOWER_BOUND; i < V8_VALUE_NUMBER_UPPER_BOUND; ++i) {
                 try {
                     cachedV8ValueIntegers[i - V8_VALUE_NUMBER_LOWER_BOUND] = decorateV8Value(new V8ValueInteger(i));
                     cachedV8ValueLongs[i - V8_VALUE_NUMBER_LOWER_BOUND] = decorateV8Value(new V8ValueLong(i));
                 } catch (JavetException e) {
                     logger.logError(e, e.getMessage());
                 }
-            });
+            }
         } catch (JavetException e) {
             logger.logError(e, e.getMessage());
         }

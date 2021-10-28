@@ -33,7 +33,10 @@ import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
-import java.lang.reflect.*;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -427,6 +430,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueArray;
                 v8Scope.setEscapable();
             }
+            // Javet Android Ignore Begin
         } else if (object instanceof BaseStream) {
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                 V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
@@ -439,6 +443,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueArray;
                 v8Scope.setEscapable();
             }
+            // Javet Android Ignore End
         } else if (object instanceof IJavetEntityFunction) {
             final IJavetEntityFunction javetEntityFunction = (IJavetEntityFunction) object;
             String sourceCode = javetEntityFunction.getJSFunctionType().isUserDefined() ?

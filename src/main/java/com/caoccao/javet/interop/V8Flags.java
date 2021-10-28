@@ -20,6 +20,7 @@ import com.caoccao.javet.utils.JavetStringUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -389,7 +390,7 @@ public final class V8Flags {
         if (trackRetainingPath) {
             tokens.add(FLAG_TRACK_RETAINING_PATH);
         }
-        tokens.sort(String::compareTo);
+        Collections.sort(tokens, String::compareTo);
         if (customFlags != null && customFlags.length() > 0) {
             tokens.add(customFlags);
         }

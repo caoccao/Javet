@@ -131,6 +131,8 @@ public final class JavetTypeUtils {
         return null;
     }
 
+    // Javet Android Ignore Begin
+
     /**
      * Convert object to double stream.
      *
@@ -149,6 +151,7 @@ public final class JavetTypeUtils {
         }
         return null;
     }
+    // Javet Android Ignore End
 
     /**
      * To exact primitive object.
@@ -185,6 +188,8 @@ public final class JavetTypeUtils {
         }
         return null;
     }
+
+    // Javet Android Ignore Begin
 
     /**
      * Convert object to int stream.
@@ -282,4 +287,5 @@ public final class JavetTypeUtils {
         }
         return null;
     }
+    // Javet Android Ignore End
 }
