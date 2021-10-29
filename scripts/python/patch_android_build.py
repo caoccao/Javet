@@ -32,12 +32,18 @@ class PatchAndroidBuild(object):
     self._patch_dict = {
       'java.time.': 'org.threeten.bp.',
       '.getParameterCount()': '.getParameterTypes().length',
-      'import java.util.stream.BaseStream;': '',
-      'import java.util.stream.DoubleStream;': '',
-      'import java.util.stream.IntStream;': '',
-      'import java.util.stream.LongStream;': '',
-      'import java.util.stream.Stream;': '',
     }
+    self._comment_list = [
+      'import java.util.Optional;',
+      'import java.util.OptionalDouble;',
+      'import java.util.OptionalInt;',
+      'import java.util.OptionalLong;',
+      'import java.util.stream.BaseStream;',
+      'import java.util.stream.DoubleStream;',
+      'import java.util.stream.IntStream;',
+      'import java.util.stream.LongStream;',
+      'import java.util.stream.Stream;',
+    ]
     self._ignore_begin = '// Javet Android Ignore Begin'
     self._ignore_end = '// Javet Android Ignore End'
     root_dir_path = pathlib.Path(__file__).parent.joinpath('../../').resolve().absolute()
@@ -70,12 +76,16 @@ class PatchAndroidBuild(object):
           for (patch_key, patch_value) in self._patch_dict.items():
             if patch_key in line:
               line = line.replace(patch_key, patch_value)
-          if self._ignore_begin in line:
-            ignore = True
-          if not ignore:
-            lines.append(line)
+          for comment_key in self._comment_list:
+            if comment_key in line:
+              line = f'// {line}'
           if self._ignore_end in line:
             ignore = False
+          if ignore:
+            line = f'// {line}'
+          if self._ignore_begin in line:
+            ignore = True
+          lines.append(line)
         buffer = self._line_separator.join(lines).encode('utf-8')
         to_be_copied = True
         if target_file_path.exists():
