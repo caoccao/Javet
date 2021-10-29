@@ -52,6 +52,8 @@ namespace Javet {
 
             jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
             jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
+            jmethodIDV8RuntimeGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "gcEpilogueCallback", "(II)V");
+            jmethodIDV8RuntimeGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "gcPrologueCallback", "(II)V");
             jmethodIDV8RuntimeReceivePromiseRejectCallback = jniEnv->GetMethodID(jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
             jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
         }
@@ -87,6 +89,44 @@ namespace Javet {
         void JavetFunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
             reinterpret_cast<Javet::Callback::JavetCallbackContextReference*>(
                 info.Data().As<v8::BigInt>()->Int64Value())->CallFunction(info);
+        }
+
+        void JavetGCEpilogueCallback(v8::Isolate* v8Isolate, v8::GCType v8GCType, v8::GCCallbackFlags v8GCCallbackFlags) {
+            auto v8Context = v8Isolate->GetCurrentContext();
+            if (v8Context.IsEmpty()) {
+                LOG_ERROR("JavetGCEpilogueCallback: V8 context is empty.");
+            }
+            else {
+                auto v8Runtime = V8Runtime::FromV8Context(v8Context);
+                if (v8Runtime == nullptr) {
+                    LOG_ERROR("JavetGCEpilogueCallback: V8 runtime is empty.");
+                }
+                else {
+                    FETCH_JNI_ENV(GlobalJavaVM);
+                    auto externalV8Runtime = v8Runtime->externalV8Runtime;
+                    jobject mIV8Module = jniEnv->CallObjectMethod(
+                        externalV8Runtime, jmethodIDV8RuntimeGCEpilogueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
+                }
+            }
+        }
+
+        void JavetGCPrologueCallback(v8::Isolate* v8Isolate, v8::GCType v8GCType, v8::GCCallbackFlags v8GCCallbackFlags) {
+            auto v8Context = v8Isolate->GetCurrentContext();
+            if (v8Context.IsEmpty()) {
+                LOG_ERROR("JavetGCPrologueCallback: V8 context is empty.");
+            }
+            else {
+                auto v8Runtime = V8Runtime::FromV8Context(v8Context);
+                if (v8Runtime == nullptr) {
+                    LOG_ERROR("JavetGCPrologueCallback: V8 runtime is empty.");
+                }
+                else {
+                    FETCH_JNI_ENV(GlobalJavaVM);
+                    auto externalV8Runtime = v8Runtime->externalV8Runtime;
+                    jobject mIV8Module = jniEnv->CallObjectMethod(
+                        externalV8Runtime, jmethodIDV8RuntimeGCPrologueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
+                }
+            }
         }
 
         void JavetPropertyGetterCallback(V8LocalName propertyName, const v8::PropertyCallbackInfo<v8::Value>& info) {

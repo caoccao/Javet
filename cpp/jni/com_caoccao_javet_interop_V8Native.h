@@ -537,6 +537,22 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_proxyRevoke
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    registerGCEpilogueCallback
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCEpilogueCallback
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    registerGCPrologueCallback
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCPrologueCallback
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    registerV8Runtime
  * Signature: (JLjava/lang/Object;)V
  */
@@ -701,6 +717,22 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    unregisterGCEpilogueCallback
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCEpilogueCallback
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    unregisterGCPrologueCallback
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCPrologueCallback
   (JNIEnv *, jobject, jlong);
 
 /*

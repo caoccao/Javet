@@ -247,6 +247,12 @@ class V8Native implements IV8Native {
     public native void proxyRevoke(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native void registerGCEpilogueCallback(long v8RuntimeHandle);
+
+    @Override
+    public native void registerGCPrologueCallback(long v8RuntimeHandle);
+
+    @Override
     public native void registerV8Runtime(long v8RuntimeHandle, Object v8Runtime);
 
     @Override
@@ -319,6 +325,12 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean unlockV8Runtime(long v8RuntimeHandle);
+
+    @Override
+    public native void unregisterGCEpilogueCallback(long v8RuntimeHandle);
+
+    @Override
+    public native void unregisterGCPrologueCallback(long v8RuntimeHandle);
 
     @Override
     public native void v8InspectorSend(long v8RuntimeHandle, String message);

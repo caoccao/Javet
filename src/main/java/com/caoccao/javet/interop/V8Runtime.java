@@ -21,12 +21,15 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.*;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IEnumBitset;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interfaces.IV8ModuleResolver;
 import com.caoccao.javet.interop.binding.BindingContext;
+import com.caoccao.javet.interop.callback.IJavetGCCallback;
+import com.caoccao.javet.interop.callback.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetPromiseRejectCallback;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
@@ -38,7 +41,6 @@ import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
-import com.caoccao.javet.utils.JavetPromiseRejectCallback;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.IV8Value;
 import com.caoccao.javet.values.V8Value;
@@ -51,10 +53,22 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * The representation of a V8 isolate (and V8 context).
+ * <p>
+ * Javet simplifies the V8 runtime model to 1 runtime - 1 isolate - 1 context,
+ * though in V8 1 isolate can host multiple context.
+ * <p>
+ * V8 runtime exposes many useful methods and callbacks that allow low level
+ * interaction with the V8 isolate or context.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
 public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     protected static final IJavetConverter DEFAULT_CONVERTER = new JavetObjectConverter();
@@ -83,6 +97,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     protected Map<Long, JavetCallbackContext> callbackContextMap;
     protected IJavetConverter converter;
+    protected List<IJavetGCCallback> gcEpilogueCallbacks;
+    protected List<IJavetGCCallback> gcPrologueCallbacks;
     protected boolean gcScheduled;
     protected long handle;
     protected IJavetLogger logger;
@@ -105,6 +121,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         callbackContextLock = new ReentrantReadWriteLock();
         callbackContextMap = new HashMap<>();
         converter = DEFAULT_CONVERTER;
+        gcEpilogueCallbacks = new CopyOnWriteArrayList<>();
+        gcPrologueCallbacks = new CopyOnWriteArrayList<>();
         gcScheduled = false;
         this.runtimeOptions = Objects.requireNonNull(runtimeOptions);
         this.handle = handle;
@@ -126,6 +144,26 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     void add(IV8ValueSet iV8ValueKeySet, V8Value value) throws JavetException {
         decorateV8Value(value);
         v8Native.add(handle, iV8ValueKeySet.getHandle(), iV8ValueKeySet.getType().getId(), value);
+    }
+
+    public void addGCEpilogueCallback(IJavetGCCallback iJavetGCCallback) {
+        synchronized (gcEpilogueCallbacks) {
+            boolean registered = !gcEpilogueCallbacks.isEmpty();
+            gcEpilogueCallbacks.add(Objects.requireNonNull(iJavetGCCallback));
+            if (!registered) {
+                v8Native.registerGCEpilogueCallback(handle);
+            }
+        }
+    }
+
+    public void addGCPrologueCallback(IJavetGCCallback iJavetGCCallback) {
+        synchronized (gcPrologueCallbacks) {
+            boolean registered = !gcPrologueCallbacks.isEmpty();
+            gcPrologueCallbacks.add(Objects.requireNonNull(iJavetGCCallback));
+            if (!registered) {
+                v8Native.registerGCPrologueCallback(handle);
+            }
+        }
     }
 
     void addReference(IV8ValueReference iV8ValueReference) {
@@ -441,6 +479,24 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
+    }
+
+    void gcEpilogueCallback(int v8GCTypeValue, int v8GCCallbackFlagsValue) {
+        final EnumSet<V8GCType> enumSetV8GCType = IEnumBitset.getEnumSet(v8GCTypeValue, V8GCType.class);
+        final EnumSet<V8GCCallbackFlags> enumSetV8GCCallbackFlags = IEnumBitset.getEnumSet(
+                v8GCCallbackFlagsValue, V8GCCallbackFlags.class, V8GCCallbackFlags.NoGCCallbackFlags);
+        for (IJavetGCCallback iJavetGCCallback : gcEpilogueCallbacks) {
+            iJavetGCCallback.callback(enumSetV8GCType, enumSetV8GCCallbackFlags);
+        }
+    }
+
+    void gcPrologueCallback(int v8GCTypeValue, int v8GCCallbackFlagsValue) {
+        final EnumSet<V8GCType> enumSetV8GCType = IEnumBitset.getEnumSet(v8GCTypeValue, V8GCType.class);
+        final EnumSet<V8GCCallbackFlags> enumSetV8GCCallbackFlags = IEnumBitset.getEnumSet(
+                v8GCCallbackFlagsValue, V8GCCallbackFlags.class, V8GCCallbackFlags.NoGCCallbackFlags);
+        for (IJavetGCCallback iJavetGCCallback : gcPrologueCallbacks) {
+            iJavetGCCallback.callback(enumSetV8GCType, enumSetV8GCCallbackFlags);
+        }
     }
 
     @CheckReturnValue
@@ -916,6 +972,24 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             }
         } finally {
             writeLock.unlock();
+        }
+    }
+
+    public void removeGCEpilogueCallback(IJavetGCCallback iJavetGCCallback) {
+        synchronized (gcEpilogueCallbacks) {
+            gcEpilogueCallbacks.remove(Objects.requireNonNull(iJavetGCCallback));
+            if (gcEpilogueCallbacks.isEmpty()) {
+                v8Native.unregisterGCEpilogueCallback(handle);
+            }
+        }
+    }
+
+    public void removeGCPrologueCallback(IJavetGCCallback iJavetGCCallback) {
+        synchronized (gcPrologueCallbacks) {
+            gcPrologueCallbacks.remove(Objects.requireNonNull(iJavetGCCallback));
+            if (gcPrologueCallbacks.isEmpty()) {
+                v8Native.unregisterGCPrologueCallback(handle);
+            }
         }
     }
 

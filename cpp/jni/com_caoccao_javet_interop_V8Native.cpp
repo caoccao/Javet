@@ -1116,6 +1116,18 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_proxyRevoke
     }
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCEpilogueCallback
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->AddGCEpilogueCallback(Javet::Callback::JavetGCEpilogueCallback);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCPrologueCallback
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->AddGCPrologueCallback(Javet::Callback::JavetGCPrologueCallback);
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerV8Runtime
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Runtime) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
@@ -1469,6 +1481,18 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runti
     }
     v8Runtime->Unlock();
     return true;
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCEpilogueCallback
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->RemoveGCEpilogueCallback(Javet::Callback::JavetGCEpilogueCallback);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCPrologueCallback
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->RemoveGCPrologueCallback(Javet::Callback::JavetGCPrologueCallback);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend

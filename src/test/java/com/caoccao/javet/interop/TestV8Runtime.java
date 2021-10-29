@@ -18,16 +18,23 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
+import com.caoccao.javet.enums.V8GCCallbackFlags;
+import com.caoccao.javet.enums.V8GCType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
+import com.caoccao.javet.interop.callback.IJavetGCCallback;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.values.reference.V8ValueGlobalObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -72,6 +79,35 @@ public class TestV8Runtime extends BaseTestJavet {
                 v8Runtime.getGlobalObject().set("window", window);
                 window.set("x", "1");
             }
+        }
+    }
+
+    @Test
+    public void testGCCallback() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            List<EnumSet<V8GCType>> gcEpilogueCallbackV8GCTypeEnumSets = new ArrayList<>();
+            List<EnumSet<V8GCCallbackFlags>> gcEpilogueCallbackV8GCCallbackFlagsEnumSets = new ArrayList<>();
+            IJavetGCCallback gcEpilogueCallback = (v8GCTypeEnumSet, v8GCCallbackFlagsEnumSet) -> {
+                gcEpilogueCallbackV8GCTypeEnumSets.add(v8GCTypeEnumSet);
+                gcEpilogueCallbackV8GCCallbackFlagsEnumSets.add(v8GCCallbackFlagsEnumSet);
+            };
+            List<EnumSet<V8GCType>> gcPrologueCallbackV8GCTypeEnumSets = new ArrayList<>();
+            List<EnumSet<V8GCCallbackFlags>> gcPrologueCallbackV8GCCallbackFlagsEnumSets = new ArrayList<>();
+            IJavetGCCallback gcPrologueCallback = (v8GCTypeEnumSet, v8GCCallbackFlagsEnumSet) -> {
+                gcPrologueCallbackV8GCTypeEnumSets.add(v8GCTypeEnumSet);
+                gcPrologueCallbackV8GCCallbackFlagsEnumSets.add(v8GCCallbackFlagsEnumSet);
+            };
+            v8Runtime.addGCEpilogueCallback(gcEpilogueCallback);
+            v8Runtime.addGCPrologueCallback(gcPrologueCallback);
+            v8Runtime.getGlobalObject().set("a", 1);
+            v8Runtime.getGlobalObject().delete("a");
+            v8Runtime.lowMemoryNotification();
+            assertEquals(2, gcEpilogueCallbackV8GCTypeEnumSets.size());
+            assertEquals(2, gcEpilogueCallbackV8GCCallbackFlagsEnumSets.size());
+            assertEquals(2, gcPrologueCallbackV8GCTypeEnumSets.size());
+            assertEquals(2, gcPrologueCallbackV8GCCallbackFlagsEnumSets.size());
+            v8Runtime.removeGCEpilogueCallback(gcEpilogueCallback);
+            v8Runtime.removeGCPrologueCallback(gcPrologueCallback);
         }
     }
 

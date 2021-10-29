@@ -168,6 +168,10 @@ public interface IV8Native {
 
     void proxyRevoke(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    void registerGCEpilogueCallback(long v8RuntimeHandle);
+
+    void registerGCPrologueCallback(long v8RuntimeHandle);
+
     void registerV8Runtime(long v8RuntimeHandle, Object v8Runtime);
 
     void removeJNIGlobalRef(long handle);
@@ -219,6 +223,10 @@ public interface IV8Native {
     String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean unlockV8Runtime(long v8RuntimeHandle);
+
+    void unregisterGCEpilogueCallback(long v8RuntimeHandle);
+
+    void unregisterGCPrologueCallback(long v8RuntimeHandle);
 
     void v8InspectorSend(long v8RuntimeHandle, String message);
 }
