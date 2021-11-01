@@ -143,6 +143,7 @@ public final class V8Host implements AutoCloseable {
         /*
          * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/management/MemoryPoolMXBean.html">Memory Usage Monitoring</a>
          */
+        /* if not defined ANDROID */
         if (memoryUsageThresholdRatio > 0) {
             MemoryPoolMXBean heapMemoryPoolMXBean = null;
             List<MemoryPoolMXBean> memoryPoolMXBeans = ManagementFactory.getMemoryPoolMXBeans();
@@ -158,6 +159,7 @@ public final class V8Host implements AutoCloseable {
                 heapMemoryPoolMXBean.setUsageThreshold(memoryUsageThreshold);
             }
         }
+        /* end if */
     }
 
     /**

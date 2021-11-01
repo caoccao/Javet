@@ -41,16 +41,17 @@ public final class JavetOSUtils {
     public static final String WORKING_DIRECTORY = System.getProperty("user.dir");
 
     static {
-        if (IS_ANDROID) {
-            PROCESS_ID = 1L;
-        } else {
-            String processName = ManagementFactory.getRuntimeMXBean().getName();
-            int positionOfSeparator = processName.indexOf("@");
-            if (positionOfSeparator > 0) {
-                processName = processName.substring(0, positionOfSeparator);
-            }
-            PROCESS_ID = Long.parseLong(processName);
+        /* if defined ANDROID
+        PROCESS_ID = 1L;
+        /* end if */
+        /* if not defined ANDROID */
+        String processName = ManagementFactory.getRuntimeMXBean().getName();
+        int positionOfSeparator = processName.indexOf("@");
+        if (positionOfSeparator > 0) {
+            processName = processName.substring(0, positionOfSeparator);
         }
+        PROCESS_ID = Long.parseLong(processName);
+        /* end if */
     }
 
     private JavetOSUtils() {

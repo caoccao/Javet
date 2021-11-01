@@ -20,7 +20,12 @@ package com.caoccao.javet.interfaces;
 import com.caoccao.javet.exceptions.JavetException;
 
 /**
- * The interface Javet closable.
+ * The interface Javet closable is for recycling the unmanaged resource.
+ * <p>
+ * Why {@link AutoCloseable} is not feasible?
+ * {@link AutoCloseable} requires the implementation to handle checked exception,
+ * however, {@link JavetException} is supposed to be handled by the caller.
+ * This interface allows throwing the {@link JavetException} in <code>close()</code>.
  *
  * @since 0.7.0
  */
@@ -30,7 +35,7 @@ public interface IJavetClosable extends AutoCloseable {
     /**
      * Is closed.
      *
-     * @return the boolean
+     * @return true : closed, false: not closed
      * @since 0.9.10
      */
     boolean isClosed();

@@ -43,9 +43,16 @@ class PatchAndroidBuild(object):
       'import java.util.stream.IntStream;',
       'import java.util.stream.LongStream;',
       'import java.util.stream.Stream;',
+      'import javax.management.ListenerNotFoundException;',
+      'import javax.management.Notification;',
+      'import javax.management.NotificationEmitter;',
+      'import javax.management.NotificationListener;',
+      'import java.lang.management.ManagementFactory;',
+      'import java.lang.management.MemoryNotificationInfo;',
+
     ]
-    self._ignore_begin = '// Javet Android Ignore Begin'
-    self._ignore_end = '// Javet Android Ignore End'
+    self._if_defined_android = '/* if defined ANDROID'
+    self._if_not_defined_android = '/* if not defined ANDROID */'
     root_dir_path = pathlib.Path(__file__).parent.joinpath('../../').resolve().absolute()
     self._source_dir_path = root_dir_path.joinpath('src/main/java/com/caoccao/javet').resolve().absolute()
     self._target_dir_path = root_dir_path.joinpath('android/javet-android/src/main/java/com/caoccao/javet').resolve().absolute()
@@ -71,7 +78,6 @@ class PatchAndroidBuild(object):
           target_file_path.parent.mkdir(parents=True)
           logging.info('%s is created.', target_file_path.parent)
         lines = []
-        ignore = False
         for line in source_file_path.read_bytes().decode('utf-8').split(self._line_separator):
           for (patch_key, patch_value) in self._patch_dict.items():
             if patch_key in line:
@@ -79,12 +85,10 @@ class PatchAndroidBuild(object):
           for comment_key in self._comment_list:
             if comment_key in line:
               line = f'// {line}'
-          if self._ignore_end in line:
-            ignore = False
-          if ignore:
-            line = f'// {line}'
-          if self._ignore_begin in line:
-            ignore = True
+          if line.endswith(self._if_defined_android):
+            line += ' */'
+          if line.endswith(self._if_not_defined_android):
+            line = line[:-3]
           lines.append(line)
         buffer = self._line_separator.join(lines).encode('utf-8')
         to_be_copied = True

@@ -430,7 +430,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueArray;
                 v8Scope.setEscapable();
             }
-            // Javet Android Ignore Begin
+            /* if not defined ANDROID */
         } else if (object instanceof BaseStream) {
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                 V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
@@ -443,7 +443,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueArray;
                 v8Scope.setEscapable();
             }
-            // Javet Android Ignore End
+            /* end if */
         } else if (object instanceof IJavetEntityFunction) {
             final IJavetEntityFunction javetEntityFunction = (IJavetEntityFunction) object;
             String sourceCode = javetEntityFunction.getJSFunctionType().isUserDefined() ?

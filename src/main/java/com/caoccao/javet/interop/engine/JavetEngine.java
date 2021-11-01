@@ -25,12 +25,45 @@ import com.caoccao.javet.utils.JavetDateTimeUtils;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+/**
+ * The type Javet engine.
+ *
+ * @param <R> the type parameter
+ * @since 0.7.0
+ */
 public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
+    /**
+     * The Active.
+     *
+     * @since 0.7.0
+     */
     protected volatile boolean active;
+    /**
+     * The Javet engine pool.
+     *
+     * @since 0.7.0
+     */
     protected IJavetEnginePool<R> iJavetEnginePool;
+    /**
+     * The Usage.
+     *
+     * @since 0.7.0
+     */
     protected JavetEngineUsage usage;
+    /**
+     * The V8 runtime.
+     *
+     * @since 0.7.0
+     */
     protected R v8Runtime;
 
+    /**
+     * Instantiates a new Javet engine.
+     *
+     * @param iJavetEnginePool the javet engine pool
+     * @param v8Runtime        the V8 runtime
+     * @since 0.7.0
+     */
     public JavetEngine(IJavetEnginePool<R> iJavetEnginePool, R v8Runtime) {
         Objects.requireNonNull(v8Runtime);
         this.iJavetEnginePool = iJavetEnginePool;
@@ -44,10 +77,17 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
         close(false);
     }
 
+    /**
+     * Close.
+     *
+     * @param forceClose the force close
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     protected void close(boolean forceClose) throws JavetException {
         setActive(false);
         if (forceClose) {
-            if (iJavetEnginePool.getConfig().isGcBeforeEngineClose()) {
+            if (iJavetEnginePool.getConfig().isGCBeforeEngineClose()) {
                 v8Runtime.lowMemoryNotification();
             }
             v8Runtime.close(true);
@@ -74,14 +114,21 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     }
 
     /**
-     * Gets utc now. It's designed for mocking the time in test scenario.
+     * Gets UTC now. It's designed for mocking the time in test scenario.
      *
-     * @return the utc now
+     * @return the UTC now
+     * @since 0.9.1
      */
     protected ZonedDateTime getUTCNow() {
         return JavetDateTimeUtils.getUTCNow();
     }
 
+    /**
+     * Gets usage.
+     *
+     * @return the usage
+     * @since 0.7.0
+     */
     protected JavetEngineUsage getUsage() {
         return usage;
     }
@@ -119,11 +166,22 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
         v8Runtime.lowMemoryNotification();
     }
 
+    /**
+     * Sets active.
+     *
+     * @param active the active
+     * @since 0.7.0
+     */
     protected void setActive(boolean active) {
         this.active = active;
         touchLastActiveZonedDateTime();
     }
 
+    /**
+     * Touch last active zoned date time.
+     *
+     * @since 0.9.1
+     */
     protected void touchLastActiveZonedDateTime() {
         usage.setLastActiveZonedDatetime(getUTCNow());
     }

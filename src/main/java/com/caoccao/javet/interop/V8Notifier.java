@@ -25,13 +25,17 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryNotificationInfo;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class V8Notifier implements NotificationListener {
+public final class V8Notifier
+        /* if not defined ANDROID */
+        implements NotificationListener
+        /* end if */ {
     private final ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
 
     public V8Notifier(ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap) {
         this.v8RuntimeMap = v8RuntimeMap;
     }
 
+    /* if not defined ANDROID */
     @Override
     public void handleNotification(Notification notification, Object handback) {
         String notificationType = notification.getType();
@@ -43,21 +47,26 @@ public final class V8Notifier implements NotificationListener {
             }
         }
     }
+    /* end if */
 
     public void registerListeners() {
+        /* if not defined ANDROID */
         NotificationEmitter notificationEmitter = (NotificationEmitter) ManagementFactory.getMemoryMXBean();
         try {
             notificationEmitter.removeNotificationListener(this, null, null);
         } catch (ListenerNotFoundException ignored) {
         }
         notificationEmitter.addNotificationListener(this, null, null);
+        /* end if */
     }
 
     public void unregisterListener() {
+        /* if not defined ANDROID */
         try {
             NotificationEmitter notificationEmitter = (NotificationEmitter) ManagementFactory.getMemoryMXBean();
             notificationEmitter.removeNotificationListener(this, null, null);
         } catch (ListenerNotFoundException ignored) {
         }
+        /* end if */
     }
 }
