@@ -105,8 +105,11 @@ Yes. In some cases, it is inconvenient to inject a listener. No worry, ``JavetLi
 
 .. code-block:: shell
 
-    # Load the Javet library from /abc
+    # Load the Javet library from /abc with auto-deployment
     java ... -Djavet.lib.loading.path=/abc
+
+    # Load the Javet library from /abc without auto-deployment
+    java ... -Djavet.lib.loading.path=/abc -Djavet.lib.loading.type=custom
 
     # Load the Javet library from system library path
     java ... -Djavet.lib.loading.type=system

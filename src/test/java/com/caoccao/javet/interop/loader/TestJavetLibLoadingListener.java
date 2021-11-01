@@ -34,8 +34,15 @@ public class TestJavetLibLoadingListener {
 
         assertFalse(new JavetLibLoadingListener().isLibInSystemPath(JSRuntimeType.V8));
         assertTrue(new JavetLibLoadingListener().isDeploy(JSRuntimeType.V8));
-        System.setProperty(JavetLibLoadingListener.PROPERTY_KEY_JAVET_LIB_LOADING_TYPE, "system");
+        System.setProperty(
+                JavetLibLoadingListener.PROPERTY_KEY_JAVET_LIB_LOADING_TYPE,
+                JavetLibLoadingListener.JAVET_LIB_LOADING_TYPE_SYSTEM);
         assertTrue(new JavetLibLoadingListener().isLibInSystemPath(JSRuntimeType.V8));
+        assertFalse(new JavetLibLoadingListener().isDeploy(JSRuntimeType.V8));
+        System.setProperty(
+                JavetLibLoadingListener.PROPERTY_KEY_JAVET_LIB_LOADING_TYPE,
+                JavetLibLoadingListener.JAVET_LIB_LOADING_TYPE_CUSTOM);
+        assertFalse(new JavetLibLoadingListener().isLibInSystemPath(JSRuntimeType.V8));
         assertFalse(new JavetLibLoadingListener().isDeploy(JSRuntimeType.V8));
         System.clearProperty(JavetLibLoadingListener.PROPERTY_KEY_JAVET_LIB_LOADING_TYPE);
     }

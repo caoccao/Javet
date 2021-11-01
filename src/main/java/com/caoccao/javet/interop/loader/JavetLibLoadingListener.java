@@ -34,6 +34,12 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
      */
     public static final String JAVET_LIB_LOADING_TYPE_DEFAULT = "default";
     /**
+     * The constant JAVET_LIB_LOADING_TYPE_CUSTOM.
+     *
+     * @since 1.0.3
+     */
+    public static final String JAVET_LIB_LOADING_TYPE_CUSTOM = "custom";
+    /**
      * The constant JAVET_LIB_LOADING_TYPE_SYSTEM.
      *
      * @since 1.0.3
@@ -55,6 +61,9 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
     private final String javetLibLoadingPath;
     private final String javetLibLoadingType;
 
+    /**
+     * Instantiates a new Javet lib loading listener.
+     */
     public JavetLibLoadingListener() {
         javetLibLoadingPath = System.getProperty(
                 PROPERTY_KEY_JAVET_LIB_LOADING_PATH);
@@ -76,6 +85,9 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
             return false;
         }
         if (JAVET_LIB_LOADING_TYPE_SYSTEM.equals(javetLibLoadingType)) {
+            return false;
+        }
+        if (JAVET_LIB_LOADING_TYPE_CUSTOM.equals(javetLibLoadingType)) {
             return false;
         }
         return true;
