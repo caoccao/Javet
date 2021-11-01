@@ -367,6 +367,21 @@
 <p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p>
 </div>
 </div>
+<div class="section" id="can-javet-lib-loading-listener-take-environment-variables">
+<h2>Can Javet Lib Loading Listener Take Environment Variables?<a class="headerlink" href="#can-javet-lib-loading-listener-take-environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>Yes. In some cases, it is inconvenient to inject a listener. No worry, <code class="docutils literal notranslate"><span class="pre">JavetLibLoadingListener</span></code> can take <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.path</span></code> and <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.type</span></code> so that applications can inject custom lib loading mechanism without implementing a new listener.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the Javet library from /abc</span>
+java ... -Djavet.lib.loading.path<span class="o">=</span>/abc
+
+<span class="c1"># Load the Javet library from system library path</span>
+java ... -Djavet.lib.loading.type<span class="o">=</span>system
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>This doesn't apply to Android.</p>
+</div>
+</div>
 </div>
 
         </article>
@@ -422,6 +437,7 @@
 </li>
 <li><a class="reference internal" href="#can-javet-native-library-be-deployed-to-a-custom-location">Can Javet Native Library be Deployed to a Custom Location?</a></li>
 <li><a class="reference internal" href="#can-javet-native-library-deployment-be-skipped">Can Javet Native Library Deployment be Skipped?</a></li>
+<li><a class="reference internal" href="#can-javet-lib-loading-listener-take-environment-variables">Can Javet Lib Loading Listener Take Environment Variables?</a></li>
 </ul>
 </li>
 </ul>

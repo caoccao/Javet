@@ -97,3 +97,20 @@ Yes. In some cases, the native library can be directly deployed to system librar
 .. caution::
 
     ``JavetLibLoader.setLibLoadingListener()`` must be called before ``V8Host`` is called, otherwise it won't take effect.
+
+Can Javet Lib Loading Listener Take Environment Variables?
+==========================================================
+
+Yes. In some cases, it is inconvenient to inject a listener. No worry, ``JavetLibLoadingListener`` can take ``javet.lib.loading.path`` and ``javet.lib.loading.type`` so that applications can inject custom lib loading mechanism without implementing a new listener.
+
+.. code-block:: shell
+
+    # Load the Javet library from /abc
+    java ... -Djavet.lib.loading.path=/abc
+
+    # Load the Javet library from system library path
+    java ... -Djavet.lib.loading.type=system
+
+.. caution::
+
+    This doesn't apply to Android.

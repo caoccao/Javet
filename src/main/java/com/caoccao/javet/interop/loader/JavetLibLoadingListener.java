@@ -27,11 +27,47 @@ import java.io.File;
  * @since 1.0.1
  */
 public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
+    /**
+     * The constant JAVET_LIB_LOADING_TYPE_DEFAULT.
+     *
+     * @since 1.0.3
+     */
+    public static final String JAVET_LIB_LOADING_TYPE_DEFAULT = "default";
+    /**
+     * The constant JAVET_LIB_LOADING_TYPE_SYSTEM.
+     *
+     * @since 1.0.3
+     */
+    public static final String JAVET_LIB_LOADING_TYPE_SYSTEM = "system";
+    /**
+     * The constant PROPERTY_KEY_JAVET_LIB_LOADING_PATH.
+     *
+     * @since 1.0.3
+     */
+    public static final String PROPERTY_KEY_JAVET_LIB_LOADING_PATH = "javet.lib.loading.path";
+    /**
+     * The constant PROPERTY_KEY_JAVET_LIB_LOADING_TYPE.
+     *
+     * @since 1.0.3
+     */
+    public static final String PROPERTY_KEY_JAVET_LIB_LOADING_TYPE = "javet.lib.loading.type";
     private static final String TEMP_ROOT_NAME = "javet";
+    private final String javetLibLoadingPath;
+    private final String javetLibLoadingType;
+
+    public JavetLibLoadingListener() {
+        javetLibLoadingPath = System.getProperty(
+                PROPERTY_KEY_JAVET_LIB_LOADING_PATH);
+        javetLibLoadingType = System.getProperty(
+                PROPERTY_KEY_JAVET_LIB_LOADING_TYPE, JAVET_LIB_LOADING_TYPE_DEFAULT);
+    }
 
     @Override
     public File getLibPath(JSRuntimeType jsRuntimeType) {
-        return new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME);
+        if (javetLibLoadingPath == null) {
+            return new File(JavetOSUtils.TEMP_DIRECTORY, TEMP_ROOT_NAME);
+        }
+        return new File(javetLibLoadingPath);
     }
 
     @Override
@@ -39,7 +75,10 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
         if (JavetOSUtils.IS_ANDROID) {
             return false;
         }
-        return IJavetLibLoadingListener.super.isDeploy(jsRuntimeType);
+        if (JAVET_LIB_LOADING_TYPE_SYSTEM.equals(javetLibLoadingType)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -47,6 +86,9 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
         if (JavetOSUtils.IS_ANDROID) {
             return true;
         }
-        return IJavetLibLoadingListener.super.isLibInSystemPath(jsRuntimeType);
+        if (JAVET_LIB_LOADING_TYPE_SYSTEM.equals(javetLibLoadingType)) {
+            return true;
+        }
+        return false;
     }
 }
