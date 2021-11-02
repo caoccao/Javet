@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
 
-    public static final int DELTA = 2000;
+    protected static final int DELTA = 2000;
 
     @Test
     public void testEquals() throws JavetException {
@@ -43,6 +43,20 @@ public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testMaxAndMin() throws JavetException {
+        ZonedDateTime maxZonedDateTime = ZonedDateTime.of(
+                9999, 12, 31, 23, 59, 59, 0, JavetDateTimeUtils.ZONE_ID_UTC);
+        ZonedDateTime minZonedDateTime = ZonedDateTime.of(
+                1900, 01, 01, 0, 0, 0, 0, JavetDateTimeUtils.ZONE_ID_UTC);
+        assertEquals(253402300799L, maxZonedDateTime.toInstant().getEpochSecond());
+        assertEquals(-2208988800L, minZonedDateTime.toInstant().getEpochSecond());
+        assertEquals(maxZonedDateTime, v8Runtime.getExecutor("new Date(253402300799000)")
+                .executeZonedDateTime().withZoneSameInstant(JavetDateTimeUtils.ZONE_ID_UTC));
+        assertEquals(minZonedDateTime, v8Runtime.getExecutor("new Date(-2208988800000)")
+                .executeZonedDateTime().withZoneSameInstant(JavetDateTimeUtils.ZONE_ID_UTC));
+    }
+
+    @Test
     public void testZonedDateTime() throws JavetException {
         ZonedDateTime now = ZonedDateTime.now();
         try (V8ValueZonedDateTime v8ValueZonedDateTime = v8Runtime.getExecutor("new Date()").execute()) {
@@ -52,7 +66,7 @@ public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
             assertTrue(deltaEpochSecond >= 0 && deltaEpochSecond <= DELTA);
         }
         ZonedDateTime zonedDateTime = v8Runtime.getExecutor("new Date(1611710223719)").executeZonedDateTime();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.of("UTC"));
+        zonedDateTime = zonedDateTime.withZoneSameInstant(JavetDateTimeUtils.ZONE_ID_UTC);
         assertEquals(2021, zonedDateTime.getYear());
         assertEquals(1, zonedDateTime.getMonthValue());
         assertEquals(27, zonedDateTime.getDayOfMonth());
