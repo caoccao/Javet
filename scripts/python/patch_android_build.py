@@ -49,7 +49,8 @@ class PatchAndroidBuild(object):
       'import javax.management.NotificationListener;',
       'import java.lang.management.ManagementFactory;',
       'import java.lang.management.MemoryNotificationInfo;',
-
+      'import java.lang.management.MemoryPoolMXBean;',
+      'import java.lang.management.MemoryType;',
     ]
     self._if_defined_android = '/* if defined ANDROID'
     self._if_not_defined_android = '/* if not defined ANDROID */'
