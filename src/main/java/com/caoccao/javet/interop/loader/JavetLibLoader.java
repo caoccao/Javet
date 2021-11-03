@@ -22,12 +22,12 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.utils.JavetStringUtils;
 import com.caoccao.javet.utils.SimpleMap;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Objects;
 
@@ -48,7 +48,7 @@ public final class JavetLibLoader {
      *
      * @since 0.8.0
      */
-    public static final String LIB_VERSION = "1.0.2";
+    public static final String LIB_VERSION = "1.0.3";
     private static final String ANDROID_ABI_ARM = "armeabi-v7a";
     private static final String ANDROID_ABI_ARM64 = "arm64-v8a";
     private static final String ANDROID_ABI_X86 = "x86";
@@ -285,7 +285,7 @@ public final class JavetLibLoader {
     public String getResourceFileName()
             throws JavetException {
         String resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, JavetOSUtils.IS_ANDROID
-                ? String.join("/", LIB_FILE_NAME_PREFIX, getAndroidABI(), getLibFileName())
+                ? JavetStringUtils.join("/", LIB_FILE_NAME_PREFIX, getAndroidABI(), getLibFileName())
                 : getLibFileName());
         if (JavetLibLoader.class.getResource(resourceFileName) == null) {
             throw new JavetException(
@@ -320,14 +320,14 @@ public final class JavetLibLoader {
                 if (isLibInSystemPath) {
                     libFilePath = getLibFileName();
                 } else if (isDeploy) {
-                    Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
+                    File libPath = libLoadingListener.getLibPath(jsRuntimeType);
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
                     String resourceFileName = getResourceFileName();
                     File rootLibPath;
                     if (JavetOSUtils.IS_ANDROID) {
-                        rootLibPath = libPath.toFile();
+                        rootLibPath = libPath;
                     } else {
-                        rootLibPath = new File(libPath.toFile(), Long.toString(JavetOSUtils.PROCESS_ID));
+                        rootLibPath = new File(libPath, Long.toString(JavetOSUtils.PROCESS_ID));
                     }
                     if (!rootLibPath.exists()) {
                         if (!rootLibPath.mkdirs()) {
@@ -339,9 +339,9 @@ public final class JavetLibLoader {
                     deployLibFile(resourceFileName, libFile);
                     libFilePath = libFile.getAbsolutePath();
                 } else {
-                    Path libPath = libLoadingListener.getLibPath(jsRuntimeType);
+                    File libPath = libLoadingListener.getLibPath(jsRuntimeType);
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
-                    libFilePath = new File(libPath.toFile(), getLibFileName()).getAbsolutePath();
+                    libFilePath = new File(libPath, getLibFileName()).getAbsolutePath();
                 }
                 if (isLibInSystemPath) {
                     System.loadLibrary(getNormalizedLibFilePath(libFilePath));

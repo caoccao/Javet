@@ -49,7 +49,7 @@ public class TestNodeRuntime extends BaseTestJavet {
 
     @AfterEach
     public void afterEach() throws JavetException {
-        nodeModuleProcess.setWorkingDirectory(new File(JavetOSUtils.WORKING_DIRECTORY).toPath());
+        nodeModuleProcess.setWorkingDirectory(new File(JavetOSUtils.WORKING_DIRECTORY));
         assertEquals(nodeRuntime.getNodeModuleCount(), nodeRuntime.getReferenceCount(),
                 "Reference count should be equal to node module count after test case is ended.");
         nodeRuntime.close();
@@ -66,14 +66,14 @@ public class TestNodeRuntime extends BaseTestJavet {
         try {
             nodeModuleProcess = nodeRuntime.getNodeModule(NodeModuleProcess.class);
             nodeModuleProcess.setWorkingDirectory(
-                    new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node").toPath());
+                    new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node"));
         } catch (JavetException e) {
             fail(e.getMessage());
         }
     }
 
     protected File getScriptFile(String relativePath) throws JavetException {
-        return nodeModuleProcess.getWorkingDirectory().resolve(relativePath).toFile();
+        return nodeModuleProcess.getWorkingDirectory().toPath().resolve(relativePath).toFile();
     }
 
     protected void internalTest(String fileName, String expectedJsonString) throws JavetException {
@@ -108,12 +108,12 @@ public class TestNodeRuntime extends BaseTestJavet {
 
     @Test
     public void testModuleProcess() throws JavetException {
-        Path path1 = nodeModuleProcess.getWorkingDirectory();
+        Path path1 = nodeModuleProcess.getWorkingDirectory().toPath();
         Path path2 = path1.resolve("../");
-        nodeModuleProcess.setWorkingDirectory(path2);
-        Path path3 = nodeModuleProcess.getWorkingDirectory();
-        nodeModuleProcess.setWorkingDirectory(path1);
-        Path path4 = nodeModuleProcess.getWorkingDirectory();
+        nodeModuleProcess.setWorkingDirectory(path2.toFile());
+        Path path3 = nodeModuleProcess.getWorkingDirectory().toPath();
+        nodeModuleProcess.setWorkingDirectory(path1.toFile());
+        Path path4 = nodeModuleProcess.getWorkingDirectory().toPath();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
         assertEquals("v16.12.0", nodeModuleProcess.getVersion());

@@ -35,23 +35,36 @@ class ChangeJavetVersion(object):
     self._update(
       'README.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\']{1}'),
+      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\'@]{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'build.gradle.kts', '\n',
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
+    self._update(
+      'android/javet-android/build.gradle.kts', '\n',
+      re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
+    self._update(
+      'android/javet-android/src/main/AndroidManifest.xml', '\n',
+      re.compile(r'versionName="(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
       'docs/conf.py', '\n',
       re.compile(r'release\s*=\s*\'(?P<version>\d+\.\d+\.\d+)\'$'))
     self._update(
       'docs/tutorial/basic/installation.rst', '\n',
       re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\']{1}'),
+      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\'@]{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'pom.xml', '\n',
       re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'^        <tag>javet-(?P<version>\d+\.\d+\.\d+)</tag>$'))
+      re.compile(r'^        <tag>(?P<version>\d+\.\d+\.\d+)</tag>$'))
+    self._update(
+      'android/pom.xml', '\n',
+      re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
+      re.compile(r'^        <tag>(?P<version>\d+\.\d+\.\d+)</tag>$'))
+    self._update(
+      'cpp/build-android.sh', '\n',
+      re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'cpp/build-linux.sh', '\n',
       re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
@@ -113,7 +126,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('1.0.2')
+  change_javet_version = ChangeJavetVersion('1.0.3')
   change_javet_version.update()
   return 0
 

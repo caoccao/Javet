@@ -19,9 +19,6 @@ package com.caoccao.javet.utils;
 
 import com.caoccao.javet.values.V8Value;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * The type V8 value utils.
  *
@@ -53,7 +50,17 @@ public final class V8ValueUtils {
         if (delimiter == null) {
             delimiter = EMPTY;
         }
-        return Arrays.stream(v8Values).map(V8Value::toString).collect(Collectors.joining(delimiter));
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (V8Value v8Value : v8Values) {
+            if (first) {
+                sb.append(v8Value.toString());
+                first = true;
+            } else {
+                sb.append(delimiter).append(v8Value.toString());
+            }
+        }
+        return sb.toString();
     }
 
     /**

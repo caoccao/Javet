@@ -32,62 +32,156 @@ import com.caoccao.javet.values.reference.V8Script;
 import java.io.File;
 import java.nio.file.Path;
 
+/**
+ * The interface V8 executor.
+ *
+ * @since 0.7.0
+ */
 public interface IV8Executor extends IV8Executable {
+    /**
+     * Compile V8 module.
+     *
+     * @return the V8 module
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
     @CheckReturnValue
     default V8Module compileV8Module() throws JavetException {
         return compileV8Module(true);
     }
 
+    /**
+     * Compile V8 module.
+     *
+     * @param resultRequired the result required
+     * @return the V8 module
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
     @CheckReturnValue
     V8Module compileV8Module(boolean resultRequired) throws JavetException;
 
+    /**
+     * Compile V8 module.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void compileV8ModuleVoid() throws JavetException {
         compileV8Module(false);
     }
 
+    /**
+     * Compile V8 script.
+     *
+     * @return the V8 script
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
     @CheckReturnValue
     default V8Script compileV8Script() throws JavetException {
         return compileV8Script(true);
     }
 
+    /**
+     * Compile V8 script.
+     *
+     * @param resultRequired the result required
+     * @return the V8 script
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
     @CheckReturnValue
     V8Script compileV8Script(boolean resultRequired) throws JavetException;
 
+    /**
+     * Compile V8 script.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void compileV8ScriptVoid() throws JavetException {
         compileV8Script(false);
     }
 
+    /**
+     * Gets resource name.
+     *
+     * @return the resource name
+     * @since 0.8.0
+     */
     default String getResourceName() {
         return getV8ScriptOrigin().getResourceName();
     }
 
+    /**
+     * Gets script string.
+     *
+     * @return the script string
+     * @throws JavetException the javet exception
+     * @since 0.9.1
+     */
     String getScriptString() throws JavetException;
 
+    /**
+     * Gets V8 runtime.
+     *
+     * @return the V8 runtime
+     * @since 0.9.1
+     */
     V8Runtime getV8Runtime();
 
+    /**
+     * Gets V8 script origin.
+     *
+     * @return the V8 script origin
+     * @since 0.9.1
+     */
     V8ScriptOrigin getV8ScriptOrigin();
 
+    /**
+     * Is module boolean.
+     *
+     * @return the boolean
+     * @since 0.9.1
+     */
     default boolean isModule() {
         return getV8ScriptOrigin().isModule();
     }
 
+    /**
+     * Sets module.
+     *
+     * @param module the module
+     * @return the self
+     * @since 0.9.1
+     */
     default IV8Executor setModule(boolean module) {
         getV8ScriptOrigin().setModule(module);
         return this;
     }
 
+    /**
+     * Sets resource name.
+     *
+     * @param resourceName the resource name
+     * @return the self
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     default IV8Executor setResourceName(String resourceName) throws JavetException {
         getV8ScriptOrigin().setResourceName(resourceName);
         V8Runtime v8Runtime = getV8Runtime();
         if (v8Runtime.getJSRuntimeType().isNode()) {
             NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
-            Path resourcePath = new File(resourceName).toPath();
-            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, resourcePath.getParent().toString());
-            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourcePath.toString());
-            nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(resourcePath.getParent());
-            nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(resourcePath.getParent());
+            File resourceFile = new File(resourceName);
+            File parentFile = resourceFile.getParentFile();
+            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, parentFile.getAbsolutePath());
+            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourceFile.getAbsolutePath());
+            nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(parentFile.getAbsolutePath());
+            nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(parentFile.getAbsolutePath());
         }
         return this;
     }

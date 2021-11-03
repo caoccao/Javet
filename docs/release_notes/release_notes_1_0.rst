@@ -4,6 +4,13 @@
 Release Notes 1.0.x
 ===================
 
+1.0.3
+-----
+
+* Supported Android (arm, arm64, x86 and x86_64) ABI >= 21
+* Added ``addGCEpilogueCallback``, ``addGCPrologueCallback``, ``removeGCEpilogueCallback`` and ``removeGCPrologueCallback`` to ``V8Runtime``
+* Enhanced ``JavetLibLoadingListener`` to take environment variables
+
 1.0.2 First Time with Android
 -----------------------------
 

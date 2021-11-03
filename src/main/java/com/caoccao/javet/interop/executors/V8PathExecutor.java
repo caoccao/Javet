@@ -22,20 +22,44 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.SimpleMap;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * The type V8 path executor.
+ *
+ * @since 0.7.0
+ */
 public class V8PathExecutor extends V8StringExecutor {
+    /**
+     * The Script path.
+     *
+     * @since 0.7.0
+     */
     protected Path scriptPath;
 
+    /**
+     * Instantiates a new V8 path executor.
+     *
+     * @param v8Runtime  the V8 runtime
+     * @param scriptPath the script path
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) throws JavetException {
         super(v8Runtime);
         this.scriptPath = scriptPath;
-        setResourceName(scriptPath.toFile().getAbsolutePath());
+        setResourceName(scriptPath.toString());
     }
 
+    /**
+     * Gets script path.
+     *
+     * @return the script path
+     * @since 0.9.1
+     */
     public Path getScriptPath() {
         return scriptPath;
     }
@@ -43,8 +67,10 @@ public class V8PathExecutor extends V8StringExecutor {
     @Override
     public String getScriptString() throws JavetException {
         if (scriptString == null) {
-            try {
-                scriptString = new String(Files.readAllBytes(scriptPath), StandardCharsets.UTF_8);
+            try (FileInputStream fileInputStream = new FileInputStream(scriptPath.toString())) {
+                byte[] buffer = new byte[fileInputStream.available()];
+                fileInputStream.read(buffer);
+                scriptString = new String(buffer, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new JavetException(
                         JavetError.FailedToReadPath,

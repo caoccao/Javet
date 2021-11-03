@@ -20,6 +20,7 @@ package com.caoccao.javet.utils.receivers;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetStringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
@@ -31,11 +32,20 @@ import java.util.Objects;
  * The type Javet explicit callback receiver.
  * <p>
  * It is supposed to provide a common ground for customized V8 callback receiver.
+ *
+ * @since 0.7.1
  */
 public class JavetCallbackReceiver implements IJavetCallbackReceiver {
+    /**
+     * The constant COMMA.
+     *
+     * @since 0.8.0
+     */
     protected static final String COMMA = ",";
     /**
      * The V8 runtime.
+     *
+     * @since 0.7.1
      */
     protected V8Runtime v8Runtime;
 
@@ -43,6 +53,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      * Instantiates a new V8 callback receiver.
      *
      * @param v8Runtime the V8 runtime
+     * @since 0.7.1
      */
     public JavetCallbackReceiver(V8Runtime v8Runtime) {
         Objects.requireNonNull(v8Runtime);
@@ -55,6 +66,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      * @param arg the arg
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @since 0.7.1
      */
     @CheckReturnValue
     public V8Value echo(V8Value arg) throws JavetException {
@@ -69,6 +81,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      * @param args the args
      * @return the V8 value array
      * @throws JavetException the javet exception
+     * @since 0.7.1
      */
     @CheckReturnValue
     public V8ValueArray echo(V8Value... args) throws JavetException {
@@ -86,6 +99,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      *
      * @param str the str
      * @return the string
+     * @since 0.7.1
      */
     public String echoString(String str) {
         return str;
@@ -96,6 +110,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      *
      * @param arg the arg
      * @return the string
+     * @since 0.7.1
      */
     public String echoString(V8Value arg) {
         return arg == null ? null : arg.toString();
@@ -108,13 +123,14 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
      *
      * @param args the args
      * @return the string
+     * @since 0.7.1
      */
     public String echoString(V8Value... args) {
         List<String> stringList = new ArrayList<>(args.length);
         for (V8Value arg : args) {
             stringList.add(arg == null ? null : arg.toString());
         }
-        return String.join(COMMA, stringList);
+        return JavetStringUtils.join(COMMA, stringList);
     }
 
     @Override

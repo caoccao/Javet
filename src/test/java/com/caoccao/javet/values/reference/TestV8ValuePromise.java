@@ -24,7 +24,7 @@ import com.caoccao.javet.enums.JavetPromiseRejectEvent;
 import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
-import com.caoccao.javet.interfaces.IJavetPromiseRejectCallback;
+import com.caoccao.javet.interop.callback.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockFS;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;

@@ -73,7 +73,7 @@ public class DecimalJavetInNodeJSMode implements IJavetClosable {
 
     public void test() throws JavetException {
         NodeRuntime nodeRuntime = iJavetEngine.getV8Runtime();
-        Path workingDirectory = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node").toPath();
+        File workingDirectory = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-node");
         // Set the require root directory so that Node.js is able to locate node_modules.
         nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(workingDirectory);
         getLogger().logInfo("1.23 + 2.34 = {0}", nodeRuntime.getExecutor(

@@ -27,23 +27,43 @@ import com.caoccao.javet.values.reference.V8Script;
 
 import java.util.Objects;
 
+/**
+ * The type Base V8 executor.
+ *
+ * @since 0.7.0
+ */
 public abstract class BaseV8Executor implements IV8Executor {
+    /**
+     * The V8 runtime.
+     *
+     * @since 0.7.0
+     */
     protected V8Runtime v8Runtime;
+    /**
+     * The V8 script origin.
+     *
+     * @since 0.7.0
+     */
     protected V8ScriptOrigin v8ScriptOrigin;
 
+    /**
+     * Instantiates a new Base V8 executor.
+     *
+     * @param v8Runtime the V8 runtime
+     * @since  0.7.0
+     */
     public BaseV8Executor(V8Runtime v8Runtime) {
-        Objects.requireNonNull(v8Runtime);
-        this.v8Runtime = v8Runtime;
+        this.v8Runtime = Objects.requireNonNull(v8Runtime);
         this.v8ScriptOrigin = new V8ScriptOrigin();
     }
 
     @Override
     @CheckReturnValue
-    public abstract V8Script compileV8Script(boolean resultRequired) throws JavetException;
+    public abstract V8Module compileV8Module(boolean resultRequired) throws JavetException;
 
     @Override
     @CheckReturnValue
-    public abstract V8Module compileV8Module(boolean resultRequired) throws JavetException;
+    public abstract V8Script compileV8Script(boolean resultRequired) throws JavetException;
 
     @Override
     @CheckReturnValue

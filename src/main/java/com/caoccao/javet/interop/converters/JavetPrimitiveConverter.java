@@ -161,6 +161,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
             v8Value = v8Runtime.createV8ValueInteger((Byte) object);
         } else if (object instanceof Character) {
             v8Value = v8Runtime.createV8ValueString(((Character) object).toString());
+            /* if not defined ANDROID */
         } else if (object instanceof Optional) {
             Optional<?> optional = (Optional<?>) object;
             v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.get(), depth) : v8Runtime.createV8ValueNull();
@@ -173,6 +174,7 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         } else if (object instanceof OptionalLong) {
             OptionalLong optional = (OptionalLong) object;
             v8Value = optional.isPresent() ? toV8Value(v8Runtime, optional.getAsLong(), depth) : v8Runtime.createV8ValueNull();
+            /* end if */
         } else {
             v8Value = v8Runtime.createV8ValueUndefined();
         }

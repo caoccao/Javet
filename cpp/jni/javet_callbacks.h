@@ -44,6 +44,8 @@ namespace Javet {
 
         static jclass jclassV8Runtime;
         static jmethodID jmethodIDV8RuntimeGetV8Module;
+        static jmethodID jmethodIDV8RuntimeGCEpilogueCallback;
+        static jmethodID jmethodIDV8RuntimeGCPrologueCallback;
         static jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
         static jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
 
@@ -52,6 +54,8 @@ namespace Javet {
         void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info);
         void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info);
         void JavetFunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& info);
+        void JavetGCEpilogueCallback(v8::Isolate* v8Isolate, v8::GCType v8GCType, v8::GCCallbackFlags v8GCCallbackFlags);
+        void JavetGCPrologueCallback(v8::Isolate* v8Isolate, v8::GCType v8GCType, v8::GCCallbackFlags v8GCCallbackFlags);
         void JavetPropertyGetterCallback(V8LocalName propertyName, const v8::PropertyCallbackInfo<v8::Value>& info);
         void JavetPropertySetterCallback(V8LocalName propertyName, V8LocalValue propertyValue, const v8::PropertyCallbackInfo<void>& info);
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message);

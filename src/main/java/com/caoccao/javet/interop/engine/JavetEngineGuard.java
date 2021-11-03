@@ -40,8 +40,13 @@ public class JavetEngineGuard implements IJavetEngineGuard {
      *
      * @since 0.8.9
      */
-    protected static final boolean IS_IN_DEBUG_MODE = ManagementFactory.getRuntimeMXBean().
-            getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+    protected static final boolean IS_IN_DEBUG_MODE =
+            /* if defined ANDROID
+            false;
+            /* end if */
+            /* if not defined ANDROID */
+            ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+    /* end if */
 
     /**
      * The Closed.
@@ -135,9 +140,9 @@ public class JavetEngineGuard implements IJavetEngineGuard {
     }
 
     /**
-     * Gets utc now.
+     * Gets UTC now.
      *
-     * @return the utc now
+     * @return the UTC now
      * @since 0.9.1
      */
     protected ZonedDateTime getUTCNow() {
@@ -150,9 +155,9 @@ public class JavetEngineGuard implements IJavetEngineGuard {
     }
 
     /**
-     * Is quitting boolean.
+     * Is quitting.
      *
-     * @return the boolean
+     * @return true : quitting, false : not quitting
      * @since 0.7.2
      */
     public boolean isQuitting() {

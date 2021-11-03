@@ -15,17 +15,19 @@
  *
  */
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id("com.android.library")
 }
 
-version = "1.0.2"
+version = "1.0.3"
 
 android {
     compileSdk = 30
 
     defaultConfig {
-        minSdk = 26
+        minSdk = 21
         targetSdk = 30
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -36,7 +38,6 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            setProperty("archivesBaseName", property("archivesBaseName") as String + "-" + version)
         }
     }
 
@@ -47,7 +48,7 @@ android {
 
     sourceSets {
         getByName("main") {
-            java.srcDirs("${projectDir}/../../src/main/java", "src/main/java")
+            java.srcDirs("src/main/java")
             jniLibs.srcDirs("src/main/jniLibs")
         }
     }
@@ -55,6 +56,7 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("org.threeten:threetenbp:1.5.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
@@ -62,11 +64,17 @@ dependencies {
 
 tasks.register<Jar>(name = "sourceJar") {
     from(android.sourceSets["main"].java.srcDirs)
-    classifier = "sources"
+    archiveClassifier.set("sources")
 }
 
-tasks.register<Jar>(name = "javadocJar") {
-    from(android.sourceSets["main"].java.srcDirs)
-    classifier = "javadoc"
-}
 
+task<Exec>("syncSourceCode") {
+    project.exec {
+        workingDir("$projectDir/../../scripts/python")
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine("cmd", "/c", "python", "patch_android_build.py")
+        } else {
+            commandLine("sh", "-c", "python3", "patch_android_build.py")
+        }
+    }
+}

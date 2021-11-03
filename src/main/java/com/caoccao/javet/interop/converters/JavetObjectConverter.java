@@ -33,8 +33,8 @@ import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -115,7 +115,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      *
      * @since 0.9.12
      */
-    protected Map<String, Executable[]> customObjectMap;
+    protected Map<String, AccessibleObject[]> customObjectMap;
 
     /**
      * Instantiates a new Javet object converter.
@@ -196,7 +196,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             if (Modifier.isStatic(methodToMap.getModifiers())) {
                 return false;
             }
-            Executable[] executables = new Executable[]{defaultConstructor, methodFromMap, methodToMap};
+            AccessibleObject[] executables = new AccessibleObject[]{defaultConstructor, methodFromMap, methodToMap};
             Lock writeLock = customObjectLock.writeLock();
             try {
                 writeLock.lock();
@@ -318,7 +318,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 Method methodFromMap = null;
                 try {
                     readLock.lock();
-                    Executable[] executables = customObjectMap.get(customObjectClassName);
+                    AccessibleObject[] executables = customObjectMap.get(customObjectClassName);
                     if (executables != null) {
                         defaultConstructor = (Constructor) executables[EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR];
                         methodFromMap = (Method) executables[EXECUTABLE_INDEX_FROM_MAP];
@@ -430,6 +430,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueArray;
                 v8Scope.setEscapable();
             }
+            /* if not defined ANDROID */
         } else if (object instanceof BaseStream) {
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                 V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
@@ -442,6 +443,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Value = v8ValueArray;
                 v8Scope.setEscapable();
             }
+            /* end if */
         } else if (object instanceof IJavetEntityFunction) {
             final IJavetEntityFunction javetEntityFunction = (IJavetEntityFunction) object;
             String sourceCode = javetEntityFunction.getJSFunctionType().isUserDefined() ?
@@ -527,7 +529,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             Method methodToMap = null;
             try {
                 readLock.lock();
-                Executable[] executables = customObjectMap.get(customObjectClassName);
+                AccessibleObject[] executables = customObjectMap.get(customObjectClassName);
                 if (executables != null) {
                     methodToMap = (Method) executables[EXECUTABLE_INDEX_TO_MAP];
                 }

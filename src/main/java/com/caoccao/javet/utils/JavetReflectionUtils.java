@@ -89,6 +89,7 @@ public final class JavetReflectionUtils {
      * @return the method name set
      * @since 0.9.13
      */
+    /* if not defined ANDROID */
     public static Set<String> getMethodNameSetFromLambdas(Serializable... lambdas) {
         return Stream.of(Objects.requireNonNull(lambdas))
                 .filter(Objects::nonNull)
@@ -96,6 +97,7 @@ public final class JavetReflectionUtils {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
+    /* end if */
 
     /**
      * Safe set accessible.

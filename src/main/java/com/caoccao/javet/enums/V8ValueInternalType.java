@@ -17,8 +17,6 @@
 
 package com.caoccao.javet.enums;
 
-import java.util.stream.Stream;
-
 public enum V8ValueInternalType {
     Undefined(0, "Undefined"),
     Null(1, "Null"),
@@ -78,7 +76,9 @@ public enum V8ValueInternalType {
     private static final V8ValueInternalType[] ALL_TYPES = new V8ValueInternalType[54];
 
     static {
-        Stream.of(values()).forEach(t -> ALL_TYPES[t.getId()] = t);
+        for (V8ValueInternalType type : values()) {
+            ALL_TYPES[type.getId()] = type;
+        }
     }
 
     private final int id;
