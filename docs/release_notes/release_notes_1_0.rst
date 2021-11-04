@@ -4,8 +4,8 @@
 Release Notes 1.0.x
 ===================
 
-1.0.3
------
+1.0.3 Android ABI 21
+--------------------
 
 * Supported Android (arm, arm64, x86 and x86_64) ABI >= 21
 * Added ``addGCEpilogueCallback``, ``addGCPrologueCallback``, ``removeGCEpilogueCallback`` and ``removeGCPrologueCallback`` to ``V8Runtime``
