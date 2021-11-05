@@ -56,7 +56,7 @@ public class JavetBridgeConverter extends BaseJavetConverter {
     @CheckReturnValue
     protected <T extends V8Value> T toV8Value(
             V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
-        PROXY_CONVERTER.validateDepth(depth);
+        validateDepth(depth);
         V8Value v8Value;
         if (object == null) {
             v8Value = v8Runtime.createV8ValueNull();
