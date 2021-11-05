@@ -107,6 +107,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals("3", map.get("z"));
         assertEquals("4", v8Runtime.getExecutor("map.z = '4'; map.z;").executeObject());
         assertEquals("4", map.get("z"));
+        assertEquals(
+                "[\"x\",\"y\",\"z\"]",
+                v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
         v8Runtime.getGlobalObject().delete("map");
     }
 
@@ -123,6 +126,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertFalse((Boolean) v8Runtime.getExecutor("set.contains('z')").executeObject());
         assertTrue((Boolean) v8Runtime.getExecutor("set.add('z')").executeObject());
         assertTrue((Boolean) v8Runtime.getExecutor("set.contains('z')").executeObject());
+        assertEquals(
+                "[\"x\",\"y\",\"z\"]",
+                v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
         v8Runtime.getGlobalObject().delete("set");
     }
 

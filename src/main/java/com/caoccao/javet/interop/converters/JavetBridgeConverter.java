@@ -23,27 +23,19 @@ import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
-import java.util.Objects;
-
 /**
  * The type Javet bridge converter.
  *
  * @since 1.0.4
  */
 @SuppressWarnings("unchecked")
-public class JavetBridgeConverter implements IJavetConverter {
+public class JavetBridgeConverter extends BaseJavetConverter {
     /**
      * The constant PROXY_CONVERTER.
      *
      * @since 1.0.4
      */
     protected static final JavetProxyConverter PROXY_CONVERTER = new JavetProxyConverter();
-    /**
-     * The Config.
-     *
-     * @since 1.0.4
-     */
-    protected JavetConverterConfig<?> config;
 
     /**
      * Instantiates a new Javet bridge converter.
@@ -51,47 +43,16 @@ public class JavetBridgeConverter implements IJavetConverter {
      * @since 1.0.4
      */
     public JavetBridgeConverter() {
-        config = new JavetConverterConfig<>();
+        super();
     }
 
     @Override
-    public JavetConverterConfig<?> getConfig() {
-        return config;
+    public Object toObject(V8Value v8Value, int depth) throws JavetException {
+        return PROXY_CONVERTER.toObject(v8Value, depth);
     }
 
-    /**
-     * Sets config.
-     *
-     * @param config the config
-     * @since 1.0.4
-     */
-    public void setConfig(JavetConverterConfig<?> config) {
-        this.config = Objects.requireNonNull(config);
-    }
-
-    @Override
-    public Object toObject(V8Value v8Value) throws JavetException {
-        return PROXY_CONVERTER.toObject(v8Value);
-    }
-
-    @Override
-    @CheckReturnValue
-    public <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
-        return toV8Value(v8Runtime, object, 0);
-    }
-
-    /**
-     * To V8 value.
-     *
-     * @param <T>       the type parameter
-     * @param v8Runtime the V8 runtime
-     * @param object    the object
-     * @param depth     the depth
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 1.0.4
-     */
     @SuppressWarnings("ConstantConditions")
+    @Override
     @CheckReturnValue
     protected <T extends V8Value> T toV8Value(
             V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
