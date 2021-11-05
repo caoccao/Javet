@@ -38,7 +38,7 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
 
     @Override
     public void add(Object key) throws JavetException {
-        try (V8VirtualValue virtualValue = new V8VirtualValue(checkV8Runtime(), key)) {
+        try (V8VirtualValue virtualValue = new V8VirtualValue(checkV8Runtime(), null, key)) {
             v8Runtime.getV8Internal().add(this, virtualValue.get());
         }
     }

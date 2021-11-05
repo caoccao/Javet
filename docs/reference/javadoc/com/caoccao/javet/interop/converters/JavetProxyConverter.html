@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10};
+var methods = {"i0":10,"i1":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -203,6 +203,13 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetObject
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>protected &lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&gt;<br>T</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html#toProxiedV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-">toProxiedV8Value</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
+                java.lang.Object&nbsp;object)</code>
+<div class="block">To proxied V8 value.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>protected &lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&gt;<br>T</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html#toV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-int-">toV8Value</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
          java.lang.Object&nbsp;object,
          int&nbsp;depth)</code>
@@ -302,6 +309,30 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetObject
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a name="toProxiedV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toProxiedV8Value</h4>
+<pre><a href="../../../../../com/caoccao/javet/annotations/CheckReturnValue.html" title="annotation in com.caoccao.javet.annotations">@CheckReturnValue</a>
+protected&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&gt;&nbsp;T&nbsp;toProxiedV8Value(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
+                                                                    java.lang.Object&nbsp;object)
+                                                             throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<div class="block">To proxied V8 value.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - the type parameter</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>v8Runtime</code> - the V8 runtime</dd>
+<dd><code>object</code> - the object</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the proxied V8 value</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
+</dl>
+</li>
+</ul>
 <a name="toV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-int-">
 <!--   -->
 </a>

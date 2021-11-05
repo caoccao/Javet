@@ -49,7 +49,6 @@ import java.util.stream.BaseStream;
  */
 @SuppressWarnings("unchecked")
 public class JavetObjectConverter extends JavetPrimitiveConverter {
-
     /**
      * The constant EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR.
      *

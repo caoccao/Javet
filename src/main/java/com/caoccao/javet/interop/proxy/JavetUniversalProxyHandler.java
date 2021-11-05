@@ -27,10 +27,8 @@ import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueFunction;
-import com.caoccao.javet.values.reference.V8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueProxy;
+import com.caoccao.javet.values.reference.*;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -373,6 +371,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 JavetUniversalInterceptor javetUniversalInterceptor =
                         new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
                 return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
+            }
+        } else if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
+                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
+                    && targetObject instanceof Iterator) {
+                return new JavetProxySymbolIteratorConverter<>(v8Runtime, (Iterator) targetObject).getV8ValueFunction();
             }
         }
         return v8Runtime.createV8ValueUndefined();

@@ -513,8 +513,8 @@
 <p>This process is transparent and fully automated once the converter is set to <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code>.</p>
 </div>
 </div>
-<div class="section" id="universal-converter">
-<h2>Universal Converter<a class="headerlink" href="#universal-converter" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="proxy-converter">
+<h2>Proxy Converter<a class="headerlink" href="#proxy-converter" title="Permalink to this headline">¶</a></h2>
 <p>Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> is designed for that. In general, the user experience is very much close to the one provided by GraalJS. As <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> opens almost the whole JVM to V8, it is very dangerous to allow end users to touch that V8 runtime, so <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> is not enabled by default. Here are the steps on how to enable that.</p>
 <div class="section" id="preparation">
 <h3>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h3>
@@ -785,6 +785,24 @@
 <p>It is recommended to subclass <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> and override few internal API to achieve complete customization.</p>
 </div>
 </div>
+<div class="section" id="bridge-converter">
+<h2>Bridge Converter<a class="headerlink" href="#bridge-converter" title="Permalink to this headline">¶</a></h2>
+<p>However, <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> skips creating proxy for primitive types, <code class="docutils literal notranslate"><span class="pre">List</span></code>, <code class="docutils literal notranslate"><span class="pre">Set</span></code>, <code class="docutils literal notranslate"><span class="pre">Map</span></code>, etc. No problem. <code class="docutils literal notranslate"><span class="pre">JavetBridgeConverter</span></code> creates proxy for all Java types including <code class="docutils literal notranslate"><span class="pre">Integer</span></code>, <code class="docutils literal notranslate"><span class="pre">Long</span></code>, <code class="docutils literal notranslate"><span class="pre">String</span></code>, etc.</p>
+<div class="section" id="id1">
+<h3>Preparation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 1: Create an instance of JavetBridgeConverter.</span>
+<span class="n">JavetBridgeConverter</span> <span class="n">javetBridgeConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JavetBridgeConverter</span><span class="p">();</span>
+<span class="c1">// Step 2: Set the V8Runtime converter to JavetBridgeConverter.</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">setConverter</span><span class="p">(</span><span class="n">javetBridgeConverter</span><span class="p">);</span>
+<span class="c1">// Please feel free to inject arbitrary Java objects.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Usage<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The usage is identical to the one in <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code>.</p>
+</div>
+</div>
 <div class="section" id="null-safety">
 <h2>Null Safety<a class="headerlink" href="#null-safety" title="Permalink to this headline">¶</a></h2>
 <p>What if the object converter meets <code class="docutils literal notranslate"><span class="pre">null</span></code> or <code class="docutils literal notranslate"><span class="pre">undefined</span></code> when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in <code class="docutils literal notranslate"><span class="pre">java.lang.NullPointerException</span></code>. Luckily, Javet object converter is null safe by injecting default primitive values to <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code> and these default primitive values can be overridden.</p>
@@ -873,7 +891,7 @@
 <li><a class="reference internal" href="#ready-go">Ready! Go!</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#universal-converter">Universal Converter</a><ul>
+<li><a class="reference internal" href="#proxy-converter">Proxy Converter</a><ul>
 <li><a class="reference internal" href="#preparation">Preparation</a></li>
 <li><a class="reference internal" href="#instance-file">Instance: File</a></li>
 <li><a class="reference internal" href="#instance-map">Instance: Map</a></li>
@@ -887,6 +905,11 @@
 <li><a class="reference internal" href="#features">Features</a></li>
 <li><a class="reference internal" href="#how-does-javetproxyconverter-work">How does JavetProxyConverter Work?</a></li>
 <li><a class="reference internal" href="#how-to-customize-javetproxyconverter">How to Customize JavetProxyConverter?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bridge-converter">Bridge Converter</a><ul>
+<li><a class="reference internal" href="#id1">Preparation</a></li>
+<li><a class="reference internal" href="#id2">Usage</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#null-safety">Null Safety</a></li>
