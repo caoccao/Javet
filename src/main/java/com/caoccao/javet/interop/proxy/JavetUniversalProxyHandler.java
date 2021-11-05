@@ -379,8 +379,8 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
-                    && targetObject instanceof Iterator) {
-                return new JavetProxySymbolIteratorConverter<>(v8Runtime, (Iterator) targetObject).getV8ValueFunction();
+                    && targetObject instanceof Iterable) {
+                return new JavetProxySymbolIterableConverter<>(v8Runtime, (Iterable) targetObject).getV8ValueFunction();
             }
         }
         return v8Runtime.createV8ValueUndefined();

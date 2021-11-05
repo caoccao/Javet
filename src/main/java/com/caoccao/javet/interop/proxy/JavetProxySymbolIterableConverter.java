@@ -18,24 +18,22 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.interop.V8Runtime;
 
-import java.util.Iterator;
-
 /**
- * The type Javet proxy symbol iterator converter.
+ * The type Javet proxy symbol iterable converter.
  *
  * @param <T> the type parameter
  * @since 1.0.4
  */
-public class JavetProxySymbolIteratorConverter<T extends Iterator> extends BaseJavetProxySymbolConverter<T> {
+public class JavetProxySymbolIterableConverter<T extends Iterable> extends BaseJavetProxySymbolConverter<T> {
 
     /**
-     * Instantiates a new Javet proxy symbol iterator converter.
+     * Instantiates a new Javet proxy symbol iterable converter.
      *
      * @param v8Runtime    the V8 runtime
      * @param targetObject the target object
      * @since 1.0.4
      */
-    public JavetProxySymbolIteratorConverter(V8Runtime v8Runtime, T targetObject) {
+    public JavetProxySymbolIterableConverter(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, targetObject);
     }
 }
