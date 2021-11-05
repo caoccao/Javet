@@ -30,7 +30,8 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 /**
- * The type Javet primitive converter.
+ * The type Javet primitive converter converts Java primitive types
+ * to JS primitive types bi-directionally.
  *
  * @since 0.7.1
  */

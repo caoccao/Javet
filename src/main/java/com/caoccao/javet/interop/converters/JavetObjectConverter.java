@@ -43,7 +43,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.BaseStream;
 
 /**
- * The type Javet object converter.
+ * The type Javet object converter converts Java primitive types,
+ * Array, List, Map and Set to JS primitive types, Array, Map, Set
+ * and Object bi-directionally.
  *
  * @since 0.7.2
  */

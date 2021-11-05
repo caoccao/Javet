@@ -3835,7 +3835,8 @@
 </dd>
 <dt><a href="com/caoccao/javet/interop/converters/JavetBridgeConverter.html" title="class in com.caoccao.javet.interop.converters"><span class="typeNameLink">JavetBridgeConverter</span></a> - Class in <a href="com/caoccao/javet/interop/converters/package-summary.html">com.caoccao.javet.interop.converters</a></dt>
 <dd>
-<div class="block">The type Javet bridge converter.</div>
+<div class="block">The type Javet bridge converter converts all Java objects to
+ JS objects via JS proxy bi-directionally.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetBridgeConverter.html#JavetBridgeConverter--">JavetBridgeConverter()</a></span> - Constructor for class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetBridgeConverter.html" title="class in com.caoccao.javet.interop.converters">JavetBridgeConverter</a></dt>
 <dd>
@@ -4046,7 +4047,9 @@
 </dd>
 <dt><a href="com/caoccao/javet/interop/converters/JavetObjectConverter.html" title="class in com.caoccao.javet.interop.converters"><span class="typeNameLink">JavetObjectConverter</span></a> - Class in <a href="com/caoccao/javet/interop/converters/package-summary.html">com.caoccao.javet.interop.converters</a></dt>
 <dd>
-<div class="block">The type Javet object converter.</div>
+<div class="block">The type Javet object converter converts Java primitive types,
+ Array, List, Map and Set to JS primitive types, Array, Map, Set
+ and Object bi-directionally.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetObjectConverter.html#JavetObjectConverter--">JavetObjectConverter()</a></span> - Constructor for class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetObjectConverter.html" title="class in com.caoccao.javet.interop.converters">JavetObjectConverter</a></dt>
 <dd>
@@ -4056,7 +4059,8 @@
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/interop/converters/JavetPrimitiveConverter.html" title="class in com.caoccao.javet.interop.converters"><span class="typeNameLink">JavetPrimitiveConverter</span></a> - Class in <a href="com/caoccao/javet/interop/converters/package-summary.html">com.caoccao.javet.interop.converters</a></dt>
 <dd>
-<div class="block">The type Javet primitive converter.</div>
+<div class="block">The type Javet primitive converter converts Java primitive types
+ to JS primitive types bi-directionally.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetPrimitiveConverter.html#JavetPrimitiveConverter--">JavetPrimitiveConverter()</a></span> - Constructor for class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetPrimitiveConverter.html" title="class in com.caoccao.javet.interop.converters">JavetPrimitiveConverter</a></dt>
 <dd>
@@ -4076,7 +4080,8 @@
 </dd>
 <dt><a href="com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters"><span class="typeNameLink">JavetProxyConverter</span></a> - Class in <a href="com/caoccao/javet/interop/converters/package-summary.html">com.caoccao.javet.interop.converters</a></dt>
 <dd>
-<div class="block">The type Javet proxy converter.</div>
+<div class="block">The type Javet proxy converter converts most of Java objects to
+ JS objects via JS proxy bi-directionally.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetProxyConverter.html#JavetProxyConverter--">JavetProxyConverter()</a></span> - Constructor for class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters">JavetProxyConverter</a></dt>
 <dd>
@@ -4821,10 +4826,6 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/BindingContext.html#propertySetterMap">propertySetterMap</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding">BindingContext</a></dt>
 <dd>
 <div class="block">The Property setter map.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetBridgeConverter.html#PROXY_CONVERTER">PROXY_CONVERTER</a></span> - Static variable in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetBridgeConverter.html" title="class in com.caoccao.javet.interop.converters">JavetBridgeConverter</a></dt>
-<dd>
-<div class="block">The constant PROXY_CONVERTER.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxySymbolConverter.html#PROXY_CONVERTER">PROXY_CONVERTER</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxySymbolConverter.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxySymbolConverter</a></dt>
 <dd>
@@ -5928,8 +5929,6 @@
 <dd>
 <div class="block">To object from V8 value and auto close the V8 value.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetBridgeConverter.html#toObject-com.caoccao.javet.values.V8Value-int-">toObject(V8Value, int)</a></span> - Method in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetBridgeConverter.html" title="class in com.caoccao.javet.interop.converters">JavetBridgeConverter</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetObjectConverter.html#toObject-com.caoccao.javet.values.V8Value-int-">toObject(V8Value, int)</a></span> - Method in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetObjectConverter.html" title="class in com.caoccao.javet.interop.converters">JavetObjectConverter</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetPrimitiveConverter.html#toObject-com.caoccao.javet.values.V8Value-int-">toObject(V8Value, int)</a></span> - Method in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetPrimitiveConverter.html" title="class in com.caoccao.javet.interop.converters">JavetPrimitiveConverter</a></dt>

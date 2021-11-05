@@ -34,10 +34,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     protected JavetBridgeConverter javetBridgeConverter;
+    protected String functionCastString;
 
     public TestJavetBridgeConverter() {
         super();
         javetBridgeConverter = new JavetBridgeConverter();
+        functionCastString = "function cast(obj) { return obj[Symbol.toPrimitive](); }";
     }
 
     @AfterEach
@@ -52,6 +54,21 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void beforeEach() throws JavetException {
         super.beforeEach();
         v8Runtime.setConverter(javetBridgeConverter);
+    }
+
+    @Test
+    public void testBoolean() throws JavetException {
+        v8Runtime.getExecutor(functionCastString).executeVoid();
+        v8Runtime.getGlobalObject().set("bTrue", true);
+        v8Runtime.getGlobalObject().set("bFalse", false);
+        assertTrue((Boolean) v8Runtime.getExecutor("bTrue").executeObject());
+        assertFalse((Boolean) v8Runtime.getExecutor("bFalse").executeObject());
+        assertEquals(1, v8Runtime.getExecutor("cast(bTrue)?1:0").executeInteger());
+        assertEquals(0, v8Runtime.getExecutor("cast(bFalse)?1:0").executeInteger());
+        assertEquals(1, v8Runtime.getExecutor("bTrue[Symbol.toPrimitive]()?1:0").executeInteger());
+        assertEquals(0, v8Runtime.getExecutor("bFalse[Symbol.toPrimitive]()?1:0").executeInteger());
+        v8Runtime.getGlobalObject().delete("bTrue");
+        v8Runtime.getGlobalObject().delete("bFalse");
     }
 
     @Test

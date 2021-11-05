@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10};
+var methods = {"i0":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -73,13 +73,13 @@ var activeTableTab = "activeTableTab";
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="#fields.inherited.from.class.com.caoccao.javet.interop.converters.JavetProxyConverter">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
@@ -101,7 +101,22 @@ var activeTableTab = "activeTableTab";
 <li><a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetConverter.html" title="class in com.caoccao.javet.interop.converters">com.caoccao.javet.interop.converters.BaseJavetConverter</a></li>
 <li>
 <ul class="inheritance">
+<li><a href="../../../../../com/caoccao/javet/interop/converters/JavetPrimitiveConverter.html" title="class in com.caoccao.javet.interop.converters">com.caoccao.javet.interop.converters.JavetPrimitiveConverter</a></li>
+<li>
+<ul class="inheritance">
+<li><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html" title="class in com.caoccao.javet.interop.converters">com.caoccao.javet.interop.converters.JavetObjectConverter</a></li>
+<li>
+<ul class="inheritance">
+<li><a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters">com.caoccao.javet.interop.converters.JavetProxyConverter</a></li>
+<li>
+<ul class="inheritance">
 <li>com.caoccao.javet.interop.converters.JavetBridgeConverter</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -117,8 +132,11 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">JavetBridgeConverter</span>
-extends <a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetConverter.html" title="class in com.caoccao.javet.interop.converters">BaseJavetConverter</a></pre>
-<div class="block">The type Javet bridge converter.</div>
+extends <a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters">JavetProxyConverter</a></pre>
+<div class="block">The type Javet bridge converter converts all Java objects to
+ JS objects via JS proxy bi-directionally.
+ <p>
+ The only exception is Java Array is converted to the JS array.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0.4</dd>
@@ -135,19 +153,20 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetCo
 <!--   -->
 </a>
 <h3>Field Summary</h3>
-<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
-<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colLast" scope="col">Field and Description</th>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>protected static <a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters">JavetProxyConverter</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetBridgeConverter.html#PROXY_CONVERTER">PROXY_CONVERTER</a></span></code>
-<div class="block">The constant PROXY_CONVERTER.</div>
-</td>
-</tr>
-</table>
+<ul class="blockList">
+<li class="blockList"><a name="fields.inherited.from.class.com.caoccao.javet.interop.converters.JavetProxyConverter">
+<!--   -->
+</a>
+<h3>Fields inherited from class&nbsp;com.caoccao.javet.interop.converters.<a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters">JavetProxyConverter</a></h3>
+<code><a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html#DUMMY_FUNCTION_STRING">DUMMY_FUNCTION_STRING</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="fields.inherited.from.class.com.caoccao.javet.interop.converters.JavetObjectConverter">
+<!--   -->
+</a>
+<h3>Fields inherited from class&nbsp;com.caoccao.javet.interop.converters.<a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html" title="class in com.caoccao.javet.interop.converters">JavetObjectConverter</a></h3>
+<code><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#customObjectLock">customObjectLock</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#customObjectMap">customObjectMap</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR">EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#EXECUTABLE_INDEX_FROM_MAP">EXECUTABLE_INDEX_FROM_MAP</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#EXECUTABLE_INDEX_TO_MAP">EXECUTABLE_INDEX_TO_MAP</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#METHOD_NAME_FROM_MAP">METHOD_NAME_FROM_MAP</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#METHOD_NAME_TO_MAP">METHOD_NAME_TO_MAP</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME">PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#PRIVATE_PROPERTY_PROXY_TARGET">PRIVATE_PROPERTY_PROXY_TARGET</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#PROPERTY_NAME">PROPERTY_NAME</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#PUBLIC_PROPERTY_CONSTRUCTOR">PUBLIC_PROPERTY_CONSTRUCTOR</a></code></li>
+</ul>
 <ul class="blockList">
 <li class="blockList"><a name="fields.inherited.from.class.com.caoccao.javet.interop.converters.BaseJavetConverter">
 <!--   -->
@@ -189,13 +208,6 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetCo
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>java.lang.Object</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetBridgeConverter.html#toObject-com.caoccao.javet.values.V8Value-int-">toObject</a></span>(<a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&nbsp;v8Value,
-        int&nbsp;depth)</code>
-<div class="block">To object with stack depth.</div>
-</td>
-</tr>
-<tr id="i1" class="rowColor">
 <td class="colFirst"><code>protected &lt;T extends <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&gt;<br>T</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/converters/JavetBridgeConverter.html#toV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-int-">toV8Value</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
          java.lang.Object&nbsp;object,
@@ -204,6 +216,20 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetCo
 </td>
 </tr>
 </table>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.com.caoccao.javet.interop.converters.JavetProxyConverter">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;com.caoccao.javet.interop.converters.<a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters">JavetProxyConverter</a></h3>
+<code><a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html#toProxiedV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-">toProxiedV8Value</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.com.caoccao.javet.interop.converters.JavetObjectConverter">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;com.caoccao.javet.interop.converters.<a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html" title="class in com.caoccao.javet.interop.converters">JavetObjectConverter</a></h3>
+<code><a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#createEntityFunction--">createEntityFunction</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#createEntityMap--">createEntityMap</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#registerCustomObject-java.lang.Class-">registerCustomObject</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#registerCustomObject-java.lang.Class-java.lang.String-java.lang.String-">registerCustomObject</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#toObject-com.caoccao.javet.values.V8Value-int-">toObject</a>, <a href="../../../../../com/caoccao/javet/interop/converters/JavetObjectConverter.html#unregisterCustomObject-java.lang.Class-">unregisterCustomObject</a></code></li>
+</ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.com.caoccao.javet.interop.converters.BaseJavetConverter">
 <!--   -->
@@ -233,28 +259,6 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetCo
 <div class="details">
 <ul class="blockList">
 <li class="blockList">
-<!-- ============ FIELD DETAIL =========== -->
-<ul class="blockList">
-<li class="blockList"><a name="field.detail">
-<!--   -->
-</a>
-<h3>Field Detail</h3>
-<a name="PROXY_CONVERTER">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>PROXY_CONVERTER</h4>
-<pre>protected static final&nbsp;<a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters">JavetProxyConverter</a> PROXY_CONVERTER</pre>
-<div class="block">The constant PROXY_CONVERTER.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>1.0.4</dd>
-</dl>
-</li>
-</ul>
-</li>
-</ul>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <ul class="blockList">
 <li class="blockList"><a name="constructor.detail">
@@ -283,30 +287,6 @@ extends <a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetCo
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="toObject-com.caoccao.javet.values.V8Value-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>toObject</h4>
-<pre>public&nbsp;java.lang.Object&nbsp;toObject(<a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&nbsp;v8Value,
-                                 int&nbsp;depth)
-                          throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetConverter.html#toObject-com.caoccao.javet.values.V8Value-int-">BaseJavetConverter</a></code></span></div>
-<div class="block">To object with stack depth.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetConverter.html#toObject-com.caoccao.javet.values.V8Value-int-">toObject</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetConverter.html" title="class in com.caoccao.javet.interop.converters">BaseJavetConverter</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>v8Value</code> - the V8 value</dd>
-<dd><code>depth</code> - the stack depth</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the object</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code> - the javet exception</dd>
-</dl>
-</li>
-</ul>
 <a name="toV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-int-">
 <!--   -->
 </a>
@@ -321,8 +301,8 @@ protected&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/values/V8
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetConverter.html#toV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-int-">BaseJavetConverter</a></code></span></div>
 <div class="block">To V8 value with stack depth.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetConverter.html#toV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-int-">toV8Value</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/converters/BaseJavetConverter.html" title="class in com.caoccao.javet.interop.converters">BaseJavetConverter</a></code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html#toV8Value-com.caoccao.javet.interop.V8Runtime-java.lang.Object-int-">toV8Value</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/converters/JavetProxyConverter.html" title="class in com.caoccao.javet.interop.converters">JavetProxyConverter</a></code></dd>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the type parameter</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -389,13 +369,13 @@ protected&nbsp;&lt;T extends <a href="../../../../../com/caoccao/javet/values/V8
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="#fields.inherited.from.class.com.caoccao.javet.interop.converters.JavetProxyConverter">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>

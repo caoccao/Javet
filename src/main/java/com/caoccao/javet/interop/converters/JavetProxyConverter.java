@@ -32,7 +32,12 @@ import com.caoccao.javet.values.reference.V8ValueProxy;
 import java.util.List;
 
 /**
- * The type Javet proxy converter.
+ * The type Javet proxy converter converts most of Java objects to
+ * JS objects via JS proxy bi-directionally.
+ * <p>
+ * Java Primitive types, Array, List, Set and Map are converted to the
+ * corresponding types in JS. Set and Map conversion can be disabled
+ * via config.
  *
  * @since 0.9.6
  */

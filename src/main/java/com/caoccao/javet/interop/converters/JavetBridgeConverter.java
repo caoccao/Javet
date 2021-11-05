@@ -24,19 +24,15 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
 /**
- * The type Javet bridge converter.
+ * The type Javet bridge converter converts all Java objects to
+ * JS objects via JS proxy bi-directionally.
+ * <p>
+ * The only exception is Java Array is converted to the JS array.
  *
  * @since 1.0.4
  */
 @SuppressWarnings("unchecked")
-public class JavetBridgeConverter extends BaseJavetConverter {
-    /**
-     * The constant PROXY_CONVERTER.
-     *
-     * @since 1.0.4
-     */
-    protected static final JavetProxyConverter PROXY_CONVERTER = new JavetProxyConverter();
-
+public class JavetBridgeConverter extends JavetProxyConverter {
     /**
      * Instantiates a new Javet bridge converter.
      *
@@ -44,11 +40,6 @@ public class JavetBridgeConverter extends BaseJavetConverter {
      */
     public JavetBridgeConverter() {
         super();
-    }
-
-    @Override
-    public Object toObject(V8Value v8Value, int depth) throws JavetException {
-        return PROXY_CONVERTER.toObject(v8Value, depth);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -145,7 +136,7 @@ public class JavetBridgeConverter extends BaseJavetConverter {
         } else if (object instanceof V8Value) {
             v8Value = (V8Value) object;
         } else {
-            v8Value = PROXY_CONVERTER.toProxiedV8Value(v8Runtime, object);
+            v8Value = toProxiedV8Value(v8Runtime, object);
         }
         return (T) v8Runtime.decorateV8Value(v8Value);
     }
