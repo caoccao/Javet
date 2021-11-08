@@ -46,6 +46,12 @@ import java.util.regex.Pattern;
 public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
 
     /**
+     * The constant FUNCTION_NAME_TO_V8_VALUE.
+     *
+     * @since 1.0.4
+     */
+    public static final String FUNCTION_NAME_TO_V8_VALUE = "toV8Value";
+    /**
      * The constant GETTER_PREFIX_ARRAY.
      *
      * @since 0.9.6
@@ -372,6 +378,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 JavetUniversalInterceptor javetUniversalInterceptor =
                         new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
                 return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
+            }
+            if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
+                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             }
         } else if (property instanceof V8ValueSymbol) {
             V8ValueSymbol propertySymbol = (V8ValueSymbol) property;

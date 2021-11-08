@@ -1,8 +1,11 @@
-:orphan:
-
 ===================
 Release Notes 1.0.x
 ===================
+
+1.0.4
+-----
+
+* Added ``JavetBridgeConverter`` for completely bridging Java and JavaScript
 
 1.0.3 Android ABI 21
 --------------------

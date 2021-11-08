@@ -544,7 +544,7 @@ It is recommended to subclass ``JavetProxyConverter`` and override few internal 
 Bridge Converter
 ================
 
-However, ``JavetProxyConverter`` skips creating proxy for primitive types, ``List``, ``Set``, ``Map``, etc. No problem. ``JavetBridgeConverter`` creates proxy for all Java types including ``Integer``, ``Long``, ``String``, etc.
+However, ``JavetProxyConverter`` skips creating proxy for primitive types, ``List``, ``Set``, ``Map``, etc. No problem. ``JavetBridgeConverter`` creates proxy for all Java types including ``Integer``, ``Long``, ``String``, etc. except that only Java array is converted to JavaScript array.
 
 Preparation
 -----------
@@ -560,7 +560,15 @@ Preparation
 Usage
 -----
 
-The usage is identical to the one in ``JavetProxyConverter``.
+The usage is identical to the one in ``JavetProxyConverter``. 
+
+How to Cast Java Objects to JavaScript Objects?
+-----------------------------------------------
+
+There are 2 ways of casting the Java objects to the JavaScript objects.
+
+* **Implicit** - In JavaScript, sometimes the engine performs implicit type conversion. E.g. Given ``x`` is a Java string ``b``, ``'a' + x`` gives ``'ab'`` because ``x`` is implicitly cast to a JavaScript string by the engine.
+* **Explicit** - In JavaScript, the built-in ways of casting a variable to a primitive type or array are ``[Symbol.toPrimitive]()`` or ``[Symbol.iterator]()``. Besides, Javet provides ``toV8Value()`` to allow the explicit type conversion.
 
 Null Safety
 ===========
