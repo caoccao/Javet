@@ -263,7 +263,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
                 return Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8MaybeLocalCompiledModule.ToLocalChecked());
             }
             catch (const std::exception& e) {
-                LOG_ERROR(e.what());
                 Javet::Exceptions::ThrowJavetConverterException(jniEnv, e.what());
             }
         }
@@ -278,7 +277,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
                 return Javet::Converter::ToExternalV8Script(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8MaybeLocalCompiledScript.ToLocalChecked());
             }
             catch (const std::exception& e) {
-                LOG_ERROR(e.what());
                 Javet::Exceptions::ThrowJavetConverterException(jniEnv, e.what());
             }
         }
@@ -334,7 +332,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer = new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextHandle);
         INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
         auto v8MaybeLocalFunction = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
-        if (!v8MaybeLocalFunction.IsEmpty()) {
+        if (v8MaybeLocalFunction.IsEmpty()) {
+            Javet::Exceptions::ThrowJavetOutOfMemoryException(jniEnv, "function allocation failed");
+        }
+        else {
             v8LocalValueResult = v8MaybeLocalFunction.ToLocalChecked();
         }
         javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer->SetWeak(
@@ -345,7 +346,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
     }
     else if (IS_V8_PROMISE(v8ValueType)) {
         auto v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
-        if (!v8MaybeLocalPromiseResolver.IsEmpty()) {
+        if (v8MaybeLocalPromiseResolver.IsEmpty()) {
+            Javet::Exceptions::ThrowJavetOutOfMemoryException(jniEnv, "promise resolver allocation failed");
+        }
+        else {
             v8LocalValueResult = v8MaybeLocalPromiseResolver.ToLocalChecked();
         }
     }
@@ -355,7 +359,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
             : Javet::Converter::ToV8Value(jniEnv, v8Context, mContext).As<v8::Object>();
         auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
         auto v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
-        if (!v8MaybeLocalProxy.IsEmpty()) {
+        if (v8MaybeLocalProxy.IsEmpty()) {
+            Javet::Exceptions::ThrowJavetOutOfMemoryException(jniEnv, "proxy allocation failed");
+        }
+        else {
             v8LocalValueResult = v8MaybeLocalProxy.ToLocalChecked();
         }
     }
@@ -1396,7 +1403,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                     auto v8MaybeLocalStringHeader = v8::String::NewFromUtf8(
                         v8Context->GetIsolate(), stdStringHeader.get(), v8::NewStringType::kNormal, utf8Length);
                     if (v8MaybeLocalStringHeader.IsEmpty()) {
-                        LOG_ERROR("Failed to get header from the source code.");
+                        Javet::Exceptions::ThrowJavetOutOfMemoryException(jniEnv, "header could not be extracted from the source code");
                         return false;
                     }
                     newSourceCode = v8MaybeLocalStringHeader.ToLocalChecked();
@@ -1415,7 +1422,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                     auto v8MaybeLocalStringFooter = v8::String::NewFromUtf8(
                         v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length);
                     if (v8MaybeLocalStringFooter.IsEmpty()) {
-                        LOG_ERROR("Failed to get footer from the source code.");
+                        Javet::Exceptions::ThrowJavetOutOfMemoryException(jniEnv, "footer could not be extracted from the source code");
                         return false;
                     }
                     auto v8LocalStringFooter = v8MaybeLocalStringFooter.ToLocalChecked();

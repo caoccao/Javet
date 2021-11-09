@@ -30,6 +30,8 @@ namespace Javet {
         static jclass jclassJavetExecutionException;
         static jmethodID jmethodIDJavetExecutionExceptionConstructor;
 
+        static jclass jclassJavetOutOfMemoryException;
+
         static jclass jclassJavetTerminatedException;
         static jmethodID jmethodIDJavetTerminatedExceptionConstructor;
 
@@ -41,6 +43,7 @@ namespace Javet {
         void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
         void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
         void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        void ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, const char* message);
         void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue);
         void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage);
     }

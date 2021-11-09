@@ -7,6 +7,7 @@ Release Notes 1.0.x
 
 * Added ``JavetBridgeConverter`` for completely bridging Java and JavaScript
 * Fixed a potential core dump issue caused by memory allocation failure in V8
+* Added error code 806 and ``JavetOutOfMemoryException``
 
 1.0.3 Android ABI 21
 --------------------

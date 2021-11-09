@@ -383,6 +383,13 @@ public class JavetError {
      */
     public static final JavetError RuntimeCloseFailure = new JavetError(
             805, JavetErrorType.Runtime, "Failed to close the runtime with error message ${message}");
+    /**
+     * The constant RuntimeOutOfMemory.
+     *
+     * @since 1.0.4
+     */
+    public static final JavetError RuntimeOutOfMemory = new JavetError(
+            806, JavetErrorType.Runtime, "Runtime is out of memory because ${message}");
 
     /**
      * The Code.

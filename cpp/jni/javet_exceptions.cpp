@@ -35,6 +35,8 @@ namespace Javet {
             jclassJavetExecutionException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetExecutionException"));
             jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
 
+            jclassJavetOutOfMemoryException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetOutOfMemoryException"));
+
             jclassJavetTerminatedException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetTerminatedException"));
             jmethodIDJavetTerminatedExceptionConstructor = jniEnv->GetMethodID(jclassJavetTerminatedException, "<init>", "(Z)V");
 
@@ -113,6 +115,11 @@ namespace Javet {
                 }
                 jniEnv->DeleteLocalRef(jStringExceptionMessage);
             }
+        }
+
+        void ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, const char* message) {
+            LOG_ERROR(*message);
+            jniEnv->ThrowNew(jclassJavetOutOfMemoryException, message);
         }
 
         void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue) {
