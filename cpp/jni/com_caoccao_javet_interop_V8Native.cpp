@@ -333,7 +333,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
         javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer = new V8PersistentBigInt(v8Runtime->v8Isolate, v8LocalContextHandle);
         INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
-        v8LocalValueResult = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle).ToLocalChecked();
+        auto v8MaybeLocalFunction = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
+        if (!v8MaybeLocalFunction.IsEmpty()) {
+            v8LocalValueResult = v8MaybeLocalFunction.ToLocalChecked();
+        }
         javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer->SetWeak(
             javetCallbackContextReferencePointer, Javet::Callback::JavetCloseWeakCallbackContextHandle, v8::WeakCallbackType::kParameter);
     }
@@ -341,14 +344,20 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         v8LocalValueResult = v8::Map::New(v8Context->GetIsolate());
     }
     else if (IS_V8_PROMISE(v8ValueType)) {
-        v8LocalValueResult = v8::Promise::Resolver::New(v8Context).ToLocalChecked();
+        auto v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
+        if (!v8MaybeLocalPromiseResolver.IsEmpty()) {
+            v8LocalValueResult = v8MaybeLocalPromiseResolver.ToLocalChecked();
+        }
     }
     else if (IS_V8_PROXY(v8ValueType)) {
         V8LocalObject v8LocalObjectObject = mContext == nullptr
             ? v8::Object::New(v8Context->GetIsolate())
             : Javet::Converter::ToV8Value(jniEnv, v8Context, mContext).As<v8::Object>();
         auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
-        v8LocalValueResult = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler).ToLocalChecked();
+        auto v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
+        if (!v8MaybeLocalProxy.IsEmpty()) {
+            v8LocalValueResult = v8MaybeLocalProxy.ToLocalChecked();
+        }
     }
     else if (IS_V8_SET(v8ValueType)) {
         v8LocalValueResult = v8::Set::New(v8Context->GetIsolate());
@@ -361,7 +370,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
     if (!v8LocalValueResult.IsEmpty()) {
         return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalValueResult);
     }
-    return nullptr;
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_delete
@@ -479,7 +488,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
     }
     else if (!v8LocalValueKey.IsEmpty()) {
         if (IS_V8_SYMBOL(v8ValueType)) {
-            v8LocalValue = v8LocalValue->ToObject(v8Context).ToLocalChecked();
+            auto v8MaybeLocalValue = v8LocalValue->ToObject(v8Context);
+            if (!v8MaybeLocalValue.IsEmpty()) {
+                v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
+            }
         }
         if (IS_V8_MAP(v8ValueType)) {
             v8MaybeLocalValueResult = v8LocalValue.As<v8::Map>()->Get(v8Context, v8LocalValueKey);
@@ -524,8 +536,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getInternalPro
         v8_inspector::V8InspectorClient v8InspectorClient;
         v8_inspector::V8InspectorImpl v8InspectorImpl(v8Runtime->v8Isolate, &v8InspectorClient);
         v8_inspector::V8Debugger v8Debugger(v8Runtime->v8Isolate, &v8InspectorImpl);
-        auto v8InternalProperties = v8Debugger.internalProperties(v8Context, v8LocalValue.As<v8::Function>()).ToLocalChecked();
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8InternalProperties);
+        auto v8MaybeLocalArray = v8Debugger.internalProperties(v8Context, v8LocalValue.As<v8::Function>());
+        if (!v8MaybeLocalArray.IsEmpty()) {
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalArray.ToLocalChecked());
+        }
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
@@ -587,7 +601,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getOwnProperty
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_SYMBOL(v8ValueType)) {
-        v8LocalValue = v8LocalValue->ToObject(v8Context).ToLocalChecked();
+        auto v8MaybeLocalValue = v8LocalValue->ToObject(v8Context);
+        if (!v8MaybeLocalValue.IsEmpty()) {
+            v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
+        }
     }
     if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
@@ -617,11 +634,17 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPropertyNam
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_SYMBOL(v8ValueType)) {
-        v8LocalValue = v8LocalValue->ToObject(v8Context).ToLocalChecked();
+        auto v8MaybeLocalValue = v8LocalValue->ToObject(v8Context);
+        if (!v8MaybeLocalValue.IsEmpty()) {
+            v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
+        }
     }
     if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalObject->GetPropertyNames(v8Context).ToLocalChecked());
+        auto v8MaybeLocalArray = v8LocalObject->GetPropertyNames(v8Context);
+        if (!v8MaybeLocalArray.IsEmpty()) {
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalArray.ToLocalChecked());
+        }
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
 }
@@ -630,7 +653,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_SYMBOL(v8ValueType)) {
-        v8LocalValue = v8LocalValue->ToObject(v8Context).ToLocalChecked();
+        auto v8MaybeLocalValue = v8LocalValue->ToObject(v8Context);
+        if (!v8MaybeLocalValue.IsEmpty()) {
+            v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
+        }
     }
     if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
@@ -812,7 +838,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnPropert
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_SYMBOL(v8ValueType)) {
-        v8LocalValue = v8LocalValue->ToObject(v8Context).ToLocalChecked();
+        auto v8MaybeLocalValue = v8LocalValue->ToObject(v8Context);
+        if (!v8MaybeLocalValue.IsEmpty()) {
+            v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
+        }
     }
     if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
@@ -853,7 +882,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_invoke
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mFunctionName, jboolean mResultRequired, jobjectArray mValues) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_SYMBOL(v8ValueType)) {
-        v8LocalValue = v8LocalValue->ToObject(v8Context).ToLocalChecked();
+        auto v8MaybeLocalValue = v8LocalValue->ToObject(v8Context);
+        if (!v8MaybeLocalValue.IsEmpty()) {
+            v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
+        }
     }
     if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
@@ -1361,9 +1393,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                     auto stdStringHeader(v8InternalSource.ToCString(
                         V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                         0, startPosition, &utf8Length));
-                    auto v8LocalStringHeader = v8::String::NewFromUtf8(
-                        v8Context->GetIsolate(), stdStringHeader.get(), v8::NewStringType::kNormal, utf8Length).ToLocalChecked();
-                    newSourceCode = v8LocalStringHeader;
+                    auto v8MaybeLocalStringHeader = v8::String::NewFromUtf8(
+                        v8Context->GetIsolate(), stdStringHeader.get(), v8::NewStringType::kNormal, utf8Length);
+                    if (v8MaybeLocalStringHeader.IsEmpty()) {
+                        LOG_ERROR("Failed to get header from the source code.");
+                        return false;
+                    }
+                    newSourceCode = v8MaybeLocalStringHeader.ToLocalChecked();
                 }
                 if (newSourceCode.IsEmpty()) {
                     newSourceCode = umSourceCode;
@@ -1376,8 +1412,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setSourceCode
                     auto stdStringFooter(v8InternalSource.ToCString(
                         V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                         endPosition, sourceLength - endPosition, &utf8Length));
-                    auto v8LocalStringFooter = v8::String::NewFromUtf8(
-                        v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length).ToLocalChecked();
+                    auto v8MaybeLocalStringFooter = v8::String::NewFromUtf8(
+                        v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length);
+                    if (v8MaybeLocalStringFooter.IsEmpty()) {
+                        LOG_ERROR("Failed to get footer from the source code.");
+                        return false;
+                    }
+                    auto v8LocalStringFooter = v8MaybeLocalStringFooter.ToLocalChecked();
                     if (newSourceCode.IsEmpty()) {
                         newSourceCode = v8LocalStringFooter;
                     }
