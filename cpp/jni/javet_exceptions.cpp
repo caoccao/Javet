@@ -18,6 +18,7 @@
 #include "javet_converter.h"
 #include "javet_exceptions.h"
 #include "javet_logging.h"
+#include "javet_monitor.h"
 
 namespace Javet {
     namespace Exceptions {
@@ -36,6 +37,7 @@ namespace Javet {
             jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
 
             jclassJavetOutOfMemoryException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetOutOfMemoryException"));
+            jmethodIDJavetOutOfMemoryExceptionConstructor = jniEnv->GetMethodID(jclassJavetOutOfMemoryException, "<init>", "(Ljava/lang/String;Lcom/caoccao/javet/interop/monitoring/V8HeapStatistics;)V");
 
             jclassJavetTerminatedException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetTerminatedException"));
             jmethodIDJavetTerminatedExceptionConstructor = jniEnv->GetMethodID(jclassJavetTerminatedException, "<init>", "(Z)V");
@@ -117,9 +119,18 @@ namespace Javet {
             }
         }
 
-        void ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, const char* message) {
+        void ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, v8::Isolate* v8Isolate, const char* message) {
             LOG_ERROR(*message);
-            jniEnv->ThrowNew(jclassJavetOutOfMemoryException, message);
+            jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, message);
+            jobject jObjectHeapStatistics = Javet::Monitor::GetHeapStatistics(jniEnv, v8Isolate);
+            jthrowable javetOutOfMemoryException = (jthrowable)jniEnv->NewObject(
+                jclassJavetOutOfMemoryException,
+                jmethodIDJavetOutOfMemoryExceptionConstructor,
+                jStringExceptionMessage,
+                jObjectHeapStatistics);
+            jniEnv->DeleteLocalRef(jStringExceptionMessage);
+            jniEnv->DeleteLocalRef(jObjectHeapStatistics);
+            jniEnv->Throw(javetOutOfMemoryException);
         }
 
         void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue) {

@@ -17,7 +17,10 @@
 
 package com.caoccao.javet.exceptions;
 
+import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import com.caoccao.javet.utils.SimpleMap;
+
+import java.util.Objects;
 
 /**
  * The type Javet out of memory exception.
@@ -26,12 +29,33 @@ import com.caoccao.javet.utils.SimpleMap;
  */
 public class JavetOutOfMemoryException extends JavetException {
     /**
-     * Instantiates a new Javet out of memory exception.
+     * The V8 heap statistics.
      *
-     * @param message the message
      * @since 1.0.4
      */
-    public JavetOutOfMemoryException(String message) {
-        super(JavetError.RuntimeOutOfMemory, SimpleMap.of(JavetError.PARAMETER_MESSAGE, message));
+    protected V8HeapStatistics v8HeapStatistics;
+
+    /**
+     * Instantiates a new Javet out of memory exception.
+     *
+     * @param message          the message
+     * @param v8HeapStatistics the V8 heap statistics
+     * @since 1.0.4
+     */
+    public JavetOutOfMemoryException(String message, V8HeapStatistics v8HeapStatistics) {
+        super(JavetError.RuntimeOutOfMemory, SimpleMap.of(
+                JavetError.PARAMETER_MESSAGE, message,
+                JavetError.PARAMETER_HEAP_STATISTICS, Objects.requireNonNull(v8HeapStatistics).toString()));
+        this.v8HeapStatistics = v8HeapStatistics;
+    }
+
+    /**
+     * Gets V8 heap statistics.
+     *
+     * @return the V8 heap statistics
+     * @since 1.0.4
+     */
+    public V8HeapStatistics getV8HeapStatistics() {
+        return v8HeapStatistics;
     }
 }
