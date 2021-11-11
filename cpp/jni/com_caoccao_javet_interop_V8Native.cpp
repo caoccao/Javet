@@ -313,7 +313,6 @@ Error, Promise, RegExp, Proxy, Symbol, etc. are not supported.
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint v8ValueType, jobject mContext) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    V8TryCatch v8TryCatch(v8Runtime->v8Isolate);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
     V8LocalValue v8LocalValueResult;
     if (IS_V8_OBJECT(v8ValueType)) {
@@ -382,11 +381,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         auto v8LocalValueDescription = Javet::Converter::ToV8String(jniEnv, v8Context, mDescription);
         v8LocalValueResult = v8::Symbol::New(v8Context->GetIsolate(), v8LocalValueDescription);
     }
-    if (v8TryCatch.HasCaught()) {
-        jniEnv->ExceptionClear();
-        Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
-    }
-    else if (!v8LocalValueResult.IsEmpty()) {
+    if (!v8LocalValueResult.IsEmpty()) {
         return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalValueResult);
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime->externalV8Runtime);
