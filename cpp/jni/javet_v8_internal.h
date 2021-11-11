@@ -39,6 +39,7 @@
 #include <src/handles/handles-inl.h>
 #include <src/inspector/v8-debugger.h>
 #include <src/inspector/v8-inspector-impl.h>
+
 #pragma warning(default: 4244)
 #pragma warning(default: 4267)
 #pragma warning(default: 4291)
@@ -49,6 +50,7 @@
 #define IS_USER_DEFINED_FUNCTION(v8InternalShared) (!v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript())
 
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
+using V8internalBlockingBehavior = v8::internal::BlockingBehavior;
 using V8InternalBuiltin = v8::internal::Builtin;
 using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilder;
 using V8InternalIsolate = v8::internal::Isolate;
@@ -59,4 +61,3 @@ using V8InternalScript = v8::internal::Script;
 using V8InternalSharedFunctionInfo = v8::internal::SharedFunctionInfo;
 using V8InternalString = v8::internal::String;
 using V8InternalWriteBarrierMode = v8::internal::WriteBarrierMode;
-

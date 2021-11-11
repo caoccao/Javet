@@ -314,6 +314,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint v8ValueType, jobject mContext) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     V8TryCatch v8TryCatch(v8Runtime->v8Isolate);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
     V8LocalValue v8LocalValueResult;
     if (IS_V8_OBJECT(v8ValueType)) {
         v8LocalValueResult = v8::Object::New(v8Context->GetIsolate());
@@ -327,6 +328,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         }
     }
     else if (IS_V8_FUNCTION(v8ValueType)) {
+        v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
         auto javetCallbackContextReferencePointer = new Javet::Callback::JavetCallbackContextReference(jniEnv, mContext);
         INCREASE_COUNTER(Javet::Monitor::CounterType::NewJavetCallbackContextReference);
         auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
@@ -347,6 +349,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         v8LocalValueResult = v8::Map::New(v8Context->GetIsolate());
     }
     else if (IS_V8_PROMISE(v8ValueType)) {
+        v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
         auto v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
         if (v8MaybeLocalPromiseResolver.IsEmpty()) {
             Javet::Exceptions::ThrowJavetOutOfMemoryException(
@@ -357,6 +360,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         }
     }
     else if (IS_V8_PROXY(v8ValueType)) {
+        v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
         V8LocalObject v8LocalObjectObject = mContext == nullptr
             ? v8::Object::New(v8Context->GetIsolate())
             : Javet::Converter::ToV8Value(jniEnv, v8Context, mContext).As<v8::Object>();
