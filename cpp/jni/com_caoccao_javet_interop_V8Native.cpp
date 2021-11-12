@@ -369,7 +369,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
             ? v8::Object::New(v8Context->GetIsolate())
             : Javet::Converter::ToV8Value(jniEnv, v8Context, mContext).As<v8::Object>();
         auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
-        V8MaybeLocalProxy v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
+        auto v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
         if (v8MaybeLocalProxy.IsEmpty()) {
             v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
             v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
