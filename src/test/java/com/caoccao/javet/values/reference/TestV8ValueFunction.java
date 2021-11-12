@@ -23,6 +23,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
@@ -30,12 +31,15 @@ import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -601,6 +605,79 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         } finally {
             v8Runtime.lowMemoryNotification();
         }
+    }
+
+    @Test
+    @Tag("performance")
+    public void testFunctionCreationFailure() throws JavetException {
+        final int size = 100;
+        final int rounds = 500;
+        final Random random = new Random();
+        MockAnnotationBasedCallbackReceiver mockAnnotationBasedCallbackReceiver =
+                new MockAnnotationBasedCallbackReceiver();
+        String placeholder = "/* PlaceHolder */";
+        StringBuilder sb = new StringBuilder("(x) => {\nconst a = [];\n");
+        IntStream.range(0, size).forEach(i -> sb.append("a.push(").append(i).append(");\n"));
+        sb.append("// ").append(placeholder).append("\nreturn a.length;\n}");
+        String codeStringTemplate = sb.toString();
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public int count(V8ValueFunction v8ValueFunction) throws JavetException {
+                V8Runtime v8Runtime = v8ValueFunction.getV8Runtime();
+                if (v8ValueFunction.getJSScopeType().isClass()) {
+                    try {
+                        v8ValueFunction.callVoid(null);
+                    } catch (JavetException e) {
+                    }
+                }
+                String originalCodeString = v8ValueFunction.getSourceCode();
+                String codeString = codeStringTemplate.replace(placeholder, Double.toString(random.nextDouble()));
+                int result;
+                try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                    v8Runtime.getGlobalObject().set("a", v8ValueObject);
+                    v8ValueObject.bind(mockAnnotationBasedCallbackReceiver);
+                    v8ValueFunction.setSourceCode(codeString);
+                    result = v8ValueFunction.callInteger(null, v8ValueObject);
+                    v8ValueFunction.setSourceCode(originalCodeString);
+                    v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver);
+                    v8Runtime.getGlobalObject().delete("a");
+                }
+                return result;
+            }
+        };
+        final AtomicInteger completedCount = new AtomicInteger(0);
+        final AtomicBoolean failed = new AtomicBoolean(false);
+        final int threadCount = 200;
+        Thread[] threads = new Thread[threadCount];
+        for (int i = 0; i < threads.length; ++i) {
+            threads[i] = new Thread(() -> {
+                try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+                     V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("(x) => 0")) {
+                    V8ValueObject v8ValueObject = v8Runtime.getGlobalObject();
+                    for (int j = 0; j < rounds && !failed.get(); ++j) {
+                        v8ValueObject.bind(anonymous);
+                        assertEquals(size, v8ValueObject.invokeInteger("count", v8ValueFunction));
+                        v8ValueObject.unbind(anonymous);
+                    }
+                    v8Runtime.lowMemoryNotification();
+                } catch (Throwable t) {
+                    t.printStackTrace(System.err);
+                    failed.set(true);
+                    fail(t.getMessage());
+                } finally {
+                    completedCount.incrementAndGet();
+                }
+            });
+        }
+        Arrays.stream(threads).forEach(Thread::start);
+        while (completedCount.get() < threadCount) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        assertFalse(failed.get());
     }
 
     @Test
