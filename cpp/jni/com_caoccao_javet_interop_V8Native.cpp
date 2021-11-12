@@ -332,16 +332,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         auto v8LocalContextHandle = v8::BigInt::New(v8Context->GetIsolate(), TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
         javetCallbackContextReferencePointer->v8PersistentCallbackContextHandlePointer = new V8PersistentBigInt(v8Context->GetIsolate(), v8LocalContextHandle);
         INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
-        V8MaybeLocalFunction v8MaybeLocalFunction;
-        bool concurrentOptimizationEnabled = false;
-        for (int i = 0; i < 2; ++i) {
+        auto v8MaybeLocalFunction = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
+        if (v8MaybeLocalFunction.IsEmpty()) {
+            v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
             v8MaybeLocalFunction = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
-            if (v8MaybeLocalFunction.IsEmpty() && !concurrentOptimizationEnabled) {
-                v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
-                concurrentOptimizationEnabled = true;
-                continue;
-            }
-            break;
         }
         if (v8MaybeLocalFunction.IsEmpty()) {
             Javet::Exceptions::ThrowJavetOutOfMemoryException(
@@ -357,16 +351,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         v8LocalValueResult = v8::Map::New(v8Context->GetIsolate());
     }
     else if (IS_V8_PROMISE(v8ValueType)) {
-        V8MaybeLocalPromiseResolver v8MaybeLocalPromiseResolver;
-        bool concurrentOptimizationEnabled = false;
-        for (int i = 0; i < 2; ++i) {
+        auto v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
+        if (v8MaybeLocalPromiseResolver.IsEmpty()) {
+            v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
             v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
-            if (v8MaybeLocalPromiseResolver.IsEmpty() && !concurrentOptimizationEnabled) {
-                v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
-                concurrentOptimizationEnabled = true;
-                continue;
-            }
-            break;
         }
         if (v8MaybeLocalPromiseResolver.IsEmpty()) {
             Javet::Exceptions::ThrowJavetOutOfMemoryException(
@@ -381,16 +369,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
             ? v8::Object::New(v8Context->GetIsolate())
             : Javet::Converter::ToV8Value(jniEnv, v8Context, mContext).As<v8::Object>();
         auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
-        V8MaybeLocalProxy v8MaybeLocalProxy;
-        bool concurrentOptimizationEnabled = false;
-        for (int i = 0; i < 2; ++i) {
+        V8MaybeLocalProxy v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
+        if (v8MaybeLocalProxy.IsEmpty()) {
+            v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
             v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
-            if (v8MaybeLocalProxy.IsEmpty() && !concurrentOptimizationEnabled) {
-                v8InternalIsolate->AbortConcurrentOptimization(V8internalBlockingBehavior::kBlock);
-                concurrentOptimizationEnabled = true;
-                continue;
-            }
-            break;
         }
         if (v8MaybeLocalProxy.IsEmpty()) {
             Javet::Exceptions::ThrowJavetOutOfMemoryException(
