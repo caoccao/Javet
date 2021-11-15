@@ -333,7 +333,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
         auto v8MaybeLocalFunction = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
         if (v8MaybeLocalFunction.IsEmpty()) {
-            v8Context->GetIsolate()->ClearCachesForTesting();
+            v8Context->GetIsolate()->LowMemoryNotification();
             v8MaybeLocalFunction = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
         }
         if (v8MaybeLocalFunction.IsEmpty()) {
@@ -352,7 +352,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
     else if (IS_V8_PROMISE(v8ValueType)) {
         auto v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
         if (v8MaybeLocalPromiseResolver.IsEmpty()) {
-            v8Context->GetIsolate()->ClearCachesForTesting();
+            v8Context->GetIsolate()->LowMemoryNotification();
             v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
         }
         if (v8MaybeLocalPromiseResolver.IsEmpty()) {
@@ -370,7 +370,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
         auto v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
         if (v8MaybeLocalProxy.IsEmpty()) {
-            v8Context->GetIsolate()->ClearCachesForTesting();
+            v8Context->GetIsolate()->LowMemoryNotification();
             v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
         }
         if (v8MaybeLocalProxy.IsEmpty()) {

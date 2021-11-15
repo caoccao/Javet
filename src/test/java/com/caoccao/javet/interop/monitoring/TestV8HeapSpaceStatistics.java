@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.monitoring;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.enums.V8AllocationSpace;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,12 +25,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8HeapSpaceStatistics extends BaseTestJavetRuntime {
     @Test
     public void test() {
-        for (V8HeapSpaceStatistics.AllocationSpace allocationSpace : V8HeapSpaceStatistics.AllocationSpace.values()) {
-            V8HeapSpaceStatistics v8HeapSpaceStatistics = v8Runtime.getV8HeapSpaceStatistics(allocationSpace);
+        for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.values()) {
+            V8HeapSpaceStatistics v8HeapSpaceStatistics = v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace);
             assertNotNull(v8HeapSpaceStatistics);
             String detailString = v8HeapSpaceStatistics.toString();
             assertNotNull(detailString);
-            assertEquals(allocationSpace, v8HeapSpaceStatistics.getAllocationSpace());
+            assertEquals(v8AllocationSpace, v8HeapSpaceStatistics.getAllocationSpace());
             assertTrue(v8HeapSpaceStatistics.getSpaceName().length() > 0);
             assertTrue(v8HeapSpaceStatistics.getPhysicalSpaceSize() >= 0);
             assertTrue(v8HeapSpaceStatistics.getSpaceAvailableSize() >= 0);

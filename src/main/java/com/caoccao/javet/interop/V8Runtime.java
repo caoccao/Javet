@@ -21,6 +21,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.*;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetOutOfMemoryException;
 import com.caoccao.javet.interfaces.IEnumBitset;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
@@ -62,7 +63,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * The representation of a V8 isolate (and V8 context).
  * <p>
  * Javet simplifies the V8 runtime model to 1 runtime - 1 isolate - 1 context,
- * though in V8 1 isolate can host multiple context.
+ * though in V8 1 isolate can host multiple contexts.
  * <p>
  * V8 runtime exposes many useful methods and callbacks that allow low level
  * interaction with the V8 isolate or context.
@@ -316,16 +317,28 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
         Objects.requireNonNull(javetCallbackContext);
-        V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Function.getId(), javetCallbackContext));
-        Lock writeLock = callbackContextLock.writeLock();
         try {
-            writeLock.lock();
-            callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
-        } finally {
-            writeLock.unlock();
+            V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
+                    handle, V8ValueReferenceType.Function.getId(), javetCallbackContext));
+            Lock writeLock = callbackContextLock.writeLock();
+            try {
+                writeLock.lock();
+                callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
+            } finally {
+                writeLock.unlock();
+            }
+            return v8ValueFunction;
+        } catch (JavetOutOfMemoryException e) {
+            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.RO_SPACE).toString());
+            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.OLD_SPACE).toString());
+            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.CODE_SPACE).toString());
+            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.MAP_SPACE).toString());
+            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.LO_SPACE).toString());
+            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.CODE_LO_SPACE).toString());
+            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.NEW_LO_SPACE).toString());
+            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.NEW_SPACE).toString());
+            throw e;
         }
-        return v8ValueFunction;
     }
 
     @Override
@@ -650,10 +663,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.getSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
-    public V8HeapSpaceStatistics getV8HeapSpaceStatistics(V8HeapSpaceStatistics.AllocationSpace allocationSpace) {
-        Objects.requireNonNull(allocationSpace);
-        return ((V8HeapSpaceStatistics) v8Native.getV8HeapSpaceStatistics(handle, allocationSpace.getIndex()))
-                .setAllocationSpace(allocationSpace);
+    public V8HeapSpaceStatistics getV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
+        Objects.requireNonNull(v8AllocationSpace);
+        return ((V8HeapSpaceStatistics) v8Native.getV8HeapSpaceStatistics(handle, v8AllocationSpace.getIndex()))
+                .setAllocationSpace(v8AllocationSpace);
     }
 
     public V8HeapStatistics getV8HeapStatistics() {

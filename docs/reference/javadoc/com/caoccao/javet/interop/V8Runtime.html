@@ -121,7 +121,7 @@ implements <a href="../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <div class="block">The representation of a V8 isolate (and V8 context).
  <p>
  Javet simplifies the V8 runtime model to 1 runtime - 1 isolate - 1 context,
- though in V8 1 isolate can host multiple context.
+ though in V8 1 isolate can host multiple contexts.
  <p>
  V8 runtime exposes many useful methods and callbacks that allow low level
  interaction with the V8 isolate or context.</div>
@@ -544,7 +544,7 @@ implements <a href="../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 </tr>
 <tr id="i48" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace-">getV8HeapSpaceStatistics</a></span>(<a href="../../../../com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html" title="enum in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics.AllocationSpace</a>&nbsp;allocationSpace)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.enums.V8AllocationSpace-">getV8HeapSpaceStatistics</a></span>(<a href="../../../../com/caoccao/javet/enums/V8AllocationSpace.html" title="enum in com.caoccao.javet.enums">V8AllocationSpace</a>&nbsp;v8AllocationSpace)</code>&nbsp;</td>
 </tr>
 <tr id="i49" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/caoccao/javet/interop/monitoring/V8HeapStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8HeapStatistics</a></code></td>
@@ -1870,13 +1870,13 @@ public&nbsp;&lt;T extends <a href="../../../../com/caoccao/javet/values/V8Value.
 <pre>public&nbsp;<a href="../../../../com/caoccao/javet/interop/options/RuntimeOptions.html" title="class in com.caoccao.javet.interop.options">RuntimeOptions</a>&lt;?&gt;&nbsp;getRuntimeOptions()</pre>
 </li>
 </ul>
-<a name="getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace-">
+<a name="getV8HeapSpaceStatistics-com.caoccao.javet.enums.V8AllocationSpace-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getV8HeapSpaceStatistics</h4>
-<pre>public&nbsp;<a href="../../../../com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics</a>&nbsp;getV8HeapSpaceStatistics(<a href="../../../../com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html" title="enum in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics.AllocationSpace</a>&nbsp;allocationSpace)</pre>
+<pre>public&nbsp;<a href="../../../../com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics</a>&nbsp;getV8HeapSpaceStatistics(<a href="../../../../com/caoccao/javet/enums/V8AllocationSpace.html" title="enum in com.caoccao.javet.enums">V8AllocationSpace</a>&nbsp;v8AllocationSpace)</pre>
 </li>
 </ul>
 <a name="getV8HeapStatistics--">

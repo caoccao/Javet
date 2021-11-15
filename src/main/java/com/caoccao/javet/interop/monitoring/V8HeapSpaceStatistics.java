@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interop.monitoring;
 
+import com.caoccao.javet.enums.V8AllocationSpace;
+
 import java.util.Objects;
 
 /**
@@ -24,7 +26,7 @@ import java.util.Objects;
  * @since 1.0.0
  */
 public final class V8HeapSpaceStatistics {
-    private AllocationSpace allocationSpace;
+    private V8AllocationSpace v8AllocationSpace;
     private int physicalSpaceSize;
     private int spaceAvailableSize;
     private String spaceName;
@@ -60,8 +62,8 @@ public final class V8HeapSpaceStatistics {
      * @return the allocation space
      * @since 1.0.0
      */
-    public AllocationSpace getAllocationSpace() {
-        return allocationSpace;
+    public V8AllocationSpace getAllocationSpace() {
+        return v8AllocationSpace;
     }
 
     /**
@@ -117,12 +119,12 @@ public final class V8HeapSpaceStatistics {
     /**
      * Sets allocation space.
      *
-     * @param allocationSpace the allocation space
+     * @param v8AllocationSpace the allocation space
      * @return the self
      * @since 1.0.1
      */
-    public V8HeapSpaceStatistics setAllocationSpace(AllocationSpace allocationSpace) {
-        this.allocationSpace = Objects.requireNonNull(allocationSpace);
+    public V8HeapSpaceStatistics setAllocationSpace(V8AllocationSpace v8AllocationSpace) {
+        this.v8AllocationSpace = Objects.requireNonNull(v8AllocationSpace);
         return this;
     }
 
@@ -138,120 +140,4 @@ public final class V8HeapSpaceStatistics {
         return sb.toString();
     }
 
-    /**
-     * The enum Allocation space.
-     *
-     * @since 1.0.0
-     */
-    public enum AllocationSpace {
-        /**
-         * Ro space allocation space.
-         * Immortal, immovable and immutable objects.
-         *
-         * @since 1.0.0
-         */
-        RO_SPACE(0),
-        /**
-         * Old space allocation space.
-         * Old generation regular object space.
-         *
-         * @since 1.0.0
-         */
-        OLD_SPACE(1),
-        /**
-         * Code space allocation space.
-         * Old generation code object space, marked executable.
-         *
-         * @since 1.0.0
-         */
-        CODE_SPACE(2),
-        /**
-         * Map space allocation space.
-         * Old generation map object space, non-movable.
-         *
-         * @since 1.0.0
-         */
-        MAP_SPACE(3),
-        /**
-         * Lo space allocation space.
-         * Old generation large object space.
-         *
-         * @since 1.0.0
-         */
-        LO_SPACE(4),
-        /**
-         * Code lo space allocation space.
-         * Old generation large code object space.
-         *
-         * @since 1.0.0
-         */
-        CODE_LO_SPACE(5),
-        /**
-         * New lo space allocation space.
-         * Young generation large object space.
-         *
-         * @since 1.0.0
-         */
-        NEW_LO_SPACE(6),
-        /**
-         * New space allocation space.
-         * Young generation semispaces for regular objects collected with Scavenger.
-         *
-         * @since 1.0.0
-         */
-        NEW_SPACE(7),
-        /**
-         * First space allocation space.
-         *
-         * @since 1.0.0
-         */
-        FIRST_SPACE(RO_SPACE.getIndex()),
-        /**
-         * Last space allocation space.
-         *
-         * @since 1.0.0
-         */
-        LAST_SPACE(NEW_SPACE.getIndex()),
-        /**
-         * First mutable space allocation space.
-         *
-         * @since 1.0.0
-         */
-        FIRST_MUTABLE_SPACE(OLD_SPACE.getIndex()),
-        /**
-         * Last mutable space allocation space.
-         *
-         * @since 1.0.0
-         */
-        LAST_MUTABLE_SPACE(NEW_SPACE.getIndex()),
-        /**
-         * First growable paged space allocation space.
-         *
-         * @since 1.0.0
-         */
-        FIRST_GROWABLE_PAGED_SPACE(OLD_SPACE.getIndex()),
-        /**
-         * Last growable paged space allocation space.
-         *
-         * @since 1.0.0
-         */
-        LAST_GROWABLE_PAGED_SPACE(MAP_SPACE.getIndex()),
-        ;
-
-        private int index;
-
-        AllocationSpace(int index) {
-            this.index = index;
-        }
-
-        /**
-         * Gets index.
-         *
-         * @return the index
-         * @since 1.0.0
-         */
-        public int getIndex() {
-            return index;
-        }
-    }
 }

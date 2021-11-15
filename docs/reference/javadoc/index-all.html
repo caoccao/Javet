@@ -2037,7 +2037,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEnginePool.html#getIdleEngineCount--">getIdleEngineCount()</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEnginePool.html" title="class in com.caoccao.javet.interop.engine">JavetEnginePool</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html#getIndex--">getIndex()</a></span> - Method in enum com.caoccao.javet.interop.monitoring.<a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html" title="enum in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics.AllocationSpace</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8AllocationSpace.html#getIndex--">getIndex()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8AllocationSpace.html" title="enum in com.caoccao.javet.enums">V8AllocationSpace</a></dt>
 <dd>
 <div class="block">Gets index.</div>
 </dd>
@@ -2913,7 +2913,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#getV8HeapSpaceStatistics-long-int-">getV8HeapSpaceStatistics(long, int)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace-">getV8HeapSpaceStatistics(V8HeapSpaceStatistics.AllocationSpace)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.enums.V8AllocationSpace-">getV8HeapSpaceStatistics(V8AllocationSpace)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetOutOfMemoryException.html#getV8HeapStatistics--">getV8HeapStatistics()</a></span> - Method in exception com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetOutOfMemoryException.html" title="class in com.caoccao.javet.exceptions">JavetOutOfMemoryException</a></dt>
 <dd>
@@ -5225,7 +5225,7 @@
 <dd>
 <div class="block">Sets active.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html#setAllocationSpace-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace-">setAllocationSpace(V8HeapSpaceStatistics.AllocationSpace)</a></span> - Method in class com.caoccao.javet.interop.monitoring.<a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html#setAllocationSpace-com.caoccao.javet.enums.V8AllocationSpace-">setAllocationSpace(V8AllocationSpace)</a></span> - Method in class com.caoccao.javet.interop.monitoring.<a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics</a></dt>
 <dd>
 <div class="block">Sets allocation space.</div>
 </dd>
@@ -6215,6 +6215,10 @@
 <dd>
 <div class="block">The constant V8_VALUE_PROXY_CLASS.</div>
 </dd>
+<dt><a href="com/caoccao/javet/enums/V8AllocationSpace.html" title="enum in com.caoccao.javet.enums"><span class="typeNameLink">V8AllocationSpace</span></a> - Enum in <a href="com/caoccao/javet/enums/package-summary.html">com.caoccao.javet.enums</a></dt>
+<dd>
+<div class="block">The enum V8 allocation space.</div>
+</dd>
 <dt><a href="com/caoccao/javet/annotations/V8BindingEnabler.html" title="annotation in com.caoccao.javet.annotations"><span class="typeNameLink">V8BindingEnabler</span></a> - Annotation Type in <a href="com/caoccao/javet/annotations/package-summary.html">com.caoccao.javet.annotations</a></dt>
 <dd>
 <div class="block">The interface V8 binding enabler is for determining
@@ -6261,10 +6265,6 @@
 <dt><a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.monitoring"><span class="typeNameLink">V8HeapSpaceStatistics</span></a> - Class in <a href="com/caoccao/javet/interop/monitoring/package-summary.html">com.caoccao.javet.interop.monitoring</a></dt>
 <dd>
 <div class="block">The type V8 heap space statistics.</div>
-</dd>
-<dt><a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html" title="enum in com.caoccao.javet.interop.monitoring"><span class="typeNameLink">V8HeapSpaceStatistics.AllocationSpace</span></a> - Enum in <a href="com/caoccao/javet/interop/monitoring/package-summary.html">com.caoccao.javet.interop.monitoring</a></dt>
-<dd>
-<div class="block">The enum Allocation space.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetOutOfMemoryException.html#v8HeapStatistics">v8HeapStatistics</a></span> - Variable in exception com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetOutOfMemoryException.html" title="class in com.caoccao.javet.exceptions">JavetOutOfMemoryException</a></dt>
 <dd>
@@ -6628,6 +6628,10 @@
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8AllocationSpace.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8AllocationSpace.html" title="enum in com.caoccao.javet.enums">V8AllocationSpace</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this type with the specified name.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8GCCallbackFlags.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8GCCallbackFlags.html" title="enum in com.caoccao.javet.enums">V8GCCallbackFlags</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
@@ -6645,10 +6649,6 @@
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8ValueSymbolType.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8ValueSymbolType.html" title="enum in com.caoccao.javet.enums">V8ValueSymbolType</a></dt>
-<dd>
-<div class="block">Returns the enum constant of this type with the specified name.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.caoccao.javet.interop.monitoring.<a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html" title="enum in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics.AllocationSpace</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
@@ -6681,6 +6681,11 @@ the order they are declared.</div>
 <div class="block">Returns an array containing the constants of this enum type, in
 the order they are declared.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8AllocationSpace.html#values--">values()</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8AllocationSpace.html" title="enum in com.caoccao.javet.enums">V8AllocationSpace</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum type, in
+the order they are declared.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8GCCallbackFlags.html#values--">values()</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8GCCallbackFlags.html" title="enum in com.caoccao.javet.enums">V8GCCallbackFlags</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum type, in
@@ -6702,11 +6707,6 @@ the order they are declared.</div>
 the order they are declared.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8ValueSymbolType.html#values--">values()</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8ValueSymbolType.html" title="enum in com.caoccao.javet.enums">V8ValueSymbolType</a></dt>
-<dd>
-<div class="block">Returns an array containing the constants of this enum type, in
-the order they are declared.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html#values--">values()</a></span> - Static method in enum com.caoccao.javet.interop.monitoring.<a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.AllocationSpace.html" title="enum in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics.AllocationSpace</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum type, in
 the order they are declared.</div>
