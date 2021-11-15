@@ -313,6 +313,7 @@ Error, Promise, RegExp, Proxy, Symbol, etc. are not supported.
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint v8ValueType, jobject mContext) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
     V8LocalValue v8LocalValueResult;
     if (IS_V8_OBJECT(v8ValueType)) {
         v8LocalValueResult = v8::Object::New(v8Context->GetIsolate());
@@ -333,12 +334,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentCallbackContextReference);
         auto v8MaybeLocalFunction = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
         if (v8MaybeLocalFunction.IsEmpty()) {
-            v8Context->GetIsolate()->LowMemoryNotification();
-            v8MaybeLocalFunction = v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
-        }
-        if (v8MaybeLocalFunction.IsEmpty()) {
-            Javet::Exceptions::ThrowJavetOutOfMemoryException(
-                jniEnv, v8Context->GetIsolate(), "function allocation failed");
+            THROW_EXECUTION_OR_OUT_OF_MEMORY_EXCEPTION(v8InternalIsolate, "function allocation failed");
         }
         else {
             v8LocalValueResult = v8MaybeLocalFunction.ToLocalChecked();
@@ -352,12 +348,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
     else if (IS_V8_PROMISE(v8ValueType)) {
         auto v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
         if (v8MaybeLocalPromiseResolver.IsEmpty()) {
-            v8Context->GetIsolate()->LowMemoryNotification();
-            v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
-        }
-        if (v8MaybeLocalPromiseResolver.IsEmpty()) {
-            Javet::Exceptions::ThrowJavetOutOfMemoryException(
-                jniEnv, v8Context->GetIsolate(), "promise resolver allocation failed");
+            THROW_EXECUTION_OR_OUT_OF_MEMORY_EXCEPTION(v8InternalIsolate, "promise resolver allocation failed");
         }
         else {
             v8LocalValueResult = v8MaybeLocalPromiseResolver.ToLocalChecked();
@@ -370,12 +361,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
         auto v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
         if (v8MaybeLocalProxy.IsEmpty()) {
-            v8Context->GetIsolate()->LowMemoryNotification();
-            v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectObject, v8LocalObjectHandler);
-        }
-        if (v8MaybeLocalProxy.IsEmpty()) {
-            Javet::Exceptions::ThrowJavetOutOfMemoryException(
-                jniEnv, v8Context->GetIsolate(), "proxy allocation failed");
+            THROW_EXECUTION_OR_OUT_OF_MEMORY_EXCEPTION(v8InternalIsolate, "proxy allocation failed");
         }
         else {
             v8LocalValueResult = v8MaybeLocalProxy.ToLocalChecked();
