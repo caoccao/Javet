@@ -9,6 +9,7 @@ Release Notes 1.0.x
 * Fixed a potential core dump issue caused by memory allocation failure in V8
 * Added error code 806 and ``JavetOutOfMemoryException``
 * Upgraded ``JavetEnginePool`` to get away from busy-wait
+* Added ``hasPendingException()``, ``hasPendingMessage()``, ``hasScheduledException()``, ``promoteScheduledException()`` and ``reportPendingMessages()`` to ``V8Runtime``
 
 1.0.3 Android ABI 21
 --------------------

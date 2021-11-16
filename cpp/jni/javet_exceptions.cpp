@@ -46,7 +46,7 @@ namespace Javet {
             jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
         }
 
-        bool HandlePendingException(JNIEnv* jniEnv, const V8LocalContext& v8Context) {
+        bool HandlePendingException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* message) {
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
             if (v8InternalIsolate->has_pending_exception()) {
                 V8TryCatch v8TryCatch(v8Context->GetIsolate());
@@ -55,6 +55,10 @@ namespace Javet {
                     ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
                     return true;
                 }
+            }
+            else if (message != nullptr) {
+                ThrowJavetOutOfMemoryException(jniEnv, v8Context->GetIsolate(), message);
+                return true;
             }
             return false;
         }

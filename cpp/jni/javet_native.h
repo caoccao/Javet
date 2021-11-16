@@ -102,12 +102,6 @@
     auto v8LocalValue1 = v8PersistentValuePointer1->Get(v8Context->GetIsolate()); \
     auto v8LocalValue2 = v8PersistentValuePointer2->Get(v8Context->GetIsolate());
 
-#define THROW_EXECUTION_OR_OUT_OF_MEMORY_EXCEPTION(jniEnv, v8Context, message) \
-    if (!Javet::Exceptions::HandlePendingException(jniEnv, v8Context)) { \
-        Javet::Exceptions::ThrowJavetOutOfMemoryException( \
-            jniEnv, v8Context->GetIsolate(), message); \
-    }
-
 extern JavaVM* GlobalJavaVM;
 
 namespace Javet {

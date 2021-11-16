@@ -162,7 +162,16 @@ class V8Native implements IV8Native {
     public native boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
     @Override
+    public native boolean hasPendingException(long v8RuntimeHandle);
+
+    @Override
+    public native boolean hasPendingMessage(long v8RuntimeHandle);
+
+    @Override
     public native boolean hasPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int type, String propertyName);
+
+    @Override
+    public native boolean hasScheduledException(long v8RuntimeHandle);
 
     @Override
     public native void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
@@ -235,6 +244,9 @@ class V8Native implements IV8Native {
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
 
     @Override
+    public native boolean promoteScheduledException(long v8RuntimeHandle);
+
+    @Override
     public native Object proxyGetHandler(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
@@ -260,6 +272,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native void removeReferenceHandle(long referenceHandle, int referenceType);
+
+    @Override
+    public native boolean reportPendingMessages(long v8RuntimeHandle);
 
     @Override
     public native void requestGarbageCollectionForTesting(long v8RuntimeHandle, boolean fullGC);

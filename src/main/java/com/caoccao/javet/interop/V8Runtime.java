@@ -754,6 +754,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
+    public boolean hasPendingException() throws JavetException {
+        return v8Native.hasPendingException(handle);
+    }
+
+    public boolean hasPendingMessage() throws JavetException {
+        return v8Native.hasPendingMessage(handle);
+    }
+
+    public boolean hasScheduledException() throws JavetException {
+        return v8Native.hasScheduledException(handle);
+    }
+
     boolean hasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
         return v8Native.hasPrivateProperty(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
@@ -1117,6 +1129,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         } finally {
             writeLock.unlock();
         }
+    }
+
+    public boolean promoteScheduledException() throws JavetException {
+        return v8Native.promoteScheduledException(handle);
+    }
+
+    public boolean reportPendingMessages() throws JavetException {
+        return v8Native.reportPendingMessages(handle);
     }
 
     /**
