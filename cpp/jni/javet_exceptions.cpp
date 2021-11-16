@@ -47,15 +47,21 @@ namespace Javet {
         }
 
         void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
-            LOG_ERROR("Compilation exception.");
-            jobject javetScriptingError = Javet::Converter::ToJavetScriptingError(jniEnv, v8Context, v8TryCatch);
-            jthrowable javetCompilationException = (jthrowable)jniEnv->NewObject(
-                jclassJavetCompilationException,
-                jmethodIDJavetCompilationExceptionConstructor,
-                javetScriptingError);
-            jniEnv->Throw(javetCompilationException);
-            jniEnv->DeleteLocalRef(javetCompilationException);
-            jniEnv->DeleteLocalRef(javetScriptingError);
+            if (v8TryCatch.HasTerminated()) {
+                LOG_ERROR("Compilation has been terminated.");
+                ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
+            }
+            else {
+                LOG_ERROR("Compilation exception.");
+                jobject javetScriptingError = Javet::Converter::ToJavetScriptingError(jniEnv, v8Context, v8TryCatch);
+                jthrowable javetCompilationException = (jthrowable)jniEnv->NewObject(
+                    jclassJavetCompilationException,
+                    jmethodIDJavetCompilationExceptionConstructor,
+                    javetScriptingError);
+                jniEnv->Throw(javetCompilationException);
+                jniEnv->DeleteLocalRef(javetCompilationException);
+                jniEnv->DeleteLocalRef(javetScriptingError);
+            }
         }
 
         void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message) {
