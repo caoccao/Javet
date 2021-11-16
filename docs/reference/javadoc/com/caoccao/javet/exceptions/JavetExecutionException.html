@@ -174,14 +174,7 @@ extends <a href="../../../../com/caoccao/javet/exceptions/BaseJavetScriptingExce
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/exceptions/JavetExecutionException.html#JavetExecutionException-java.lang.String-java.lang.String-java.lang.String-int-int-int-int-int-">JavetExecutionException</a></span>(java.lang.String&nbsp;message,
-                       java.lang.String&nbsp;resourceName,
-                       java.lang.String&nbsp;sourceLine,
-                       int&nbsp;lineNumber,
-                       int&nbsp;startColumn,
-                       int&nbsp;endColumn,
-                       int&nbsp;startPosition,
-                       int&nbsp;endPosition)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/exceptions/JavetExecutionException.html#JavetExecutionException-com.caoccao.javet.exceptions.JavetScriptingError-">JavetExecutionException</a></span>(<a href="../../../../com/caoccao/javet/exceptions/JavetScriptingError.html" title="class in com.caoccao.javet.exceptions">JavetScriptingError</a>&nbsp;scriptingError)</code>
 <div class="block">Instantiates a new Javet execution exception.</div>
 </td>
 </tr>
@@ -236,31 +229,17 @@ extends <a href="../../../../com/caoccao/javet/exceptions/BaseJavetScriptingExce
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="JavetExecutionException-java.lang.String-java.lang.String-java.lang.String-int-int-int-int-int-">
+<a name="JavetExecutionException-com.caoccao.javet.exceptions.JavetScriptingError-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>JavetExecutionException</h4>
-<pre>public&nbsp;JavetExecutionException(java.lang.String&nbsp;message,
-                               java.lang.String&nbsp;resourceName,
-                               java.lang.String&nbsp;sourceLine,
-                               int&nbsp;lineNumber,
-                               int&nbsp;startColumn,
-                               int&nbsp;endColumn,
-                               int&nbsp;startPosition,
-                               int&nbsp;endPosition)</pre>
+<pre>public&nbsp;JavetExecutionException(<a href="../../../../com/caoccao/javet/exceptions/JavetScriptingError.html" title="class in com.caoccao.javet.exceptions">JavetScriptingError</a>&nbsp;scriptingError)</pre>
 <div class="block">Instantiates a new Javet execution exception.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>message</code> - the message</dd>
-<dd><code>resourceName</code> - the resource name</dd>
-<dd><code>sourceLine</code> - the source line</dd>
-<dd><code>lineNumber</code> - the line number</dd>
-<dd><code>startColumn</code> - the start column</dd>
-<dd><code>endColumn</code> - the end column</dd>
-<dd><code>startPosition</code> - the start position</dd>
-<dd><code>endPosition</code> - the end position</dd>
+<dd><code>scriptingError</code> - the scripting error</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.7.0</dd>
 </dl>

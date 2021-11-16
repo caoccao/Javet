@@ -160,6 +160,11 @@ namespace Javet {
         static jmethodID jmethodIDV8ValueWeakSetConstructor;
         static jmethodID jmethodIDV8ValueWeakSetGetHandle;
 
+        // Misc
+
+        static jclass jclassJavetScriptingError;
+        static jmethodID jmethodIDJavetScriptingErrorConstructor;
+
         void Initialize(JNIEnv* jniEnv);
 
         static inline jstring ToJavaString(JNIEnv* jniEnv, const char* utfString) {
@@ -217,6 +222,8 @@ namespace Javet {
         }
 
         jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv, jobject externalV8Runtime);
+
+        jobject ToJavetScriptingError(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 
         static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& managedBoolean) {
             return v8::Boolean::New(v8Context->GetIsolate(), managedBoolean);

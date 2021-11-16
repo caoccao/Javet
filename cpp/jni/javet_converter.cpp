@@ -193,6 +193,10 @@ namespace Javet {
             jclassV8ValueWeakSet = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueWeakSet"));
             jmethodIDV8ValueWeakSetConstructor = jniEnv->GetMethodID(jclassV8ValueWeakSet, JAVA_CONSTRUCTOR_AND_SIGNATURE_FROM_HANDLE);
             jmethodIDV8ValueWeakSetGetHandle = jniEnv->GetMethodID(jclassV8ValueWeakSet, JAVA_METHOD_AND_SIGNATURE_GET_HANDLE);
+
+            // Misc
+            jclassJavetScriptingError = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetScriptingError"));
+            jmethodIDJavetScriptingErrorConstructor = jniEnv->GetMethodID(jclassJavetScriptingError, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
         }
 
         jobject ToExternalV8ValueArray(
@@ -378,6 +382,35 @@ namespace Javet {
 
         jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv, jobject externalV8Runtime) {
             return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueUndefined);
+        }
+
+        jobject ToJavetScriptingError(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
+            jstring jStringExceptionMessage = ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
+            jstring jStringScriptResourceName = nullptr, jStringSourceLine = nullptr;
+            int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
+            auto v8LocalMessage = v8TryCatch.Message();
+            if (!v8LocalMessage.IsEmpty()) {
+                jStringScriptResourceName = ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
+                jStringSourceLine = ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).FromMaybe(V8LocalString()));
+                lineNumber = v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0);
+                startColumn = v8LocalMessage->GetStartColumn();
+                endColumn = v8LocalMessage->GetEndColumn();
+                startPosition = v8LocalMessage->GetStartPosition();
+                endPosition = v8LocalMessage->GetEndPosition();
+            }
+            jobject javetScriptingError = jniEnv->NewObject(
+                jclassJavetScriptingError,
+                jmethodIDJavetScriptingErrorConstructor,
+                jStringExceptionMessage, jStringScriptResourceName, jStringSourceLine,
+                lineNumber, startColumn, endColumn, startPosition, endPosition);
+            if (jStringSourceLine != nullptr) {
+                jniEnv->DeleteLocalRef(jStringSourceLine);
+            }
+            if (jStringScriptResourceName != nullptr) {
+                jniEnv->DeleteLocalRef(jStringScriptResourceName);
+            }
+            jniEnv->DeleteLocalRef(jStringExceptionMessage);
+            return javetScriptingError;
         }
 
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(JNIEnv* jniEnv, const V8LocalContext& v8Context,
