@@ -17,6 +17,7 @@
 
 #include "javet_converter.h"
 #include "javet_enums.h"
+#include "javet_exceptions.h"
 #include "javet_logging.h"
 
  // Primitive
@@ -206,8 +207,11 @@ namespace Javet {
             if (argLength > 0) {
                 auto v8Array = v8::Array::New(v8Context->GetIsolate(), argLength);
                 for (int i = 0; i < argLength; ++i) {
-                    auto maybeResult = v8Array->Set(v8Context, i, args[i]);
-                    maybeResult.Check();
+                    auto v8MaybeBool = v8Array->Set(v8Context, i, args[i]);
+                    if (v8MaybeBool.IsNothing()) {
+                        Javet::Exceptions::HandlePendingException(jniEnv, v8Context);
+                        return nullptr;
+                    }
                 }
                 return ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Array);
             }
@@ -440,8 +444,7 @@ namespace Javet {
             if (twoByteString.IsEmpty()) {
                 return V8LocalString();
             }
-            auto localV8String = twoByteString.ToLocalChecked();
-            return localV8String;
+            return twoByteString.ToLocalChecked();
         }
 
         V8LocalValue ToV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj) {

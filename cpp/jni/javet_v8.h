@@ -61,6 +61,10 @@ using V8LocalSymbol = v8::Local<v8::Symbol>;
 using V8LocalSymbolObject = v8::Local<v8::SymbolObject>;
 using V8LocalValue = v8::Local<v8::Value>;
 
+// Maybe
+
+using V8MaybeBool = v8::Maybe<bool>;
+
 // Maybe Local
 
 using V8MaybeLocalFunction = v8::MaybeLocal<v8::Function>;

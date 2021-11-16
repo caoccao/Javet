@@ -46,6 +46,19 @@ namespace Javet {
             jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
         }
 
+        bool HandlePendingException(JNIEnv* jniEnv, const V8LocalContext& v8Context) {
+            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+            if (v8InternalIsolate->has_pending_exception()) {
+                V8TryCatch v8TryCatch(v8Context->GetIsolate());
+                v8InternalIsolate->ReportPendingMessages();
+                if (v8TryCatch.HasCaught()) {
+                    ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
             if (v8TryCatch.HasTerminated()) {
                 LOG_ERROR("Compilation has been terminated.");

@@ -39,8 +39,7 @@ public abstract class BaseJavetScriptingException extends JavetException {
      * @param scriptingError the scripting error
      * @since 0.8.5
      */
-    protected BaseJavetScriptingException(
-            JavetError error, JavetScriptingError scriptingError) {
+    protected BaseJavetScriptingException(JavetError error, JavetScriptingError scriptingError) {
         super(error, SimpleMap.of(
                 JavetError.PARAMETER_MESSAGE, scriptingError.getMessage(),
                 JavetError.PARAMETER_RESOURCE_NAME, scriptingError.getResourceName(),
