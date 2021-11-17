@@ -48,22 +48,12 @@ namespace Javet {
 
         bool HandlePendingException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* message) {
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-            if (v8InternalIsolate->has_pending_exception() || v8InternalIsolate->has_pending_message()) {
+            if (v8InternalIsolate->has_pending_exception()) {
                 V8TryCatch v8TryCatch(v8Context->GetIsolate());
                 v8InternalIsolate->ReportPendingMessages();
                 if (v8TryCatch.HasCaught()) {
                     ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
                     return true;
-                }
-            }
-            else if (v8InternalIsolate->has_scheduled_exception()) {
-                V8TryCatch v8TryCatch(v8Context->GetIsolate());
-                v8InternalIsolate->PromoteScheduledException();
-                if (v8InternalIsolate->has_pending_exception()) {
-                    if (v8TryCatch.HasCaught()) {
-                        ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
-                        return true;
-                    }
                 }
             }
             else if (message != nullptr) {

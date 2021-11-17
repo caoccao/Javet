@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetCompilationException;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockModuleResolver;
 import com.caoccao.javet.values.V8Value;
@@ -83,7 +84,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 if (v8Runtime.getJSRuntimeType().isV8()) {
                     assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
-                assertFalse(v8Module2.instantiate(), "Function is invalid");
+                assertThrows(JavetExecutionException.class, () -> v8Module2.instantiate(), "Function should be invalid");
                 assertNull(v8Module2.getException());
             }
             iV8Executor = v8Runtime.getExecutor(codeString3).setResourceName(moduleName3);
@@ -255,7 +256,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         v8Runtime.setV8ModuleResolver(resolver);
         assertFalse(resolver.isCalled());
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
-                "import { test } from './test.js'; globalThis.test = test;")
+                        "import { test } from './test.js'; globalThis.test = test;")
                 .setResourceName("./case.js").setModule(true).execute()) {
             assertEquals(1, v8Runtime.getV8ModuleCount());
             assertTrue(resolver.isCalled(), "Module resolver should be called in the first time.");
@@ -264,7 +265,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         }
         resolver.setCalled(false);
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
-                "import { test } from './test.js'; globalThis.test = test;")
+                        "import { test } from './test.js'; globalThis.test = test;")
                 .setResourceName("./case.js").setModule(true).execute()) {
             assertEquals(1, v8Runtime.getV8ModuleCount());
             assertFalse(resolver.isCalled(), "Module resolver should not be called in the second time because it is cached.");
@@ -274,7 +275,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         v8Runtime.removeV8Modules(true);
         assertEquals(0, v8Runtime.getV8ModuleCount());
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
-                "import { test } from './test.js'; globalThis.test = test;")
+                        "import { test } from './test.js'; globalThis.test = test;")
                 .setResourceName("./case.js").setModule(true).execute()) {
             assertEquals(1, v8Runtime.getV8ModuleCount());
             assertTrue(resolver.isCalled(), "Module resolver should be called after modules are cleared.");

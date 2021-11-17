@@ -459,13 +459,13 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
         }
         else if (!v8MaybeLocalCompiledModule.IsEmpty()) {
             auto compliedModule = v8MaybeLocalCompiledModule.ToLocalChecked();
-            auto maybeResult = compliedModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
-            if (maybeResult.IsNothing()) {
+            auto v8MaybeBool = compliedModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
+            if (v8MaybeBool.IsNothing()) {
                 if (v8TryCatch.HasCaught()) {
                     Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
                 }
             }
-            else if (maybeResult.FromMaybe(false)) {
+            else if (v8MaybeBool.FromMaybe(false)) {
                 auto v8MaybeLocalValueResult = compliedModule->Evaluate(v8Context);
                 if (v8TryCatch.HasCaught()) {
                     Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
@@ -1106,9 +1106,12 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalModule->GetStatus() == v8::Module::Status::kUninstantiated) {
-        V8MaybeBool v8MaybeBool = v8LocalModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        auto v8MaybeBool = v8LocalModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
         if (v8MaybeBool.IsNothing()) {
-            Javet::Exceptions::HandlePendingException(jniEnv, v8Context);
+            if (v8TryCatch.HasCaught()) {
+                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+            }
         }
         return v8MaybeBool.FromMaybe(false);
     }
