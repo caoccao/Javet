@@ -84,7 +84,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 if (v8Runtime.getJSRuntimeType().isV8()) {
                     assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
-                assertThrows(JavetExecutionException.class, () -> v8Module2.instantiate(), "Function should be invalid");
+                assertThrows(JavetExecutionException.class, () -> v8Module2.instantiate(), "Function is invalid");
                 assertNull(v8Module2.getException());
             }
             iV8Executor = v8Runtime.getExecutor(codeString3).setResourceName(moduleName3);

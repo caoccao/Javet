@@ -460,10 +460,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
         else if (!v8MaybeLocalCompiledModule.IsEmpty()) {
             auto compliedModule = v8MaybeLocalCompiledModule.ToLocalChecked();
             auto v8MaybeBool = compliedModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
-            if (v8MaybeBool.IsNothing()) {
-                if (v8TryCatch.HasCaught()) {
-                    Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
-                }
+            if (v8TryCatch.HasCaught()) {
+                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
             }
             else if (v8MaybeBool.FromMaybe(false)) {
                 auto v8MaybeLocalValueResult = compliedModule->Evaluate(v8Context);
@@ -1108,10 +1106,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
     if (v8LocalModule->GetStatus() == v8::Module::Status::kUninstantiated) {
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         auto v8MaybeBool = v8LocalModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
-        if (v8MaybeBool.IsNothing()) {
-            if (v8TryCatch.HasCaught()) {
-                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
-            }
+        if (v8TryCatch.HasCaught()) {
+            Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
         }
         return v8MaybeBool.FromMaybe(false);
     }
