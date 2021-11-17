@@ -17,14 +17,39 @@
 package com.caoccao.javet.interop.monitoring;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestV8SharedMemoryStatistics extends BaseTestJavetRuntime {
+
+    protected void printV8SharedMemoryStatistics(V8Runtime v8Runtime, String prefix) {
+        System.out.println(String.format("%s: %s", prefix, v8Runtime.getV8SharedMemoryStatistics().toString()));
+    }
+
     @Test
-    public void test() {
+    @Tag("performance")
+    public void testCorrelations() throws JavetException {
+        printV8SharedMemoryStatistics(v8Runtime, "Baseline");
+        List<V8Runtime> v8Runtimes = new ArrayList<>();
+        for (int i = 0; i < 100; ++i) {
+            V8Runtime newV8Runtime = v8Host.createV8Runtime();
+            v8Runtimes.add(newV8Runtime);
+            printV8SharedMemoryStatistics(newV8Runtime, Integer.toString(i));
+        }
+        JavetResourceUtils.safeClose(v8Runtimes);
+    }
+
+    @Test
+    public void testGetV8SharedMemoryStatistics() {
         V8SharedMemoryStatistics v8SharedMemoryStatistics = v8Runtime.getV8SharedMemoryStatistics();
         assertNotNull(v8SharedMemoryStatistics);
         String detailString = v8SharedMemoryStatistics.toString();

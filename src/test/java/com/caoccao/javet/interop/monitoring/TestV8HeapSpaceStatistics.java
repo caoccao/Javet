@@ -18,13 +18,51 @@ package com.caoccao.javet.interop.monitoring;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.enums.V8AllocationSpace;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8HeapSpaceStatistics extends BaseTestJavetRuntime {
+    protected static final V8AllocationSpace[] V8_ALLOCATION_SPACES = new V8AllocationSpace[]{
+            V8AllocationSpace.RO_SPACE,
+            V8AllocationSpace.OLD_SPACE,
+            V8AllocationSpace.CODE_SPACE,
+            V8AllocationSpace.MAP_SPACE,
+            V8AllocationSpace.LO_SPACE,
+            V8AllocationSpace.CODE_LO_SPACE,
+            V8AllocationSpace.NEW_LO_SPACE,
+            V8AllocationSpace.NEW_SPACE,
+    };
+
+    protected void printV8HeapSpaceStatistics(V8Runtime v8Runtime, String prefix) {
+        for (V8AllocationSpace v8AllocationSpace : V8_ALLOCATION_SPACES) {
+            System.out.println(String.format(
+                    "%s: %s", prefix, v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace).toString()));
+        }
+    }
+
     @Test
-    public void test() {
+    @Tag("performance")
+    public void testCorrelations() throws JavetException {
+        printV8HeapSpaceStatistics(v8Runtime, "Baseline");
+        List<V8Runtime> v8Runtimes = new ArrayList<>();
+        for (int i = 0; i < 100; ++i) {
+            V8Runtime newV8Runtime = v8Host.createV8Runtime();
+            v8Runtimes.add(newV8Runtime);
+            printV8HeapSpaceStatistics(v8Runtime, Integer.toString(i));
+        }
+        JavetResourceUtils.safeClose(v8Runtimes);
+    }
+
+    @Test
+    public void testGetV8HeapSpaceStatistics() {
         for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.values()) {
             V8HeapSpaceStatistics v8HeapSpaceStatistics = v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace);
             assertNotNull(v8HeapSpaceStatistics);

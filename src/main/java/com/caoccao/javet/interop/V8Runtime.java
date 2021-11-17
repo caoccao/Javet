@@ -21,7 +21,6 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.*;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.exceptions.JavetOutOfMemoryException;
 import com.caoccao.javet.interfaces.IEnumBitset;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
@@ -316,29 +315,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
-        Objects.requireNonNull(javetCallbackContext);
+        V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
+                handle, V8ValueReferenceType.Function.getId(), Objects.requireNonNull(javetCallbackContext)));
+        Lock writeLock = callbackContextLock.writeLock();
         try {
-            V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
-                    handle, V8ValueReferenceType.Function.getId(), javetCallbackContext));
-            Lock writeLock = callbackContextLock.writeLock();
-            try {
-                writeLock.lock();
-                callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
-            } finally {
-                writeLock.unlock();
-            }
-            return v8ValueFunction;
-        } catch (JavetOutOfMemoryException e) {
-            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.RO_SPACE).toString());
-            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.OLD_SPACE).toString());
-            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.CODE_SPACE).toString());
-            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.MAP_SPACE).toString());
-            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.LO_SPACE).toString());
-            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.CODE_LO_SPACE).toString());
-            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.NEW_LO_SPACE).toString());
-            logger.error(getV8HeapSpaceStatistics(V8AllocationSpace.NEW_SPACE).toString());
-            throw e;
+            writeLock.lock();
+            callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
+        } finally {
+            writeLock.unlock();
         }
+        return v8ValueFunction;
     }
 
     @Override
@@ -762,13 +748,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.hasPendingMessage(handle);
     }
 
-    public boolean hasScheduledException() throws JavetException {
-        return v8Native.hasScheduledException(handle);
-    }
-
     boolean hasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
         return v8Native.hasPrivateProperty(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
+    }
+
+    public boolean hasScheduledException() throws JavetException {
+        return v8Native.hasScheduledException(handle);
     }
 
     /**
@@ -932,6 +918,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId(),
                 functionFulfilledHandle.getHandle(),
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
+    }
+
+    public boolean promoteScheduledException() throws JavetException {
+        return v8Native.promoteScheduledException(handle);
     }
 
     @CheckReturnValue
@@ -1129,10 +1119,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         } finally {
             writeLock.unlock();
         }
-    }
-
-    public boolean promoteScheduledException() throws JavetException {
-        return v8Native.promoteScheduledException(handle);
     }
 
     public boolean reportPendingMessages() throws JavetException {
