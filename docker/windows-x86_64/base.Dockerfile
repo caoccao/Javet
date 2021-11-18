@@ -60,7 +60,7 @@ ENV DEPOT_TOOLS_WIN_TOOLCHAIN=0
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.6.180.12
+RUN git checkout 9.6.180.8
 WORKDIR /google
 RUN gclient sync
 RUN echo V8 preparation is completed.

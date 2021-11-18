@@ -37,7 +37,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.6.180.12
+RUN git checkout 9.6.180.8
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
