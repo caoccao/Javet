@@ -88,5 +88,13 @@ RUN apt-get clean -y
 RUN rm -rf /var/lib/apt/lists/*
 WORKDIR /
 
+# Pre-cache Dependencies
+RUN mkdir Javet
+WORKDIR /Javet
+COPY . .
+RUN gradle dependencies
+WORKDIR /
+RUN rm -rf /Javet
+
 # Completed
 RUN echo Javet build base image is completed.
