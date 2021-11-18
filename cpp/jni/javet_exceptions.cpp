@@ -66,7 +66,7 @@ namespace Javet {
                     }
                 }
             }
-            else if (message != nullptr) {
+            if (message != nullptr) {
                 ThrowJavetOutOfMemoryException(jniEnv, v8Context->GetIsolate(), message);
                 return true;
             }
