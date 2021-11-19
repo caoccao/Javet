@@ -19,6 +19,7 @@
 
 #include <jni.h>
 #include "javet_v8.h"
+#include "javet_v8_internal.h"
 
 namespace Javet {
     namespace Exceptions {
@@ -30,6 +31,9 @@ namespace Javet {
         static jclass jclassJavetExecutionException;
         static jmethodID jmethodIDJavetExecutionExceptionConstructor;
 
+        static jclass jclassJavetOutOfMemoryException;
+        static jmethodID jmethodIDJavetOutOfMemoryExceptionConstructor;
+
         static jclass jclassJavetTerminatedException;
         static jmethodID jmethodIDJavetTerminatedExceptionConstructor;
 
@@ -38,9 +42,11 @@ namespace Javet {
 
         void Initialize(JNIEnv* jniEnv);
 
+        bool HandlePendingException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* message = nullptr);
         void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
         void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
         void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        void ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, v8::Isolate* v8Isolate, const char* message);
         void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue);
         void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage);
     }

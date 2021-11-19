@@ -18,6 +18,7 @@
 #include "javet_converter.h"
 #include "javet_exceptions.h"
 #include "javet_logging.h"
+#include "javet_monitor.h"
 
 namespace Javet {
     namespace Exceptions {
@@ -28,12 +29,15 @@ namespace Javet {
             */
 
             jclassJavetCompilationException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetCompilationException"));
-            jmethodIDJavetCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetCompilationException, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
+            jmethodIDJavetCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetCompilationException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;)V");
 
             jclassJavetConverterException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetConverterException"));
 
             jclassJavetExecutionException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetExecutionException"));
-            jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
+            jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;)V");
+
+            jclassJavetOutOfMemoryException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetOutOfMemoryException"));
+            jmethodIDJavetOutOfMemoryExceptionConstructor = jniEnv->GetMethodID(jclassJavetOutOfMemoryException, "<init>", "(Ljava/lang/String;Lcom/caoccao/javet/interop/monitoring/V8HeapStatistics;)V");
 
             jclassJavetTerminatedException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetTerminatedException"));
             jmethodIDJavetTerminatedExceptionConstructor = jniEnv->GetMethodID(jclassJavetTerminatedException, "<init>", "(Z)V");
@@ -42,35 +46,49 @@ namespace Javet {
             jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
         }
 
+        bool HandlePendingException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* message) {
+            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+            if (v8InternalIsolate->has_pending_exception() || v8InternalIsolate->has_pending_message()) {
+                V8TryCatch v8TryCatch(v8Context->GetIsolate());
+                v8InternalIsolate->ReportPendingMessages();
+                if (v8TryCatch.HasCaught()) {
+                    ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+                    return true;
+                }
+            }
+            else if (v8InternalIsolate->has_scheduled_exception()) {
+                V8TryCatch v8TryCatch(v8Context->GetIsolate());
+                v8InternalIsolate->PromoteScheduledException();
+                if (v8InternalIsolate->has_pending_exception()) {
+                    if (v8TryCatch.HasCaught()) {
+                        ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+                        return true;
+                    }
+                }
+            }
+            if (message != nullptr) {
+                ThrowJavetOutOfMemoryException(jniEnv, v8Context->GetIsolate(), message);
+                return true;
+            }
+            return false;
+        }
+
         void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
-            LOG_ERROR("Compilation exception.");
-            auto isolate = v8Context->GetIsolate();
-            jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
-            jstring jStringScriptResourceName = nullptr, jStringSourceLine = nullptr;
-            int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
-            auto v8LocalMessage = v8TryCatch.Message();
-            if (!v8LocalMessage.IsEmpty()) {
-                jStringScriptResourceName = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
-                jStringSourceLine = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
-                lineNumber = v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0);
-                startColumn = v8LocalMessage->GetStartColumn();
-                endColumn = v8LocalMessage->GetEndColumn();
-                startPosition = v8LocalMessage->GetStartPosition();
-                endPosition = v8LocalMessage->GetEndPosition();
+            if (v8TryCatch.HasTerminated()) {
+                LOG_ERROR("Compilation has been terminated.");
+                ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
             }
-            jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
-                jclassJavetCompilationException,
-                jmethodIDJavetCompilationExceptionConstructor,
-                jStringExceptionMessage, jStringScriptResourceName, jStringSourceLine,
-                lineNumber, startColumn, endColumn, startPosition, endPosition);
-            jniEnv->Throw(javetConverterException);
-            if (jStringSourceLine != nullptr) {
-                jniEnv->DeleteLocalRef(jStringSourceLine);
+            else {
+                LOG_ERROR("Compilation exception.");
+                jobject javetScriptingError = Javet::Converter::ToJavetScriptingError(jniEnv, v8Context, v8TryCatch);
+                jthrowable javetCompilationException = (jthrowable)jniEnv->NewObject(
+                    jclassJavetCompilationException,
+                    jmethodIDJavetCompilationExceptionConstructor,
+                    javetScriptingError);
+                jniEnv->Throw(javetCompilationException);
+                jniEnv->DeleteLocalRef(javetCompilationException);
+                jniEnv->DeleteLocalRef(javetScriptingError);
             }
-            if (jStringScriptResourceName != nullptr) {
-                jniEnv->DeleteLocalRef(jStringScriptResourceName);
-            }
-            jniEnv->DeleteLocalRef(jStringExceptionMessage);
         }
 
         void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message) {
@@ -79,40 +97,34 @@ namespace Javet {
         }
 
         void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
-            auto isolate = v8Context->GetIsolate();
             if (v8TryCatch.HasTerminated()) {
                 LOG_ERROR("Execution has been terminated.");
                 ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
             }
             else {
                 LOG_ERROR("Execution exception.");
-                jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
-                jstring jStringScriptResourceName = nullptr, jStringSourceLine = nullptr;
-                int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
-                auto v8LocalMessage = v8TryCatch.Message();
-                if (!v8LocalMessage.IsEmpty()) {
-                    jStringScriptResourceName = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
-                    jStringSourceLine = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).ToLocalChecked());
-                    lineNumber = v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0);
-                    startColumn = v8LocalMessage->GetStartColumn();
-                    endColumn = v8LocalMessage->GetEndColumn();
-                    startPosition = v8LocalMessage->GetStartPosition();
-                    endPosition = v8LocalMessage->GetEndPosition();
-                }
-                jthrowable javetConverterException = (jthrowable)jniEnv->NewObject(
+                jobject javetScriptingError = Javet::Converter::ToJavetScriptingError(jniEnv, v8Context, v8TryCatch);
+                jthrowable javetExecutionException = (jthrowable)jniEnv->NewObject(
                     jclassJavetExecutionException,
                     jmethodIDJavetExecutionExceptionConstructor,
-                    jStringExceptionMessage, jStringScriptResourceName, jStringSourceLine,
-                    lineNumber, startColumn, endColumn, startPosition, endPosition);
-                jniEnv->Throw(javetConverterException);
-                if (jStringSourceLine != nullptr) {
-                    jniEnv->DeleteLocalRef(jStringSourceLine);
-                }
-                if (jStringScriptResourceName != nullptr) {
-                    jniEnv->DeleteLocalRef(jStringScriptResourceName);
-                }
-                jniEnv->DeleteLocalRef(jStringExceptionMessage);
+                    javetScriptingError);
+                jniEnv->Throw(javetExecutionException);
+                jniEnv->DeleteLocalRef(javetExecutionException);
             }
+        }
+
+        void ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, v8::Isolate* v8Isolate, const char* message) {
+            LOG_ERROR(*message);
+            jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, message);
+            jobject jObjectHeapStatistics = Javet::Monitor::GetHeapStatistics(jniEnv, v8Isolate);
+            jthrowable javetOutOfMemoryException = (jthrowable)jniEnv->NewObject(
+                jclassJavetOutOfMemoryException,
+                jmethodIDJavetOutOfMemoryExceptionConstructor,
+                jStringExceptionMessage,
+                jObjectHeapStatistics);
+            jniEnv->DeleteLocalRef(jStringExceptionMessage);
+            jniEnv->DeleteLocalRef(jObjectHeapStatistics);
+            jniEnv->Throw(javetOutOfMemoryException);
         }
 
         void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue) {

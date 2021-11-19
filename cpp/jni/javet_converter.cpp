@@ -17,6 +17,7 @@
 
 #include "javet_converter.h"
 #include "javet_enums.h"
+#include "javet_exceptions.h"
 #include "javet_logging.h"
 
  // Primitive
@@ -193,6 +194,10 @@ namespace Javet {
             jclassV8ValueWeakSet = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueWeakSet"));
             jmethodIDV8ValueWeakSetConstructor = jniEnv->GetMethodID(jclassV8ValueWeakSet, JAVA_CONSTRUCTOR_AND_SIGNATURE_FROM_HANDLE);
             jmethodIDV8ValueWeakSetGetHandle = jniEnv->GetMethodID(jclassV8ValueWeakSet, JAVA_METHOD_AND_SIGNATURE_GET_HANDLE);
+
+            // Misc
+            jclassJavetScriptingError = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetScriptingError"));
+            jmethodIDJavetScriptingErrorConstructor = jniEnv->GetMethodID(jclassJavetScriptingError, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
         }
 
         jobject ToExternalV8ValueArray(
@@ -202,8 +207,11 @@ namespace Javet {
             if (argLength > 0) {
                 auto v8Array = v8::Array::New(v8Context->GetIsolate(), argLength);
                 for (int i = 0; i < argLength; ++i) {
-                    auto maybeResult = v8Array->Set(v8Context, i, args[i]);
-                    maybeResult.Check();
+                    auto v8MaybeBool = v8Array->Set(v8Context, i, args[i]);
+                    if (v8MaybeBool.IsNothing()) {
+                        Javet::Exceptions::HandlePendingException(jniEnv, v8Context);
+                        return nullptr;
+                    }
                 }
                 return ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Array);
             }
@@ -380,6 +388,35 @@ namespace Javet {
             return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueUndefined);
         }
 
+        jobject ToJavetScriptingError(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
+            jstring jStringExceptionMessage = ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
+            jstring jStringScriptResourceName = nullptr, jStringSourceLine = nullptr;
+            int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
+            auto v8LocalMessage = v8TryCatch.Message();
+            if (!v8LocalMessage.IsEmpty()) {
+                jStringScriptResourceName = ToJavaString(jniEnv, v8Context, v8LocalMessage->GetScriptResourceName());
+                jStringSourceLine = ToJavaString(jniEnv, v8Context, v8LocalMessage->GetSourceLine(v8Context).FromMaybe(V8LocalString()));
+                lineNumber = v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0);
+                startColumn = v8LocalMessage->GetStartColumn();
+                endColumn = v8LocalMessage->GetEndColumn();
+                startPosition = v8LocalMessage->GetStartPosition();
+                endPosition = v8LocalMessage->GetEndPosition();
+            }
+            jobject javetScriptingError = jniEnv->NewObject(
+                jclassJavetScriptingError,
+                jmethodIDJavetScriptingErrorConstructor,
+                jStringExceptionMessage, jStringScriptResourceName, jStringSourceLine,
+                lineNumber, startColumn, endColumn, startPosition, endPosition);
+            if (jStringSourceLine != nullptr) {
+                jniEnv->DeleteLocalRef(jStringSourceLine);
+            }
+            if (jStringScriptResourceName != nullptr) {
+                jniEnv->DeleteLocalRef(jStringScriptResourceName);
+            }
+            jniEnv->DeleteLocalRef(jStringExceptionMessage);
+            return javetScriptingError;
+        }
+
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(JNIEnv* jniEnv, const V8LocalContext& v8Context,
             jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule) {
             return std::make_unique<v8::ScriptOrigin>(
@@ -407,8 +444,7 @@ namespace Javet {
             if (twoByteString.IsEmpty()) {
                 return V8LocalString();
             }
-            auto localV8String = twoByteString.ToLocalChecked();
-            return localV8String;
+            return twoByteString.ToLocalChecked();
         }
 
         V8LocalValue ToV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj) {

@@ -80,6 +80,12 @@ public final class JavetEngineConfig {
      */
     public static final int DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS = 5;
     /**
+     * The constant MAX_POOL_SIZE.
+     *
+     * @since 1.0.4
+     */
+    public static final int MAX_POOL_SIZE = 4096;
+    /**
      * The constant DEFAULT_JAVET_LOGGER.
      *
      * @since 0.7.0

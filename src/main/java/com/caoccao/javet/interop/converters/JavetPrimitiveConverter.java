@@ -18,67 +18,35 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 /**
- * The type Javet primitive converter.
+ * The type Javet primitive converter converts Java primitive types
+ * to JS primitive types bi-directionally.
  *
  * @since 0.7.1
  */
 @SuppressWarnings("unchecked")
-public class JavetPrimitiveConverter implements IJavetConverter {
-    /**
-     * The Config.
-     *
-     * @since 0.9.4
-     */
-    protected JavetConverterConfig<?> config;
-
+public class JavetPrimitiveConverter extends BaseJavetConverter {
     /**
      * Instantiates a new Javet primitive converter.
      *
      * @since 0.7.1
      */
     public JavetPrimitiveConverter() {
-        config = new JavetConverterConfig<>();
+        super();
     }
 
     @Override
-    public JavetConverterConfig<?> getConfig() {
-        return config;
-    }
-
-    /**
-     * Sets config.
-     *
-     * @param config the config
-     * @since 0.9.4
-     */
-    public void setConfig(JavetConverterConfig<?> config) {
-        this.config = Objects.requireNonNull(config);
-    }
-
-    @Override
-    public final Object toObject(V8Value v8Value) throws JavetException {
-        return toObject(v8Value, 0);
-    }
-
-    /**
-     * To object with stack depth.
-     *
-     * @param v8Value the V8 value
-     * @param depth   the stack depth
-     * @return the object
-     * @throws JavetException the javet exception
-     * @since 0.9.3
-     */
     protected Object toObject(V8Value v8Value, final int depth) throws JavetException {
         validateDepth(depth);
         if (v8Value == null || v8Value.isNull() || v8Value.isUndefined()) {
@@ -89,24 +57,8 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         return v8Value;
     }
 
-    @Override
-    @CheckReturnValue
-    public final <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
-        return toV8Value(v8Runtime, object, 0);
-    }
-
-    /**
-     * To V8 value with stack depth.
-     *
-     * @param <T>       the type parameter
-     * @param v8Runtime the V8 runtime
-     * @param object    the object
-     * @param depth     the stack depth
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 0.9.3
-     */
     @SuppressWarnings("ConstantConditions")
+    @Override
     @CheckReturnValue
     protected <T extends V8Value> T toV8Value(
             V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
@@ -180,18 +132,4 @@ public class JavetPrimitiveConverter implements IJavetConverter {
         }
         return (T) v8Runtime.decorateV8Value(v8Value);
     }
-
-    /**
-     * Validate the stack depth.
-     *
-     * @param depth the stack depth
-     * @throws JavetException the javet exception
-     * @since 0.9.3
-     */
-    protected void validateDepth(final int depth) throws JavetException {
-        if (depth >= config.getMaxDepth()) {
-            throw JavetConverterException.circularStructure(config.getMaxDepth());
-        }
-    }
-
 }

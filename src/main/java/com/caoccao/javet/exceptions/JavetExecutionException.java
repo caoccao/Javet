@@ -17,6 +17,8 @@
 
 package com.caoccao.javet.exceptions;
 
+import java.util.Objects;
+
 /**
  * The type Javet execution exception.
  *
@@ -26,20 +28,10 @@ public class JavetExecutionException extends BaseJavetScriptingException {
     /**
      * Instantiates a new Javet execution exception.
      *
-     * @param message       the message
-     * @param resourceName  the resource name
-     * @param sourceLine    the source line
-     * @param lineNumber    the line number
-     * @param startColumn   the start column
-     * @param endColumn     the end column
-     * @param startPosition the start position
-     * @param endPosition   the end position
+     * @param scriptingError the scripting error
      * @since 0.7.0
      */
-    public JavetExecutionException(
-            String message, String resourceName, String sourceLine,
-            int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
-        super(JavetError.ExecutionFailure, message,
-                resourceName, sourceLine, lineNumber, startColumn, endColumn, startPosition, endPosition);
+    public JavetExecutionException(JavetScriptingError scriptingError) {
+        super(JavetError.ExecutionFailure, Objects.requireNonNull(scriptingError));
     }
 }

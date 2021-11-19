@@ -21,10 +21,13 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.converters.JavetObjectConverter;
 
 import java.util.Objects;
 
 public abstract class V8Value extends V8Data implements IV8Value {
+    protected static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
+
     protected V8Runtime v8Runtime;
 
     protected V8Value() {

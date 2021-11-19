@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -151,6 +150,17 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testLowMemoryNotification() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testPending() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            assertFalse(v8Runtime.hasPendingException());
+            assertFalse(v8Runtime.hasPendingMessage());
+            assertFalse(v8Runtime.hasScheduledException());
+            assertFalse(v8Runtime.promoteScheduledException());
+            assertFalse(v8Runtime.reportPendingMessages());
         }
     }
 

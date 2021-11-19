@@ -253,8 +253,8 @@ The console output is:
 
 This process is transparent and fully automated once the converter is set to ``V8Runtime``.
 
-Universal Converter
-===================
+Proxy Converter
+===============
 
 Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, ``JavetProxyConverter`` is designed for that. In general, the user experience is very much close to the one provided by GraalJS. As ``JavetProxyConverter`` opens almost the whole JVM to V8, it is very dangerous to allow end users to touch that V8 runtime, so ``JavetProxyConverter`` is not enabled by default. Here are the steps on how to enable that.
 
@@ -540,6 +540,35 @@ How to Customize JavetProxyConverter?
 -------------------------------------
 
 It is recommended to subclass ``JavetProxyConverter`` and override few internal API to achieve complete customization.
+
+Bridge Converter
+================
+
+However, ``JavetProxyConverter`` skips creating proxy for primitive types, ``List``, ``Set``, ``Map``, etc. No problem. ``JavetBridgeConverter`` creates proxy for all Java types including ``Integer``, ``Long``, ``String``, etc. except that only Java array is converted to JavaScript array.
+
+Preparation
+-----------
+
+.. code-block:: java
+
+    // Step 1: Create an instance of JavetBridgeConverter.
+    JavetBridgeConverter javetBridgeConverter = new JavetBridgeConverter();
+    // Step 2: Set the V8Runtime converter to JavetBridgeConverter.
+    v8Runtime.setConverter(javetBridgeConverter);
+    // Please feel free to inject arbitrary Java objects.
+
+Usage
+-----
+
+The usage is identical to the one in ``JavetProxyConverter``. 
+
+How to Cast Java Objects to JavaScript Objects?
+-----------------------------------------------
+
+There are 2 ways of casting the Java objects to the JavaScript objects.
+
+* **Implicit** - In JavaScript, sometimes the engine performs implicit type conversion. E.g. Given ``x`` is a Java string ``b``, ``'a' + x`` gives ``'ab'`` because ``x`` is implicitly cast to a JavaScript string by the engine.
+* **Explicit** - In JavaScript, the built-in ways of casting a variable to a primitive type or array are ``[Symbol.toPrimitive]()`` or ``[Symbol.iterator]()``. Besides, Javet provides ``toV8Value()`` to allow the explicit type conversion.
 
 Null Safety
 ===========

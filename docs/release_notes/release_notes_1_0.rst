@@ -1,11 +1,20 @@
-:orphan:
-
 ===================
 Release Notes 1.0.x
 ===================
 
-1.0.3
------
+1.0.4 V8 9.6
+------------
+
+* Upgraded Node.js to ``v16.13.0`` `(2021-10-26) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.13.0>`_
+* Upgraded V8 to ``v9.6.180.8`` `(2021-10-25) <https://v8.dev/blog/v8-release-96>`_
+* Added ``JavetBridgeConverter`` for completely bridging Java and JavaScript
+* Fixed a potential core dump issue caused by memory allocation failure in V8
+* Added error code 806 and ``JavetOutOfMemoryException``
+* Upgraded ``JavetEnginePool`` to get away from busy-wait
+* Added ``hasPendingException()``, ``hasPendingMessage()``, ``hasScheduledException()``, ``promoteScheduledException()`` and ``reportPendingMessages()`` to ``V8Runtime``
+
+1.0.3 Android ABI 21
+--------------------
 
 * Supported Android (arm, arm64, x86 and x86_64) ABI >= 21
 * Added ``addGCEpilogueCallback``, ``addGCPrologueCallback``, ``removeGCEpilogueCallback`` and ``removeGCPrologueCallback`` to ``V8Runtime``

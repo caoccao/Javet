@@ -62,7 +62,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * The representation of a V8 isolate (and V8 context).
  * <p>
  * Javet simplifies the V8 runtime model to 1 runtime - 1 isolate - 1 context,
- * though in V8 1 isolate can host multiple context.
+ * though in V8 1 isolate can host multiple contexts.
  * <p>
  * V8 runtime exposes many useful methods and callbacks that allow low level
  * interaction with the V8 isolate or context.
@@ -315,9 +315,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
-        Objects.requireNonNull(javetCallbackContext);
         V8ValueFunction v8ValueFunction = decorateV8Value((V8ValueFunction) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Function.getId(), javetCallbackContext));
+                handle, V8ValueReferenceType.Function.getId(), Objects.requireNonNull(javetCallbackContext)));
         Lock writeLock = callbackContextLock.writeLock();
         try {
             writeLock.lock();
@@ -650,10 +649,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.getSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
-    public V8HeapSpaceStatistics getV8HeapSpaceStatistics(V8HeapSpaceStatistics.AllocationSpace allocationSpace) {
-        Objects.requireNonNull(allocationSpace);
-        return ((V8HeapSpaceStatistics) v8Native.getV8HeapSpaceStatistics(handle, allocationSpace.getIndex()))
-                .setAllocationSpace(allocationSpace);
+    public V8HeapSpaceStatistics getV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
+        Objects.requireNonNull(v8AllocationSpace);
+        return ((V8HeapSpaceStatistics) v8Native.getV8HeapSpaceStatistics(handle, v8AllocationSpace.getIndex()))
+                .setAllocationSpace(v8AllocationSpace);
     }
 
     public V8HeapStatistics getV8HeapStatistics() {
@@ -741,9 +740,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
+    public boolean hasPendingException() throws JavetException {
+        return v8Native.hasPendingException(handle);
+    }
+
+    public boolean hasPendingMessage() throws JavetException {
+        return v8Native.hasPendingMessage(handle);
+    }
+
     boolean hasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
         return v8Native.hasPrivateProperty(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
+    }
+
+    public boolean hasScheduledException() throws JavetException {
+        return v8Native.hasScheduledException(handle);
     }
 
     /**
@@ -907,6 +918,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId(),
                 functionFulfilledHandle.getHandle(),
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
+    }
+
+    public boolean promoteScheduledException() throws JavetException {
+        return v8Native.promoteScheduledException(handle);
     }
 
     @CheckReturnValue
@@ -1104,6 +1119,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         } finally {
             writeLock.unlock();
         }
+    }
+
+    public boolean reportPendingMessages() throws JavetException {
+        return v8Native.reportPendingMessages(handle);
     }
 
     /**

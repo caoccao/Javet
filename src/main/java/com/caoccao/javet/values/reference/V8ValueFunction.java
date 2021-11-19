@@ -52,7 +52,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException {
-        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(checkV8Runtime(), objects)) {
+        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(checkV8Runtime(), null, objects)) {
             return v8Runtime.getV8Internal().callAsConstructor(this, virtualValueList.get());
         }
     }
@@ -67,7 +67,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @CheckReturnValue
     public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, Object... objects)
             throws JavetException {
-        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(checkV8Runtime(), objects)) {
+        try (V8VirtualValueList virtualValueList = new V8VirtualValueList(checkV8Runtime(), null, objects)) {
             return v8Runtime.getV8Internal().call(this, receiver, returnResult, virtualValueList.get());
         }
     }

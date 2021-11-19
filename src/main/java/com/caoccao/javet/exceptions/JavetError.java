@@ -58,7 +58,6 @@ public class JavetError {
      * @since 0.8.5
      */
     public static final String PARAMETER_ACTUAL_PARAMETER_SIZE = "actualParameterSize";
-
     /**
      * The constant PARAMETER_RESOURCE_NAME.
      *
@@ -107,7 +106,6 @@ public class JavetError {
      * @since 0.8.5
      */
     public static final String PARAMETER_MESSAGE = "message";
-
     /**
      * The constant PARAMETER_CURRENT_THREAD_ID.
      *
@@ -120,14 +118,12 @@ public class JavetError {
      * @since 0.8.5
      */
     public static final String PARAMETER_LOCKED_THREAD_ID = "lockedThreadId";
-
     /**
      * The constant PARAMETER_OS.
      *
      * @since 0.8.5
      */
     public static final String PARAMETER_OS = "OS";
-
     /**
      * The constant PARAMETER_FEATURE.
      *
@@ -140,7 +136,6 @@ public class JavetError {
      * @since 0.8.5
      */
     public static final String PARAMETER_SYMBOL = "symbol";
-
     /**
      * The constant PARAMETER_COUNT.
      *
@@ -165,13 +160,18 @@ public class JavetError {
      * @since 0.8.5
      */
     public static final String PARAMETER_REASON = "reason";
-
     /**
      * The constant PARAMETER_MAX_DEPTH.
      *
      * @since 0.8.5
      */
     public static final String PARAMETER_MAX_DEPTH = "maxDepth";
+    /**
+     * The constant PARAMETER_HEAP_STATISTICS.
+     *
+     * @since 1.0.4
+     */
+    public static final String PARAMETER_HEAP_STATISTICS = "heapStatistics";
 
     /**
      * The constant OSNotSupported.
@@ -383,6 +383,13 @@ public class JavetError {
      */
     public static final JavetError RuntimeCloseFailure = new JavetError(
             805, JavetErrorType.Runtime, "Failed to close the runtime with error message ${message}");
+    /**
+     * The constant RuntimeOutOfMemory.
+     *
+     * @since 1.0.4
+     */
+    public static final JavetError RuntimeOutOfMemory = new JavetError(
+            806, JavetErrorType.Runtime, "Runtime is out of memory because ${message} with ${heapStatistics}");
 
     /**
      * The Code.

@@ -22,15 +22,14 @@ import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueFunction;
-import com.caoccao.javet.values.reference.V8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueProxy;
+import com.caoccao.javet.values.reference.*;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -46,6 +45,12 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unchecked")
 public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
 
+    /**
+     * The constant FUNCTION_NAME_TO_V8_VALUE.
+     *
+     * @since 1.0.4
+     */
+    public static final String FUNCTION_NAME_TO_V8_VALUE = "toV8Value";
     /**
      * The constant GETTER_PREFIX_ARRAY.
      *
@@ -374,6 +379,18 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
                 return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
             }
+            if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
+                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            }
+        } else if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
+                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
+                    && targetObject instanceof Iterable) {
+                return new JavetProxySymbolIterableConverter<>(v8Runtime, (Iterable) targetObject).getV8ValueFunction();
+            }
         }
         return v8Runtime.createV8ValueUndefined();
     }
@@ -652,10 +669,27 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @Override
     public V8Value ownKeys(V8Value target) throws JavetException {
         if (!classMode) {
+            Object[] keys = null;
             if (isTargetTypeMap) {
-                return v8Runtime.toV8Value(((Map<?, ?>) targetObject).keySet().toArray());
+                keys = ((Map<?, ?>) targetObject).keySet().toArray();
             } else if (isTargetTypeSet) {
-                return v8Runtime.toV8Value(((Set<?>) targetObject).toArray());
+                keys = ((Set<?>) targetObject).toArray();
+            }
+            if (keys != null && keys.length > 0) {
+                try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+                    V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                    for (Object key : keys) {
+                        if (key instanceof String) {
+                            v8ValueArray.push(v8Runtime.createV8ValueString((String) key));
+                        } else if (key instanceof V8ValueString || key instanceof V8ValueSymbol) {
+                            v8ValueArray.push(key);
+                        } else if (key != null) {
+                            v8ValueArray.push(v8Runtime.createV8ValueString(key.toString()));
+                        }
+                    }
+                    v8Scope.setEscapable();
+                    return v8ValueArray;
+                }
             }
         }
         return v8Runtime.toV8Value(uniqueKeySet.toArray());

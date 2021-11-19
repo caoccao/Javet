@@ -17,13 +17,38 @@
 package com.caoccao.javet.interop.monitoring;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8HeapStatistics extends BaseTestJavetRuntime {
+
+    protected void printV8HeapStatistics(V8Runtime v8Runtime, String prefix) {
+        System.out.println(String.format("%s: %s", prefix, v8Runtime.getV8HeapStatistics().toString()));
+    }
+
     @Test
-    public void test() {
+    @Tag("performance")
+    public void testCorrelations() throws JavetException {
+        printV8HeapStatistics(v8Runtime, "Baseline");
+        List<V8Runtime> v8Runtimes = new ArrayList<>();
+        for (int i = 0; i < 100; ++i) {
+            V8Runtime newV8Runtime = v8Host.createV8Runtime();
+            v8Runtimes.add(newV8Runtime);
+            printV8HeapStatistics(newV8Runtime, Integer.toString(i));
+        }
+        JavetResourceUtils.safeClose(v8Runtimes);
+    }
+
+    @Test
+    public void testGetV8HeapStatistics() {
         V8HeapStatistics v8HeapStatistics = v8Runtime.getV8HeapStatistics();
         assertNotNull(v8HeapStatistics);
         String detailString = v8HeapStatistics.toString();

@@ -110,7 +110,13 @@ public interface IV8Native {
 
     boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
+    boolean hasPendingException(long v8RuntimeHandle);
+
+    boolean hasPendingMessage(long v8RuntimeHandle);
+
     boolean hasPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int type, String propertyName);
+
+    boolean hasScheduledException(long v8RuntimeHandle);
 
     void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
 
@@ -160,6 +166,8 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
 
+    boolean promoteScheduledException(long v8RuntimeHandle);
+
     Object proxyGetHandler(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object proxyGetTarget(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -177,6 +185,8 @@ public interface IV8Native {
     void removeJNIGlobalRef(long handle);
 
     void removeReferenceHandle(long referenceHandle, int referenceType);
+
+    boolean reportPendingMessages(long v8RuntimeHandle);
 
     void requestGarbageCollectionForTesting(long v8RuntimeHandle, boolean fullGC);
 

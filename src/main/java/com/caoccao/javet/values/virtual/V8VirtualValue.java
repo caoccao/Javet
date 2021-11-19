@@ -20,6 +20,7 @@ package com.caoccao.javet.values.virtual;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 
@@ -51,18 +52,19 @@ public class V8VirtualValue implements IJavetClosable {
      * Instantiates a new V8 virtual value.
      *
      * @param v8Runtime the V8 runtime
+     * @param converter the converter
      * @param object    the object
      * @throws JavetException the javet exception
      * @since 0.8.5
      */
-    public V8VirtualValue(V8Runtime v8Runtime, Object object) throws JavetException {
+    public V8VirtualValue(V8Runtime v8Runtime, IJavetConverter converter, Object object) throws JavetException {
         Objects.requireNonNull(v8Runtime);
         if (object instanceof V8Value) {
             converted = false;
             value = (V8Value) object;
         } else {
             converted = true;
-            value = v8Runtime.toV8Value(object);
+            value = converter == null ? v8Runtime.toV8Value(object) : converter.toV8Value(v8Runtime, object);
         }
     }
 

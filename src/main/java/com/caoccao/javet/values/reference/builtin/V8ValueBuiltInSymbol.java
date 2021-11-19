@@ -42,9 +42,23 @@ public class V8ValueBuiltInSymbol extends V8ValueFunction {
     public static final String PROPERTY_TO_PRIMITIVE = "toPrimitive";
     public static final String PROPERTY_TO_STRING_TAG = "toStringTag";
     public static final String PROPERTY_UNSCOPABLES = "unscopables";
-    public static final String FUNCTION_FOR = "for";
-    public static final String FUNCTION_KEY_FOR = "keyFor";
-    public static final String PREFIX_PROPERTY = "PROPERTY_";
+
+    public static final String SYMBOL_PROPERTY_ASYNC_ITERATOR = "Symbol.asyncIterator";
+    public static final String SYMBOL_PROPERTY_HAS_INSTANCE = "Symbol.hasInstance";
+    public static final String SYMBOL_PROPERTY_IS_CONCAT_SPREADABLE = "Symbol.isConcatSpreadable";
+    public static final String SYMBOL_PROPERTY_ITERATOR = "Symbol.iterator";
+    public static final String SYMBOL_PROPERTY_MATCH = "Symbol.match";
+    public static final String SYMBOL_PROPERTY_MATCH_ALL = "Symbol.matchAll";
+    public static final String SYMBOL_PROPERTY_REPLACE = "Symbol.replace";
+    public static final String SYMBOL_PROPERTY_SEARCH = "Symbol.search";
+    public static final String SYMBOL_PROPERTY_SPECIES = "Symbol.species";
+    public static final String SYMBOL_PROPERTY_SPLIT = "Symbol.split";
+    public static final String SYMBOL_PROPERTY_TO_PRIMITIVE = "Symbol.toPrimitive";
+    public static final String SYMBOL_PROPERTY_TO_STRING_TAG = "Symbol.toStringTag";
+    public static final String SYMBOL_PROPERTY_UNSCOPABLES = "Symbol.unscopables";
+
+    protected static final String FUNCTION_FOR = "for";
+    protected static final String FUNCTION_KEY_FOR = "keyFor";
 
     protected Map<String, IJavetSupplier<V8ValueSymbol, Throwable>> builtInSymbolMap;
 

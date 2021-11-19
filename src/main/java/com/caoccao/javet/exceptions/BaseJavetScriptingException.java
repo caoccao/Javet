@@ -35,32 +35,21 @@ public abstract class BaseJavetScriptingException extends JavetException {
     /**
      * Instantiates a new Base javet scripting exception.
      *
-     * @param error         the error
-     * @param message       the message
-     * @param resourceName  the resource name
-     * @param sourceLine    the source line
-     * @param lineNumber    the line number
-     * @param startColumn   the start column
-     * @param endColumn     the end column
-     * @param startPosition the start position
-     * @param endPosition   the end position
+     * @param error          the error
+     * @param scriptingError the scripting error
      * @since 0.8.5
      */
-    protected BaseJavetScriptingException(
-            JavetError error,
-            String message, String resourceName, String sourceLine,
-            int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
+    protected BaseJavetScriptingException(JavetError error, JavetScriptingError scriptingError) {
         super(error, SimpleMap.of(
-                JavetError.PARAMETER_MESSAGE, message,
-                JavetError.PARAMETER_RESOURCE_NAME, resourceName,
-                JavetError.PARAMETER_SOURCE_LINE, sourceLine,
-                JavetError.PARAMETER_LINE_NUMBER, lineNumber,
-                JavetError.PARAMETER_START_COLUMN, startColumn,
-                JavetError.PARAMETER_END_COLUMN, endColumn,
-                JavetError.PARAMETER_START_POSITION, startPosition,
-                JavetError.PARAMETER_END_POSITION, endPosition));
-        scriptingError = new JavetScriptingError(message, resourceName, sourceLine,
-                lineNumber, startColumn, endColumn, startPosition, endPosition);
+                JavetError.PARAMETER_MESSAGE, scriptingError.getMessage(),
+                JavetError.PARAMETER_RESOURCE_NAME, scriptingError.getResourceName(),
+                JavetError.PARAMETER_SOURCE_LINE, scriptingError.getSourceLine(),
+                JavetError.PARAMETER_LINE_NUMBER, scriptingError.getLineNumber(),
+                JavetError.PARAMETER_START_COLUMN, scriptingError.getStartColumn(),
+                JavetError.PARAMETER_END_COLUMN, scriptingError.getEndColumn(),
+                JavetError.PARAMETER_START_POSITION, scriptingError.getStartPosition(),
+                JavetError.PARAMETER_END_POSITION, scriptingError.getEndPosition()));
+        this.scriptingError = scriptingError;
     }
 
     /**

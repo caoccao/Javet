@@ -20,10 +20,11 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
-import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueProxy;
@@ -31,7 +32,12 @@ import com.caoccao.javet.values.reference.V8ValueProxy;
 import java.util.List;
 
 /**
- * The type Javet proxy converter.
+ * The type Javet proxy converter converts most of Java objects to
+ * JS objects via JS proxy bi-directionally.
+ * <p>
+ * Java Primitive types, Array, List, Set and Map are converted to the
+ * corresponding types in JS. Set and Map conversion can be disabled
+ * via config.
  *
  * @since 0.9.6
  */
@@ -61,14 +67,18 @@ public class JavetProxyConverter extends JavetObjectConverter {
         super();
     }
 
-    @Override
+    /**
+     * To proxied V8 value.
+     *
+     * @param <T>       the type parameter
+     * @param v8Runtime the V8 runtime
+     * @param object    the object
+     * @return the proxied V8 value
+     * @throws JavetException the javet exception
+     */
     @CheckReturnValue
-    protected <T extends V8Value> T toV8Value(
-            V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
-        V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
-        if (v8Value != null && !(v8Value.isUndefined())) {
-            return (T) v8Value;
-        }
+    protected <T extends V8Value> T toProxiedV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
+        V8Value v8Value;
         boolean classMode = false;
         if (object instanceof Class) {
             classMode = JavetUniversalProxyHandler.isClassMode((Class<?>) object);
@@ -87,12 +97,25 @@ public class JavetProxyConverter extends JavetObjectConverter {
                         new JavetUniversalProxyHandler<>(v8Runtime, object);
                 List<JavetCallbackContext> javetCallbackContexts =
                         iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                iV8ValueObjectHandler.setPrivateProperty(
-                        PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+                try (V8ValueLong v8ValueLongHandle = v8Runtime.createV8ValueLong(
+                        javetCallbackContexts.get(0).getHandle())) {
+                    iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, v8ValueLongHandle);
+                }
             }
             v8Value = v8ValueProxy;
             v8Scope.setEscapable();
         }
         return (T) v8Runtime.decorateV8Value(v8Value);
+    }
+
+    @Override
+    @CheckReturnValue
+    protected <T extends V8Value> T toV8Value(
+            V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
+        V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
+        if (v8Value != null && !(v8Value.isUndefined())) {
+            return (T) v8Value;
+        }
+        return toProxiedV8Value(v8Runtime, object);
     }
 }

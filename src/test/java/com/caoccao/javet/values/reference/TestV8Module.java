@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetCompilationException;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockModuleResolver;
 import com.caoccao.javet.values.V8Value;
@@ -33,6 +34,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         IV8Executor iV8Executor = v8Runtime.getExecutor(
                 "Object.a = 1").setResourceName("./test.js");
         try (V8Module v8Module = iV8Executor.compileV8Module()) {
+            assertEquals(V8Module.Uninstantiated, v8Module.getStatus());
             assertTrue(v8Runtime.containsV8Module(v8Module.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
@@ -66,28 +68,33 @@ public class TestV8Module extends BaseTestJavetRuntime {
         String moduleName3 = "./module3.js";
         IV8Executor iV8Executor = v8Runtime.getExecutor(codeString1).setResourceName(moduleName1);
         try (V8Module v8Module1 = iV8Executor.compileV8Module()) {
+            assertEquals(V8Module.Uninstantiated, v8Module1.getStatus());
             assertTrue(v8Runtime.containsV8Module(v8Module1.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
                 assertTrue(3 <= v8Module1.getScriptId() && v8Module1.getScriptId() <= 4);
             }
             assertTrue(v8Module1.instantiate());
+            assertEquals(V8Module.Instantiated, v8Module1.getStatus());
             try (V8ValuePromise v8ValuePromise = v8Module1.evaluate()) {
                 assertTrue(v8ValuePromise.isFulfilled());
                 assertTrue(v8ValuePromise.getResult().isUndefined());
             }
             iV8Executor = v8Runtime.getExecutor(codeString2).setResourceName(moduleName2);
             try (V8Module v8Module2 = iV8Executor.compileV8Module()) {
+                assertEquals(V8Module.Uninstantiated, v8Module2.getStatus());
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
                     assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
-                assertFalse(v8Module2.instantiate(), "Function is invalid");
+                assertThrows(JavetExecutionException.class, () -> v8Module2.instantiate(), "Function is invalid");
+                assertEquals(V8Module.Uninstantiated, v8Module2.getStatus());
                 assertNull(v8Module2.getException());
             }
             iV8Executor = v8Runtime.getExecutor(codeString3).setResourceName(moduleName3);
             try (V8Module v8Module3 = iV8Executor.compileV8Module()) {
+                assertEquals(V8Module.Uninstantiated, v8Module3.getStatus());
                 assertTrue(v8Runtime.containsV8Module(v8Module3.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
@@ -255,7 +262,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         v8Runtime.setV8ModuleResolver(resolver);
         assertFalse(resolver.isCalled());
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
-                "import { test } from './test.js'; globalThis.test = test;")
+                        "import { test } from './test.js'; globalThis.test = test;")
                 .setResourceName("./case.js").setModule(true).execute()) {
             assertEquals(1, v8Runtime.getV8ModuleCount());
             assertTrue(resolver.isCalled(), "Module resolver should be called in the first time.");
@@ -264,7 +271,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         }
         resolver.setCalled(false);
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
-                "import { test } from './test.js'; globalThis.test = test;")
+                        "import { test } from './test.js'; globalThis.test = test;")
                 .setResourceName("./case.js").setModule(true).execute()) {
             assertEquals(1, v8Runtime.getV8ModuleCount());
             assertFalse(resolver.isCalled(), "Module resolver should not be called in the second time because it is cached.");
@@ -274,7 +281,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         v8Runtime.removeV8Modules(true);
         assertEquals(0, v8Runtime.getV8ModuleCount());
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
-                "import { test } from './test.js'; globalThis.test = test;")
+                        "import { test } from './test.js'; globalThis.test = test;")
                 .setResourceName("./case.js").setModule(true).execute()) {
             assertEquals(1, v8Runtime.getV8ModuleCount());
             assertTrue(resolver.isCalled(), "Module resolver should be called after modules are cleared.");

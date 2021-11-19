@@ -28,9 +28,7 @@ import com.caoccao.javet.utils.JavetDateTimeUtils;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * The type Javet engine pool.
@@ -50,7 +48,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      *
      * @since 0.9.1
      */
-    protected final ConcurrentLinkedQueue<JavetEngine<R>> activeEngineList;
+    protected final ArrayBlockingQueue<JavetEngine<R>> activeEngineList;
     /**
      * The External lock.
      *
@@ -62,7 +60,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      *
      * @since 0.9.1
      */
-    protected final ConcurrentLinkedQueue<JavetEngine<R>> idleEngineList;
+    protected final ArrayBlockingQueue<JavetEngine<R>> idleEngineList;
     /**
      * The Active.
      *
@@ -106,8 +104,8 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     public JavetEnginePool(JavetEngineConfig config) {
         Objects.requireNonNull(config);
         this.config = config;
-        activeEngineList = new ConcurrentLinkedQueue<>();
-        idleEngineList = new ConcurrentLinkedQueue<>();
+        activeEngineList = new ArrayBlockingQueue<>(JavetEngineConfig.MAX_POOL_SIZE, true);
+        idleEngineList = new ArrayBlockingQueue<>(JavetEngineConfig.MAX_POOL_SIZE, true);
         externalLock = new Object();
         active = false;
         quitting = false;

@@ -61,10 +61,17 @@ using V8LocalSymbol = v8::Local<v8::Symbol>;
 using V8LocalSymbolObject = v8::Local<v8::SymbolObject>;
 using V8LocalValue = v8::Local<v8::Value>;
 
+// Maybe
+
+using V8MaybeBool = v8::Maybe<bool>;
+
 // Maybe Local
 
+using V8MaybeLocalFunction = v8::MaybeLocal<v8::Function>;
 using V8MaybeLocalModule = v8::MaybeLocal<v8::Module>;
 using V8MaybeLocalPromise = v8::MaybeLocal<v8::Promise>;
+using V8MaybeLocalPromiseResolver = v8::MaybeLocal<v8::Promise::Resolver>;
+using V8MaybeLocalProxy = v8::MaybeLocal<v8::Proxy>;
 using V8MaybeLocalString = v8::MaybeLocal<v8::String>;
 using V8MaybeLocalValue = v8::MaybeLocal<v8::Value>;
 
