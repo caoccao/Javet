@@ -119,12 +119,10 @@ namespace Javet {
 
         inline jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value) {
             V8TryCatch v8TryCatch(v8Context->GetIsolate());
-            jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Value);
             if (v8TryCatch.HasCaught()) {
-                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
-                externalV8Value = nullptr;
+                return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
             }
-            return externalV8Value;
+            return Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Value);
         }
 
         inline void Unlock() {

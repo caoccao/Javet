@@ -73,10 +73,10 @@ namespace Javet {
             return false;
         }
 
-        void ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
+        jobject ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
             if (v8TryCatch.HasTerminated()) {
                 LOG_ERROR("Compilation has been terminated.");
-                ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
+                return ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
             }
             else {
                 LOG_ERROR("Compilation exception.");
@@ -89,17 +89,19 @@ namespace Javet {
                 jniEnv->DeleteLocalRef(javetCompilationException);
                 jniEnv->DeleteLocalRef(javetScriptingError);
             }
+            return nullptr;
         }
 
-        void ThrowJavetConverterException(JNIEnv* jniEnv, const char* message) {
+        jobject ThrowJavetConverterException(JNIEnv* jniEnv, const char* message) {
             LOG_ERROR(*message);
             jniEnv->ThrowNew(jclassJavetConverterException, message);
+            return nullptr;
         }
 
-        void ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
+        jobject ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
             if (v8TryCatch.HasTerminated()) {
                 LOG_ERROR("Execution has been terminated.");
-                ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
+                return ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
             }
             else {
                 LOG_ERROR("Execution exception.");
@@ -111,9 +113,10 @@ namespace Javet {
                 jniEnv->Throw(javetExecutionException);
                 jniEnv->DeleteLocalRef(javetExecutionException);
             }
+            return nullptr;
         }
 
-        void ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, v8::Isolate* v8Isolate, const char* message) {
+        jobject ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, v8::Isolate* v8Isolate, const char* message) {
             LOG_ERROR(*message);
             jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, message);
             jobject jObjectHeapStatistics = Javet::Monitor::GetHeapStatistics(jniEnv, v8Isolate);
@@ -125,14 +128,16 @@ namespace Javet {
             jniEnv->DeleteLocalRef(jStringExceptionMessage);
             jniEnv->DeleteLocalRef(jObjectHeapStatistics);
             jniEnv->Throw(javetOutOfMemoryException);
+            return nullptr;
         }
 
-        void ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue) {
+        jobject ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue) {
             jthrowable javetTerminatedException = (jthrowable)jniEnv->NewObject(
                 jclassJavetTerminatedException,
                 jmethodIDJavetTerminatedExceptionConstructor,
                 canContinue);
             jniEnv->Throw(javetTerminatedException);
+            return nullptr;
         }
 
         void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage) {
