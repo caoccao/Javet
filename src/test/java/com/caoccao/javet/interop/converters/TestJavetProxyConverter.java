@@ -103,6 +103,19 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             IStringJoiner joiner = stringJoiner.getJoiner();
             assertEquals("a,b", joiner.join("a", "b"));
             assertEquals("a,b,c", joiner.join(joiner.join("a", "b"), "c"));
+            try {
+                v8Runtime.getExecutor("stringJoiner.invalidFunction();").executeVoid();
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: stringJoiner.invalidFunction is not a function", e.getMessage());
+                assertEquals(
+                        "TypeError: stringJoiner.invalidFunction is not a function\n" +
+                                "Resource: undefined\n" +
+                                "Source Code: stringJoiner.invalidFunction();\n" +
+                                "Line Number: 1\n" +
+                                "Column: 13, 14\n" +
+                                "Position: 13, 14",
+                        e.getScriptingError().toString());
+            }
             v8Runtime.getGlobalObject().delete("stringJoiner");
         }
     }
