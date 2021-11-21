@@ -71,21 +71,66 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 @SuppressWarnings("unchecked")
 public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
-    protected static final IJavetConverter DEFAULT_CONVERTER = new JavetObjectConverter();
-    protected static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
-    protected static final long INVALID_HANDLE = 0L;
-    protected static final String PROPERTY_DATA_VIEW = "DataView";
-    protected static final int V8_VALUE_BOOLEAN_FALSE_INDEX = 0;
-    protected static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
-    protected static final int V8_VALUE_NUMBER_LOWER_BOUND = -128; // Inclusive
-    protected static final int V8_VALUE_NUMBER_UPPER_BOUND = 128; // Exclusive
-    protected Map<Class<?>, BindingContext> bindingContextWeakHashMap;
-    protected V8ValueBoolean[] cachedV8ValueBooleans;
-    protected V8ValueInteger[] cachedV8ValueIntegers;
-    protected V8ValueLong[] cachedV8ValueLongs;
-    protected V8ValueNull cachedV8ValueNull;
-    protected V8ValueUndefined cachedV8ValueUndefined;
-    protected ReadWriteLock callbackContextLock;
+    /**
+     * The Default converter.
+     *
+     * @since 0.8.5
+     */
+    static final IJavetConverter DEFAULT_CONVERTER = new JavetObjectConverter();
+    /**
+     * The Default message format javet inspector.
+     *
+     * @since 0.7.3
+     */
+    static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
+    /**
+     * The Invalid handle.
+     *
+     * @since 0.7.0
+     */
+    static final long INVALID_HANDLE = 0L;
+    /**
+     * The Property data view.
+     *
+     * @since 0.7.2
+     */
+    static final String PROPERTY_DATA_VIEW = "DataView";
+    /**
+     * The V8 value boolean false index.
+     *
+     * @since 0.7.4
+     */
+    static final int V8_VALUE_BOOLEAN_FALSE_INDEX = 0;
+    /**
+     * The V8 value boolean true index.
+     *
+     * @since 0.7.4
+     */
+    static final int V8_VALUE_BOOLEAN_TRUE_INDEX = 1;
+    /**
+     * The V8 value number lower bound.
+     *
+     * @since 0.7.4
+     */
+    static final int V8_VALUE_NUMBER_LOWER_BOUND = -128; // Inclusive
+    /**
+     * The V8 value number upper bound.
+     *
+     * @since 0.7.4
+     */
+    static final int V8_VALUE_NUMBER_UPPER_BOUND = 128; // Exclusive
+    /**
+     * The Binding context weak hash map.
+     *
+     * @since 0.9.2
+     */
+    final Map<Class<?>, BindingContext> bindingContextWeakHashMap;
+    /**
+     * The Callback context lock.
+     *
+     * @since 0.9.12
+     */
+    final ReadWriteLock callbackContextLock;
     /**
      * The Callback context map.
      * <p>
@@ -95,26 +140,156 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @since 0.8.3
      */
-    protected Map<Long, JavetCallbackContext> callbackContextMap;
-    protected IJavetConverter converter;
-    protected List<IJavetGCCallback> gcEpilogueCallbacks;
-    protected List<IJavetGCCallback> gcPrologueCallbacks;
-    protected boolean gcScheduled;
-    protected long handle;
-    protected IJavetLogger logger;
-    protected boolean pooled;
-    protected IJavetPromiseRejectCallback promiseRejectCallback;
-    protected ReadWriteLock referenceLock;
-    protected Map<Long, IV8ValueReference> referenceMap;
-    protected RuntimeOptions<?> runtimeOptions;
-    protected V8Host v8Host;
-    protected V8Inspector v8Inspector;
-    protected V8Internal v8Internal;
-    protected ReadWriteLock v8ModuleLock;
-    protected Map<String, IV8Module> v8ModuleMap;
-    protected IV8ModuleResolver v8ModuleResolver;
-    protected IV8Native v8Native;
+    final Map<Long, JavetCallbackContext> callbackContextMap;
+    /**
+     * The GC epilogue callbacks.
+     *
+     * @since 1.0.3
+     */
+    final List<IJavetGCCallback> gcEpilogueCallbacks;
+    /**
+     * The GC prologue callbacks.
+     *
+     * @since 1.0.3
+     */
+    final List<IJavetGCCallback> gcPrologueCallbacks;
+    /**
+     * The Reference map.
+     *
+     * @since 0.7.0
+     */
+    final Map<Long, IV8ValueReference> referenceMap;
+    /**
+     * The Runtime options.
+     *
+     * @since 1.0.0
+     */
+    final RuntimeOptions<?> runtimeOptions;
+    /**
+     * The V8 host.
+     *
+     * @since 0.7.0
+     */
+    final V8Host v8Host;
+    /**
+     * The V8 internal.
+     *
+     * @since 1.0.2
+     */
+    final V8Internal v8Internal;
+    /**
+     * The V8 module lock.
+     *
+     * @since 0.9.12
+     */
+    final ReadWriteLock v8ModuleLock;
+    /**
+     * The V8 module map.
+     *
+     * @since 0.9.12
+     */
+    final Map<String, IV8Module> v8ModuleMap;
+    /**
+     * The Cached V8 value booleans.
+     *
+     * @since 0.7.4
+     */
+    V8ValueBoolean[] cachedV8ValueBooleans;
+    /**
+     * The Cached V8 value integers.
+     *
+     * @since 0.7.4
+     */
+    V8ValueInteger[] cachedV8ValueIntegers;
+    /**
+     * The Cached V8 value longs.
+     *
+     * @since 0.7.4
+     */
+    V8ValueLong[] cachedV8ValueLongs;
+    /**
+     * The Cached V8 value null.
+     *
+     * @since 0.7.4
+     */
+    V8ValueNull cachedV8ValueNull;
+    /**
+     * The Cached V8 value undefined.
+     *
+     * @since 0.7.4
+     */
+    V8ValueUndefined cachedV8ValueUndefined;
+    /**
+     * The Converter.
+     *
+     * @since 0.7.0
+     */
+    IJavetConverter converter;
+    /**
+     * The GC scheduled.
+     *
+     * @since 0.8.3
+     */
+    boolean gcScheduled;
+    /**
+     * The Handle.
+     *
+     * @since 0.7.0
+     */
+    long handle;
+    /**
+     * The Logger.
+     *
+     * @since 0.7.0
+     */
+    IJavetLogger logger;
+    /**
+     * The Pooled.
+     *
+     * @since 0.7.0
+     */
+    boolean pooled;
+    /**
+     * The Promise reject callback.
+     *
+     * @since 0.8.3
+     */
+    IJavetPromiseRejectCallback promiseRejectCallback;
+    /**
+     * The Reference lock.
+     *
+     * @since 0.9.12
+     */
+    ReadWriteLock referenceLock;
+    /**
+     * The V8 inspector.
+     *
+     * @since 0.7.3
+     */
+    V8Inspector v8Inspector;
+    /**
+     * The V8 module resolver.
+     *
+     * @since 0.9.3
+     */
+    IV8ModuleResolver v8ModuleResolver;
+    /**
+     * The V8 native.
+     *
+     * @since 0.7.0
+     */
+    IV8Native v8Native;
 
+    /**
+     * Instantiates a new V8 runtime.
+     *
+     * @param v8Host         the V8 host
+     * @param handle         the handle
+     * @param pooled         the pooled
+     * @param v8Native       the V8 native
+     * @param runtimeOptions the runtime options
+     * @since 0.7.0
+     */
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
         assert handle != 0;
         bindingContextWeakHashMap = Collections.synchronizedMap(new WeakHashMap<>());
@@ -141,11 +316,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         initializeV8ValueCache();
     }
 
-    void add(IV8ValueSet iV8ValueKeySet, V8Value value) throws JavetException {
+    /**
+     * Add a value to a set.
+     *
+     * @param iV8ValueSet the V8 value set
+     * @param value       the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    void add(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
         decorateV8Value(value);
-        v8Native.add(handle, iV8ValueKeySet.getHandle(), iV8ValueKeySet.getType().getId(), value);
+        v8Native.add(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), value);
     }
 
+    /**
+     * Add GC epilogue callback.
+     *
+     * @param iJavetGCCallback the javet GC callback
+     * @since 1.0.3
+     */
     public void addGCEpilogueCallback(IJavetGCCallback iJavetGCCallback) {
         synchronized (gcEpilogueCallbacks) {
             boolean registered = !gcEpilogueCallbacks.isEmpty();
@@ -156,6 +345,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Add GC prologue callback.
+     *
+     * @param iJavetGCCallback the javet GC callback
+     * @since 1.0.3
+     */
     public void addGCPrologueCallback(IJavetGCCallback iJavetGCCallback) {
         synchronized (gcPrologueCallbacks) {
             boolean registered = !gcPrologueCallbacks.isEmpty();
@@ -166,6 +361,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Add reference.
+     *
+     * @param iV8ValueReference the V8 value reference
+     * @since 1.0.3
+     */
     void addReference(IV8ValueReference iV8ValueReference) {
         Lock readLock = referenceLock.readLock();
         try {
@@ -176,6 +377,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Add V8 module.
+     *
+     * @param iV8Module the V8 module
+     * @since 0.9.1
+     */
     public void addV8Module(IV8Module iV8Module) {
         Lock readLock = v8ModuleLock.readLock();
         try {
@@ -186,23 +393,61 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Allow eval().
+     *
+     * @param allow true : allow eval(), false : disallow eval()
+     * @since 0.8.0
+     */
     public void allowEval(boolean allow) {
         v8Native.allowCodeGenerationFromStrings(handle, allow);
     }
 
+    /**
+     * Await tells the V8 runtime to pump the message loop in a non-blocking manner.
+     *
+     * @since 0.8.0
+     */
     public void await() {
         v8Native.await(handle);
     }
 
+    /**
+     * Call a function.
+     * <p>
+     * It is similar to JavaScript built-in functions apply() or call().
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param receiver       the receiver
+     * @param returnResult   the return result
+     * @param v8Values       the V8 values
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     <T extends V8Value> T call(
-            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+            IV8ValueObject iV8ValueObject,
+            IV8ValueObject receiver,
+            boolean returnResult,
+            V8Value... v8Values)
             throws JavetException {
         decorateV8Values(v8Values);
         return decorateV8Value((T) v8Native.call(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), receiver, returnResult, v8Values));
     }
 
+    /**
+     * Call a function as a constructor.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param v8Values       the V8 values
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
     @CheckReturnValue
     <T extends V8Value> T callAsConstructor(
             IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
@@ -211,11 +456,27 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), v8Values));
     }
 
+    /**
+     * Set a reference to a strong reference.
+     *
+     * @param iV8ValueReference the V8 value reference
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @SuppressWarnings("RedundantThrows")
     void clearWeak(IV8ValueReference iV8ValueReference) throws JavetException {
         v8Native.clearWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
+    /**
+     * Clone a V8 value.
+     *
+     * @param <T>               the type parameter
+     * @param iV8ValueReference the V8 value reference
+     * @return the cloned V8 value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws JavetException {
         return decorateV8Value((T) v8Native.cloneV8Value(
@@ -227,6 +488,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         close(!pooled);
     }
 
+    /**
+     * Close by a force close flag.
+     *
+     * @param forceClose the force close
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public void close(boolean forceClose) throws JavetException {
         if (!isClosed() && forceClose) {
             removeAllReferences();
@@ -236,6 +504,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Compile a V8 module and add that V8 module to the internal V8 module map.
+     *
+     * @param scriptString   the script string
+     * @param v8ScriptOrigin the V8 script origin
+     * @param resultRequired the result required
+     * @return the compiled V8 module or null
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
@@ -256,6 +534,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Module;
     }
 
+    /**
+     * Compile a V8 script.
+     *
+     * @param scriptString   the script string
+     * @param v8ScriptOrigin the V8 script origin
+     * @param resultRequired the result required
+     * @return the V8 script
+     * @throws JavetException the javet exception
+     * @since 0.9.13
+     */
     @CheckReturnValue
     public V8Script compileV8Script(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
@@ -266,6 +554,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
+    /**
+     * Contains a V8 module by resource name.
+     *
+     * @param resourceName the resource name
+     * @return true : yes, false : no
+     * @since 0.8.1
+     */
     public boolean containsV8Module(String resourceName) {
         Lock readLock = v8ModuleLock.readLock();
         try {
@@ -433,6 +728,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return decorateV8Value(new V8ValueZonedDateTime(zonedDateTime));
     }
 
+    /**
+     * Decorate a V8 value.
+     *
+     * @param <T>     the type parameter
+     * @param v8Value the V8 value
+     * @return the input V8 value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @SuppressWarnings("UnusedReturnValue")
     public <T extends IV8Value> T decorateV8Value(T v8Value) throws JavetException {
         if (v8Value != null) {
@@ -445,6 +749,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Value;
     }
 
+    /**
+     * Decorate a V8 value array.
+     *
+     * @param <T>      the type parameter
+     * @param v8Values the V8 values
+     * @return the V8 value count
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @SuppressWarnings("UnusedReturnValue")
     public <T extends IV8Value> int decorateV8Values(T... v8Values) throws JavetException {
         if (v8Values != null && v8Values.length > 0) {
@@ -456,21 +769,59 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return 0;
     }
 
+    /**
+     * Delete a key from an object.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return true : deleted, false : key is not found
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     boolean delete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         decorateV8Value(key);
         return v8Native.delete(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
+    /**
+     * Delete a private property from an object.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param propertyName   the property name
+     * @return true : deleted, false : key is not found
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
     boolean deletePrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
         return v8Native.deletePrivateProperty(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
     }
 
+    /**
+     * Equals tells whether 2 references are reference equal or not.
+     *
+     * @param iV8ValueReference1 the V8 value reference 1
+     * @param iV8ValueReference2 the V8 value reference 2
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
     boolean equals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
             throws JavetException {
         return v8Native.equals(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
     }
 
+    /**
+     * Execute a script or module.
+     *
+     * @param <T>            the type parameter
+     * @param scriptString   the script string
+     * @param v8ScriptOrigin the V8 script origin
+     * @param resultRequired the result required
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     public <T extends V8Value> T execute(
             String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
@@ -480,6 +831,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule()));
     }
 
+    /**
+     * Receives the GC epilogue callback from JNI.
+     *
+     * @param v8GCTypeValue          the V8 GC type value
+     * @param v8GCCallbackFlagsValue the V8 GC callback flags value
+     * @since 1.0.3
+     */
     void gcEpilogueCallback(int v8GCTypeValue, int v8GCCallbackFlagsValue) {
         final EnumSet<V8GCType> enumSetV8GCType = IEnumBitset.getEnumSet(v8GCTypeValue, V8GCType.class);
         final EnumSet<V8GCCallbackFlags> enumSetV8GCCallbackFlags = IEnumBitset.getEnumSet(
@@ -489,6 +847,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Receives the GC prologue callback from JNI.
+     *
+     * @param v8GCTypeValue          the V8 GC type value
+     * @param v8GCCallbackFlagsValue the V8 GC callback flags value
+     * @since 1.0.3
+     */
     void gcPrologueCallback(int v8GCTypeValue, int v8GCCallbackFlagsValue) {
         final EnumSet<V8GCType> enumSetV8GCType = IEnumBitset.getEnumSet(v8GCTypeValue, V8GCType.class);
         final EnumSet<V8GCCallbackFlags> enumSetV8GCCallbackFlags = IEnumBitset.getEnumSet(
@@ -498,16 +863,39 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Get a property from an object by a property key.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param key            the property key
+     * @return the property value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     <T extends V8Value> T get(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return decorateV8Value((T) v8Native.get(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key));
     }
 
+    /**
+     * Gets the internal binding context weak hash map.
+     *
+     * @return the binding context weak hash map
+     * @since 0.9.2
+     */
     public Map<Class<?>, BindingContext> getBindingContextWeakHashMap() {
         return bindingContextWeakHashMap;
     }
 
+    /**
+     * Gets a callback context by a handle.
+     *
+     * @param handle the handle
+     * @return the callback context
+     * @since 0.9.12
+     */
     public JavetCallbackContext getCallbackContext(long handle) {
         Lock readLock = callbackContextLock.readLock();
         try {
@@ -518,6 +906,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Gets callback context count.
+     *
+     * @return the callback context count
+     * @since 0.9.12
+     */
     public int getCallbackContextCount() {
         Lock readLock = callbackContextLock.readLock();
         try {
@@ -528,67 +922,177 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Gets converter.
+     *
+     * @return the converter
+     * @since 0.8.5
+     */
     public IJavetConverter getConverter() {
         return converter;
     }
 
+    /**
+     * Gets an executor by {@link File}.
+     *
+     * @param scriptFile the script file
+     * @return the executor
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     public IV8Executor getExecutor(File scriptFile) throws JavetException {
         return new V8FileExecutor(this, scriptFile);
     }
 
+    /**
+     * Gets an executor by {@link Path}.
+     *
+     * @param scriptPath the script path
+     * @return the executor
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     public IV8Executor getExecutor(Path scriptPath) throws JavetException {
         return new V8PathExecutor(this, scriptPath);
     }
 
+    /**
+     * Gets an executor by a script string.
+     *
+     * @param scriptString the script string
+     * @return the executor
+     * @since 0.8.0
+     */
     public IV8Executor getExecutor(String scriptString) {
         return new V8StringExecutor(this, scriptString);
     }
 
+    /**
+     * Gets the global object. By default, it is <code>globalThis</code>.
+     *
+     * @return the global object
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueGlobalObject getGlobalObject() throws JavetException {
         return decorateV8Value((V8ValueGlobalObject) v8Native.getGlobalObject(handle));
     }
 
+    /**
+     * Gets the internal handle that represents the current V8 runtime in JNI.
+     *
+     * @return the handle
+     * @since 0.7.0
+     */
     public long getHandle() {
         return handle;
     }
 
+    /**
+     * Gets the internal identity hash by a reference object.
+     *
+     * @param iV8ValueReference the V8 value reference
+     * @return the identity hash
+     * @throws JavetException the javet exception
+     * @since 0.9.1
+     */
     @SuppressWarnings("RedundantThrows")
     int getIdentityHash(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.getIdentityHash(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
+    /**
+     * Gets internal properties from a function.
+     * <p>
+     * This is experimental only.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the internal properties
+     * @throws JavetException the javet exception
+     * @since 0.8.8
+     */
     @CheckReturnValue
     IV8ValueArray getInternalProperties(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return decorateV8Value((V8ValueArray) v8Native.getInternalProperties(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
     }
 
+    /**
+     * Gets the JS function type from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the JS function type
+     * @since 0.8.8
+     */
     JSFunctionType getJSFunctionType(IV8ValueFunction iV8ValueFunction) {
         return JSFunctionType.parse(v8Native.getJSFunctionType(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
     }
 
+    /**
+     * Gets the JS runtime type.
+     *
+     * @return the JS runtime type
+     * @since 0.9.1
+     */
     public JSRuntimeType getJSRuntimeType() {
         return JSRuntimeType.V8;
     }
 
+    /**
+     * Gets js scope type.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the js scope type
+     * @since 0.8.8
+     */
     JSScopeType getJSScopeType(IV8ValueFunction iV8ValueFunction) {
         return JSScopeType.parse(v8Native.getJSScopeType(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
     }
 
+    /**
+     * Gets length from an array.
+     *
+     * @param iV8ValueArray the V8 value array
+     * @return the length
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     int getLength(IV8ValueArray iV8ValueArray) throws JavetException {
         return v8Native.getLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId());
     }
 
+    /**
+     * Gets length from a typed array.
+     *
+     * @param iV8ValueTypedArray the V8 value typed array
+     * @return the length
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     int getLength(IV8ValueTypedArray iV8ValueTypedArray) throws JavetException {
         return v8Native.getLength(handle, iV8ValueTypedArray.getHandle(), iV8ValueTypedArray.getType().getId());
     }
 
+    /**
+     * Gets the internal logger.
+     *
+     * @return the logger
+     * @since 0.9.1
+     */
     public IJavetLogger getLogger() {
         return logger;
     }
 
+    /**
+     * Gets own property names from an object.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return the own property names
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     IV8ValueArray getOwnPropertyNames(
             IV8ValueObject iV8ValueObject) throws JavetException {
@@ -596,6 +1100,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
     }
 
+    /**
+     * Gets a private property from an object by a property name.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param propertyName   the property name
+     * @return the private property
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
     @CheckReturnValue
     <T extends V8Value> T getPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName)
             throws JavetException {
@@ -603,10 +1117,26 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName));
     }
 
+    /**
+     * Gets promise reject callback.
+     *
+     * @return the promise reject callback
+     * @since 0.8.3
+     */
     public IJavetPromiseRejectCallback getPromiseRejectCallback() {
         return promiseRejectCallback;
     }
 
+    /**
+     * Gets a property from an object by a property key.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param key            the property key
+     * @return the property
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     <T extends V8Value> T getProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         decorateV8Value(key);
@@ -614,18 +1144,41 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key));
     }
 
+    /**
+     * Gets property names from an object.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return the property names
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     IV8ValueArray getPropertyNames(IV8ValueObject iV8ValueObject) throws JavetException {
         return decorateV8Value((V8ValueArray) v8Native.getPropertyNames(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
     }
 
+    /**
+     * Gets prototype from an object.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @return the prototype
+     * @throws JavetException the javet exception
+     * @since 0.9.4
+     */
     @CheckReturnValue
     <T extends IV8ValueObject> T getPrototype(IV8ValueObject iV8ValueObject) throws JavetException {
         return decorateV8Value((T) v8Native.getPrototype(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId()));
     }
 
+    /**
+     * Gets the internal reference count.
+     *
+     * @return the reference count
+     * @since 0.7.0
+     */
     public int getReferenceCount() {
         Lock readLock = referenceLock.readLock();
         try {
@@ -636,33 +1189,81 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Gets the runtime options.
+     *
+     * @return the runtime options
+     * @since 1.0.0
+     */
     public RuntimeOptions<?> getRuntimeOptions() {
         return runtimeOptions;
     }
 
+    /**
+     * Gets size from a key container.
+     *
+     * @param iV8ValueKeyContainer the V8 value key container
+     * @return the size
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
         return v8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType().getId());
     }
 
+    /**
+     * Gets source code from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the source code
+     * @throws JavetException the javet exception
+     * @since 0.8.8
+     */
     @SuppressWarnings("RedundantThrows")
     String getSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Native.getSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
+    /**
+     * Gets V8 heap space statistics by an allocation space.
+     *
+     * @param v8AllocationSpace the V8 allocation space
+     * @return the V8 heap space statistics
+     * @since 1.0.4
+     */
     public V8HeapSpaceStatistics getV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
         Objects.requireNonNull(v8AllocationSpace);
         return ((V8HeapSpaceStatistics) v8Native.getV8HeapSpaceStatistics(handle, v8AllocationSpace.getIndex()))
                 .setAllocationSpace(v8AllocationSpace);
     }
 
+    /**
+     * Gets V8 heap statistics.
+     *
+     * @return the V8 heap statistics
+     * @since 1.0.0
+     */
     public V8HeapStatistics getV8HeapStatistics() {
         return (V8HeapStatistics) v8Native.getV8HeapStatistics(handle);
     }
 
+    /**
+     * Gets V8 inspector.
+     *
+     * @return the V8 inspector
+     * @since 0.7.3
+     */
     public V8Inspector getV8Inspector() {
         return getV8Inspector(MessageFormat.format(DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR, Long.toString(handle)));
     }
 
+    /**
+     * Gets V8 inspector by name.
+     *
+     * @param name the name
+     * @return the V8 inspector
+     * @since 0.7.3
+     */
     public V8Inspector getV8Inspector(String name) {
         if (v8Inspector == null) {
             v8Inspector = new V8Inspector(this, name, v8Native);
@@ -670,15 +1271,43 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Inspector;
     }
 
+    /**
+     * Gets V8 internal.
+     *
+     * @return the V8 internal
+     * @since 1.0.2
+     */
     public V8Internal getV8Internal() {
         return v8Internal;
     }
 
+    /**
+     * Gets V8 locker.
+     * <p>
+     * The V8 locker is for maximizing the performance by explicitly acquire and release
+     * the lock. It should not be called in regular case because V8 runtime is thread-safe.
+     *
+     * @return the V8 locker
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     public V8Locker getV8Locker() throws JavetException {
         return new V8Locker(this, v8Native);
     }
 
+    /**
+     * Gets V8 module by the resource name and module referrer.
+     * <p>
+     * It is the callback function that handles the callback from JNI.
+     * The return V8 module tells V8 how to resolve an ESM request.
+     *
+     * @param resourceName     the resource name
+     * @param v8ModuleReferrer the V8 module referrer
+     * @return the V8 module
+     * @throws JavetException the javet exception
+     * @since 0.9.3
+     */
     @CheckReturnValue
     IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
         if (resourceName != null && resourceName.length() > 0) {
@@ -699,6 +1328,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return null;
     }
 
+    /**
+     * Gets V8 module count.
+     *
+     * @return the V8 module count
+     * @since 0.8.1
+     */
     public int getV8ModuleCount() {
         Lock readLock = v8ModuleLock.readLock();
         try {
@@ -709,60 +1344,139 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Gets V8 module resolver.
+     *
+     * @return the V8 module resolver
+     * @since 0.9.3
+     */
     public IV8ModuleResolver getV8ModuleResolver() {
         return v8ModuleResolver;
     }
 
+    /**
+     * Gets V8 scope.
+     *
+     * @return the V8 scope
+     * @since 0.9.14
+     */
     public V8Scope getV8Scope() {
         return new V8Scope(this);
     }
 
+    /**
+     * Gets V8 shared memory statistics.
+     *
+     * @return the V8 shared memory statistics
+     * @since 1.0.0
+     */
     public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
         return (V8SharedMemoryStatistics) v8Native.getV8SharedMemoryStatistics();
     }
 
+    /**
+     * Gets the V8 version.
+     *
+     * @return the version
+     * @since 0.8.2
+     */
     public String getVersion() {
         return v8Native.getVersion();
     }
 
+    /**
+     * Has a property in an object.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param value          the value
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
     boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
         decorateV8Value(value);
         return v8Native.has(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), value);
     }
 
+    /**
+     * Has internal type.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param internalType   the internal type
+     * @return true : yes, false : no
+     * @since 0.9.13
+     */
     boolean hasInternalType(IV8ValueObject iV8ValueObject, V8ValueInternalType internalType) {
         return v8Native.hasInternalType(
                 handle, iV8ValueObject.getHandle(), Objects.requireNonNull(internalType).getId());
     }
 
+    /**
+     * Has own property in an object by a property key.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the property key
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
     boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         decorateV8Value(key);
         return v8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
+    /**
+     * Has pending exception.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 1.0.4
+     */
     public boolean hasPendingException() throws JavetException {
         return v8Native.hasPendingException(handle);
     }
 
+    /**
+     * Has pending message.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 1.0.4
+     */
     public boolean hasPendingMessage() throws JavetException {
         return v8Native.hasPendingMessage(handle);
     }
 
+    /**
+     * Has private property in an object by a property name.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param propertyName   the property name
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
     boolean hasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
         return v8Native.hasPrivateProperty(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
     }
 
+    /**
+     * Has scheduled exception.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 1.0.4
+     */
     public boolean hasScheduledException() throws JavetException {
         return v8Native.hasScheduledException(handle);
     }
 
     /**
-     * Idle notification deadline.
-     * <p>
-     * Note: This API is the recommended one that notifies V8 to perform GC.
+     * Idle notification deadline tells V8 to perform GC in the given millis.
      *
      * @param deadlineInMillis the deadline in millis
+     * @since 0.9.1
      */
     public void idleNotificationDeadline(long deadlineInMillis) {
         if (!isClosed() && deadlineInMillis > 0) {
@@ -770,6 +1484,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Initialize V8 value cache.
+     *
+     * @since 0.7.4
+     */
     void initializeV8ValueCache() {
         try {
             cachedV8ValueNull = decorateV8Value(new V8ValueNull());
@@ -792,6 +1511,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Invoke a function by a function name.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param functionName   the function name
+     * @param returnResult   the return result
+     * @param v8Values       the V8 values
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @CheckReturnValue
     <T extends V8Value> T invoke(
             IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values)
@@ -806,28 +1537,61 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return handle == INVALID_HANDLE;
     }
 
+    /**
+     * Returns whether the V8 runtime is dead or not.
+     *
+     * @return true : dead, false : alive
+     * @since 0.7.2
+     */
     public boolean isDead() {
         return v8Native.isDead(handle);
     }
 
+    /**
+     * Returns whether the GC is scheduled or not.
+     *
+     * @return true : scheduled, false: not scheduled
+     * @since 0.8.3
+     */
     public boolean isGCScheduled() {
         return gcScheduled;
     }
 
+    /**
+     * Returns whether the V8 runtime is in use or not.
+     *
+     * @return the boolean
+     * @since 0.7.2
+     */
     public boolean isInUse() {
         return v8Native.isInUse(handle);
     }
 
+    /**
+     * Returns whether the V8 runtime is managed by a pool or not.
+     *
+     * @return true : yes, false : no
+     * @since 0.7.0
+     */
     public boolean isPooled() {
         return pooled;
     }
 
+    /**
+     * Returns whether the reference is weak or not.
+     *
+     * @param iV8ValueReference the V8 value reference
+     * @return true : weak, false : strong
+     * @since 0.7.0
+     */
     boolean isWeak(IV8ValueReference iV8ValueReference) {
         return v8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
     /**
      * Send low memory notification to current V8 isolate.
+     *
+     * @since 0.8.3
      */
     public void lowMemoryNotification() {
         if (!isClosed()) {
@@ -835,6 +1599,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Evaluate a module.
+     *
+     * @param <T>            the type parameter
+     * @param iV8Module      the V8 module
+     * @param resultRequired the result required
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     <T extends V8Value> T moduleEvaluate(
             IV8Module iV8Module, boolean resultRequired) throws JavetException {
@@ -842,33 +1616,85 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8Module.getHandle(), iV8Module.getType().getId(), resultRequired));
     }
 
+    /**
+     * Gets an error from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the V8 value error
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
     @CheckReturnValue
     V8ValueError moduleGetException(IV8Module iV8Module) throws JavetException {
         return decorateV8Value((V8ValueError) v8Native.moduleGetException(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId()));
     }
 
+    /**
+     * Gets the namespace from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the namespace
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     V8ValueObject moduleGetNamespace(IV8Module iV8Module) throws JavetException {
         return decorateV8Value((V8ValueObject) v8Native.moduleGetNamespace(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId()));
     }
 
+    /**
+     * Gets the script ID from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the script ID
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     @SuppressWarnings("RedundantThrows")
     int moduleGetScriptId(IV8Module iV8Module) throws JavetException {
         return v8Native.moduleGetScriptId(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
+    /**
+     * Gets the status from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the status
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     @SuppressWarnings("RedundantThrows")
     int moduleGetStatus(IV8Module iV8Module) throws JavetException {
         return v8Native.moduleGetStatus(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
+    /**
+     * Instantiate a module.
+     * <p>
+     * It may return an exception or false if the module state is invalid.
+     *
+     * @param iV8Module the V8 module
+     * @return true : success, false : false
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     @SuppressWarnings("RedundantThrows")
     boolean moduleInstantiate(IV8Module iV8Module) throws JavetException {
         return v8Native.moduleInstantiate(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
+    /**
+     * Call Promise.catch().
+     *
+     * @param <T>             the type parameter
+     * @param iV8ValuePromise the V8 value promise
+     * @param functionHandle  the function handle
+     * @return the V8 value promise
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     <T extends V8ValuePromise> T promiseCatch(
             IV8ValuePromise iV8ValuePromise, IV8ValueFunction functionHandle) throws JavetException {
@@ -876,40 +1702,104 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId(), functionHandle.getHandle()));
     }
 
+    /**
+     * Gets a promise from a promise resolver.
+     *
+     * @param iV8ValuePromise the V8 value promise
+     * @return the V8 value promise
+     * @throws JavetException the javet exception
+     * @since 0.9.8
+     */
     @CheckReturnValue
     V8ValuePromise promiseGetPromise(IV8ValuePromise iV8ValuePromise) throws JavetException {
         return decorateV8Value((V8ValuePromise) v8Native.promiseGetPromise(
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId()));
     }
 
+    /**
+     * Gets the result from a promise.
+     *
+     * @param <T>             the type parameter
+     * @param iV8ValuePromise the V8 value promise
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     <T extends V8Value> T promiseGetResult(IV8ValuePromise iV8ValuePromise) throws JavetException {
         return decorateV8Value((T) v8Native.promiseGetResult(
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId()));
     }
 
+    /**
+     * Gets the state from a promise.
+     *
+     * @param iV8ValuePromise the V8 value promise
+     * @return the state
+     * @since 0.8.4
+     */
     int promiseGetState(IV8ValuePromise iV8ValuePromise) {
         return v8Native.promiseGetState(handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId());
     }
 
+    /**
+     * Returns whether a promise has a handler or not.
+     *
+     * @param iV8ValuePromise the V8 value promise
+     * @return true : yes, false : false
+     * @since 0.8.4
+     */
     boolean promiseHasHandler(IV8ValuePromise iV8ValuePromise) {
         return v8Native.promiseHasHandler(handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId());
     }
 
+    /**
+     * Mark a promise as handled.
+     *
+     * @param iV8ValuePromise the V8 value promise
+     * @since 0.8.4
+     */
     void promiseMarkAsHandled(IV8ValuePromise iV8ValuePromise) {
         v8Native.promiseMarkAsHandled(handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId());
     }
 
+    /**
+     * Rejects a promise by a value.
+     *
+     * @param v8ValuePromise the V8 value promise
+     * @param v8Value        the V8 value
+     * @return true : rejected, false : not rejected
+     * @since 0.8.4
+     */
     boolean promiseReject(V8ValuePromise v8ValuePromise, V8Value v8Value) {
         return v8Native.promiseReject(
                 handle, v8ValuePromise.getHandle(), v8ValuePromise.getType().getId(), v8Value);
     }
 
+    /**
+     * Call Promise.resolve() by a value.
+     *
+     * @param v8ValuePromise the V8 value promise
+     * @param v8Value        the V8 value
+     * @return true : resolved, false : not resolved
+     * @since 0.9.8
+     */
     boolean promiseResolve(V8ValuePromise v8ValuePromise, V8Value v8Value) {
         return v8Native.promiseResolve(
                 handle, v8ValuePromise.getHandle(), v8ValuePromise.getType().getId(), v8Value);
     }
 
+    /**
+     * Call Promise.then() by a function fulfilled handle and a function rejected handle.
+     *
+     * @param <T>                     the type parameter
+     * @param iV8ValuePromise         the V8 value promise
+     * @param functionFulfilledHandle the function fulfilled handle
+     * @param functionRejectedHandle  the function rejected handle
+     * @return the result promise
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     <T extends V8ValuePromise> T promiseThen(
             IV8ValuePromise iV8ValuePromise, IV8ValueFunction functionFulfilledHandle,
@@ -920,30 +1810,76 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle()));
     }
 
+    /**
+     * Promote scheduled exception.
+     *
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 1.0.4
+     */
     public boolean promoteScheduledException() throws JavetException {
         return v8Native.promoteScheduledException(handle);
     }
 
+    /**
+     * Gets a handler from a proxy
+     *
+     * @param iV8ValueProxy the V8 value proxy
+     * @return the handler
+     * @throws JavetException the javet exception
+     * @since 0.9.6
+     */
     @CheckReturnValue
     V8ValueObject proxyGetHandler(IV8ValueProxy iV8ValueProxy) throws JavetException {
         return decorateV8Value((V8ValueObject) v8Native.proxyGetHandler(
                 handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId()));
     }
 
+    /**
+     * Gets the target from a proxy.
+     *
+     * @param iV8ValueProxy the V8 value proxy
+     * @return the target
+     * @throws JavetException the javet exception
+     * @since 0.9.6
+     */
     @CheckReturnValue
     V8ValueObject proxyGetTarget(IV8ValueProxy iV8ValueProxy) throws JavetException {
         return decorateV8Value((V8ValueObject) v8Native.proxyGetTarget(
                 handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId()));
     }
 
+    /**
+     * Returns whether a proxy is revoked or not.
+     *
+     * @param iV8ValueProxy the V8 value proxy
+     * @return true : revoked, false : not revoked
+     * @throws JavetException the javet exception
+     * @since 0.9.6
+     */
     boolean proxyIsRevoked(IV8ValueProxy iV8ValueProxy) throws JavetException {
         return v8Native.proxyIsRevoked(handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId());
     }
 
+    /**
+     * Revokes a proxy.
+     *
+     * @param iV8ValueProxy the V8 value proxy
+     * @throws JavetException the javet exception
+     * @since 0.9.6
+     */
     void proxyRevoke(IV8ValueProxy iV8ValueProxy) throws JavetException {
         v8Native.proxyRevoke(handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId());
     }
 
+    /**
+     * Receives the promise reject callback from JNI.
+     *
+     * @param event   the event
+     * @param promise the promise
+     * @param value   the value
+     * @since 0.9.1
+     */
     void receivePromiseRejectCallback(int event, V8ValuePromise promise, V8Value value) {
         try {
             decorateV8Values(promise, value);
@@ -955,6 +1891,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Remove all references.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.8.3
+     */
     void removeAllReferences() throws JavetException {
         removeReferences();
         removeCallbackContexts();
@@ -962,6 +1904,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         v8Inspector = null;
     }
 
+    /**
+     * Remove a callback context by a handle.
+     *
+     * @param handle the handle
+     * @since 0.8.3
+     */
     public void removeCallbackContext(long handle) {
         Lock writeLock = callbackContextLock.writeLock();
         try {
@@ -972,6 +1920,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Remove callback contexts.
+     *
+     * @since 0.8.3
+     */
     void removeCallbackContexts() {
         Lock writeLock = callbackContextLock.writeLock();
         try {
@@ -990,6 +1943,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Remove a GC epilogue callback.
+     *
+     * @param iJavetGCCallback the javet GC callback
+     * @since 1.0.3
+     */
     public void removeGCEpilogueCallback(IJavetGCCallback iJavetGCCallback) {
         synchronized (gcEpilogueCallbacks) {
             gcEpilogueCallbacks.remove(Objects.requireNonNull(iJavetGCCallback));
@@ -999,6 +1958,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Remove a GC prologue callback.
+     *
+     * @param iJavetGCCallback the javet GC callback
+     * @since 1.0.3
+     */
     public void removeGCPrologueCallback(IJavetGCCallback iJavetGCCallback) {
         synchronized (gcPrologueCallbacks) {
             gcPrologueCallbacks.remove(Objects.requireNonNull(iJavetGCCallback));
@@ -1008,12 +1973,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Remove a JNI global ref by a handle.
+     *
+     * @param handle the handle
+     * @since 0.8.0
+     */
     void removeJNIGlobalRef(long handle) {
         if (!isClosed()) {
             v8Native.removeJNIGlobalRef(handle);
         }
     }
 
+    /**
+     * Remove reference.
+     *
+     * @param iV8ValueReference the V8 value reference
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     @SuppressWarnings("RedundantThrows")
     void removeReference(IV8ValueReference iV8ValueReference) throws JavetException {
         final long referenceHandle = iV8ValueReference.getHandle();
@@ -1037,6 +2015,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Remove all references.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     void removeReferences() throws JavetException {
         Lock writeLock = referenceLock.writeLock();
         try {
@@ -1072,6 +2056,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Remove a V8 module by a resource name and force close flag.
+     *
+     * @param resourceName the resource name
+     * @param forceClose   the force close
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
     public void removeV8Module(String resourceName, boolean forceClose) throws JavetException {
         IV8Module iV8Module;
         Lock writeLock = v8ModuleLock.writeLock();
@@ -1086,22 +2078,57 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Remove a V8 module by a resource name.
+     *
+     * @param resourceName the resource name
+     * @throws JavetException the javet exception
+     * @since 0.9.4
+     */
     public void removeV8Module(String resourceName) throws JavetException {
         removeV8Module(resourceName, false);
     }
 
+    /**
+     * Remove a V8 module.
+     *
+     * @param iV8Module the V8 module
+     * @throws JavetException the javet exception
+     * @since 0.9.4
+     */
     public void removeV8Module(IV8Module iV8Module) throws JavetException {
         removeV8Module(iV8Module, false);
     }
 
+    /**
+     * Remove a V8 module by a force close flag.
+     *
+     * @param iV8Module  the V8 module
+     * @param forceClose the force close
+     * @throws JavetException the javet exception
+     * @since 0.9.4
+     */
     public void removeV8Module(IV8Module iV8Module, boolean forceClose) throws JavetException {
         removeV8Module(iV8Module.getResourceName(), forceClose);
     }
 
+    /**
+     * Remove all V8 modules.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.9.3
+     */
     public void removeV8Modules() throws JavetException {
         removeV8Modules(false);
     }
 
+    /**
+     * Remove all V8 modules by a force close flag.
+     *
+     * @param forceClose the force close
+     * @throws JavetException the javet exception
+     * @since 0.8.3
+     */
     public void removeV8Modules(boolean forceClose) throws JavetException {
         Lock writeLock = v8ModuleLock.writeLock();
         try {
@@ -1121,6 +2148,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Report pending messages.
+     *
+     * @return true : reported, false : not reported
+     * @throws JavetException the javet exception
+     * @since 1.0.4
+     */
     public boolean reportPendingMessages() throws JavetException {
         return v8Native.reportPendingMessages(handle);
     }
@@ -1129,48 +2163,62 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Requests GC for testing.
      * Note: --expose_gc must be set.
      *
-     * @param fullGC true = Full GC, false = Minor GC
-     * @return the self
+     * @param fullGC true : Full GC, false : Minor GC
      * @since 0.8.0
      */
-    public V8Runtime requestGarbageCollectionForTesting(boolean fullGC) {
+    public void requestGarbageCollectionForTesting(boolean fullGC) {
         v8Native.requestGarbageCollectionForTesting(handle, fullGC);
-        return this;
     }
 
     /**
-     * Reset V8 context.
+     * Resets the V8 context.
+     * <p>
      * This is a light-weight and recommended reset.
      *
-     * @return the self
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    public V8Runtime resetContext() throws JavetException {
+    public void resetContext() throws JavetException {
         removeAllReferences();
         v8Native.resetV8Context(handle, runtimeOptions);
-        return this;
     }
 
     /**
-     * Reset V8 isolate.
+     * Resets the V8 isolate.
+     * <p>
      * This is a heavy reset. Please avoid using it in performance sensitive scenario.
      *
-     * @return the self
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     @SuppressWarnings("UnusedReturnValue")
-    public V8Runtime resetIsolate() throws JavetException {
+    public void resetIsolate() throws JavetException {
         removeAllReferences();
         v8Native.resetV8Isolate(handle, runtimeOptions);
-        return this;
     }
 
+    /**
+     * Tests whether 2 objects are the same in value.
+     *
+     * @param iV8ValueObject1 the V8 value object 1
+     * @param iV8ValueObject2 the V8 value object 2
+     * @return true : same, false : not same
+     * @since 0.8.4
+     */
     boolean sameValue(IV8ValueObject iV8ValueObject1, IV8ValueObject iV8ValueObject2) {
         return v8Native.sameValue(handle, iV8ValueObject1.getHandle(), iV8ValueObject2.getHandle());
     }
 
+    /**
+     * Run a script.
+     *
+     * @param <T>            the type parameter
+     * @param iV8Script      the V8 script
+     * @param resultRequired the result required
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     <T extends V8Value> T scriptRun(
             IV8Script iV8Script, boolean resultRequired) throws JavetException {
@@ -1178,11 +2226,32 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8Script.getHandle(), iV8Script.getType().getId(), resultRequired));
     }
 
+    /**
+     * Sets a property by a key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @param value          the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     boolean set(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         decorateV8Values(key, value);
         return v8Native.set(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
     }
 
+    /**
+     * Sets accessor (getter / setter) by a property name.
+     *
+     * @param iV8ValueObject             the V8 value object
+     * @param propertyName               the property name
+     * @param javetCallbackContextGetter the javet callback context getter
+     * @param javetCallbackContextSetter the javet callback context setter
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 0.8.9
+     */
     @SuppressWarnings("RedundantThrows")
     boolean setAccessor(
             IV8ValueObject iV8ValueObject,
@@ -1207,19 +2276,47 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return isAccessorSet;
     }
 
+    /**
+     * Sets converter.
+     *
+     * @param converter the converter
+     * @since 0.9.1
+     */
     public void setConverter(IJavetConverter converter) {
         Objects.requireNonNull(converter);
         this.converter = converter;
     }
 
+    /**
+     * Sets GC scheduled.
+     *
+     * @param gcScheduled the GC scheduled
+     * @since 0.9.1
+     */
     public void setGCScheduled(boolean gcScheduled) {
         this.gcScheduled = gcScheduled;
     }
 
+    /**
+     * Sets logger.
+     *
+     * @param logger the logger
+     * @since 0.9.1
+     */
     public void setLogger(IJavetLogger logger) {
         this.logger = logger;
     }
 
+    /**
+     * Sets a private property.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param propertyName   the property name
+     * @param propertyValue  the property value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
     boolean setPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName, V8Value propertyValue)
             throws JavetException {
         decorateV8Value(propertyValue);
@@ -1227,16 +2324,41 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName, propertyValue);
     }
 
+    /**
+     * Sets promise reject callback.
+     *
+     * @param promiseRejectCallback the promise reject callback
+     * @since 0.9.1
+     */
     public void setPromiseRejectCallback(IJavetPromiseRejectCallback promiseRejectCallback) {
         Objects.requireNonNull(promiseRejectCallback);
         this.promiseRejectCallback = promiseRejectCallback;
     }
 
+    /**
+     * Sets property.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @param value          the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     boolean setProperty(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
         decorateV8Values(key, value);
         return v8Native.setProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
     }
 
+    /**
+     * Sets prototype.
+     *
+     * @param iV8ValueObject          the V8 value object
+     * @param iV8ValueObjectPrototype the V8 value object prototype
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 0.9.4
+     */
     boolean setPrototype(
             IV8ValueObject iV8ValueObject, IV8ValueObject iV8ValueObjectPrototype) throws JavetException {
         decorateV8Value(iV8ValueObjectPrototype);
@@ -1245,20 +2367,49 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 iV8ValueObjectPrototype.getHandle());
     }
 
+    /**
+     * Sets source code of a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @param sourceCode       the source code
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 0.8.8
+     */
     @SuppressWarnings("RedundantThrows")
     boolean setSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
         return v8Native.setSourceCode(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), sourceCode);
     }
 
+    /**
+     * Sets V8 module resolver.
+     *
+     * @param v8ModuleResolver the V8 module resolver
+     * @since 0.9.3
+     */
     public void setV8ModuleResolver(IV8ModuleResolver v8ModuleResolver) {
         this.v8ModuleResolver = v8ModuleResolver;
     }
 
+    /**
+     * Sets a reference to weak.
+     *
+     * @param iV8ValueReference the V8 value reference
+     * @since 0.8.4
+     */
     void setWeak(IV8ValueReference iV8ValueReference) {
         v8Native.setWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId(), iV8ValueReference);
     }
 
+    /**
+     * Tests whether 2 objects are strict equal.
+     *
+     * @param iV8ValueObject1 the V8 value object 1
+     * @param iV8ValueObject2 the V8 value object 2
+     * @return true : strict equal, false: not strict equal
+     * @since 0.8.4
+     */
     boolean strictEquals(IV8ValueObject iV8ValueObject1, IV8ValueObject iV8ValueObject2) {
         return v8Native.strictEquals(handle, iV8ValueObject1.getHandle(), iV8ValueObject2.getHandle());
     }
@@ -1271,6 +2422,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * <p>
      * This method can be used by any thread even if that thread has not
      * acquired the V8 lock with a Locker object.
+     *
+     * @since 0.8.0
      */
     public void terminateExecution() {
         v8Native.terminateExecution(handle);
@@ -1281,10 +2434,26 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return (T) converter.toObject(v8Value);
     }
 
+    /**
+     * Gets a proto string from a reference.
+     *
+     * @param iV8ValueReference the V8 value reference
+     * @return the proto string
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
     String toProtoString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.toProtoString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
 
+    /**
+     * Call toString().
+     *
+     * @param iV8ValueReference the V8 value reference
+     * @return the string
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     String toString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.toString(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
     }
