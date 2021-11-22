@@ -2,6 +2,12 @@
 Release Notes 1.0.x
 ===================
 
+1.0.5
+------------
+
+* Fixed crash issue for Android
+* Upgraded Javet engine pool to expose more statistics
+
 1.0.4 V8 9.6
 ------------
 

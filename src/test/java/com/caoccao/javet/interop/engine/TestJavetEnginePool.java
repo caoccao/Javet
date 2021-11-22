@@ -43,6 +43,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         javetEnginePool.close();
         assertEquals(0, javetEnginePool.getActiveEngineCount());
         assertEquals(0, javetEnginePool.getIdleEngineCount());
+        assertEquals(javetEnginePool.getConfig().getPoolMaxSize(), javetEnginePool.getReleasedEngineCount());
         assertFalse(javetEnginePool.isActive());
         assertTrue(javetEnginePool.isClosed());
         assertEquals(0, v8Host.getV8RuntimeCount());
@@ -53,6 +54,9 @@ public class TestJavetEnginePool extends BaseTestJavet {
         javetEnginePool = new JavetEnginePool();
         assertTrue(javetEnginePool.isActive());
         assertFalse(javetEnginePool.isClosed());
+        assertEquals(0, javetEnginePool.getActiveEngineCount());
+        assertEquals(0, javetEnginePool.getIdleEngineCount());
+        assertEquals(javetEnginePool.getConfig().getPoolMaxSize(), javetEnginePool.getReleasedEngineCount());
         javetEngineConfig = javetEnginePool.getConfig();
         javetEngineConfig.setPoolDaemonCheckIntervalMillis(TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS);
         javetEngineConfig.setJSRuntimeType(v8Host.getJSRuntimeType());
@@ -60,8 +64,6 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @Test
     public void testMultiThreadedExecutionBelowMaxSize() throws Exception {
-        assertEquals(0, javetEnginePool.getIdleEngineCount());
-        assertEquals(0, javetEnginePool.getActiveEngineCount());
         final int threadCount = javetEngineConfig.getPoolMaxSize() - javetEngineConfig.getPoolMinSize();
         Thread[] threads = new Thread[threadCount];
         Object lockObject = new Object();
@@ -97,7 +99,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 logger.logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
             }
         }
-        javetEnginePool.releaseEngine(null);
+        javetEnginePool.wakeUpDaemon();
         runAndWait(TEST_MAX_TIMEOUT, () -> threadCount == javetEnginePool.getIdleEngineCount());
         assertEquals(0, failureCount.get());
         assertEquals(threadCount, javetEnginePool.getIdleEngineCount());
@@ -144,7 +146,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 logger.logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
             }
         }
-        javetEnginePool.releaseEngine(null);
+        javetEnginePool.wakeUpDaemon();
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEngineConfig.getPoolMaxSize() == javetEnginePool.getIdleEngineCount());
         assertEquals(0, failureCount.get());
         runAndWait(TEST_MAX_TIMEOUT, () -> 0 == javetEnginePool.getActiveEngineCount());
@@ -152,11 +154,10 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @Test
     public void testSingleThreadedExecution() throws Exception {
-        assertEquals(0, javetEnginePool.getIdleEngineCount());
-        assertEquals(0, javetEnginePool.getActiveEngineCount());
         try (IJavetEngine engine = javetEnginePool.getEngine()) {
             assertEquals(0, javetEnginePool.getIdleEngineCount());
             assertEquals(1, javetEnginePool.getActiveEngineCount());
+            assertEquals(javetEnginePool.getConfig().getPoolMaxSize() - 1, javetEnginePool.getReleasedEngineCount());
             V8Runtime v8Runtime = engine.getV8Runtime();
             assertTrue(v8Runtime.isPooled());
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
@@ -169,5 +170,6 @@ public class TestJavetEnginePool extends BaseTestJavet {
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
         assertEquals(1, javetEnginePool.getIdleEngineCount());
         assertEquals(0, javetEnginePool.getActiveEngineCount());
+        assertEquals(javetEnginePool.getConfig().getPoolMaxSize() - 1, javetEnginePool.getReleasedEngineCount());
     }
 }

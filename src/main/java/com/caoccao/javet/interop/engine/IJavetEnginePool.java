@@ -64,6 +64,14 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     int getIdleEngineCount();
 
     /**
+     * Gets released engine count.
+     *
+     * @return the released engine count
+     * @since 1.0.5
+     */
+    int getReleasedEngineCount();
+
+    /**
      * Is active.
      *
      * @return true : active, false: inactive
@@ -82,8 +90,15 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     /**
      * Release engine.
      *
-     * @param engine the engine
+     * @param iJavetEngine the javet engine
      * @since 0.7.0
      */
-    void releaseEngine(IJavetEngine<R> engine);
+    void releaseEngine(IJavetEngine<R> iJavetEngine);
+
+    /**
+     * Wake up the daemon thread explicitly.
+     *
+     * @since 1.0.5
+     */
+    void wakeUpDaemon();
 }
