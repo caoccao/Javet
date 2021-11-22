@@ -114,7 +114,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
             put("y", "2");
         }};
         v8Runtime.getGlobalObject().set("map", map);
-        assertTrue(map == v8Runtime.getGlobalObject().getObject("map"));
+        assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
         assertTrue((Boolean) v8Runtime.getExecutor("map.containsKey('x')").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("map['x']").executeObject());
         assertEquals("2", v8Runtime.getExecutor("map['y']").executeObject());
@@ -137,7 +137,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
             add("y");
         }};
         v8Runtime.getGlobalObject().set("set", set);
-        assertTrue(set == v8Runtime.getGlobalObject().getObject("set"));
+        assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
         assertTrue((Boolean) v8Runtime.getExecutor("set.contains('x')").executeObject());
         assertTrue((Boolean) v8Runtime.getExecutor("set.contains('y')").executeObject());
         assertFalse((Boolean) v8Runtime.getExecutor("set.contains('z')").executeObject());

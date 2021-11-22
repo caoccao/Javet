@@ -33,8 +33,8 @@ public class TestV8HeapSpaceStatistics extends BaseTestJavetRuntime {
 
     protected void printV8HeapSpaceStatistics(V8Runtime v8Runtime, String prefix) {
         for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.getDistinctValues()) {
-            System.out.println(String.format(
-                    "%s: %s", prefix, v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace).toString()));
+            System.out.printf(
+                    "%s: %s%n", prefix, v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace).toString());
         }
     }
 

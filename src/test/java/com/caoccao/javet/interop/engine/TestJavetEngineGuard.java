@@ -33,7 +33,7 @@ public class TestJavetEngineGuard extends BaseTestJavetPool {
     @Test
     public void testTermination() throws JavetException {
         // Get an engine from the pool as usual.
-        try (IJavetEngine iJavetEngine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
             V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
             // Get a guard from the engine and apply try-with-resource pattern.
             try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(1)) {
@@ -53,7 +53,7 @@ public class TestJavetEngineGuard extends BaseTestJavetPool {
     public void testWithoutTermination() throws JavetException {
         final long timeoutMillis = 10000;
         ZonedDateTime startZonedDateTime = JavetDateTimeUtils.getUTCNow();
-        try (IJavetEngine iJavetEngine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
             try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(timeoutMillis)) {
                 V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
                 assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());

@@ -262,7 +262,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             put("y", "2");
         }};
         v8Runtime.getGlobalObject().set("map", map);
-        assertTrue(map == v8Runtime.getGlobalObject().getObject("map"));
+        assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
         assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
         assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
         assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
@@ -323,7 +323,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             add("y");
         }};
         v8Runtime.getGlobalObject().set("set", set);
-        assertTrue(set == v8Runtime.getGlobalObject().getObject("set"));
+        assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
         assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
         assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());
         assertFalse(v8Runtime.getExecutor("set.contains('z')").executeBoolean());

@@ -59,7 +59,7 @@ public class TestPerformance extends BaseTestJavetPool {
         final int iterations = jsRuntimeType.isNode() ? 200 : 10000;
         String codeString = "1 + 1";
         final long startTime = System.currentTimeMillis();
-        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
             IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
             for (int i = 0; i < iterations; i++) {
@@ -82,7 +82,7 @@ public class TestPerformance extends BaseTestJavetPool {
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             threads[i] = new Thread(() -> {
-                try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+                try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
                     V8Runtime v8Runtime = javetEngine.getV8Runtime();
                     IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
                     for (int j = 0; j < iterations; j++) {
@@ -113,7 +113,7 @@ public class TestPerformance extends BaseTestJavetPool {
         final int iterations = jsRuntimeType.isNode() ? 200 : 10000;
         String codeString = "1 + 1";
         final long startTime = System.currentTimeMillis();
-        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
             IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
             for (int i = 0; i < iterations; i++) {
@@ -136,7 +136,7 @@ public class TestPerformance extends BaseTestJavetPool {
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             threads[i] = new Thread(() -> {
-                try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+                try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
                     V8Runtime v8Runtime = javetEngine.getV8Runtime();
                     IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
                     for (int j = 0; j < iterations; j++) {
@@ -167,7 +167,7 @@ public class TestPerformance extends BaseTestJavetPool {
         final int iterations = 2000000;
         String codeString = "1 + 1";
         final long startTime = System.currentTimeMillis();
-        try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
             V8Runtime v8Runtime = javetEngine.getV8Runtime();
             try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
                 IV8Executor v8Executor = v8Runtime.getExecutor(codeString);
@@ -191,7 +191,7 @@ public class TestPerformance extends BaseTestJavetPool {
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             threads[i] = new Thread(() -> {
-                try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+                try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
                     V8Runtime v8Runtime = javetEngine.getV8Runtime();
                     try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
                         IV8Executor v8Executor = v8Runtime.getExecutor(codeString);

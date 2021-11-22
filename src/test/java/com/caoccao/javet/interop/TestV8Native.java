@@ -22,6 +22,7 @@ import com.caoccao.javet.enums.JSRuntimeType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,12 +39,9 @@ public class TestV8Native extends BaseTestJavet {
     public void testGetVersion() {
         assertEquals(JSRuntimeType.Node.getVersion(), V8Host.getNodeInstance().getV8Native().getVersion());
         assertEquals(JSRuntimeType.V8.getVersion(), V8Host.getV8Instance().getV8Native().getVersion());
-        Arrays.stream(JSRuntimeType.values()).map(jsRuntimeType -> {
-            assertEquals(
-                    jsRuntimeType.getVersion(),
-                    V8Host.getInstance(jsRuntimeType).getV8Native().getVersion());
-            return jsRuntimeType;
-        });
+        Arrays.stream(JSRuntimeType.values()).forEach(jsRuntimeType -> assertEquals(
+                jsRuntimeType.getVersion(),
+                Objects.requireNonNull(V8Host.getInstance(jsRuntimeType)).getV8Native().getVersion()));
     }
 
     @Test

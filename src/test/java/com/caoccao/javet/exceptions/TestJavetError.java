@@ -53,9 +53,9 @@ public class TestJavetError {
         final int endPosition = fileContent.lastIndexOf(endSign) + 1;
         assertTrue(endPosition >= startPosition && startPosition > 0);
         String[] headerRow = new String[]{"Code", "Type", "Name", "Format"};
-        int[] maxLengths = Arrays.stream(headerRow).mapToInt(cell -> cell.length()).toArray();
+        int[] maxLengths = Arrays.stream(headerRow).mapToInt(String::length).toArray();
         Map<Integer, String[]> table = new TreeMap<>();
-        Class javetErrorClass = JavetError.class;
+        Class<?> javetErrorClass = JavetError.class;
         for (Field field : javetErrorClass.getDeclaredFields()) {
             final int modifiers = field.getModifiers();
             if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers) && Modifier.isFinal(modifiers)
@@ -88,22 +88,19 @@ public class TestJavetError {
         }
         assertTrue(table.size() > 0);
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(fileContent.substring(0, startPosition));
-        String separator = String.join(" ",
-                Arrays.stream(maxLengths)
-                        .mapToObj(length -> String.join("", Collections.nCopies(length, "=")))
-                        .collect(Collectors.toList()));
+        stringBuilder.append(fileContent, 0, startPosition);
+        String separator = Arrays.stream(maxLengths)
+                .mapToObj(length -> String.join("", Collections.nCopies(length, "=")))
+                .collect(Collectors.joining(" "));
         stringBuilder.append(separator).append("\n");
-        stringBuilder.append(String.join(" ",
-                IntStream.range(0, maxLengths.length)
-                        .mapToObj(i -> String.format("%1$-" + Integer.toString(maxLengths[i]) + "s", headerRow[i]))
-                        .collect(Collectors.toList()))).append("\n");
+        stringBuilder.append(IntStream.range(0, maxLengths.length)
+                .mapToObj(i -> String.format("%1$-" + Integer.toString(maxLengths[i]) + "s", headerRow[i]))
+                .collect(Collectors.joining(" "))).append("\n");
         stringBuilder.append(separator).append("\n");
         for (String[] row : table.values()) {
-            stringBuilder.append(String.join(" ",
-                    IntStream.range(0, maxLengths.length)
-                            .mapToObj(i -> String.format("%1$-" + Integer.toString(maxLengths[i]) + "s", row[i]))
-                            .collect(Collectors.toList()))).append("\n");
+            stringBuilder.append(IntStream.range(0, maxLengths.length)
+                    .mapToObj(i -> String.format("%1$-" + Integer.toString(maxLengths[i]) + "s", row[i]))
+                    .collect(Collectors.joining(" "))).append("\n");
         }
         stringBuilder.append(separator).append("\n\n\n");
         stringBuilder.append(fileContent.substring(endPosition));

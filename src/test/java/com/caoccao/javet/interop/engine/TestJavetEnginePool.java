@@ -37,12 +37,11 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("unchecked")
 public class TestJavetEnginePool extends BaseTestJavet {
     public static final int TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1;
     public static final int TEST_MAX_TIMEOUT = 1000;
     protected JavetEngineConfig javetEngineConfig;
-    protected JavetEnginePool javetEnginePool;
+    protected JavetEnginePool<?> javetEnginePool;
 
     @AfterEach
     private void afterEach() throws JavetException {
@@ -65,7 +64,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @BeforeEach
     private void beforeEach() {
-        javetEnginePool = new JavetEnginePool();
+        javetEnginePool = new JavetEnginePool<>();
         assertTrue(javetEnginePool.isActive());
         assertFalse(javetEnginePool.isClosed());
         assertEquals(0, javetEnginePool.getActiveEngineCount());
@@ -86,7 +85,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         synchronized (lockObject) {
             IntStream.range(0, threadCount).forEach(j -> {
                 Thread thread = new Thread(() -> {
-                    try (IJavetEngine engine = javetEnginePool.getEngine()) {
+                    try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
                         runningCount.incrementAndGet();
                         V8Runtime v8Runtime = engine.getV8Runtime();
                         IV8Executor iV8Executor;
@@ -133,7 +132,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         synchronized (lockObject) {
             IntStream.range(0, threadCount).forEach(j -> {
                 Thread thread = new Thread(() -> {
-                    try (IJavetEngine engine = javetEnginePool.getEngine()) {
+                    try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
                         runningCount.incrementAndGet();
                         IV8Executor iV8Executor;
                         synchronized (lockObject) {
@@ -174,7 +173,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         IV8RuntimeObserver observer =
                 v8Runtime -> v8HeapStatisticsList.add(v8Runtime.getV8HeapStatistics());
         assertEquals(0, javetEnginePool.observe(observer));
-        try (IJavetEngine engine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
             assertEquals(0, javetEnginePool.getIdleEngineCount());
             assertEquals(1, javetEnginePool.getActiveEngineCount());
             assertEquals(javetEnginePool.getConfig().getPoolMaxSize() - 1, javetEnginePool.getReleasedEngineCount());
@@ -183,9 +182,10 @@ public class TestJavetEnginePool extends BaseTestJavet {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.close(); // close() doesn't take effect because the V8 runtime is managed by pool
             assertEquals(4, v8Runtime.getExecutor("2 + 2").executeInteger());
-            assertThrows(JavetExecutionException.class, () -> {
-                v8Runtime.getExecutor("eval('1');").executeVoid();
-            }, "By default, the engine pool should disallow eval().");
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
+                    "By default, the engine pool should disallow eval().");
         }
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
         assertEquals(1, javetEnginePool.getIdleEngineCount());
