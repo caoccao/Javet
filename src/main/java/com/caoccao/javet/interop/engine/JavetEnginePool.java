@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interfaces.IV8RuntimeObserver;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.options.RuntimeOptions;
@@ -59,6 +60,12 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      * @since 1.0.5
      */
     protected final ArrayBlockingQueue<Integer> idleEngineIndexList;
+    /**
+     * The Internal lock.
+     *
+     * @since 1.0.5
+     */
+    protected final Object internalLock;
     /**
      * The Released engine index list.
      *
@@ -118,6 +125,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         releasedEngineIndexList = new ArrayBlockingQueue<>(config.getPoolMaxSize(), true);
         engines = new JavetEngine[config.getPoolMaxSize()];
         externalLock = new Object();
+        internalLock = new Object();
         active = false;
         quitting = false;
         startDaemon();
@@ -228,6 +236,33 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     }
 
     @Override
+    public int observe(IV8RuntimeObserver observer) {
+        int processedCount = 0;
+        if (observer != null) {
+            synchronized (internalLock) {
+                for (int index = 0; index < engines.length; ++index) {
+                    JavetEngine<R> engine = engines[index];
+                    if (engine != null) {
+                        boolean isContinuable = true;
+                        try {
+                            isContinuable = observer.observe(engine.v8Runtime);
+                        } catch (Throwable t) {
+                            IJavetLogger logger = config.getJavetLogger();
+                            logger.error(t.getMessage(), t);
+                        } finally {
+                            ++processedCount;
+                        }
+                        if (!isContinuable) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return processedCount;
+    }
+
+    @Override
     public void releaseEngine(IJavetEngine<R> iJavetEngine) {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.releaseEngine() begins.");
@@ -246,42 +281,44 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.run() begins.");
         while (!quitting) {
-            final int initialIdleEngineCount = idleEngineIndexList.size();
-            for (int i = config.getPoolMinSize(); i < initialIdleEngineCount; ++i) {
-                final int immediateIdleEngineCount = idleEngineIndexList.size();
-                Integer index = idleEngineIndexList.poll();
-                if (index == null) {
-                    break;
-                }
-                JavetEngine<R> engine = Objects.requireNonNull(engines[index], "The idle engine must not be null.");
-                JavetEngineUsage usage = engine.getUsage();
-                ZonedDateTime expirationZonedDateTime = usage.getLastActiveZonedDatetime()
-                        .plus(config.getPoolIdleTimeoutSeconds(), ChronoUnit.SECONDS);
-                if (immediateIdleEngineCount > config.getPoolMaxSize()
-                        || expirationZonedDateTime.isBefore(getUTCNow())) {
-                    try {
-                        engine.close(true);
-                    } catch (Throwable t) {
-                        logger.logError(t, "Failed to release idle engine.");
-                    } finally {
-                        engines[index] = null;
-                        releasedEngineIndexList.add(index);
+            synchronized (internalLock) {
+                final int initialIdleEngineCount = idleEngineIndexList.size();
+                for (int i = config.getPoolMinSize(); i < initialIdleEngineCount; ++i) {
+                    final int immediateIdleEngineCount = idleEngineIndexList.size();
+                    Integer index = idleEngineIndexList.poll();
+                    if (index == null) {
+                        break;
                     }
-                } else {
-                    if (config.getResetEngineTimeoutSeconds() > 0) {
-                        ZonedDateTime resetEngineZonedDateTime = usage.getLastActiveZonedDatetime()
-                                .plus(config.getResetEngineTimeoutSeconds(), ChronoUnit.SECONDS);
-                        if (resetEngineZonedDateTime.isBefore(getUTCNow())) {
-                            try {
-                                logger.debug("JavetEnginePool reset engine begins.");
-                                engine.resetContext();
-                                logger.debug("JavetEnginePool reset engine ends.");
-                            } catch (Throwable t) {
-                                logger.logError(t, "Failed to reset idle engine.");
+                    JavetEngine<R> engine = Objects.requireNonNull(engines[index], "The idle engine must not be null.");
+                    JavetEngineUsage usage = engine.getUsage();
+                    ZonedDateTime expirationZonedDateTime = usage.getLastActiveZonedDatetime()
+                            .plus(config.getPoolIdleTimeoutSeconds(), ChronoUnit.SECONDS);
+                    if (immediateIdleEngineCount > config.getPoolMaxSize()
+                            || expirationZonedDateTime.isBefore(getUTCNow())) {
+                        try {
+                            engine.close(true);
+                        } catch (Throwable t) {
+                            logger.logError(t, "Failed to release idle engine.");
+                        } finally {
+                            engines[index] = null;
+                            releasedEngineIndexList.add(index);
+                        }
+                    } else {
+                        if (config.getResetEngineTimeoutSeconds() > 0) {
+                            ZonedDateTime resetEngineZonedDateTime = usage.getLastActiveZonedDatetime()
+                                    .plus(config.getResetEngineTimeoutSeconds(), ChronoUnit.SECONDS);
+                            if (resetEngineZonedDateTime.isBefore(getUTCNow())) {
+                                try {
+                                    logger.debug("JavetEnginePool reset engine begins.");
+                                    engine.resetContext();
+                                    logger.debug("JavetEnginePool reset engine ends.");
+                                } catch (Throwable t) {
+                                    logger.logError(t, "Failed to reset idle engine.");
+                                }
                             }
                         }
+                        idleEngineIndexList.add(index);
                     }
-                    idleEngineIndexList.add(index);
                 }
             }
             synchronized (externalLock) {
@@ -298,33 +335,35 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 Integer.toString(getActiveEngineCount()),
                 Integer.toString(getIdleEngineCount()),
                 Integer.toString(engines.length));
-        Set<Integer> idleEngineIndexSet = new TreeSet<>(idleEngineIndexList);
-        Set<Integer> releasedEngineIndexSet = new TreeSet<>(releasedEngineIndexList);
-        for (int index = 0; index < engines.length; ++index) {
-            JavetEngine<R> engine = engines[index];
-            if (engine != null) {
-                try {
-                    if (engine.isActive()) {
-                        try {
-                            engine.getV8Runtime().terminateExecution();
-                        } catch (Throwable t) {
-                            logger.logError(t, "Failed to terminate active engine.");
+        synchronized (internalLock) {
+            Set<Integer> idleEngineIndexSet = new TreeSet<>(idleEngineIndexList);
+            Set<Integer> releasedEngineIndexSet = new TreeSet<>(releasedEngineIndexList);
+            for (int index = 0; index < engines.length; ++index) {
+                JavetEngine<R> engine = engines[index];
+                if (engine != null) {
+                    try {
+                        if (engine.isActive()) {
+                            try {
+                                engine.getV8Runtime().terminateExecution();
+                            } catch (Throwable t) {
+                                logger.logError(t, "Failed to terminate active engine.");
+                            }
                         }
+                        engine.close(true);
+                    } catch (Throwable t) {
+                        logger.logError(t, "Failed to release engine.");
+                    } finally {
+                        engines[index] = null;
                     }
-                    engine.close(true);
-                } catch (Throwable t) {
-                    logger.logError(t, "Failed to release engine.");
-                } finally {
-                    engines[index] = null;
                 }
-            }
-            if (idleEngineIndexSet.contains(index)) {
-                idleEngineIndexSet.remove(index);
-                idleEngineIndexList.remove(index);
-            }
-            if (!releasedEngineIndexSet.contains(index)) {
-                releasedEngineIndexSet.add(index);
-                releasedEngineIndexList.add(index);
+                if (idleEngineIndexSet.contains(index)) {
+                    idleEngineIndexSet.remove(index);
+                    idleEngineIndexList.remove(index);
+                }
+                if (!releasedEngineIndexSet.contains(index)) {
+                    releasedEngineIndexSet.add(index);
+                    releasedEngineIndexList.add(index);
+                }
             }
         }
         logger.debug("JavetEnginePool.run() ends.");

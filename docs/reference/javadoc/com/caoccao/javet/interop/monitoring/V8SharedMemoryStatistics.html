@@ -74,13 +74,13 @@ var activeTableTab = "activeTableTab";
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
-<li>Constr&nbsp;|&nbsp;</li>
+<li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
-<li>Constr&nbsp;|&nbsp;</li>
+<li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
@@ -120,6 +120,27 @@ extends java.lang.Object</pre>
 <div class="summary">
 <ul class="blockList">
 <li class="blockList">
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor.summary">
+<!--   -->
+</a>
+<h3>Constructor Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html#V8SharedMemoryStatistics-long-long-long-">V8SharedMemoryStatistics</a></span>(long&nbsp;readOnlySpacePhysicalSize,
+                        long&nbsp;readOnlySpaceSize,
+                        long&nbsp;readOnlySpaceUsedSize)</code>
+<div class="block">Instantiates a new V8 shared memory statistics.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
 <!-- ========== METHOD SUMMARY =========== -->
 <ul class="blockList">
 <li class="blockList"><a name="method.summary">
@@ -133,19 +154,19 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html#getReadOnlySpacePhysicalSize--">getReadOnlySpacePhysicalSize</a></span>()</code>
 <div class="block">Gets read only space physical size.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html#getReadOnlySpaceSize--">getReadOnlySpaceSize</a></span>()</code>
 <div class="block">Gets read only space size.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html#getReadOnlySpaceUsedSize--">getReadOnlySpaceUsedSize</a></span>()</code>
 <div class="block">Gets read only space used size.</div>
 </td>
@@ -170,6 +191,34 @@ extends java.lang.Object</pre>
 <div class="details">
 <ul class="blockList">
 <li class="blockList">
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor.detail">
+<!--   -->
+</a>
+<h3>Constructor Detail</h3>
+<a name="V8SharedMemoryStatistics-long-long-long-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>V8SharedMemoryStatistics</h4>
+<pre>public&nbsp;V8SharedMemoryStatistics(long&nbsp;readOnlySpacePhysicalSize,
+                                long&nbsp;readOnlySpaceSize,
+                                long&nbsp;readOnlySpaceUsedSize)</pre>
+<div class="block">Instantiates a new V8 shared memory statistics.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>readOnlySpacePhysicalSize</code> - the read only space physical size</dd>
+<dd><code>readOnlySpaceSize</code> - the read only space size</dd>
+<dd><code>readOnlySpaceUsedSize</code> - the read only space used size</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.1</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
 <!-- ============ METHOD DETAIL ========== -->
 <ul class="blockList">
 <li class="blockList"><a name="method.detail">
@@ -182,7 +231,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getReadOnlySpacePhysicalSize</h4>
-<pre>public&nbsp;int&nbsp;getReadOnlySpacePhysicalSize()</pre>
+<pre>public&nbsp;long&nbsp;getReadOnlySpacePhysicalSize()</pre>
 <div class="block">Gets read only space physical size.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -198,7 +247,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getReadOnlySpaceSize</h4>
-<pre>public&nbsp;int&nbsp;getReadOnlySpaceSize()</pre>
+<pre>public&nbsp;long&nbsp;getReadOnlySpaceSize()</pre>
 <div class="block">Gets read only space size.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -214,7 +263,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getReadOnlySpaceUsedSize</h4>
-<pre>public&nbsp;int&nbsp;getReadOnlySpaceUsedSize()</pre>
+<pre>public&nbsp;long&nbsp;getReadOnlySpaceUsedSize()</pre>
 <div class="block">Gets read only space used size.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -291,13 +340,13 @@ extends java.lang.Object</pre>
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
-<li>Constr&nbsp;|&nbsp;</li>
+<li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
-<li>Constr&nbsp;|&nbsp;</li>
+<li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
 </div>

@@ -113,9 +113,7 @@ namespace Javet {
             v8Locker.reset(new v8::Locker(v8Isolate));
         }
 
-        inline void Register(const V8LocalContext& v8Context) {
-            v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
-        }
+        void Register(const V8LocalContext& v8Context);
 
         inline jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value) {
             V8TryCatch v8TryCatch(v8Context->GetIsolate());
@@ -133,9 +131,7 @@ namespace Javet {
             v8Locker.reset();
         }
 
-        inline void Unregister(const V8LocalContext& v8Context) {
-            v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, 0));
-        }
+        void Unregister(const V8LocalContext& v8Context);
 
         virtual ~V8Runtime();
 

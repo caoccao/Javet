@@ -22,20 +22,20 @@ package com.caoccao.javet.interop.monitoring;
  * @since 1.0.0
  */
 public final class V8HeapStatistics {
-    private int doesZapGarbage;
-    private int externalMemory;
-    private int heapSizeLimit;
-    private int mallocedMemory;
-    private int numberOfDetachedContexts;
-    private int numberOfNativeContexts;
-    private int peakMallocedMemory;
-    private int totalAvailableSize;
-    private int totalGlobalHandlesSize;
-    private int totalHeapSize;
-    private int totalHeapSizeExecutable;
-    private int totalPhysicalSize;
-    private int usedGlobalHandlesSize;
-    private int usedHeapSize;
+    private long doesZapGarbage;
+    private long externalMemory;
+    private long heapSizeLimit;
+    private long mallocedMemory;
+    private long numberOfDetachedContexts;
+    private long numberOfNativeContexts;
+    private long peakMallocedMemory;
+    private long totalAvailableSize;
+    private long totalGlobalHandlesSize;
+    private long totalHeapSize;
+    private long totalHeapSizeExecutable;
+    private long totalPhysicalSize;
+    private long usedGlobalHandlesSize;
+    private long usedHeapSize;
 
     /**
      * Instantiates a new V8 heap statistics.
@@ -56,21 +56,21 @@ public final class V8HeapStatistics {
      * @param usedHeapSize             the used heap size
      * @since 1.0.1
      */
-    V8HeapStatistics(
-            int doesZapGarbage,
-            int externalMemory,
-            int heapSizeLimit,
-            int mallocedMemory,
-            int numberOfDetachedContexts,
-            int numberOfNativeContexts,
-            int peakMallocedMemory,
-            int totalAvailableSize,
-            int totalGlobalHandlesSize,
-            int totalHeapSize,
-            int totalHeapSizeExecutable,
-            int totalPhysicalSize,
-            int usedGlobalHandlesSize,
-            int usedHeapSize) {
+    public V8HeapStatistics(
+            long doesZapGarbage,
+            long externalMemory,
+            long heapSizeLimit,
+            long mallocedMemory,
+            long numberOfDetachedContexts,
+            long numberOfNativeContexts,
+            long peakMallocedMemory,
+            long totalAvailableSize,
+            long totalGlobalHandlesSize,
+            long totalHeapSize,
+            long totalHeapSizeExecutable,
+            long totalPhysicalSize,
+            long usedGlobalHandlesSize,
+            long usedHeapSize) {
         this.doesZapGarbage = doesZapGarbage;
         this.externalMemory = externalMemory;
         this.heapSizeLimit = heapSizeLimit;
@@ -93,7 +93,7 @@ public final class V8HeapStatistics {
      * @return the does zap garbage
      * @since 1.0.0
      */
-    public int getDoesZapGarbage() {
+    public long getDoesZapGarbage() {
         return doesZapGarbage;
     }
 
@@ -103,7 +103,7 @@ public final class V8HeapStatistics {
      * @return the external memory
      * @since 1.0.0
      */
-    public int getExternalMemory() {
+    public long getExternalMemory() {
         return externalMemory;
     }
 
@@ -113,7 +113,7 @@ public final class V8HeapStatistics {
      * @return the heap size limit
      * @since 1.0.0
      */
-    public int getHeapSizeLimit() {
+    public long getHeapSizeLimit() {
         return heapSizeLimit;
     }
 
@@ -123,7 +123,7 @@ public final class V8HeapStatistics {
      * @return the malloced memory
      * @since 1.0.0
      */
-    public int getMallocedMemory() {
+    public long getMallocedMemory() {
         return mallocedMemory;
     }
 
@@ -133,7 +133,7 @@ public final class V8HeapStatistics {
      * @return the number of detached contexts
      * @since 1.0.0
      */
-    public int getNumberOfDetachedContexts() {
+    public long getNumberOfDetachedContexts() {
         return numberOfDetachedContexts;
     }
 
@@ -143,7 +143,7 @@ public final class V8HeapStatistics {
      * @return the number of native contexts
      * @since 1.0.0
      */
-    public int getNumberOfNativeContexts() {
+    public long getNumberOfNativeContexts() {
         return numberOfNativeContexts;
     }
 
@@ -153,7 +153,7 @@ public final class V8HeapStatistics {
      * @return the peak malloced memory
      * @since 1.0.0
      */
-    public int getPeakMallocedMemory() {
+    public long getPeakMallocedMemory() {
         return peakMallocedMemory;
     }
 
@@ -163,7 +163,7 @@ public final class V8HeapStatistics {
      * @return the total available size
      * @since 1.0.0
      */
-    public int getTotalAvailableSize() {
+    public long getTotalAvailableSize() {
         return totalAvailableSize;
     }
 
@@ -173,7 +173,7 @@ public final class V8HeapStatistics {
      * @return the total global handles size
      * @since 1.0.0
      */
-    public int getTotalGlobalHandlesSize() {
+    public long getTotalGlobalHandlesSize() {
         return totalGlobalHandlesSize;
     }
 
@@ -183,7 +183,7 @@ public final class V8HeapStatistics {
      * @return the total heap size
      * @since 1.0.0
      */
-    public int getTotalHeapSize() {
+    public long getTotalHeapSize() {
         return totalHeapSize;
     }
 
@@ -193,7 +193,7 @@ public final class V8HeapStatistics {
      * @return the total heap size executable
      * @since 1.0.0
      */
-    public int getTotalHeapSizeExecutable() {
+    public long getTotalHeapSizeExecutable() {
         return totalHeapSizeExecutable;
     }
 
@@ -203,7 +203,7 @@ public final class V8HeapStatistics {
      * @return the total physical size
      * @since 1.0.0
      */
-    public int getTotalPhysicalSize() {
+    public long getTotalPhysicalSize() {
         return totalPhysicalSize;
     }
 
@@ -213,7 +213,7 @@ public final class V8HeapStatistics {
      * @return the used global handles size
      * @since 1.0.0
      */
-    public int getUsedGlobalHandlesSize() {
+    public long getUsedGlobalHandlesSize() {
         return usedGlobalHandlesSize;
     }
 
@@ -223,7 +223,7 @@ public final class V8HeapStatistics {
      * @return the used heap size
      * @since 1.0.0
      */
-    public int getUsedHeapSize() {
+    public long getUsedHeapSize() {
         return usedHeapSize;
     }
 

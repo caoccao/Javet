@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -148,21 +148,21 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected java.util.concurrent.ArrayBlockingQueue&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngine.html" title="class in com.caoccao.javet.interop.engine">JavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a>&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#activeEngineList">activeEngineList</a></span></code>
-<div class="block">The Active engine list.</div>
-</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#config">config</a></span></code>
 <div class="block">The Config.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.lang.Thread</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#daemonThread">daemonThread</a></span></code>
 <div class="block">The Daemon thread.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../../../../com/caoccao/javet/interop/engine/JavetEngine.html" title="class in com.caoccao.javet.interop.engine">JavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a>&gt;[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#engines">engines</a></span></code>
+<div class="block">The Engines.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -172,21 +172,33 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected java.util.concurrent.ArrayBlockingQueue&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngine.html" title="class in com.caoccao.javet.interop.engine">JavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a>&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#idleEngineList">idleEngineList</a></span></code>
-<div class="block">The Idle engine list.</div>
+<td class="colFirst"><code>protected java.util.concurrent.ArrayBlockingQueue&lt;java.lang.Integer&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#idleEngineIndexList">idleEngineIndexList</a></span></code>
+<div class="block">The Idle engine index list.</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected java.lang.Object</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#internalLock">internalLock</a></span></code>
+<div class="block">The Internal lock.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#JAVET_DAEMON_THREAD_NAME">JAVET_DAEMON_THREAD_NAME</a></span></code>
 <div class="block">The constant JAVET_DAEMON_THREAD_NAME.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#quitting">quitting</a></span></code>
 <div class="block">The Quitting.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected java.util.concurrent.ArrayBlockingQueue&lt;java.lang.Integer&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#releasedEngineIndexList">releasedEngineIndexList</a></span></code>
+<div class="block">The Released engine index list.</div>
 </td>
 </tr>
 </table>
@@ -263,49 +275,67 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </td>
 </tr>
 <tr id="i6" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#getReleasedEngineCount--">getReleasedEngineCount</a></span>()</code>
+<div class="block">Gets released engine count.</div>
+</td>
+</tr>
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>protected java.time.ZonedDateTime</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#getUTCNow--">getUTCNow</a></span>()</code>
 <div class="block">Gets utc now.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#isActive--">isActive</a></span>()</code>
 <div class="block">Is active.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#isClosed--">isClosed</a></span>()</code>
 <div class="block">Is closed.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#isQuitting--">isQuitting</a></span>()</code>
 <div class="block">Is quitting boolean.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#observe-com.caoccao.javet.interfaces.IV8RuntimeObserver-">observe</a></span>(<a href="../../../../../com/caoccao/javet/interfaces/IV8RuntimeObserver.html" title="interface in com.caoccao.javet.interfaces">IV8RuntimeObserver</a>&nbsp;observer)</code>
+<div class="block">Traverse the internal V8 runtimes, apply the observer and return the observed V8 runtime count.</div>
+</td>
+</tr>
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#releaseEngine-com.caoccao.javet.interop.engine.IJavetEngine-">releaseEngine</a></span>(<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a>&gt;&nbsp;engine)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#releaseEngine-com.caoccao.javet.interop.engine.IJavetEngine-">releaseEngine</a></span>(<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a>&gt;&nbsp;iJavetEngine)</code>
 <div class="block">Release engine.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#run--">run</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#startDaemon--">startDaemon</a></span>()</code>
 <div class="block">Start daemon.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#stopDaemon--">stopDaemon</a></span>()</code>
 <div class="block">Stop daemon.</div>
+</td>
+</tr>
+<tr id="i16" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#wakeUpDaemon--">wakeUpDaemon</a></span>()</code>
+<div class="block">Wake up the daemon thread explicitly.</div>
 </td>
 </tr>
 </table>
@@ -315,6 +345,13 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </a>
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.com.caoccao.javet.interop.engine.IJavetEnginePool">
+<!--   -->
+</a>
+<h3>Methods inherited from interface&nbsp;com.caoccao.javet.interop.engine.<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a></h3>
+<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8HeapSpaceStatistics-com.caoccao.javet.enums.V8AllocationSpace-">getAverageV8HeapSpaceStatistics</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8HeapStatistics--">getAverageV8HeapStatistics</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8SharedMemoryStatistics--">getAverageV8SharedMemoryStatistics</a></code></li>
 </ul>
 </li>
 </ul>
@@ -346,20 +383,6 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </dl>
 </li>
 </ul>
-<a name="activeEngineList">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>activeEngineList</h4>
-<pre>protected final&nbsp;java.util.concurrent.ArrayBlockingQueue&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngine.html" title="class in com.caoccao.javet.interop.engine">JavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;&gt; activeEngineList</pre>
-<div class="block">The Active engine list.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.1</dd>
-</dl>
-</li>
-</ul>
 <a name="externalLock">
 <!--   -->
 </a>
@@ -374,17 +397,45 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </dl>
 </li>
 </ul>
-<a name="idleEngineList">
+<a name="idleEngineIndexList">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>idleEngineList</h4>
-<pre>protected final&nbsp;java.util.concurrent.ArrayBlockingQueue&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngine.html" title="class in com.caoccao.javet.interop.engine">JavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;&gt; idleEngineList</pre>
-<div class="block">The Idle engine list.</div>
+<h4>idleEngineIndexList</h4>
+<pre>protected final&nbsp;java.util.concurrent.ArrayBlockingQueue&lt;java.lang.Integer&gt; idleEngineIndexList</pre>
+<div class="block">The Idle engine index list.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.1</dd>
+<dd>1.0.5</dd>
+</dl>
+</li>
+</ul>
+<a name="internalLock">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>internalLock</h4>
+<pre>protected final&nbsp;java.lang.Object internalLock</pre>
+<div class="block">The Internal lock.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.5</dd>
+</dl>
+</li>
+</ul>
+<a name="releasedEngineIndexList">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>releasedEngineIndexList</h4>
+<pre>protected final&nbsp;java.util.concurrent.ArrayBlockingQueue&lt;java.lang.Integer&gt; releasedEngineIndexList</pre>
+<div class="block">The Released engine index list.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.5</dd>
 </dl>
 </li>
 </ul>
@@ -427,6 +478,20 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.7.0</dd>
+</dl>
+</li>
+</ul>
+<a name="engines">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>engines</h4>
+<pre>protected&nbsp;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngine.html" title="class in com.caoccao.javet.interop.engine">JavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;[] engines</pre>
+<div class="block">The Engines.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.5</dd>
 </dl>
 </li>
 </ul>
@@ -598,6 +663,23 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </dl>
 </li>
 </ul>
+<a name="getReleasedEngineCount--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getReleasedEngineCount</h4>
+<pre>public&nbsp;int&nbsp;getReleasedEngineCount()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getReleasedEngineCount--">IJavetEnginePool</a></code></span></div>
+<div class="block">Gets released engine count.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getReleasedEngineCount--">getReleasedEngineCount</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;</code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the released engine count</dd>
+</dl>
+</li>
+</ul>
 <a name="getUTCNow--">
 <!--   -->
 </a>
@@ -665,20 +747,41 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </dl>
 </li>
 </ul>
+<a name="observe-com.caoccao.javet.interfaces.IV8RuntimeObserver-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>observe</h4>
+<pre>public&nbsp;int&nbsp;observe(<a href="../../../../../com/caoccao/javet/interfaces/IV8RuntimeObserver.html" title="interface in com.caoccao.javet.interfaces">IV8RuntimeObserver</a>&nbsp;observer)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#observe-com.caoccao.javet.interfaces.IV8RuntimeObserver-">IJavetEnginePool</a></code></span></div>
+<div class="block">Traverse the internal V8 runtimes, apply the observer and return the observed V8 runtime count.
+ This API is for collecting statistics.
+ Executing code or changing the V8 runtime may result in inconsistent pool state or core dump.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#observe-com.caoccao.javet.interfaces.IV8RuntimeObserver-">observe</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>observer</code> - the observer</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the int</dd>
+</dl>
+</li>
+</ul>
 <a name="releaseEngine-com.caoccao.javet.interop.engine.IJavetEngine-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>releaseEngine</h4>
-<pre>public&nbsp;void&nbsp;releaseEngine(<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a>&gt;&nbsp;engine)</pre>
+<pre>public&nbsp;void&nbsp;releaseEngine(<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a>&gt;&nbsp;iJavetEngine)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#releaseEngine-com.caoccao.javet.interop.engine.IJavetEngine-">IJavetEnginePool</a></code></span></div>
 <div class="block">Release engine.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#releaseEngine-com.caoccao.javet.interop.engine.IJavetEngine-">releaseEngine</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>engine</code> - the engine</dd>
+<dd><code>iJavetEngine</code> - the javet engine</dd>
 </dl>
 </li>
 </ul>
@@ -712,7 +815,7 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 <a name="stopDaemon--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>stopDaemon</h4>
 <pre>protected&nbsp;void&nbsp;stopDaemon()</pre>
@@ -720,6 +823,21 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.7.0</dd>
+</dl>
+</li>
+</ul>
+<a name="wakeUpDaemon--">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>wakeUpDaemon</h4>
+<pre>public&nbsp;void&nbsp;wakeUpDaemon()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#wakeUpDaemon--">IJavetEnginePool</a></code></span></div>
+<div class="block">Wake up the daemon thread explicitly.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#wakeUpDaemon--">wakeUpDaemon</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;</code></dd>
 </dl>
 </li>
 </ul>
