@@ -434,6 +434,18 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 </pre></div>
 </div>
 </div>
+<div class="section" id="manual-patch-native-modules-on-windows">
+<h4>Manual Patch Native Modules on Windows<a class="headerlink" href="#manual-patch-native-modules-on-windows" title="Permalink to this headline">¶</a></h4>
+<p>Apart from rebuilding the native modules on Windows, there is also a manual way of patching the native modules. Let's see how to patch <code class="docutils literal notranslate"><span class="pre">@swc/core</span></code> which doesn't support <code class="docutils literal notranslate"><span class="pre">node-gyp</span></code>.</p>
+<ol class="arabic simple">
+<li><p>Download <a class="reference external" href="https://www.mzrst.com/">PPEE (Puppy, Professional PE file Explorer)</a>.</p></li>
+<li><p>Install SWC via <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">i</span> <span class="pre">@swc/cli</span> <span class="pre">@swc/core</span></code>.</p></li>
+<li><p>Drag and drop <code class="docutils literal notranslate"><span class="pre">node_modules\@swc\core-win32-x64-msvc\swc.win32-x64-msvc.node</span></code> to PPEE.</p></li>
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">DIRECTORY_ENTRY_DELAY_IMPORT</span></code>.</p></li>
+<li><p>Change the DLL name from <code class="docutils literal notranslate"><span class="pre">node.exe</span></code> to <code class="docutils literal notranslate"><span class="pre">libjavet-node-windows-x86_64.v.x.x.x.dll</span></code> where <code class="docutils literal notranslate"><span class="pre">x.x.x</span></code> needs to be replaced with the actual Javet version.</p></li>
+<li><p>Save the change.</p></li>
+</ol>
+</div>
 </div>
 </div>
 <div class="section" id="v8-mode">
@@ -571,6 +583,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 <li><a class="reference internal" href="#deal-with-native-modules">Deal with Native Modules</a><ul>
 <li><a class="reference internal" href="#patch-elf-native-modules-on-linux">Patch ELF Native Modules on Linux</a></li>
 <li><a class="reference internal" href="#rebuild-native-modules-on-windows">Rebuild Native Modules on Windows</a></li>
+<li><a class="reference internal" href="#manual-patch-native-modules-on-windows">Manual Patch Native Modules on Windows</a></li>
 </ul>
 </li>
 </ul>

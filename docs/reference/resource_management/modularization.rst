@@ -145,6 +145,18 @@ After the rebuild script is executed, the imports look like the following:
                         ...
                         6072 napi_get_undefined
 
+Manual Patch Native Modules on Windows
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Apart from rebuilding the native modules on Windows, there is also a manual way of patching the native modules. Let's see how to patch ``@swc/core`` which doesn't support ``node-gyp``.
+
+1. Download `PPEE (Puppy, Professional PE file Explorer) <https://www.mzrst.com/>`_.
+2. Install SWC via ``npm i @swc/cli @swc/core``.
+3. Drag and drop ``node_modules\@swc\core-win32-x64-msvc\swc.win32-x64-msvc.node`` to PPEE.
+4. Navigate to ``DIRECTORY_ENTRY_DELAY_IMPORT``.
+5. Change the DLL name from ``node.exe`` to ``libjavet-node-windows-x86_64.v.x.x.x.dll`` where ``x.x.x`` needs to be replaced with the actual Javet version.
+6. Save the change.
+
 V8 Mode
 =======
 

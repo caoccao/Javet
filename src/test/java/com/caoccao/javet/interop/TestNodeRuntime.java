@@ -128,6 +128,20 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @Test
+    public void testSWC() throws JavetException {
+        File swcCoreFile = getScriptFile("../node_modules/@swc/core/index.js");
+        if (swcCoreFile.exists()) {
+            File scriptFile = getScriptFile("test-node-module-swc-sync.js");
+            try {
+                nodeRuntime.getExecutor(scriptFile).executeVoid();
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+                fail(MessageFormat.format("{0} should pass.", scriptFile.getAbsolutePath()));
+            }
+        }
+    }
+
+    @Test
     public void testSqlite3InRootDirectoryWithDoubleDots() throws JavetException, IOException {
         File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
         if (sqlite3File.exists()) {
