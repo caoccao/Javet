@@ -44,8 +44,8 @@ namespace Javet {
 
         static jclass jclassV8Runtime;
         static jmethodID jmethodIDV8RuntimeGetV8Module;
-        static jmethodID jmethodIDV8RuntimeGCEpilogueCallback;
-        static jmethodID jmethodIDV8RuntimeGCPrologueCallback;
+        static jmethodID jmethodIDV8RuntimeReceiveGCEpilogueCallback;
+        static jmethodID jmethodIDV8RuntimeReceiveGCPrologueCallback;
         static jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
         static jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
 

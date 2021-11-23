@@ -832,38 +832,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Receives the GC epilogue callback from JNI.
-     *
-     * @param v8GCTypeValue          the V8 GC type value
-     * @param v8GCCallbackFlagsValue the V8 GC callback flags value
-     * @since 1.0.3
-     */
-    void gcEpilogueCallback(int v8GCTypeValue, int v8GCCallbackFlagsValue) {
-        final EnumSet<V8GCType> enumSetV8GCType = IEnumBitset.getEnumSet(v8GCTypeValue, V8GCType.class);
-        final EnumSet<V8GCCallbackFlags> enumSetV8GCCallbackFlags = IEnumBitset.getEnumSet(
-                v8GCCallbackFlagsValue, V8GCCallbackFlags.class, V8GCCallbackFlags.NoGCCallbackFlags);
-        for (IJavetGCCallback iJavetGCCallback : gcEpilogueCallbacks) {
-            iJavetGCCallback.callback(enumSetV8GCType, enumSetV8GCCallbackFlags);
-        }
-    }
-
-    /**
-     * Receives the GC prologue callback from JNI.
-     *
-     * @param v8GCTypeValue          the V8 GC type value
-     * @param v8GCCallbackFlagsValue the V8 GC callback flags value
-     * @since 1.0.3
-     */
-    void gcPrologueCallback(int v8GCTypeValue, int v8GCCallbackFlagsValue) {
-        final EnumSet<V8GCType> enumSetV8GCType = IEnumBitset.getEnumSet(v8GCTypeValue, V8GCType.class);
-        final EnumSet<V8GCCallbackFlags> enumSetV8GCCallbackFlags = IEnumBitset.getEnumSet(
-                v8GCCallbackFlagsValue, V8GCCallbackFlags.class, V8GCCallbackFlags.NoGCCallbackFlags);
-        for (IJavetGCCallback iJavetGCCallback : gcPrologueCallbacks) {
-            iJavetGCCallback.callback(enumSetV8GCType, enumSetV8GCCallbackFlags);
-        }
-    }
-
-    /**
      * Get a property from an object by a property key.
      *
      * @param <T>            the type parameter
@@ -1870,6 +1838,38 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     void proxyRevoke(IV8ValueProxy iV8ValueProxy) throws JavetException {
         v8Native.proxyRevoke(handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId());
+    }
+
+    /**
+     * Receives the GC epilogue callback from JNI.
+     *
+     * @param v8GCTypeValue          the V8 GC type value
+     * @param v8GCCallbackFlagsValue the V8 GC callback flags value
+     * @since 1.0.3
+     */
+    void receiveGCEpilogueCallback(int v8GCTypeValue, int v8GCCallbackFlagsValue) {
+        final EnumSet<V8GCType> enumSetV8GCType = IEnumBitset.getEnumSet(v8GCTypeValue, V8GCType.class);
+        final EnumSet<V8GCCallbackFlags> enumSetV8GCCallbackFlags = IEnumBitset.getEnumSet(
+                v8GCCallbackFlagsValue, V8GCCallbackFlags.class, V8GCCallbackFlags.NoGCCallbackFlags);
+        for (IJavetGCCallback iJavetGCCallback : gcEpilogueCallbacks) {
+            iJavetGCCallback.callback(enumSetV8GCType, enumSetV8GCCallbackFlags);
+        }
+    }
+
+    /**
+     * Receives the GC prologue callback from JNI.
+     *
+     * @param v8GCTypeValue          the V8 GC type value
+     * @param v8GCCallbackFlagsValue the V8 GC callback flags value
+     * @since 1.0.3
+     */
+    void receiveGCPrologueCallback(int v8GCTypeValue, int v8GCCallbackFlagsValue) {
+        final EnumSet<V8GCType> enumSetV8GCType = IEnumBitset.getEnumSet(v8GCTypeValue, V8GCType.class);
+        final EnumSet<V8GCCallbackFlags> enumSetV8GCCallbackFlags = IEnumBitset.getEnumSet(
+                v8GCCallbackFlagsValue, V8GCCallbackFlags.class, V8GCCallbackFlags.NoGCCallbackFlags);
+        for (IJavetGCCallback iJavetGCCallback : gcPrologueCallbacks) {
+            iJavetGCCallback.callback(enumSetV8GCType, enumSetV8GCCallbackFlags);
+        }
     }
 
     /**

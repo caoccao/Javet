@@ -52,8 +52,8 @@ namespace Javet {
 
             jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
             jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
-            jmethodIDV8RuntimeGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "gcEpilogueCallback", "(II)V");
-            jmethodIDV8RuntimeGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "gcPrologueCallback", "(II)V");
+            jmethodIDV8RuntimeReceiveGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
+            jmethodIDV8RuntimeReceiveGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
             jmethodIDV8RuntimeReceivePromiseRejectCallback = jniEnv->GetMethodID(jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
             jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
         }
@@ -105,7 +105,7 @@ namespace Javet {
                     FETCH_JNI_ENV(GlobalJavaVM);
                     auto externalV8Runtime = v8Runtime->externalV8Runtime;
                     jobject mIV8Module = jniEnv->CallObjectMethod(
-                        externalV8Runtime, jmethodIDV8RuntimeGCEpilogueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
+                        externalV8Runtime, jmethodIDV8RuntimeReceiveGCEpilogueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
                 }
             }
         }
@@ -124,7 +124,7 @@ namespace Javet {
                     FETCH_JNI_ENV(GlobalJavaVM);
                     auto externalV8Runtime = v8Runtime->externalV8Runtime;
                     jobject mIV8Module = jniEnv->CallObjectMethod(
-                        externalV8Runtime, jmethodIDV8RuntimeGCPrologueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
+                        externalV8Runtime, jmethodIDV8RuntimeReceiveGCPrologueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
                 }
             }
         }
