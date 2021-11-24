@@ -21,7 +21,7 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
-import com.caoccao.javet.interfaces.IV8RuntimeObserver;
+import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;

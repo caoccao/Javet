@@ -15,9 +15,9 @@
  */
 
 /**
- * Interoperation between JVM and C++ via JNI.
+ * Observers for V8 runtime.
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 1.0.5
  */
-package com.caoccao.javet.interop;
+package com.caoccao.javet.interop.engine.observers;

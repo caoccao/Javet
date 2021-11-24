@@ -19,7 +19,7 @@ package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interfaces.IV8RuntimeObserver;
+import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.options.RuntimeOptions;
@@ -236,21 +236,26 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     }
 
     @Override
-    public int observe(IV8RuntimeObserver observer) {
+    public int observe(IV8RuntimeObserver... observers) {
         int processedCount = 0;
-        if (observer != null) {
+        if (observers.length > 0) {
             synchronized (internalLock) {
+                IJavetLogger logger = config.getJavetLogger();
                 for (int index = 0; index < engines.length; ++index) {
                     JavetEngine<R> engine = engines[index];
                     if (engine != null) {
                         boolean isContinuable = true;
-                        try {
-                            isContinuable = observer.observe(engine.v8Runtime);
-                        } catch (Throwable t) {
-                            IJavetLogger logger = config.getJavetLogger();
-                            logger.error(t.getMessage(), t);
-                        } finally {
-                            ++processedCount;
+                        for (IV8RuntimeObserver observer : observers) {
+                            try {
+                                isContinuable = observer.observe(engine.v8Runtime);
+                            } catch (Throwable t) {
+                                logger.error(t.getMessage(), t);
+                            } finally {
+                                ++processedCount;
+                            }
+                            if (!isContinuable) {
+                                break;
+                            }
                         }
                         if (!isContinuable) {
                             break;

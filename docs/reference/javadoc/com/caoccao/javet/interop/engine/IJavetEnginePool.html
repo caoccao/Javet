@@ -198,7 +198,7 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#observe-com.caoccao.javet.interfaces.IV8RuntimeObserver-">observe</a></span>(<a href="../../../../../com/caoccao/javet/interfaces/IV8RuntimeObserver.html" title="interface in com.caoccao.javet.interfaces">IV8RuntimeObserver</a>&nbsp;observer)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#observe-com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver...-">observe</a></span>(<a href="../../../../../com/caoccao/javet/interop/engine/observers/IV8RuntimeObserver.html" title="interface in com.caoccao.javet.interop.engine.observers">IV8RuntimeObserver</a>&lt;?&gt;...&nbsp;observers)</code>
 <div class="block">Traverse the internal V8 runtimes, apply the observer and return the observed V8 runtime count.</div>
 </td>
 </tr>
@@ -402,19 +402,19 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 </dl>
 </li>
 </ul>
-<a name="observe-com.caoccao.javet.interfaces.IV8RuntimeObserver-">
+<a name="observe-com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver...-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>observe</h4>
-<pre>int&nbsp;observe(<a href="../../../../../com/caoccao/javet/interfaces/IV8RuntimeObserver.html" title="interface in com.caoccao.javet.interfaces">IV8RuntimeObserver</a>&nbsp;observer)</pre>
+<pre>int&nbsp;observe(<a href="../../../../../com/caoccao/javet/interop/engine/observers/IV8RuntimeObserver.html" title="interface in com.caoccao.javet.interop.engine.observers">IV8RuntimeObserver</a>&lt;?&gt;...&nbsp;observers)</pre>
 <div class="block">Traverse the internal V8 runtimes, apply the observer and return the observed V8 runtime count.
  This API is for collecting statistics.
  Executing code or changing the V8 runtime may result in inconsistent pool state or core dump.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>observer</code> - the observer</dd>
+<dd><code>observers</code> - the observers</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the int</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>

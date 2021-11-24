@@ -183,15 +183,15 @@ public class JavetEngineGuard implements IJavetEngineGuard {
                         Duration duration = Duration.between(startZonedDateTime, currentZonedDateTime);
                         logger.logWarn("Execution was terminated after {0}ms.", duration.toMillis());
                     }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                } catch (Throwable t) {
+                    logger.error(t.getMessage(), t);
                 }
                 break;
             } else {
                 try {
                     //noinspection BusyWait
                     Thread.sleep(config.getEngineGuardCheckIntervalMillis());
-                } catch (InterruptedException e) {
+                } catch (Throwable t) {
                     // It's closed.
                 }
             }
