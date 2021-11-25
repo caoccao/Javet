@@ -7,6 +7,7 @@ Release Notes 1.0.x
 
 * Fixed crash issue for Android
 * Upgraded Javet engine pool to expose more statistics
+* Upgraded Javet engine pool scheduling algorithm
 
 1.0.4 V8 9.6
 ------------
