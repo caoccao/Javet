@@ -19,9 +19,9 @@ package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
@@ -31,7 +31,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -59,7 +59,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      *
      * @since 1.0.5
      */
-    protected final ArrayBlockingQueue<Integer> idleEngineIndexList;
+    protected final ConcurrentLinkedQueue<Integer> idleEngineIndexList;
     /**
      * The Internal lock.
      *
@@ -71,7 +71,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      *
      * @since 1.0.5
      */
-    protected final ArrayBlockingQueue<Integer> releasedEngineIndexList;
+    protected final ConcurrentLinkedQueue<Integer> releasedEngineIndexList;
     /**
      * The Active.
      *
@@ -121,8 +121,8 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     @SuppressWarnings("unchecked")
     public JavetEnginePool(JavetEngineConfig config) {
         this.config = Objects.requireNonNull(config).freezePoolSize();
-        idleEngineIndexList = new ArrayBlockingQueue<>(config.getPoolMaxSize(), true);
-        releasedEngineIndexList = new ArrayBlockingQueue<>(config.getPoolMaxSize(), true);
+        idleEngineIndexList = new ConcurrentLinkedQueue<>();
+        releasedEngineIndexList = new ConcurrentLinkedQueue<>();
         engines = new JavetEngine[config.getPoolMaxSize()];
         externalLock = new Object();
         internalLock = new Object();
@@ -298,7 +298,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                     JavetEngineUsage usage = engine.getUsage();
                     ZonedDateTime expirationZonedDateTime = usage.getLastActiveZonedDatetime()
                             .plus(config.getPoolIdleTimeoutSeconds(), ChronoUnit.SECONDS);
-                    if (immediateIdleEngineCount > config.getPoolMaxSize()
+                    if (immediateIdleEngineCount > engines.length
                             || expirationZonedDateTime.isBefore(getUTCNow())) {
                         try {
                             engine.close(true);
