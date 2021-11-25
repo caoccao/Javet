@@ -188,8 +188,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(config.getPoolDaemonCheckIntervalMillis());
-            } catch (InterruptedException e) {
-                logger.logError(e, "Failed to sleep a while to wait for an idle engine.");
+                logger.logWarn(
+                        "Sleep {0}ms because there is no engines available.",
+                        Integer.toString(config.getPoolDaemonCheckIntervalMillis()));
+            } catch (Throwable t) {
+                logger.logError(t, "Failed to sleep a while to wait for an idle engine.");
             }
         }
         engine.setActive(true);
