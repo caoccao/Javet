@@ -21,9 +21,10 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
-import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.executors.IV8Executor;
+import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,10 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertNotNull(javetEnginePool.getAverageV8HeapStatistics().toString());
         assertNotNull(javetEnginePool.getAverageV8SharedMemoryStatistics().toString());
         for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.getDistinctValues()) {
-            assertNotNull(javetEnginePool.getAverageV8HeapSpaceStatistics(v8AllocationSpace).toString());
+            V8HeapSpaceStatistics v8HeapSpaceStatistics =
+                    javetEnginePool.getAverageV8HeapSpaceStatistics(v8AllocationSpace);
+            assertSame(v8AllocationSpace, v8HeapSpaceStatistics.getAllocationSpace());
+            assertNotNull(v8HeapSpaceStatistics.toString());
         }
     }
 

@@ -22,6 +22,7 @@ import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The type V8 runtime observer average V8 heap space statistics.
@@ -49,7 +50,7 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
      * @since 1.0.5
      */
     public V8RuntimeObserverAverageV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
-        this.v8AllocationSpace = v8AllocationSpace;
+        this.v8AllocationSpace = Objects.requireNonNull(v8AllocationSpace);
         v8HeapSpaceStatisticsList = new ArrayList<>();
     }
 
@@ -81,7 +82,7 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
                 physicalSpaceSize,
                 spaceAvailableSize,
                 spaceSize,
-                spaceUsedSize);
+                spaceUsedSize).setAllocationSpace(v8AllocationSpace);
     }
 
     @Override
