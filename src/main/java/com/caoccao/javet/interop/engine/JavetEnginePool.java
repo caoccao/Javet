@@ -43,6 +43,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>, Runnable {
     /**
+     * The constant GET_ENGINE_SLEEP_INTERVAL_IN_MILLIS.
+     */
+    protected static final int GET_ENGINE_SLEEP_INTERVAL_IN_MILLIS = 10;
+    /**
      * The constant JAVET_DAEMON_THREAD_NAME.
      *
      * @since 0.8.10
@@ -173,29 +177,39 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         logger.debug("JavetEnginePool.getEngine() begins.");
         JavetEngine<R> engine = null;
         while (!quitting) {
-            Integer index = idleEngineIndexList.poll();
-            if (index == null) {
-                index = releasedEngineIndexList.poll();
-                if (index != null) {
-                    engine = createEngine();
-                    engine.setIndex(index);
-                    engines[index] = engine;
+            try {
+                Integer index = idleEngineIndexList.poll();
+                if (index == null) {
+                    index = releasedEngineIndexList.poll();
+                    if (index != null) {
+                        engine = createEngine();
+                        engine.setIndex(index);
+                        engines[index] = engine;
+                        break;
+                    }
+                } else {
+                    engine = engines[index];
+                    if (engine == null) {
+                        logger.error("Idle engine cannot be null.");
+                        engine = createEngine();
+                        engine.setIndex(index);
+                        engines[index] = engine;
+                    }
                     break;
                 }
-            } else {
-                engine = Objects.requireNonNull(engines[index], "The idle engine must not be null.");
-                break;
+            } catch (Throwable t) {
+                logger.logError(t, "Failed to create a new engine.");
             }
             try {
-                TimeUnit.MILLISECONDS.sleep(config.getPoolDaemonCheckIntervalMillis());
                 logger.logWarn(
-                        "Sleep {0}ms because there is no engines available.",
-                        Integer.toString(config.getPoolDaemonCheckIntervalMillis()));
+                        "Sleep {0}ms to wait for an idle engine.",
+                        Integer.toString(GET_ENGINE_SLEEP_INTERVAL_IN_MILLIS));
+                TimeUnit.MILLISECONDS.sleep(GET_ENGINE_SLEEP_INTERVAL_IN_MILLIS);
             } catch (Throwable t) {
                 logger.logError(t, "Failed to sleep a while to wait for an idle engine.");
             }
         }
-        engine.setActive(true);
+        Objects.requireNonNull(engine).setActive(true);
         JavetEngineUsage usage = engine.getUsage();
         usage.increaseUsedCount();
         logger.debug("JavetEnginePool.getEngine() ends.");
