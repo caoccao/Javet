@@ -202,6 +202,15 @@ V8 exposes quite a few statistics for applications to analyze the memory usage, 
 * `getV8HeapStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapStatistics-->`_
 * `getV8SharedMemoryStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8SharedMemoryStatistics-->`_
 
+.. image:: ../../resources/images/statistics_v8_heap_space_statistics.png
+    :alt: V8 Heap Space Statistics
+
+.. image:: ../../resources/images/statistics_v8_heap_statistics.png
+    :alt: V8 Heap Statistics
+
+.. image:: ../../resources/images/statistics_v8_shared_memory_statistics.png
+    :alt: V8 Shared Memory Statistics
+
 .. note::
 
     More statistics will be exposed in new releases. Please file issues if you need more of them.

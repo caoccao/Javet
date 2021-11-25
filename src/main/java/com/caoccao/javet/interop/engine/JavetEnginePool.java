@@ -193,7 +193,6 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
             }
         }
         engine.setActive(true);
-        @SuppressWarnings("ConstantConditions")
         JavetEngineUsage usage = engine.getUsage();
         usage.increaseUsedCount();
         logger.debug("JavetEnginePool.getEngine() ends.");
@@ -236,16 +235,15 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     }
 
     @Override
-    public int observe(IV8RuntimeObserver... observers) {
+    public int observe(IV8RuntimeObserver<?>... observers) {
         int processedCount = 0;
         if (observers.length > 0) {
             synchronized (internalLock) {
                 IJavetLogger logger = config.getJavetLogger();
-                for (int index = 0; index < engines.length; ++index) {
-                    JavetEngine<R> engine = engines[index];
+                for (JavetEngine<R> engine : engines) {
                     if (engine != null) {
                         boolean isContinuable = true;
-                        for (IV8RuntimeObserver observer : observers) {
+                        for (IV8RuntimeObserver<?> observer : observers) {
                             try {
                                 isContinuable = observer.observe(engine.v8Runtime);
                             } catch (Throwable t) {
