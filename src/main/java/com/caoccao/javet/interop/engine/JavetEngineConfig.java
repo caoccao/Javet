@@ -80,6 +80,18 @@ public final class JavetEngineConfig {
      */
     public static final int DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS = 5;
     /**
+     * The constant DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT.
+     *
+     * @since 1.0.5
+     */
+    public static final int DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT = 100;
+    /**
+     * The constant DEFAULT_WAIT_FOR_ENGINE_SHEEP_INTERVAL_MILLIS.
+     *
+     * @since 1.0.5
+     */
+    public static final int DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS = 10;
+    /**
      * The constant MAX_POOL_SIZE.
      *
      * @since 1.0.4
@@ -107,6 +119,8 @@ public final class JavetEngineConfig {
     private int poolShutdownTimeoutSeconds;
     private boolean poolSizeFrozen;
     private int resetEngineTimeoutSeconds;
+    private int waitForEngineLogIntervalCount;
+    private int waitForEngineSleepIntervalMillis;
 
     /**
      * Instantiates a new Javet engine config.
@@ -129,8 +143,15 @@ public final class JavetEngineConfig {
         poolShutdownTimeoutSeconds = DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS;
         poolDaemonCheckIntervalMillis = DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS;
         resetEngineTimeoutSeconds = DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS;
+        waitForEngineLogIntervalCount = DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT;
+        waitForEngineSleepIntervalMillis = DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS;
     }
 
+    /**
+     * Freeze pool size javet engine config.
+     *
+     * @return the javet engine config
+     */
     public JavetEngineConfig freezePoolSize() {
         if (!poolSizeFrozen) {
             poolSizeFrozen = true;
@@ -256,6 +277,26 @@ public final class JavetEngineConfig {
      */
     public int getResetEngineTimeoutSeconds() {
         return resetEngineTimeoutSeconds;
+    }
+
+    /**
+     * Gets wait for engine log interval count.
+     *
+     * @return the wait for engine log interval count
+     * @since 1.0.5
+     */
+    public int getWaitForEngineLogIntervalCount() {
+        return waitForEngineLogIntervalCount;
+    }
+
+    /**
+     * Gets wait for engine sleep interval millis.
+     *
+     * @return the wait for engine sleep interval millis
+     * @since 1.0.5
+     */
+    public int getWaitForEngineSleepIntervalMillis() {
+        return waitForEngineSleepIntervalMillis;
     }
 
     /**
@@ -482,6 +523,30 @@ public final class JavetEngineConfig {
     public JavetEngineConfig setResetEngineTimeoutSeconds(int resetEngineTimeoutSeconds) {
         assert resetEngineTimeoutSeconds > 0 : "The reset engine timeout seconds must be greater than 0.";
         this.resetEngineTimeoutSeconds = resetEngineTimeoutSeconds;
+        return this;
+    }
+
+    /**
+     * Sets wait for engine log interval count.
+     *
+     * @param waitForEngineLogIntervalCount the wait for engine log interval count
+     * @return the self
+     * @since 1.0.5
+     */
+    public JavetEngineConfig setWaitForEngineLogIntervalCount(int waitForEngineLogIntervalCount) {
+        this.waitForEngineLogIntervalCount = waitForEngineLogIntervalCount;
+        return this;
+    }
+
+    /**
+     * Sets wait for engine sleep interval millis.
+     *
+     * @param waitForEngineSleepIntervalMillis the wait for engine sleep interval millis
+     * @return the self
+     * @since 1.0.5
+     */
+    public JavetEngineConfig setWaitForEngineSleepIntervalMillis(int waitForEngineSleepIntervalMillis) {
+        this.waitForEngineSleepIntervalMillis = waitForEngineSleepIntervalMillis;
         return this;
     }
 }

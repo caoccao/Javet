@@ -43,10 +43,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>, Runnable {
     /**
-     * The constant GET_ENGINE_SLEEP_INTERVAL_IN_MILLIS.
-     */
-    protected static final int GET_ENGINE_SLEEP_INTERVAL_IN_MILLIS = 10;
-    /**
      * The constant JAVET_DAEMON_THREAD_NAME.
      *
      * @since 0.8.10
@@ -176,6 +172,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.getEngine() begins.");
         JavetEngine<R> engine = null;
+        int sleepCount = 0;
         while (!quitting) {
             try {
                 Integer index = idleEngineIndexList.poll();
@@ -201,10 +198,15 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 logger.logError(t, "Failed to create a new engine.");
             }
             try {
-                logger.logWarn(
-                        "Sleep {0}ms to wait for an idle engine.",
-                        Integer.toString(GET_ENGINE_SLEEP_INTERVAL_IN_MILLIS));
-                TimeUnit.MILLISECONDS.sleep(GET_ENGINE_SLEEP_INTERVAL_IN_MILLIS);
+                TimeUnit.MILLISECONDS.sleep(config.getWaitForEngineSleepIntervalMillis());
+                ++sleepCount;
+                if (sleepCount % config.getWaitForEngineLogIntervalCount() == 0) {
+                    long millis = (long) config.getWaitForEngineLogIntervalCount()
+                            * (long) config.getWaitForEngineSleepIntervalMillis();
+                    logger.logWarn(
+                            "{0}ms passed while waiting for an idle engine.",
+                            Long.toString(millis));
+                }
             } catch (Throwable t) {
                 logger.logError(t, "Failed to sleep a while to wait for an idle engine.");
             }
