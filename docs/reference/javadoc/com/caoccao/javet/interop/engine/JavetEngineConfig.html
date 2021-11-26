@@ -188,12 +188,12 @@ extends java.lang.Object</pre>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT">DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT</a></span></code>
-<div class="block">The constant DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS">DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS</a></span></code>
+<div class="block">The constant DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>static int</code></td>
+<td class="colFirst"><code>protected static int[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS">DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS</a></span></code>
 <div class="block">The constant DEFAULT_WAIT_FOR_ENGINE_SHEEP_INTERVAL_MILLIS.</div>
 </td>
@@ -318,12 +318,12 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#getWaitForEngineLogIntervalCount--">getWaitForEngineLogIntervalCount</a></span>()</code>
-<div class="block">Gets wait for engine log interval count.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#getWaitForEngineLogIntervalMillis--">getWaitForEngineLogIntervalMillis</a></span>()</code>
+<div class="block">Gets wait for engine log interval millis.</div>
 </td>
 </tr>
 <tr id="i14" class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>int[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#getWaitForEngineSleepIntervalMillis--">getWaitForEngineSleepIntervalMillis</a></span>()</code>
 <div class="block">Gets wait for engine sleep interval millis.</div>
 </td>
@@ -372,7 +372,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i22" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#setGcBeforeEngineClose-boolean-">setGcBeforeEngineClose</a></span>(boolean&nbsp;gcBeforeEngineClose)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#setGCBeforeEngineClose-boolean-">setGCBeforeEngineClose</a></span>(boolean&nbsp;gcBeforeEngineClose)</code>
 <div class="block">Sets GC before engine close.</div>
 </td>
 </tr>
@@ -432,13 +432,13 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i32" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#setWaitForEngineLogIntervalCount-int-">setWaitForEngineLogIntervalCount</a></span>(int&nbsp;waitForEngineLogIntervalCount)</code>
-<div class="block">Sets wait for engine log interval count.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#setWaitForEngineLogIntervalMillis-int-">setWaitForEngineLogIntervalMillis</a></span>(int&nbsp;waitForEngineLogIntervalMillis)</code>
+<div class="block">Sets wait for engine log interval millis.</div>
 </td>
 </tr>
 <tr id="i33" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#setWaitForEngineSleepIntervalMillis-int-">setWaitForEngineSleepIntervalMillis</a></span>(int&nbsp;waitForEngineSleepIntervalMillis)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html#setWaitForEngineSleepIntervalMillis-int:A-">setWaitForEngineSleepIntervalMillis</a></span>(int[]&nbsp;waitForEngineSleepIntervalMillis)</code>
 <div class="block">Sets wait for engine sleep interval millis.</div>
 </td>
 </tr>
@@ -590,35 +590,19 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT">
+<a name="DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT</h4>
-<pre>public static final&nbsp;int DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT</pre>
-<div class="block">The constant DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT.</div>
+<h4>DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS</h4>
+<pre>public static final&nbsp;int DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS</pre>
+<div class="block">The constant DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0.5</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../constant-values.html#com.caoccao.javet.interop.engine.JavetEngineConfig.DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_COUNT">Constant Field Values</a></dd>
-</dl>
-</li>
-</ul>
-<a name="DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS</h4>
-<pre>public static final&nbsp;int DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS</pre>
-<div class="block">The constant DEFAULT_WAIT_FOR_ENGINE_SHEEP_INTERVAL_MILLIS.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>1.0.5</dd>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../constant-values.html#com.caoccao.javet.interop.engine.JavetEngineConfig.DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS">Constant Field Values</a></dd>
+<dd><a href="../../../../../constant-values.html#com.caoccao.javet.interop.engine.JavetEngineConfig.DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -635,6 +619,20 @@ extends java.lang.Object</pre>
 <dd>1.0.4</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../constant-values.html#com.caoccao.javet.interop.engine.JavetEngineConfig.MAX_POOL_SIZE">Constant Field Values</a></dd>
+</dl>
+</li>
+</ul>
+<a name="DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS</h4>
+<pre>protected static final&nbsp;int[] DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS</pre>
+<div class="block">The constant DEFAULT_WAIT_FOR_ENGINE_SHEEP_INTERVAL_MILLIS.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.5</dd>
 </dl>
 </li>
 </ul>
@@ -888,17 +886,17 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="getWaitForEngineLogIntervalCount--">
+<a name="getWaitForEngineLogIntervalMillis--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getWaitForEngineLogIntervalCount</h4>
-<pre>public&nbsp;int&nbsp;getWaitForEngineLogIntervalCount()</pre>
-<div class="block">Gets wait for engine log interval count.</div>
+<h4>getWaitForEngineLogIntervalMillis</h4>
+<pre>public&nbsp;int&nbsp;getWaitForEngineLogIntervalMillis()</pre>
+<div class="block">Gets wait for engine log interval millis.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the wait for engine log interval count</dd>
+<dd>the wait for engine log interval millis</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0.5</dd>
 </dl>
@@ -910,7 +908,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getWaitForEngineSleepIntervalMillis</h4>
-<pre>public&nbsp;int&nbsp;getWaitForEngineSleepIntervalMillis()</pre>
+<pre>public&nbsp;int[]&nbsp;getWaitForEngineSleepIntervalMillis()</pre>
 <div class="block">Gets wait for engine sleep interval millis.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1040,13 +1038,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="setGcBeforeEngineClose-boolean-">
+<a name="setGCBeforeEngineClose-boolean-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>setGcBeforeEngineClose</h4>
-<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a>&nbsp;setGcBeforeEngineClose(boolean&nbsp;gcBeforeEngineClose)</pre>
+<h4>setGCBeforeEngineClose</h4>
+<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a>&nbsp;setGCBeforeEngineClose(boolean&nbsp;gcBeforeEngineClose)</pre>
 <div class="block">Sets GC before engine close.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1220,17 +1218,17 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="setWaitForEngineLogIntervalCount-int-">
+<a name="setWaitForEngineLogIntervalMillis-int-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>setWaitForEngineLogIntervalCount</h4>
-<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a>&nbsp;setWaitForEngineLogIntervalCount(int&nbsp;waitForEngineLogIntervalCount)</pre>
-<div class="block">Sets wait for engine log interval count.</div>
+<h4>setWaitForEngineLogIntervalMillis</h4>
+<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a>&nbsp;setWaitForEngineLogIntervalMillis(int&nbsp;waitForEngineLogIntervalMillis)</pre>
+<div class="block">Sets wait for engine log interval millis.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>waitForEngineLogIntervalCount</code> - the wait for engine log interval count</dd>
+<dd><code>waitForEngineLogIntervalMillis</code> - the wait for engine log interval millis</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the self</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -1238,13 +1236,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="setWaitForEngineSleepIntervalMillis-int-">
+<a name="setWaitForEngineSleepIntervalMillis-int:A-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>setWaitForEngineSleepIntervalMillis</h4>
-<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a>&nbsp;setWaitForEngineSleepIntervalMillis(int&nbsp;waitForEngineSleepIntervalMillis)</pre>
+<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a>&nbsp;setWaitForEngineSleepIntervalMillis(int[]&nbsp;waitForEngineSleepIntervalMillis)</pre>
 <div class="block">Sets wait for engine sleep interval millis.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

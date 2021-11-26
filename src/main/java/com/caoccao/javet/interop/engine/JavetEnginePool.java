@@ -29,6 +29,7 @@ import com.caoccao.javet.utils.JavetDateTimeUtils;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -102,6 +103,12 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      * @since 0.7.0
      */
     protected volatile boolean quitting;
+    /**
+     * The Random.
+     *
+     * @since 1.0.5
+     */
+    protected Random random;
 
     /**
      * Instantiates a new Javet engine pool.
@@ -128,6 +135,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         internalLock = new Object();
         active = false;
         quitting = false;
+        random = new Random();
         startDaemon();
     }
 
@@ -172,7 +180,8 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.getEngine() begins.");
         JavetEngine<R> engine = null;
-        int sleepCount = 0;
+        long startTime = System.currentTimeMillis();
+        long lastTime = startTime;
         while (!quitting) {
             try {
                 Integer index = idleEngineIndexList.poll();
@@ -198,14 +207,15 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 logger.logError(t, "Failed to create a new engine.");
             }
             try {
-                TimeUnit.MILLISECONDS.sleep(config.getWaitForEngineSleepIntervalMillis());
-                ++sleepCount;
-                if (sleepCount % config.getWaitForEngineLogIntervalCount() == 0) {
-                    long millis = (long) config.getWaitForEngineLogIntervalCount()
-                            * (long) config.getWaitForEngineSleepIntervalMillis();
+                TimeUnit.MILLISECONDS.sleep(
+                        config.getWaitForEngineSleepIntervalMillis()[
+                                random.nextInt(config.getWaitForEngineSleepIntervalMillis().length)]);
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastTime >= config.getWaitForEngineLogIntervalMillis()) {
                     logger.logWarn(
                             "{0}ms passed while waiting for an idle engine.",
-                            Long.toString(millis));
+                            Long.toString(currentTime - startTime));
+                    lastTime = currentTime;
                 }
             } catch (Throwable t) {
                 logger.logError(t, "Failed to sleep a while to wait for an idle engine.");
