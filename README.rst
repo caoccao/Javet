@@ -58,14 +58,14 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.6</version>
     </dependency>
 
     <!-- Mac OS (x86_64 Only) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.6</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -73,18 +73,18 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:1.0.5") // Linux or Windows
-    implementation("com.caoccao.javet:javet-macos:1.0.5") // Mac OS (x86_64 Only)
-    implementation("com.caoccao.javet:javet-android:1.0.5") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:1.0.6") // Linux or Windows
+    implementation("com.caoccao.javet:javet-macos:1.0.6") // Mac OS (x86_64 Only)
+    implementation("com.caoccao.javet:javet-android:1.0.6") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:1.0.5' // Linux or Windows
-    implementation 'com.caoccao.javet:javet-macos:1.0.5' // Mac OS (x86_64 Only)
-    implementation 'com.caoccao.javet:javet-android:1.0.5' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:1.0.6' // Linux or Windows
+    implementation 'com.caoccao.javet:javet-macos:1.0.6' // Mac OS (x86_64 Only)
+    implementation 'com.caoccao.javet:javet-android:1.0.6' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------
