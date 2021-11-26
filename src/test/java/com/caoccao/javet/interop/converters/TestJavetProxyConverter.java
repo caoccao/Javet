@@ -103,6 +103,19 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             IStringJoiner joiner = stringJoiner.getJoiner();
             assertEquals("a,b", joiner.join("a", "b"));
             assertEquals("a,b,c", joiner.join(joiner.join("a", "b"), "c"));
+            try {
+                v8Runtime.getExecutor("stringJoiner.invalidFunction();").executeVoid();
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: stringJoiner.invalidFunction is not a function", e.getMessage());
+                assertEquals(
+                        "TypeError: stringJoiner.invalidFunction is not a function\n" +
+                                "Resource: undefined\n" +
+                                "Source Code: stringJoiner.invalidFunction();\n" +
+                                "Line Number: 1\n" +
+                                "Column: 13, 14\n" +
+                                "Position: 13, 14",
+                        e.getScriptingError().toString());
+            }
             v8Runtime.getGlobalObject().delete("stringJoiner");
         }
     }
@@ -249,7 +262,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             put("y", "2");
         }};
         v8Runtime.getGlobalObject().set("map", map);
-        assertTrue(map == v8Runtime.getGlobalObject().getObject("map"));
+        assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
         assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
         assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
         assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
@@ -310,7 +323,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             add("y");
         }};
         v8Runtime.getGlobalObject().set("set", set);
-        assertTrue(set == v8Runtime.getGlobalObject().getObject("set"));
+        assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
         assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
         assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());
         assertFalse(v8Runtime.getExecutor("set.contains('z')").executeBoolean());

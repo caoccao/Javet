@@ -123,6 +123,24 @@ public enum V8AllocationSpace {
     }
 
     /**
+     * Get distinct values.
+     *
+     * @return the distinct values
+     * @since 1.0.5
+     */
+    public static V8AllocationSpace[] getDistinctValues() {
+        return new V8AllocationSpace[]{
+                RO_SPACE,
+                OLD_SPACE,
+                CODE_SPACE,
+                MAP_SPACE,
+                LO_SPACE,
+                CODE_LO_SPACE,
+                NEW_LO_SPACE,
+                NEW_SPACE};
+    }
+
+    /**
      * Gets index.
      *
      * @return the index

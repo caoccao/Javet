@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8HeapStatistics extends BaseTestJavetRuntime {
 
     protected void printV8HeapStatistics(V8Runtime v8Runtime, String prefix) {
-        System.out.println(String.format("%s: %s", prefix, v8Runtime.getV8HeapStatistics().toString()));
+        System.out.printf("%s: %s%n", prefix, v8Runtime.getV8HeapStatistics().toString());
     }
 
     @Test

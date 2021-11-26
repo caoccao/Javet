@@ -31,6 +31,8 @@ RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r
 RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r21e -DCMAKE_ANDROID_ARCH=x86_64
 
 # Build AAR
+WORKDIR /Javet/scripts/python
+RUN python3 patch_android_build.py
 WORKDIR /Javet/android
 RUN gradle build
 

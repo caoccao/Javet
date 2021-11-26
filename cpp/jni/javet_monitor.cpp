@@ -23,13 +23,13 @@ namespace Javet {
     namespace Monitor {
         void Initialize(JNIEnv* jniEnv) {
             jclassV8HeapSpaceStatistics = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics"));
-            jmethodIDV8HeapSpaceStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapSpaceStatistics, "<init>", "(Ljava/lang/String;IIII)V");
+            jmethodIDV8HeapSpaceStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapSpaceStatistics, "<init>", "(Ljava/lang/String;JJJJ)V");
 
             jclassV8HeapStatistics = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/monitoring/V8HeapStatistics"));
-            jmethodIDV8HeapStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapStatistics, "<init>", "(IIIIIIIIIIIIII)V");
+            jmethodIDV8HeapStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapStatistics, "<init>", "(JJJJJJJJJJJJJJ)V");
 
             jclassV8SharedMemoryStatistics = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics"));
-            jmethodIDV8SharedMemoryStatisticsConstructor = jniEnv->GetMethodID(jclassV8SharedMemoryStatistics, "<init>", "(III)V");
+            jmethodIDV8SharedMemoryStatisticsConstructor = jniEnv->GetMethodID(jclassV8SharedMemoryStatistics, "<init>", "(JJJ)V");
         }
 
         jobject GetHeapSpaceStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jint allocationSpaceIndex) {
@@ -37,39 +37,39 @@ namespace Javet {
             v8Isolate->GetHeapSpaceStatistics(&heapSpaceStatistics, static_cast<size_t>(allocationSpaceIndex));
             return jniEnv->NewObject(jclassV8HeapSpaceStatistics, jmethodIDV8HeapSpaceStatisticsConstructor,
                 Javet::Converter::ToJavaString(jniEnv, heapSpaceStatistics.space_name()),
-                static_cast<jint>(heapSpaceStatistics.physical_space_size()),
-                static_cast<jint>(heapSpaceStatistics.space_available_size()),
-                static_cast<jint>(heapSpaceStatistics.space_size()),
-                static_cast<jint>(heapSpaceStatistics.space_used_size()));
+                static_cast<jlong>(heapSpaceStatistics.physical_space_size()),
+                static_cast<jlong>(heapSpaceStatistics.space_available_size()),
+                static_cast<jlong>(heapSpaceStatistics.space_size()),
+                static_cast<jlong>(heapSpaceStatistics.space_used_size()));
         }
 
         jobject GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate) {
             v8::HeapStatistics heapStatistics;
             v8Isolate->GetHeapStatistics(&heapStatistics);
             return jniEnv->NewObject(jclassV8HeapStatistics, jmethodIDV8HeapStatisticsConstructor,
-                static_cast<jint>(heapStatistics.does_zap_garbage()),
-                static_cast<jint>(heapStatistics.external_memory()),
-                static_cast<jint>(heapStatistics.heap_size_limit()),
-                static_cast<jint>(heapStatistics.malloced_memory()),
-                static_cast<jint>(heapStatistics.number_of_detached_contexts()),
-                static_cast<jint>(heapStatistics.number_of_native_contexts()),
-                static_cast<jint>(heapStatistics.peak_malloced_memory()),
-                static_cast<jint>(heapStatistics.total_available_size()),
-                static_cast<jint>(heapStatistics.total_global_handles_size()),
-                static_cast<jint>(heapStatistics.total_heap_size()),
-                static_cast<jint>(heapStatistics.total_heap_size_executable()),
-                static_cast<jint>(heapStatistics.total_physical_size()),
-                static_cast<jint>(heapStatistics.used_global_handles_size()),
-                static_cast<jint>(heapStatistics.used_heap_size()));
+                static_cast<jlong>(heapStatistics.does_zap_garbage()),
+                static_cast<jlong>(heapStatistics.external_memory()),
+                static_cast<jlong>(heapStatistics.heap_size_limit()),
+                static_cast<jlong>(heapStatistics.malloced_memory()),
+                static_cast<jlong>(heapStatistics.number_of_detached_contexts()),
+                static_cast<jlong>(heapStatistics.number_of_native_contexts()),
+                static_cast<jlong>(heapStatistics.peak_malloced_memory()),
+                static_cast<jlong>(heapStatistics.total_available_size()),
+                static_cast<jlong>(heapStatistics.total_global_handles_size()),
+                static_cast<jlong>(heapStatistics.total_heap_size()),
+                static_cast<jlong>(heapStatistics.total_heap_size_executable()),
+                static_cast<jlong>(heapStatistics.total_physical_size()),
+                static_cast<jlong>(heapStatistics.used_global_handles_size()),
+                static_cast<jlong>(heapStatistics.used_heap_size()));
         }
 
         jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) {
             v8::SharedMemoryStatistics sharedMemoryStatistics;
             v8::V8::GetSharedMemoryStatistics(&sharedMemoryStatistics);
             return jniEnv->NewObject(jclassV8SharedMemoryStatistics, jmethodIDV8SharedMemoryStatisticsConstructor,
-                static_cast<jint>(sharedMemoryStatistics.read_only_space_physical_size()),
-                static_cast<jint>(sharedMemoryStatistics.read_only_space_size()),
-                static_cast<jint>(sharedMemoryStatistics.read_only_space_used_size()));
+                static_cast<jlong>(sharedMemoryStatistics.read_only_space_physical_size()),
+                static_cast<jlong>(sharedMemoryStatistics.read_only_space_size()),
+                static_cast<jlong>(sharedMemoryStatistics.read_only_space_used_size()));
         }
 
 #ifdef ENABLE_MONITOR

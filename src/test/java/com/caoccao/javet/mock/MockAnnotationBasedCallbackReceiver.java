@@ -26,7 +26,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.io.Serializable;
@@ -34,11 +33,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class MockAnnotationBasedCallbackReceiver {
-    private AtomicInteger count;
-    private Set<String> disabledFunctionSet;
+    private final AtomicInteger count;
+    private final Set<String> disabledFunctionSet;
     private String stringValue;
     private String symbolValue;
     private V8Runtime v8Runtime;
@@ -46,8 +43,8 @@ public class MockAnnotationBasedCallbackReceiver {
     public MockAnnotationBasedCallbackReceiver() {
         count = new AtomicInteger(0);
         disabledFunctionSet = JavetReflectionUtils.getMethodNameSetFromLambdas(
-                (Supplier & Serializable) this::disabledFunction,
-                (Supplier & Serializable) this::disabledProperty);
+                (Supplier<?> & Serializable) this::disabledFunction,
+                (Supplier<?> & Serializable) this::disabledProperty);
         stringValue = null;
         symbolValue = null;
         v8Runtime = null;
@@ -78,7 +75,7 @@ public class MockAnnotationBasedCallbackReceiver {
 
     // Instance method with converter for non-primitive objects.
     @V8Function(name = "generateArrayWithConverter")
-    public Object[] generateArrayWithConverter() throws JavetException {
+    public Object[] generateArrayWithConverter() {
         count.incrementAndGet();
         // Converter is able to recognize non-primitive types.
         return new Object[]{"a", 1};

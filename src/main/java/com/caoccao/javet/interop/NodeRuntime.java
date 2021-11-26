@@ -22,7 +22,6 @@ import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.options.RuntimeOptions;
-import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.node.modules.INodeModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -59,12 +58,13 @@ public class NodeRuntime extends V8Runtime {
      * @since 0.8.4
      */
     public static final String PROPERTY_FILENAME = "__filename";
+
     /**
      * The Node module map.
      *
      * @since 0.8.1
      */
-    protected Map<String, INodeModule> nodeModuleMap;
+    Map<String, INodeModule> nodeModuleMap;
 
     /**
      * Instantiates a new Node runtime.

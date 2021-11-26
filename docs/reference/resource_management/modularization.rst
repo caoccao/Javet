@@ -80,7 +80,7 @@ The fix is very simple. Here is a sample sqlite3.
     export NODE_MODULE_FILE="../node_modules/sqlite3/lib/binding/napi-v3-linux-x64/node_sqlite3.node"
     ./rebuild.sh
 
-The `rebuild.sh <../../../scripts/node/javet-rebuild/rebuild.sh>`_ actually calls `patchelf <https://github.com/NixOS/patchelf>`_ to add Javet to the node module's dependency.
+The :extsource3:`rebuild.sh <../../../scripts/node/javet-rebuild/rebuild.sh>` actually calls `patchelf <https://github.com/NixOS/patchelf>`_ to add Javet to the node module's dependency.
 
 Rebuild Native Modules on Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -95,7 +95,7 @@ The fix is a bit complicated.
 * Install the node modules from source code ``npm install --build-from-source``.
 * Download the corresponding Javet library file from this `drive <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_.
 * Unzip the Javet library file somewhere.
-* Create a rebuild script pointing to the Javet library file by referencing `rebuild-sqlite3.cmd <../../../scripts/node/javet-rebuild/rebuild-sqlite3.cmd>`_ and `rebuild.cmd <../../scripts/node/javet-rebuild/rebuild.cmd>`_.
+* Create a rebuild script pointing to the Javet library file by referencing :extsource3:`rebuild-sqlite3.cmd <../../../scripts/node/javet-rebuild/rebuild-sqlite3.cmd>` and :extsource3:`rebuild.cmd <../../scripts/node/javet-rebuild/rebuild.cmd>`.
 * Run the rebuild script.
 
 The rebuild script actually replaces ``node.lib`` with ``libjavet....lib`` during the rebuild so that the new node modules can tell ``LoadLibraryExW`` to look for Javet instead of Node.js.
@@ -105,6 +105,57 @@ Javet calls for someone who can voluntarily host the Javet libraries and Javet c
 .. caution:: Make Backups
 
     Once the node modules are patched or rebuilt, they can only be loaded by that particular version of Javet and they cannot be loaded by Node.js any more.
+
+Before the rebuild script is executed, the imports look like the following:
+
+.. code-block:: text
+
+    dumpbin /imports node_modules\sqlite3\lib\binding\napi-v3-win32-x64\node_sqlite3.node
+
+    Section contains the following delay load imports:
+
+    node.exe
+              00000001 Characteristics
+      0000000180154A40 Address of HMODULE
+      0000000180154818 Import Address Table
+      000000018014F248 Import Name Table
+      000000018014FA68 Bound Import Name Table
+      0000000000000000 Unload Import Name Table
+                     0 time date stamp
+
+                                    0000000180108724  424B napi_create_function
+                                    ...
+                                    0000000180108AB5  4243 napi_create_buffer_copy
+
+After the rebuild script is executed, the imports look like the following:
+
+.. code-block:: text
+
+    dumpbin /imports node_modules\sqlite3\lib\binding\napi-v3-win32-x64\node_sqlite3.node
+
+    Section contains the following delay load imports:
+
+    libjavet-node-windows-x86_64.v.x.x.x.dll
+             1801363D8 Import Address Table
+             180166610 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                        6096 napi_open_escapable_handle_scope
+                        ...
+                        6072 napi_get_undefined
+
+Manual Patch Native Modules on Windows
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Apart from rebuilding the native modules on Windows, there is also a manual way of patching the native modules. Let's see how to patch ``@swc/core`` which doesn't support ``node-gyp``.
+
+1. Download `PPEE (Puppy, Professional PE file Explorer) <https://www.mzrst.com/>`_.
+2. Install SWC via ``npm i @swc/cli @swc/core``.
+3. Drag and drop ``node_modules\@swc\core-win32-x64-msvc\swc.win32-x64-msvc.node`` to PPEE.
+4. Navigate to ``DIRECTORY_ENTRY_DELAY_IMPORT``.
+5. Change the DLL name from ``node.exe`` to ``libjavet-node-windows-x86_64.v.x.x.x.dll`` where ``x.x.x`` needs to be replaced with the actual Javet version.
+6. Save the change.
 
 V8 Mode
 =======

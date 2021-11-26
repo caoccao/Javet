@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.4",
+    "@swc/cli": "^0.1.51",
+    "@swc/core": "^1.2.111",
     "decimal.js": "^10.2.1",
     "node-gyp": "^3.8.0",
     "sqlite3": "^5.0.2"

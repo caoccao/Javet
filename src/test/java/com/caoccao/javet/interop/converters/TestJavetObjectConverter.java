@@ -50,7 +50,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         converter.getConfig().setSkipFunctionInObject(false).setExtractFunctionSourceCode(true);
         Object object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
         assertTrue(object instanceof Map);
-        Map map = (Map) object;
+        Map<String, Object> map = (Map<String, Object>) object;
         assertEquals(2, map.size());
         assertEquals(1, map.get("a"));
         JavetEntityFunction javetEntityFunction = (JavetEntityFunction) map.get("b");
@@ -59,12 +59,12 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         v8Runtime.resetContext();
         converter.getConfig().setExtractFunctionSourceCode(false);
         object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
-        map = (Map) object;
+        map = (Map<String, Object>) object;
         assertNull(((JavetEntityFunction) map.get("b")).getSourceCode());
         v8Runtime.resetContext();
         converter.getConfig().setSkipFunctionInObject(true);
         object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
-        map = (Map) object;
+        map = (Map<String, Object>) object;
         assertEquals(1, map.size());
         assertEquals(1, map.get("a"));
         v8Runtime.resetContext();

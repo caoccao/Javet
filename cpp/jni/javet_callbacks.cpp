@@ -52,8 +52,8 @@ namespace Javet {
 
             jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
             jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
-            jmethodIDV8RuntimeGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "gcEpilogueCallback", "(II)V");
-            jmethodIDV8RuntimeGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "gcPrologueCallback", "(II)V");
+            jmethodIDV8RuntimeReceiveGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
+            jmethodIDV8RuntimeReceiveGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
             jmethodIDV8RuntimeReceivePromiseRejectCallback = jniEnv->GetMethodID(jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
             jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
         }
@@ -105,7 +105,7 @@ namespace Javet {
                     FETCH_JNI_ENV(GlobalJavaVM);
                     auto externalV8Runtime = v8Runtime->externalV8Runtime;
                     jobject mIV8Module = jniEnv->CallObjectMethod(
-                        externalV8Runtime, jmethodIDV8RuntimeGCEpilogueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
+                        externalV8Runtime, jmethodIDV8RuntimeReceiveGCEpilogueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
                 }
             }
         }
@@ -124,7 +124,7 @@ namespace Javet {
                     FETCH_JNI_ENV(GlobalJavaVM);
                     auto externalV8Runtime = v8Runtime->externalV8Runtime;
                     jobject mIV8Module = jniEnv->CallObjectMethod(
-                        externalV8Runtime, jmethodIDV8RuntimeGCPrologueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
+                        externalV8Runtime, jmethodIDV8RuntimeReceiveGCPrologueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
                 }
             }
         }
@@ -255,26 +255,32 @@ namespace Javet {
                         callbackContext,
                         thisObject,
                         externalArgs);
-                    if (jniEnv->ExceptionCheck()) {
-                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in function callback");
-                    }
-                    else if (isReturnResult) {
-                        if (mResult == nullptr) {
-                            args.GetReturnValue().SetUndefined();
-                        }
-                        else {
-                            args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Context, mResult));
-                        }
-                    }
                     if (thisObject != nullptr) {
                         jniEnv->DeleteLocalRef(thisObject);
                     }
                     if (externalArgs != nullptr) {
                         jniEnv->DeleteLocalRef(externalArgs);
                     }
-                    if (mResult != nullptr) {
-                        jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
-                        jniEnv->DeleteLocalRef(mResult);
+                    if (jniEnv->ExceptionCheck()) {
+                        if (mResult != nullptr) {
+                            jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
+                            jniEnv->DeleteLocalRef(mResult);
+                        }
+                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in function callback");
+                    }
+                    else {
+                        if (isReturnResult) {
+                            if (mResult == nullptr) {
+                                args.GetReturnValue().SetUndefined();
+                            }
+                            else {
+                                args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Context, mResult));
+                            }
+                        }
+                        if (mResult != nullptr) {
+                            jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
+                            jniEnv->DeleteLocalRef(mResult);
+                        }
                     }
                 }
             }
@@ -308,7 +314,14 @@ namespace Javet {
                         callbackContext,
                         thisObject,
                         nullptr);
+                    if (thisObject != nullptr) {
+                        jniEnv->DeleteLocalRef(thisObject);
+                    }
                     if (jniEnv->ExceptionCheck()) {
+                        if (mResult != nullptr) {
+                            jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
+                            jniEnv->DeleteLocalRef(mResult);
+                        }
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property getter callback");
                     }
                     else {
@@ -317,14 +330,9 @@ namespace Javet {
                         }
                         else {
                             args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Context, mResult));
+                            jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
+                            jniEnv->DeleteLocalRef(mResult);
                         }
-                    }
-                    if (thisObject != nullptr) {
-                        jniEnv->DeleteLocalRef(thisObject);
-                    }
-                    if (mResult != nullptr) {
-                        jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
-                        jniEnv->DeleteLocalRef(mResult);
                     }
                 }
             }
@@ -363,15 +371,15 @@ namespace Javet {
                             callbackContext,
                             thisObject,
                             mPropertyValue);
-                        if (jniEnv->ExceptionCheck()) {
-                            Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property setter callback");
-                        }
                         if (thisObject != nullptr) {
                             jniEnv->DeleteLocalRef(thisObject);
                         }
                         if (mResult != nullptr) {
                             jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
                             jniEnv->DeleteLocalRef(mResult);
+                        }
+                        if (jniEnv->ExceptionCheck()) {
+                            Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property setter callback");
                         }
                     }
                 }

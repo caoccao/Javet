@@ -88,6 +88,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         NodeRuntimeOptions runtimeOptions = new NodeRuntimeOptions();
         runtimeOptions.setConsoleArguments(new String[]{"--version"});
         try (NodeRuntime testNodeRuntime = v8Host.createV8Runtime(runtimeOptions)) {
+            assertNotNull(testNodeRuntime);
         }
     }
 
@@ -127,6 +128,20 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @Test
+    public void testSWC() throws JavetException {
+        File swcCoreFile = getScriptFile("../node_modules/@swc/core/index.js");
+        if (swcCoreFile.exists()) {
+            File scriptFile = getScriptFile("test-node-module-swc-sync.js");
+            try {
+                nodeRuntime.getExecutor(scriptFile).executeVoid();
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+                fail(MessageFormat.format("{0} should pass.", scriptFile.getAbsolutePath()));
+            }
+        }
+    }
+
+    @Test
     public void testSqlite3InRootDirectoryWithDoubleDots() throws JavetException, IOException {
         File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
         if (sqlite3File.exists()) {
@@ -134,7 +149,7 @@ public class TestNodeRuntime extends BaseTestJavet {
             File testModuleModeFile = getScriptFile("../test-module-mode.js");
             try {
                 if (testModuleModeFile.exists()) {
-                    testModuleModeFile.delete();
+                    assertTrue(testModuleModeFile.delete());
                 }
                 Files.write(
                         testModuleModeFile.toPath(),
@@ -150,7 +165,7 @@ public class TestNodeRuntime extends BaseTestJavet {
                             testModuleModeFile.getAbsolutePath()));
                 }
             } finally {
-                testModuleModeFile.delete();
+                assertTrue(testModuleModeFile.delete());
             }
         }
     }
@@ -163,7 +178,7 @@ public class TestNodeRuntime extends BaseTestJavet {
             File testModuleModeFile = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-module-mode.js");
             try {
                 if (testModuleModeFile.exists()) {
-                    testModuleModeFile.delete();
+                    assertTrue(testModuleModeFile.delete());
                 }
                 Files.write(
                         testModuleModeFile.toPath(),
@@ -180,7 +195,7 @@ public class TestNodeRuntime extends BaseTestJavet {
                     assertTrue(e.getMessage().startsWith("Error: Cannot find module 'sqlite3'"));
                 }
             } finally {
-                testModuleModeFile.delete();
+                assertTrue(testModuleModeFile.delete());
             }
         }
     }

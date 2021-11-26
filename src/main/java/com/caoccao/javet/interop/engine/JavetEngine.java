@@ -45,6 +45,12 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
      */
     protected IJavetEnginePool<R> iJavetEnginePool;
     /**
+     * The Index.
+     *
+     * @since 1.0.5
+     */
+    protected int index;
+    /**
      * The Usage.
      *
      * @since 0.7.0
@@ -65,9 +71,8 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
      * @since 0.7.0
      */
     public JavetEngine(IJavetEnginePool<R> iJavetEnginePool, R v8Runtime) {
-        Objects.requireNonNull(v8Runtime);
-        this.iJavetEnginePool = iJavetEnginePool;
-        this.v8Runtime = v8Runtime;
+        this.iJavetEnginePool = Objects.requireNonNull(iJavetEnginePool);
+        this.v8Runtime = Objects.requireNonNull(v8Runtime);
         usage = new JavetEngineUsage();
         setActive(false);
     }
@@ -111,6 +116,16 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     @CheckReturnValue
     public IJavetEngineGuard getGuard(long timeoutMillis) {
         return new JavetEngineGuard(this, v8Runtime, timeoutMillis);
+    }
+
+    /**
+     * Gets index.
+     *
+     * @return the index
+     * @since 1.0.5
+     */
+    public int getIndex() {
+        return index;
     }
 
     /**
@@ -175,6 +190,19 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     protected void setActive(boolean active) {
         this.active = active;
         touchLastActiveZonedDateTime();
+    }
+
+    /**
+     * Sets index.
+     *
+     * @param index the index
+     * @since 1.0.5
+     */
+    void setIndex(int index) {
+        assert index >= 0 : "Engine index must be no less than 0.";
+        assert index < iJavetEnginePool.getConfig().getPoolMaxSize()
+                : "Engine index must be less than " + iJavetEnginePool.getConfig().getPoolMaxSize() + ".";
+        this.index = index;
     }
 
     /**

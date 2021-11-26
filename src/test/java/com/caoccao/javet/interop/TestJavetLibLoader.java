@@ -69,6 +69,7 @@ public class TestJavetLibLoader {
 
     protected void testLoadAndUnload(JSRuntimeType jsRuntimeType) throws JavetException {
         V8Host v8Host = V8Host.getInstance(jsRuntimeType);
+        assertNotNull(v8Host);
         assertTrue(v8Host.isLibraryLoaded());
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());

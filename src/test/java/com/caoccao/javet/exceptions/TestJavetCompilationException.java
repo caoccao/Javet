@@ -19,6 +19,7 @@ package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8Script;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
@@ -73,8 +74,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
 
     @Test
     public void testUnexpectedIdentifier() {
-        try {
-            v8Runtime.getExecutor("const a = 1;\na a a a;").compileV8Script();
+        try (V8Script v8Script = v8Runtime.getExecutor("const a = 1;\na a a a;").compileV8Script()) {
             fail("Exception should be thrown.");
         } catch (JavetCompilationException e) {
             assertEquals(JavetError.CompilationFailure, e.getError());

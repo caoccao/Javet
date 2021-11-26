@@ -203,8 +203,11 @@ namespace Javet {
                 }
             }
         }
-        // node::CreateEnvironment is thread-safe.
-        nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
+        {
+            // node::CreateEnvironment is not thread-safe.
+            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
+        }
         // node::LoadEnvironment is thread-safe.
         auto v8MaybeLocalValue = node::LoadEnvironment(
             nodeEnvironment.get(),
@@ -249,6 +252,14 @@ namespace Javet {
         v8Isolate = v8::Isolate::New(createParams);
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
+    }
+
+    inline void V8Runtime::Register(const V8LocalContext & v8Context) {
+        v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
+    }
+
+    inline void V8Runtime::Unregister(const V8LocalContext & v8Context) {
+        v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, 0));
     }
 
     V8Runtime::~V8Runtime() {

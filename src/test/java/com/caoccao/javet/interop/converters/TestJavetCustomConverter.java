@@ -73,7 +73,7 @@ public class TestJavetCustomConverter extends BaseTestJavetRuntime {
             if (v8Value != null && !(v8Value.isUndefined())) {
                 return v8Value;
             }
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
             for (Method method : objectClass.getMethods()) {
                 if (method.getParameterCount() == 0) {
@@ -102,7 +102,7 @@ public class TestJavetCustomConverter extends BaseTestJavetRuntime {
         }
     }
 
-    class Pojo {
+    static class Pojo {
         private String name;
         private String value;
 

@@ -18,41 +18,62 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.BaseTestJavet;
+import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.executors.IV8Executor;
+import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
+import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("unchecked")
 public class TestJavetEnginePool extends BaseTestJavet {
     public static final int TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1;
     public static final int TEST_MAX_TIMEOUT = 1000;
-    private JavetEngineConfig javetEngineConfig;
-    private JavetEnginePool javetEnginePool;
+    protected JavetEngineConfig javetEngineConfig;
+    protected JavetEnginePool<?> javetEnginePool;
 
     @AfterEach
     private void afterEach() throws JavetException {
         javetEnginePool.close();
         assertEquals(0, javetEnginePool.getActiveEngineCount());
         assertEquals(0, javetEnginePool.getIdleEngineCount());
+        assertEquals(javetEnginePool.getConfig().getPoolMaxSize(), javetEnginePool.getReleasedEngineCount());
         assertFalse(javetEnginePool.isActive());
         assertTrue(javetEnginePool.isClosed());
         assertEquals(0, v8Host.getV8RuntimeCount());
     }
 
+    protected void assertStatistics() {
+        assertNotNull(javetEnginePool.getAverageV8HeapStatistics().toString());
+        assertNotNull(javetEnginePool.getAverageV8SharedMemoryStatistics().toString());
+        for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.getDistinctValues()) {
+            V8HeapSpaceStatistics v8HeapSpaceStatistics =
+                    javetEnginePool.getAverageV8HeapSpaceStatistics(v8AllocationSpace);
+            assertSame(v8AllocationSpace, v8HeapSpaceStatistics.getAllocationSpace());
+            assertNotNull(v8HeapSpaceStatistics.toString());
+        }
+    }
+
     @BeforeEach
     private void beforeEach() {
-        javetEnginePool = new JavetEnginePool();
+        javetEnginePool = new JavetEnginePool<>();
         assertTrue(javetEnginePool.isActive());
         assertFalse(javetEnginePool.isClosed());
+        assertEquals(0, javetEnginePool.getActiveEngineCount());
+        assertEquals(0, javetEnginePool.getIdleEngineCount());
+        assertEquals(javetEnginePool.getConfig().getPoolMaxSize(), javetEnginePool.getReleasedEngineCount());
         javetEngineConfig = javetEnginePool.getConfig();
         javetEngineConfig.setPoolDaemonCheckIntervalMillis(TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS);
         javetEngineConfig.setJSRuntimeType(v8Host.getJSRuntimeType());
@@ -60,8 +81,6 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @Test
     public void testMultiThreadedExecutionBelowMaxSize() throws Exception {
-        assertEquals(0, javetEnginePool.getIdleEngineCount());
-        assertEquals(0, javetEnginePool.getActiveEngineCount());
         final int threadCount = javetEngineConfig.getPoolMaxSize() - javetEngineConfig.getPoolMinSize();
         Thread[] threads = new Thread[threadCount];
         Object lockObject = new Object();
@@ -70,7 +89,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         synchronized (lockObject) {
             IntStream.range(0, threadCount).forEach(j -> {
                 Thread thread = new Thread(() -> {
-                    try (IJavetEngine engine = javetEnginePool.getEngine()) {
+                    try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
                         runningCount.incrementAndGet();
                         V8Runtime v8Runtime = engine.getV8Runtime();
                         IV8Executor iV8Executor;
@@ -97,11 +116,12 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 logger.logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
             }
         }
-        javetEnginePool.releaseEngine(null);
+        javetEnginePool.wakeUpDaemon();
         runAndWait(TEST_MAX_TIMEOUT, () -> threadCount == javetEnginePool.getIdleEngineCount());
         assertEquals(0, failureCount.get());
         assertEquals(threadCount, javetEnginePool.getIdleEngineCount());
         assertEquals(0, javetEnginePool.getActiveEngineCount());
+        assertStatistics();
     }
 
     @Test
@@ -116,7 +136,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         synchronized (lockObject) {
             IntStream.range(0, threadCount).forEach(j -> {
                 Thread thread = new Thread(() -> {
-                    try (IJavetEngine engine = javetEnginePool.getEngine()) {
+                    try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
                         runningCount.incrementAndGet();
                         IV8Executor iV8Executor;
                         synchronized (lockObject) {
@@ -144,30 +164,39 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 logger.logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
             }
         }
-        javetEnginePool.releaseEngine(null);
+        javetEnginePool.wakeUpDaemon();
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEngineConfig.getPoolMaxSize() == javetEnginePool.getIdleEngineCount());
         assertEquals(0, failureCount.get());
         runAndWait(TEST_MAX_TIMEOUT, () -> 0 == javetEnginePool.getActiveEngineCount());
+        assertStatistics();
     }
 
     @Test
     public void testSingleThreadedExecution() throws Exception {
-        assertEquals(0, javetEnginePool.getIdleEngineCount());
-        assertEquals(0, javetEnginePool.getActiveEngineCount());
-        try (IJavetEngine engine = javetEnginePool.getEngine()) {
+        List<V8HeapStatistics> v8HeapStatisticsList = new ArrayList<>();
+        IV8RuntimeObserver observer =
+                v8Runtime -> v8HeapStatisticsList.add(v8Runtime.getV8HeapStatistics());
+        assertEquals(0, javetEnginePool.observe(observer));
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
             assertEquals(0, javetEnginePool.getIdleEngineCount());
             assertEquals(1, javetEnginePool.getActiveEngineCount());
+            assertEquals(javetEnginePool.getConfig().getPoolMaxSize() - 1, javetEnginePool.getReleasedEngineCount());
             V8Runtime v8Runtime = engine.getV8Runtime();
             assertTrue(v8Runtime.isPooled());
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             v8Runtime.close(); // close() doesn't take effect because the V8 runtime is managed by pool
             assertEquals(4, v8Runtime.getExecutor("2 + 2").executeInteger());
-            assertThrows(JavetExecutionException.class, () -> {
-                v8Runtime.getExecutor("eval('1');").executeVoid();
-            }, "By default, the engine pool should disallow eval().");
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
+                    "By default, the engine pool should disallow eval().");
         }
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
         assertEquals(1, javetEnginePool.getIdleEngineCount());
         assertEquals(0, javetEnginePool.getActiveEngineCount());
+        assertEquals(javetEnginePool.getConfig().getPoolMaxSize() - 1, javetEnginePool.getReleasedEngineCount());
+        assertEquals(1, javetEnginePool.observe(observer));
+        assertEquals(1, v8HeapStatisticsList.size());
+        assertNotNull(v8HeapStatisticsList.stream().map(V8HeapStatistics::toString).collect(Collectors.joining()));
     }
 }

@@ -130,7 +130,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     @Test
     public void testDouble() throws JavetException {
         assertEquals(1.23D, (double) converter.toObject(v8Runtime.createV8ValueDouble(1.23D)), 0.001);
-        assertEquals(1.23D, ((V8ValueDouble) converter.toV8Value(v8Runtime, Double.valueOf(1.23D))).getValue(), 0.001);
+        assertEquals(1.23D, ((V8ValueDouble) converter.toV8Value(v8Runtime, 1.23D)).getValue(), 0.001);
         String codeString = String.join("\n",
                 "expectDouble(1, 1); // int to double",
                 "expectDouble(1n, 1n); // long to double",
@@ -141,7 +141,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     @Test
     public void testFloat() throws JavetException {
         assertEquals(1.23F, ((Double) converter.toObject(v8Runtime.createV8ValueDouble(1.23F))).floatValue(), 0.001);
-        assertEquals(1.23F, ((V8ValueDouble) converter.toV8Value(v8Runtime, Float.valueOf(1.23F))).getValue(), 0.001);
+        assertEquals(1.23F, ((V8ValueDouble) converter.toV8Value(v8Runtime, 1.23F)).getValue(), 0.001);
         String codeString = String.join("\n",
                 "expectFloat(1, 1); // int to float",
                 "expectFloat(1n, 1n); // long to float",
@@ -152,7 +152,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     @Test
     public void testInteger() throws JavetException {
         assertEquals(123, converter.toObject(v8Runtime.createV8ValueInteger(123)));
-        assertEquals(123, ((V8ValueInteger) converter.toV8Value(v8Runtime, Integer.valueOf(123))).getValue());
+        assertEquals(123, ((V8ValueInteger) converter.toV8Value(v8Runtime, 123)).getValue());
         String codeString = String.join("\n",
                 "expectInteger(1, 1); // int to int",
                 "expectInteger(1n, 1n); // long to int");
@@ -162,7 +162,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     @Test
     public void testLong() throws JavetException {
         assertEquals(123L, converter.toObject(v8Runtime.createV8ValueLong(123L)));
-        assertEquals(123L, ((V8ValueLong) converter.toV8Value(v8Runtime, Long.valueOf(123L))).getValue());
+        assertEquals(123L, ((V8ValueLong) converter.toV8Value(v8Runtime, 123L)).getValue());
         String codeString = String.join("\n",
                 "expectLong(1, 1); // int to long",
                 "expectLong(1n, 1n); // long to long");
@@ -179,7 +179,6 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     @Test
     public void testOptional() throws JavetException {
         assertTrue(converter.toV8Value(v8Runtime, Optional.empty()).isNull());
-        assertTrue(converter.toV8Value(v8Runtime, Optional.ofNullable(null)).isNull());
         V8Value v8Value;
         // Boolean
         v8Value = converter.toV8Value(v8Runtime, Optional.of(true));
@@ -224,7 +223,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testString() throws JavetException {
-        assertEquals("abc", (String) converter.toObject(v8Runtime.createV8ValueString("abc")));
+        assertEquals("abc", converter.toObject(v8Runtime.createV8ValueString("abc")));
         assertEquals("abc", ((V8ValueString) converter.toV8Value(v8Runtime, "abc")).getValue());
     }
 

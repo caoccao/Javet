@@ -30,21 +30,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8HeapSpaceStatistics extends BaseTestJavetRuntime {
-    protected static final V8AllocationSpace[] V8_ALLOCATION_SPACES = new V8AllocationSpace[]{
-            V8AllocationSpace.RO_SPACE,
-            V8AllocationSpace.OLD_SPACE,
-            V8AllocationSpace.CODE_SPACE,
-            V8AllocationSpace.MAP_SPACE,
-            V8AllocationSpace.LO_SPACE,
-            V8AllocationSpace.CODE_LO_SPACE,
-            V8AllocationSpace.NEW_LO_SPACE,
-            V8AllocationSpace.NEW_SPACE,
-    };
 
     protected void printV8HeapSpaceStatistics(V8Runtime v8Runtime, String prefix) {
-        for (V8AllocationSpace v8AllocationSpace : V8_ALLOCATION_SPACES) {
-            System.out.println(String.format(
-                    "%s: %s", prefix, v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace).toString()));
+        for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.getDistinctValues()) {
+            System.out.printf(
+                    "%s: %s%n", prefix, v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace).toString());
         }
     }
 

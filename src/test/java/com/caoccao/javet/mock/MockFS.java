@@ -42,7 +42,7 @@ public class MockFS implements AutoCloseable, Runnable {
         quitting = false;
         this.timeout = timeout;
         v8Runtime = null;
-        daemonThread = new Thread(this::run);
+        daemonThread = new Thread(this);
         daemonThread.setName("MockFS Daemon");
         daemonThread.start();
     }
@@ -95,6 +95,7 @@ public class MockFS implements AutoCloseable, Runnable {
                             promise.resolve(fileContent);
                         }
                     } catch (Throwable t) {
+                        t.printStackTrace(System.err);
                     }
                     if (v8Runtime.getJSRuntimeType().isNode()) {
                         v8Runtime.await();
@@ -133,10 +134,10 @@ public class MockFS implements AutoCloseable, Runnable {
     }
 
     static class Task {
-        private String filePath;
-        private V8ValuePromise promise;
-        private long tick;
-        private long timeout;
+        private final String filePath;
+        private final V8ValuePromise promise;
+        private final long tick;
+        private final long timeout;
 
         public Task(V8ValuePromise promise, String filePath, long timeout) {
             this.filePath = filePath;

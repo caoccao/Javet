@@ -18,9 +18,17 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
+import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapSpaceStatistics;
+import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapStatistics;
+import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8SharedMemoryStatistics;
+import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
+import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
+import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 
 /**
  * The interface Javet engine pool.
@@ -36,6 +44,45 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 0.7.0
      */
     int getActiveEngineCount();
+
+    /**
+     * Gets average V8 heap space statistics.
+     *
+     * @param v8AllocationSpace the V8 allocation space
+     * @return the average V8 heap space statistics
+     * @since 1.0.5
+     */
+    default V8HeapSpaceStatistics getAverageV8HeapSpaceStatistics(final V8AllocationSpace v8AllocationSpace) {
+        V8RuntimeObserverAverageV8HeapSpaceStatistics observer =
+                new V8RuntimeObserverAverageV8HeapSpaceStatistics(v8AllocationSpace);
+        observe(observer);
+        return observer.getResult();
+    }
+
+    /**
+     * Gets average V8 heap statistics.
+     *
+     * @return the average V8 heap statistics
+     * @since 1.0.5
+     */
+    default V8HeapStatistics getAverageV8HeapStatistics() {
+        V8RuntimeObserverAverageV8HeapStatistics observer = new V8RuntimeObserverAverageV8HeapStatistics();
+        observe(observer);
+        return observer.getResult();
+    }
+
+    /**
+     * Gets average V8 shared memory statistics.
+     *
+     * @return the average V8 shared memory statistics
+     * @since 1.0.5
+     */
+    default V8SharedMemoryStatistics getAverageV8SharedMemoryStatistics() {
+        V8RuntimeObserverAverageV8SharedMemoryStatistics observer =
+                new V8RuntimeObserverAverageV8SharedMemoryStatistics();
+        observe(observer);
+        return observer.getResult();
+    }
 
     /**
      * Gets config.
@@ -64,6 +111,14 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     int getIdleEngineCount();
 
     /**
+     * Gets released engine count.
+     *
+     * @return the released engine count
+     * @since 1.0.5
+     */
+    int getReleasedEngineCount();
+
+    /**
      * Is active.
      *
      * @return true : active, false: inactive
@@ -80,10 +135,28 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     boolean isQuitting();
 
     /**
+     * Traverse the internal V8 runtimes, apply the observer and return the observed V8 runtime count.
+     * This API is for collecting statistics.
+     * Executing code or changing the V8 runtime may result in inconsistent pool state or core dump.
+     *
+     * @param observers the observers
+     * @return the int
+     * @since 1.0.5
+     */
+    int observe(IV8RuntimeObserver<?>... observers);
+
+    /**
      * Release engine.
      *
-     * @param engine the engine
+     * @param iJavetEngine the javet engine
      * @since 0.7.0
      */
-    void releaseEngine(IJavetEngine<R> engine);
+    void releaseEngine(IJavetEngine<R> iJavetEngine);
+
+    /**
+     * Wake up the daemon thread explicitly.
+     *
+     * @since 1.0.5
+     */
+    void wakeUpDaemon();
 }

@@ -27,11 +27,11 @@ import java.util.Objects;
  */
 public final class V8HeapSpaceStatistics {
     private V8AllocationSpace v8AllocationSpace;
-    private int physicalSpaceSize;
-    private int spaceAvailableSize;
+    private long physicalSpaceSize;
+    private long spaceAvailableSize;
     private String spaceName;
-    private int spaceSize;
-    private int spaceUsedSize;
+    private long spaceSize;
+    private long spaceUsedSize;
 
     /**
      * Instantiates a new V8 heap space statistics.
@@ -43,12 +43,12 @@ public final class V8HeapSpaceStatistics {
      * @param spaceUsedSize      the space used size
      * @since 1.0.1
      */
-    V8HeapSpaceStatistics(
+    public V8HeapSpaceStatistics(
             String spaceName,
-            int physicalSpaceSize,
-            int spaceAvailableSize,
-            int spaceSize,
-            int spaceUsedSize) {
+            long physicalSpaceSize,
+            long spaceAvailableSize,
+            long spaceSize,
+            long spaceUsedSize) {
         this.spaceName = spaceName;
         this.physicalSpaceSize = physicalSpaceSize;
         this.spaceAvailableSize = spaceAvailableSize;
@@ -72,7 +72,7 @@ public final class V8HeapSpaceStatistics {
      * @return the physical space size
      * @since 1.0.0
      */
-    public int getPhysicalSpaceSize() {
+    public long getPhysicalSpaceSize() {
         return physicalSpaceSize;
     }
 
@@ -82,7 +82,7 @@ public final class V8HeapSpaceStatistics {
      * @return the space available size
      * @since 1.0.0
      */
-    public int getSpaceAvailableSize() {
+    public long getSpaceAvailableSize() {
         return spaceAvailableSize;
     }
 
@@ -102,7 +102,7 @@ public final class V8HeapSpaceStatistics {
      * @return the space size
      * @since 1.0.0
      */
-    public int getSpaceSize() {
+    public long getSpaceSize() {
         return spaceSize;
     }
 
@@ -112,7 +112,7 @@ public final class V8HeapSpaceStatistics {
      * @return the space used size
      * @since 1.0.0
      */
-    public int getSpaceUsedSize() {
+    public long getSpaceUsedSize() {
         return spaceUsedSize;
     }
 

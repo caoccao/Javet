@@ -21,7 +21,7 @@ plugins {
     id("com.android.library")
 }
 
-version = "1.0.4"
+version = "1.0.5"
 
 android {
     compileSdk = 30

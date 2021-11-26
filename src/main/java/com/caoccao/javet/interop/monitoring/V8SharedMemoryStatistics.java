@@ -22,9 +22,9 @@ package com.caoccao.javet.interop.monitoring;
  * @since 1.0.0
  */
 public final class V8SharedMemoryStatistics {
-    private int readOnlySpacePhysicalSize;
-    private int readOnlySpaceSize;
-    private int readOnlySpaceUsedSize;
+    private long readOnlySpacePhysicalSize;
+    private long readOnlySpaceSize;
+    private long readOnlySpaceUsedSize;
 
     /**
      * Instantiates a new V8 shared memory statistics.
@@ -34,10 +34,10 @@ public final class V8SharedMemoryStatistics {
      * @param readOnlySpaceUsedSize     the read only space used size
      * @since 1.0.1
      */
-    V8SharedMemoryStatistics(
-            int readOnlySpacePhysicalSize,
-            int readOnlySpaceSize,
-            int readOnlySpaceUsedSize) {
+    public V8SharedMemoryStatistics(
+            long readOnlySpacePhysicalSize,
+            long readOnlySpaceSize,
+            long readOnlySpaceUsedSize) {
         this.readOnlySpacePhysicalSize = readOnlySpacePhysicalSize;
         this.readOnlySpaceSize = readOnlySpaceSize;
         this.readOnlySpaceUsedSize = readOnlySpaceUsedSize;
@@ -49,7 +49,7 @@ public final class V8SharedMemoryStatistics {
      * @return the read only space physical size
      * @since 1.0.0
      */
-    public int getReadOnlySpacePhysicalSize() {
+    public long getReadOnlySpacePhysicalSize() {
         return readOnlySpacePhysicalSize;
     }
 
@@ -59,7 +59,7 @@ public final class V8SharedMemoryStatistics {
      * @return the read only space size
      * @since 1.0.0
      */
-    public int getReadOnlySpaceSize() {
+    public long getReadOnlySpaceSize() {
         return readOnlySpaceSize;
     }
 
@@ -69,7 +69,7 @@ public final class V8SharedMemoryStatistics {
      * @return the read only space used size
      * @since 1.0.0
      */
-    public int getReadOnlySpaceUsedSize() {
+    public long getReadOnlySpaceUsedSize() {
         return readOnlySpaceUsedSize;
     }
 

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestV8SharedMemoryStatistics extends BaseTestJavetRuntime {
 
     protected void printV8SharedMemoryStatistics(V8Runtime v8Runtime, String prefix) {
-        System.out.println(String.format("%s: %s", prefix, v8Runtime.getV8SharedMemoryStatistics().toString()));
+        System.out.printf("%s: %s%n", prefix, v8Runtime.getV8SharedMemoryStatistics().toString());
     }
 
     @Test

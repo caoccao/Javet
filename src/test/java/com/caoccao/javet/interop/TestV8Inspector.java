@@ -91,11 +91,11 @@ public class TestV8Inspector extends BaseTestJavet {
         assertEquals(atomicInteger.get(), listener.getResponses().size());
     }
 
-    class MockV8InspectorListener implements IV8InspectorListener {
-        private List<Integer> contextGroupIds;
-        private List<String> notifications;
-        private List<String> requests;
-        private List<String> responses;
+    static class MockV8InspectorListener implements IV8InspectorListener {
+        private final List<Integer> contextGroupIds;
+        private final List<String> notifications;
+        private final List<String> requests;
+        private final List<String> responses;
 
         public MockV8InspectorListener() {
             contextGroupIds = new ArrayList<>();

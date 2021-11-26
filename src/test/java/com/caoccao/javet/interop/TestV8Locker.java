@@ -22,16 +22,15 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Locker extends BaseTestJavetRuntime {
     @Test
     public void testExceptionInAcquire() throws JavetException {
         try (V8Locker v8Locker = v8Runtime.getV8Locker()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-            try {
-                v8Runtime.getV8Locker();
+            try (V8Locker innerV8Locker = v8Runtime.getV8Locker()) {
+                fail("Failed to report lock acquisition failure.");
             } catch (JavetException e) {
                 assertEquals(JavetError.LockAcquisitionFailure, e.getError(),
                         "Second lock acquisition should fail.");

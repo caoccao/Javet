@@ -22,6 +22,7 @@ import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
@@ -80,11 +81,23 @@ public final class JavetEngineConfig {
      */
     public static final int DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS = 5;
     /**
+     * The constant DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS.
+     *
+     * @since 1.0.5
+     */
+    public static final int DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS = 1000;
+    /**
      * The constant MAX_POOL_SIZE.
      *
      * @since 1.0.4
      */
     public static final int MAX_POOL_SIZE = 4096;
+    /**
+     * The constant DEFAULT_WAIT_FOR_ENGINE_SHEEP_INTERVAL_MILLIS.
+     *
+     * @since 1.0.5
+     */
+    protected static final int[] DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS = new int[]{5, 6, 7, 8, 9, 10};
     /**
      * The constant DEFAULT_JAVET_LOGGER.
      *
@@ -105,7 +118,10 @@ public final class JavetEngineConfig {
     private int poolMaxSize;
     private int poolMinSize;
     private int poolShutdownTimeoutSeconds;
+    private boolean poolSizeFrozen;
     private int resetEngineTimeoutSeconds;
+    private int waitForEngineLogIntervalMillis;
+    private int[] waitForEngineSleepIntervalMillis;
 
     /**
      * Instantiates a new Javet engine config.
@@ -113,7 +129,36 @@ public final class JavetEngineConfig {
      * @since 0.7.0
      */
     public JavetEngineConfig() {
-        reset();
+        setJavetLogger(DEFAULT_JAVET_LOGGER);
+        setGlobalName(null);
+        setAllowEval(false);
+        setAutoSendGCNotification(true);
+        setDefaultEngineGuardTimeoutMillis(DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS);
+        setEngineGuardCheckIntervalMillis(DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS);
+        setGCBeforeEngineClose(false);
+        setJSRuntimeType(DEFAULT_JS_RUNTIME_TYPE);
+        poolSizeFrozen = false;
+        final int cpuCount = JavetOSUtils.getCPUCount();
+        setPoolMinSize(Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount >> 1));
+        setPoolMaxSize(Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount));
+        setPoolIdleTimeoutSeconds(DEFAULT_POOL_IDLE_TIMEOUT_SECONDS);
+        setPoolShutdownTimeoutSeconds(DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS);
+        setPoolDaemonCheckIntervalMillis(DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS);
+        setResetEngineTimeoutSeconds(DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS);
+        setWaitForEngineLogIntervalMillis(DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS);
+        setWaitForEngineSleepIntervalMillis(DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS);
+    }
+
+    /**
+     * Freeze pool size javet engine config.
+     *
+     * @return the javet engine config
+     */
+    public JavetEngineConfig freezePoolSize() {
+        if (!poolSizeFrozen) {
+            poolSizeFrozen = true;
+        }
+        return this;
     }
 
     /**
@@ -237,6 +282,26 @@ public final class JavetEngineConfig {
     }
 
     /**
+     * Gets wait for engine log interval millis.
+     *
+     * @return the wait for engine log interval millis
+     * @since 1.0.5
+     */
+    public int getWaitForEngineLogIntervalMillis() {
+        return waitForEngineLogIntervalMillis;
+    }
+
+    /**
+     * Gets wait for engine sleep interval millis.
+     *
+     * @return the wait for engine sleep interval millis
+     * @since 1.0.5
+     */
+    public int[] getWaitForEngineSleepIntervalMillis() {
+        return waitForEngineSleepIntervalMillis;
+    }
+
+    /**
      * Is allow eval().
      *
      * @return true : eval() is allowed, false : eval() is disallowed
@@ -264,32 +329,6 @@ public final class JavetEngineConfig {
      */
     public boolean isGCBeforeEngineClose() {
         return gcBeforeEngineClose;
-    }
-
-    /**
-     * Reset javet engine config.
-     *
-     * @return the javet engine config
-     * @since 0.9.1
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public JavetEngineConfig reset() {
-        javetLogger = DEFAULT_JAVET_LOGGER;
-        globalName = null;
-        allowEval = false;
-        autoSendGCNotification = true;
-        defaultEngineGuardTimeoutMillis = DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS;
-        engineGuardCheckIntervalMillis = DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS;
-        gcBeforeEngineClose = false;
-        jsRuntimeType = DEFAULT_JS_RUNTIME_TYPE;
-        final int cpuCount = JavetOSUtils.getCPUCount();
-        poolMinSize = Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount >> 1);
-        poolMaxSize = Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount);
-        poolIdleTimeoutSeconds = DEFAULT_POOL_IDLE_TIMEOUT_SECONDS;
-        poolShutdownTimeoutSeconds = DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS;
-        poolDaemonCheckIntervalMillis = DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS;
-        resetEngineTimeoutSeconds = DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS;
-        return this;
     }
 
     /**
@@ -324,6 +363,7 @@ public final class JavetEngineConfig {
      * @since 0.7.2
      */
     public JavetEngineConfig setDefaultEngineGuardTimeoutMillis(int defaultEngineGuardTimeoutMillis) {
+        assert defaultEngineGuardTimeoutMillis > 0 : "The default engine guard timeout millis must be greater than 0.";
         this.defaultEngineGuardTimeoutMillis = defaultEngineGuardTimeoutMillis;
         return this;
     }
@@ -337,6 +377,7 @@ public final class JavetEngineConfig {
      */
     @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setEngineGuardCheckIntervalMillis(int engineGuardCheckIntervalMillis) {
+        assert engineGuardCheckIntervalMillis > 0 : "The engine guard check interval millis must be greater than 0.";
         this.engineGuardCheckIntervalMillis = engineGuardCheckIntervalMillis;
         return this;
     }
@@ -361,7 +402,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
-    public JavetEngineConfig setGcBeforeEngineClose(boolean gcBeforeEngineClose) {
+    public JavetEngineConfig setGCBeforeEngineClose(boolean gcBeforeEngineClose) {
         this.gcBeforeEngineClose = gcBeforeEngineClose;
         return this;
     }
@@ -386,8 +427,7 @@ public final class JavetEngineConfig {
      * @since 0.9.1
      */
     public JavetEngineConfig setJSRuntimeType(JSRuntimeType jsRuntimeType) {
-        Objects.requireNonNull(jsRuntimeType);
-        this.jsRuntimeType = jsRuntimeType;
+        this.jsRuntimeType = Objects.requireNonNull(jsRuntimeType);
         return this;
     }
 
@@ -399,8 +439,7 @@ public final class JavetEngineConfig {
      * @since 0.7.0
      */
     public JavetEngineConfig setJavetLogger(IJavetLogger javetLogger) {
-        Objects.requireNonNull(javetLogger);
-        this.javetLogger = javetLogger;
+        this.javetLogger = Objects.requireNonNull(javetLogger);
         return this;
     }
 
@@ -413,6 +452,7 @@ public final class JavetEngineConfig {
      */
     @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setPoolDaemonCheckIntervalMillis(int poolDaemonCheckIntervalMillis) {
+        assert poolDaemonCheckIntervalMillis > 0 : "The pool daemon check interval millis must be greater than 0.";
         this.poolDaemonCheckIntervalMillis = poolDaemonCheckIntervalMillis;
         return this;
     }
@@ -425,6 +465,7 @@ public final class JavetEngineConfig {
      * @since 0.9.1
      */
     public JavetEngineConfig setPoolIdleTimeoutSeconds(int poolIdleTimeoutSeconds) {
+        assert poolIdleTimeoutSeconds > 0 : "The pool idle timeout seconds must be greater than 0.";
         this.poolIdleTimeoutSeconds = poolIdleTimeoutSeconds;
         return this;
     }
@@ -437,7 +478,11 @@ public final class JavetEngineConfig {
      * @since 0.9.1
      */
     public JavetEngineConfig setPoolMaxSize(int poolMaxSize) {
-        this.poolMaxSize = poolMaxSize;
+        assert poolMaxSize > 0 : "Pool max size must be greater than 0.";
+        assert poolMaxSize <= MAX_POOL_SIZE : "Pool max size must be no greater than " + MAX_POOL_SIZE + ".";
+        if (!poolSizeFrozen) {
+            this.poolMaxSize = poolMaxSize;
+        }
         return this;
     }
 
@@ -449,7 +494,11 @@ public final class JavetEngineConfig {
      * @since 0.7.0
      */
     public JavetEngineConfig setPoolMinSize(int poolMinSize) {
-        this.poolMinSize = poolMinSize;
+        assert poolMinSize > 0 : "Pool min size must be greater than 0.";
+        assert poolMinSize <= MAX_POOL_SIZE : "Pool min size must be no greater than " + MAX_POOL_SIZE + ".";
+        if (!poolSizeFrozen) {
+            this.poolMinSize = poolMinSize;
+        }
         return this;
     }
 
@@ -461,6 +510,7 @@ public final class JavetEngineConfig {
      * @since 0.9.1
      */
     public JavetEngineConfig setPoolShutdownTimeoutSeconds(int poolShutdownTimeoutSeconds) {
+        assert poolShutdownTimeoutSeconds > 0 : "The pool shutdown timeout seconds must be greater than 0.";
         this.poolShutdownTimeoutSeconds = poolShutdownTimeoutSeconds;
         return this;
     }
@@ -473,7 +523,36 @@ public final class JavetEngineConfig {
      * @since 0.9.1
      */
     public JavetEngineConfig setResetEngineTimeoutSeconds(int resetEngineTimeoutSeconds) {
+        assert resetEngineTimeoutSeconds > 0 : "The reset engine timeout seconds must be greater than 0.";
         this.resetEngineTimeoutSeconds = resetEngineTimeoutSeconds;
+        return this;
+    }
+
+    /**
+     * Sets wait for engine log interval millis.
+     *
+     * @param waitForEngineLogIntervalMillis the wait for engine log interval millis
+     * @return the self
+     * @since 1.0.5
+     */
+    public JavetEngineConfig setWaitForEngineLogIntervalMillis(int waitForEngineLogIntervalMillis) {
+        this.waitForEngineLogIntervalMillis = waitForEngineLogIntervalMillis;
+        return this;
+    }
+
+    /**
+     * Sets wait for engine sleep interval millis.
+     *
+     * @param waitForEngineSleepIntervalMillis the wait for engine sleep interval millis
+     * @return the self
+     * @since 1.0.5
+     */
+    public JavetEngineConfig setWaitForEngineSleepIntervalMillis(int[] waitForEngineSleepIntervalMillis) {
+        Objects.requireNonNull(waitForEngineSleepIntervalMillis);
+        assert waitForEngineSleepIntervalMillis.length > 0;
+        this.waitForEngineSleepIntervalMillis = Arrays.copyOf(
+                waitForEngineSleepIntervalMillis,
+                waitForEngineSleepIntervalMillis.length);
         return this;
     }
 }
