@@ -117,3 +117,12 @@ Yes. In some cases, it is inconvenient to inject a listener. No worry, ``JavetLi
 .. caution::
 
     This doesn't apply to Android.
+
+Can Javet Libraries be Removed from the Jar File?
+=================================================
+
+Yes, ``javet-core`` is available without the libraries. Just update ``javet`` or ``javet-macos`` to ``javet-core`` in the :doc:`../../tutorial/basic/installation`.
+
+.. caution::
+
+    This doesn't apply to Android.

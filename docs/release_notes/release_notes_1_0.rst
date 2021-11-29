@@ -2,12 +2,13 @@
 Release Notes 1.0.x
 ===================
 
-1.0.5
-------------
+1.0.5 Javet Core
+----------------
 
 * Fixed crash issue for Android
 * Upgraded Javet engine pool to expose more statistics
 * Upgraded Javet engine pool scheduling algorithm
+* Started to release javet-core-x.x.x without JNI libraries
 
 1.0.4 V8 9.6
 ------------
