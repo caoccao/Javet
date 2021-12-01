@@ -17,8 +17,6 @@
 
 package com.caoccao.javet.exceptions;
 
-import java.text.MessageFormat;
-
 /**
  * The type Javet scripting error.
  *
@@ -237,10 +235,13 @@ public final class JavetScriptingError {
 
     @Override
     public String toString() {
-        return MessageFormat.format(
-                "{0}\nResource: {1}\nSource Code: {2}\nLine Number: {3}\nColumn: {4}, {5}\nPosition: {6}, {7}",
-                message, resourceName, sourceLine, Integer.toString(lineNumber),
-                Integer.toString(startColumn), Integer.toString(endColumn),
-                Integer.toString(startPosition), Integer.toString(endPosition));
+        StringBuilder sb = new StringBuilder();
+        sb.append(message).append("\n");
+        sb.append("Resource: ").append(resourceName).append("\n");
+        sb.append("Source Code: ").append(sourceLine).append("\n");
+        sb.append("Line Number: ").append(lineNumber).append("\n");
+        sb.append("Column: ").append(startColumn).append(", ").append(endColumn).append("\n");
+        sb.append("Position: ").append(startPosition).append(", ").append(endPosition);
+        return sb.toString();
     }
 }
