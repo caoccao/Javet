@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -219,6 +220,36 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 "a.expectFloat(1n, 1n); // long to float",
                 "a.expectFloat(1.0, 1.0); // double to float");
         v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
+    public void testGetter() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            private String name;
+
+            public String test(String greeting) {
+                return MessageFormat.format("test(): {0} {1}", greeting, name);
+            }
+
+            public String get(String greeting) {
+                return MessageFormat.format("get(): {0} {1}", greeting, name);
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+        };
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        v8Runtime.getExecutor("a.setName('a');").executeVoid();
+        assertEquals("a", v8Runtime.getExecutor("a.getName();").executeString());
+        assertEquals("get(): hello a", v8Runtime.getExecutor("a['hello'];").executeString());
+        assertEquals("get(): hello a", v8Runtime.getExecutor("a.get('hello');").executeString());
+        assertEquals("test(): hello a", v8Runtime.getExecutor("a.test('hello');").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 

@@ -332,6 +332,33 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 }
             }
         }
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).toPrimitive();
+            List<Method> methods = methodsMap.get(propertyName);
+            if (methods != null && !methods.isEmpty()) {
+                JavetUniversalInterceptor javetUniversalInterceptor =
+                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
+                return v8Runtime.createV8ValueFunction(javetUniversalInterceptor.getCallbackContext());
+            }
+            methods = gettersMap.get(propertyName);
+            if (methods != null && !methods.isEmpty()) {
+                JavetUniversalInterceptor javetUniversalInterceptor =
+                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
+                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
+            }
+            if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
+                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            }
+        } else if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
+                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
+                    && targetObject instanceof Iterable) {
+                return new JavetProxySymbolIterableConverter<>(v8Runtime, (Iterable) targetObject).getV8ValueFunction();
+            }
+        }
         if (!genericGetters.isEmpty()) {
             try {
                 Object propertyObject = v8Runtime.toObject(property);
@@ -363,33 +390,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             } catch (Throwable t) {
                 throw new JavetException(JavetError.CallbackUnknownFailure,
                         SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
-            }
-        }
-        if (property instanceof V8ValueString) {
-            String propertyName = ((V8ValueString) property).toPrimitive();
-            List<Method> methods = methodsMap.get(propertyName);
-            if (methods != null && !methods.isEmpty()) {
-                JavetUniversalInterceptor javetUniversalInterceptor =
-                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
-                return v8Runtime.createV8ValueFunction(javetUniversalInterceptor.getCallbackContext());
-            }
-            methods = gettersMap.get(propertyName);
-            if (methods != null && !methods.isEmpty()) {
-                JavetUniversalInterceptor javetUniversalInterceptor =
-                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
-                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
-            }
-            if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
-                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
-            }
-        } else if (property instanceof V8ValueSymbol) {
-            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
-            String description = propertySymbol.getDescription();
-            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
-                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
-            } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
-                    && targetObject instanceof Iterable) {
-                return new JavetProxySymbolIterableConverter<>(v8Runtime, (Iterable) targetObject).getV8ValueFunction();
             }
         }
         return v8Runtime.createV8ValueUndefined();

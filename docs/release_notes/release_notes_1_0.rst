@@ -2,6 +2,11 @@
 Release Notes 1.0.x
 ===================
 
+1.0.6 
+----------------
+
+* Adjusted the priority of getter detection in ``JavetProxyConverter``
+
 1.0.5 Javet Core
 ----------------
 
