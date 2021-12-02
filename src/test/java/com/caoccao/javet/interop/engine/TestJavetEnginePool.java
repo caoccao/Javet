@@ -18,14 +18,18 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.BaseTestJavet;
+import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -198,5 +202,37 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(1, javetEnginePool.observe(observer));
         assertEquals(1, v8HeapStatisticsList.size());
         assertNotNull(v8HeapStatisticsList.stream().map(V8HeapStatistics::toString).collect(Collectors.joining()));
+    }
+
+    @Test
+    public void testStatistics() throws Exception {
+        final int size = 4;
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test() {
+            }
+        };
+        List<IJavetEngine<?>> engines = new ArrayList<>();
+        List<V8ValueObject> v8ValueObjects = new ArrayList<>();
+        assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
+        assertEquals(0, javetEnginePool.getAverageReferenceCount());
+        for (int i = 0; i < size; ++i) {
+            IJavetEngine<?> engine = javetEnginePool.getEngine();
+            engines.add(engine);
+            v8ValueObjects.add(engine.getV8Runtime().createV8ValueObject());
+        }
+        assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
+        assertEquals(1, javetEnginePool.getAverageReferenceCount());
+        for (V8ValueObject v8ValueObject : v8ValueObjects) {
+            v8ValueObject.bind(anonymous);
+        }
+        assertEquals(1, javetEnginePool.getAverageCallbackContextCount());
+        assertEquals(1, javetEnginePool.getAverageReferenceCount());
+        JavetResourceUtils.safeClose(v8ValueObjects);
+        assertEquals(1, javetEnginePool.getAverageCallbackContextCount());
+        assertEquals(0, javetEnginePool.getAverageReferenceCount());
+        JavetResourceUtils.safeClose(engines);
+        assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
+        assertEquals(0, javetEnginePool.getAverageReferenceCount());
     }
 }

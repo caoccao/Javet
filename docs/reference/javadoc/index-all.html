@@ -369,6 +369,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/callback/JavetPromiseRejectCallback.html#callback-com.caoccao.javet.enums.JavetPromiseRejectEvent-com.caoccao.javet.values.reference.V8ValuePromise-com.caoccao.javet.values.V8Value-">callback(JavetPromiseRejectEvent, V8ValuePromise, V8Value)</a></span> - Method in class com.caoccao.javet.interop.callback.<a href="com/caoccao/javet/interop/callback/JavetPromiseRejectCallback.html" title="class in com.caoccao.javet.interop.callback">JavetPromiseRejectCallback</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html#callbackContextCountList">callbackContextCountList</a></span> - Variable in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageCallbackContextCount</a></dt>
+<dd>
+<div class="block">The Callback context count list.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetError.html#CallbackInjectionFailure">CallbackInjectionFailure</a></span> - Static variable in class com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetError.html" title="class in com.caoccao.javet.exceptions">JavetError</a></dt>
 <dd>
 <div class="block">The constant CallbackInjectionFailure.</div>
@@ -1731,6 +1735,14 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html#getAsyncIterator--">getAsyncIterator()</a></span> - Method in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInSymbol</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageCallbackContextCount--">getAverageCallbackContextCount()</a></span> - Method in interface com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a></dt>
+<dd>
+<div class="block">Gets average callback context count.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageReferenceCount--">getAverageReferenceCount()</a></span> - Method in interface com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a></dt>
+<dd>
+<div class="block">Gets average reference count.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8HeapSpaceStatistics-com.caoccao.javet.enums.V8AllocationSpace-">getAverageV8HeapSpaceStatistics(V8AllocationSpace)</a></span> - Method in interface com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a></dt>
 <dd>
 <div class="block">Gets average V8 heap space statistics.</div>
@@ -2663,6 +2675,10 @@
 <dd>
 <div class="block">Gets result.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html#getResult--">getResult()</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageCallbackContextCount</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html#getResult--">getResult()</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageReferenceCount</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapSpaceStatistics.html#getResult--">getResult()</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageV8HeapSpaceStatistics</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapStatistics.html#getResult--">getResult()</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapStatistics.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageV8HeapStatistics</a></dt>
@@ -4641,6 +4657,10 @@
 <dd>
 <div class="block">Observe the input V8 runtime.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html#observe-com.caoccao.javet.interop.V8Runtime-">observe(V8Runtime)</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageCallbackContextCount</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html#observe-com.caoccao.javet.interop.V8Runtime-">observe(V8Runtime)</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageReferenceCount</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapSpaceStatistics.html#observe-com.caoccao.javet.interop.V8Runtime-">observe(V8Runtime)</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageV8HeapSpaceStatistics</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapStatistics.html#observe-com.caoccao.javet.interop.V8Runtime-">observe(V8Runtime)</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapStatistics.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageV8HeapStatistics</a></dt>
@@ -5079,6 +5099,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Inspector.html#receiveResponse-java.lang.String-">receiveResponse(String)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Inspector.html" title="class in com.caoccao.javet.interop">V8Inspector</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html#referenceCountList">referenceCountList</a></span> - Variable in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageReferenceCount</a></dt>
+<dd>
+<div class="block">The Reference count list.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/BaseJavetInterceptor.html#register-com.caoccao.javet.values.reference.IV8ValueObject...-">register(IV8ValueObject...)</a></span> - Method in class com.caoccao.javet.interception.<a href="com/caoccao/javet/interception/BaseJavetInterceptor.html" title="class in com.caoccao.javet.interception">BaseJavetInterceptor</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/logging/BaseJavetConsoleInterceptor.html#register-com.caoccao.javet.values.reference.IV8ValueObject...-">register(IV8ValueObject...)</a></span> - Method in class com.caoccao.javet.interception.logging.<a href="com/caoccao/javet/interception/logging/BaseJavetConsoleInterceptor.html" title="class in com.caoccao.javet.interception.logging">BaseJavetConsoleInterceptor</a></dt>
@@ -5205,6 +5229,10 @@
 <dd>
 <div class="block">Reset.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html#reset--">reset()</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageCallbackContextCount</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html#reset--">reset()</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageReferenceCount</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapSpaceStatistics.html#reset--">reset()</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageV8HeapSpaceStatistics</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapStatistics.html#reset--">reset()</a></span> - Method in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapStatistics.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageV8HeapStatistics</a></dt>
@@ -6556,6 +6584,30 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/V8Value.html#v8Runtime">v8Runtime</a></span> - Variable in class com.caoccao.javet.values.<a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html" title="class in com.caoccao.javet.interop.engine.observers"><span class="typeNameLink">V8RuntimeObserverAverageCallbackContextCount</span></a> - Class in <a href="com/caoccao/javet/interop/engine/observers/package-summary.html">com.caoccao.javet.interop.engine.observers</a></dt>
+<dd>
+<div class="block">The type V8 runtime observer average callback context count.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html#V8RuntimeObserverAverageCallbackContextCount--">V8RuntimeObserverAverageCallbackContextCount()</a></span> - Constructor for class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageCallbackContextCount</a></dt>
+<dd>
+<div class="block">Instantiates a new V8 runtime observer average callback context count.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html#V8RuntimeObserverAverageCallbackContextCount-int-">V8RuntimeObserverAverageCallbackContextCount(int)</a></span> - Constructor for class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageCallbackContextCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageCallbackContextCount</a></dt>
+<dd>
+<div class="block">Instantiates a new V8 runtime observer average callback context count.</div>
+</dd>
+<dt><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html" title="class in com.caoccao.javet.interop.engine.observers"><span class="typeNameLink">V8RuntimeObserverAverageReferenceCount</span></a> - Class in <a href="com/caoccao/javet/interop/engine/observers/package-summary.html">com.caoccao.javet.interop.engine.observers</a></dt>
+<dd>
+<div class="block">The type V8 runtime observer average reference count.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html#V8RuntimeObserverAverageReferenceCount--">V8RuntimeObserverAverageReferenceCount()</a></span> - Constructor for class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageReferenceCount</a></dt>
+<dd>
+<div class="block">Instantiates a new V8 runtime observer average reference count.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html#V8RuntimeObserverAverageReferenceCount-int-">V8RuntimeObserverAverageReferenceCount(int)</a></span> - Constructor for class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageReferenceCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageReferenceCount</a></dt>
+<dd>
+<div class="block">Instantiates a new V8 runtime observer average reference count.</div>
+</dd>
 <dt><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.engine.observers"><span class="typeNameLink">V8RuntimeObserverAverageV8HeapSpaceStatistics</span></a> - Class in <a href="com/caoccao/javet/interop/engine/observers/package-summary.html">com.caoccao.javet.interop.engine.observers</a></dt>
 <dd>
 <div class="block">The type V8 runtime observer average V8 heap space statistics.</div>

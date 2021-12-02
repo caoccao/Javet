@@ -22,10 +22,7 @@ import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
-import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapSpaceStatistics;
-import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapStatistics;
-import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8SharedMemoryStatistics;
+import com.caoccao.javet.interop.engine.observers.*;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
@@ -44,6 +41,32 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 0.7.0
      */
     int getActiveEngineCount();
+
+    /**
+     * Gets average callback context count.
+     *
+     * @return the average callback context count
+     * @since 1.0.6
+     */
+    default int getAverageCallbackContextCount() {
+        V8RuntimeObserverAverageCallbackContextCount observer = new V8RuntimeObserverAverageCallbackContextCount(
+                getConfig().getPoolMaxSize());
+        observe(observer);
+        return observer.getResult();
+    }
+
+    /**
+     * Gets average reference count.
+     *
+     * @return the average reference count
+     * @since 1.0.6
+     */
+    default int getAverageReferenceCount() {
+        V8RuntimeObserverAverageReferenceCount observer = new V8RuntimeObserverAverageReferenceCount(
+                getConfig().getPoolMaxSize());
+        observe(observer);
+        return observer.getResult();
+    }
 
     /**
      * Gets average V8 heap space statistics.
