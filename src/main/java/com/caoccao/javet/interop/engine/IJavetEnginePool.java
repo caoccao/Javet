@@ -96,6 +96,18 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     }
 
     /**
+     * Gets average V8 module count.
+     *
+     * @return the average V8 module count
+     */
+    default int getAverageV8ModuleCount() {
+        V8RuntimeObserverAverageV8ModuleCount observer = new V8RuntimeObserverAverageV8ModuleCount(
+                getConfig().getPoolMaxSize());
+        observe(observer);
+        return observer.getResult();
+    }
+
+    /**
      * Gets average V8 shared memory statistics.
      *
      * @return the average V8 shared memory statistics

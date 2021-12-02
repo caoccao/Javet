@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6,"i1":18,"i2":18,"i3":18,"i4":18,"i5":18,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6};
+var methods = {"i0":6,"i1":18,"i2":18,"i3":18,"i4":18,"i5":18,"i6":18,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -167,60 +167,66 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 </td>
 </tr>
 <tr id="i5" class="rowColor">
+<td class="colFirst"><code>default int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8ModuleCount--">getAverageV8ModuleCount</a></span>()</code>
+<div class="block">Gets average V8 module count.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>default <a href="../../../../../com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8SharedMemoryStatistics</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8SharedMemoryStatistics--">getAverageV8SharedMemoryStatistics</a></span>()</code>
 <div class="block">Gets average V8 shared memory statistics.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getConfig--">getConfig</a></span>()</code>
 <div class="block">Gets config.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="type parameter in IJavetEnginePool">R</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getEngine--">getEngine</a></span>()</code>
 <div class="block">Gets engine.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getIdleEngineCount--">getIdleEngineCount</a></span>()</code>
 <div class="block">Gets idle engine count.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getReleasedEngineCount--">getReleasedEngineCount</a></span>()</code>
 <div class="block">Gets released engine count.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#isActive--">isActive</a></span>()</code>
 <div class="block">Is active.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#isQuitting--">isQuitting</a></span>()</code>
 <div class="block">Is quitting boolean.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#observe-com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver...-">observe</a></span>(<a href="../../../../../com/caoccao/javet/interop/engine/observers/IV8RuntimeObserver.html" title="interface in com.caoccao.javet.interop.engine.observers">IV8RuntimeObserver</a>&lt;?&gt;...&nbsp;observers)</code>
 <div class="block">Traverse the internal V8 runtimes, apply the observer and return the observed V8 runtime count.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#releaseEngine-com.caoccao.javet.interop.engine.IJavetEngine-">releaseEngine</a></span>(<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngine</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="type parameter in IJavetEnginePool">R</a>&gt;&nbsp;iJavetEngine)</code>
 <div class="block">Release engine.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#wakeUpDaemon--">wakeUpDaemon</a></span>()</code>
 <div class="block">Wake up the daemon thread explicitly.</div>
@@ -327,6 +333,20 @@ extends <a href="../../../../../com/caoccao/javet/interfaces/IJavetClosable.html
 <dd>the average V8 heap statistics</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0.5</dd>
+</dl>
+</li>
+</ul>
+<a name="getAverageV8ModuleCount--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAverageV8ModuleCount</h4>
+<pre>default&nbsp;int&nbsp;getAverageV8ModuleCount()</pre>
+<div class="block">Gets average V8 module count.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the average V8 module count</dd>
 </dl>
 </li>
 </ul>

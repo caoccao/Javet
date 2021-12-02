@@ -50,6 +50,9 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @AfterEach
     private void afterEach() throws JavetException {
+        assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
+        assertEquals(0, javetEnginePool.getAverageReferenceCount());
+        assertEquals(0, javetEnginePool.getAverageV8ModuleCount());
         javetEnginePool.close();
         assertEquals(0, javetEnginePool.getActiveEngineCount());
         assertEquals(0, javetEnginePool.getIdleEngineCount());
@@ -81,6 +84,9 @@ public class TestJavetEnginePool extends BaseTestJavet {
         javetEngineConfig = javetEnginePool.getConfig();
         javetEngineConfig.setPoolDaemonCheckIntervalMillis(TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS);
         javetEngineConfig.setJSRuntimeType(v8Host.getJSRuntimeType());
+        assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
+        assertEquals(0, javetEnginePool.getAverageReferenceCount());
+        assertEquals(0, javetEnginePool.getAverageV8ModuleCount());
     }
 
     @Test
@@ -214,8 +220,6 @@ public class TestJavetEnginePool extends BaseTestJavet {
         };
         List<IJavetEngine<?>> engines = new ArrayList<>();
         List<V8ValueObject> v8ValueObjects = new ArrayList<>();
-        assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
-        assertEquals(0, javetEnginePool.getAverageReferenceCount());
         for (int i = 0; i < size; ++i) {
             IJavetEngine<?> engine = javetEnginePool.getEngine();
             engines.add(engine);
@@ -232,7 +236,5 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(1, javetEnginePool.getAverageCallbackContextCount());
         assertEquals(0, javetEnginePool.getAverageReferenceCount());
         JavetResourceUtils.safeClose(engines);
-        assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
-        assertEquals(0, javetEnginePool.getAverageReferenceCount());
     }
 }
