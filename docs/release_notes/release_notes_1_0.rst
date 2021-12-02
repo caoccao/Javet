@@ -6,6 +6,8 @@ Release Notes 1.0.x
 ----------------
 
 * Adjusted the priority of getter detection in ``JavetProxyConverter``
+* Fixed a bug in custom lib loading
+* Added capacity to some V8 runtime observers for performance improvement
 
 1.0.5 Javet Core
 ----------------

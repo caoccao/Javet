@@ -36,12 +36,22 @@ public class V8RuntimeObserverAverageV8HeapStatistics implements IV8RuntimeObser
     protected final List<V8HeapStatistics> v8HeapStatisticsList;
 
     /**
-     * Instantiates a new V8 runtime observer average V8 heap statistics.
+     * Instantiates a new V8 runtime observer for average V8 heap statistics.
      *
      * @since 1.0.5
      */
     public V8RuntimeObserverAverageV8HeapStatistics() {
-        v8HeapStatisticsList = new ArrayList<>();
+        this(256);
+    }
+
+    /**
+     * Instantiates a new V8 runtime observer for average V8 heap statistics.
+     *
+     * @param capacity the capacity
+     * @since 1.0.6
+     */
+    public V8RuntimeObserverAverageV8HeapStatistics(int capacity) {
+        v8HeapStatisticsList = new ArrayList<>(capacity);
     }
 
     @Override

@@ -44,14 +44,25 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
     protected final List<V8HeapSpaceStatistics> v8HeapSpaceStatisticsList;
 
     /**
-     * Instantiates a new V8 runtime observer average V8 heap space statistics.
+     * Instantiates a new V8 runtime observer for average V8 heap space statistics.
      *
      * @param v8AllocationSpace the V8 allocation space
      * @since 1.0.5
      */
     public V8RuntimeObserverAverageV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
+        this(v8AllocationSpace, 256);
+    }
+
+    /**
+     * Instantiates a new V8 runtime observer for average V8 heap space statistics.
+     *
+     * @param v8AllocationSpace the V8 allocation space
+     * @param capacity          the capacity
+     * @since 1.0.6
+     */
+    public V8RuntimeObserverAverageV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace, int capacity) {
         this.v8AllocationSpace = Objects.requireNonNull(v8AllocationSpace);
-        v8HeapSpaceStatisticsList = new ArrayList<>();
+        v8HeapSpaceStatisticsList = new ArrayList<>(capacity);
     }
 
     @Override

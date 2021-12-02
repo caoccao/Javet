@@ -36,12 +36,22 @@ public class V8RuntimeObserverAverageV8SharedMemoryStatistics implements IV8Runt
     protected final List<V8SharedMemoryStatistics> v8SharedMemoryStatisticsList;
 
     /**
-     * Instantiates a new V8 runtime observer average V8 shared memory statistics.
+     * Instantiates a new V8 runtime observer for average V8 shared memory statistics.
      *
      * @since 1.0.5
      */
     public V8RuntimeObserverAverageV8SharedMemoryStatistics() {
-        v8SharedMemoryStatisticsList = new ArrayList<>();
+        this(256);
+    }
+
+    /**
+     * Instantiates a new V8 runtime observer for average V8 shared memory statistics.
+     *
+     * @param capacity the capacity
+     * @since 1.0.6
+     */
+    public V8RuntimeObserverAverageV8SharedMemoryStatistics(int capacity) {
+        v8SharedMemoryStatisticsList = new ArrayList<>(capacity);
     }
 
     @Override

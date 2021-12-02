@@ -53,8 +53,8 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 1.0.5
      */
     default V8HeapSpaceStatistics getAverageV8HeapSpaceStatistics(final V8AllocationSpace v8AllocationSpace) {
-        V8RuntimeObserverAverageV8HeapSpaceStatistics observer =
-                new V8RuntimeObserverAverageV8HeapSpaceStatistics(v8AllocationSpace);
+        V8RuntimeObserverAverageV8HeapSpaceStatistics observer = new V8RuntimeObserverAverageV8HeapSpaceStatistics(
+                v8AllocationSpace, getConfig().getPoolMaxSize());
         observe(observer);
         return observer.getResult();
     }
@@ -66,7 +66,8 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 1.0.5
      */
     default V8HeapStatistics getAverageV8HeapStatistics() {
-        V8RuntimeObserverAverageV8HeapStatistics observer = new V8RuntimeObserverAverageV8HeapStatistics();
+        V8RuntimeObserverAverageV8HeapStatistics observer = new V8RuntimeObserverAverageV8HeapStatistics(
+                getConfig().getPoolMaxSize());
         observe(observer);
         return observer.getResult();
     }
@@ -78,8 +79,8 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 1.0.5
      */
     default V8SharedMemoryStatistics getAverageV8SharedMemoryStatistics() {
-        V8RuntimeObserverAverageV8SharedMemoryStatistics observer =
-                new V8RuntimeObserverAverageV8SharedMemoryStatistics();
+        V8RuntimeObserverAverageV8SharedMemoryStatistics observer = new V8RuntimeObserverAverageV8SharedMemoryStatistics(
+                getConfig().getPoolMaxSize());
         observe(observer);
         return observer.getResult();
     }
