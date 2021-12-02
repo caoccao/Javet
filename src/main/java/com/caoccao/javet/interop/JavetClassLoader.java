@@ -20,6 +20,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.loader.IJavetLibLoadingListener;
 import com.caoccao.javet.interop.loader.JavetLibLoader;
 import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.utils.JavetReflectionUtils;
@@ -34,6 +35,7 @@ class JavetClassLoader extends ClassLoader {
     protected static final String ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID = "Node.js is not supported on Android.";
     protected static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
     protected static final String METHOD_LOAD = "load";
+    protected static final String METHOD_SET_LIB_LOADING_LISTENER = "setLibLoadingListener";
     protected static final String NODE_NATIVE_CLASS_NAME = NodeNative.class.getName();
     protected static final String V8_NATIVE_CLASS_NAME = V8Native.class.getName();
     protected JSRuntimeType jsRuntimeType;
@@ -82,6 +84,8 @@ class JavetClassLoader extends ClassLoader {
                 Class<?> classJavetLibLoader = loadClass(JAVET_LIB_LOADER_CLASS_NAME);
                 Constructor<?> constructor = classJavetLibLoader.getConstructor(JSRuntimeType.class);
                 Object javetLibLoader = constructor.newInstance(jsRuntimeType);
+                classJavetLibLoader.getMethod(METHOD_SET_LIB_LOADING_LISTENER, IJavetLibLoadingListener.class)
+                        .invoke(null, JavetLibLoader.getLibLoadingListener());
                 classJavetLibLoader.getMethod(METHOD_LOAD).invoke(javetLibLoader);
             } catch (Exception e) {
                 e.printStackTrace(System.err);
