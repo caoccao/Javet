@@ -18,6 +18,7 @@
 plugins {
     java
     `java-library`
+    `maven-publish`
 }
 
 repositories {
@@ -82,4 +83,13 @@ tasks.withType<Test> {
 
 tasks.withType<Javadoc>{
     options.encoding = "UTF-8"
+}
+
+// Allow for publishing to maven local
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
 }

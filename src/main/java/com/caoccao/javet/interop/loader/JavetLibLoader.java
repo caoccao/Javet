@@ -247,7 +247,7 @@ public final class JavetLibLoader {
         } else if (JavetOSUtils.IS_LINUX) {
             return ARCH_X86_64;
         } else if (JavetOSUtils.IS_MACOS) {
-            return ARCH_X86_64;
+            return JavetOSUtils.IS_ARM64 ? ARCH_ARM64 : ARCH_X86_64;
         } else if (JavetOSUtils.IS_ANDROID) {
             if (JavetOSUtils.IS_ARM) {
                 return ARCH_ARM;
