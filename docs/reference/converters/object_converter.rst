@@ -9,6 +9,57 @@ Javet has a built-in ``JavetObjectConverter`` with the following features.
 * It minimizes the performance overhead.
 * It allows registering custom objects.
 
+From Java to JavaScript
+=======================
+
+===================== ===============
+Java                  JavaScript
+===================== ===============
+boolean[]             Array
+byte[]                Int8Array
+char[]                Array
+double[]              Float64Array
+float[]               Float32Array
+int[]                 Int32Array
+long[]                Int64Array
+short[]               Int16Array
+Object[]              Array
+Map                   object or Proxy
+Set                   Set or Proxy
+Collection            Array
+Stream                Array
+IJavetEntityFunction  Function
+IJavetEntityMap       Map
+JavetEntitySymbol     Symbol
+IJavetMappable        Any
+===================== ===============
+
+From JavaScript to Java
+=======================
+
+===================== ===============================
+JavaScript            Java
+===================== ===============================
+Array                 ArrayList<Object>
+Set                   HashSet<Object>
+Map                   HashMap<Object, Object>
+Int8Array             byte[]
+Uint8Array            byte[]
+Uint8ClampedArray     byte[]
+Int16Array            short[]
+Uint16Array           short[]
+Int32Array            int[]
+Uint32Array           int[]
+Float32Array          float[]
+Float64Array          double[]
+BigInt32Array         long[]
+BigInt64Array         long[]
+Function              IJavetEntityFunction
+Symbol                JavetEntitySymbol
+Proxy                 Any
+Object                HashMap<Object, Object> or Any
+===================== ===============================
+
 So, Javet doesn't natively support converting POJO objects because a POJO converter has to deal with reflection which is so slow that Javet leaves that to applications. However, if the POJO objects are owned by the application, it is possible to register custom objects with the built-in ``JavetObjectConverter``. Otherwise, designing a POJO converter is the alternative solution.
 
 Register Custom Objects

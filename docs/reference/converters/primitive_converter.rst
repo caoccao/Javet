@@ -11,10 +11,13 @@ From Java to JavaScript
 Java            JavaScript
 =============== ===============
 boolean/Boolean boolean
+byte/Byte       int
+char/Character  string
+double/Double   number
+float/Float     number
 int/Integer     int
 long/Long       bigint
-float/Float     number
-double/Double   number
+short/Short     int
 String          string
 ZonedDateTime   Date
 =============== ===============
