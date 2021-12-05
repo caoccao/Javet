@@ -252,6 +252,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         endif()
         # https://caoccao.blogspot.com/2021/08/jni-symbol-conflicts-in-mac-os.html
         target_link_libraries(Javet PUBLIC -exported_symbols_list ${CMAKE_SOURCE_DIR}/jni/exported_symbols_list.txt)
+    else()
+        message(FATAL_ERROR "Linux or Windows (arm64) have not been supported yet.")
     endif()
     set_target_properties(JavetStatic PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}-${JAVET_LIB_ARCH}.v.${JAVET_VERSION}")
 else()

@@ -2,13 +2,15 @@
 Release Notes 1.0.x
 ===================
 
-1.0.6 
-----------------
+1.0.6 Mac OS (arm64)
+--------------------
 
+* Supported Mac OS (arm64)
 * Adjusted the priority of getter detection in ``JavetProxyConverter``
 * Fixed a bug in custom lib loading
 * Added capacity to some V8 runtime observers for performance improvement
 * Added ``V8RuntimeObserverAverageCallbackContextCount``, ``V8RuntimeObserverAverageReferenceCount`` and ``V8RuntimeObserverAverageV8ModuleCount``
+* Refactored the doc for object converters
 
 1.0.5 Javet Core
 ----------------

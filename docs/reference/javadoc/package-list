@@ -10,7 +10,6 @@ com.caoccao.javet.interop.binding
 com.caoccao.javet.interop.callback
 com.caoccao.javet.interop.converters
 com.caoccao.javet.interop.engine
-com.caoccao.javet.interop.engine.observers
 com.caoccao.javet.interop.executors
 com.caoccao.javet.interop.loader
 com.caoccao.javet.interop.monitoring
