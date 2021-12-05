@@ -11,6 +11,7 @@ Release Notes 1.0.x
 * Added capacity to some V8 runtime observers for performance improvement
 * Added ``V8RuntimeObserverAverageCallbackContextCount``, ``V8RuntimeObserverAverageReferenceCount`` and ``V8RuntimeObserverAverageV8ModuleCount``
 * Refactored the doc for object converters
+* Added ``@V8Convert``, ``@V8Property``, ``@V8Function``, ``@V8Getter``, ``@V8Setter``, ``@V8Allow`` and ``@V8Block`` to ``JavetProxyConverter``
 
 1.0.5 Javet Core
 ----------------

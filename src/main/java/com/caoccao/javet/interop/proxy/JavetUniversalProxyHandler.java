@@ -17,8 +17,8 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.annotations.V8BindingEnabler;
-import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.annotations.*;
+import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -253,39 +253,53 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     protected void addMethod(Method method, int startIndex, Map<String, List<Method>> map) {
-        String methodName = method.getName();
-        String aliasMethodName = methodName.substring(startIndex);
-        Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
-        if (matcher.find()) {
-            final int capitalizedPrefixLength = matcher.group().length();
-            if (capitalizedPrefixLength == 1) {
-                aliasMethodName = methodName.substring(startIndex, startIndex + capitalizedPrefixLength).toLowerCase(Locale.ROOT)
-                        + methodName.substring(startIndex + capitalizedPrefixLength);
-                List<Method> methods = map.get(aliasMethodName);
-                if (methods == null) {
-                    methods = new ArrayList<>();
-                    map.put(aliasMethodName, methods);
-                }
-                methods.add(method);
-            } else {
-                for (int i = 1; i < capitalizedPrefixLength; ++i) {
-                    aliasMethodName = methodName.substring(startIndex, startIndex + i).toLowerCase(Locale.ROOT)
-                            + methodName.substring(startIndex + i);
+        if (method.isAnnotationPresent(V8Function.class)) {
+            String methodName = method.getName();
+            String aliasMethodName = method.getAnnotation(V8Function.class).name();
+            if (aliasMethodName.length() > 0) {
+                methodName = aliasMethodName;
+            }
+            List<Method> methods = map.get(methodName);
+            if (methods == null) {
+                methods = new ArrayList<>();
+                map.put(methodName, methods);
+            }
+            methods.add(method);
+        } else {
+            String methodName = method.getName();
+            String aliasMethodName = methodName.substring(startIndex);
+            Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
+            if (matcher.find()) {
+                final int capitalizedPrefixLength = matcher.group().length();
+                if (capitalizedPrefixLength == 1) {
+                    aliasMethodName = methodName.substring(startIndex, startIndex + capitalizedPrefixLength).toLowerCase(Locale.ROOT)
+                            + methodName.substring(startIndex + capitalizedPrefixLength);
                     List<Method> methods = map.get(aliasMethodName);
                     if (methods == null) {
                         methods = new ArrayList<>();
                         map.put(aliasMethodName, methods);
                     }
                     methods.add(method);
+                } else {
+                    for (int i = 1; i < capitalizedPrefixLength; ++i) {
+                        aliasMethodName = methodName.substring(startIndex, startIndex + i).toLowerCase(Locale.ROOT)
+                                + methodName.substring(startIndex + i);
+                        List<Method> methods = map.get(aliasMethodName);
+                        if (methods == null) {
+                            methods = new ArrayList<>();
+                            map.put(aliasMethodName, methods);
+                        }
+                        methods.add(method);
+                    }
                 }
+            } else {
+                List<Method> methods = map.get(aliasMethodName);
+                if (methods == null) {
+                    methods = new ArrayList<>();
+                    map.put(aliasMethodName, methods);
+                }
+                methods.add(method);
             }
-        } else {
-            List<Method> methods = map.get(aliasMethodName);
-            if (methods == null) {
-                methods = new ArrayList<>();
-                map.put(aliasMethodName, methods);
-            }
-            methods.add(method);
         }
     }
 
@@ -529,6 +543,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     protected void initializeFieldsAndMethods(Class<?> currentClass, boolean staticMode) {
+        V8ConversionMode conversionMode = targetClass.isAnnotationPresent(V8Convert.class)
+                ? targetClass.getAnnotation(V8Convert.class).mode()
+                : V8ConversionMode.Transparent;
         if (!classMode) {
             if (isTargetTypeMap) {
                 uniqueKeySet.addAll(((Map<String, ?>) targetObject).keySet());
@@ -538,7 +555,11 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
         do {
             if (classMode) {
-                constructors.addAll(Arrays.asList(currentClass.getConstructors()));
+                for (Constructor<?> constructor : currentClass.getConstructors()) {
+                    if (isAllowed(conversionMode, constructor)) {
+                        constructors.add(constructor);
+                    }
+                }
             }
             // All public fields are in the scope.
             for (Field field : currentClass.getFields()) {
@@ -549,7 +570,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 if (!(Modifier.isPublic(fieldModifiers))) {
                     continue;
                 }
+                if (!isAllowed(conversionMode, field)) {
+                    continue;
+                }
                 String fieldName = field.getName();
+                if (field.isAnnotationPresent(V8Property.class)) {
+                    String aliasFieldName = field.getAnnotation(V8Property.class).name();
+                    if (aliasFieldName.length() > 0) {
+                        fieldName = aliasFieldName;
+                    }
+                }
                 if (fieldMap.containsKey(fieldName)) {
                     continue;
                 }
@@ -566,6 +596,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     continue;
                 }
                 if (!(Modifier.isPublic(methodModifiers))) {
+                    continue;
+                }
+                if (!isAllowed(conversionMode, method)) {
                     continue;
                 }
                 JavetReflectionUtils.safeSetAccessible(method);
@@ -608,9 +641,27 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
+     * Is allowed.
+     *
+     * @param conversionMode   the conversion mode
+     * @param accessibleObject the accessible object
+     * @return true : allowed, false : disallowed
+     */
+    protected boolean isAllowed(V8ConversionMode conversionMode, AccessibleObject accessibleObject) {
+        switch (conversionMode) {
+            case AllowOnly:
+                return accessibleObject.isAnnotationPresent(V8Allow.class);
+            case BlockOnly:
+                return !accessibleObject.isAnnotationPresent(V8Block.class);
+            default:
+                return true;
+        }
+    }
+
+    /**
      * Is class mode.
      *
-     * @return the boolean
+     * @return true : class mode, false : not class mode
      * @since 0.9.9
      */
     public boolean isClassMode() {
@@ -618,13 +669,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is generic getter boolean.
+     * Is generic getter.
      *
      * @param method the method
-     * @return the boolean
+     * @return true : yes, false : no
      * @since 0.9.6
      */
     protected boolean isGenericGetter(Method method) {
+        if (method.isAnnotationPresent(V8Getter.class)) {
+            return true;
+        }
         String methodName = method.getName();
         for (String prefix : GETTER_PREFIX_ARRAY) {
             if (methodName.equals(prefix) && method.getParameterCount() == 1 && !method.isVarArgs()) {
@@ -635,13 +689,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is generic setter boolean.
+     * Is generic setter.
      *
      * @param method the method
-     * @return the boolean
+     * @return true : yes, false : no
      * @since 0.9.6
      */
     protected boolean isGenericSetter(Method method) {
+        if (method.isAnnotationPresent(V8Setter.class)) {
+            return true;
+        }
         String methodName = method.getName();
         for (String prefix : SETTER_PREFIX_ARRAY) {
             if (methodName.equals(prefix) && method.getParameterCount() == 2 && !method.isVarArgs()) {

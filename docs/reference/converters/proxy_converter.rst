@@ -278,6 +278,38 @@ Features
 * Overloaded methods and varargs methods are identified well.
 * Primitive types, Set, Map, List, Array are not handled. Map is special because it can be enabled.
 * Java interfaces can be implemented by anonymous functions in JavaScript.
+* Annotations can be applied to classes or methods to alter the default behaviors.
+
+============= ============================= =====================================================================
+Annotation    Type                          Description
+============= ============================= =====================================================================
+@V8Convert    Class                         It tells the converter which mode to be applied to the annotated class.
+@V8Allow      Constructor / Field / Method  It tells the converter to bind the constructor / field / method.
+@V8Block      Constructor / Field / Method  It tells the converter to ignore the constructor / field / method.
+@V8Property   Field                         It tells the converter to bind the field.
+@V8Function   Method                        It tells the converter to bind the method.
+@V8Getter     Method                        It tells the converter to bind the method as getter.
+@V8Setter     Method                        It tells the converter to bind the method as setter.
+============= ============================= =====================================================================
+
+@V8Convert::mode
+----------------
+
+It tells the converter how to treat the annotated class.
+
+* Transparent - Transparent mode maps the Java objects directly to V8 and ignores any annotations. It is the default mode.
+* AllowOnly - AllowOnly mode only maps the API with ``@V8Allow``.
+* BlockOnly - BlockOnly mode only ignores the API with ``@V8Block``.
+
+@V8Property::name
+-----------------
+
+It tells the converter to bind the property to an alias name.
+
+@V8Function::name
+-----------------
+
+It tells the converter to bind the function to an alias name.
 
 How does JavetProxyConverter Work?
 ==================================
