@@ -212,7 +212,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @Test
     public void testStatistics() throws Exception {
-        final int size = 4;
+        final int size = Math.min(4, javetEnginePool.getConfig().getPoolMaxSize());
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public void test() {
