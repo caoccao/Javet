@@ -31,9 +31,9 @@ RUN sh ./build-linux.sh -DNODE_DIR=/node
 # Build Jar
 WORKDIR /Javet
 RUN touch src/main/resources/libjavet-v8*
-RUN gradle build test --rerun-tasks
+RUN gradle build test --rerun-tasks --debug
 RUN touch src/main/resources/libjavet-node*
-RUN gradle test --rerun-tasks
+RUN gradle test --rerun-tasks --debug
 
 VOLUME /output
 
