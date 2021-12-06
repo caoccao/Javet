@@ -295,14 +295,14 @@
 <h2>Dependency<a class="headerlink" href="#dependency" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="maven">
 <h3>Maven<a class="headerlink" href="#maven" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="c">&lt;!-- Linux or Windows --&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="c">&lt;!-- Linux and Windows (x86_64) --&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
     <span class="nt">&lt;version&gt;</span>1.0.6<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 
-<span class="c">&lt;!-- Mac OS (x86_64 Only) --&gt;</span>
+<span class="c">&lt;!-- Mac OS (x86_64 and arm64) --&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
@@ -313,16 +313,16 @@
 </div>
 <div class="section" id="gradle-kotlin-dsl">
 <h3>Gradle Kotlin DSL<a class="headerlink" href="#gradle-kotlin-dsl" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet:1.0.6"</span><span class="p">)</span> <span class="c1">// Linux or Windows</span>
-<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-macos:1.0.6"</span><span class="p">)</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet:1.0.6"</span><span class="p">)</span> <span class="c1">// Linux and Windows (x86_64)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-macos:1.0.6"</span><span class="p">)</span> <span class="c1">// Mac OS (x86_64 and arm64)</span>
 <span class="n">implementation</span><span class="p">(</span><span class="s">"com.caoccao.javet:javet-android:1.0.6"</span><span class="p">)</span> <span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="gradle-groovy-dsl">
 <h3>Gradle Groovy DSL<a class="headerlink" href="#gradle-groovy-dsl" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet:1.0.6'</span> <span class="c1">// Linux or Windows</span>
-<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-macos:1.0.6'</span> <span class="c1">// Mac OS (x86_64 Only)</span>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet:1.0.6'</span> <span class="c1">// Linux and Windows (x86_64)</span>
+<span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-macos:1.0.6'</span> <span class="c1">// Mac OS (x86_64 and arm64)</span>
 <span class="n">implementation</span> <span class="s1">'com.caoccao.javet:javet-android:1.0.6'</span> <span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
@@ -412,7 +412,7 @@
 <td><p>Yes</p></td>
 </tr>
 <tr class="row-odd"><td><p>Mac OS arm64</p></td>
-<td><p>No (<a class="reference internal" href="../../faq/environment/can_javet_support_mac.html"><span class="doc">Can Javet Support Mac?</span></a>)</p></td>
+<td><p>Temporary (<a class="reference internal" href="../../faq/environment/can_javet_support_mac.html"><span class="doc">Can Javet Support Mac?</span></a>)</p></td>
 </tr>
 </tbody>
 </table></div>

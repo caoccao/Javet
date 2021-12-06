@@ -273,15 +273,17 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                     if (engine != null) {
                         boolean isContinuable = true;
                         for (IV8RuntimeObserver<?> observer : observers) {
-                            try {
-                                isContinuable = observer.observe(engine.v8Runtime);
-                            } catch (Throwable t) {
-                                logger.error(t.getMessage(), t);
-                            } finally {
-                                ++processedCount;
-                            }
-                            if (!isContinuable) {
-                                break;
+                            if (!engine.v8Runtime.isClosed()) {
+                                try {
+                                    isContinuable = observer.observe(engine.v8Runtime);
+                                } catch (Throwable t) {
+                                    logger.error(t.getMessage(), t);
+                                } finally {
+                                    ++processedCount;
+                                }
+                                if (!isContinuable) {
+                                    break;
+                                }
                             }
                         }
                         if (!isContinuable) {

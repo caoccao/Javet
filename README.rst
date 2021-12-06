@@ -26,12 +26,12 @@ If you like my work, please **Star** this project. And, you may follow me `@sjtu
 
 💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because my `MacBook Air mid-2012 <https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html>`_ will be soon deprecated by new version of V8. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (x86_64) device. Or, if you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will also be great. Thank you for supporting Javet.
 
-💖 If you use Mac OS (arm64), unfortunately there is no Mac OS (arm64) build because I don't have any Mac OS (arm64) device. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (arm64) device.
+💖 If you use Mac OS (arm64), please thank `@longwa <https://github.com/longwa>`_ for building the M1 version. However, that's a temporary solution because I don't have any Mac OS (arm64) device, so there is no support. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (arm64) device.
 
 Major Features
 ==============
 
-* Linux + Mac OS + ️Windows (x86_64)
+* Linux (x86_64) + Mac OS (x86_64, arm64) + ️Windows (x86_64)
 * Android (arm, arm64, x86 and x86_64)
 * Node.js ``v16.13.0`` + V8 ``v9.6.180.8``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
@@ -54,14 +54,14 @@ Maven
 
 .. code-block:: xml
 
-    <!-- Linux or Windows -->
+    <!-- Linux and Windows (x86_64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
         <version>1.0.6</version>
     </dependency>
 
-    <!-- Mac OS (x86_64 Only) -->
+    <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
@@ -73,8 +73,8 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:1.0.6") // Linux or Windows
-    implementation("com.caoccao.javet:javet-macos:1.0.6") // Mac OS (x86_64 Only)
+    implementation("com.caoccao.javet:javet:1.0.6") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-macos:1.0.6") // Mac OS (x86_64 and arm64)
     implementation("com.caoccao.javet:javet-android:1.0.6") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
@@ -82,8 +82,8 @@ Gradle Groovy DSL
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:1.0.6' // Linux or Windows
-    implementation 'com.caoccao.javet:javet-macos:1.0.6' // Mac OS (x86_64 Only)
+    implementation 'com.caoccao.javet:javet:1.0.6' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-macos:1.0.6' // Mac OS (x86_64 and arm64)
     implementation 'com.caoccao.javet:javet-android:1.0.6' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
