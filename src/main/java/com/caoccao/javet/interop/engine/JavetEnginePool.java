@@ -152,14 +152,13 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      * @since 0.7.0
      */
     protected JavetEngine<R> createEngine() throws JavetException {
-        V8Host v8Host = V8Host.getInstance(config.getJSRuntimeType());
         RuntimeOptions<?> runtimeOptions = config.getJSRuntimeType().getRuntimeOptions();
         if (runtimeOptions instanceof V8RuntimeOptions) {
             V8RuntimeOptions v8RuntimeOptions = (V8RuntimeOptions) runtimeOptions;
             v8RuntimeOptions.setGlobalName(config.getGlobalName());
         }
         @SuppressWarnings("ConstantConditions")
-        R v8Runtime = v8Host.createV8Runtime(true, runtimeOptions);
+        R v8Runtime = getV8Host().createV8Runtime(true, runtimeOptions);
         v8Runtime.allowEval(config.isAllowEval());
         v8Runtime.setLogger(config.getJavetLogger());
         return new JavetEngine<>(this, v8Runtime);
@@ -246,6 +245,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      */
     protected ZonedDateTime getUTCNow() {
         return JavetDateTimeUtils.getUTCNow();
+    }
+
+    @Override
+    public V8Host getV8Host() {
+        return V8Host.getInstance(config.getJSRuntimeType());
     }
 
     @Override

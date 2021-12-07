@@ -21,6 +21,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.observers.*;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
@@ -108,19 +109,6 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     }
 
     /**
-     * Gets average V8 shared memory statistics.
-     *
-     * @return the average V8 shared memory statistics
-     * @since 1.0.5
-     */
-    default V8SharedMemoryStatistics getAverageV8SharedMemoryStatistics() {
-        V8RuntimeObserverAverageV8SharedMemoryStatistics observer = new V8RuntimeObserverAverageV8SharedMemoryStatistics(
-                getConfig().getPoolMaxSize());
-        observe(observer);
-        return observer.getResult();
-    }
-
-    /**
      * Gets config.
      *
      * @return the config
@@ -153,6 +141,23 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 1.0.5
      */
     int getReleasedEngineCount();
+
+    /**
+     * Gets V8 host.
+     *
+     * @return the V8 host
+     */
+    V8Host getV8Host();
+
+    /**
+     * Gets V8 shared memory statistics.
+     *
+     * @return the V8 shared memory statistics
+     * @since 1.0.5
+     */
+    default V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
+        return getV8Host().getV8SharedMemoryStatistics();
+    }
 
     /**
      * Is active.

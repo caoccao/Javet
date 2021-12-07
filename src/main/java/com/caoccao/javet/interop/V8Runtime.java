@@ -1339,7 +1339,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.0
      */
     public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
-        return (V8SharedMemoryStatistics) v8Native.getV8SharedMemoryStatistics();
+        return v8Host.getV8SharedMemoryStatistics();
     }
 
     /**
