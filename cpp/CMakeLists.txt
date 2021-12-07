@@ -34,9 +34,6 @@ if (POLICY CMP0091)
     cmake_policy(SET CMP0091 NEW)
 endif()
 
-# Initialize to ensure all CMAKE properties are available when needed
-project(Javet)
-
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     if(NOT DEFINED CMAKE_ANDROID_NDK)
         message(FATAL_ERROR "CMAKE_ANDROID_NDK needs to be defined.")
@@ -66,10 +63,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../src/main/resources)
-    set(JAVET_LIB_ARCH ${CMAKE_HOST_SYSTEM_PROCESSOR})
+    set(JAVET_LIB_ARCH x86_64)
 endif()
 
 # Initialization
+project(Javet)
 aux_source_directory("jni" sourceFiles)
 set(includeDirs $ENV{JAVA_HOME}/include)
 set(importLibraries)
@@ -221,6 +219,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|x86_64)")
         set(JAVET_LIB_SYSTEM "macos")
         if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+            set(JAVET_LIB_ARCH arm64)
             add_definitions(-D__arm64__)
         else()
             add_definitions(-D__x86_64__)
