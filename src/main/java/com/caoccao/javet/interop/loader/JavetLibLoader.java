@@ -343,12 +343,21 @@ public final class JavetLibLoader {
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
                     libFilePath = new File(libPath, getLibFileName()).getAbsolutePath();
                 }
-                if (isLibInSystemPath) {
-                    System.loadLibrary(getNormalizedLibFilePath(libFilePath));
-                } else {
-                    System.load(libFilePath);
+                try {
+                    if (isLibInSystemPath) {
+                        System.loadLibrary(getNormalizedLibFilePath(libFilePath));
+                    } else {
+                        System.load(libFilePath);
+                    }
+                    loaded = true;
+                } catch (Throwable t) {
+                    if (libLoadingListener.isSuppressingError(jsRuntimeType)) {
+                        LOGGER.warn(t.getMessage());
+                        loaded = true;
+                    } else {
+                        throw t;
+                    }
                 }
-                loaded = true;
             } catch (Throwable t) {
                 LOGGER.logError(t, t.getMessage());
                 throw new JavetException(

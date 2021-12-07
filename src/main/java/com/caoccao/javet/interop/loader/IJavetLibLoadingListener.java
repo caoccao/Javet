@@ -61,4 +61,15 @@ public interface IJavetLibLoadingListener {
     default boolean isLibInSystemPath(JSRuntimeType jsRuntimeType) {
         return false;
     }
+
+    /**
+     * Is suppressing error.
+     *
+     * @param jsRuntimeType the JS runtime type
+     * @return true : yes, false : no
+     * @since 1.0.6
+     */
+    default boolean isSuppressingError(JSRuntimeType jsRuntimeType) {
+        return false;
+    }
 }

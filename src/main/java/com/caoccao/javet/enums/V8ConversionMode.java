@@ -30,13 +30,13 @@ public enum V8ConversionMode {
      */
     Transparent,
     /**
-     * AllowOnly mode only maps the API with {@link @V8Allow}.
+     * AllowOnly mode only maps the API with @V8Allow.
      *
      * @since 1.0.6
      */
     AllowOnly,
     /**
-     * BlockOnly mode ignored the API with {@link @V8Block}
+     * BlockOnly mode ignored the API with @V8Block.
      *
      * @since 1.0.6
      */

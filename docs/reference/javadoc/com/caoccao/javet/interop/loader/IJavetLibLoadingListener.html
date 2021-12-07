@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":18,"i1":18,"i2":18};
+var methods = {"i0":18,"i1":18,"i2":18,"i3":18};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -145,6 +145,12 @@ var activeTableTab = "activeTableTab";
 <div class="block">Is lib in system path.</div>
 </td>
 </tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>default boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/loader/IJavetLibLoadingListener.html#isSuppressingError-com.caoccao.javet.enums.JSRuntimeType-">isSuppressingError</a></span>(<a href="../../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</code>
+<div class="block">Is suppressing error.</div>
+</td>
+</tr>
 </table>
 </li>
 </ul>
@@ -202,7 +208,7 @@ var activeTableTab = "activeTableTab";
 <a name="isLibInSystemPath-com.caoccao.javet.enums.JSRuntimeType-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>isLibInSystemPath</h4>
 <pre>default&nbsp;boolean&nbsp;isLibInSystemPath(<a href="../../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</pre>
@@ -214,6 +220,24 @@ var activeTableTab = "activeTableTab";
 <dd>true : yes, false : no</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0.1</dd>
+</dl>
+</li>
+</ul>
+<a name="isSuppressingError-com.caoccao.javet.enums.JSRuntimeType-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>isSuppressingError</h4>
+<pre>default&nbsp;boolean&nbsp;isSuppressingError(<a href="../../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</pre>
+<div class="block">Is suppressing error.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>jsRuntimeType</code> - the JS runtime type</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>true : yes, false : no</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.0.6</dd>
 </dl>
 </li>
 </ul>

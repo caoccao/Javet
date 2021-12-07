@@ -57,18 +57,24 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
      * @since 1.0.3
      */
     public static final String PROPERTY_KEY_JAVET_LIB_LOADING_TYPE = "javet.lib.loading.type";
+    /**
+     * The constant PROPERTY_KEY_JAVET_LIB_LOADING_SUPPRESS_ERROR.
+     *
+     * @since 1.0.6
+     */
+    public static final String PROPERTY_KEY_JAVET_LIB_LOADING_SUPPRESS_ERROR = "javet.lib.loading.suppress.error";
     private static final String TEMP_ROOT_NAME = "javet";
     private final String javetLibLoadingPath;
+    private final String javetLibLoadingSuppressError;
     private final String javetLibLoadingType;
 
     /**
      * Instantiates a new Javet lib loading listener.
      */
     public JavetLibLoadingListener() {
-        javetLibLoadingPath = System.getProperty(
-                PROPERTY_KEY_JAVET_LIB_LOADING_PATH);
-        javetLibLoadingType = System.getProperty(
-                PROPERTY_KEY_JAVET_LIB_LOADING_TYPE, JAVET_LIB_LOADING_TYPE_DEFAULT);
+        javetLibLoadingPath = System.getProperty(PROPERTY_KEY_JAVET_LIB_LOADING_PATH);
+        javetLibLoadingSuppressError = System.getProperty(PROPERTY_KEY_JAVET_LIB_LOADING_SUPPRESS_ERROR, null);
+        javetLibLoadingType = System.getProperty(PROPERTY_KEY_JAVET_LIB_LOADING_TYPE, JAVET_LIB_LOADING_TYPE_DEFAULT);
     }
 
     @Override
@@ -102,5 +108,13 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isSuppressingError(JSRuntimeType jsRuntimeType) {
+        if (JavetOSUtils.IS_ANDROID) {
+            return true;
+        }
+        return javetLibLoadingSuppressError != null;
     }
 }
