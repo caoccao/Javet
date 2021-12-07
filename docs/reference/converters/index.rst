@@ -18,19 +18,68 @@ Comparisons
 .. raw:: html
 
     <embed>
-        <table border="1" cellspacing="1" cellpadding="2" style="text-align: center;">
-          <thead>
-            <th>Feature</th>
-            <th>Primitive Converter</th>
-            <th>Object Converter</th>
-            <th>Proxy Converter</th>
-            <th>Bridge Converter</th>
-            <th>Custom Converter</th>
-          </thead>
-          <tr><td>From Java Primitive to V8 Native Object</td><td>✔️</td><td>✔️</td><td>✔️</td><td>❌️</td><td>✔️</td></tr>
-          <tr><td>From Java List, Set, Map to V8 Native Object</td><td>❌️️</td><td>✔️</td><td>✔️</td><td>❌️</td><td>✔️</td></tr>
-          <tr><td>From Java Arbitrary Object to V8 Native Object</td><td>❌️️</td><td>❌️️</td><td>✔️</td><td>✔️</td><td>✔️</td></tr>
-        </table>
+      <table border="1" cellspacing="1" cellpadding="2" style="text-align: center;">
+        <thead>
+          <th>From</th>
+          <th>To</th>
+          <th>Primitive Converter</th>
+          <th>Object Converter</th>
+          <th>Proxy Converter</th>
+          <th>Bridge Converter</th>
+          <th>Custom Converter</th>
+        </thead>
+        <tr>
+          <td rowspan="2">Java Primitive</td>
+          <td>V8 Native Object</td>
+          <td>✔️</td>
+          <td>✔️</td>
+          <td>✔️</td>
+          <td>❌️</td>
+          <td>✔️</td>
+        </tr>
+        <tr>
+          <td>V8 Proxy Object</td>
+          <td>❌️</td>
+          <td>❌️</td>
+          <td>❌️</td>
+          <td>✔️</td>
+          <td>✔️</td>
+        </tr>
+        <tr>
+          <td rowspan="2">Java List, Set, Map</td>
+          <td>V8 Native Object</td>
+          <td>❌️</td>
+          <td>✔️</td>
+          <td>✔️</td>
+          <td>❌️</td>
+          <td>✔️</td>
+        </tr>
+        <tr>
+          <td>V8 Proxy Object</td>
+          <td>❌️</td>
+          <td>❌️</td>
+          <td>❌️</td>
+          <td>✔️</td>
+          <td>✔️</td>
+        </tr>
+        <tr>
+          <td rowspan="2">Java Non-primitive, Non-list, Non-set, Non-map Object</td>
+          <td>V8 Native Object</td>
+          <td>❌️</td>
+          <td>✔️</td>
+          <td>❌️</td>
+          <td>❌️</td>
+          <td>✔️</td>
+        </tr>
+        <tr>
+          <td>V8 Proxy Object</td>
+          <td>❌️</td>
+          <td>❌️</td>
+          <td>✔️</td>
+          <td>✔️</td>
+          <td>✔️</td>
+        </tr>
+      </table>
     </embed>
 
 Inside Converters

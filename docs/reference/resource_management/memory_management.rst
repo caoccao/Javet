@@ -196,11 +196,11 @@ This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It 
 Statistics
 ==========
 
-V8 exposes quite a few statistics for applications to analyze the memory usage, performance, etc. Javet selectively exposes some of those statistics via ``V8Runtime``.
+V8 exposes quite a few statistics for applications to analyze the memory usage, performance, etc. Javet selectively exposes some of those statistics via ``V8Runtime`` or ``V8Host``.
 
 * `getV8HeapSpaceStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace->`_
 * `getV8HeapStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapStatistics-->`_
-* `getV8SharedMemoryStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8SharedMemoryStatistics-->`_
+* `getV8SharedMemoryStatistics() <../javadoc/com/caoccao/javet/interop/V8Host.html#getV8SharedMemoryStatistics-->`_
 
 .. image:: ../../resources/images/statistics_v8_heap_space_statistics.png
     :alt: V8 Heap Space Statistics

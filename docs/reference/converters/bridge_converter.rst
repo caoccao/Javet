@@ -2,7 +2,7 @@
 Bridge Converter
 ================
 
-As ``JavetProxyConverter`` skips creating proxies for primitive types, ``List``, ``Set``, ``Map``, etc., sometimes it may be annoying that a variable is converted to a native JavaScript object by accident. So, how to fix that? ``JavetBridgeConverter`` is the one because it creates proxies for all Java types including ``Integer``, ``Long``, ``String``, etc. except that only Java array is converted to JavaScript array.
+As ``JavetProxyConverter`` skips creating proxies for primitive types, ``List``, ``Set``, ``Map``, etc., sometimes it may be annoying that a variable is converted to a native JavaScript object by accident. So, how to fix that? ``JavetBridgeConverter`` is the one because it creates proxies for all Java types including ``Integer``, ``Long``, ``String``, ``int[]``, ``long[]``, ``Object[]``, etc.
 
 Usage
 =====

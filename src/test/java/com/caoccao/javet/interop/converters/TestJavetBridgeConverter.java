@@ -23,18 +23,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
-    protected JavetBridgeConverter javetBridgeConverter;
     protected String functionCastString;
+    protected JavetBridgeConverter javetBridgeConverter;
 
     public TestJavetBridgeConverter() {
         super();
@@ -69,10 +66,12 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("bFalse");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testIntArray() throws JavetException {
-        v8Runtime.getGlobalObject().set("a", new int[]{1, 2});
-        assertEquals(2, v8Runtime.getExecutor("a.length").executeInteger());
+        int[] intArray = new int[]{1, 2};
+        v8Runtime.getGlobalObject().set("a", intArray);
+        assertEquals(2, (Integer) v8Runtime.getExecutor("a.length").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
         v8Runtime.getGlobalObject().delete("a");
@@ -91,7 +90,19 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     @Test
     public void testIntegerArray() throws JavetException {
         v8Runtime.getGlobalObject().set("a", new Integer[]{1, 2});
-        assertEquals(2, v8Runtime.getExecutor("a.length").executeInteger());
+        assertEquals(2, (Integer) v8Runtime.getExecutor("a.length").executeObject());
+        assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
+        assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
+    public void testIntegerList() throws JavetException {
+        List<Integer> integerList = new ArrayList<>();
+        integerList.add(1);
+        integerList.add(2);
+        v8Runtime.getGlobalObject().set("a", integerList);
+        assertEquals(2, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
         v8Runtime.getGlobalObject().delete("a");
@@ -116,6 +127,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().set("map", map);
         assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
         assertTrue((Boolean) v8Runtime.getExecutor("map.containsKey('x')").executeObject());
+        assertEquals(2, (Integer) v8Runtime.getExecutor("map.size()").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("map['x']").executeObject());
         assertEquals("2", v8Runtime.getExecutor("map['y']").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("map.x").executeObject());
@@ -164,9 +176,18 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     @Test
     public void testStringArray() throws JavetException {
         v8Runtime.getGlobalObject().set("a", new String[]{"x", "y"});
-        assertEquals(2, v8Runtime.getExecutor("a.length").executeInteger());
+        assertEquals(2, (Integer) v8Runtime.getExecutor("a.length").executeObject());
         assertEquals("x", v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals("y", v8Runtime.getExecutor("a[1]").executeObject());
+        assertEquals(
+                "[\"x\",\"y\"]",
+                v8Runtime.getExecutor("JSON.stringify(a[Symbol.toPrimitive]())").executeString());
+        assertEquals(
+                "[\"x\",\"y\"]",
+                v8Runtime.getExecutor("JSON.stringify(a[Symbol.iterator]())").executeString());
+        assertEquals(
+                "[\"x\",\"y\"]",
+                v8Runtime.getExecutor("JSON.stringify(a.toV8Value())").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 

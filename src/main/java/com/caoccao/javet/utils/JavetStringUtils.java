@@ -28,6 +28,25 @@ public final class JavetStringUtils {
     }
 
     /**
+     * Is digital.
+     *
+     * @param str the str
+     * @return true : yes, false : no
+     * @since 1.0.6
+     */
+    public static boolean isDigital(String str) {
+        if (str == null || str.length() == 0) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); ++i) {
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Join string.
      *
      * @param delimiter the delimiter
