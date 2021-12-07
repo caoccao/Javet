@@ -334,7 +334,7 @@ public final class JavetLibLoader {
                             LOGGER.logError("Failed to create {0}.", rootLibPath.getAbsolutePath());
                         }
                     }
-                    purge(rootLibPath);
+                    purge(libPath);
                     File libFile = new File(rootLibPath, getLibFileName()).getAbsoluteFile();
                     deployLibFile(resourceFileName, libFile);
                     libFilePath = libFile.getAbsolutePath();
@@ -392,6 +392,8 @@ public final class JavetLibLoader {
                                                 break;
                                             }
                                         }
+                                    } else {
+                                        toBeDeleted = true;
                                     }
                                 } catch (Throwable t) {
                                     LOGGER.logError(t, "Failed to delete {0}.", libFileOrPath.getAbsolutePath());

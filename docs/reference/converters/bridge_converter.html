@@ -304,6 +304,65 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="boolean">
+<h3>Boolean<a class="headerlink" href="#boolean" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"bTrue"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"bFalse"</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">((</span><span class="n">Boolean</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"bTrue"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">((</span><span class="n">Boolean</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"bFalse"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"bTrue.toV8Value()?1:0"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"bFalse.toV8Value()?1:0"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"bTrue[Symbol.toPrimitive]()?1:0"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"bFalse[Symbol.toPrimitive]()?1:0"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"bTrue"</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"bFalse"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="int">
+<h3>int<a class="headerlink" href="#int" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"i"</span><span class="p">,</span> <span class="mi">12345</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">12345</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"i"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">12345</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"i.toV8Value()"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">12345</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"i[Symbol.toPrimitive]()"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">12346</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"1 + i"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"i"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="int-array">
+<h3>int Array<a class="headerlink" href="#int-array" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">[]</span> <span class="n">intArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">};</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">intArray</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.length"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[0]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[1]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertArrayEquals</span><span class="p">(</span><span class="n">intArray</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[Symbol.toPrimitive]()"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertArrayEquals</span><span class="p">(</span><span class="n">intArray</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[Symbol.iterator]()"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertArrayEquals</span><span class="p">(</span><span class="n">intArray</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.toV8Value()"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="string-array">
+<h3>String Array<a class="headerlink" href="#string-array" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span><span class="p">{</span><span class="s">"x"</span><span class="p">,</span> <span class="s">"y"</span><span class="p">});</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.length"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"x"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[0]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">"y"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[1]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+        <span class="s">"[\"x\",\"y\"]"</span><span class="p">,</span>
+        <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"JSON.stringify(a[Symbol.toPrimitive]())"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+        <span class="s">"[\"x\",\"y\"]"</span><span class="p">,</span>
+        <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"JSON.stringify(a[Symbol.iterator]())"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+        <span class="s">"[\"x\",\"y\"]"</span><span class="p">,</span>
+        <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"JSON.stringify(a.toV8Value())"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="how-to-cast-java-objects-to-javascript-objects">
 <h2>How to Cast Java Objects to JavaScript Objects?<a class="headerlink" href="#how-to-cast-java-objects-to-javascript-objects" title="Permalink to this headline">¶</a></h2>
@@ -363,6 +422,10 @@
 <li><a class="reference internal" href="#">Bridge Converter</a><ul>
 <li><a class="reference internal" href="#usage">Usage</a><ul>
 <li><a class="reference internal" href="#preparation">Preparation</a></li>
+<li><a class="reference internal" href="#boolean">Boolean</a></li>
+<li><a class="reference internal" href="#int">int</a></li>
+<li><a class="reference internal" href="#int-array">int Array</a></li>
+<li><a class="reference internal" href="#string-array">String Array</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#how-to-cast-java-objects-to-javascript-objects">How to Cast Java Objects to JavaScript Objects?</a></li>
