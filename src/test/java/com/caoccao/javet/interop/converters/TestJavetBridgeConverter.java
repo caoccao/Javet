@@ -74,6 +74,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(2, (Integer) v8Runtime.getExecutor("a.length").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
+        assertArrayEquals(intArray, v8Runtime.getExecutor("a[Symbol.toPrimitive]()").executeObject());
+        assertArrayEquals(intArray, v8Runtime.getExecutor("a[Symbol.iterator]()").executeObject());
+        assertArrayEquals(intArray, v8Runtime.getExecutor("a.toV8Value()").executeObject());
         v8Runtime.getGlobalObject().delete("a");
     }
 
@@ -89,10 +92,14 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testIntegerArray() throws JavetException {
-        v8Runtime.getGlobalObject().set("a", new Integer[]{1, 2});
+        Integer[] integerArray = new Integer[]{1, 2};
+        v8Runtime.getGlobalObject().set("a", integerArray);
         assertEquals(2, (Integer) v8Runtime.getExecutor("a.length").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
+        assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(a[Symbol.toPrimitive]())").executeString());
+        assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(a[Symbol.iterator]())").executeString());
+        assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(a.toV8Value())").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 

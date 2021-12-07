@@ -709,7 +709,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
         try (V8ValueFunction v8ValueFunction = getGlobalObject().get(type.getName())) {
-            return v8ValueFunction.callAsConstructor(length);
+            return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
         }
     }
 

@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
@@ -40,11 +41,11 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
      */
     protected static final String METHOD_NAME_TO_V8_VALUE = "toV8Value";
     /**
-     * The constant PROXY_CONVERTER.
+     * The constant OBJECT_CONVERTER.
      *
      * @since 1.0.4
      */
-    protected static final JavetProxyConverter PROXY_CONVERTER = new JavetProxyConverter();
+    protected static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
     /**
      * The Target object.
      *
@@ -95,6 +96,6 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
      */
     @CheckReturnValue
     public V8Value toV8Value(V8Value... v8Values) throws JavetException {
-        return PROXY_CONVERTER.toV8Value(v8Runtime, targetObject);
+        return OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject);
     }
 }
