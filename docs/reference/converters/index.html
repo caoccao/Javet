@@ -303,8 +303,9 @@
 <div class="section" id="comparisons">
 <h2>Comparisons<a class="headerlink" href="#comparisons" title="Permalink to this headline">¶</a></h2>
 <embed/>
-<div class="table-wrapper"><table border="1" cellpadding="2" cellspacing="1" style="text-align: center;">
+<div class="table-wrapper"><table class="docutils" style="text-align: center;">
 <thead>
+<tr class="row-odd">
 <th>From</th>
 <th>To</th>
 <th>Primitive Converter</th>
@@ -312,8 +313,10 @@
 <th>Proxy Converter</th>
 <th>Bridge Converter</th>
 <th>Custom Converter</th>
+</tr>
 </thead>
-<tr>
+<tbody>
+<tr class="row-even">
 <td rowspan="2">Java Primitive</td>
 <td>V8 Native Object</td>
 <td>✔️</td>
@@ -322,7 +325,7 @@
 <td>❌️</td>
 <td>✔️</td>
 </tr>
-<tr>
+<tr class="row-odd">
 <td>V8 Proxy Object</td>
 <td>❌️</td>
 <td>❌️</td>
@@ -330,8 +333,8 @@
 <td>✔️</td>
 <td>✔️</td>
 </tr>
-<tr>
-<td rowspan="2">Java List, Set, Map</td>
+<tr class="row-even">
+<td rowspan="2">Java Array, List, Set, Map</td>
 <td>V8 Native Object</td>
 <td>❌️</td>
 <td>✔️</td>
@@ -339,7 +342,7 @@
 <td>❌️</td>
 <td>✔️</td>
 </tr>
-<tr>
+<tr class="row-odd">
 <td>V8 Proxy Object</td>
 <td>❌️</td>
 <td>❌️</td>
@@ -347,8 +350,8 @@
 <td>✔️</td>
 <td>✔️</td>
 </tr>
-<tr>
-<td rowspan="2">Java Non-primitive, Non-list, Non-set, Non-map Object</td>
+<tr class="row-even">
+<td rowspan="2">Other Java Object</td>
 <td>V8 Native Object</td>
 <td>❌️</td>
 <td>✔️</td>
@@ -356,7 +359,7 @@
 <td>❌️</td>
 <td>✔️</td>
 </tr>
-<tr>
+<tr class="row-odd">
 <td>V8 Proxy Object</td>
 <td>❌️</td>
 <td>❌️</td>
@@ -364,6 +367,7 @@
 <td>✔️</td>
 <td>✔️</td>
 </tr>
+</tbody>
 </table></div>
 </div>
 <div class="section" id="inside-converters">

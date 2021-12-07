@@ -18,67 +18,71 @@ Comparisons
 .. raw:: html
 
     <embed>
-      <table border="1" cellspacing="1" cellpadding="2" style="text-align: center;">
+      <table class="docutils" style="text-align: center;">
         <thead>
-          <th>From</th>
-          <th>To</th>
-          <th>Primitive Converter</th>
-          <th>Object Converter</th>
-          <th>Proxy Converter</th>
-          <th>Bridge Converter</th>
-          <th>Custom Converter</th>
+          <tr class="row-odd">
+            <th>From</th>
+            <th>To</th>
+            <th>Primitive Converter</th>
+            <th>Object Converter</th>
+            <th>Proxy Converter</th>
+            <th>Bridge Converter</th>
+            <th>Custom Converter</th>
+          </tr>
         </thead>
-        <tr>
-          <td rowspan="2">Java Primitive</td>
-          <td>V8 Native Object</td>
-          <td>✔️</td>
-          <td>✔️</td>
-          <td>✔️</td>
-          <td>❌️</td>
-          <td>✔️</td>
-        </tr>
-        <tr>
-          <td>V8 Proxy Object</td>
-          <td>❌️</td>
-          <td>❌️</td>
-          <td>❌️</td>
-          <td>✔️</td>
-          <td>✔️</td>
-        </tr>
-        <tr>
-          <td rowspan="2">Java List, Set, Map</td>
-          <td>V8 Native Object</td>
-          <td>❌️</td>
-          <td>✔️</td>
-          <td>✔️</td>
-          <td>❌️</td>
-          <td>✔️</td>
-        </tr>
-        <tr>
-          <td>V8 Proxy Object</td>
-          <td>❌️</td>
-          <td>❌️</td>
-          <td>❌️</td>
-          <td>✔️</td>
-          <td>✔️</td>
-        </tr>
-        <tr>
-          <td rowspan="2">Java Non-primitive, Non-list, Non-set, Non-map Object</td>
-          <td>V8 Native Object</td>
-          <td>❌️</td>
-          <td>✔️</td>
-          <td>❌️</td>
-          <td>❌️</td>
-          <td>✔️</td>
-        </tr>
-        <tr>
-          <td>V8 Proxy Object</td>
-          <td>❌️</td>
-          <td>❌️</td>
-          <td>✔️</td>
-          <td>✔️</td>
-          <td>✔️</td>
-        </tr>
+        <tbody>
+          <tr class="row-even">
+            <td rowspan="2">Java Primitive</td>
+            <td>V8 Native Object</td>
+            <td>✔️</td>
+            <td>✔️</td>
+            <td>✔️</td>
+            <td>❌️</td>
+            <td>✔️</td>
+          </tr>
+          <tr class="row-odd">
+            <td>V8 Proxy Object</td>
+            <td>❌️</td>
+            <td>❌️</td>
+            <td>❌️</td>
+            <td>✔️</td>
+            <td>✔️</td>
+          </tr>
+          <tr class="row-even">
+            <td rowspan="2">Java Array, List, Set, Map</td>
+            <td>V8 Native Object</td>
+            <td>❌️</td>
+            <td>✔️</td>
+            <td>✔️</td>
+            <td>❌️</td>
+            <td>✔️</td>
+          </tr>
+          <tr class="row-odd">
+            <td>V8 Proxy Object</td>
+            <td>❌️</td>
+            <td>❌️</td>
+            <td>❌️</td>
+            <td>✔️</td>
+            <td>✔️</td>
+          </tr>
+          <tr class="row-even">
+            <td rowspan="2">Other Java Object</td>
+            <td>V8 Native Object</td>
+            <td>❌️</td>
+            <td>✔️</td>
+            <td>❌️</td>
+            <td>❌️</td>
+            <td>✔️</td>
+          </tr>
+          <tr class="row-odd">
+            <td>V8 Proxy Object</td>
+            <td>❌️</td>
+            <td>❌️</td>
+            <td>✔️</td>
+            <td>✔️</td>
+            <td>✔️</td>
+          </tr>
+        </tbody>
       </table>
     </embed>
 
