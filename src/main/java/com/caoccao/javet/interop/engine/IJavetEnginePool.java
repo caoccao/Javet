@@ -143,21 +143,12 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     int getReleasedEngineCount();
 
     /**
-     * Gets V8 host.
-     *
-     * @return the V8 host
-     */
-    V8Host getV8Host();
-
-    /**
      * Gets V8 shared memory statistics.
      *
      * @return the V8 shared memory statistics
      * @since 1.0.5
      */
-    default V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
-        return getV8Host().getV8SharedMemoryStatistics();
-    }
+    V8SharedMemoryStatistics getV8SharedMemoryStatistics();
 
     /**
      * Is active.

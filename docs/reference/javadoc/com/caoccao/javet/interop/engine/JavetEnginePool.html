@@ -293,9 +293,9 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </td>
 </tr>
 <tr id="i8" class="altColor">
-<td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#getV8Host--">getV8Host</a></span>()</code>
-<div class="block">Gets V8 host.</div>
+<td class="colFirst"><code><a href="../../../../../com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8SharedMemoryStatistics</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html#getV8SharedMemoryStatistics--">getV8SharedMemoryStatistics</a></span>()</code>
+<div class="block">Gets V8 shared memory statistics.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
@@ -363,7 +363,7 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 <!--   -->
 </a>
 <h3>Methods inherited from interface&nbsp;com.caoccao.javet.interop.engine.<a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a></h3>
-<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageCallbackContextCount--">getAverageCallbackContextCount</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageReferenceCount--">getAverageReferenceCount</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8HeapSpaceStatistics-com.caoccao.javet.enums.V8AllocationSpace-">getAverageV8HeapSpaceStatistics</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8HeapStatistics--">getAverageV8HeapStatistics</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8ModuleCount--">getAverageV8ModuleCount</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getV8SharedMemoryStatistics--">getV8SharedMemoryStatistics</a></code></li>
+<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageCallbackContextCount--">getAverageCallbackContextCount</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageReferenceCount--">getAverageReferenceCount</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8HeapSpaceStatistics-com.caoccao.javet.enums.V8AllocationSpace-">getAverageV8HeapSpaceStatistics</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8HeapStatistics--">getAverageV8HeapStatistics</a>, <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAverageV8ModuleCount--">getAverageV8ModuleCount</a></code></li>
 </ul>
 </li>
 </ul>
@@ -722,20 +722,20 @@ implements <a href="../../../../../com/caoccao/javet/interop/engine/IJavetEngine
 </dl>
 </li>
 </ul>
-<a name="getV8Host--">
+<a name="getV8SharedMemoryStatistics--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getV8Host</h4>
-<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a>&nbsp;getV8Host()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getV8Host--">IJavetEnginePool</a></code></span></div>
-<div class="block">Gets V8 host.</div>
+<h4>getV8SharedMemoryStatistics</h4>
+<pre>public&nbsp;<a href="../../../../../com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8SharedMemoryStatistics</a>&nbsp;getV8SharedMemoryStatistics()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getV8SharedMemoryStatistics--">IJavetEnginePool</a></code></span></div>
+<div class="block">Gets V8 shared memory statistics.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getV8Host--">getV8Host</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;</code></dd>
+<dd><code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html#getV8SharedMemoryStatistics--">getV8SharedMemoryStatistics</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/caoccao/javet/interop/engine/IJavetEnginePool.html" title="interface in com.caoccao.javet.interop.engine">IJavetEnginePool</a>&lt;<a href="../../../../../com/caoccao/javet/interop/engine/JavetEnginePool.html" title="type parameter in JavetEnginePool">R</a> extends <a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&gt;</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the V8 host</dd>
+<dd>the V8 shared memory statistics</dd>
 </dl>
 </li>
 </ul>
