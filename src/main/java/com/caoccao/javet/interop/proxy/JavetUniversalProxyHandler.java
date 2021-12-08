@@ -17,8 +17,8 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.annotations.V8BindingEnabler;
-import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.annotations.*;
+import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -51,6 +51,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 1.0.4
      */
     public static final String FUNCTION_NAME_TO_V8_VALUE = "toV8Value";
+    /**
+     * The constant FUNCTION_NAME_LENGTH.
+     *
+     * @since 1.0.6
+     */
+    public static final String FUNCTION_NAME_LENGTH = "length";
     /**
      * The constant GETTER_PREFIX_ARRAY.
      *
@@ -253,39 +259,53 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     protected void addMethod(Method method, int startIndex, Map<String, List<Method>> map) {
-        String methodName = method.getName();
-        String aliasMethodName = methodName.substring(startIndex);
-        Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
-        if (matcher.find()) {
-            final int capitalizedPrefixLength = matcher.group().length();
-            if (capitalizedPrefixLength == 1) {
-                aliasMethodName = methodName.substring(startIndex, startIndex + capitalizedPrefixLength).toLowerCase(Locale.ROOT)
-                        + methodName.substring(startIndex + capitalizedPrefixLength);
-                List<Method> methods = map.get(aliasMethodName);
-                if (methods == null) {
-                    methods = new ArrayList<>();
-                    map.put(aliasMethodName, methods);
-                }
-                methods.add(method);
-            } else {
-                for (int i = 1; i < capitalizedPrefixLength; ++i) {
-                    aliasMethodName = methodName.substring(startIndex, startIndex + i).toLowerCase(Locale.ROOT)
-                            + methodName.substring(startIndex + i);
+        if (method.isAnnotationPresent(V8Function.class)) {
+            String methodName = method.getName();
+            String aliasMethodName = method.getAnnotation(V8Function.class).name();
+            if (aliasMethodName.length() > 0) {
+                methodName = aliasMethodName;
+            }
+            List<Method> methods = map.get(methodName);
+            if (methods == null) {
+                methods = new ArrayList<>();
+                map.put(methodName, methods);
+            }
+            methods.add(method);
+        } else {
+            String methodName = method.getName();
+            String aliasMethodName = methodName.substring(startIndex);
+            Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
+            if (matcher.find()) {
+                final int capitalizedPrefixLength = matcher.group().length();
+                if (capitalizedPrefixLength == 1) {
+                    aliasMethodName = methodName.substring(startIndex, startIndex + capitalizedPrefixLength).toLowerCase(Locale.ROOT)
+                            + methodName.substring(startIndex + capitalizedPrefixLength);
                     List<Method> methods = map.get(aliasMethodName);
                     if (methods == null) {
                         methods = new ArrayList<>();
                         map.put(aliasMethodName, methods);
                     }
                     methods.add(method);
+                } else {
+                    for (int i = 1; i < capitalizedPrefixLength; ++i) {
+                        aliasMethodName = methodName.substring(startIndex, startIndex + i).toLowerCase(Locale.ROOT)
+                                + methodName.substring(startIndex + i);
+                        List<Method> methods = map.get(aliasMethodName);
+                        if (methods == null) {
+                            methods = new ArrayList<>();
+                            map.put(aliasMethodName, methods);
+                        }
+                        methods.add(method);
+                    }
                 }
+            } else {
+                List<Method> methods = map.get(aliasMethodName);
+                if (methods == null) {
+                    methods = new ArrayList<>();
+                    map.put(aliasMethodName, methods);
+                }
+                methods.add(method);
             }
-        } else {
-            List<Method> methods = map.get(aliasMethodName);
-            if (methods == null) {
-                methods = new ArrayList<>();
-                map.put(aliasMethodName, methods);
-            }
-            methods.add(method);
         }
     }
 
@@ -314,6 +334,26 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @V8Function
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
+        if (property instanceof V8ValueString) {
+            String propertyString = ((V8ValueString) property).toPrimitive();
+            if (JavetStringUtils.isDigital(propertyString)) {
+                final int index = Integer.parseInt(propertyString);
+                if (index >= 0) {
+                    if (targetClass.isArray()) {
+                        if (index < Array.getLength(targetObject)) {
+                            return v8Runtime.toV8Value(Array.get(targetObject, index));
+                        }
+                    } else if (List.class.isAssignableFrom(targetClass)) {
+                        List<?> list = (List<?>) targetObject;
+                        if (index < list.size()) {
+                            return v8Runtime.toV8Value(list.get(index));
+                        }
+                    }
+                }
+            } else if (targetClass.isArray() && FUNCTION_NAME_LENGTH.equals(propertyString)) {
+                return v8Runtime.toV8Value(Array.getLength(targetObject));
+            }
+        }
         if (!fieldMap.isEmpty() && property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
             Field field = fieldMap.get(propertyName);
@@ -330,6 +370,33 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     throw new JavetException(JavetError.CallbackUnknownFailure,
                             SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
                 }
+            }
+        }
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).toPrimitive();
+            List<Method> methods = methodsMap.get(propertyName);
+            if (methods != null && !methods.isEmpty()) {
+                JavetUniversalInterceptor javetUniversalInterceptor =
+                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
+                return v8Runtime.createV8ValueFunction(javetUniversalInterceptor.getCallbackContext());
+            }
+            methods = gettersMap.get(propertyName);
+            if (methods != null && !methods.isEmpty()) {
+                JavetUniversalInterceptor javetUniversalInterceptor =
+                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
+                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
+            }
+            if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
+                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            }
+        } else if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
+                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
+                    && (targetObject instanceof Iterable || targetClass.isArray())) {
+                return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             }
         }
         if (!genericGetters.isEmpty()) {
@@ -363,33 +430,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             } catch (Throwable t) {
                 throw new JavetException(JavetError.CallbackUnknownFailure,
                         SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
-            }
-        }
-        if (property instanceof V8ValueString) {
-            String propertyName = ((V8ValueString) property).toPrimitive();
-            List<Method> methods = methodsMap.get(propertyName);
-            if (methods != null && !methods.isEmpty()) {
-                JavetUniversalInterceptor javetUniversalInterceptor =
-                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
-                return v8Runtime.createV8ValueFunction(javetUniversalInterceptor.getCallbackContext());
-            }
-            methods = gettersMap.get(propertyName);
-            if (methods != null && !methods.isEmpty()) {
-                JavetUniversalInterceptor javetUniversalInterceptor =
-                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
-                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
-            }
-            if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
-                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
-            }
-        } else if (property instanceof V8ValueSymbol) {
-            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
-            String description = propertySymbol.getDescription();
-            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
-                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
-            } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
-                    && targetObject instanceof Iterable) {
-                return new JavetProxySymbolIterableConverter<>(v8Runtime, (Iterable) targetObject).getV8ValueFunction();
             }
         }
         return v8Runtime.createV8ValueUndefined();
@@ -440,6 +480,18 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 isFound = ((Map<?, ?>) targetObject).containsKey(v8Runtime.toObject(property));
             } else if (isTargetTypeSet) {
                 isFound = ((Set<?>) targetObject).contains(v8Runtime.toObject(property));
+            } else if (property instanceof V8ValueString) {
+                String indexString = ((V8ValueString) property).toPrimitive();
+                if (JavetStringUtils.isDigital(indexString)) {
+                    final int index = Integer.parseInt(indexString);
+                    if (index >= 0) {
+                        if (targetClass.isArray()) {
+                            isFound = index < Array.getLength(targetObject);
+                        } else if (List.class.isAssignableFrom(targetClass)) {
+                            isFound = index < ((List<?>) targetObject).size();
+                        }
+                    }
+                }
             }
         }
         if (!isFound && (property instanceof V8ValueString)) {
@@ -529,6 +581,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.6
      */
     protected void initializeFieldsAndMethods(Class<?> currentClass, boolean staticMode) {
+        V8ConversionMode conversionMode = targetClass.isAnnotationPresent(V8Convert.class)
+                ? targetClass.getAnnotation(V8Convert.class).mode()
+                : V8ConversionMode.Transparent;
         if (!classMode) {
             if (isTargetTypeMap) {
                 uniqueKeySet.addAll(((Map<String, ?>) targetObject).keySet());
@@ -538,7 +593,11 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
         do {
             if (classMode) {
-                constructors.addAll(Arrays.asList(currentClass.getConstructors()));
+                for (Constructor<?> constructor : currentClass.getConstructors()) {
+                    if (isAllowed(conversionMode, constructor)) {
+                        constructors.add(constructor);
+                    }
+                }
             }
             // All public fields are in the scope.
             for (Field field : currentClass.getFields()) {
@@ -549,7 +608,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 if (!(Modifier.isPublic(fieldModifiers))) {
                     continue;
                 }
+                if (!isAllowed(conversionMode, field)) {
+                    continue;
+                }
                 String fieldName = field.getName();
+                if (field.isAnnotationPresent(V8Property.class)) {
+                    String aliasFieldName = field.getAnnotation(V8Property.class).name();
+                    if (aliasFieldName.length() > 0) {
+                        fieldName = aliasFieldName;
+                    }
+                }
                 if (fieldMap.containsKey(fieldName)) {
                     continue;
                 }
@@ -566,6 +634,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     continue;
                 }
                 if (!(Modifier.isPublic(methodModifiers))) {
+                    continue;
+                }
+                if (!isAllowed(conversionMode, method)) {
                     continue;
                 }
                 JavetReflectionUtils.safeSetAccessible(method);
@@ -608,9 +679,27 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
+     * Is allowed.
+     *
+     * @param conversionMode   the conversion mode
+     * @param accessibleObject the accessible object
+     * @return true : allowed, false : disallowed
+     */
+    protected boolean isAllowed(V8ConversionMode conversionMode, AccessibleObject accessibleObject) {
+        switch (conversionMode) {
+            case AllowOnly:
+                return accessibleObject.isAnnotationPresent(V8Allow.class);
+            case BlockOnly:
+                return !accessibleObject.isAnnotationPresent(V8Block.class);
+            default:
+                return true;
+        }
+    }
+
+    /**
      * Is class mode.
      *
-     * @return the boolean
+     * @return true : class mode, false : not class mode
      * @since 0.9.9
      */
     public boolean isClassMode() {
@@ -618,13 +707,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is generic getter boolean.
+     * Is generic getter.
      *
      * @param method the method
-     * @return the boolean
+     * @return true : yes, false : no
      * @since 0.9.6
      */
     protected boolean isGenericGetter(Method method) {
+        if (method.isAnnotationPresent(V8Getter.class)) {
+            return true;
+        }
         String methodName = method.getName();
         for (String prefix : GETTER_PREFIX_ARRAY) {
             if (methodName.equals(prefix) && method.getParameterCount() == 1 && !method.isVarArgs()) {
@@ -635,13 +727,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is generic setter boolean.
+     * Is generic setter.
      *
      * @param method the method
-     * @return the boolean
+     * @return true : yes, false : no
      * @since 0.9.6
      */
     protected boolean isGenericSetter(Method method) {
+        if (method.isAnnotationPresent(V8Setter.class)) {
+            return true;
+        }
         String methodName = method.getName();
         for (String prefix : SETTER_PREFIX_ARRAY) {
             if (methodName.equals(prefix) && method.getParameterCount() == 2 && !method.isVarArgs()) {
@@ -674,6 +769,14 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 keys = ((Map<?, ?>) targetObject).keySet().toArray();
             } else if (isTargetTypeSet) {
                 keys = ((Set<?>) targetObject).toArray();
+            } else if (targetClass.isArray() || Collection.class.isAssignableFrom(targetClass)) {
+                final int length = targetClass.isArray()
+                        ? Array.getLength(targetObject)
+                        : ((List<?>) targetObject).size();
+                keys = new Object[length];
+                for (int i = 0; i < length; ++i) {
+                    keys[i] = i;
+                }
             }
             if (keys != null && keys.length > 0) {
                 try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
@@ -699,6 +802,26 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @Override
     public V8ValueBoolean set(V8Value target, V8Value propertyKey, V8Value propertyValue, V8Value receiver) throws JavetException {
         boolean isSet = false;
+        if (propertyKey instanceof V8ValueString) {
+            String indexString = ((V8ValueString) propertyKey).toPrimitive();
+            if (JavetStringUtils.isDigital(indexString)) {
+                final int index = Integer.parseInt(indexString);
+                if (index >= 0) {
+                    if (targetClass.isArray()) {
+                        if (index < Array.getLength(targetObject)) {
+                            Array.set(targetObject, index, v8Runtime.toObject(propertyValue));
+                            isSet = true;
+                        }
+                    } else if (List.class.isAssignableFrom(targetClass)) {
+                        List<?> list = (List<?>) targetObject;
+                        if (index < list.size()) {
+                            list.set(index, v8Runtime.toObject(propertyValue));
+                            isSet = true;
+                        }
+                    }
+                }
+            }
+        }
         if (!fieldMap.isEmpty() && propertyKey instanceof V8ValueString) {
             String propertyName = ((V8ValueString) propertyKey).toPrimitive();
             Field field = fieldMap.get(propertyName);

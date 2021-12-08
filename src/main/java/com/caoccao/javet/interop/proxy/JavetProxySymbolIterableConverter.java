@@ -24,7 +24,7 @@ import com.caoccao.javet.interop.V8Runtime;
  * @param <T> the type parameter
  * @since 1.0.4
  */
-public class JavetProxySymbolIterableConverter<T extends Iterable> extends BaseJavetProxySymbolConverter<T> {
+public class JavetProxySymbolIterableConverter<T> extends BaseJavetProxySymbolConverter<T> {
 
     /**
      * Instantiates a new Javet proxy symbol iterable converter.

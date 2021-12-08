@@ -27,7 +27,7 @@ import java.lang.annotation.*;
  * @since 0.9.0
  */
 @Documented
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface V8Property {
     /**

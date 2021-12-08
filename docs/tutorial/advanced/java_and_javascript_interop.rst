@@ -2,7 +2,17 @@
 Java and JavaScript Interop
 ===========================
 
-Javet allows injecting arbitrary Java objects into V8 which enables the complete interop between Java and JavaScript. To enable this feature, application just needs to call ``v8Runtime.setConverter(new JavetProxyConverter());``. Here are 3 examples.
+Javet allows injecting arbitrary Java objects into V8 which enables the complete interop between Java and JavaScript. To enable this feature, application just needs to change the default converter to ``JavetProxyConverter``. Here are a few examples.
+
+Preparation
+===========
+
+.. code-block:: java
+
+    // Step 1: Create an instance of JavetProxyConverter.
+    JavetProxyConverter javetProxyConverter = new JavetProxyConverter();
+    // Step 2: Set the V8Runtime converter to JavetProxyConverter.
+    v8Runtime.setConverter(javetProxyConverter);
 
 Inject a Static Class
 =====================

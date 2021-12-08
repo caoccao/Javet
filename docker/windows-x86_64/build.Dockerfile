@@ -33,9 +33,9 @@ RUN build-windows.cmd -DNODE_DIR="C:\node"
 # Build Jar
 WORKDIR /Javet
 RUN touch src/main/resources/libjavet-v8*
-RUN gradlew build test --rerun-tasks
+RUN gradlew build test --rerun-tasks --debug
 RUN touch src/main/resources/libjavet-node*
-RUN gradlew test --rerun-tasks
+RUN gradlew test --rerun-tasks --debug
 
 VOLUME C:\\output
 

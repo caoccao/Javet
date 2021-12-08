@@ -21,11 +21,9 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
-import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapSpaceStatistics;
-import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapStatistics;
-import com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8SharedMemoryStatistics;
+import com.caoccao.javet.interop.engine.observers.*;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
@@ -46,6 +44,32 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     int getActiveEngineCount();
 
     /**
+     * Gets average callback context count.
+     *
+     * @return the average callback context count
+     * @since 1.0.6
+     */
+    default int getAverageCallbackContextCount() {
+        V8RuntimeObserverAverageCallbackContextCount observer = new V8RuntimeObserverAverageCallbackContextCount(
+                getConfig().getPoolMaxSize());
+        observe(observer);
+        return observer.getResult();
+    }
+
+    /**
+     * Gets average reference count.
+     *
+     * @return the average reference count
+     * @since 1.0.6
+     */
+    default int getAverageReferenceCount() {
+        V8RuntimeObserverAverageReferenceCount observer = new V8RuntimeObserverAverageReferenceCount(
+                getConfig().getPoolMaxSize());
+        observe(observer);
+        return observer.getResult();
+    }
+
+    /**
      * Gets average V8 heap space statistics.
      *
      * @param v8AllocationSpace the V8 allocation space
@@ -53,8 +77,8 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 1.0.5
      */
     default V8HeapSpaceStatistics getAverageV8HeapSpaceStatistics(final V8AllocationSpace v8AllocationSpace) {
-        V8RuntimeObserverAverageV8HeapSpaceStatistics observer =
-                new V8RuntimeObserverAverageV8HeapSpaceStatistics(v8AllocationSpace);
+        V8RuntimeObserverAverageV8HeapSpaceStatistics observer = new V8RuntimeObserverAverageV8HeapSpaceStatistics(
+                v8AllocationSpace, getConfig().getPoolMaxSize());
         observe(observer);
         return observer.getResult();
     }
@@ -66,20 +90,20 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 1.0.5
      */
     default V8HeapStatistics getAverageV8HeapStatistics() {
-        V8RuntimeObserverAverageV8HeapStatistics observer = new V8RuntimeObserverAverageV8HeapStatistics();
+        V8RuntimeObserverAverageV8HeapStatistics observer = new V8RuntimeObserverAverageV8HeapStatistics(
+                getConfig().getPoolMaxSize());
         observe(observer);
         return observer.getResult();
     }
 
     /**
-     * Gets average V8 shared memory statistics.
+     * Gets average V8 module count.
      *
-     * @return the average V8 shared memory statistics
-     * @since 1.0.5
+     * @return the average V8 module count
      */
-    default V8SharedMemoryStatistics getAverageV8SharedMemoryStatistics() {
-        V8RuntimeObserverAverageV8SharedMemoryStatistics observer =
-                new V8RuntimeObserverAverageV8SharedMemoryStatistics();
+    default int getAverageV8ModuleCount() {
+        V8RuntimeObserverAverageV8ModuleCount observer = new V8RuntimeObserverAverageV8ModuleCount(
+                getConfig().getPoolMaxSize());
         observe(observer);
         return observer.getResult();
     }
@@ -117,6 +141,14 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
      * @since 1.0.5
      */
     int getReleasedEngineCount();
+
+    /**
+     * Gets V8 shared memory statistics.
+     *
+     * @return the V8 shared memory statistics
+     * @since 1.0.5
+     */
+    V8SharedMemoryStatistics getV8SharedMemoryStatistics();
 
     /**
      * Is active.

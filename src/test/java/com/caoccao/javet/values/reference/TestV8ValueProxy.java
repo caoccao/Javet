@@ -240,8 +240,12 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
             v8Runtime.getExecutor("y['name'] = 'abc';").executeVoid();
             assertNull(handler.getTargetObject().getName(), "Generic getter should take higher priority.");
             assertEquals("abc", handler.getTargetObject().get("name"), "Getter should work.");
-            assertEquals("abc", v8Runtime.getExecutor("y['name']").executeString(),
+            assertEquals("abc", v8Runtime.getExecutor("y.get('name')").executeString(),
                     "Getter should work.");
+            assertNull(v8Runtime.getExecutor("y['name']").executeString(),
+                    "Getter should not work.");
+            assertEquals(2, v8Runtime.getExecutor("y.add(1, 1)").executeInteger(),
+                    "add() should work.");
             assertEquals(
                     "[\"STATIC_READONLY_VALUE\",\"STATIC_WRITABLE_VALUE\",\"class\"," +
                             "\"instanceReadonlyValue\",\"instanceWritableValue\",\"intValue\"," +

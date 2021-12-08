@@ -2,12 +2,26 @@
 Release Notes 1.0.x
 ===================
 
-1.0.5
-------------
+1.0.6 Mac OS (arm64)
+--------------------
+
+* Supported Mac OS (arm64)
+* Adjusted the priority of getter detection in ``JavetProxyConverter``
+* Fixed a bug in custom lib loading
+* Added capacity to some V8 runtime observers for performance improvement
+* Added ``V8RuntimeObserverAverageCallbackContextCount``, ``V8RuntimeObserverAverageReferenceCount`` and ``V8RuntimeObserverAverageV8ModuleCount``
+* Refactored the doc for object converters
+* Added ``@V8Convert``, ``@V8Property``, ``@V8Function``, ``@V8Getter``, ``@V8Setter``, ``@V8Allow`` and ``@V8Block`` to ``JavetProxyConverter``
+* Added ``isSuppressingError()`` to ``IJavetLibLoadingListener``
+* Added ``getV8SharedMemoryStatistics()`` to ``V8Host``
+
+1.0.5 Javet Core
+----------------
 
 * Fixed crash issue for Android
 * Upgraded Javet engine pool to expose more statistics
 * Upgraded Javet engine pool scheduling algorithm
+* Started to release javet-core-x.x.x without JNI libraries
 
 1.0.4 V8 9.6
 ------------

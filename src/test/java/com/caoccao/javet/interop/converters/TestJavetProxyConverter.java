@@ -18,7 +18,9 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.JavetErrorType;
+import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -93,6 +96,68 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void beforeEach() throws JavetException {
         super.beforeEach();
         v8Runtime.setConverter(javetProxyConverter);
+    }
+
+    @Test
+    public void testAnnotationInAllowOnlyMode() throws JavetException {
+        AllowOnlyClass allowOnlyClass = new AllowOnlyClass();
+        v8Runtime.getGlobalObject().set("x", allowOnlyClass);
+        assertEquals(allowOnlyClass.xType, v8Runtime.getExecutor("x['type']").executeString());
+        assertEquals(allowOnlyClass.xType, v8Runtime.getExecutor("x.type").executeString());
+        assertTrue(v8Runtime.getExecutor("x.xType").execute().isUndefined());
+        assertTrue(v8Runtime.getExecutor("x.disallowedType").execute().isUndefined());
+        assertEquals(allowOnlyClass.getName(), v8Runtime.getExecutor("x.name()").executeString());
+        assertThrows(
+                JavetExecutionException.class,
+                () -> v8Runtime.getExecutor("x.getName()").executeVoid());
+        assertThrows(
+                JavetExecutionException.class,
+                () -> v8Runtime.getExecutor("x.getDisallowedName()").executeVoid());
+        assertTrue(v8Runtime.getExecutor("x['abc']").execute().isUndefined());
+        v8Runtime.getExecutor("x['abc'] = 'def';").executeVoid();
+        assertEquals("def", v8Runtime.getExecutor("x['abc']").executeString());
+        assertEquals("def", allowOnlyClass.xGetter("abc"));
+        v8Runtime.getGlobalObject().delete("x");
+    }
+
+    @Test
+    public void testAnnotationInBlockOnlyMode() throws JavetException {
+        BlockOnlyClass blockOnlyClass = new BlockOnlyClass();
+        v8Runtime.getGlobalObject().set("x", blockOnlyClass);
+        assertEquals(blockOnlyClass.xType, v8Runtime.getExecutor("x['type']").executeString());
+        assertEquals(blockOnlyClass.xType, v8Runtime.getExecutor("x.type").executeString());
+        assertTrue(v8Runtime.getExecutor("x.xType").execute().isUndefined());
+        assertTrue(v8Runtime.getExecutor("x.disallowedType").execute().isUndefined());
+        assertEquals(blockOnlyClass.getName(), v8Runtime.getExecutor("x.name()").executeString());
+        assertThrows(
+                JavetExecutionException.class,
+                () -> v8Runtime.getExecutor("x.getName()").executeVoid());
+        assertThrows(
+                JavetExecutionException.class,
+                () -> v8Runtime.getExecutor("x.getDisallowedName()").executeVoid());
+        assertTrue(v8Runtime.getExecutor("x['abc']").execute().isUndefined());
+        v8Runtime.getExecutor("x['abc'] = 'def';").executeVoid();
+        assertEquals("def", v8Runtime.getExecutor("x['abc']").executeString());
+        assertEquals("def", blockOnlyClass.xGetter("abc"));
+        v8Runtime.getGlobalObject().delete("x");
+    }
+
+    @Test
+    public void testAnnotationInTransparentMode() throws JavetException {
+        TransparentClass transparentClass = new TransparentClass();
+        v8Runtime.getGlobalObject().set("x", transparentClass);
+        assertEquals(transparentClass.xType, v8Runtime.getExecutor("x['type']").executeString());
+        assertEquals(transparentClass.xType, v8Runtime.getExecutor("x.type").executeString());
+        assertTrue(v8Runtime.getExecutor("x.xType").execute().isUndefined());
+        assertEquals(transparentClass.getName(), v8Runtime.getExecutor("x.name()").executeString());
+        assertThrows(
+                JavetExecutionException.class,
+                () -> v8Runtime.getExecutor("x.getName()").executeVoid());
+        assertTrue(v8Runtime.getExecutor("x['abc']").execute().isUndefined());
+        v8Runtime.getExecutor("x['abc'] = 'def';").executeVoid();
+        assertEquals("def", v8Runtime.getExecutor("x['abc']").executeString());
+        assertEquals("def", transparentClass.xGetter("abc"));
+        v8Runtime.getGlobalObject().delete("x");
     }
 
     @Test
@@ -223,6 +288,36 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGetter() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            private String name;
+
+            public String get(String greeting) {
+                return MessageFormat.format("get(): {0} {1}", greeting, name);
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String test(String greeting) {
+                return MessageFormat.format("test(): {0} {1}", greeting, name);
+            }
+        };
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        v8Runtime.getExecutor("a.setName('a');").executeVoid();
+        assertEquals("a", v8Runtime.getExecutor("a.getName();").executeString());
+        assertEquals("get(): hello a", v8Runtime.getExecutor("a['hello'];").executeString());
+        assertEquals("get(): hello a", v8Runtime.getExecutor("a.get('hello');").executeString());
+        assertEquals("test(): hello a", v8Runtime.getExecutor("a.test('hello');").executeString());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
     public void testInteger() throws JavetException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeString = String.join("\n",
@@ -348,6 +443,85 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         List<String> split(String separator, String string);
     }
 
+    @V8Convert(mode = V8ConversionMode.AllowOnly)
+    public static class AllowOnlyClass {
+        @V8Allow
+        @V8Property(name = "type")
+        public String xType;
+
+        @V8Property(name = "disallowedType")
+        public String yType;
+
+        private Map<String, String> map;
+
+        @V8Allow
+        public AllowOnlyClass() {
+            map = new HashMap<>();
+            this.xType = "abc";
+        }
+
+        @V8Function(name = "disallowedName")
+        public String getDisallowedName() {
+            return getClass().getSimpleName();
+        }
+
+        @V8Allow
+        @V8Function(name = "name")
+        public String getName() {
+            return getClass().getSimpleName();
+        }
+
+        @V8Allow
+        @V8Getter
+        public String xGetter(String key) {
+            return map.get(key);
+        }
+
+        @V8Allow
+        @V8Setter
+        public boolean xSetter(String key, String value) {
+            return map.put(key, value) != null;
+        }
+    }
+
+    @V8Convert(mode = V8ConversionMode.BlockOnly)
+    public static class BlockOnlyClass {
+        @V8Property(name = "type")
+        public String xType;
+
+        @V8Block
+        @V8Property(name = "disallowedType")
+        public String yType;
+
+        private Map<String, String> map;
+
+        public BlockOnlyClass() {
+            map = new HashMap<>();
+            this.xType = "abc";
+        }
+
+        @V8Block
+        @V8Function(name = "disallowedName")
+        public String getDisallowedName() {
+            return getClass().getSimpleName();
+        }
+
+        @V8Function(name = "name")
+        public String getName() {
+            return getClass().getSimpleName();
+        }
+
+        @V8Getter
+        public String xGetter(String key) {
+            return map.get(key);
+        }
+
+        @V8Setter
+        public boolean xSetter(String key, String value) {
+            return map.put(key, value) != null;
+        }
+    }
+
     static class StringJoiner implements AutoCloseable {
         private IStringJoiner joiner;
 
@@ -393,6 +567,36 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
 
         public void setUtils(IStringUtils utils) {
             this.utils = utils;
+        }
+    }
+
+    @V8Convert(mode = V8ConversionMode.Transparent)
+    public static class TransparentClass {
+        @V8Property(name = "type")
+        public String xType;
+
+        private Map<String, String> map;
+
+        public TransparentClass() {
+            map = new HashMap<>();
+            this.xType = "abc";
+        }
+
+        @V8Function(name = "name")
+        @V8Allow
+        @V8Block
+        public String getName() {
+            return getClass().getSimpleName();
+        }
+
+        @V8Getter
+        public String xGetter(String key) {
+            return map.get(key);
+        }
+
+        @V8Setter
+        public boolean xSetter(String key, String value) {
+            return map.put(key, value) != null;
         }
     }
 }

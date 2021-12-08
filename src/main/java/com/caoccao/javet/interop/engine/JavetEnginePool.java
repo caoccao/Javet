@@ -17,11 +17,13 @@
 
 package com.caoccao.javet.interop.engine;
 
+import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
+import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
@@ -152,14 +154,14 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      * @since 0.7.0
      */
     protected JavetEngine<R> createEngine() throws JavetException {
-        V8Host v8Host = V8Host.getInstance(config.getJSRuntimeType());
-        RuntimeOptions<?> runtimeOptions = config.getJSRuntimeType().getRuntimeOptions();
+        JSRuntimeType jsRuntimeType = config.getJSRuntimeType();
+        RuntimeOptions<?> runtimeOptions = jsRuntimeType.getRuntimeOptions();
         if (runtimeOptions instanceof V8RuntimeOptions) {
             V8RuntimeOptions v8RuntimeOptions = (V8RuntimeOptions) runtimeOptions;
             v8RuntimeOptions.setGlobalName(config.getGlobalName());
         }
         @SuppressWarnings("ConstantConditions")
-        R v8Runtime = v8Host.createV8Runtime(true, runtimeOptions);
+        R v8Runtime = V8Host.getInstance(jsRuntimeType).createV8Runtime(true, runtimeOptions);
         v8Runtime.allowEval(config.isAllowEval());
         v8Runtime.setLogger(config.getJavetLogger());
         return new JavetEngine<>(this, v8Runtime);
@@ -249,6 +251,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     }
 
     @Override
+    public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
+        return V8Host.getInstance(config.getJSRuntimeType()).getV8SharedMemoryStatistics();
+    }
+
+    @Override
     public boolean isActive() {
         return active;
     }
@@ -273,15 +280,17 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                     if (engine != null) {
                         boolean isContinuable = true;
                         for (IV8RuntimeObserver<?> observer : observers) {
-                            try {
-                                isContinuable = observer.observe(engine.v8Runtime);
-                            } catch (Throwable t) {
-                                logger.error(t.getMessage(), t);
-                            } finally {
-                                ++processedCount;
-                            }
-                            if (!isContinuable) {
-                                break;
+                            if (!engine.v8Runtime.isClosed()) {
+                                try {
+                                    isContinuable = observer.observe(engine.v8Runtime);
+                                } catch (Throwable t) {
+                                    logger.error(t.getMessage(), t);
+                                } finally {
+                                    ++processedCount;
+                                }
+                                if (!isContinuable) {
+                                    break;
+                                }
                             }
                         }
                         if (!isContinuable) {

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Know the Lock" href="lock.html" /><link rel="prev" title="Resource Management" href="index.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Load and Unload - Javet 1.0.5 documentation</title>
+        <title>Load and Unload - Javet 1.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 1.0.5 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 1.0.6 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.5 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.6 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -173,8 +173,8 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/interact_with_node_js.html">Interact with Node.js</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/object_converter.html">Object Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/migration_guides/index.html">Migration Guides</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -191,7 +191,15 @@
 <li class="toctree-l3"><a class="reference internal" href="../v8_values/v8_promise.html">V8 Promise</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Resource Management</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../converters/index.html">Converters</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../converters/primitive_converter.html">Primitive Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../converters/object_converter.html">Object Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../converters/proxy_converter.html">Proxy Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../converters/bridge_converter.html">Bridge Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../converters/custom_converter.html">Custom Converter</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Resource Management</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Load and Unload</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lock.html">Know the Lock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
@@ -199,42 +207,42 @@
 <li class="toctree-l3"><a class="reference internal" href="performance.html">Javet Performance</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/error_codes.html">Error Codes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/logging.html">Logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/termination.html">Termination</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tips/index.html">Tips</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tips/index.html">Tips</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tips/best_practices.html">Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../todo_list.html">TODO List</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_1_0.html">Release Notes 1.0.x</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/background/history_with_j2v8.html">History with J2V8</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/background/what_is_the_motivation.html">What is the Motivation?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_the_examples.html">Where are the Examples?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/why_is_the_inspector_disabled_in_node_js_mode.html">Why is the Inspector Disabled in Node.js Mode?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
@@ -242,9 +250,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../development/tools.html">Development Tools</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_with_docker.html">Build Javet with Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
@@ -370,9 +378,29 @@
 <p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p>
 </div>
 </div>
+<div class="section" id="can-already-loaded-in-another-classloader-be-suppressed">
+<h2>Can <em>already loaded in another classloader</em> be Suppressed?<a class="headerlink" href="#can-already-loaded-in-another-classloader-be-suppressed" title="Permalink to this headline">¶</a></h2>
+<p>In some cases, the applications are hosted by some other classloaders (e.g. Mavin plug-in host, Osgi, etc.) that actively load and unload the applications on demand. That causes the Javet native library to be loaded repeatedly. However, JVM only allows one memory copy of a particular JNI library regardless of at which classloader it stays.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">UnsatisfiedLinkError</span><span class="p">:</span> <span class="n">Native</span> <span class="n">Library</span> <span class="o">***</span><span class="n">libjavet</span><span class="o">***</span> <span class="n">already</span> <span class="n">loaded</span> <span class="ow">in</span> <span class="n">another</span> <span class="n">classloader</span>
+</pre></div>
+</div>
+<p>By default, Javet treats that as an error and prevent all API from working. But, applications may want to suppress this error because the Javet native library has already been loaded. Yes, Javet allows that. Here is a sample.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetLibLoadingListener</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isSuppressingError</span><span class="p">(</span><span class="n">JSRuntimeType</span> <span class="n">jsRuntimeType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><code class="docutils literal notranslate"><span class="pre">JavetLibLoader.setLibLoadingListener()</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> is called, otherwise it won't take effect.</p>
+</div>
+</div>
 <div class="section" id="can-javet-lib-loading-listener-take-environment-variables">
 <h2>Can Javet Lib Loading Listener Take Environment Variables?<a class="headerlink" href="#can-javet-lib-loading-listener-take-environment-variables" title="Permalink to this headline">¶</a></h2>
-<p>Yes. In some cases, it is inconvenient to inject a listener. No worry, <code class="docutils literal notranslate"><span class="pre">JavetLibLoadingListener</span></code> can take <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.path</span></code> and <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.type</span></code> so that applications can inject custom lib loading mechanism without implementing a new listener.</p>
+<p>Yes. In some cases, it is inconvenient to inject a listener. No worry, <code class="docutils literal notranslate"><span class="pre">JavetLibLoadingListener</span></code> can take <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.path</span></code>,  <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.type</span></code> and <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.suppress.error</span></code> so that applications can inject custom lib loading mechanism without implementing a new listener.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the Javet library from /abc with auto-deployment</span>
 java ... -Djavet.lib.loading.path<span class="o">=</span>/abc
 
@@ -381,8 +409,19 @@ java ... -Djavet.lib.loading.path<span class="o">=</span>/abc -Djavet.lib.loadin
 
 <span class="c1"># Load the Javet library from system library path</span>
 java ... -Djavet.lib.loading.type<span class="o">=</span>system
+
+<span class="c1"># Suppress the error in loading the library</span>
+java ... -Djavet.lib.loading.suppress.error<span class="o">=</span><span class="nb">true</span>
 </pre></div>
 </div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>This doesn't apply to Android.</p>
+</div>
+</div>
+<div class="section" id="can-javet-libraries-be-removed-from-the-jar-file">
+<h2>Can Javet Libraries be Removed from the Jar File?<a class="headerlink" href="#can-javet-libraries-be-removed-from-the-jar-file" title="Permalink to this headline">¶</a></h2>
+<p>Yes, <code class="docutils literal notranslate"><span class="pre">javet-core</span></code> is available without the libraries. Just update <code class="docutils literal notranslate"><span class="pre">javet</span></code> or <code class="docutils literal notranslate"><span class="pre">javet-macos</span></code> to <code class="docutils literal notranslate"><span class="pre">javet-core</span></code> in the <a class="reference internal" href="../../tutorial/basic/installation.html"><span class="doc">Installation</span></a>.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>This doesn't apply to Android.</p>
@@ -443,7 +482,9 @@ java ... -Djavet.lib.loading.type<span class="o">=</span>system
 </li>
 <li><a class="reference internal" href="#can-javet-native-library-be-deployed-to-a-custom-location">Can Javet Native Library be Deployed to a Custom Location?</a></li>
 <li><a class="reference internal" href="#can-javet-native-library-deployment-be-skipped">Can Javet Native Library Deployment be Skipped?</a></li>
+<li><a class="reference internal" href="#can-already-loaded-in-another-classloader-be-suppressed">Can <em>already loaded in another classloader</em> be Suppressed?</a></li>
 <li><a class="reference internal" href="#can-javet-lib-loading-listener-take-environment-variables">Can Javet Lib Loading Listener Take Environment Variables?</a></li>
+<li><a class="reference internal" href="#can-javet-libraries-be-removed-from-the-jar-file">Can Javet Libraries be Removed from the Jar File?</a></li>
 </ul>
 </li>
 </ul>

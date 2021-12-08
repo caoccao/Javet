@@ -1,0 +1,612 @@
+<!doctype html>
+<html class="no-js" lang="en, zh-CN">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Proxy Converter" href="proxy_converter.html" /><link rel="prev" title="Primitive Converter" href="primitive_converter.html" />
+
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
+        <title>Object Converter - Javet 1.0.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">Javet 1.0.6 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Javet 1.0.6 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/hello_javet.html">Hello Javet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/javet_shell.html">Javet Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/interception.html">Interception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/engine_pool.html">Javet Engine Pool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/node_js_mode_and_v8_mode.html">Node.js Mode and V8 Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/spring_integration.html">Spring Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/polyfill.html">Polyfill</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/interact_with_node_js.html">Interact with Node.js</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/object_converter.html">Object Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/migration_guides/index.html">Migration Guides</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/migration_guides/migrate_from_j2v8.html">Migrate from J2V8</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../javadoc/index.html">API Reference</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../v8_values/index.html">V8 Values</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../v8_values/v8_collection.html">V8 Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../v8_values/v8_function.html">V8 Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../v8_values/v8_promise.html">V8 Promise</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Converters</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="primitive_converter.html">Primitive Converter</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Object Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="proxy_converter.html">Proxy Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridge_converter.html">Bridge Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_converter.html">Custom Converter</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resource_management/index.html">Resource Management</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../resource_management/load_and_unload.html">Load and Unload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../resource_management/lock.html">Know the Lock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../resource_management/memory_management.html">Memory Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../resource_management/modularization.html">Modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../resource_management/performance.html">Javet Performance</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/error_codes.html">Error Codes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/logging.html">Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/termination.html">Termination</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tips/index.html">Tips</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tips/best_practices.html">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../todo_list.html">TODO List</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_1_0.html">Release Notes 1.0.x</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/background/history_with_j2v8.html">History with J2V8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/background/what_is_the_motivation.html">What is the Motivation?</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_the_examples.html">Where are the Examples?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/development/why_is_the_inspector_disabled_in_node_js_mode.html">Why is the Inspector Disabled in Node.js Mode?</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../development/tools.html">Development Tools</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_with_docker.html">Build Javet with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../development/test.html">Test Javet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development/design.html">Javet Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development/debug_with_chrome_developer_tools.html">Debug with Chrome Developer Tools</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="section" id="object-converter">
+<h1>Object Converter<a class="headerlink" href="#object-converter" title="Permalink to this headline">¶</a></h1>
+<p>Javet has a built-in <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> with the following features.</p>
+<ul class="simple">
+<li><p>It covers primitive types + Set + Map + Array.</p></li>
+<li><p>It is completely open to subclass.</p></li>
+<li><p>It minimizes the performance overhead.</p></li>
+<li><p>It allows registering custom objects.</p></li>
+</ul>
+<div class="section" id="from-java-to-javascript">
+<h2>From Java to JavaScript<a class="headerlink" href="#from-java-to-javascript" title="Permalink to this headline">¶</a></h2>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 58%"/>
+<col style="width: 42%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Java</p></th>
+<th class="head"><p>JavaScript</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>boolean[]</p></td>
+<td><p>Array</p></td>
+</tr>
+<tr class="row-odd"><td><p>byte[]</p></td>
+<td><p>Int8Array</p></td>
+</tr>
+<tr class="row-even"><td><p>char[]</p></td>
+<td><p>Array</p></td>
+</tr>
+<tr class="row-odd"><td><p>double[]</p></td>
+<td><p>Float64Array</p></td>
+</tr>
+<tr class="row-even"><td><p>float[]</p></td>
+<td><p>Float32Array</p></td>
+</tr>
+<tr class="row-odd"><td><p>int[]</p></td>
+<td><p>Int32Array</p></td>
+</tr>
+<tr class="row-even"><td><p>long[]</p></td>
+<td><p>Int64Array</p></td>
+</tr>
+<tr class="row-odd"><td><p>short[]</p></td>
+<td><p>Int16Array</p></td>
+</tr>
+<tr class="row-even"><td><p>Object[]</p></td>
+<td><p>Array</p></td>
+</tr>
+<tr class="row-odd"><td><p>Map</p></td>
+<td><p>object or Proxy</p></td>
+</tr>
+<tr class="row-even"><td><p>Set</p></td>
+<td><p>Set or Proxy</p></td>
+</tr>
+<tr class="row-odd"><td><p>Collection</p></td>
+<td><p>Array</p></td>
+</tr>
+<tr class="row-even"><td><p>Stream</p></td>
+<td><p>Array</p></td>
+</tr>
+<tr class="row-odd"><td><p>IJavetEntityFunction</p></td>
+<td><p>Function</p></td>
+</tr>
+<tr class="row-even"><td><p>IJavetEntityMap</p></td>
+<td><p>Map</p></td>
+</tr>
+<tr class="row-odd"><td><p>JavetEntitySymbol</p></td>
+<td><p>Symbol</p></td>
+</tr>
+<tr class="row-even"><td><p>IJavetMappable</p></td>
+<td><p>Any</p></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="section" id="from-javascript-to-java">
+<h2>From JavaScript to Java<a class="headerlink" href="#from-javascript-to-java" title="Permalink to this headline">¶</a></h2>
+<div class="table-wrapper"><table class="docutils align-default">
+<colgroup>
+<col style="width: 40%"/>
+<col style="width: 60%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>JavaScript</p></th>
+<th class="head"><p>Java</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Array</p></td>
+<td><p>ArrayList&lt;Object&gt;</p></td>
+</tr>
+<tr class="row-odd"><td><p>Set</p></td>
+<td><p>HashSet&lt;Object&gt;</p></td>
+</tr>
+<tr class="row-even"><td><p>Map</p></td>
+<td><p>HashMap&lt;Object, Object&gt;</p></td>
+</tr>
+<tr class="row-odd"><td><p>Int8Array</p></td>
+<td><p>byte[]</p></td>
+</tr>
+<tr class="row-even"><td><p>Uint8Array</p></td>
+<td><p>byte[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Uint8ClampedArray</p></td>
+<td><p>byte[]</p></td>
+</tr>
+<tr class="row-even"><td><p>Int16Array</p></td>
+<td><p>short[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Uint16Array</p></td>
+<td><p>short[]</p></td>
+</tr>
+<tr class="row-even"><td><p>Int32Array</p></td>
+<td><p>int[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Uint32Array</p></td>
+<td><p>int[]</p></td>
+</tr>
+<tr class="row-even"><td><p>Float32Array</p></td>
+<td><p>float[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Float64Array</p></td>
+<td><p>double[]</p></td>
+</tr>
+<tr class="row-even"><td><p>BigInt32Array</p></td>
+<td><p>long[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>BigInt64Array</p></td>
+<td><p>long[]</p></td>
+</tr>
+<tr class="row-even"><td><p>Function</p></td>
+<td><p>IJavetEntityFunction</p></td>
+</tr>
+<tr class="row-odd"><td><p>Symbol</p></td>
+<td><p>JavetEntitySymbol</p></td>
+</tr>
+<tr class="row-even"><td><p>Proxy</p></td>
+<td><p>Any</p></td>
+</tr>
+<tr class="row-odd"><td><p>Object</p></td>
+<td><p>HashMap&lt;Object, Object&gt; or Any</p></td>
+</tr>
+</tbody>
+</table></div>
+<p>So, Javet doesn't natively support converting POJO objects because a POJO converter has to deal with reflection which is so slow that Javet leaves that to applications. However, if the POJO objects are owned by the application, it is possible to register custom objects with the built-in <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code>. Otherwise, designing a POJO converter is the alternative solution.</p>
+</div>
+<div class="section" id="register-custom-objects">
+<h2>Register Custom Objects<a class="headerlink" href="#register-custom-objects" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> exposes <code class="docutils literal notranslate"><span class="pre">registerCustomObject()</span></code> for alien objects which match the following conditions.</p>
+<ul class="simple">
+<li><p>Default constructor without arguments</p></li>
+<li><p>Method with signature <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">fromMap(Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">map)</span></code></p></li>
+<li><p>Method with signature <code class="docutils literal notranslate"><span class="pre">Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">toMap()</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the target custom object is touchable, having it implement <code class="docutils literal notranslate"><span class="pre">IJavetMappable</span></code> can make things easier.</p>
+</div>
+<div class="section" id="enhance-the-custom-object">
+<h3>Enhance the Custom Object<a class="headerlink" href="#enhance-the-custom-object" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Create a default constructor without arguments.</p></li>
+<li><p>Add a method with signature <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">fromMap(Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">map)</span></code></p></li>
+<li><p>Add a method with signature <code class="docutils literal notranslate"><span class="pre">Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">toMap()</span></code></p></li>
+</ul>
+<p>Can the method names be changed? Yes, they can have arbitrary names.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">CustomObject</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="p">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="nf">CustomObject</span><span class="p">(</span><span class="n">String</span> <span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="nf">CustomObject</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">fromMap</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">setName</span><span class="p">((</span><span class="n">String</span><span class="p">)</span> <span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"name"</span><span class="p">));</span>
+        <span class="n">setValue</span><span class="p">((</span><span class="n">Integer</span><span class="p">)</span> <span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"value"</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">toMap</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+            <span class="p">{</span>
+                <span class="n">put</span><span class="p">(</span><span class="s">"name"</span><span class="p">,</span> <span class="n">getName</span><span class="p">());</span>
+                <span class="n">put</span><span class="p">(</span><span class="s">"value"</span><span class="p">,</span> <span class="n">getValue</span><span class="p">());</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+
+    <span class="c1">// getters and setters</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="register-the-custom-object">
+<h3>Register the Custom Object<a class="headerlink" href="#register-the-custom-object" title="Permalink to this headline">¶</a></h3>
+<p>As the default converter is <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code>, just follow the code snippet below to register a custom object.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetObjectConverter</span> <span class="n">converter</span> <span class="o">=</span> <span class="p">(</span><span class="n">JavetObjectConverter</span><span class="p">)</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getConverter</span><span class="p">();</span>
+<span class="n">converter</span><span class="p">.</span><span class="na">registerCustomObject</span><span class="p">(</span><span class="n">CustomObject</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If the method names are different from the default ones, just provide the names upon registration as the following.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">converter</span><span class="p">.</span><span class="na">registerCustomObject</span><span class="p">(</span><span class="n">CustomObject</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="s">"customFromMap"</span><span class="p">,</span> <span class="s">"customToMap"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>After the registration is completed, there is no additional steps any more. Just follow the regular pattern.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CustomObject</span><span class="o">[]</span> <span class="n">customObjects</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CustomObject</span><span class="o">[]</span><span class="p">{</span>
+        <span class="k">new</span> <span class="n">CustomObject</span><span class="p">(</span><span class="s">"x"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="k">new</span> <span class="n">CustomObject</span><span class="p">(</span><span class="s">"y"</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+<span class="p">};</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">customObjects</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.length"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">CustomObject</span><span class="o">&gt;</span> <span class="n">v8CustomObjects</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+<span class="n">assertNotNull</span><span class="p">(</span><span class="n">v8CustomObjects</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">v8CustomObjects</span><span class="p">.</span><span class="na">size</span><span class="p">());</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">customObjects</span><span class="p">.</span><span class="na">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="n">customObjects</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a["</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s">"].name"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="n">customObjects</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">.</span><span class="na">getValue</span><span class="p">(),</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a["</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s">"].value"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="n">customObjects</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span> <span class="n">v8CustomObjects</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="na">getName</span><span class="p">());</span>
+    <span class="n">assertEquals</span><span class="p">(</span><span class="n">customObjects</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">.</span><span class="na">getValue</span><span class="p">(),</span> <span class="n">v8CustomObjects</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="na">getValue</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="highlights">
+<h3>Highlights<a class="headerlink" href="#highlights" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>PROS: This is a built-in feature so there is no need to deal with a POJO converter.</p></li>
+<li><p>CONS: This is a little bit intrusive to the custom objects.</p></li>
+</ul>
+</div>
+<div class="section" id="how-does-it-work">
+<h3>How does It Work?<a class="headerlink" href="#how-does-it-work" title="Permalink to this headline">¶</a></h3>
+<p>As V8 supports private properties, <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> sets the custom object class name to the V8 object in <code class="docutils literal notranslate"><span class="pre">toMap()</span></code> and gets the name from the V8 object in <code class="docutils literal notranslate"><span class="pre">fromMap()</span></code>. So it is the V8 object that carries the type information all the time and <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> is free from memorizing the complicated relationship between the Java objects and V8 objects.</p>
+</div>
+</div>
+</div>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="proxy_converter.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Proxy Converter</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="primitive_converter.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Primitive Converter</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021. caoccao.com Sam Cao
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Object Converter</a><ul>
+<li><a class="reference internal" href="#from-java-to-javascript">From Java to JavaScript</a></li>
+<li><a class="reference internal" href="#from-javascript-to-java">From JavaScript to Java</a></li>
+<li><a class="reference internal" href="#register-custom-objects">Register Custom Objects</a><ul>
+<li><a class="reference internal" href="#enhance-the-custom-object">Enhance the Custom Object</a></li>
+<li><a class="reference internal" href="#register-the-custom-object">Register the Custom Object</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#highlights">Highlights</a></li>
+<li><a class="reference internal" href="#how-does-it-work">How does It Work?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/scripts/main.js"></script>
+    <script src="../../_static/tabs.js"></script>
+    </body>
+</html>

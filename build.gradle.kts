@@ -18,6 +18,7 @@
 plugins {
     java
     `java-library`
+    `maven-publish`
 }
 
 repositories {
@@ -25,7 +26,7 @@ repositories {
 }
 
 group = "com.caoccao.javet"
-version = "1.0.5"
+version = "1.0.6"
 
 dependencies {
     testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.38.v20210224")
@@ -82,4 +83,13 @@ tasks.withType<Test> {
 
 tasks.withType<Javadoc>{
     options.encoding = "UTF-8"
+}
+
+// Allow for publishing to maven local
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
 }

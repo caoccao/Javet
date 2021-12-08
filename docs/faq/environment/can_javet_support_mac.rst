@@ -15,15 +15,12 @@ Some of the Node.js symbols might not be exposed correctly. That might cause nat
 Will the Mac OS Build be LTS?
 -----------------------------
 
-I doubt because when next time V8 abandons Catalina, I won't be able to create any new builds unless someone takes care of the Mac OS build or I get enough donation for a new device. |Donate|
+I doubt because when next time V8 abandons Catalina, I won't be able to create any new builds unless someone takes care of the Mac OS build or I get enough donation for a new device. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (x86_64) device.
 
 How about arm64?
 ----------------
 
-That is still not supported. Please |Donate|
-
-.. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
-    :target: https://paypal.me/caoccao?locale.x=en_US
+Please thank `@longwa <https://github.com/longwa>`_ for building the M1 version. However, that's a temporary solution because I don't have any Mac OS (arm64) device, so there is no support. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (arm64) device.
 
 Before Aug 10, 2021
 ===================

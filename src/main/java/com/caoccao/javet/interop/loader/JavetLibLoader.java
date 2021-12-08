@@ -48,7 +48,7 @@ public final class JavetLibLoader {
      *
      * @since 0.8.0
      */
-    public static final String LIB_VERSION = "1.0.5";
+    public static final String LIB_VERSION = "1.0.6";
     private static final String ANDROID_ABI_ARM = "armeabi-v7a";
     private static final String ANDROID_ABI_ARM64 = "arm64-v8a";
     private static final String ANDROID_ABI_X86 = "x86";
@@ -247,7 +247,7 @@ public final class JavetLibLoader {
         } else if (JavetOSUtils.IS_LINUX) {
             return ARCH_X86_64;
         } else if (JavetOSUtils.IS_MACOS) {
-            return ARCH_X86_64;
+            return JavetOSUtils.IS_ARM64 ? ARCH_ARM64 : ARCH_X86_64;
         } else if (JavetOSUtils.IS_ANDROID) {
             if (JavetOSUtils.IS_ARM) {
                 return ARCH_ARM;
@@ -334,7 +334,7 @@ public final class JavetLibLoader {
                             LOGGER.logError("Failed to create {0}.", rootLibPath.getAbsolutePath());
                         }
                     }
-                    purge(rootLibPath);
+                    purge(libPath);
                     File libFile = new File(rootLibPath, getLibFileName()).getAbsoluteFile();
                     deployLibFile(resourceFileName, libFile);
                     libFilePath = libFile.getAbsolutePath();
@@ -343,12 +343,21 @@ public final class JavetLibLoader {
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
                     libFilePath = new File(libPath, getLibFileName()).getAbsolutePath();
                 }
-                if (isLibInSystemPath) {
-                    System.loadLibrary(getNormalizedLibFilePath(libFilePath));
-                } else {
-                    System.load(libFilePath);
+                try {
+                    if (isLibInSystemPath) {
+                        System.loadLibrary(getNormalizedLibFilePath(libFilePath));
+                    } else {
+                        System.load(libFilePath);
+                    }
+                    loaded = true;
+                } catch (Throwable t) {
+                    if (libLoadingListener.isSuppressingError(jsRuntimeType)) {
+                        LOGGER.warn(t.getMessage());
+                        loaded = true;
+                    } else {
+                        throw t;
+                    }
                 }
-                loaded = true;
             } catch (Throwable t) {
                 LOGGER.logError(t, t.getMessage());
                 throw new JavetException(
@@ -383,6 +392,8 @@ public final class JavetLibLoader {
                                                 break;
                                             }
                                         }
+                                    } else {
+                                        toBeDeleted = true;
                                     }
                                 } catch (Throwable t) {
                                     LOGGER.logError(t, "Failed to delete {0}.", libFileOrPath.getAbsolutePath());

@@ -7,6 +7,7 @@ Reference
 
     javadoc/index
     v8_values/index
+    converters/index
     resource_management/index
     troubleshooting/index
     tips/index

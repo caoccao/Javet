@@ -72,67 +72,6 @@ public class JavetBridgeConverter extends JavetProxyConverter {
             } else {
                 v8Value = v8Runtime.createV8ValueUndefined();
             }
-        } else if (object.getClass().isArray()) {
-            try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                if (object instanceof boolean[]) {
-                    for (boolean item : (boolean[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                } else if (object instanceof byte[]) {
-                    for (byte item : (byte[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                } else if (object instanceof char[]) {
-                    for (char item : (char[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                } else if (object instanceof double[]) {
-                    for (double item : (double[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                } else if (object instanceof float[]) {
-                    for (float item : (float[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                } else if (object instanceof int[]) {
-                    for (int item : (int[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                } else if (object instanceof long[]) {
-                    for (long item : (long[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                } else if (object instanceof short[]) {
-                    for (short item : (short[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                } else {
-                    for (Object item : (Object[]) object) {
-                        try (V8Value v8ValueItem = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(v8ValueItem);
-                        }
-                    }
-                }
-                v8Value = v8ValueArray;
-                v8Scope.setEscapable();
-            }
         } else if (object instanceof V8Value) {
             v8Value = (V8Value) object;
         } else {

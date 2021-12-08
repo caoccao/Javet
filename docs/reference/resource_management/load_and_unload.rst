@@ -98,10 +98,34 @@ Yes. In some cases, the native library can be directly deployed to system librar
 
     ``JavetLibLoader.setLibLoadingListener()`` must be called before ``V8Host`` is called, otherwise it won't take effect.
 
+Can *already loaded in another classloader* be Suppressed?
+==========================================================
+
+In some cases, the applications are hosted by some other classloaders (e.g. Mavin plug-in host, Osgi, etc.) that actively load and unload the applications on demand. That causes the Javet native library to be loaded repeatedly. However, JVM only allows one memory copy of a particular JNI library regardless of at which classloader it stays.
+
+::
+
+    java.lang.UnsatisfiedLinkError: Native Library ***libjavet*** already loaded in another classloader
+
+By default, Javet treats that as an error and prevent all API from working. But, applications may want to suppress this error because the Javet native library has already been loaded. Yes, Javet allows that. Here is a sample.
+
+.. code-block:: java
+
+    JavetLibLoader.setLibLoadingListener(new IJavetLibLoadingListener() {
+        @Override
+        public boolean isSuppressingError(JSRuntimeType jsRuntimeType) {
+            return true;
+        }
+    });
+
+.. caution::
+
+    ``JavetLibLoader.setLibLoadingListener()`` must be called before ``V8Host`` is called, otherwise it won't take effect.
+
 Can Javet Lib Loading Listener Take Environment Variables?
 ==========================================================
 
-Yes. In some cases, it is inconvenient to inject a listener. No worry, ``JavetLibLoadingListener`` can take ``javet.lib.loading.path`` and ``javet.lib.loading.type`` so that applications can inject custom lib loading mechanism without implementing a new listener.
+Yes. In some cases, it is inconvenient to inject a listener. No worry, ``JavetLibLoadingListener`` can take ``javet.lib.loading.path``,  ``javet.lib.loading.type`` and ``javet.lib.loading.suppress.error`` so that applications can inject custom lib loading mechanism without implementing a new listener.
 
 .. code-block:: shell
 
@@ -113,6 +137,18 @@ Yes. In some cases, it is inconvenient to inject a listener. No worry, ``JavetLi
 
     # Load the Javet library from system library path
     java ... -Djavet.lib.loading.type=system
+
+    # Suppress the error in loading the library
+    java ... -Djavet.lib.loading.suppress.error=true
+
+.. caution::
+
+    This doesn't apply to Android.
+
+Can Javet Libraries be Removed from the Jar File?
+=================================================
+
+Yes, ``javet-core`` is available without the libraries. Just update ``javet`` or ``javet-macos`` to ``javet-core`` in the :doc:`../../tutorial/basic/installation`.
 
 .. caution::
 
