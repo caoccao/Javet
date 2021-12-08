@@ -4,6 +4,7 @@
     JNI_OnUnload;
     Java_com_caoccao_javet_*;
     napi_*;
+    node_*;
   local:
     *;
 };
