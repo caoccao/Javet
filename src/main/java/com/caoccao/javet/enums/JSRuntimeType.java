@@ -101,9 +101,9 @@ public enum JSRuntimeType {
     }
 
     /**
-     * Is Node.js.
+     * Is Node.js mode.
      *
-     * @return the boolean
+     * @return true : Node.js mode, false : not Node.js mode
      * @since 0.8.0
      */
     public boolean isNode() {
@@ -114,7 +114,7 @@ public enum JSRuntimeType {
      * Is runtime options valid.
      *
      * @param runtimeOptions the runtime options
-     * @return the boolean
+     * @return true : valid, false : invalid
      * @since 1.0.0
      */
     public boolean isRuntimeOptionsValid(RuntimeOptions<?> runtimeOptions) {
@@ -122,12 +122,17 @@ public enum JSRuntimeType {
     }
 
     /**
-     * Is V8.
+     * Is V8 mode.
      *
-     * @return the boolean
+     * @return true : V8 mode, false : not V8 mode
      * @since 0.8.0
      */
     public boolean isV8() {
         return this == V8;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(name).append(" v").append(version).toString();
     }
 }

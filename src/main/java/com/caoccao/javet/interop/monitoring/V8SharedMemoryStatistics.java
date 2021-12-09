@@ -22,9 +22,9 @@ package com.caoccao.javet.interop.monitoring;
  * @since 1.0.0
  */
 public final class V8SharedMemoryStatistics {
-    private long readOnlySpacePhysicalSize;
-    private long readOnlySpaceSize;
-    private long readOnlySpaceUsedSize;
+    private final long readOnlySpacePhysicalSize;
+    private final long readOnlySpaceSize;
+    private final long readOnlySpaceUsedSize;
 
     /**
      * Instantiates a new V8 shared memory statistics.
@@ -73,13 +73,40 @@ public final class V8SharedMemoryStatistics {
         return readOnlySpaceUsedSize;
     }
 
+    /**
+     * Minus the input V8 shared memory statistics to produce a diff.
+     *
+     * @param v8SharedMemoryStatistics the V8 shared memory statistics
+     * @return the V8 shared memory statistics diff
+     */
+    public V8SharedMemoryStatistics minus(V8SharedMemoryStatistics v8SharedMemoryStatistics) {
+        return new V8SharedMemoryStatistics(
+                this.readOnlySpacePhysicalSize - v8SharedMemoryStatistics.readOnlySpacePhysicalSize,
+                this.readOnlySpaceSize - v8SharedMemoryStatistics.readOnlySpaceSize,
+                this.readOnlySpaceUsedSize - v8SharedMemoryStatistics.readOnlySpaceUsedSize);
+    }
+
     @Override
     public String toString() {
+        return toString(false);
+    }
+
+    /**
+     * To string with zero value ignored or not.
+     *
+     * @param ignoreZero ignore zero
+     * @return the string
+     * @since 1.0.7
+     */
+    public String toString(boolean ignoreZero) {
         StringBuilder sb = new StringBuilder();
         sb.append("name = ").append(getClass().getSimpleName());
-        sb.append(", ").append("readOnlySpacePhysicalSize = ").append(readOnlySpacePhysicalSize);
-        sb.append(", ").append("readOnlySpaceSize = ").append(readOnlySpaceSize);
-        sb.append(", ").append("readOnlySpaceUsedSize = ").append(readOnlySpaceUsedSize);
+        if (!ignoreZero || readOnlySpacePhysicalSize != 0)
+            sb.append(", ").append("readOnlySpacePhysicalSize = ").append(readOnlySpacePhysicalSize);
+        if (!ignoreZero || readOnlySpaceSize != 0)
+            sb.append(", ").append("readOnlySpaceSize = ").append(readOnlySpaceSize);
+        if (!ignoreZero || readOnlySpaceUsedSize != 0)
+            sb.append(", ").append("readOnlySpaceUsedSize = ").append(readOnlySpaceUsedSize);
         return sb.toString();
     }
 }
