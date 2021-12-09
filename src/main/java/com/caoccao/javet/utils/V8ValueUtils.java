@@ -55,7 +55,7 @@ public final class V8ValueUtils {
         for (V8Value v8Value : v8Values) {
             if (first) {
                 sb.append(v8Value.toString());
-                first = true;
+                first = false;
             } else {
                 sb.append(delimiter).append(v8Value.toString());
             }
