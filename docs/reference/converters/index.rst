@@ -21,8 +21,8 @@ Comparisons
       <table class="docutils" style="text-align: center;">
         <thead>
           <tr class="row-odd">
-            <th>From</th>
-            <th>To</th>
+            <th>From Java</th>
+            <th>To V8</th>
             <th>Primitive Converter</th>
             <th>Object Converter</th>
             <th>Proxy Converter</th>
@@ -32,8 +32,8 @@ Comparisons
         </thead>
         <tbody>
           <tr class="row-even">
-            <td rowspan="2">Java Primitive</td>
-            <td>V8 Native Object</td>
+            <td rowspan="2">Primitive</td>
+            <td>Native</td>
             <td>✔️</td>
             <td>✔️</td>
             <td>✔️</td>
@@ -41,7 +41,7 @@ Comparisons
             <td>✔️</td>
           </tr>
           <tr class="row-odd">
-            <td>V8 Proxy Object</td>
+            <td>Proxy</td>
             <td>❌️</td>
             <td>❌️</td>
             <td>❌️</td>
@@ -49,8 +49,8 @@ Comparisons
             <td>✔️</td>
           </tr>
           <tr class="row-even">
-            <td rowspan="2">Java Array, List, Set, Map</td>
-            <td>V8 Native Object</td>
+            <td rowspan="2">Array, List, Set, Map</td>
+            <td>Native</td>
             <td>❌️</td>
             <td>✔️</td>
             <td>✔️</td>
@@ -58,7 +58,7 @@ Comparisons
             <td>✔️</td>
           </tr>
           <tr class="row-odd">
-            <td>V8 Proxy Object</td>
+            <td>Proxy</td>
             <td>❌️</td>
             <td>❌️</td>
             <td>❌️</td>
@@ -66,8 +66,8 @@ Comparisons
             <td>✔️</td>
           </tr>
           <tr class="row-even">
-            <td rowspan="2">Other Java Object</td>
-            <td>V8 Native Object</td>
+            <td rowspan="2">Other</td>
+            <td>Native</td>
             <td>❌️</td>
             <td>✔️</td>
             <td>❌️</td>
@@ -75,7 +75,7 @@ Comparisons
             <td>✔️</td>
           </tr>
           <tr class="row-odd">
-            <td>V8 Proxy Object</td>
+            <td>Proxy</td>
             <td>❌️</td>
             <td>❌️</td>
             <td>✔️</td>
@@ -88,6 +88,18 @@ Comparisons
 
 Inside Converters
 =================
+
+Binding via Native
+------------------
+
+.. image:: ../../resources/images/javet_converter_binding_via_native.png
+    :alt: Javet Converter - Binding via Native
+
+Binding via Proxy
+-----------------
+
+.. image:: ../../resources/images/javet_converter_binding_via_proxy.png
+    :alt: Javet Converter - Binding via Proxy
 
 Null Safety
 -----------
