@@ -33,8 +33,8 @@ public final class JavetOSUtils {
     public static final boolean IS_ARM64 =
             OS_ARCH.startsWith("arm64") || OS_ARCH.startsWith("armv8") ||
                     OS_ARCH.equals("aarch64");
-    public static final boolean IS_X86 = OS_ARCH.matches("^(x8632|x86|i[3-6]86|ia32|x32)$");
-    public static final boolean IS_X86_64 = OS_ARCH.matches("^(x8664|amd64|ia32e|em64t|x64)$");
+    public static final boolean IS_X86 = OS_ARCH.matches("^(x86_32|x8632|x86|i[3-6]86|ia32|x32)$");
+    public static final boolean IS_X86_64 = OS_ARCH.matches("^(x86_64|x8664|amd64|ia32e|em64t|x64)$");
     public static final long PROCESS_ID;
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
