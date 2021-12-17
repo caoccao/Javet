@@ -65,6 +65,7 @@ public final class JavetLibLoader {
     private static final String LIB_FILE_EXTENSION_MACOS = "dylib";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
     private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-{2}.v.{3}.{4}";
+    private static final String LIB_FILE_NAME_FOR_ANDROID_FORMAT = "libjavet-{0}-{1}.v.{2}.{3}";
     private static final String LIB_FILE_NAME_PREFIX = "lib";
     private static final IJavetLogger LOGGER = new JavetDefaultLogger(JavetLibLoader.class.getName());
     private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 60L * 1000L; // 1 minute
@@ -193,25 +194,34 @@ public final class JavetLibLoader {
      */
     public String getLibFileName() throws JavetException {
         String fileExtension = getFileExtension();
-        String osArch = getOSArch();
         String osName = getOSName();
         if (fileExtension == null || osName == null) {
             throw new JavetException(
                     JavetError.OSNotSupported,
                     SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_NAME));
         }
-        if (osArch == null) {
-            throw new JavetException(
-                    JavetError.OSNotSupported,
-                    SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_ARCH));
+        if (JavetOSUtils.IS_ANDROID) {
+            return MessageFormat.format(
+                    LIB_FILE_NAME_FOR_ANDROID_FORMAT,
+                    jsRuntimeType.getName(),
+                    osName,
+                    LIB_VERSION,
+                    fileExtension);
+        } else {
+            String osArch = getOSArch();
+            if (osArch == null) {
+                throw new JavetException(
+                        JavetError.OSNotSupported,
+                        SimpleMap.of(JavetError.PARAMETER_OS, JavetOSUtils.OS_ARCH));
+            }
+            return MessageFormat.format(
+                    LIB_FILE_NAME_FORMAT,
+                    jsRuntimeType.getName(),
+                    osName,
+                    osArch,
+                    LIB_VERSION,
+                    fileExtension);
         }
-        return MessageFormat.format(
-                LIB_FILE_NAME_FORMAT,
-                jsRuntimeType.getName(),
-                osName,
-                osArch,
-                LIB_VERSION,
-                fileExtension);
     }
 
     private String getNormalizedLibFilePath(String libFilePath) {
