@@ -2,6 +2,11 @@
 Release Notes 1.0.x
 ===================
 
+1.0.7
+--------------------
+
+* Changed JNI library naming convention to be arch agnostic for Android.
+
 1.0.6 Mac OS (arm64)
 --------------------
 
