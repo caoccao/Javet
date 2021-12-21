@@ -344,6 +344,35 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="integer-list">
+<h3>Integer List<a class="headerlink" href="#integer-list" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">integerList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="n">integerList</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">integerList</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">integerList</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.size()"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[0]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[1]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.add(3);"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.size()"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[2]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">integerList</span><span class="p">.</span><span class="na">size</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">integerList</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="long-unmodifiable-list">
+<h3>Long Unmodifiable List<a class="headerlink" href="#long-unmodifiable-list" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span> <span class="n">longList</span> <span class="o">=</span> <span class="n">Collections</span><span class="p">.</span><span class="na">unmodifiableList</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span><span class="mi">1L</span><span class="p">,</span> <span class="mi">2L</span><span class="p">));</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">longList</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">Integer</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.size()"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">1L</span><span class="p">,</span> <span class="p">(</span><span class="n">Long</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[0]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2L</span><span class="p">,</span> <span class="p">(</span><span class="n">Long</span><span class="p">)</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a[1]"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="string-array">
 <h3>String Array<a class="headerlink" href="#string-array" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span><span class="p">{</span><span class="s">"x"</span><span class="p">,</span> <span class="s">"y"</span><span class="p">});</span>
@@ -425,6 +454,8 @@
 <li><a class="reference internal" href="#boolean">Boolean</a></li>
 <li><a class="reference internal" href="#int">int</a></li>
 <li><a class="reference internal" href="#int-array">int Array</a></li>
+<li><a class="reference internal" href="#integer-list">Integer List</a></li>
+<li><a class="reference internal" href="#long-unmodifiable-list">Long Unmodifiable List</a></li>
 <li><a class="reference internal" href="#string-array">String Array</a></li>
 </ul>
 </li>

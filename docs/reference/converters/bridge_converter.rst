@@ -62,6 +62,37 @@ int Array
     assertArrayEquals(intArray, v8Runtime.getExecutor("a.toV8Value()").executeObject());
     v8Runtime.getGlobalObject().delete("a");
 
+Integer List
+------------
+
+.. code-block:: java
+
+    List<Integer> integerList = new ArrayList<>();
+    integerList.add(1);
+    integerList.add(2);
+    v8Runtime.getGlobalObject().set("a", integerList);
+    assertEquals(2, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
+    assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
+    assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
+    v8Runtime.getExecutor("a.add(3);").executeVoid();
+    assertEquals(3, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
+    assertEquals(3, (Integer) v8Runtime.getExecutor("a[2]").executeObject());
+    assertEquals(3, integerList.size());
+    assertEquals(3, integerList.get(2));
+    v8Runtime.getGlobalObject().delete("a");
+
+Long Unmodifiable List
+----------------------
+
+.. code-block:: java
+
+    List<Long> longList = Collections.unmodifiableList(Arrays.asList(1L, 2L));
+    v8Runtime.getGlobalObject().set("a", longList);
+    assertEquals(2, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
+    assertEquals(1L, (Long) v8Runtime.getExecutor("a[0]").executeObject());
+    assertEquals(2L, (Long) v8Runtime.getExecutor("a[1]").executeObject());
+    v8Runtime.getGlobalObject().delete("a");
+
 String Array
 ------------
 
