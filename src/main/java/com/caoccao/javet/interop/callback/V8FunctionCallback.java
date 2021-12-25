@@ -408,7 +408,7 @@ public final class V8FunctionCallback {
                     JavetResourceUtils.safeClose(resultObject);
                 }
             } catch (InvocationTargetException e) {
-                throw e.getCause();
+                throw e.getTargetException();
             } finally {
                 // Result object must be excluded because it will be closed in JNI.
                 if (!javetCallbackContext.isThisObjectRequired()) {

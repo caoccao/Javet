@@ -37,18 +37,25 @@ public abstract class BaseJavetScriptingException extends JavetException {
      *
      * @param error          the error
      * @param scriptingError the scripting error
+     * @param cause          the cause
      * @since 0.8.5
      */
-    protected BaseJavetScriptingException(JavetError error, JavetScriptingError scriptingError) {
-        super(error, SimpleMap.of(
-                JavetError.PARAMETER_MESSAGE, scriptingError.getMessage(),
-                JavetError.PARAMETER_RESOURCE_NAME, scriptingError.getResourceName(),
-                JavetError.PARAMETER_SOURCE_LINE, scriptingError.getSourceLine(),
-                JavetError.PARAMETER_LINE_NUMBER, scriptingError.getLineNumber(),
-                JavetError.PARAMETER_START_COLUMN, scriptingError.getStartColumn(),
-                JavetError.PARAMETER_END_COLUMN, scriptingError.getEndColumn(),
-                JavetError.PARAMETER_START_POSITION, scriptingError.getStartPosition(),
-                JavetError.PARAMETER_END_POSITION, scriptingError.getEndPosition()));
+    protected BaseJavetScriptingException(
+            JavetError error,
+            JavetScriptingError scriptingError,
+            Throwable cause) {
+        super(
+                error,
+                SimpleMap.of(
+                        JavetError.PARAMETER_MESSAGE, scriptingError.getMessage(),
+                        JavetError.PARAMETER_RESOURCE_NAME, scriptingError.getResourceName(),
+                        JavetError.PARAMETER_SOURCE_LINE, scriptingError.getSourceLine(),
+                        JavetError.PARAMETER_LINE_NUMBER, scriptingError.getLineNumber(),
+                        JavetError.PARAMETER_START_COLUMN, scriptingError.getStartColumn(),
+                        JavetError.PARAMETER_END_COLUMN, scriptingError.getEndColumn(),
+                        JavetError.PARAMETER_START_POSITION, scriptingError.getStartPosition(),
+                        JavetError.PARAMETER_END_POSITION, scriptingError.getEndPosition()),
+                cause);
         this.scriptingError = scriptingError;
     }
 

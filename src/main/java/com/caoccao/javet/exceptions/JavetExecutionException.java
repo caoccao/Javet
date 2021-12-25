@@ -29,9 +29,10 @@ public class JavetExecutionException extends BaseJavetScriptingException {
      * Instantiates a new Javet execution exception.
      *
      * @param scriptingError the scripting error
+     * @param cause          the cause
      * @since 0.7.0
      */
-    public JavetExecutionException(JavetScriptingError scriptingError) {
-        super(JavetError.ExecutionFailure, Objects.requireNonNull(scriptingError));
+    public JavetExecutionException(JavetScriptingError scriptingError, Throwable cause) {
+        super(JavetError.ExecutionFailure, Objects.requireNonNull(scriptingError), cause);
     }
 }

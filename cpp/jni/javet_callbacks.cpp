@@ -165,15 +165,23 @@ namespace Javet {
                         mReferrerV8Module);
                     if (jniEnv->ExceptionCheck()) {
                         // JNI exception is not re-thrown in this callback function because it will pop up automatically.
-                        LOG_ERROR("JavetModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " with exception");
+                        LOG_ERROR("JavetModuleResolveCallback: module '" << *Javet::Converter::ToStdString(v8Context, specifier) << "' with exception");
+                        std::string errorMessage("Unable to resolve module '");
+                        errorMessage.append(*Javet::Converter::ToStdString(v8Context, specifier));
+                        errorMessage.append("'");
+                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str(), false);
                     }
                     else if (mIV8Module == nullptr) {
-                        LOG_ERROR("JavetModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " not found");
+                        LOG_ERROR("JavetModuleResolveCallback: module '" << *Javet::Converter::ToStdString(v8Context, specifier) << "' not found");
+                        std::string errorMessage("Module '");
+                        errorMessage.append(*Javet::Converter::ToStdString(v8Context, specifier));
+                        errorMessage.append("' is not found");
+                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str());
                     }
                     else {
                         auto mHandle = jniEnv->CallLongMethod(mIV8Module, jmethodIDIV8ModuleGetHandle);
                         auto v8PersistentModule = TO_V8_PERSISTENT_MODULE_POINTER(mHandle);
-                        LOG_DEBUG("JavetModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " found");
+                        LOG_DEBUG("JavetModuleResolveCallback: module '" << *Javet::Converter::ToStdString(v8Context, specifier) << "' found");
                         resolvedV8MaybeLocalModule = v8PersistentModule->Get(v8Context->GetIsolate());
                     }
                     if (mReferrerV8Module != nullptr) {

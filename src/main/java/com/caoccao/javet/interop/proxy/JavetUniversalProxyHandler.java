@@ -999,12 +999,14 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 throw new JavetException(JavetError.CallbackMethodFailure,
                         SimpleMap.of(
                                 JavetError.PARAMETER_METHOD_NAME, jsMethodName,
-                                JavetError.PARAMETER_MESSAGE, e.getCause().getMessage()), e);
+                                JavetError.PARAMETER_MESSAGE, e.getTargetException().getMessage()),
+                        e.getTargetException());
             } catch (Throwable t) {
                 throw new JavetException(JavetError.CallbackMethodFailure,
                         SimpleMap.of(
                                 JavetError.PARAMETER_METHOD_NAME, jsMethodName,
-                                JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
+                                JavetError.PARAMETER_MESSAGE, t.getMessage()),
+                        t);
             }
         }
     }
