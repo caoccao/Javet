@@ -17,6 +17,7 @@
 
 package com.caoccao.javet.exceptions;
 
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
@@ -32,7 +33,6 @@ import java.util.Map;
  * @since 0.7.0
  */
 public final class JavetScriptingError {
-    private static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
     private Map<String, Object> context;
     private String detailedMessage;
     private int endColumn;
@@ -72,8 +72,9 @@ public final class JavetScriptingError {
                 detailedMessage = v8ValueError.getMessage();
                 message = v8ValueError.toString();
                 stack = v8ValueError.getStack();
+                final V8Runtime v8Runtime = v8ValueError.getV8Runtime();
                 v8ValueError.forEach((V8Value key, V8Value value) -> {
-                    context.put(key.toString(), OBJECT_CONVERTER.toObject(value));
+                    context.put(key.toString(), v8Runtime.toObject(value));
                 });
             }
         } catch (JavetException e) {
