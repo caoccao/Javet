@@ -29,10 +29,10 @@ group = "com.caoccao.javet"
 version = "1.0.7"
 
 dependencies {
-    testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.38.v20210224")
-    testImplementation("org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.38.v20210224")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.12.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    implementation("org.eclipse.jetty.websocket:websocket-server:9.4.44.v20210927")
+    implementation("org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.44.v20210927")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
