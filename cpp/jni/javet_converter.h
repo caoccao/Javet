@@ -34,6 +34,11 @@ namespace Javet {
         static jmethodID jmethodIDV8RuntimeCreateV8ValueLong;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueNull;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueUndefined;
+        
+        // Base
+
+        static jclass jclassV8Value;
+        static jmethodID jmethodIDV8ValueSetV8Runtime;
 
         // Primitive
 
@@ -223,7 +228,7 @@ namespace Javet {
 
         jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv, jobject externalV8Runtime);
 
-        jobject ToJavetScriptingError(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        jobject ToJavetScriptingError(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 
         static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& managedBoolean) {
             return v8::Boolean::New(v8Context->GetIsolate(), managedBoolean);

@@ -122,7 +122,7 @@ namespace Javet {
                 if (externalV8Value != nullptr) {
                     jniEnv->DeleteLocalRef(externalV8Value);
                 }
-                return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+                return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, externalV8Runtime, v8Context, v8TryCatch);
             }
             return externalV8Value;
         }

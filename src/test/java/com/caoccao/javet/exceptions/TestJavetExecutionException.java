@@ -22,6 +22,8 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetExecutionException extends BaseTestJavetRuntime {
@@ -51,6 +53,33 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
                     javetScriptingError.toString());
         } catch (JavetException e) {
             fail("JavetExecutionException should be thrown.");
+        }
+    }
+
+    @Test
+    public void testCustomError() throws JavetException {
+        String codeString = "throw Object.assign(new Error('Custom Error.'), { a: 1, b: 2 })";
+        try {
+            v8Runtime.getExecutor(codeString).executeVoid();
+            fail("Failed to capture the custom error.");
+        } catch (JavetExecutionException e) {
+            assertEquals(JavetError.ExecutionFailure, e.getError());
+            assertEquals("Error: Custom Error.", e.getMessage());
+            JavetScriptingError javetScriptingError = e.getScriptingError();
+            assertEquals("undefined", javetScriptingError.getResourceName());
+            assertEquals(codeString, javetScriptingError.getSourceLine());
+            assertEquals(
+                    "Error: Custom Error.\n" +
+                            "Resource: undefined\n" +
+                            "Source Code: throw Object.assign(new Error('Custom Error.'), { a: 1, b: 2 })\n" +
+                            "Line Number: 1\n" +
+                            "Column: 0, 1\n" +
+                            "Position: 0, 1",
+                    javetScriptingError.toString());
+            Map<String, Object> context = javetScriptingError.getContext();
+            assertEquals(2, context.size());
+            assertEquals(1, context.get("a"));
+            assertEquals(2, context.get("b"));
         }
     }
 

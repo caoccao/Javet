@@ -367,7 +367,7 @@ namespace Javet {
                     auto v8Array = v8::Array::New(v8Context->GetIsolate(), 1);
                     auto maybeResult = v8Array->Set(v8Context, 0, propertyValue);
                     if (maybeResult.IsNothing()) {
-                        Javet::Exceptions::HandlePendingException(jniEnv, v8Context);
+                        Javet::Exceptions::HandlePendingException(jniEnv, externalV8Runtime, v8Context);
                     }
                     else {
                         jboolean isThisObjectRequired = IsThisObjectRequired();

@@ -42,10 +42,10 @@ namespace Javet {
 
         void Initialize(JNIEnv* jniEnv);
 
-        bool HandlePendingException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* message = nullptr);
-        jobject ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        bool HandlePendingException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const char* message = nullptr);
+        jobject ThrowJavetCompilationException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
         jobject ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
-        jobject ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        jobject ThrowJavetExecutionException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
         jobject ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, v8::Isolate* v8Isolate, const char* message);
         jobject ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue);
         void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage, bool clearException = true);

@@ -9,6 +9,7 @@ Release Notes 1.0.x
 * Upgraded V8 to ``v9.7.106.18`` `(2021-12-14) <https://v8.dev/blog/v8-release-97>`_
 * Relayed inner exception for ``JavetCompilationException`` and ``JavetExecutionException``
 * Changed JNI library naming convention to be arch agnostic for Android.
+* Added ``getDetailedMessage()``, ``getStack()`` and ``getContext()`` to ``JavetScriptingError``
 
 1.0.6 Mac OS (arm64)
 --------------------

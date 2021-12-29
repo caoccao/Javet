@@ -70,6 +70,11 @@ namespace Javet {
             jmethodIDV8RuntimeCreateV8ValueNull = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueNull", "()Lcom/caoccao/javet/values/primitive/V8ValueNull;");
             jmethodIDV8RuntimeCreateV8ValueUndefined = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueUndefined", "()Lcom/caoccao/javet/values/primitive/V8ValueUndefined;");
 
+            // Base
+
+            jclassV8Value = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/V8Value"));
+            jmethodIDV8ValueSetV8Runtime = jniEnv->GetMethodID(jclassV8Value, "setV8Runtime", "(Lcom/caoccao/javet/interop/V8Runtime;)V");
+
             // Primitive
 
             jclassV8ValueBoolean = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueBoolean"));
@@ -197,7 +202,7 @@ namespace Javet {
 
             // Misc
             jclassJavetScriptingError = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetScriptingError"));
-            jmethodIDJavetScriptingErrorConstructor = jniEnv->GetMethodID(jclassJavetScriptingError, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)V");
+            jmethodIDJavetScriptingErrorConstructor = jniEnv->GetMethodID(jclassJavetScriptingError, "<init>", "(Lcom/caoccao/javet/values/V8Value;Ljava/lang/String;Ljava/lang/String;IIIII)V");
         }
 
         jobject ToExternalV8ValueArray(
@@ -209,7 +214,7 @@ namespace Javet {
                 for (int i = 0; i < argLength; ++i) {
                     auto v8MaybeBool = v8Array->Set(v8Context, i, args[i]);
                     if (v8MaybeBool.IsNothing()) {
-                        Javet::Exceptions::HandlePendingException(jniEnv, v8Context);
+                        Javet::Exceptions::HandlePendingException(jniEnv, externalV8Runtime, v8Context);
                         return nullptr;
                     }
                 }
@@ -227,6 +232,7 @@ namespace Javet {
         }
 
         jobject ToExternalV8Value(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalValue v8Value) {
+            using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType::V8ValueReferenceType;
             if (v8Value->IsUndefined()) {
                 return ToExternalV8ValueUndefined(jniEnv, externalV8Runtime);
             }
@@ -238,7 +244,6 @@ namespace Javet {
             if (v8Value->IsArray()) {
                 return jniEnv->NewObject(jclassV8ValueArray, jmethodIDV8ValueArrayConstructor, ToV8PersistentValueReference(v8Context, v8Value));
             }
-            using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType::V8ValueReferenceType;
             if (v8Value->IsTypedArray()) {
                 int type = V8ValueReferenceType::Invalid;
                 if (v8Value->IsBigInt64Array()) {
@@ -388,8 +393,9 @@ namespace Javet {
             return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueUndefined);
         }
 
-        jobject ToJavetScriptingError(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
-            jstring jStringExceptionMessage = ToJavaString(jniEnv, v8Context, v8TryCatch.Exception());
+        jobject ToJavetScriptingError(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
+            jobject jObjectException = ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8TryCatch.Exception());
+            jniEnv->CallObjectMethod(jObjectException, jmethodIDV8ValueSetV8Runtime, externalV8Runtime);
             jstring jStringScriptResourceName = nullptr, jStringSourceLine = nullptr;
             int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
             auto v8LocalMessage = v8TryCatch.Message();
@@ -405,7 +411,7 @@ namespace Javet {
             jobject javetScriptingError = jniEnv->NewObject(
                 jclassJavetScriptingError,
                 jmethodIDJavetScriptingErrorConstructor,
-                jStringExceptionMessage, jStringScriptResourceName, jStringSourceLine,
+                jObjectException, jStringScriptResourceName, jStringSourceLine,
                 lineNumber, startColumn, endColumn, startPosition, endPosition);
             if (jStringSourceLine != nullptr) {
                 jniEnv->DeleteLocalRef(jStringSourceLine);
@@ -413,7 +419,7 @@ namespace Javet {
             if (jStringScriptResourceName != nullptr) {
                 jniEnv->DeleteLocalRef(jStringScriptResourceName);
             }
-            jniEnv->DeleteLocalRef(jStringExceptionMessage);
+            jniEnv->DeleteLocalRef(jObjectException);
             return javetScriptingError;
         }
 
