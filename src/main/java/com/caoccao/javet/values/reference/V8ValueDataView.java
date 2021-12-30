@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 public class V8ValueDataView extends V8ValueObject {
     protected static final String FUNCTION_GET_BIG_INT_64 = "getBigInt64";
@@ -46,8 +47,8 @@ public class V8ValueDataView extends V8ValueObject {
      */
     protected static final String PROPERTY_BYTE_OFFSET = "byteOffset";
 
-    V8ValueDataView(long handle) {
-        super(handle);
+    V8ValueDataView(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     public long getBigInt64(int byteOffset) throws JavetException {

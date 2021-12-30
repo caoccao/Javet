@@ -21,7 +21,7 @@
 
 #define EMBEDDER_DATA_INDEX_V8_RUNTIME 5
 
-#define JAVA_CONSTRUCTOR_AND_SIGNATURE_FROM_HANDLE "<init>", "(J)V"
+#define JAVA_CONSTRUCTOR_AND_SIGNATURE_FROM_HANDLE "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V"
 
 #define JAVA_METHOD_AND_SIGNATURE_GET_HANDLE "getHandle", "()J"
 

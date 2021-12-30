@@ -18,15 +18,16 @@
 package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 @SuppressWarnings("unchecked")
 public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
-    public V8ValueBoolean() {
-        this(false);
+    public V8ValueBoolean(V8Runtime v8Runtime) throws JavetException {
+        this(v8Runtime, false);
     }
 
-    public V8ValueBoolean(boolean value) {
-        super(value);
+    public V8ValueBoolean(V8Runtime v8Runtime, boolean value) throws JavetException {
+        super(v8Runtime, value);
     }
 
     @Override

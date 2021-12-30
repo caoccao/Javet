@@ -1052,14 +1052,6 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetDefaultLogger.html#debug-java.lang.String-">debug(String)</a></span> - Method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetDefaultLogger.html" title="class in com.caoccao.javet.utils">JavetDefaultLogger</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#decorateV8Value-T-">decorateV8Value(T)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
-<dd>
-<div class="block">Decorate a V8 value.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#decorateV8Values-T...-">decorateV8Values(T...)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
-<dd>
-<div class="block">Decorate a V8 value array.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS">DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS</a></span> - Static variable in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>
 <div class="block">The constant DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS.</div>
@@ -5881,14 +5873,6 @@
 <dd>
 <div class="block">Sets V8 module resolver.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/IV8Value.html#setV8Runtime-com.caoccao.javet.interop.V8Runtime-">setV8Runtime(V8Runtime)</a></span> - Method in interface com.caoccao.javet.values.<a href="com/caoccao/javet/values/IV8Value.html" title="interface in com.caoccao.javet.values">IV8Value</a></dt>
-<dd>
-<div class="block">Sets V8 runtime.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueReference.html#setV8Runtime-com.caoccao.javet.interop.V8Runtime-">setV8Runtime(V8Runtime)</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueReference.html" title="class in com.caoccao.javet.values.reference">V8ValueReference</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/V8Value.html#setV8Runtime-com.caoccao.javet.interop.V8Runtime-">setV8Runtime(V8Runtime)</a></span> - Method in class com.caoccao.javet.values.<a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/BindingContext.html#setV8RuntimeSetter-java.lang.reflect.Method-">setV8RuntimeSetter(Method)</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding">BindingContext</a></dt>
 <dd>
 <div class="block">Sets V8 runtime setter.</div>
@@ -6582,7 +6566,7 @@
 </dd>
 <dt><a href="com/caoccao/javet/values/reference/V8Module.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8Module</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8Module.html#V8Module-long-">V8Module(long)</a></span> - Constructor for class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8Module.html" title="class in com.caoccao.javet.values.reference">V8Module</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8Module.html#V8Module-com.caoccao.javet.interop.V8Runtime-long-">V8Module(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8Module.html" title="class in com.caoccao.javet.values.reference">V8Module</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8ModuleCount.html#v8ModuleCountList">v8ModuleCountList</a></span> - Variable in class com.caoccao.javet.interop.engine.observers.<a href="com/caoccao/javet/interop/engine/observers/V8RuntimeObserverAverageV8ModuleCount.html" title="class in com.caoccao.javet.interop.engine.observers">V8RuntimeObserverAverageV8ModuleCount</a></dt>
 <dd>
@@ -6728,7 +6712,7 @@
 </dd>
 <dt><a href="com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8Script</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8Script.html#V8Script-long-">V8Script(long)</a></span> - Constructor for class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8Script.html#V8Script-com.caoccao.javet.interop.V8Runtime-long-">V8Script(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8Script.html" title="class in com.caoccao.javet.values.reference">V8Script</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/executors/BaseV8Executor.html#v8ScriptOrigin">v8ScriptOrigin</a></span> - Variable in class com.caoccao.javet.interop.executors.<a href="com/caoccao/javet/interop/executors/BaseV8Executor.html" title="class in com.caoccao.javet.interop.executors">BaseV8Executor</a></dt>
 <dd>
@@ -6776,7 +6760,7 @@
 </dd>
 <dt><a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values"><span class="typeNameLink">V8Value</span></a> - Class in <a href="com/caoccao/javet/values/package-summary.html">com.caoccao.javet.values</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/V8Value.html#V8Value--">V8Value()</a></span> - Constructor for class com.caoccao.javet.values.<a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/V8Value.html#V8Value-com.caoccao.javet.interop.V8Runtime-">V8Value(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.<a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/V8ValueArguments.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8ValueArguments</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>&nbsp;</dd>
@@ -6786,37 +6770,37 @@
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueBoolean</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html#V8ValueBoolean--">V8ValueBoolean()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html" title="class in com.caoccao.javet.values.primitive">V8ValueBoolean</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html#V8ValueBoolean-com.caoccao.javet.interop.V8Runtime-">V8ValueBoolean(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html" title="class in com.caoccao.javet.values.primitive">V8ValueBoolean</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html#V8ValueBoolean-boolean-">V8ValueBoolean(boolean)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html" title="class in com.caoccao.javet.values.primitive">V8ValueBoolean</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html#V8ValueBoolean-com.caoccao.javet.interop.V8Runtime-boolean-">V8ValueBoolean(V8Runtime, boolean)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueBoolean.html" title="class in com.caoccao.javet.values.primitive">V8ValueBoolean</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInJson.html" title="class in com.caoccao.javet.values.reference.builtin"><span class="typeNameLink">V8ValueBuiltInJson</span></a> - Class in <a href="com/caoccao/javet/values/reference/builtin/package-summary.html">com.caoccao.javet.values.reference.builtin</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInJson.html#V8ValueBuiltInJson-long-">V8ValueBuiltInJson(long)</a></span> - Constructor for class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInJson.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInJson</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInJson.html#V8ValueBuiltInJson-com.caoccao.javet.interop.V8Runtime-long-">V8ValueBuiltInJson(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInJson.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInJson</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInObject.html" title="class in com.caoccao.javet.values.reference.builtin"><span class="typeNameLink">V8ValueBuiltInObject</span></a> - Class in <a href="com/caoccao/javet/values/reference/builtin/package-summary.html">com.caoccao.javet.values.reference.builtin</a></dt>
 <dd>
 <div class="block">The type V8 value built in object.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInObject.html#V8ValueBuiltInObject-long-">V8ValueBuiltInObject(long)</a></span> - Constructor for class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInObject.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInObject</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInObject.html#V8ValueBuiltInObject-com.caoccao.javet.interop.V8Runtime-long-">V8ValueBuiltInObject(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInObject.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInObject</a></dt>
 <dd>
-<div class="block">Instantiates a new V 8 value built in object.</div>
+<div class="block">Instantiates a new V8 value built in object.</div>
 </dd>
 <dt><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html" title="class in com.caoccao.javet.values.reference.builtin"><span class="typeNameLink">V8ValueBuiltInPromise</span></a> - Class in <a href="com/caoccao/javet/values/reference/builtin/package-summary.html">com.caoccao.javet.values.reference.builtin</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html#V8ValueBuiltInPromise-long-">V8ValueBuiltInPromise(long)</a></span> - Constructor for class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInPromise</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html#V8ValueBuiltInPromise-com.caoccao.javet.interop.V8Runtime-long-">V8ValueBuiltInPromise(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInPromise.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInPromise</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin"><span class="typeNameLink">V8ValueBuiltInSymbol</span></a> - Class in <a href="com/caoccao/javet/values/reference/builtin/package-summary.html">com.caoccao.javet.values.reference.builtin</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html#V8ValueBuiltInSymbol-long-">V8ValueBuiltInSymbol(long)</a></span> - Constructor for class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInSymbol</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html#V8ValueBuiltInSymbol-com.caoccao.javet.interop.V8Runtime-long-">V8ValueBuiltInSymbol(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInSymbol</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/V8ValueDataView.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8ValueDataView</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueDouble.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueDouble</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueDouble.html#V8ValueDouble--">V8ValueDouble()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueDouble.html" title="class in com.caoccao.javet.values.primitive">V8ValueDouble</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueDouble.html#V8ValueDouble-com.caoccao.javet.interop.V8Runtime-">V8ValueDouble(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueDouble.html" title="class in com.caoccao.javet.values.primitive">V8ValueDouble</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueDouble.html#V8ValueDouble-double-">V8ValueDouble(double)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueDouble.html" title="class in com.caoccao.javet.values.primitive">V8ValueDouble</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueDouble.html#V8ValueDouble-com.caoccao.javet.interop.V8Runtime-double-">V8ValueDouble(V8Runtime, double)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueDouble.html" title="class in com.caoccao.javet.values.primitive">V8ValueDouble</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/V8ValueError.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8ValueError</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>&nbsp;</dd>
@@ -6824,7 +6808,7 @@
 <dd>
 <div class="block">The type V8 value function.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueFunction.html#V8ValueFunction-long-">V8ValueFunction(long)</a></span> - Constructor for class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueFunction.html" title="class in com.caoccao.javet.values.reference">V8ValueFunction</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueFunction.html#V8ValueFunction-com.caoccao.javet.interop.V8Runtime-long-">V8ValueFunction(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueFunction.html" title="class in com.caoccao.javet.values.reference">V8ValueFunction</a></dt>
 <dd>
 <div class="block">Instantiates a new V8 value function.</div>
 </dd>
@@ -6834,9 +6818,9 @@
 </dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueInteger.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueInteger</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueInteger.html#V8ValueInteger--">V8ValueInteger()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueInteger.html" title="class in com.caoccao.javet.values.primitive">V8ValueInteger</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueInteger.html#V8ValueInteger-com.caoccao.javet.interop.V8Runtime-">V8ValueInteger(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueInteger.html" title="class in com.caoccao.javet.values.primitive">V8ValueInteger</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueInteger.html#V8ValueInteger-int-">V8ValueInteger(int)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueInteger.html" title="class in com.caoccao.javet.values.primitive">V8ValueInteger</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueInteger.html#V8ValueInteger-com.caoccao.javet.interop.V8Runtime-int-">V8ValueInteger(V8Runtime, int)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueInteger.html" title="class in com.caoccao.javet.values.primitive">V8ValueInteger</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/enums/V8ValueInternalType.html" title="enum in com.caoccao.javet.enums"><span class="typeNameLink">V8ValueInternalType</span></a> - Enum in <a href="com/caoccao/javet/enums/package-summary.html">com.caoccao.javet.enums</a></dt>
 <dd>&nbsp;</dd>
@@ -6844,27 +6828,27 @@
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueLong.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueLong</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueLong.html#V8ValueLong--">V8ValueLong()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueLong.html" title="class in com.caoccao.javet.values.primitive">V8ValueLong</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueLong.html#V8ValueLong-com.caoccao.javet.interop.V8Runtime-">V8ValueLong(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueLong.html" title="class in com.caoccao.javet.values.primitive">V8ValueLong</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueLong.html#V8ValueLong-long-">V8ValueLong(long)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueLong.html" title="class in com.caoccao.javet.values.primitive">V8ValueLong</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueLong.html#V8ValueLong-com.caoccao.javet.interop.V8Runtime-long-">V8ValueLong(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueLong.html" title="class in com.caoccao.javet.values.primitive">V8ValueLong</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueLong.html#V8ValueLong-java.lang.String-">V8ValueLong(String)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueLong.html" title="class in com.caoccao.javet.values.primitive">V8ValueLong</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueLong.html#V8ValueLong-com.caoccao.javet.interop.V8Runtime-java.lang.String-">V8ValueLong(V8Runtime, String)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueLong.html" title="class in com.caoccao.javet.values.primitive">V8ValueLong</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/V8ValueMap.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8ValueMap</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueNull.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueNull</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueNull.html#V8ValueNull--">V8ValueNull()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueNull.html" title="class in com.caoccao.javet.values.primitive">V8ValueNull</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueNull.html#V8ValueNull-com.caoccao.javet.interop.V8Runtime-">V8ValueNull(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueNull.html" title="class in com.caoccao.javet.values.primitive">V8ValueNull</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/V8ValueObject.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8ValueObject</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueObject.html#V8ValueObject-long-">V8ValueObject(long)</a></span> - Constructor for class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueObject.html" title="class in com.caoccao.javet.values.reference">V8ValueObject</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueObject.html#V8ValueObject-com.caoccao.javet.interop.V8Runtime-long-">V8ValueObject(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueObject.html" title="class in com.caoccao.javet.values.reference">V8ValueObject</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValuePrimitive</span></a>&lt;<a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html" title="type parameter in V8ValuePrimitive">T</a>&gt; - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html#V8ValuePrimitive--">V8ValuePrimitive()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html" title="class in com.caoccao.javet.values.primitive">V8ValuePrimitive</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html#V8ValuePrimitive-com.caoccao.javet.interop.V8Runtime-">V8ValuePrimitive(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html" title="class in com.caoccao.javet.values.primitive">V8ValuePrimitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html#V8ValuePrimitive-T-">V8ValuePrimitive(T)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html" title="class in com.caoccao.javet.values.primitive">V8ValuePrimitive</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html#V8ValuePrimitive-com.caoccao.javet.interop.V8Runtime-T-">V8ValuePrimitive(V8Runtime, T)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValuePrimitive.html" title="class in com.caoccao.javet.values.primitive">V8ValuePrimitive</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/V8ValuePromise.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8ValuePromise</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>
@@ -6886,9 +6870,9 @@
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueString.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueString</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueString.html#V8ValueString--">V8ValueString()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueString.html" title="class in com.caoccao.javet.values.primitive">V8ValueString</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueString.html#V8ValueString-com.caoccao.javet.interop.V8Runtime-">V8ValueString(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueString.html" title="class in com.caoccao.javet.values.primitive">V8ValueString</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueString.html#V8ValueString-java.lang.String-">V8ValueString(String)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueString.html" title="class in com.caoccao.javet.values.primitive">V8ValueString</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueString.html#V8ValueString-com.caoccao.javet.interop.V8Runtime-java.lang.String-">V8ValueString(V8Runtime, String)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueString.html" title="class in com.caoccao.javet.values.primitive">V8ValueString</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/reference/V8ValueSymbol.html" title="class in com.caoccao.javet.values.reference"><span class="typeNameLink">V8ValueSymbol</span></a> - Class in <a href="com/caoccao/javet/values/reference/package-summary.html">com.caoccao.javet.values.reference</a></dt>
 <dd>
@@ -6908,13 +6892,13 @@
 </dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueUndefined.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueUndefined</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueUndefined.html#V8ValueUndefined--">V8ValueUndefined()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueUndefined.html" title="class in com.caoccao.javet.values.primitive">V8ValueUndefined</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueUndefined.html#V8ValueUndefined-com.caoccao.javet.interop.V8Runtime-">V8ValueUndefined(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueUndefined.html" title="class in com.caoccao.javet.values.primitive">V8ValueUndefined</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueUnknown</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html#V8ValueUnknown--">V8ValueUnknown()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html" title="class in com.caoccao.javet.values.primitive">V8ValueUnknown</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html#V8ValueUnknown-com.caoccao.javet.interop.V8Runtime-">V8ValueUnknown(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html" title="class in com.caoccao.javet.values.primitive">V8ValueUnknown</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html#V8ValueUnknown-java.lang.String-">V8ValueUnknown(String)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html" title="class in com.caoccao.javet.values.primitive">V8ValueUnknown</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html#V8ValueUnknown-com.caoccao.javet.interop.V8Runtime-java.lang.String-">V8ValueUnknown(V8Runtime, String)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueUnknown.html" title="class in com.caoccao.javet.values.primitive">V8ValueUnknown</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/utils/V8ValueUtils.html" title="class in com.caoccao.javet.utils"><span class="typeNameLink">V8ValueUtils</span></a> - Class in <a href="com/caoccao/javet/utils/package-summary.html">com.caoccao.javet.utils</a></dt>
 <dd>
@@ -6926,11 +6910,11 @@
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html" title="class in com.caoccao.javet.values.primitive"><span class="typeNameLink">V8ValueZonedDateTime</span></a> - Class in <a href="com/caoccao/javet/values/primitive/package-summary.html">com.caoccao.javet.values.primitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html#V8ValueZonedDateTime--">V8ValueZonedDateTime()</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html" title="class in com.caoccao.javet.values.primitive">V8ValueZonedDateTime</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html#V8ValueZonedDateTime-com.caoccao.javet.interop.V8Runtime-">V8ValueZonedDateTime(V8Runtime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html" title="class in com.caoccao.javet.values.primitive">V8ValueZonedDateTime</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html#V8ValueZonedDateTime-long-">V8ValueZonedDateTime(long)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html" title="class in com.caoccao.javet.values.primitive">V8ValueZonedDateTime</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html#V8ValueZonedDateTime-com.caoccao.javet.interop.V8Runtime-long-">V8ValueZonedDateTime(V8Runtime, long)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html" title="class in com.caoccao.javet.values.primitive">V8ValueZonedDateTime</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html#V8ValueZonedDateTime-java.time.ZonedDateTime-">V8ValueZonedDateTime(ZonedDateTime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html" title="class in com.caoccao.javet.values.primitive">V8ValueZonedDateTime</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html#V8ValueZonedDateTime-com.caoccao.javet.interop.V8Runtime-java.time.ZonedDateTime-">V8ValueZonedDateTime(V8Runtime, ZonedDateTime)</a></span> - Constructor for class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueZonedDateTime.html" title="class in com.caoccao.javet.values.primitive">V8ValueZonedDateTime</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/values/virtual/V8VirtualValue.html" title="class in com.caoccao.javet.values.virtual"><span class="typeNameLink">V8VirtualValue</span></a> - Class in <a href="com/caoccao/javet/values/virtual/package-summary.html">com.caoccao.javet.values.virtual</a></dt>
 <dd>

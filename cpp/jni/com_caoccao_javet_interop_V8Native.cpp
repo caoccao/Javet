@@ -564,7 +564,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getGlobalObject
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    return Javet::Converter::ToExternalV8ValueGlobalObject(jniEnv, v8Runtime->v8GlobalObject);
+    return Javet::Converter::ToExternalV8ValueGlobalObject(jniEnv, v8Runtime->externalV8Runtime, v8Runtime->v8GlobalObject);
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getIdentityHash

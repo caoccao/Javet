@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 /**
  * The type V8 value proxy.
@@ -33,8 +34,8 @@ public class V8ValueProxy extends V8ValueObject implements IV8ValueProxy {
      * @param handle the handle
      * @since 0.9.6
      */
-    V8ValueProxy(long handle) {
-        super(handle);
+    V8ValueProxy(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

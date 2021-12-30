@@ -19,13 +19,14 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 public class V8ValueError extends V8ValueObject {
     protected static final String MESSAGE = "message";
     protected static final String STACK = "stack";
 
-    V8ValueError(long handle) {
-        super(handle);
+    V8ValueError(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     public String getMessage() throws JavetException {

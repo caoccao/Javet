@@ -77,6 +77,6 @@ public class JavetBridgeConverter extends JavetProxyConverter {
         } else {
             v8Value = toProxiedV8Value(v8Runtime, object);
         }
-        return (T) v8Runtime.decorateV8Value(v8Value);
+        return (T) v8Value;
     }
 }

@@ -547,7 +547,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 }
             }
         }
-        return (T) v8Runtime.decorateV8Value(v8Value);
+        return (T) v8Value;
     }
 
     /**

@@ -22,6 +22,7 @@ import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
@@ -41,11 +42,13 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     /**
      * Instantiates a new V8 value function.
      *
-     * @param handle the handle
+     * @param v8Runtime the V8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    protected V8ValueFunction(long handle) {
-        super(handle);
+    protected V8ValueFunction(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
         jsFunctionType = null;
     }
 

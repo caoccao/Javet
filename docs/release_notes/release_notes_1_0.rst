@@ -10,6 +10,7 @@ Release Notes 1.0.x
 * Relayed inner exception for ``JavetCompilationException`` and ``JavetExecutionException``
 * Changed JNI library naming convention to be arch agnostic for Android.
 * Added ``getDetailedMessage()``, ``getStack()`` and ``getContext()`` to ``JavetScriptingError``
+* Updated all V8 values to take ``V8Runtime`` in the constructor
 
 1.0.6 Mac OS (arm64)
 --------------------

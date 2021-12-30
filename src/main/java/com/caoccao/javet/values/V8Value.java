@@ -23,15 +23,16 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 
-import java.util.Objects;
-
 public abstract class V8Value extends V8Data implements IV8Value {
     protected static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
 
     protected V8Runtime v8Runtime;
 
-    protected V8Value() {
-        v8Runtime = null;
+    protected V8Value(V8Runtime v8Runtime) throws JavetException {
+        if (v8Runtime == null) {
+            throw new JavetException(JavetError.RuntimeNotRegistered);
+        }
+        this.v8Runtime = v8Runtime;
     }
 
     protected V8Runtime checkV8Runtime() throws JavetException {
@@ -58,14 +59,6 @@ public abstract class V8Value extends V8Data implements IV8Value {
 
     @Override
     public abstract boolean sameValue(V8Value v8Value) throws JavetException;
-
-    public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
-        Objects.requireNonNull(v8Runtime);
-        if (this.v8Runtime != null) {
-            throw new JavetException(JavetError.RuntimeAlreadyRegistered);
-        }
-        this.v8Runtime = v8Runtime;
-    }
 
     @Override
     public abstract boolean strictEquals(V8Value v8Value) throws JavetException;

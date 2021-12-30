@@ -22,6 +22,7 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.ArrayList;
@@ -36,8 +37,8 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     protected static final String PROPERTY_DONE = "done";
     protected static final String PROPERTY_VALUE = "value";
 
-    V8ValueArray(long handle) {
-        super(handle);
+    V8ValueArray(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

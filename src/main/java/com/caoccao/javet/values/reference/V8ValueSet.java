@@ -22,6 +22,7 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValue;
 
@@ -32,8 +33,8 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     protected static final String FUNCTION_ENTRIES = "entries";
     protected static final String FUNCTION_KEYS = "keys";
 
-    V8ValueSet(long handle) {
-        super(handle);
+    V8ValueSet(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

@@ -18,11 +18,13 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 public class V8ValueRegExp extends V8ValueObject {
 
-    V8ValueRegExp(long handle) {
-        super(handle);
+    V8ValueRegExp(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

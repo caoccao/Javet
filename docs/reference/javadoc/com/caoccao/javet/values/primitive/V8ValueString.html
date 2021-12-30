@@ -168,10 +168,11 @@ extends <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimit
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/primitive/V8ValueString.html#V8ValueString--">V8ValueString</a></span>()</code>&nbsp;</td>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/primitive/V8ValueString.html#V8ValueString-com.caoccao.javet.interop.V8Runtime-">V8ValueString</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/primitive/V8ValueString.html#V8ValueString-java.lang.String-">V8ValueString</a></span>(java.lang.String&nbsp;value)</code>&nbsp;</td>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/primitive/V8ValueString.html#V8ValueString-com.caoccao.javet.interop.V8Runtime-java.lang.String-">V8ValueString</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
+             java.lang.String&nbsp;value)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -211,7 +212,7 @@ extends <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimit
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.caoccao.javet.values.<a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></h3>
-<code><a href="../../../../../com/caoccao/javet/values/V8Value.html#checkV8Runtime--">checkV8Runtime</a>, <a href="../../../../../com/caoccao/javet/values/V8Value.html#getV8Runtime--">getV8Runtime</a>, <a href="../../../../../com/caoccao/javet/values/V8Value.html#isClosed--">isClosed</a>, <a href="../../../../../com/caoccao/javet/values/V8Value.html#setV8Runtime-com.caoccao.javet.interop.V8Runtime-">setV8Runtime</a></code></li>
+<code><a href="../../../../../com/caoccao/javet/values/V8Value.html#checkV8Runtime--">checkV8Runtime</a>, <a href="../../../../../com/caoccao/javet/values/V8Value.html#getV8Runtime--">getV8Runtime</a>, <a href="../../../../../com/caoccao/javet/values/V8Value.html#isClosed--">isClosed</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -241,22 +242,33 @@ extends <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimit
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="V8ValueString--">
+<a name="V8ValueString-com.caoccao.javet.interop.V8Runtime-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>V8ValueString</h4>
-<pre>public&nbsp;V8ValueString()</pre>
+<pre>public&nbsp;V8ValueString(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime)
+              throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></dd>
+</dl>
 </li>
 </ul>
-<a name="V8ValueString-java.lang.String-">
+<a name="V8ValueString-com.caoccao.javet.interop.V8Runtime-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>V8ValueString</h4>
-<pre>public&nbsp;V8ValueString(java.lang.String&nbsp;value)</pre>
+<pre>public&nbsp;V8ValueString(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
+                     java.lang.String&nbsp;value)
+              throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></dd>
+</dl>
 </li>
 </ul>
 </li>

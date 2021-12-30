@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.Objects;
@@ -28,8 +29,8 @@ import java.util.Objects;
 public class V8Script extends V8ValueReference implements IV8Script {
     protected String resourceName;
 
-    public V8Script(long handle) {
-        super(handle);
+    public V8Script(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
         resourceName = null;
     }
 

@@ -21,14 +21,15 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.SimpleMap;
 
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueWeakSet extends V8ValueObject {
-    V8ValueWeakSet(long handle) {
-        super(handle);
+    V8ValueWeakSet(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     public void add(IV8ValueObject key) throws JavetException {

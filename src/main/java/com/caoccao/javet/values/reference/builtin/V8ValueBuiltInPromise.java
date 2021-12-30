@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference.builtin;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValuePromise;
@@ -35,8 +36,8 @@ public class V8ValueBuiltInPromise extends V8ValueFunction {
     public static final String FUNCTION_REJECT = "reject";
     public static final String FUNCTION_RESOLVE = "resolve";
 
-    public V8ValueBuiltInPromise(long handle) {
-        super(handle);
+    public V8ValueBuiltInPromise(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @CheckReturnValue

@@ -18,6 +18,7 @@
 package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
@@ -25,8 +26,8 @@ public final class V8ValueNull extends V8Value {
 
     public static final String NULL = "null";
 
-    public V8ValueNull() {
-        super();
+    public V8ValueNull(V8Runtime v8Runtime) throws JavetException {
+        super(v8Runtime);
     }
 
     @Override

@@ -77,9 +77,9 @@ Then, create a generic PojoConverter.
         }
 
         @Override
-        protected V8Value toV8Value(
+        protected <T extends V8Value> T toV8Value(
                 V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
-            V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
+            T v8Value = super.toV8Value(v8Runtime, object, depth);
             if (v8Value != null && !(v8Value.isUndefined())) {
                 return v8Value;
             }
@@ -107,8 +107,8 @@ Then, create a generic PojoConverter.
                     }
                 }
             }
-            v8Value = v8ValueObject;
-            return v8Runtime.decorateV8Value(v8Value);
+            v8Value = (T) v8ValueObject;
+            return v8Value;
         }
     }
 

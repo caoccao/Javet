@@ -18,10 +18,12 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 public class V8ValueArguments extends V8ValueArray {
-    V8ValueArguments(long handle) {
-        super(handle);
+    V8ValueArguments(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

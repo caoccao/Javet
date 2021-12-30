@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference.builtin;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetSupplier;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
 
@@ -62,8 +63,8 @@ public class V8ValueBuiltInSymbol extends V8ValueFunction {
 
     protected Map<String, IJavetSupplier<V8ValueSymbol, Throwable>> builtInSymbolMap;
 
-    public V8ValueBuiltInSymbol(long handle) {
-        super(handle);
+    public V8ValueBuiltInSymbol(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
         builtInSymbolMap = new HashMap<>();
         builtInSymbolMap.put(PROPERTY_ASYNC_ITERATOR, this::getAsyncIterator);
         builtInSymbolMap.put(PROPERTY_HAS_INSTANCE, this::getHasInstance);

@@ -18,22 +18,23 @@
 package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 
 import java.time.ZonedDateTime;
 
 @SuppressWarnings("unchecked")
 public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> {
-    public V8ValueZonedDateTime() {
-        this(null);
+    public V8ValueZonedDateTime(V8Runtime v8Runtime) throws JavetException {
+        this(v8Runtime, null);
     }
 
-    public V8ValueZonedDateTime(long jsTimestamp) {
-        super(JavetDateTimeUtils.toZonedDateTime(jsTimestamp));
+    public V8ValueZonedDateTime(V8Runtime v8Runtime, long jsTimestamp) throws JavetException {
+        this(v8Runtime, JavetDateTimeUtils.toZonedDateTime(jsTimestamp));
     }
 
-    public V8ValueZonedDateTime(ZonedDateTime value) {
-        super(value);
+    public V8ValueZonedDateTime(V8Runtime v8Runtime, ZonedDateTime value) throws JavetException {
+        super(v8Runtime, value);
     }
 
     @Override

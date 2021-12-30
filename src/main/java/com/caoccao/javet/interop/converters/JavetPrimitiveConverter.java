@@ -130,6 +130,6 @@ public class JavetPrimitiveConverter extends BaseJavetConverter {
         } else {
             v8Value = v8Runtime.createV8ValueUndefined();
         }
-        return (T) v8Runtime.decorateV8Value(v8Value);
+        return (T) v8Value;
     }
 }

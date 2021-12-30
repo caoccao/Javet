@@ -814,7 +814,7 @@
 
 <span class="c1">// Option 3</span>
 <span class="kd">public</span> <span class="n">V8ValueInteger</span> <span class="nf">echo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="n">V8ValueInteger</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueInteger</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="c1">// Option 4</span>
