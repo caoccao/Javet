@@ -48,6 +48,6 @@ namespace Javet {
         jobject ThrowJavetExecutionException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
         jobject ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, v8::Isolate* v8Isolate, const char* message);
         jobject ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue);
-        void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage, bool clearException = true);
+        void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage);
     }
 }

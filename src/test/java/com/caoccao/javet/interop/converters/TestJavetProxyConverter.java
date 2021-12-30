@@ -21,6 +21,7 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.enums.V8ConversionMode;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
@@ -224,6 +225,28 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 "a.expectCharacter('123', '123'); // 3-char string to char");
         v8Runtime.getExecutor(codeString).executeVoid();
         v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
+    public void testClassForName() throws JavetException {
+        v8Runtime.getGlobalObject().set("Class", Class.class);
+        assertEquals(v8Runtime.getExecutor("Class.forName('java.io.File')").executeObject(), File.class);
+        try {
+            v8Runtime.getExecutor("Class.forName('i_do_not_exist')").executeVoid();
+            fail("Failed to report class not found.");
+        } catch (JavetExecutionException e) {
+            assertEquals(JavetError.ExecutionFailure, e.getError());
+            assertEquals(
+                    "Error: Callback forName failed with error message i_do_not_exist\n" +
+                            "Resource: undefined\n" +
+                            "Source Code: Class.forName('i_do_not_exist')\n" +
+                            "Line Number: 1\n" +
+                            "Column: 6, 7\n" +
+                            "Position: 6, 7",
+                    e.getScriptingError().toString());
+            assertTrue(e.getCause().getCause() instanceof ClassNotFoundException);
+        }
+        v8Runtime.getGlobalObject().delete("Class");
     }
 
     @Test

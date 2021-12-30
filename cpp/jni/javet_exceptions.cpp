@@ -161,15 +161,13 @@ namespace Javet {
             return nullptr;
         }
 
-        void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage, bool clearException) {
+        void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage) {
             auto v8Isolate = v8Context->GetIsolate();
             jstring externalErrorMessage = nullptr;
             if (jniEnv->ExceptionCheck()) {
                 jthrowable externalException = jniEnv->ExceptionOccurred();
                 externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
-                if (clearException) {
-                    jniEnv->ExceptionClear();
-                }
+                // The exception is not cleared because it will be embedded as an inner exception.
                 jniEnv->DeleteLocalRef(externalException);
             }
             V8LocalString v8ErrorMessage;

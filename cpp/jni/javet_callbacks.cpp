@@ -170,7 +170,7 @@ namespace Javet {
                         std::string errorMessage("Cannot resolve package '");
                         errorMessage.append(*moduleNamePointer);
                         errorMessage.append("'");
-                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str(), false);
+                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str());
                     }
                     else if (mIV8Module == nullptr) {
                         LOG_ERROR("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' not found");
