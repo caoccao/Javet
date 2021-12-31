@@ -473,9 +473,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
                 if (v8TryCatch.HasCaught()) {
                     return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
                 }
-                if (jniEnv->ExceptionCheck()) {
-                    jniEnv->ExceptionClear();
-                }
+                Javet::Exceptions::ClearJNIException(jniEnv);
                 if (mResultRequired && !v8MaybeLocalValueResult.IsEmpty()) {
                     return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalValueResult.ToLocalChecked());
                 }
@@ -493,9 +491,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
             if (v8TryCatch.HasCaught()) {
                 return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
             }
-            if (jniEnv->ExceptionCheck()) {
-                jniEnv->ExceptionClear();
-            }
+            Javet::Exceptions::ClearJNIException(jniEnv);
             if (mResultRequired && !v8MaybeLocalValueResult.IsEmpty()) {
                 return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalValueResult.ToLocalChecked());
             }
@@ -1109,7 +1105,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleEvaluate
         if (v8TryCatch.HasCaught()) {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
         }
-        else if (mResultRequired && !v8MaybeLocalValueResult.IsEmpty()) {
+        Javet::Exceptions::ClearJNIException(jniEnv);
+        if (mResultRequired && !v8MaybeLocalValueResult.IsEmpty()) {
             return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalValueResult.ToLocalChecked());
         }
     }
@@ -1415,9 +1412,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptRun
         if (v8TryCatch.HasCaught()) {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
         }
-        if (jniEnv->ExceptionCheck()) {
-            jniEnv->ExceptionClear();
-        }
+        Javet::Exceptions::ClearJNIException(jniEnv);
         if (mResultRequired && !v8MaybeLocalValueResult.IsEmpty()) {
             return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalValueResult.ToLocalChecked());
         }

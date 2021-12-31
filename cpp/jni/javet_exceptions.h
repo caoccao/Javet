@@ -18,6 +18,7 @@
 #pragma once
 
 #include <jni.h>
+#include "javet_logging.h"
 #include "javet_v8.h"
 #include "javet_v8_internal.h"
 
@@ -41,6 +42,13 @@ namespace Javet {
         static jmethodID jmethodIDThrowableGetMessage;
 
         void Initialize(JNIEnv* jniEnv);
+
+        static inline void ClearJNIException(JNIEnv* jniEnv) {
+            if (jniEnv->ExceptionCheck()) {
+                jniEnv->ExceptionClear();
+                LOG_DEBUG("Cleared JNI exception.");
+            }
+        }
 
         bool HandlePendingException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const char* message = nullptr);
         jobject ThrowJavetCompilationException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
