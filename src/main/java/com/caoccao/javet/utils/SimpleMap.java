@@ -40,7 +40,7 @@ public final class SimpleMap {
     public static <K, V> Map<K, V> of(
             K k1, V v1
     ) {
-        HashMap<K, V> map = new HashMap<K, V>();
+        HashMap<K, V> map = new HashMap<K, V>((int) (1.0F / 0.75F + 1.0F));
         map.put(k1, v1);
         return map;
     }
@@ -61,7 +61,7 @@ public final class SimpleMap {
             K k1, V v1,
             K k2, V v2
     ) {
-        HashMap<K, V> map = new HashMap<K, V>();
+        HashMap<K, V> map = new HashMap<K, V>((int) (2.0F / 0.75F + 1.0F));
         map.put(k1, v1);
         map.put(k2, v2);
         return map;
@@ -86,7 +86,7 @@ public final class SimpleMap {
             K k2, V v2,
             K k3, V v3
     ) {
-        HashMap<K, V> map = new HashMap<K, V>();
+        HashMap<K, V> map = new HashMap<K, V>((int) (3.0F / 0.75F + 1.0F));
         map.put(k1, v1);
         map.put(k2, v2);
         map.put(k3, v3);
@@ -115,7 +115,7 @@ public final class SimpleMap {
             K k3, V v3,
             K k4, V v4
     ) {
-        HashMap<K, V> map = new HashMap<K, V>();
+        HashMap<K, V> map = new HashMap<K, V>((int) (4.0F / 0.75F + 1.0F));
         map.put(k1, v1);
         map.put(k2, v2);
         map.put(k3, v3);
@@ -148,7 +148,7 @@ public final class SimpleMap {
             K k4, V v4,
             K k5, V v5
     ) {
-        HashMap<K, V> map = new HashMap<K, V>();
+        HashMap<K, V> map = new HashMap<K, V>((int) (5.0F / 0.75F + 1.0F));
         map.put(k1, v1);
         map.put(k2, v2);
         map.put(k3, v3);
@@ -185,7 +185,7 @@ public final class SimpleMap {
             K k5, V v5,
             K k6, V v6
     ) {
-        HashMap<K, V> map = new HashMap<K, V>();
+        HashMap<K, V> map = new HashMap<K, V>((int) (6.0F / 0.75F + 1.0F));
         map.put(k1, v1);
         map.put(k2, v2);
         map.put(k3, v3);
@@ -226,7 +226,7 @@ public final class SimpleMap {
             K k6, V v6,
             K k7, V v7
     ) {
-        HashMap<K, V> map = new HashMap<K, V>();
+        HashMap<K, V> map = new HashMap<K, V>((int) (7.0F / 0.75F + 1.0F));
         map.put(k1, v1);
         map.put(k2, v2);
         map.put(k3, v3);
@@ -271,7 +271,7 @@ public final class SimpleMap {
             K k7, V v7,
             K k8, V v8
     ) {
-        HashMap<K, V> map = new HashMap<K, V>();
+        HashMap<K, V> map = new HashMap<K, V>((int) (8.0F / 0.75F + 1.0F));
         map.put(k1, v1);
         map.put(k2, v2);
         map.put(k3, v3);
