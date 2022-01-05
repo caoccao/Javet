@@ -15,7 +15,7 @@
 
 # Usage: docker build -t javet-android:local -f docker/android/build.Dockerfile .
 
-FROM sjtucaocao/javet-android:1.0.7
+FROM sjtucaocao/javet-android:1.1.0
 WORKDIR /
 
 # Copy Javet
@@ -25,10 +25,10 @@ COPY . .
 
 # Build JNI
 WORKDIR /Javet/cpp
-RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r21e -DCMAKE_ANDROID_ARCH=arm
-RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r21e -DCMAKE_ANDROID_ARCH=arm64
-RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r21e -DCMAKE_ANDROID_ARCH=x86
-RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r21e -DCMAKE_ANDROID_ARCH=x86_64
+RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r23b -DCMAKE_ANDROID_ARCH=arm
+RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r23b -DCMAKE_ANDROID_ARCH=arm64
+RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r23b -DCMAKE_ANDROID_ARCH=x86
+RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r23b -DCMAKE_ANDROID_ARCH=x86_64
 
 # Build AAR
 WORKDIR /Javet/scripts/python
