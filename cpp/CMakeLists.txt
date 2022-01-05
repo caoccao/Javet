@@ -52,9 +52,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     else()
         message(FATAL_ERROR "CMAKE_ANDROID_ARCH must be one of arm, arm64, x86, x86_64.")
     endif()
-    # For now, the target ABI version is set to 26 because not all Java code is fully compatible with legacy SDK.
-    # In the future, more work will be done to lower the target ABI version.
-    set(CMAKE_SYSTEM_VERSION 21)
+    # The target ABI version is set to 23 because pre-23 is no longer supported by V8 v9.7+.
+    set(CMAKE_SYSTEM_VERSION 23)
     set(CMAKE_ANDROID_STL_TYPE c++_static)
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
@@ -209,9 +208,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                -llog "${libgcc}")
+                -llog -static-libgcc -static-libstdc++ "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                -llog "${libgcc}")
+                -llog -static-libgcc -static-libstdc++ "${libgcc}")
         endif()
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|x86_64)")
         set(JAVET_LIB_SYSTEM "macos")

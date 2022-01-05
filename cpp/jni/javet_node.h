@@ -28,7 +28,7 @@
 #pragma warning(default: 4275)
 #pragma warning(default: 4251)
 
-// These libraries are for UV on Windows
+#ifdef _WIN32
 #pragma comment(lib, "Crypt32.lib")
 #pragma comment(lib, "Dbghelp.lib")
 #pragma comment(lib, "Iphlpapi.lib")
@@ -36,6 +36,7 @@
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "Winmm.lib")
 #pragma comment(lib, "Ws2_32.lib")
+#endif
 
 #define DEFAULT_SCRIPT_NAME "javet.js"
 
