@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 /**
@@ -35,8 +36,8 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
      * @param handle the handle
      * @since 0.8.0
      */
-    V8ValuePromise(long handle) {
-        super(handle);
+    V8ValuePromise(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

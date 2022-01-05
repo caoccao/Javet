@@ -29,10 +29,11 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
     protected long handle;
     protected boolean weak;
 
-    V8ValueReference(long handle) {
-        super();
+    V8ValueReference(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime);
         this.handle = handle;
         weak = false;
+        addReference();
     }
 
     protected void addReference() throws JavetException {
@@ -122,12 +123,6 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
             return false;
         }
         return ((V8ValueReference) v8Value).getHandle() == getHandle();
-    }
-
-    @Override
-    public void setV8Runtime(V8Runtime v8Runtime) throws JavetException {
-        super.setV8Runtime(v8Runtime);
-        addReference();
     }
 
     @Override

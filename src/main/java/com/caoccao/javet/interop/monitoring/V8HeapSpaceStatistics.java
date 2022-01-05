@@ -26,12 +26,12 @@ import java.util.Objects;
  * @since 1.0.0
  */
 public final class V8HeapSpaceStatistics {
+    private final long physicalSpaceSize;
+    private final long spaceAvailableSize;
+    private final String spaceName;
+    private final long spaceSize;
+    private final long spaceUsedSize;
     private V8AllocationSpace v8AllocationSpace;
-    private long physicalSpaceSize;
-    private long spaceAvailableSize;
-    private String spaceName;
-    private long spaceSize;
-    private long spaceUsedSize;
 
     /**
      * Instantiates a new V8 heap space statistics.
@@ -117,6 +117,21 @@ public final class V8HeapSpaceStatistics {
     }
 
     /**
+     * Minus the input V8 heap space statistics to produce a diff.
+     *
+     * @param v8HeapSpaceStatistics the V8 heap space statistics
+     * @return the V8 heap space statistics diff
+     */
+    public V8HeapSpaceStatistics minus(V8HeapSpaceStatistics v8HeapSpaceStatistics) {
+        return new V8HeapSpaceStatistics(
+                spaceName,
+                this.physicalSpaceSize - v8HeapSpaceStatistics.physicalSpaceSize,
+                this.spaceAvailableSize - v8HeapSpaceStatistics.spaceAvailableSize,
+                this.spaceSize - v8HeapSpaceStatistics.spaceSize,
+                this.spaceUsedSize - v8HeapSpaceStatistics.spaceUsedSize);
+    }
+
+    /**
      * Sets allocation space.
      *
      * @param v8AllocationSpace the allocation space
@@ -130,14 +145,28 @@ public final class V8HeapSpaceStatistics {
 
     @Override
     public String toString() {
+        return toString(false);
+    }
+
+    /**
+     * To string with zero value ignored or not.
+     *
+     * @param ignoreZero ignore zero
+     * @return the string
+     * @since 1.0.7
+     */
+    public String toString(boolean ignoreZero) {
         StringBuilder sb = new StringBuilder();
         sb.append("name = ").append(getClass().getSimpleName());
         sb.append(", ").append("spaceName = ").append(spaceName);
-        sb.append(", ").append("physicalSpaceSize = ").append(physicalSpaceSize);
-        sb.append(", ").append("spaceAvailableSize = ").append(spaceAvailableSize);
-        sb.append(", ").append("spaceSize = ").append(spaceSize);
-        sb.append(", ").append("spaceUsedSize = ").append(spaceUsedSize);
+        if (!ignoreZero || physicalSpaceSize != 0)
+            sb.append(", ").append("physicalSpaceSize = ").append(physicalSpaceSize);
+        if (!ignoreZero || spaceAvailableSize != 0)
+            sb.append(", ").append("spaceAvailableSize = ").append(spaceAvailableSize);
+        if (!ignoreZero || spaceSize != 0)
+            sb.append(", ").append("spaceSize = ").append(spaceSize);
+        if (!ignoreZero || spaceUsedSize != 0)
+            sb.append(", ").append("spaceUsedSize = ").append(spaceUsedSize);
         return sb.toString();
     }
-
 }

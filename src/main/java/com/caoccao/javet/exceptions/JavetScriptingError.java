@@ -17,25 +17,38 @@
 
 package com.caoccao.javet.exceptions;
 
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.converters.JavetObjectConverter;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueError;
+
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * The type Javet scripting error.
  *
  * @since 0.7.0
  */
 public final class JavetScriptingError {
+    private Map<String, Object> context;
+    private String detailedMessage;
     private int endColumn;
     private int endPosition;
     private int lineNumber;
     private String message;
     private String resourceName;
     private String sourceLine;
+    private String stack;
     private int startColumn;
     private int startPosition;
 
     /**
      * Instantiates a new Javet scripting error.
      *
-     * @param message       the message
+     * @param v8Value       the V8 value
      * @param resourceName  the resource name
      * @param sourceLine    the source line
      * @param lineNumber    the line number
@@ -45,10 +58,31 @@ public final class JavetScriptingError {
      * @param endPosition   the end position
      * @since 0.7.0
      */
-    public JavetScriptingError(
-            String message, String resourceName, String sourceLine,
+    JavetScriptingError(
+            V8Value v8Value, String resourceName, String sourceLine,
             int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
-        this.message = message;
+        context = new LinkedHashMap<>();
+        detailedMessage = null;
+        message = null;
+        stack = null;
+        try {
+            if (v8Value instanceof V8ValueError) {
+                // https://v8.dev/features/error-cause
+                V8ValueError v8ValueError = (V8ValueError) v8Value;
+                detailedMessage = v8ValueError.getMessage();
+                message = v8ValueError.toString();
+                stack = v8ValueError.getStack();
+                final V8Runtime v8Runtime = v8ValueError.getV8Runtime();
+                v8ValueError.forEach((V8Value key, V8Value value) -> {
+                    context.put(key.toString(), v8Runtime.toObject(value));
+                });
+            }
+        } catch (JavetException e) {
+            e.printStackTrace();
+        } finally {
+            JavetResourceUtils.safeClose(v8Value);
+        }
+        context = Collections.unmodifiableMap(context);
         this.resourceName = resourceName;
         this.sourceLine = sourceLine;
         this.lineNumber = lineNumber;
@@ -56,6 +90,26 @@ public final class JavetScriptingError {
         this.endColumn = endColumn;
         this.startPosition = startPosition;
         this.endPosition = endPosition;
+    }
+
+    /**
+     * Gets context.
+     *
+     * @return the context
+     * @since 1.0.7
+     */
+    public Map<String, Object> getContext() {
+        return context;
+    }
+
+    /**
+     * Gets detailed message.
+     *
+     * @return the detailed message
+     * @since 1.0.7
+     */
+    public String getDetailedMessage() {
+        return detailedMessage;
     }
 
     /**
@@ -118,6 +172,16 @@ public final class JavetScriptingError {
     }
 
     /**
+     * Gets stack.
+     *
+     * @return the stack
+     * @since 1.0.7
+     */
+    public String getStack() {
+        return stack;
+    }
+
+    /**
      * Gets start column.
      *
      * @return the start column
@@ -135,102 +199,6 @@ public final class JavetScriptingError {
      */
     public int getStartPosition() {
         return startPosition;
-    }
-
-    /**
-     * Sets end column.
-     *
-     * @param endColumn the end column
-     * @return the self
-     * @since 0.9.1
-     */
-    public JavetScriptingError setEndColumn(int endColumn) {
-        this.endColumn = endColumn;
-        return this;
-    }
-
-    /**
-     * Sets end position.
-     *
-     * @param endPosition the end position
-     * @return the self
-     * @since 0.9.1
-     */
-    public JavetScriptingError setEndPosition(int endPosition) {
-        this.endPosition = endPosition;
-        return this;
-    }
-
-    /**
-     * Sets line number.
-     *
-     * @param lineNumber the line number
-     * @return the self
-     * @since 0.9.1
-     */
-    public JavetScriptingError setLineNumber(int lineNumber) {
-        this.lineNumber = lineNumber;
-        return this;
-    }
-
-    /**
-     * Sets message.
-     *
-     * @param message the message
-     * @return the self
-     * @since 0.9.1
-     */
-    public JavetScriptingError setMessage(String message) {
-        this.message = message;
-        return this;
-    }
-
-    /**
-     * Sets resource name.
-     *
-     * @param resourceName the resource name
-     * @return the self
-     * @since 0.9.1
-     */
-    public JavetScriptingError setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-        return this;
-    }
-
-    /**
-     * Sets source line.
-     *
-     * @param sourceLine the source line
-     * @return the self
-     * @since 0.9.1
-     */
-    public JavetScriptingError setSourceLine(String sourceLine) {
-        this.sourceLine = sourceLine;
-        return this;
-    }
-
-    /**
-     * Sets start column.
-     *
-     * @param startColumn the start column
-     * @return the self
-     * @since 0.9.1
-     */
-    public JavetScriptingError setStartColumn(int startColumn) {
-        this.startColumn = startColumn;
-        return this;
-    }
-
-    /**
-     * Sets start position.
-     *
-     * @param startPosition the start position
-     * @return the self
-     * @since 0.9.1
-     */
-    public JavetScriptingError setStartPosition(int startPosition) {
-        this.startPosition = startPosition;
-        return this;
     }
 
     @Override

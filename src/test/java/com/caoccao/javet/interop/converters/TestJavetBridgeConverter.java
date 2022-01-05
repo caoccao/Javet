@@ -112,6 +112,11 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(2, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
+        v8Runtime.getExecutor("a.add(3);").executeVoid();
+        assertEquals(3, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
+        assertEquals(3, (Integer) v8Runtime.getExecutor("a[2]").executeObject());
+        assertEquals(3, integerList.size());
+        assertEquals(3, integerList.get(2));
         v8Runtime.getGlobalObject().delete("a");
     }
 
@@ -123,6 +128,16 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(12345L, v8Runtime.getExecutor("l[Symbol.toPrimitive]()").executeLong());
         assertEquals(12346L, v8Runtime.getExecutor("1n + l").executeLong());
         v8Runtime.getGlobalObject().delete("l");
+    }
+
+    @Test
+    public void testLongList() throws JavetException {
+        List<Long> longList = Collections.unmodifiableList(Arrays.asList(1L, 2L));
+        v8Runtime.getGlobalObject().set("a", longList);
+        assertEquals(2, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
+        assertEquals(1L, (Long) v8Runtime.getExecutor("a[0]").executeObject());
+        assertEquals(2L, (Long) v8Runtime.getExecutor("a[1]").executeObject());
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test

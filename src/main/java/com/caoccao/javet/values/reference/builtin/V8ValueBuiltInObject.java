@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference.builtin;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.IV8ValueArray;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -47,13 +48,15 @@ public class V8ValueBuiltInObject extends V8ValueObject {
     public static final String FUNCTION_GET_OWN_PROPERTY_SYMBOLS = "getOwnPropertySymbols";
 
     /**
-     * Instantiates a new V 8 value built in object.
+     * Instantiates a new V8 value built in object.
      *
-     * @param handle the handle
+     * @param v8Runtime the V8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
      * @since 0.9.2
      */
-    public V8ValueBuiltInObject(long handle) {
-        super(handle);
+    public V8ValueBuiltInObject(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     /**

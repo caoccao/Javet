@@ -18,15 +18,16 @@
 package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 @SuppressWarnings("unchecked")
 public class V8ValueDouble extends V8ValuePrimitive<Double> {
-    public V8ValueDouble() {
-        this(0D);
+    public V8ValueDouble(V8Runtime v8Runtime) throws JavetException {
+        this(v8Runtime, 0D);
     }
 
-    public V8ValueDouble(double value) {
-        super(value);
+    public V8ValueDouble(V8Runtime v8Runtime, double value) throws JavetException {
+        super(v8Runtime, value);
     }
 
     public boolean isFinite() {

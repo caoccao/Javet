@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Resource Management" href="../resource_management/index.html" /><link rel="prev" title="Bridge Converter" href="bridge_converter.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Custom Converter - Javet 1.0.6 documentation</title>
+        <title>Custom Converter - Javet 1.0.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 1.0.6 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 1.0.7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.6 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -358,9 +358,9 @@
     <span class="p">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="n">V8Value</span> <span class="nf">toV8Value</span><span class="p">(</span>
+    <span class="kd">protected</span> <span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">V8Value</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">toV8Value</span><span class="p">(</span>
             <span class="n">V8Runtime</span> <span class="n">v8Runtime</span><span class="p">,</span> <span class="n">Object</span> <span class="n">object</span><span class="p">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">depth</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
-        <span class="n">V8Value</span> <span class="n">v8Value</span> <span class="o">=</span> <span class="kd">super</span><span class="p">.</span><span class="na">toV8Value</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">,</span> <span class="n">object</span><span class="p">,</span> <span class="n">depth</span><span class="p">);</span>
+        <span class="n">T</span> <span class="n">v8Value</span> <span class="o">=</span> <span class="kd">super</span><span class="p">.</span><span class="na">toV8Value</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">,</span> <span class="n">object</span><span class="p">,</span> <span class="n">depth</span><span class="p">);</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">v8Value</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">v8Value</span><span class="p">.</span><span class="na">isUndefined</span><span class="p">()))</span> <span class="p">{</span>
             <span class="k">return</span> <span class="n">v8Value</span><span class="p">;</span>
         <span class="p">}</span>
@@ -388,8 +388,8 @@
                 <span class="p">}</span>
             <span class="p">}</span>
         <span class="p">}</span>
-        <span class="n">v8Value</span> <span class="o">=</span> <span class="n">v8ValueObject</span><span class="p">;</span>
-        <span class="k">return</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">decorateV8Value</span><span class="p">(</span><span class="n">v8Value</span><span class="p">);</span>
+        <span class="n">v8Value</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="n">v8ValueObject</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">v8Value</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>

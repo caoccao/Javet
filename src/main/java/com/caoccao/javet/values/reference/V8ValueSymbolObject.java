@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 /**
  * The type V8 value symbol object.
@@ -41,8 +42,8 @@ public class V8ValueSymbolObject extends V8ValueSymbol {
      * @param handle the handle
      * @since 0.9.11
      */
-    V8ValueSymbolObject(long handle) {
-        super(handle);
+    V8ValueSymbolObject(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

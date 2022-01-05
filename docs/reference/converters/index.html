@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Primitive Converter" href="primitive_converter.html" /><link rel="prev" title="V8 Promise" href="../v8_values/v8_promise.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Converters - Javet 1.0.6 documentation</title>
+        <title>Converters - Javet 1.0.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 1.0.6 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 1.0.7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.6 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -306,8 +306,8 @@
 <div class="table-wrapper"><table class="docutils" style="text-align: center;">
 <thead>
 <tr class="row-odd">
-<th>From</th>
-<th>To</th>
+<th>From Java</th>
+<th>To V8</th>
 <th>Primitive Converter</th>
 <th>Object Converter</th>
 <th>Proxy Converter</th>
@@ -317,8 +317,8 @@
 </thead>
 <tbody>
 <tr class="row-even">
-<td rowspan="2">Java Primitive</td>
-<td>V8 Native Object</td>
+<td rowspan="2">Primitive</td>
+<td>Native</td>
 <td>✔️</td>
 <td>✔️</td>
 <td>✔️</td>
@@ -326,7 +326,7 @@
 <td>✔️</td>
 </tr>
 <tr class="row-odd">
-<td>V8 Proxy Object</td>
+<td>Proxy</td>
 <td>❌️</td>
 <td>❌️</td>
 <td>❌️</td>
@@ -334,8 +334,8 @@
 <td>✔️</td>
 </tr>
 <tr class="row-even">
-<td rowspan="2">Java Array, List, Set, Map</td>
-<td>V8 Native Object</td>
+<td rowspan="2">Array, List, Set, Map</td>
+<td>Native</td>
 <td>❌️</td>
 <td>✔️</td>
 <td>✔️</td>
@@ -343,7 +343,7 @@
 <td>✔️</td>
 </tr>
 <tr class="row-odd">
-<td>V8 Proxy Object</td>
+<td>Proxy</td>
 <td>❌️</td>
 <td>❌️</td>
 <td>❌️</td>
@@ -351,8 +351,8 @@
 <td>✔️</td>
 </tr>
 <tr class="row-even">
-<td rowspan="2">Other Java Object</td>
-<td>V8 Native Object</td>
+<td rowspan="2">Other</td>
+<td>Native</td>
 <td>❌️</td>
 <td>✔️</td>
 <td>❌️</td>
@@ -360,7 +360,7 @@
 <td>✔️</td>
 </tr>
 <tr class="row-odd">
-<td>V8 Proxy Object</td>
+<td>Proxy</td>
 <td>❌️</td>
 <td>❌️</td>
 <td>✔️</td>
@@ -372,6 +372,14 @@
 </div>
 <div class="section" id="inside-converters">
 <h2>Inside Converters<a class="headerlink" href="#inside-converters" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="binding-via-native">
+<h3>Binding via Native<a class="headerlink" href="#binding-via-native" title="Permalink to this headline">¶</a></h3>
+<img alt="Javet Converter - Binding via Native" src="../../_images/javet_converter_binding_via_native.png"/>
+</div>
+<div class="section" id="binding-via-proxy">
+<h3>Binding via Proxy<a class="headerlink" href="#binding-via-proxy" title="Permalink to this headline">¶</a></h3>
+<img alt="Javet Converter - Binding via Proxy" src="../../_images/javet_converter_binding_via_proxy.png"/>
+</div>
 <div class="section" id="null-safety">
 <h3>Null Safety<a class="headerlink" href="#null-safety" title="Permalink to this headline">¶</a></h3>
 <p>What if the object converter meets <code class="docutils literal notranslate"><span class="pre">null</span></code> or <code class="docutils literal notranslate"><span class="pre">undefined</span></code> when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in <code class="docutils literal notranslate"><span class="pre">java.lang.NullPointerException</span></code>. Luckily, Javet object converter is null safe by injecting default primitive values to <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code> and these default primitive values can be overridden.</p>
@@ -453,6 +461,8 @@
 <li><a class="reference internal" href="#">Converters</a><ul>
 <li><a class="reference internal" href="#comparisons">Comparisons</a></li>
 <li><a class="reference internal" href="#inside-converters">Inside Converters</a><ul>
+<li><a class="reference internal" href="#binding-via-native">Binding via Native</a></li>
+<li><a class="reference internal" href="#binding-via-proxy">Binding via Proxy</a></li>
 <li><a class="reference internal" href="#null-safety">Null Safety</a></li>
 <li><a class="reference internal" href="#functions-and-objects">Functions and Objects</a></li>
 <li><a class="reference internal" href="#circular-structure">Circular Structure</a></li>

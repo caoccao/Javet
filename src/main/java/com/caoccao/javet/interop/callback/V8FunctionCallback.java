@@ -328,7 +328,6 @@ public final class V8FunctionCallback {
             List<Object> values = new ArrayList<>();
             Object resultObject = null;
             try {
-                v8Runtime.decorateV8Values(thisObject, args);
                 /*
                  * Converter is the key to automatic type conversion.
                  * If the call doesn't want automatic type conversion,
@@ -396,9 +395,7 @@ public final class V8FunctionCallback {
                     resultObject = method.invoke(callbackReceiver, objectValues.toArray());
                 }
                 if (javetCallbackContext.isReturnResult()) {
-                    if (resultObject instanceof IV8Value) {
-                        v8Runtime.decorateV8Value((IV8Value) resultObject);
-                    } else {
+                    if (!(resultObject instanceof IV8Value)) {
                         resultObject = v8Runtime.toV8Value(resultObject);
                     }
                     // The lifecycle of the result is handed over to JNI native implementation.
@@ -408,7 +405,7 @@ public final class V8FunctionCallback {
                     JavetResourceUtils.safeClose(resultObject);
                 }
             } catch (InvocationTargetException e) {
-                throw e.getCause();
+                throw e.getTargetException();
             } finally {
                 // Result object must be excluded because it will be closed in JNI.
                 if (!javetCallbackContext.isThisObjectRequired()) {

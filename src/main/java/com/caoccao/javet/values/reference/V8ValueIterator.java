@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements IV8ValueIterator<T> {
@@ -27,8 +28,8 @@ public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements
     protected static final String PROPERTY_DONE = "done";
     protected static final String PROPERTY_VALUE = "value";
 
-    V8ValueIterator(long handle) {
-        super(handle);
+    V8ValueIterator(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

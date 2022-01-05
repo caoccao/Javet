@@ -45,6 +45,19 @@ public class TestV8ValueBuiltInJson extends BaseTestJavetRuntime {
                                 "    |     property 'y' -> object with constructor 'Object'\n" +
                                 "    --- property 'x' closes the circle",
                         e.getMessage());
+                assertEquals(
+                        "Converting circular structure to JSON\n" +
+                                "    --> starting at object with constructor 'Object'\n" +
+                                "    |     property 'y' -> object with constructor 'Object'\n" +
+                                "    --- property 'x' closes the circle",
+                        e.getScriptingError().getDetailedMessage());
+                assertEquals(
+                        "TypeError: Converting circular structure to JSON\n" +
+                                "    --> starting at object with constructor 'Object'\n" +
+                                "    |     property 'y' -> object with constructor 'Object'\n" +
+                                "    --- property 'x' closes the circle\n" +
+                                "    at JSON.stringify (<anonymous>)",
+                        e.getScriptingError().getStack());
             }
         }
     }

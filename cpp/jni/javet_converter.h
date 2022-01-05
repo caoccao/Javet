@@ -30,27 +30,25 @@ namespace Javet {
 
         static jclass jclassV8Runtime;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueBoolean;
+        static jmethodID jmethodIDV8RuntimeCreateV8ValueDouble;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueInteger;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueLong;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueNull;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueUndefined;
-
+        static jmethodID jmethodIDV8RuntimeCreateV8ValueZonedDateTime;
+        
         // Primitive
 
         static jclass jclassV8ValueBoolean;
-        static jmethodID jmethodIDV8ValueBooleanConstructor;
         static jmethodID jmethodIDV8ValueBooleanToPrimitive;
 
         static jclass jclassV8ValueDouble;
-        static jmethodID jmethodIDV8ValueDoubleConstructor;
         static jmethodID jmethodIDV8ValueDoubleToPrimitive;
 
         static jclass jclassV8ValueInteger;
-        static jmethodID jmethodIDV8ValueIntegerConstructor;
         static jmethodID jmethodIDV8ValueIntegerToPrimitive;
 
         static jclass jclassV8ValueLong;
-        static jmethodID jmethodIDV8ValueLongConstructorFromLong;
         static jmethodID jmethodIDV8ValueLongToPrimitive;
 
         static jclass jclassV8ValueNull;
@@ -65,7 +63,6 @@ namespace Javet {
         static jmethodID jmethodIDV8ValueUnknownConstructor;
 
         static jclass jclassV8ValueZonedDateTime;
-        static jmethodID jmethodIDV8ValueZonedDateTimeConstructor;
         static jmethodID jmethodIDV8ValueZonedDateTimeToPrimitive;
 
         // Reference
@@ -209,21 +206,20 @@ namespace Javet {
             return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueNull);
         }
 
-        jobject ToExternalV8ValueGlobalObject(JNIEnv* jniEnv, V8PersistentObject& v8PersistentObject);
+        jobject ToExternalV8ValueGlobalObject(JNIEnv* jniEnv, jobject externalV8Runtime, V8PersistentObject& v8PersistentObject);
 
         static inline jobject ToExternalV8ValuePrimitive(
             JNIEnv* jniEnv, jclass jclassV8ValuePrimitive, jmethodID jmethodIDV8ValuePrimitiveConstructor,
-            const V8LocalContext& v8Context, const V8LocalValue v8Value) {
+            jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalValue v8Value) {
             jstring mStringValue = ToJavaString(jniEnv, v8Context, v8Value->ToString(v8Context).ToLocalChecked());
-            jobject mV8ValuePrimitive = jniEnv->NewObject(
-                jclassV8ValuePrimitive, jmethodIDV8ValuePrimitiveConstructor, mStringValue);
+            jobject mV8ValuePrimitive = jniEnv->NewObject(jclassV8ValuePrimitive, jmethodIDV8ValuePrimitiveConstructor, externalV8Runtime, mStringValue);
             jniEnv->DeleteLocalRef(mStringValue);
             return mV8ValuePrimitive;
         }
 
         jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv, jobject externalV8Runtime);
 
-        jobject ToJavetScriptingError(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        jobject ToJavetScriptingError(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 
         static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& managedBoolean) {
             return v8::Boolean::New(v8Context->GetIsolate(), managedBoolean);

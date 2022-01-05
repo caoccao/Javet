@@ -19,12 +19,10 @@ package com.caoccao.javet.node.modules;
 
 import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Objects;
 
 @NodeModule(name = "process")
@@ -39,7 +37,7 @@ public class NodeModuleProcess extends BaseNodeModule {
     }
 
     public String getVersion() throws JavetException {
-        return moduleObject.getString(PROPERTY_VERSION);
+        return moduleObject.getString(moduleObject.getV8Runtime().createV8ValueString(PROPERTY_VERSION));
     }
 
     public File getWorkingDirectory() throws JavetException {
@@ -47,7 +45,10 @@ public class NodeModuleProcess extends BaseNodeModule {
     }
 
     public void on(String eventName, V8ValueFunction v8ValueFunction) throws JavetException {
-        moduleObject.invokeVoid(FUNCTION_ON, new V8ValueString(eventName), v8ValueFunction);
+        moduleObject.invokeVoid(
+                FUNCTION_ON,
+                moduleObject.getV8Runtime().createV8ValueString(eventName),
+                v8ValueFunction);
     }
 
     public void setWorkingDirectory(File workingDirectory) throws JavetException {
@@ -55,6 +56,8 @@ public class NodeModuleProcess extends BaseNodeModule {
     }
 
     public void setWorkingDirectory(String workingDirectory) throws JavetException {
-        moduleObject.invokeVoid(FUNCTION_CHDIR, Objects.requireNonNull(workingDirectory));
+        moduleObject.invokeVoid(
+                FUNCTION_CHDIR,
+                moduleObject.getV8Runtime().createV8ValueString(Objects.requireNonNull(workingDirectory)));
     }
 }

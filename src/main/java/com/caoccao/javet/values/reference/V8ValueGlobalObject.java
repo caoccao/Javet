@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
@@ -44,8 +45,8 @@ public final class V8ValueGlobalObject extends V8ValueObject {
      *
      * @param handle the handle
      */
-    V8ValueGlobalObject(long handle) {
-        super(handle);
+    V8ValueGlobalObject(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override
@@ -66,25 +67,25 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     @CheckReturnValue
     public V8ValueBuiltInJson getBuiltInJson() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_JSON);
-        return v8Runtime.decorateV8Value(new V8ValueBuiltInJson(v8ValueObject.getHandle()));
+        return new V8ValueBuiltInJson(v8Runtime, v8ValueObject.getHandle());
     }
 
     @CheckReturnValue
     public V8ValueBuiltInObject getBuiltInObject() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_OBJECT);
-        return v8Runtime.decorateV8Value(new V8ValueBuiltInObject(v8ValueObject.getHandle()));
+        return new V8ValueBuiltInObject(v8Runtime, v8ValueObject.getHandle());
     }
 
     @CheckReturnValue
     public V8ValueBuiltInPromise getBuiltInPromise() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_PROMISE);
-        return v8Runtime.decorateV8Value(new V8ValueBuiltInPromise(v8ValueObject.getHandle()));
+        return new V8ValueBuiltInPromise(v8Runtime, v8ValueObject.getHandle());
     }
 
     @CheckReturnValue
     public V8ValueBuiltInSymbol getBuiltInSymbol() throws JavetException {
         V8ValueObject v8ValueObject = get(PROPERTY_SYMBOL);
-        return v8Runtime.decorateV8Value(new V8ValueBuiltInSymbol(v8ValueObject.getHandle()));
+        return new V8ValueBuiltInSymbol(v8Runtime, v8ValueObject.getHandle());
     }
 
     @Override

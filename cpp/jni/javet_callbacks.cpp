@@ -163,17 +163,26 @@ namespace Javet {
                         externalV8Runtime, jmethodIDV8RuntimeGetV8Module,
                         Javet::Converter::ToJavaString(jniEnv, v8Context, specifier),
                         mReferrerV8Module);
+                    auto moduleNamePointer = Javet::Converter::ToStdString(v8Context, specifier);
                     if (jniEnv->ExceptionCheck()) {
                         // JNI exception is not re-thrown in this callback function because it will pop up automatically.
-                        LOG_ERROR("JavetModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " with exception");
+                        LOG_ERROR("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' with exception");
+                        std::string errorMessage("Cannot resolve package '");
+                        errorMessage.append(*moduleNamePointer);
+                        errorMessage.append("'");
+                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str());
                     }
                     else if (mIV8Module == nullptr) {
-                        LOG_ERROR("JavetModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " not found");
+                        LOG_ERROR("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' not found");
+                        std::string errorMessage("Cannot find package '");
+                        errorMessage.append(*moduleNamePointer);
+                        errorMessage.append("'");
+                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str());
                     }
                     else {
                         auto mHandle = jniEnv->CallLongMethod(mIV8Module, jmethodIDIV8ModuleGetHandle);
                         auto v8PersistentModule = TO_V8_PERSISTENT_MODULE_POINTER(mHandle);
-                        LOG_DEBUG("JavetModuleResolveCallback: module " << *Javet::Converter::ToStdString(v8Context, specifier) << " found");
+                        LOG_DEBUG("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' found");
                         resolvedV8MaybeLocalModule = v8PersistentModule->Get(v8Context->GetIsolate());
                     }
                     if (mReferrerV8Module != nullptr) {
@@ -358,7 +367,7 @@ namespace Javet {
                     auto v8Array = v8::Array::New(v8Context->GetIsolate(), 1);
                     auto maybeResult = v8Array->Set(v8Context, 0, propertyValue);
                     if (maybeResult.IsNothing()) {
-                        Javet::Exceptions::HandlePendingException(jniEnv, v8Context);
+                        Javet::Exceptions::HandlePendingException(jniEnv, externalV8Runtime, v8Context);
                     }
                     else {
                         jboolean isThisObjectRequired = IsThisObjectRequired();

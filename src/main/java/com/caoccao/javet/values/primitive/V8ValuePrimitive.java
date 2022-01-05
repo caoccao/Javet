@@ -18,16 +18,18 @@
 package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 public abstract class V8ValuePrimitive<T> extends V8Value {
     protected T value;
 
-    public V8ValuePrimitive() {
-        this(null);
+    public V8ValuePrimitive(V8Runtime v8Runtime) throws JavetException {
+        this(v8Runtime, null);
     }
 
-    public V8ValuePrimitive(T value) {
+    public V8ValuePrimitive(V8Runtime v8Runtime, T value) throws JavetException {
+        super(v8Runtime);
         this.value = value;
     }
 

@@ -22,20 +22,20 @@ package com.caoccao.javet.interop.monitoring;
  * @since 1.0.0
  */
 public final class V8HeapStatistics {
-    private long doesZapGarbage;
-    private long externalMemory;
-    private long heapSizeLimit;
-    private long mallocedMemory;
-    private long numberOfDetachedContexts;
-    private long numberOfNativeContexts;
-    private long peakMallocedMemory;
-    private long totalAvailableSize;
-    private long totalGlobalHandlesSize;
-    private long totalHeapSize;
-    private long totalHeapSizeExecutable;
-    private long totalPhysicalSize;
-    private long usedGlobalHandlesSize;
-    private long usedHeapSize;
+    private final long doesZapGarbage;
+    private final long externalMemory;
+    private final long heapSizeLimit;
+    private final long mallocedMemory;
+    private final long numberOfDetachedContexts;
+    private final long numberOfNativeContexts;
+    private final long peakMallocedMemory;
+    private final long totalAvailableSize;
+    private final long totalGlobalHandlesSize;
+    private final long totalHeapSize;
+    private final long totalHeapSizeExecutable;
+    private final long totalPhysicalSize;
+    private final long usedGlobalHandlesSize;
+    private final long usedHeapSize;
 
     /**
      * Instantiates a new V8 heap statistics.
@@ -227,24 +227,73 @@ public final class V8HeapStatistics {
         return usedHeapSize;
     }
 
+    /**
+     * Minus the input V8 heap statistics to produce a diff.
+     *
+     * @param v8HeapStatistics the V8 heap statistics
+     * @return the V8 heap statistics diff
+     */
+    public V8HeapStatistics minus(V8HeapStatistics v8HeapStatistics) {
+        return new V8HeapStatistics(
+                this.doesZapGarbage - v8HeapStatistics.doesZapGarbage,
+                this.externalMemory - v8HeapStatistics.externalMemory,
+                this.heapSizeLimit - v8HeapStatistics.heapSizeLimit,
+                this.mallocedMemory - v8HeapStatistics.mallocedMemory,
+                this.numberOfDetachedContexts - v8HeapStatistics.numberOfDetachedContexts,
+                this.numberOfNativeContexts - v8HeapStatistics.numberOfNativeContexts,
+                this.peakMallocedMemory - v8HeapStatistics.peakMallocedMemory,
+                this.totalAvailableSize - v8HeapStatistics.totalAvailableSize,
+                this.totalGlobalHandlesSize - v8HeapStatistics.totalGlobalHandlesSize,
+                this.totalHeapSize - v8HeapStatistics.totalHeapSize,
+                this.totalHeapSizeExecutable - v8HeapStatistics.totalHeapSizeExecutable,
+                this.totalPhysicalSize - v8HeapStatistics.totalPhysicalSize,
+                this.usedGlobalHandlesSize - v8HeapStatistics.usedGlobalHandlesSize,
+                this.usedHeapSize - v8HeapStatistics.usedHeapSize);
+    }
+
     @Override
     public String toString() {
+        return toString(false);
+    }
+
+    /**
+     * To string with zero value ignored or not.
+     *
+     * @param ignoreZero ignore zero
+     * @return the string
+     * @since 1.0.7
+     */
+    public String toString(boolean ignoreZero) {
         StringBuilder sb = new StringBuilder();
         sb.append("name = ").append(getClass().getSimpleName());
-        sb.append(", ").append("doesZapGarbage = ").append(doesZapGarbage);
-        sb.append(", ").append("externalMemory = ").append(externalMemory);
-        sb.append(", ").append("heapSizeLimit = ").append(heapSizeLimit);
-        sb.append(", ").append("mallocedMemory = ").append(mallocedMemory);
-        sb.append(", ").append("numberOfDetachedContexts = ").append(numberOfDetachedContexts);
-        sb.append(", ").append("numberOfNativeContexts = ").append(numberOfNativeContexts);
-        sb.append(", ").append("peakMallocedMemory = ").append(peakMallocedMemory);
-        sb.append(", ").append("totalAvailableSize = ").append(totalAvailableSize);
-        sb.append(", ").append("totalGlobalHandlesSize = ").append(totalGlobalHandlesSize);
-        sb.append(", ").append("totalHeapSize = ").append(totalHeapSize);
-        sb.append(", ").append("totalHeapSizeExecutable = ").append(totalHeapSizeExecutable);
-        sb.append(", ").append("totalPhysicalSize = ").append(totalPhysicalSize);
-        sb.append(", ").append("usedGlobalHandlesSize = ").append(usedGlobalHandlesSize);
-        sb.append(", ").append("usedHeapSize = ").append(usedHeapSize);
+        if (!ignoreZero || doesZapGarbage != 0)
+            sb.append(", ").append("doesZapGarbage = ").append(doesZapGarbage);
+        if (!ignoreZero || externalMemory != 0)
+            sb.append(", ").append("externalMemory = ").append(externalMemory);
+        if (!ignoreZero || heapSizeLimit != 0)
+            sb.append(", ").append("heapSizeLimit = ").append(heapSizeLimit);
+        if (!ignoreZero || mallocedMemory != 0)
+            sb.append(", ").append("mallocedMemory = ").append(mallocedMemory);
+        if (!ignoreZero || numberOfDetachedContexts != 0)
+            sb.append(", ").append("numberOfDetachedContexts = ").append(numberOfDetachedContexts);
+        if (!ignoreZero || numberOfNativeContexts != 0)
+            sb.append(", ").append("numberOfNativeContexts = ").append(numberOfNativeContexts);
+        if (!ignoreZero || peakMallocedMemory != 0)
+            sb.append(", ").append("peakMallocedMemory = ").append(peakMallocedMemory);
+        if (!ignoreZero || totalAvailableSize != 0)
+            sb.append(", ").append("totalAvailableSize = ").append(totalAvailableSize);
+        if (!ignoreZero || totalGlobalHandlesSize != 0)
+            sb.append(", ").append("totalGlobalHandlesSize = ").append(totalGlobalHandlesSize);
+        if (!ignoreZero || totalHeapSize != 0)
+            sb.append(", ").append("totalHeapSize = ").append(totalHeapSize);
+        if (!ignoreZero || totalHeapSizeExecutable != 0)
+            sb.append(", ").append("totalHeapSizeExecutable = ").append(totalHeapSizeExecutable);
+        if (!ignoreZero || totalPhysicalSize != 0)
+            sb.append(", ").append("totalPhysicalSize = ").append(totalPhysicalSize);
+        if (!ignoreZero || usedGlobalHandlesSize != 0)
+            sb.append(", ").append("usedGlobalHandlesSize = ").append(usedGlobalHandlesSize);
+        if (!ignoreZero || usedHeapSize != 0)
+            sb.append(", ").append("usedHeapSize = ").append(usedHeapSize);
         return sb.toString();
     }
 }

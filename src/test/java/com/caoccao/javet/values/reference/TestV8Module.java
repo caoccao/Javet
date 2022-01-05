@@ -83,24 +83,26 @@ public class TestV8Module extends BaseTestJavetRuntime {
             iV8Executor = v8Runtime.getExecutor(codeString2).setResourceName(moduleName2);
             try (V8Module v8Module2 = iV8Executor.compileV8Module()) {
                 assertEquals(V8Module.Uninstantiated, v8Module2.getStatus());
+                assertNull(v8Module2.getException());
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
                     assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
-                assertThrows(JavetExecutionException.class, () -> v8Module2.instantiate(), "Function is invalid");
+                assertThrows(JavetExecutionException.class, v8Module2::instantiate, "Function is invalid");
                 assertEquals(V8Module.Uninstantiated, v8Module2.getStatus());
                 assertNull(v8Module2.getException());
             }
             iV8Executor = v8Runtime.getExecutor(codeString3).setResourceName(moduleName3);
             try (V8Module v8Module3 = iV8Executor.compileV8Module()) {
                 assertEquals(V8Module.Uninstantiated, v8Module3.getStatus());
+                assertNull(v8Module3.getException());
                 assertTrue(v8Runtime.containsV8Module(v8Module3.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
                 if (v8Runtime.getJSRuntimeType().isV8()) {
                     assertTrue(5 <= v8Module3.getScriptId() && v8Module3.getScriptId() <= 6);
                 }
-                assertFalse(v8Module3.instantiate(), "Module is invalid");
+                assertThrows(JavetExecutionException.class, v8Module3::instantiate, "Module is invalid");
                 assertNull(v8Module3.getException());
             }
         }
@@ -203,7 +205,16 @@ public class TestV8Module extends BaseTestJavetRuntime {
         try (V8Value v8Value = v8Runtime.getExecutor("import { test } from './test.js';")
                 .setResourceName("./case.js").setModule(true).execute()) {
             fail("Failed to report SyntaxError.");
-        } catch (JavetCompilationException e) {
+        } catch (JavetExecutionException e) {
+            assertEquals(
+                    "Error: SyntaxError: Unexpected identifier\n" +
+                            "Resource: undefined\n" +
+                            "Source Code: \n" +
+                            "Line Number: 0\n" +
+                            "Column: -1, -1\n" +
+                            "Position: -1, -1",
+                    e.getScriptingError().toString());
+            assertTrue(e.getCause() instanceof JavetCompilationException);
             assertEquals(
                     "SyntaxError: Unexpected identifier\n" +
                             "Resource: ./test.js\n" +
@@ -211,7 +222,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                             "Line Number: 1\n" +
                             "Column: 2, 3\n" +
                             "Position: 2, 3",
-                    e.getScriptingError().toString());
+                    ((JavetCompilationException) e.getCause()).getScriptingError().toString());
         }
         assertTrue(resolver.isCalled());
     }

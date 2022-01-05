@@ -24,6 +24,7 @@ import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.Objects;
@@ -34,8 +35,8 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     protected static final String FUNCTION_KEYS = "keys";
     protected static final String FUNCTION_VALUES = "values";
 
-    V8ValueMap(long handle) {
-        super(handle);
+    V8ValueMap(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

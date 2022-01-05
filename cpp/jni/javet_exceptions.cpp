@@ -29,12 +29,12 @@ namespace Javet {
             */
 
             jclassJavetCompilationException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetCompilationException"));
-            jmethodIDJavetCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetCompilationException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;)V");
+            jmethodIDJavetCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetCompilationException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
 
             jclassJavetConverterException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetConverterException"));
 
             jclassJavetExecutionException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetExecutionException"));
-            jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;)V");
+            jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
 
             jclassJavetOutOfMemoryException = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/exceptions/JavetOutOfMemoryException"));
             jmethodIDJavetOutOfMemoryExceptionConstructor = jniEnv->GetMethodID(jclassJavetOutOfMemoryException, "<init>", "(Ljava/lang/String;Lcom/caoccao/javet/interop/monitoring/V8HeapStatistics;)V");
@@ -46,13 +46,13 @@ namespace Javet {
             jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
         }
 
-        bool HandlePendingException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* message) {
+        bool HandlePendingException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const char* message) {
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-            if (v8InternalIsolate->has_pending_exception() || v8InternalIsolate->has_pending_message()) {
+            if (v8InternalIsolate->has_pending_exception()) {
                 V8TryCatch v8TryCatch(v8Context->GetIsolate());
                 v8InternalIsolate->ReportPendingMessages();
                 if (v8TryCatch.HasCaught()) {
-                    ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+                    ThrowJavetExecutionException(jniEnv, externalV8Runtime, v8Context, v8TryCatch);
                     return true;
                 }
             }
@@ -61,7 +61,7 @@ namespace Javet {
                 v8InternalIsolate->PromoteScheduledException();
                 if (v8InternalIsolate->has_pending_exception()) {
                     if (v8TryCatch.HasCaught()) {
-                        ThrowJavetExecutionException(jniEnv, v8Context, v8TryCatch);
+                        ThrowJavetExecutionException(jniEnv, externalV8Runtime, v8Context, v8TryCatch);
                         return true;
                     }
                 }
@@ -73,21 +73,31 @@ namespace Javet {
             return false;
         }
 
-        jobject ThrowJavetCompilationException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
+        jobject ThrowJavetCompilationException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
             if (v8TryCatch.HasTerminated()) {
                 LOG_ERROR("Compilation has been terminated.");
                 return ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
             }
             else {
                 LOG_ERROR("Compilation exception.");
-                jobject javetScriptingError = Javet::Converter::ToJavetScriptingError(jniEnv, v8Context, v8TryCatch);
+                jthrowable innerException = nullptr;
+                if (jniEnv->ExceptionCheck()) {
+                    LOG_ERROR("Inner exception is found.");
+                    innerException = jniEnv->ExceptionOccurred();
+                    jniEnv->ExceptionClear();
+                }
+                jobject javetScriptingError = Javet::Converter::ToJavetScriptingError(jniEnv, externalV8Runtime, v8Context, v8TryCatch);
                 jthrowable javetCompilationException = (jthrowable)jniEnv->NewObject(
                     jclassJavetCompilationException,
                     jmethodIDJavetCompilationExceptionConstructor,
-                    javetScriptingError);
+                    javetScriptingError,
+                    innerException);
                 jniEnv->Throw(javetCompilationException);
                 jniEnv->DeleteLocalRef(javetCompilationException);
                 jniEnv->DeleteLocalRef(javetScriptingError);
+                if (innerException != nullptr) {
+                    jniEnv->DeleteLocalRef(innerException);
+                }
             }
             return nullptr;
         }
@@ -98,20 +108,31 @@ namespace Javet {
             return nullptr;
         }
 
-        jobject ThrowJavetExecutionException(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
+        jobject ThrowJavetExecutionException(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch) {
             if (v8TryCatch.HasTerminated()) {
                 LOG_ERROR("Execution has been terminated.");
                 return ThrowJavetTerminatedException(jniEnv, v8TryCatch.CanContinue());
             }
             else {
                 LOG_ERROR("Execution exception.");
-                jobject javetScriptingError = Javet::Converter::ToJavetScriptingError(jniEnv, v8Context, v8TryCatch);
+                jthrowable innerException = nullptr;
+                if (jniEnv->ExceptionCheck()) {
+                    LOG_ERROR("Inner exception is found.");
+                    innerException = jniEnv->ExceptionOccurred();
+                    jniEnv->ExceptionClear();
+                }
+                jobject javetScriptingError = Javet::Converter::ToJavetScriptingError(jniEnv, externalV8Runtime, v8Context, v8TryCatch);
                 jthrowable javetExecutionException = (jthrowable)jniEnv->NewObject(
                     jclassJavetExecutionException,
                     jmethodIDJavetExecutionExceptionConstructor,
-                    javetScriptingError);
+                    javetScriptingError,
+                    innerException);
                 jniEnv->Throw(javetExecutionException);
                 jniEnv->DeleteLocalRef(javetExecutionException);
+                jniEnv->DeleteLocalRef(javetScriptingError);
+                if (innerException != nullptr) {
+                    jniEnv->DeleteLocalRef(innerException);
+                }
             }
             return nullptr;
         }
@@ -142,9 +163,13 @@ namespace Javet {
 
         void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage) {
             auto v8Isolate = v8Context->GetIsolate();
-            jthrowable externalException = jniEnv->ExceptionOccurred();
-            jstring externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
-            jniEnv->ExceptionClear();
+            jstring externalErrorMessage = nullptr;
+            if (jniEnv->ExceptionCheck()) {
+                jthrowable externalException = jniEnv->ExceptionOccurred();
+                externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
+                // The exception is not cleared because it will be embedded as an inner exception.
+                jniEnv->DeleteLocalRef(externalException);
+            }
             V8LocalString v8ErrorMessage;
             if (externalErrorMessage == nullptr) {
                 v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, defaultMessage).ToLocalChecked();
@@ -154,7 +179,6 @@ namespace Javet {
                 jniEnv->DeleteLocalRef(externalErrorMessage);
             }
             v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
-            jniEnv->DeleteLocalRef(externalException);
         }
     }
 }

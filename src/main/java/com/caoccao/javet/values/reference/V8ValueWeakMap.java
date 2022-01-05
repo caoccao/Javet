@@ -21,6 +21,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 
@@ -28,8 +29,8 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueWeakMap extends V8ValueObject {
-    V8ValueWeakMap(long handle) {
-        super(handle);
+    V8ValueWeakMap(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

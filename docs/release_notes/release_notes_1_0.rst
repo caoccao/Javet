@@ -2,6 +2,16 @@
 Release Notes 1.0.x
 ===================
 
+1.0.7 V8 v9.7
+-------------
+
+* Upgraded Node.js to ``v16.13.1`` `(2021-12-01) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.13.1>`_
+* Upgraded V8 to ``v9.7.106.18`` `(2021-12-14) <https://v8.dev/blog/v8-release-97>`_
+* Relayed inner exception for ``JavetCompilationException`` and ``JavetExecutionException``
+* Changed JNI library naming convention to be arch agnostic for Android.
+* Added ``getDetailedMessage()``, ``getStack()`` and ``getContext()`` to ``JavetScriptingError``
+* Updated all V8 values to take ``V8Runtime`` in the constructor
+
 1.0.6 Mac OS (arm64)
 --------------------
 

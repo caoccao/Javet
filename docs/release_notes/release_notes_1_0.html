@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ" href="../faq/index.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Release Notes 1.0.x - Javet 1.0.6 documentation</title>
+        <title>Release Notes 1.0.x - Javet 1.0.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 1.0.6 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 1.0.7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.0.6 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.0.7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -291,6 +291,17 @@
         <article role="main">
           <div class="section" id="release-notes-1-0-x">
 <h1>Release Notes 1.0.x<a class="headerlink" href="#release-notes-1-0-x" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v8-v9-7">
+<h2>1.0.7 V8 v9.7<a class="headerlink" href="#v8-v9-7" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v16.13.1</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.13.1">(2021-12-01)</a></p></li>
+<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v9.7.106.18</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-97">(2021-12-14)</a></p></li>
+<li><p>Relayed inner exception for <code class="docutils literal notranslate"><span class="pre">JavetCompilationException</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetExecutionException</span></code></p></li>
+<li><p>Changed JNI library naming convention to be arch agnostic for Android.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">getDetailedMessage()</span></code>, <code class="docutils literal notranslate"><span class="pre">getStack()</span></code> and <code class="docutils literal notranslate"><span class="pre">getContext()</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetScriptingError</span></code></p></li>
+<li><p>Updated all V8 values to take <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> in the constructor</p></li>
+</ul>
+</div>
 <div class="section" id="mac-os-arm64">
 <h2>1.0.6 Mac OS (arm64)<a class="headerlink" href="#mac-os-arm64" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -411,6 +422,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Release Notes 1.0.x</a><ul>
+<li><a class="reference internal" href="#v8-v9-7">1.0.7 V8 v9.7</a></li>
 <li><a class="reference internal" href="#mac-os-arm64">1.0.6 Mac OS (arm64)</a></li>
 <li><a class="reference internal" href="#javet-core">1.0.5 Javet Core</a></li>
 <li><a class="reference internal" href="#v8-9-6">1.0.4 V8 9.6</a></li>

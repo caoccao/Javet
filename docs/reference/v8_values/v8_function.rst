@@ -544,7 +544,7 @@ For instance: The following 4 functions are all the same and valid.
 
     // Option 3
     public V8ValueInteger echo(int i) {
-        return new V8ValueInteger(i);
+        return v8Runtime.createV8ValueInteger(i);
     }
 
     // Option 4

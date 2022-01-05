@@ -54,8 +54,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String METHOD_PREFIX_SET = "set";
     protected static final String PROPERTY_PROTOTYPE = "prototype";
 
-    protected V8ValueObject(long handle) {
-        super(handle);
+    protected V8ValueObject(V8Runtime v8Runtime, long handle) throws JavetException {
+        super(v8Runtime, handle);
     }
 
     @Override

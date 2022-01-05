@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-android:1.0.4 -f docker/android/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-android:1.0.7 -f docker/android/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
 
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
-RUN echo Cache V2
+RUN echo Cache V3
 RUN apt-get update
 RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack cmake
 RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
@@ -37,7 +37,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.6.180.8
+RUN git checkout 9.7.106.18
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh

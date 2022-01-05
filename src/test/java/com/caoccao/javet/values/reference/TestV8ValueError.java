@@ -37,4 +37,19 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             }
         }
     }
+
+    @Test
+    public void testProperty() throws JavetException {
+        try (V8ValueError v8ValueError = v8Runtime.getExecutor("const e = Error('test'); e.a = 1; e;").execute()) {
+            assertNotNull(v8ValueError);
+            assertEquals("test", v8ValueError.getMessage());
+            assertEquals("Error: test\n    at <anonymous>:1:11", v8ValueError.getStack());
+            try (IV8ValueArray iV8ValueArray = v8ValueError.getOwnPropertyNames()) {
+                assertNotNull(iV8ValueArray);
+                assertEquals(1, iV8ValueArray.getLength());
+                assertEquals("a", iV8ValueArray.getString(0));
+            }
+            assertEquals(1, v8ValueError.getInteger("a"));
+        }
+    }
 }

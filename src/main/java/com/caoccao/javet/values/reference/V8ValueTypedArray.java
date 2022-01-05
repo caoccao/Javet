@@ -20,6 +20,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 import java.util.Objects;
 
@@ -53,63 +54,90 @@ import java.util.Objects;
  *     // ...
  * }
  * </pre>
+ *
+ * @since 0.7.2
  */
 public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArray {
 
     /**
      * The constant PROPERTY_BYTE_LENGTH.
+     *
+     * @since 0.7.2
      */
     public static final String PROPERTY_BYTE_LENGTH = "byteLength";
     /**
      * The constant PROPERTY_BUFFER.
+     *
+     * @since 0.7.2
      */
     public static final String PROPERTY_BUFFER = "buffer";
     /**
      * The constant PROPERTY_BYTE_OFFSET.
+     *
+     * @since 0.7.2
      */
     public static final String PROPERTY_BYTE_OFFSET = "byteOffset";
     /**
      * The constant PROPERTY_NAME.
+     *
+     * @since 0.7.2
      */
     public static final String PROPERTY_NAME = "Name";
     /**
      * The constant ONE_BYTE_PER_VALUE.
+     *
+     * @since 0.7.2
      */
     public static final int ONE_BYTE_PER_VALUE = 1;
     /**
      * The constant TWO_BYTES_PER_VALUE.
+     *
+     * @since 0.7.2
      */
     public static final int TWO_BYTES_PER_VALUE = 2;
     /**
      * The constant FOUR_BYTES_PER_VALUE.
+     *
+     * @since 0.7.2
      */
     public static final int FOUR_BYTES_PER_VALUE = 4;
     /**
      * The constant EIGHT_BYTES_PER_VALUE.
+     *
+     * @since 0.7.2
      */
     public static final int EIGHT_BYTES_PER_VALUE = 8;
     /**
      * The constant ZERO_BYTE_PER_VALUE.
+     *
+     * @since 0.7.2
      */
     public static final int ZERO_BYTE_PER_VALUE = 0;
 
     /**
      * The Size in bytes.
+     *
+     * @since 0.7.2
      */
     protected int sizeInBytes;
     /**
      * The Type.
+     *
+     * @since 0.8.4
      */
     protected V8ValueReferenceType type;
 
     /**
      * Instantiates a new V8 value typed array.
      *
-     * @param handle the handle
-     * @param type   the type
+     * @param v8Runtime the v 8 runtime
+     * @param handle    the handle
+     * @param type      the type
+     * @throws JavetException the javet exception
+     * @since 0.8.4
      */
-    V8ValueTypedArray(long handle, int type) {
-        super(handle);
+    V8ValueTypedArray(V8Runtime v8Runtime, long handle, int type) throws JavetException {
+        super(v8Runtime, handle);
         setType(V8ValueReferenceType.parse(type));
     }
 
@@ -119,6 +147,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @param bytes the byte array
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public boolean fromBytes(byte[] bytes) throws JavetException {
         Objects.requireNonNull(bytes);
@@ -138,6 +167,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @param doubles the double array
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public boolean fromDoubles(double[] doubles) throws JavetException {
         Objects.requireNonNull(doubles);
@@ -155,6 +185,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @param floats the float array
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public boolean fromFloats(float[] floats) throws JavetException {
         Objects.requireNonNull(floats);
@@ -172,6 +203,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @param integers the integer array
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public boolean fromIntegers(int[] integers) throws JavetException {
         Objects.requireNonNull(integers);
@@ -190,6 +222,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @param longs the long array
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public boolean fromLongs(long[] longs) throws JavetException {
         Objects.requireNonNull(longs);
@@ -208,6 +241,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @param shorts the short array
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public boolean fromShorts(short[] shorts) throws JavetException {
         Objects.requireNonNull(shorts);
@@ -260,6 +294,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * Sets type.
      *
      * @param type the type
+     * @since 0.9.1
      */
     protected void setType(V8ValueReferenceType type) {
         switch (type) {
@@ -295,6 +330,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      *
      * @return the byte array
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public byte[] toBytes() throws JavetException {
         if (getType() == V8ValueReferenceType.Int8Array ||
@@ -312,6 +348,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      *
      * @return the double array
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public double[] toDoubles() throws JavetException {
         if (getType() == V8ValueReferenceType.Float64Array) {
@@ -327,6 +364,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      *
      * @return the float array
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public float[] toFloats() throws JavetException {
         if (getType() == V8ValueReferenceType.Float32Array) {
@@ -342,6 +380,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      *
      * @return the int array
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public int[] toIntegers() throws JavetException {
         if (getType() == V8ValueReferenceType.Int32Array ||
@@ -358,6 +397,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      *
      * @return the long array
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public long[] toLongs() throws JavetException {
         if (getType() == V8ValueReferenceType.BigInt64Array ||
@@ -374,6 +414,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      *
      * @return the short array
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     public short[] toShorts() throws JavetException {
         if (getType() == V8ValueReferenceType.Int16Array ||

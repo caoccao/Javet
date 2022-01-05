@@ -18,12 +18,14 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 import java.nio.ByteBuffer;
 
 public class V8ValueSharedArrayBuffer extends V8ValueArrayBuffer {
-    V8ValueSharedArrayBuffer(long handle, ByteBuffer byteBuffer) {
-        super(handle, byteBuffer);
+    V8ValueSharedArrayBuffer(V8Runtime v8Runtime, long handle, ByteBuffer byteBuffer) throws JavetException {
+        super(v8Runtime, handle, byteBuffer);
     }
 
     @Override

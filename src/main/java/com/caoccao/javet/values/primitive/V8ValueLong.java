@@ -18,19 +18,20 @@
 package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 @SuppressWarnings("unchecked")
 public final class V8ValueLong extends V8ValuePrimitive<Long> {
-    public V8ValueLong() {
-        this(0L);
+    public V8ValueLong(V8Runtime v8Runtime) throws JavetException {
+        this(v8Runtime, 0L);
     }
 
-    public V8ValueLong(long value) {
-        super(value);
+    public V8ValueLong(V8Runtime v8Runtime, long value) throws JavetException {
+        super(v8Runtime, value);
     }
 
-    public V8ValueLong(String value) {
-        super(Long.valueOf(value));
+    public V8ValueLong(V8Runtime v8Runtime, String value) throws JavetException {
+        this(v8Runtime, Long.valueOf(value));
     }
 
     @Override

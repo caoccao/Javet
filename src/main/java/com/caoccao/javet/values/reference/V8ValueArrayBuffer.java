@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -32,8 +33,8 @@ public class V8ValueArrayBuffer extends V8ValueObject {
     protected ByteBuffer byteBuffer;
     protected ByteOrder byteOrder;
 
-    V8ValueArrayBuffer(long handle, ByteBuffer byteBuffer) {
-        super(handle);
+    V8ValueArrayBuffer(V8Runtime v8Runtime, long handle, ByteBuffer byteBuffer) throws JavetException {
+        super(v8Runtime, handle);
         this.byteBuffer = byteBuffer;
         byteOrder = ByteOrder.nativeOrder();
     }

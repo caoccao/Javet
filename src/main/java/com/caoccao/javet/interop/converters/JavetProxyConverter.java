@@ -105,7 +105,7 @@ public class JavetProxyConverter extends JavetObjectConverter {
             v8Value = v8ValueProxy;
             v8Scope.setEscapable();
         }
-        return (T) v8Runtime.decorateV8Value(v8Value);
+        return (T) v8Value;
     }
 
     @Override
