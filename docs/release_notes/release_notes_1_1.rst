@@ -7,3 +7,4 @@ Release Notes 1.1.x
 
 * Upgraded Android NDK to r23b
 * Updated Android ABI >= 23
+* Added static libgcc and libstdc++ for Linux

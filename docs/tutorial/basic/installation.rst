@@ -63,10 +63,10 @@ Linux
 OS                          Compatible
 =========================== =======================================================================================================================
 Ubuntu 20.04                Yes
-Ubuntu 18.04                Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
-Ubuntu 16.04                Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
-Cent OS 8                   Yes
-Cent OS 7                   Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
+Ubuntu 18.04                Yes (since v1.1.0)
+Ubuntu 16.04                Yes (since v1.1.0)
+Cent OS 8                   Yes (since v1.1.0)
+Cent OS 7                   Yes (since v1.1.0)
 Other Linux Distributions   Not Tested
 =========================== =======================================================================================================================
 
