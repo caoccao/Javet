@@ -176,9 +176,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                debug "-lrt" optimized "-lrt" "${libgcc}")
+                debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                debug "-lrt" optimized "-lrt" "${libgcc}")
+                debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         if(DEFINED NODE_DIR)
             list(APPEND includeDirs
@@ -190,9 +190,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             endforeach(importLibrary)
             list(REMOVE_ITEM importLibraries v8_init)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                v8_init debug "-lrt" optimized "-lrt" "${libgcc}")
+                v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                v8_init debug "-lrt" optimized "-lrt" "${libgcc}")
+                v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         # Exported symbol filter is disabled unless production issues call for it.
         # https://www.gnu.org/software/gnulib/manual/html_node/LD-Version-Scripts.html
