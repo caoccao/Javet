@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:1.1.0 -f docker/linux-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:1.1.0.1 -f docker/linux-x86_64/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
@@ -27,6 +27,15 @@ RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python pyth
 RUN apt-get upgrade -y
 RUN pip3 install coloredlogs
 
+# Install CMake
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4-linux-x86_64.sh
+RUN chmod 755 cmake-3.21.4-linux-x86_64.sh
+RUN mkdir -p /usr/lib/cmake
+RUN ./cmake-3.21.4-linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/lib/cmake
+RUN ln -sf /usr/lib/cmake/bin/cmake /usr/bin/cmake
+RUN ln -sf /usr/lib/cmake/bin/cmake /bin/cmake
+RUN rm cmake-3.21.4-linux-x86_64.sh
+
 # Prepare V8
 RUN mkdir google
 WORKDIR /google
@@ -37,7 +46,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.7.106.18
+RUN git checkout 9.8.177.11
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
@@ -58,7 +67,7 @@ RUN echo V8 build is completed.
 WORKDIR /
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v16.13.1
+RUN git checkout v16.14.0
 RUN echo Node.js preparation is completed.
 
 # Build Node.js
@@ -80,15 +89,6 @@ ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
 RUN curl -s https://get.sdkman.io | bash
 RUN source ${SDKMAN_HOME}/bin/sdkman-init.sh && sdk install gradle 7.2
 ENV PATH=$GRADLE_HOME/bin:$PATH
-
-# Install CMake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4-linux-x86_64.sh
-RUN chmod 755 cmake-3.21.4-linux-x86_64.sh
-RUN mkdir -p /usr/lib/cmake
-RUN ./cmake-3.21.4-linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/lib/cmake
-RUN ln -sf /usr/lib/cmake/bin/cmake /usr/bin/cmake
-RUN ln -sf /usr/lib/cmake/bin/cmake /bin/cmake
-RUN rm cmake-3.21.4-linux-x86_64.sh
 
 # Shrink
 RUN rm -rf ${SDKMAN_HOME}/archives/*
