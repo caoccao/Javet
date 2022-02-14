@@ -26,7 +26,7 @@ Linux Environment
 -----------------
 
 * Ubuntu 20.04
-* CMake 3.10+
+* CMake 3.21+
 * JDK 8
 * Gradle 7.2+
 

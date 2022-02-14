@@ -21,13 +21,14 @@
 #include <v8.h>
 #include <v8-inspector.h>
 
-// These libraries are for V8 on Windows
+#ifdef _WIN32
 #pragma comment(lib, "DbgHelp.lib")
 #pragma comment(lib, "Iphlpapi.lib")
 #pragma comment(lib, "Psapi.lib")
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "Winmm.lib")
 #pragma comment(lib, "Ws2_32.lib")
+#endif
 
 // Scope
 

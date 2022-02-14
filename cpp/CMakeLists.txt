@@ -52,9 +52,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     else()
         message(FATAL_ERROR "CMAKE_ANDROID_ARCH must be one of arm, arm64, x86, x86_64.")
     endif()
-    # For now, the target ABI version is set to 26 because not all Java code is fully compatible with legacy SDK.
-    # In the future, more work will be done to lower the target ABI version.
-    set(CMAKE_SYSTEM_VERSION 21)
+    # The target ABI version is set to 23 because pre-23 is no longer supported by V8 v9.7+.
+    set(CMAKE_SYSTEM_VERSION 23)
     set(CMAKE_ANDROID_STL_TYPE c++_static)
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
@@ -138,6 +137,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND includeDirs $ENV{JAVA_HOME}/include/win32)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     if(DEFINED V8_DIR)
+        add_definitions(-D_WIN32_WINNT)
         foreach(importLibrary ${importLibraries})
             set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/${importLibrary}.lib)
         endforeach(importLibrary)
@@ -177,9 +177,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                debug "-lrt" optimized "-lrt" "${libgcc}")
+                debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                debug "-lrt" optimized "-lrt" "${libgcc}")
+                debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         if(DEFINED NODE_DIR)
             list(APPEND includeDirs
@@ -191,9 +191,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             endforeach(importLibrary)
             list(REMOVE_ITEM importLibraries v8_init)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                v8_init debug "-lrt" optimized "-lrt" "${libgcc}")
+                v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                v8_init debug "-lrt" optimized "-lrt" "${libgcc}")
+                v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         # Exported symbol filter is disabled unless production issues call for it.
         # https://www.gnu.org/software/gnulib/manual/html_node/LD-Version-Scripts.html
@@ -209,9 +209,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                -llog "${libgcc}")
+                -llog -static-libgcc -static-libstdc++ "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                -llog "${libgcc}")
+                -llog -static-libgcc -static-libstdc++ "${libgcc}")
         endif()
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|x86_64)")
         set(JAVET_LIB_SYSTEM "macos")

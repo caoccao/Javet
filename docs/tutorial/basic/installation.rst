@@ -14,14 +14,14 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>1.0.7</version>
+        <version>1.1.0</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>1.0.7</version>
+        <version>1.1.0</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -29,18 +29,18 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:1.0.7") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-macos:1.0.7") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:1.0.7") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:1.1.0") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-macos:1.1.0") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android:1.1.0") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 -----------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:1.0.7' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-macos:1.0.7' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:1.0.7' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:1.1.0' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-macos:1.1.0' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:1.1.0' // Android (arm, arm64, x86 and x86_64)
 
 OS Compatibility
 ================
@@ -63,10 +63,10 @@ Linux
 OS                          Compatible
 =========================== =======================================================================================================================
 Ubuntu 20.04                Yes
-Ubuntu 18.04                Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
-Ubuntu 16.04                Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
-Cent OS 8                   Yes
-Cent OS 7                   Yes (`Private Build <https://drive.google.com/drive/folders/18wcF8c-zjZg9iZeGfNSL8-bxqJwDZVEL?usp=sharing>`_)
+Ubuntu 18.04                Yes (since v1.1.0)
+Ubuntu 16.04                Yes (since v1.1.0)
+Cent OS 8                   Yes (since v1.1.0)
+Cent OS 7                   Yes (since v1.1.0)
 Other Linux Distributions   Not Tested
 =========================== =======================================================================================================================
 
@@ -94,10 +94,10 @@ Android
 =========================== =======================================================================================================================
 OS                          Compatible
 =========================== =======================================================================================================================
-Android arm                 Yes (ABI >= 21)
-Android arm64               Yes (ABI >= 21)
-Android x86                 Yes (ABI >= 21)
-Android x86_64              Yes (ABI >= 21)
+Android arm                 Yes (ABI >= 23)
+Android arm64               Yes (ABI >= 23)
+Android x86                 Yes (ABI >= 23)
+Android x86_64              Yes (ABI >= 23)
 =========================== =======================================================================================================================
 
 .. caution::
@@ -105,5 +105,5 @@ Android x86_64              Yes (ABI >= 21)
     * Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.
     * If you need Node.js features on Android, please refer to project `Javenode <https://github.com/caoccao/Javenode>`_.
     * `ZonedDateTime <https://developer.android.com/reference/java/time/ZonedDateTime>`_ (since ABI 26) is polyfilled by ``org.threeten.bp.ZonedDateTime`` so that Javet can work well with low ABI version.
-    * `Stream` and `Optional` are not supported because they are not available with ABI version 21-24.
-    * More Android CPU arch support implies considerable effort. Please contact the maintainer for detail.
+    * `Stream` and `Optional` are not supported because they are not available with ABI version 23-24.
+    * If you need ABI version 21/22, please use Javet v1.0.x or contact the maintainer for details.

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-android:1.0.7 -f docker/android/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-android:1.1.0.1 -f docker/android/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
@@ -27,6 +27,15 @@ RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python pyth
 RUN apt-get upgrade -y
 RUN pip3 install coloredlogs
 
+# Install CMake
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4-linux-x86_64.sh
+RUN chmod 755 cmake-3.21.4-linux-x86_64.sh
+RUN mkdir -p /usr/lib/cmake
+RUN ./cmake-3.21.4-linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/lib/cmake
+RUN ln -sf /usr/lib/cmake/bin/cmake /usr/bin/cmake
+RUN ln -sf /usr/lib/cmake/bin/cmake /bin/cmake
+RUN rm cmake-3.21.4-linux-x86_64.sh
+
 # Prepare V8
 RUN mkdir google
 WORKDIR /google
@@ -37,7 +46,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 9.7.106.18
+RUN git checkout 9.8.177.11
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
@@ -48,9 +57,9 @@ RUN echo V8 preparation is completed.
 
 # Prepare Android NDK
 WORKDIR /
-RUN wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
-RUN unzip android-ndk-r21e-linux-x86_64.zip
-RUN rm android-ndk-r21e-linux-x86_64.zip
+RUN wget https://dl.google.com/android/repository/android-ndk-r23b-linux.zip
+RUN unzip android-ndk-r23b-linux.zip
+RUN rm android-ndk-r23b-linux.zip
 
 # Prepare Android SDK
 WORKDIR /google/v8/third_party/android_sdk/public/cmdline-tools/latest/bin
