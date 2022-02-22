@@ -2,6 +2,11 @@
 Release Notes 1.1.x
 ===================
 
+1.1.1
+-------------
+
+* Enhanced createV8ValueArrayBuffer with ByteBuffer
+
 1.1.0 V8 v9.8
 -------------
 

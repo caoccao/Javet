@@ -35,6 +35,7 @@
   * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
   */
 
+#define IS_JAVA_BYTE_BUFFER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassByteBuffer)
 #define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueInteger)
 #define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueString)
 #define IS_JAVA_SYMBOL(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueSymbol)
@@ -73,6 +74,8 @@ namespace Javet {
         static std::unique_ptr<V8Platform> GlobalV8Platform;
 #endif
 
+        static jclass jclassByteBuffer;
+
         static jclass jclassV8Host;
         static jmethodID jmethodIDV8HostIsLibraryReloadable;
 
@@ -98,6 +101,8 @@ namespace Javet {
         or runtime memory corruption will take place.
         */
         void Initialize(JNIEnv* jniEnv) {
+            jclassByteBuffer = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/nio/ByteBuffer"));
+
             jclassV8Host = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Host"));
             jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
 
@@ -324,6 +329,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
     else if (IS_V8_ARRAY_BUFFER(v8ValueType)) {
         if (IS_JAVA_INTEGER(jniEnv, mContext)) {
             v8LocalValueResult = v8::ArrayBuffer::New(v8Context->GetIsolate(), TO_JAVA_INTEGER(jniEnv, mContext));
+        }
+        else if (IS_JAVA_BYTE_BUFFER(jniEnv, mContext)) {
+            std::unique_ptr<v8::BackingStore> v8BackingStorePointer = v8::ArrayBuffer::NewBackingStore(
+                jniEnv->GetDirectBufferAddress(mContext),
+                static_cast<size_t>(jniEnv->GetDirectBufferCapacity(mContext)),
+                [](void*, size_t, void*) {},
+                nullptr);
+            v8LocalValueResult = v8::ArrayBuffer::New(v8Context->GetIsolate(), std::move(v8BackingStorePointer));
         }
     }
     else if (IS_V8_FUNCTION(v8ValueType)) {

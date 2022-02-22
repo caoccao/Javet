@@ -1,18 +1,17 @@
 /*
- *   Copyright (c) 2021. caoccao.com Sam Cao
- *   All rights reserved.
+ * Copyright (c) 2021-2022. caoccao.com Sam Cao
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.caoccao.javet.interop;
@@ -24,6 +23,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
+import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 
 /**
@@ -43,7 +43,7 @@ public interface IV8Creatable {
     V8ValueArray createV8ValueArray() throws JavetException;
 
     /**
-     * Create V8 value array buffer.
+     * Create V8 value array buffer from a given length.
      *
      * @param length the length
      * @return the V8 value array buffer
@@ -52,6 +52,17 @@ public interface IV8Creatable {
      */
     @CheckReturnValue
     V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException;
+
+    /**
+     * Create V8 value array buffer from a native byte buffer.
+     *
+     * @param byteBuffer the byte buffer
+     * @return the V8 value array buffer
+     * @throws JavetException the javet exception
+     * @since 1.1.1
+     */
+    @CheckReturnValue
+    V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException;
 
     /**
      * Create V8 value boolean.
