@@ -138,6 +138,7 @@ public final class JavetTypeUtils {
      * @return the double stream
      * @since 0.9.13
      */
+    /* if not defined ANDROID */
     public static DoubleStream toDoubleStream(Object object) {
         if (object instanceof double[]) {
             return DoubleStream.of((double[]) object);
@@ -149,6 +150,7 @@ public final class JavetTypeUtils {
         }
         return null;
     }
+    /* end if */
 
     /**
      * To exact primitive object.
@@ -193,6 +195,7 @@ public final class JavetTypeUtils {
      * @return the int stream
      * @since 0.9.13
      */
+    /* if not defined ANDROID */
     public static IntStream toIntStream(Object object) {
         if (object instanceof int[]) {
             return IntStream.of((int[]) object);
@@ -204,6 +207,7 @@ public final class JavetTypeUtils {
         }
         return null;
     }
+    /* end if */
 
     /**
      * Convert object to long stream.
@@ -212,6 +216,7 @@ public final class JavetTypeUtils {
      * @return the long stream
      * @since 0.9.13
      */
+    /* if not defined ANDROID */
     public static LongStream toLongStream(Object object) {
         if (object instanceof long[]) {
             return LongStream.of((long[]) object);
@@ -223,6 +228,7 @@ public final class JavetTypeUtils {
         }
         return null;
     }
+    /* end if */
 
     /**
      * Convert object to stream.
@@ -231,6 +237,7 @@ public final class JavetTypeUtils {
      * @return the stream
      * @since 0.9.13
      */
+    /* if not defined ANDROID */
     public static Stream<?> toStream(Object object) {
         if (object.getClass().isArray()) {
             if (object instanceof int[]) {
@@ -282,4 +289,5 @@ public final class JavetTypeUtils {
         }
         return null;
     }
+    /* end if */
 }

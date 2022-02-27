@@ -104,4 +104,6 @@ Android x86_64              Yes (ABI >= 23)
 
     * Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.
     * If you need Node.js features on Android, please refer to project `Javenode <https://github.com/caoccao/Javenode>`_.
+    * `ZonedDateTime <https://developer.android.com/reference/java/time/ZonedDateTime>`_ (since ABI 26) is polyfilled by ``org.threeten.bp.ZonedDateTime`` so that Javet can work well with low ABI version.
+    * `Stream` and `Optional` are not supported because they are not available with ABI version 23-24.
     * If you need ABI version 21/22, please use Javet v1.0.x or contact the maintainer for details.

@@ -455,6 +455,8 @@
 <ul class="simple">
 <li><p>Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.</p></li>
 <li><p>If you need Node.js features on Android, please refer to project <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a>.</p></li>
+<li><p><a class="reference external" href="https://developer.android.com/reference/java/time/ZonedDateTime">ZonedDateTime</a> (since ABI 26) is polyfilled by <code class="docutils literal notranslate"><span class="pre">org.threeten.bp.ZonedDateTime</span></code> so that Javet can work well with low ABI version.</p></li>
+<li><p><cite>Stream</cite> and <cite>Optional</cite> are not supported because they are not available with ABI version 23-24.</p></li>
 <li><p>If you need ABI version 21/22, please use Javet v1.0.x or contact the maintainer for details.</p></li>
 </ul>
 </div>
