@@ -6,6 +6,7 @@ Release Notes 1.1.x
 -------------
 
 * Enhanced createV8ValueArrayBuffer with ByteBuffer
+* Added support to `Optional`, `Stream`, `ZonedDateTime` for Android
 
 1.1.0 V8 v9.8
 -------------

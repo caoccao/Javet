@@ -1,5 +1,5 @@
 /*
- *    Copyright 2021. caoccao.com Sam Cao
+ *    Copyright 2021-2022. caoccao.com Sam Cao
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -55,8 +55,9 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("org.threeten:threetenbp:1.5.1")
+    // https://developer.android.com/studio/write/java8-support
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    implementation("androidx.appcompat:appcompat:1.4.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
