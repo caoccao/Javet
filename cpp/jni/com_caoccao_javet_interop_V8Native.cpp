@@ -518,6 +518,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, key);
     V8MaybeLocalValue v8MaybeLocalValueResult;
+    V8TryCatch v8TryCatch(v8Context->GetIsolate());
     if (IS_V8_ARGUMENTS(v8ValueType) || IS_V8_ARRAY(v8ValueType) || v8LocalValue->IsTypedArray()) {
         if (IS_JAVA_INTEGER(jniEnv, key)) {
             jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
@@ -564,6 +565,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
                 v8MaybeLocalValueResult = v8LocalObject->Get(v8Context, v8LocalValueKey);
             }
         }
+    }
+    if (v8TryCatch.HasCaught()) {
+        return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
     }
     if (v8MaybeLocalValueResult.IsEmpty()) {
         if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime->externalV8Runtime, v8Context)) {
@@ -698,9 +702,13 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPrivateProp
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mKey) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalValue->IsObject()) {
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
         auto v8LocalStringKey = Javet::Converter::ToV8String(jniEnv, v8Context, mKey);
         auto v8LocalPrivateKey = v8::Private::ForApi(v8Context->GetIsolate(), v8LocalStringKey);
         auto v8MaybeLocalValue = v8LocalValue.As<v8::Object>()->GetPrivate(v8Context, v8LocalPrivateKey);
+        if (v8TryCatch.HasCaught()) {
+            return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
+        }
         if (v8MaybeLocalValue.IsEmpty()) {
             if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime->externalV8Runtime, v8Context)) {
                 return nullptr;
@@ -757,6 +765,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
         }
     }
     if (v8LocalValue->IsObject()) {
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
         V8MaybeLocalValue v8MaybeLocalValueValue;
         if (IS_JAVA_INTEGER(jniEnv, key)) {
@@ -773,6 +782,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
             else {
                 v8MaybeLocalValueValue = v8LocalObject->Get(v8Context, v8ValueKey);
             }
+        }
+        if (v8TryCatch.HasCaught()) {
+            return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
         }
         if (v8MaybeLocalValueValue.IsEmpty()) {
             if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime->externalV8Runtime, v8Context)) {

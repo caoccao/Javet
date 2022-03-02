@@ -23,6 +23,7 @@ import com.caoccao.javet.annotations.V8Property;
 import com.caoccao.javet.entities.JavetEntityFunction;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
@@ -321,6 +322,21 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertTrue(v8ValueObject.delete("b"));
             V8Value v8Value = v8ValueObject.getUndefined("b");
             assertNotNull(v8Value);
+        }
+        v8Runtime.getExecutor("var test = { get a(){return b;}};").executeVoid();
+        try {
+            v8Runtime.getGlobalObject().getObject("test");
+            fail("Failed to report ReferenceError.");
+        } catch (JavetExecutionException e) {
+            assertEquals("ReferenceError: b is not defined", e.getMessage());
+            assertEquals(
+                    "ReferenceError: b is not defined\n" +
+                            "Resource: undefined\n" +
+                            "Source Code: var test = { get a(){return b;}};\n" +
+                            "Line Number: 1\n" +
+                            "Column: 21, 22\n" +
+                            "Position: 21, 22",
+                    e.getScriptingError().toString());
         }
     }
 

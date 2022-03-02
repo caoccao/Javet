@@ -81,8 +81,12 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                 assertEquals(3, v8ValueProxy.getInteger("b"));
                 v8ValueProxy.revoke();
                 assertTrue(v8ValueProxy.isRevoked());
-                assertTrue(v8ValueProxy.get("a").isUndefined());
-                assertTrue(v8ValueProxy.get("b").isUndefined());
+                try {
+                    v8ValueProxy.get("a");
+                    fail("Failed to report TypeError.");
+                } catch (JavetExecutionException e) {
+                    assertEquals("TypeError: Cannot perform 'get' on a proxy that has been revoked", e.getMessage());
+                }
             }
         }
     }

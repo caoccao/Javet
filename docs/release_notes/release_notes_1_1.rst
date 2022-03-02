@@ -6,6 +6,7 @@ Release Notes 1.1.x
 -------------
 
 * Enhanced createV8ValueArrayBuffer with ByteBuffer
+* Fixed a bug in ``V8ValueObject.get()`` when evaluation fails
 
 1.1.0 V8 v9.8
 -------------
