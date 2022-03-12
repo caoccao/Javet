@@ -1545,7 +1545,6 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
         char const* utfChars = jniEnv->GetStringUTFChars(flags, nullptr);
         v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(flags));
         jniEnv->ReleaseStringUTFChars(flags, utfChars);
-        v8::V8::Initialize();
     }
 }
 
