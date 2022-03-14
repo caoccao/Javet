@@ -75,7 +75,6 @@ public final class V8FunctionCallback {
                 } else if (expectedClass == char.class) {
                     return config.getDefaultChar();
                 }
-                /* if not defined ANDROID */
             } else if (expectedClass == Optional.class) {
                 return Optional.empty();
             } else if (expectedClass == OptionalInt.class) {
@@ -92,7 +91,6 @@ public final class V8FunctionCallback {
                 return DoubleStream.empty();
             } else if (expectedClass == LongStream.class) {
                 return LongStream.empty();
-                /* end if */
             }
         } else if (expectedClass.isAssignableFrom(v8Value.getClass())) {
             // Skip assignable
@@ -259,7 +257,6 @@ public final class V8FunctionCallback {
                             return convertedString.length() > 0 ?
                                     convertedString.charAt(0) : converter.getConfig().getDefaultChar();
                         }
-                        /* if not defined ANDROID */
                     } else if (expectedClass == Optional.class) {
                         return Optional.of(convertedObject);
                     } else if (expectedClass == OptionalInt.class) {
@@ -294,7 +291,6 @@ public final class V8FunctionCallback {
                         if (doubleStream != null) {
                             return doubleStream;
                         }
-                        /* end if */
                     }
                 }
             } catch (Throwable ignored) {

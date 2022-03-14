@@ -7,6 +7,7 @@ Release Notes 1.1.x
 
 * Upgraded V8 to ``v9.9.115.9`` `(2022-03-07) <https://v8.dev/blog/v8-release-99>`_
 * Enhanced createV8ValueArrayBuffer with ByteBuffer
+* Added support to `Optional`, `Stream`, `ZonedDateTime` for Android
 * Fixed a bug in ``V8ValueObject.get()`` when evaluation fails
 
 1.1.0 V8 v9.8
