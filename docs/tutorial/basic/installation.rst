@@ -14,14 +14,14 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -29,18 +29,18 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:1.1.0") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-macos:1.1.0") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:1.1.0") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:1.1.1") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-macos:1.1.1") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android:1.1.1") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 -----------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:1.1.0' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-macos:1.1.0' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:1.1.0' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:1.1.1' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-macos:1.1.1' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:1.1.1' // Android (arm, arm64, x86 and x86_64)
 
 OS Compatibility
 ================
@@ -104,6 +104,4 @@ Android x86_64              Yes (ABI >= 23)
 
     * Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.
     * If you need Node.js features on Android, please refer to project `Javenode <https://github.com/caoccao/Javenode>`_.
-    * `ZonedDateTime <https://developer.android.com/reference/java/time/ZonedDateTime>`_ (since ABI 26) is polyfilled by ``org.threeten.bp.ZonedDateTime`` so that Javet can work well with low ABI version.
-    * `Stream` and `Optional` are not supported because they are not available with ABI version 23-24.
     * If you need ABI version 21/22, please use Javet v1.0.x or contact the maintainer for details.

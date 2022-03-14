@@ -1,5 +1,5 @@
 '''
-  Copyright (c) 2021 caoccao.com Sam Cao
+  Copyright (c) 2021-2022 caoccao.com Sam Cao
   All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,19 +30,9 @@ class PatchAndroidBuild(object):
   def __init__(self) -> None:
     self._line_separator = '\n'
     self._patch_dict = {
-      'java.time.': 'org.threeten.bp.',
       '.getParameterCount()': '.getParameterTypes().length',
     }
     self._comment_list = [
-      'import java.util.Optional;',
-      'import java.util.OptionalDouble;',
-      'import java.util.OptionalInt;',
-      'import java.util.OptionalLong;',
-      'import java.util.stream.BaseStream;',
-      'import java.util.stream.DoubleStream;',
-      'import java.util.stream.IntStream;',
-      'import java.util.stream.LongStream;',
-      'import java.util.stream.Stream;',
       'import javax.management.ListenerNotFoundException;',
       'import javax.management.Notification;',
       'import javax.management.NotificationEmitter;',

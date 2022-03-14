@@ -21,13 +21,13 @@ plugins {
     id("com.android.library")
 }
 
-version = "1.1.0"
+version = "1.1.1"
 
 android {
     compileSdk = 30
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
         targetSdk = 30
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -46,6 +46,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    lintOptions.isAbortOnError = false
+
     sourceSets {
         getByName("main") {
             java.srcDirs("src/main/java")
@@ -55,8 +57,9 @@ android {
 }
 
 dependencies {
+    // https://developer.android.com/studio/write/java8-support
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
     implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("org.threeten:threetenbp:1.5.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

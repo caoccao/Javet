@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2021. caoccao.com Sam Cao
+ * Copyright (c) 2021-2022. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
+import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +148,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     public V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return add(v8Runtime.createV8ValueArrayBuffer(length));
+    }
+
+    @Override
+    public V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return add(v8Runtime.createV8ValueArrayBuffer(byteBuffer));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2022 caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License"),
@@ -129,8 +129,8 @@ namespace Javet {
                 Uint16Array = 37, //      0 to 65535     2     16-bit unsigned integer     unsigned short     uint16_t
                 Int32Array = 38, // -2147483648 to 2147483647     4     32-bit two's complement signed integer     long     int32_t
                 Uint32Array = 39, // 0 to 4294967295     4     32-bit unsigned integer     unsigned long     uint32_t
-                Float32Array = 40, // 1.2¡Á10^-38 to 3.4¡Á10^38     4     32-bit IEEE floating point number (7 significant digits e.g., 1.234567)     unrestricted float     float
-                Float64Array = 41, // 5.0¡Á10^-324 to 1.8¡Á10^308     8     64-bit IEEE floating point number (16 significant digits e.g., 1.23456789012345)     unrestricted double     double
+                Float32Array = 40, // 1.2ï¿½ï¿½10^-38 to 3.4ï¿½ï¿½10^38     4     32-bit IEEE floating point number (7 significant digits e.g., 1.234567)     unrestricted float     float
+                Float64Array = 41, // 5.0ï¿½ï¿½10^-324 to 1.8ï¿½ï¿½10^308     8     64-bit IEEE floating point number (16 significant digits e.g., 1.23456789012345)     unrestricted double     double
                 BigInt64Array = 42, // -2^63 to 2^63-1     8     64-bit two's complement signed integer     bigint     int64_t (signed long long)
                 BigUint64Array = 43, // 0 to 2^64-1     8     64-bit unsigned integer     bigint     uint64_t (unsigned long long)
             };

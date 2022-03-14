@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2022 caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,7 @@
   * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
   */
 
+#define IS_JAVA_BYTE_BUFFER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassByteBuffer)
 #define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueInteger)
 #define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueString)
 #define IS_JAVA_SYMBOL(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueSymbol)
@@ -73,6 +74,8 @@ namespace Javet {
         static std::unique_ptr<V8Platform> GlobalV8Platform;
 #endif
 
+        static jclass jclassByteBuffer;
+
         static jclass jclassV8Host;
         static jmethodID jmethodIDV8HostIsLibraryReloadable;
 
@@ -98,6 +101,8 @@ namespace Javet {
         or runtime memory corruption will take place.
         */
         void Initialize(JNIEnv* jniEnv) {
+            jclassByteBuffer = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/nio/ByteBuffer"));
+
             jclassV8Host = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Host"));
             jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
 
@@ -325,6 +330,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         if (IS_JAVA_INTEGER(jniEnv, mContext)) {
             v8LocalValueResult = v8::ArrayBuffer::New(v8Context->GetIsolate(), TO_JAVA_INTEGER(jniEnv, mContext));
         }
+        else if (IS_JAVA_BYTE_BUFFER(jniEnv, mContext)) {
+            std::unique_ptr<v8::BackingStore> v8BackingStorePointer = v8::ArrayBuffer::NewBackingStore(
+                jniEnv->GetDirectBufferAddress(mContext),
+                static_cast<size_t>(jniEnv->GetDirectBufferCapacity(mContext)),
+                [](void*, size_t, void*) {},
+                nullptr);
+            v8LocalValueResult = v8::ArrayBuffer::New(v8Context->GetIsolate(), std::move(v8BackingStorePointer));
+        }
     }
     else if (IS_V8_FUNCTION(v8ValueType)) {
         auto javetCallbackContextReferencePointer = new Javet::Callback::JavetCallbackContextReference(jniEnv, mContext);
@@ -505,6 +518,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, key);
     V8MaybeLocalValue v8MaybeLocalValueResult;
+    V8TryCatch v8TryCatch(v8Context->GetIsolate());
     if (IS_V8_ARGUMENTS(v8ValueType) || IS_V8_ARRAY(v8ValueType) || v8LocalValue->IsTypedArray()) {
         if (IS_JAVA_INTEGER(jniEnv, key)) {
             jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
@@ -551,6 +565,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
                 v8MaybeLocalValueResult = v8LocalObject->Get(v8Context, v8LocalValueKey);
             }
         }
+    }
+    if (v8TryCatch.HasCaught()) {
+        return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
     }
     if (v8MaybeLocalValueResult.IsEmpty()) {
         if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime->externalV8Runtime, v8Context)) {
@@ -685,9 +702,13 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPrivateProp
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mKey) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalValue->IsObject()) {
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
         auto v8LocalStringKey = Javet::Converter::ToV8String(jniEnv, v8Context, mKey);
         auto v8LocalPrivateKey = v8::Private::ForApi(v8Context->GetIsolate(), v8LocalStringKey);
         auto v8MaybeLocalValue = v8LocalValue.As<v8::Object>()->GetPrivate(v8Context, v8LocalPrivateKey);
+        if (v8TryCatch.HasCaught()) {
+            return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
+        }
         if (v8MaybeLocalValue.IsEmpty()) {
             if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime->externalV8Runtime, v8Context)) {
                 return nullptr;
@@ -744,6 +765,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
         }
     }
     if (v8LocalValue->IsObject()) {
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
         V8MaybeLocalValue v8MaybeLocalValueValue;
         if (IS_JAVA_INTEGER(jniEnv, key)) {
@@ -760,6 +782,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
             else {
                 v8MaybeLocalValueValue = v8LocalObject->Get(v8Context, v8ValueKey);
             }
+        }
+        if (v8TryCatch.HasCaught()) {
+            return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8TryCatch);
         }
         if (v8MaybeLocalValueValue.IsEmpty()) {
             if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime->externalV8Runtime, v8Context)) {
@@ -1520,7 +1545,6 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
         char const* utfChars = jniEnv->GetStringUTFChars(flags, nullptr);
         v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(flags));
         jniEnv->ReleaseStringUTFChars(flags, utfChars);
-        v8::V8::Initialize();
     }
 }
 
