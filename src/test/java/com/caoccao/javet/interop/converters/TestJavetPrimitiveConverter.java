@@ -150,7 +150,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testInteger() throws JavetException {
-        assertEquals(123, converter.toObject(v8Runtime.createV8ValueInteger(123)));
+        assertEquals(123, (int) converter.toObject(v8Runtime.createV8ValueInteger(123)));
         assertEquals(123, ((V8ValueInteger) converter.toV8Value(v8Runtime, 123)).getValue());
         String codeString = String.join("\n",
                 "expectInteger(1, 1); // int to int",
@@ -160,7 +160,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testLong() throws JavetException {
-        assertEquals(123L, converter.toObject(v8Runtime.createV8ValueLong(123L)));
+        assertEquals(123L, (long) converter.toObject(v8Runtime.createV8ValueLong(123L)));
         assertEquals(123L, ((V8ValueLong) converter.toV8Value(v8Runtime, 123L)).getValue());
         String codeString = String.join("\n",
                 "expectLong(1, 1); // int to long",

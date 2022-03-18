@@ -212,8 +212,8 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
     }
 
     @Override
-    protected Object toObject(V8Value v8Value, final int depth) throws JavetException {
-        Object returnObject = super.toObject(v8Value, depth);
+    protected <T> T toObject(V8Value v8Value, final int depth) throws JavetException {
+        T returnObject = super.toObject(v8Value, depth);
         if (!(returnObject instanceof V8Value)) {
             return returnObject;
         }
@@ -221,37 +221,37 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             V8ValueArray v8ValueArray = (V8ValueArray) v8Value;
             final List<Object> list = new ArrayList<>();
             v8ValueArray.forEach(value -> list.add(toObject(value, depth + 1)));
-            return list;
+            return (T) list;
         } else if (v8Value instanceof V8ValueSet) {
             V8ValueSet v8ValueSet = (V8ValueSet) v8Value;
             final HashSet<Object> set = new HashSet<>();
             v8ValueSet.forEach(key -> set.add(toObject(key, depth + 1)));
-            return set;
+            return (T) set;
         } else if (v8Value instanceof V8ValueMap) {
             V8ValueMap v8ValueMap = (V8ValueMap) v8Value;
             final Map<String, Object> map = createEntityMap();
             v8ValueMap.forEach((V8Value key, V8Value value) -> map.put(key.toString(), toObject(value, depth + 1)));
-            return map;
+            return (T) map;
         } else if (v8Value instanceof V8ValueTypedArray) {
             V8ValueTypedArray v8ValueTypedArray = (V8ValueTypedArray) v8Value;
             switch (v8ValueTypedArray.getType()) {
                 case Int8Array:
                 case Uint8Array:
                 case Uint8ClampedArray:
-                    return v8ValueTypedArray.toBytes();
+                    return (T) v8ValueTypedArray.toBytes();
                 case Int16Array:
                 case Uint16Array:
-                    return v8ValueTypedArray.toShorts();
+                    return (T) v8ValueTypedArray.toShorts();
                 case Int32Array:
                 case Uint32Array:
-                    return v8ValueTypedArray.toIntegers();
+                    return (T) v8ValueTypedArray.toIntegers();
                 case Float32Array:
-                    return v8ValueTypedArray.toFloats();
+                    return (T) v8ValueTypedArray.toFloats();
                 case Float64Array:
-                    return v8ValueTypedArray.toDoubles();
+                    return (T) v8ValueTypedArray.toDoubles();
                 case BigInt64Array:
                 case BigUint64Array:
-                    return v8ValueTypedArray.toLongs();
+                    return (T) v8ValueTypedArray.toLongs();
                 default:
                     break;
             }
@@ -272,10 +272,10 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         break;
                 }
             }
-            return javetEntityFunction;
+            return (T) javetEntityFunction;
         } else if (v8Value instanceof V8ValueSymbol) {
             final V8ValueSymbol v8ValueSymbol = (V8ValueSymbol) v8Value;
-            return new JavetEntitySymbol(v8ValueSymbol.getDescription());
+            return (T) new JavetEntitySymbol(v8ValueSymbol.getDescription());
         } else if (v8Value instanceof V8ValueObject) {
             if (v8Value instanceof V8ValueProxy) {
                 final V8ValueProxy v8ValueProxy = (V8ValueProxy) v8Value;
@@ -288,7 +288,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                                     (IJavetProxyHandler<Object>) javetCallbackContext.getCallbackReceiver();
                             Object targetObject = iJavetProxyHandler.getTargetObject();
                             if (targetObject != null) {
-                                return targetObject;
+                                return (T) targetObject;
                             }
                         }
                     }
@@ -332,15 +332,15 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     try {
                         Object customObject = defaultConstructor.newInstance();
                         methodFromMap.invoke(customObject, map);
-                        return customObject;
+                        return (T) customObject;
                     } catch (Throwable t) {
                         // Do nothing
                     }
                 }
             }
-            return map;
+            return (T) map;
         }
-        return v8Value;
+        return (T) v8Value;
     }
 
     @Override
@@ -536,7 +536,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
             if (methodToMap != null) {
                 try {
-                    Map map = (Map) methodToMap.invoke(object);
+                    Map<?, ?> map = (Map<?, ?>) methodToMap.invoke(object);
                     v8Value = toV8Value(v8Runtime, map);
                     ((V8ValueObject) v8Value).setPrivateProperty(
                             PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME, customObjectClassName);

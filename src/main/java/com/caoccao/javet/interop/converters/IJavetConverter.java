@@ -47,7 +47,7 @@ public interface IJavetConverter {
      * @throws JavetException the javet exception
      * @since 0.7.1
      */
-    Object toObject(V8Value v8Value) throws JavetException;
+    <T> T toObject(V8Value v8Value) throws JavetException;
 
     /**
      * To object from V8 value and auto close the V8 value.
@@ -58,7 +58,7 @@ public interface IJavetConverter {
      * @throws JavetException the javet exception
      * @since 0.8.5
      */
-    default Object toObject(V8Value v8Value, boolean autoClose) throws JavetException {
+    default <T> T toObject(V8Value v8Value, boolean autoClose) throws JavetException {
         if (autoClose) {
             try {
                 return toObject(v8Value);

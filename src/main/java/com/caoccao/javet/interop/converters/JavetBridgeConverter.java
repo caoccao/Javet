@@ -19,9 +19,7 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.V8ValueArray;
 
 /**
  * The type Javet bridge converter converts all Java objects to

@@ -62,7 +62,7 @@ public abstract class BaseJavetConverter implements IJavetConverter {
     }
 
     @Override
-    public final Object toObject(V8Value v8Value) throws JavetException {
+    public final <T> T toObject(V8Value v8Value) throws JavetException {
         return toObject(v8Value, 0);
     }
 
@@ -75,7 +75,7 @@ public abstract class BaseJavetConverter implements IJavetConverter {
      * @throws JavetException the javet exception
      * @since 1.0.4
      */
-    protected abstract Object toObject(V8Value v8Value, final int depth) throws JavetException;
+    protected abstract <T> T toObject(V8Value v8Value, final int depth) throws JavetException;
 
     @Override
     @CheckReturnValue

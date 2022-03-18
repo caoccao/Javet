@@ -46,14 +46,14 @@ public class JavetPrimitiveConverter extends BaseJavetConverter {
     }
 
     @Override
-    protected Object toObject(V8Value v8Value, final int depth) throws JavetException {
+    protected <T> T toObject(V8Value v8Value, final int depth) throws JavetException {
         validateDepth(depth);
         if (v8Value == null || v8Value.isNull() || v8Value.isUndefined()) {
             return null;
         } else if (v8Value instanceof V8ValuePrimitive) {
-            return ((V8ValuePrimitive<?>) v8Value).getValue();
+            return (T) ((V8ValuePrimitive<?>) v8Value).getValue();
         }
-        return v8Value;
+        return (T) v8Value;
     }
 
     @SuppressWarnings("ConstantConditions")
