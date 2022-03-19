@@ -2,6 +2,11 @@
 Release Notes 1.1.x
 ===================
 
+1.1.2
+-------------
+
+* Fixed a bug in exception handling in JNI callback
+
 1.1.1 V8 v9.9
 -------------
 
