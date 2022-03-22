@@ -236,6 +236,7 @@ namespace Javet {
 
         void JavetCallbackContextReference::CallFunction(const v8::FunctionCallbackInfo<v8::Value>& args) {
             FETCH_JNI_ENV(GlobalJavaVM);
+            Javet::Exceptions::ClearJNIException(jniEnv);
             v8::Isolate* v8Isolate = args.GetIsolate();
             V8IsolateScope v8IsolateScope(v8Isolate);
             V8HandleScope v8HandleScope(v8Isolate);

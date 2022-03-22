@@ -1,18 +1,17 @@
 /*
- *   Copyright (c) 2021. caoccao.com Sam Cao
- *   All rights reserved.
+ * Copyright (c) 2021-2022. caoccao.com Sam Cao
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.caoccao.javet.interop.converters;
@@ -151,7 +150,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testInteger() throws JavetException {
-        assertEquals(123, converter.toObject(v8Runtime.createV8ValueInteger(123)));
+        assertEquals(123, (int) converter.toObject(v8Runtime.createV8ValueInteger(123)));
         assertEquals(123, ((V8ValueInteger) converter.toV8Value(v8Runtime, 123)).getValue());
         String codeString = String.join("\n",
                 "expectInteger(1, 1); // int to int",
@@ -161,7 +160,7 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testLong() throws JavetException {
-        assertEquals(123L, converter.toObject(v8Runtime.createV8ValueLong(123L)));
+        assertEquals(123L, (long) converter.toObject(v8Runtime.createV8ValueLong(123L)));
         assertEquals(123L, ((V8ValueLong) converter.toV8Value(v8Runtime, 123L)).getValue());
         String codeString = String.join("\n",
                 "expectLong(1, 1); // int to long",

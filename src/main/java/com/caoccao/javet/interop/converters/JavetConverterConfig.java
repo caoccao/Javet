@@ -1,18 +1,17 @@
 /*
- *   Copyright (c) 2021. caoccao.com Sam Cao
- *   All rights reserved.
+ * Copyright (c) 2021-2022. caoccao.com Sam Cao
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.caoccao.javet.interop.converters;
@@ -23,7 +22,6 @@ package com.caoccao.javet.interop.converters;
  * @param <T> the type parameter
  * @since 0.9.4
  */
-@SuppressWarnings("unchecked")
 public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     /**
      * The constant DEFAULT_MAX_DEPTH.
@@ -267,9 +265,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setDefaultBoolean(boolean defaultBoolean) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setDefaultBoolean(boolean defaultBoolean) {
         this.defaultBoolean = defaultBoolean;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -279,9 +278,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setDefaultByte(byte defaultByte) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setDefaultByte(byte defaultByte) {
         this.defaultByte = defaultByte;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -291,9 +291,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setDefaultChar(char defaultChar) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setDefaultChar(char defaultChar) {
         this.defaultChar = defaultChar;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -303,9 +304,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setDefaultDouble(double defaultDouble) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setDefaultDouble(double defaultDouble) {
         this.defaultDouble = defaultDouble;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -315,9 +317,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setDefaultFloat(float defaultFloat) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setDefaultFloat(float defaultFloat) {
         this.defaultFloat = defaultFloat;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -327,9 +330,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setDefaultInt(int defaultInt) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setDefaultInt(int defaultInt) {
         this.defaultInt = defaultInt;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -339,9 +343,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setDefaultLong(long defaultLong) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setDefaultLong(long defaultLong) {
         this.defaultLong = defaultLong;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -351,9 +356,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setDefaultShort(short defaultShort) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setDefaultShort(short defaultShort) {
         this.defaultShort = defaultShort;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -364,9 +370,9 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 0.9.4
      */
     @SuppressWarnings("UnusedReturnValue")
-    public T setExtractFunctionSourceCode(boolean extractFunctionSourceCode) {
+    public JavetConverterConfig<T> setExtractFunctionSourceCode(boolean extractFunctionSourceCode) {
         this.extractFunctionSourceCode = extractFunctionSourceCode;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -376,9 +382,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.3
      */
-    public T setMaxDepth(int maxDepth) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -389,9 +396,9 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 0.9.6
      */
     @SuppressWarnings("UnusedReturnValue")
-    public T setProxyMapEnabled(boolean proxyMapEnabled) {
+    public JavetConverterConfig<T> setProxyMapEnabled(boolean proxyMapEnabled) {
         this.proxyMapEnabled = proxyMapEnabled;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -402,9 +409,9 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 0.9.8
      */
     @SuppressWarnings("UnusedReturnValue")
-    public T setProxySetEnabled(boolean proxySetEnabled) {
+    public JavetConverterConfig<T> setProxySetEnabled(boolean proxySetEnabled) {
         this.proxySetEnabled = proxySetEnabled;
-        return (T) this;
+        return this;
     }
 
     /**
@@ -414,8 +421,9 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @return the self
      * @since 0.9.4
      */
-    public T setSkipFunctionInObject(boolean skipFunctionInObject) {
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setSkipFunctionInObject(boolean skipFunctionInObject) {
         this.skipFunctionInObject = skipFunctionInObject;
-        return (T) this;
+        return this;
     }
 }

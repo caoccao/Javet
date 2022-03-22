@@ -1,18 +1,17 @@
 /*
- *   Copyright (c) 2021. caoccao.com Sam Cao
- *   All rights reserved.
+ * Copyright (c) 2021-2022. caoccao.com Sam Cao
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.caoccao.javet.interop.converters;
@@ -63,7 +62,7 @@ public abstract class BaseJavetConverter implements IJavetConverter {
     }
 
     @Override
-    public final Object toObject(V8Value v8Value) throws JavetException {
+    public final <T> T toObject(V8Value v8Value) throws JavetException {
         return toObject(v8Value, 0);
     }
 
@@ -76,7 +75,7 @@ public abstract class BaseJavetConverter implements IJavetConverter {
      * @throws JavetException the javet exception
      * @since 1.0.4
      */
-    protected abstract Object toObject(V8Value v8Value, final int depth) throws JavetException;
+    protected abstract <T> T toObject(V8Value v8Value, final int depth) throws JavetException;
 
     @Override
     @CheckReturnValue
