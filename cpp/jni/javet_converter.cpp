@@ -417,15 +417,16 @@ namespace Javet {
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(JNIEnv* jniEnv, const V8LocalContext& v8Context,
             jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule) {
             return std::make_unique<v8::ScriptOrigin>(
+                v8Context->GetIsolate(),
                 ToV8String(jniEnv, v8Context, mResourceName),
-                ToV8Integer(v8Context, mResourceLineOffset),
-                ToV8Integer(v8Context, mResourceColumnOffset),
-                V8LocalBoolean(),
-                ToV8Integer(v8Context, mScriptId),
+                (int)mResourceLineOffset,
+                (int)mResourceColumnOffset,
+                false,
+                (int)mScriptId,
                 V8LocalValue(),
-                V8LocalBoolean(),
-                ToV8Boolean(v8Context, mIsWASM),
-                ToV8Boolean(v8Context, mIsModule),
+                false,
+                (bool)mIsWASM,
+                (bool)mIsModule,
                 V8LocalPrimitiveArray());
         }
 

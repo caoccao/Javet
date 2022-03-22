@@ -5,6 +5,8 @@ Release Notes 1.1.x
 1.1.2
 -------------
 
+* Upgraded Node.js to ``v16.14.2`` `(2022-03-17) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.14.2>`_
+* Upgraded V8 to ``v10.0.139.6`` `(2022-03-07) <https://v8.dev/blog/v8-release-100>`_
 * Fixed a bug in exception handling in JNI callback
 
 1.1.1 V8 v9.9
