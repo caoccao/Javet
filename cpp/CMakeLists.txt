@@ -195,9 +195,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
                 v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
-        # Exported symbol filter is disabled unless production issues call for it.
         # https://www.gnu.org/software/gnulib/manual/html_node/LD-Version-Scripts.html
-        # target_link_libraries(Javet PUBLIC -Wl,--version-script=${CMAKE_SOURCE_DIR}/jni/version_script.map)
+        target_link_libraries(Javet PUBLIC -Wl,--version-script=${CMAKE_SOURCE_DIR}/jni/version_script.map)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Android" AND CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
         set(JAVET_LIB_SYSTEM "android")
         add_definitions(-D__ANDROID__)
