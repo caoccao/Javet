@@ -2,8 +2,15 @@
 Release Notes 1.1.x
 ===================
 
-1.1.2
--------------
+1.1.3 V8 v10.1
+--------------
+
+* Upgraded Node.js to ``v16.15.0`` `(2022-04-26) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.15.0>`_
+* Upgraded V8 to ``v10.1.124.11`` `(2022-04-20) <https://v8.dev/blog/v8-release-101>`_
+* Removed internal symbols from public symbols for Linux
+
+1.1.2 V8 v10.0
+--------------
 
 * Upgraded Node.js to ``v16.14.2`` `(2022-03-17) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.14.2>`_
 * Upgraded V8 to ``v10.0.139.6`` `(2022-03-07) <https://v8.dev/blog/v8-release-100>`_
