@@ -75,7 +75,7 @@ Gradle Kotlin DSL
 
     implementation("com.caoccao.javet:javet:1.1.3") // Linux and Windows (x86_64)
     implementation("com.caoccao.javet:javet-macos:1.1.0") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:1.1.3") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-android:1.1.2") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
@@ -84,7 +84,7 @@ Gradle Groovy DSL
 
     implementation 'com.caoccao.javet:javet:1.1.3' // Linux and Windows (x86_64)
     implementation 'com.caoccao.javet:javet-macos:1.1.0' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:1.1.3' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-android:1.1.2' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------
