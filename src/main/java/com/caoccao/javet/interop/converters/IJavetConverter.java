@@ -42,6 +42,7 @@ public interface IJavetConverter {
      * Don't override this function, instead, override the one with depth as argument
      * for circular structure detection.
      *
+     * @param <T>     the type parameter
      * @param v8Value the V8 value
      * @return the object
      * @throws JavetException the javet exception
@@ -52,6 +53,7 @@ public interface IJavetConverter {
     /**
      * To object from V8 value and auto close the V8 value.
      *
+     * @param <T>       the type parameter
      * @param v8Value   the V8 value
      * @param autoClose the auto close
      * @return the object
