@@ -422,6 +422,10 @@ Call <span class="c1">#9</span>
 </div>
 </div>
 </div>
+<div class="section" id="what-if-node-js-hangs-during-close">
+<h2>What If Node.js Hangs during Close()?<a class="headerlink" href="#what-if-node-js-hangs-during-close" title="Permalink to this headline">¶</a></h2>
+<p>If there are pending promises, timers (<code class="docutils literal notranslate"><span class="pre">setTimeout</span></code>, <code class="docutils literal notranslate"><span class="pre">setInterval</span></code>), etc., Node.js runtime will hang during <code class="docutils literal notranslate"><span class="pre">Close()</span></code>. <code class="docutils literal notranslate"><span class="pre">setPurgeEventLoopBeforeClose(true)</span></code> is designed to tell Javet to purge the event loop before <code class="docutils literal notranslate"><span class="pre">Close()</span></code> so that Node.js runtime can be gracefully closed.</p>
+</div>
 </div>
 
         </article>
@@ -477,6 +481,7 @@ Call <span class="c1">#9</span>
 <li><a class="reference internal" href="#step-3-main-thread-for-the-interaction">Step 3: Main Thread for the Interaction</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#what-if-node-js-hangs-during-close">What If Node.js Hangs during Close()?</a></li>
 </ul>
 </li>
 </ul>

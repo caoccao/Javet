@@ -127,6 +127,16 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @Test
+    public void testPurgeEventLoopBeforeClose() throws JavetException {
+        nodeRuntime.getExecutor(
+                "const log = () => console.log('test');" +
+                        "setTimeout(log, 1000);").executeVoid();
+        assertFalse(nodeRuntime.isPurgeEventLoopBeforeClose());
+        nodeRuntime.setPurgeEventLoopBeforeClose(true);
+        assertTrue(nodeRuntime.isPurgeEventLoopBeforeClose());
+    }
+
+    @Test
     public void testSWC() throws JavetException {
         File swcCoreFile = getScriptFile("../node_modules/@swc/core/index.js");
         if (swcCoreFile.exists()) {

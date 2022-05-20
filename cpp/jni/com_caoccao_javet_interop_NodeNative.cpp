@@ -33,3 +33,21 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_await
     v8Runtime->Await();
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_isPurgeEventLoopBeforeClose
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return v8Runtime->purgeEventLoopBeforeClose;
+#else
+    return false;
+#endif
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_setPurgeEventLoopBeforeClose
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean purgeEventLoopBeforeClose) {
+#ifdef ENABLE_NODE
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->purgeEventLoopBeforeClose = purgeEventLoopBeforeClose;
+#endif
+}
+

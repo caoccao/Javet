@@ -136,3 +136,8 @@ How can this work? The ``await()`` in the worker thread actually plays the follo
                 resume_the_event_loop()
             else:
                 break
+
+What If Node.js Hangs during Close()?
+=====================================
+
+If there are pending promises, timers (``setTimeout``, ``setInterval``), etc., Node.js runtime will hang during ``Close()``. ``setPurgeEventLoopBeforeClose(true)`` is designed to tell Javet to purge the event loop before ``Close()`` so that Node.js runtime can be gracefully closed.

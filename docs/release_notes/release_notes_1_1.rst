@@ -7,6 +7,7 @@ Release Notes 1.1.x
 
 * Upgraded V8 to ``v10.2.154.4`` `(2022-05-06) <https://v8.dev/blog/v8-release-102>`_
 * Applied C++ 17 to V8
+* Added ``isPurgeEventLoopBeforeClose()`` and ``setPurgeEventLoopBeforeClose()`` to ``NodeRuntime``
 
 1.1.3 V8 v10.1
 --------------

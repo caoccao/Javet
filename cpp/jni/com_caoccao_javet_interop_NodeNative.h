@@ -15,6 +15,22 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_await
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     com_caoccao_javet_interop_NodeNative
+ * Method:    isPurgeEventLoopBeforeClose
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_isPurgeEventLoopBeforeClose
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_NodeNative
+ * Method:    setPurgeEventLoopBeforeClose
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_setPurgeEventLoopBeforeClose
+  (JNIEnv *, jobject, jlong, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

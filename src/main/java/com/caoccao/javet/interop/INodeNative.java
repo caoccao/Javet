@@ -22,4 +22,8 @@ package com.caoccao.javet.interop;
  * @since 0.8.0
  */
 public interface INodeNative extends IV8Native {
+
+    boolean isPurgeEventLoopBeforeClose(long v8RuntimeHandle);
+
+    void setPurgeEventLoopBeforeClose(long v8RuntimeHandle, boolean purgeEventLoopBeforeClose);
 }
