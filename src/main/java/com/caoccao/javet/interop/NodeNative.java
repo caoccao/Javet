@@ -28,4 +28,10 @@ class NodeNative extends V8Native implements INodeNative {
 
     @Override
     public native void await(long v8RuntimeHandle);
+
+    @Override
+    public native boolean isPurgeEventLoopBeforeClose(long v8RuntimeHandle);
+
+    @Override
+    public native void setPurgeEventLoopBeforeClose(long v8RuntimeHandle, boolean purgeEventLoopBeforeClose);
 }

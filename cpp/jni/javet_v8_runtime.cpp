@@ -46,6 +46,7 @@ namespace Javet {
 #ifdef ENABLE_NODE
     V8Runtime::V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer, std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator)
         : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), v8Locker(nullptr), uvLoop() {
+        purgeEventLoopBeforeClose = false;
         this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
 #else
     V8Runtime::V8Runtime(V8Platform * v8PlatformPointer)
@@ -101,7 +102,7 @@ namespace Javet {
         Unregister(v8LocalContext);
         v8GlobalObject.Reset();
 #ifdef ENABLE_NODE
-        {
+        if (!purgeEventLoopBeforeClose) {
             auto v8ContextScope = GetV8ContextScope(v8LocalContext);
             v8::SealHandleScope v8SealHandleScope(v8Isolate);
             bool hasMoreTasks;

@@ -15,7 +15,7 @@
 
 # Usage: docker build -t javet:local -f docker/windows-x86_64/build.Dockerfile .
 
-FROM sjtucaocao/javet-windows:1.1.3
+FROM sjtucaocao/javet-windows:1.1.4
 
 SHELL ["cmd", "/S", "/C"]
 WORKDIR /

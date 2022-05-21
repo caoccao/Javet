@@ -47,6 +47,7 @@ namespace Javet {
     public:
 #ifdef ENABLE_NODE
         node::MultiIsolatePlatform* v8PlatformPointer;
+        bool purgeEventLoopBeforeClose;
 #else
         V8Platform* v8PlatformPointer;
 #endif
