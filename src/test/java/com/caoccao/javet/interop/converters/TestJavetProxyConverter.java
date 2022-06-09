@@ -285,6 +285,29 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testError() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            public void throwNullPointerException() {
+                throw new NullPointerException("abc");
+            }
+        };
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        try {
+            v8Runtime.getExecutor("a.throwNullPointerException();").executeVoid();
+            fail("Failed to throw NullPointerException");
+        } catch (JavetExecutionException e) {
+            assertEquals(
+                    "Error: Callback throwNullPointerException failed with error message abc",
+                    e.getMessage());
+            assertTrue(e.getCause() instanceof JavetException);
+            assertTrue(e.getCause().getCause() instanceof NullPointerException);
+            assertEquals("abc", e.getCause().getCause().getMessage());
+        } finally {
+            v8Runtime.getGlobalObject().delete("a");
+        }
+    }
+
+    @Test
     public void testFile() throws JavetException {
         File file = new File("/tmp/i-am-not-accessible");
         v8Runtime.getGlobalObject().set("file", file);

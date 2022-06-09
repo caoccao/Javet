@@ -2,6 +2,11 @@
 Release Notes 1.1.x
 ===================
 
+1.1.5
+--------------
+
+* Fixed JNI pending exception for Andoird by caching it in the runtime.
+
 1.1.4 V8 v10.2
 --------------
 

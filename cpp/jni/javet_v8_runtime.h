@@ -19,20 +19,18 @@
 
 #include <jni.h>
 #include <mutex>
-#include "javet_converter.h"
-#include "javet_exceptions.h"
 #include "javet_logging.h"
 #include "javet_native.h"
 #include "javet_node.h"
 #include "javet_v8.h"
 
 namespace Javet {
+    class V8Runtime;
+    class V8Scope;
+
     namespace Inspector {
         class JavetInspector;
     }
-
-    class V8Runtime;
-    class V8Scope;
 
     static jclass jclassRuntimeOptions;
 #ifdef ENABLE_NODE
@@ -53,6 +51,7 @@ namespace Javet {
 #endif
         v8::Isolate* v8Isolate;
         jobject externalV8Runtime;
+        jthrowable externalException;
         V8PersistentObject v8GlobalObject;
         std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
@@ -116,17 +115,7 @@ namespace Javet {
 
         void Register(const V8LocalContext& v8Context);
 
-        inline jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value) {
-            V8TryCatch v8TryCatch(v8Context->GetIsolate());
-            jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, externalV8Runtime, v8Context, v8Value);
-            if (v8TryCatch.HasCaught()) {
-                if (externalV8Value != nullptr) {
-                    jniEnv->DeleteLocalRef(externalV8Value);
-                }
-                return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, externalV8Runtime, v8Context, v8TryCatch);
-            }
-            return externalV8Value;
-        }
+        jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value);
 
         inline void Unlock() {
             v8Locker.reset();

@@ -23,6 +23,7 @@
 #include "javet_monitor.h"
 #include "javet_native.h"
 #include "javet_v8.h"
+#include "javet_v8_runtime.h"
 
 namespace Javet {
     namespace Converter {
@@ -198,12 +199,12 @@ namespace Javet {
 
         jobject ToExternalV8Script(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalScript& v8Script);
 
-        jobject ToExternalV8Value(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalValue v8Value);
+        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue v8Value);
 
-        jobject ToExternalV8ValueArray(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args);
+        jobject ToExternalV8ValueArray(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args);
 
-        static inline jobject ToExternalV8ValueNull(JNIEnv* jniEnv, jobject externalV8Runtime) {
-            return jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueNull);
+        static inline jobject ToExternalV8ValueNull(JNIEnv* jniEnv, V8Runtime* v8Runtime) {
+            return jniEnv->CallObjectMethod(v8Runtime->externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueNull);
         }
 
         jobject ToExternalV8ValueGlobalObject(JNIEnv* jniEnv, jobject externalV8Runtime, V8PersistentObject& v8PersistentObject);
@@ -217,9 +218,9 @@ namespace Javet {
             return mV8ValuePrimitive;
         }
 
-        jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv, jobject externalV8Runtime);
+        jobject ToExternalV8ValueUndefined(JNIEnv* jniEnv, V8Runtime* v8Runtime);
 
-        jobject ToJavetScriptingError(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
+        jobject ToJavetScriptingError(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 
         static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& managedBoolean) {
             return v8::Boolean::New(v8Context->GetIsolate(), managedBoolean);
