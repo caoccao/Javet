@@ -248,14 +248,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-    if (v8Runtime->externalV8Runtime != nullptr) {
-        jniEnv->DeleteGlobalRef(v8Runtime->externalV8Runtime);
-        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
-    }
-    if (v8Runtime->externalException != nullptr) {
-        jniEnv->DeleteGlobalRef(v8Runtime->externalException);
-        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
-    }
+    v8Runtime->ClearExternalException(jniEnv);
+    v8Runtime->ClearExternalV8Runtime(jniEnv);
     delete v8Runtime;
     INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteV8Runtime);
 }
@@ -1374,14 +1368,8 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCPrologu
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerV8Runtime
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Runtime) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-    if (v8Runtime->externalV8Runtime != nullptr) {
-        jniEnv->DeleteGlobalRef(v8Runtime->externalV8Runtime);
-        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
-    }
-    if (v8Runtime->externalException != nullptr) {
-        jniEnv->DeleteGlobalRef(v8Runtime->externalException);
-        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
-    }
+    v8Runtime->ClearExternalException(jniEnv);
+    v8Runtime->ClearExternalV8Runtime(jniEnv);
     v8Runtime->externalV8Runtime = jniEnv->NewGlobalRef(mV8Runtime);
     INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
 }

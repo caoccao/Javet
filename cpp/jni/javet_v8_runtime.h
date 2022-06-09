@@ -63,6 +63,26 @@ namespace Javet {
 
         void Await();
 
+        inline bool ClearExternalException(JNIEnv* jniEnv) {
+            if (HasExternalException()) {
+                jniEnv->DeleteGlobalRef(externalException);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+                externalException = nullptr;
+                return true;
+            }
+            return false;
+        }
+
+        inline bool ClearExternalV8Runtime(JNIEnv* jniEnv) {
+            if (externalV8Runtime != nullptr) {
+                jniEnv->DeleteGlobalRef(externalV8Runtime);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+                externalV8Runtime = nullptr;
+                return true;
+            }
+            return false;
+        }
+
         void CloseV8Context();
         void CloseV8Isolate();
 
@@ -103,6 +123,10 @@ namespace Javet {
 
         inline auto GetV8IsolateScope() {
             return std::make_unique<V8IsolateScope>(v8Isolate);
+        }
+
+        inline bool HasExternalException() {
+            return externalException != nullptr;
         }
 
         inline bool IsLocked() {
