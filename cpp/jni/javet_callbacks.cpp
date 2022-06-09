@@ -223,6 +223,12 @@ namespace Javet {
                         promiseRejectEvent,
                         Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalPromise),
                         value);
+                    if (value != nullptr) {
+                        jniEnv->DeleteLocalRef(value);
+                    }
+                    if (jniEnv->ExceptionCheck()) {
+                        Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in promise reject callback");
+                    }
                 }
             }
         }
