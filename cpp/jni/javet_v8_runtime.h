@@ -74,7 +74,7 @@ namespace Javet {
         }
 
         inline bool ClearExternalV8Runtime(JNIEnv* jniEnv) {
-            if (externalV8Runtime != nullptr) {
+            if (HasExternalV8Runtime()) {
                 jniEnv->DeleteGlobalRef(externalV8Runtime);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
                 externalV8Runtime = nullptr;
@@ -127,6 +127,10 @@ namespace Javet {
 
         inline bool HasExternalException() {
             return externalException != nullptr;
+        }
+
+        inline bool HasExternalV8Runtime() {
+            return externalV8Runtime != nullptr;
         }
 
         inline bool IsLocked() {

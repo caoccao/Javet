@@ -90,7 +90,7 @@ namespace Javet {
                     v8Runtime->ClearExternalException(jniEnv);
                 }
                 else {
-                    if (v8Runtime->externalException != nullptr) {
+                    if (v8Runtime->HasExternalException()) {
                         innerException = v8Runtime->externalException;
                         pendingException = true;
                     }
@@ -139,7 +139,7 @@ namespace Javet {
                     v8Runtime->ClearExternalException(jniEnv);
                 }
                 else {
-                    if (v8Runtime->externalException != nullptr) {
+                    if (v8Runtime->HasExternalException()) {
                         innerException = v8Runtime->externalException;
                         pendingException = true;
                     }
@@ -194,9 +194,10 @@ namespace Javet {
             auto v8Runtime = V8Runtime::FromV8Context(v8Context);
             jstring externalErrorMessage = nullptr;
             if (jniEnv->ExceptionCheck()) {
-                jthrowable externalException = (jthrowable)jniEnv->NewGlobalRef(jniEnv->ExceptionOccurred());
-                INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+                jthrowable externalException = jniEnv->ExceptionOccurred();
                 jniEnv->ExceptionClear();
+                externalException = (jthrowable)jniEnv->NewGlobalRef(externalException);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
                 v8Runtime->ClearExternalException(jniEnv);
                 v8Runtime->externalException = externalException;
                 externalErrorMessage = (jstring)jniEnv->CallObjectMethod(externalException, jmethodIDThrowableGetMessage);
