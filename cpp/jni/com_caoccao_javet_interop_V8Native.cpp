@@ -90,7 +90,11 @@ namespace Javet {
         void Dispose(JNIEnv* jniEnv) {
             if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
                 v8::V8::Dispose();
+#ifdef ENABLE_NODE
                 v8::V8::ShutdownPlatform();
+#else
+                v8::V8::DisposePlatform();
+#endif
                 GlobalV8Platform.reset();
             }
         }
