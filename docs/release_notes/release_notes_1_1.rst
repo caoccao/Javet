@@ -8,6 +8,7 @@ Release Notes 1.1.x
 * Upgraded Node.js to ``v16.15.1`` `(2022-06-01) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.15.1>`_
 * Upgraded V8 to ``v10.3.174.14`` `(2022-06-14) <https://v8.dev/blog/v8-release-103>`_
 * Fixed JNI pending exception for Andoird by caching it in the runtime.
+* Added ``V8ValueBigInteger`` as an experiment.
 
 1.1.4 V8 v10.2
 --------------

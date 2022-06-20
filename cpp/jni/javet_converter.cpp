@@ -21,6 +21,7 @@
 #include "javet_logging.h"
 
  // Primitive
+#define IS_JAVA_BIG_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueBigInteger)
 #define IS_JAVA_BOOLEAN(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueBoolean)
 #define IS_JAVA_DOUBLE(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueDouble)
 #define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueInteger)
@@ -73,6 +74,10 @@ namespace Javet {
             jmethodIDV8RuntimeCreateV8ValueZonedDateTime = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueZonedDateTime", "(J)Lcom/caoccao/javet/values/primitive/V8ValueZonedDateTime;");
 
             // Primitive
+
+            jclassV8ValueBigInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueBigInteger"));
+            jmethodIDV8ValueBigIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueBigInteger, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
+            jmethodIDV8ValueBigIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueBigInteger, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/math/BigInteger;");
 
             jclassV8ValueBoolean = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueBoolean"));
             jmethodIDV8ValueBooleanToPrimitive = jniEnv->GetMethodID(jclassV8ValueBoolean, JAVA_METHOD_TO_PRIMITIVE, "()Z");
@@ -348,7 +353,14 @@ namespace Javet {
                 return jniEnv->CallObjectMethod(v8Runtime->externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueInteger, v8Value->Int32Value(v8Context).FromMaybe(0));
             }
             if (v8Value->IsBigInt() || v8Value->IsBigIntObject()) {
-                return jniEnv->CallObjectMethod(v8Runtime->externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueLong, v8Value->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
+                auto v8ValueBigInt = v8Value->ToBigInt(v8Context).ToLocalChecked();
+                int wordCount = v8ValueBigInt->WordCount();
+                if (wordCount == 1) {
+                    return jniEnv->CallObjectMethod(v8Runtime->externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueLong, v8ValueBigInt->Int64Value());
+                }
+                else if (wordCount > 1) {
+                    return ToExternalV8ValuePrimitive(jniEnv, jclassV8ValueBigInteger, jmethodIDV8ValueBigIntegerConstructor, v8Runtime->externalV8Runtime, v8Context, v8Value);
+                }
             }
             if (v8Value->IsDate()) {
                 auto v8Date = v8Value->ToObject(v8Context).ToLocalChecked().As<v8::Date>();
@@ -472,6 +484,9 @@ namespace Javet {
             else if (IS_JAVA_ZONED_DATE_TIME(jniEnv, obj)) {
                 jlong longObject = (jlong)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueZonedDateTimeToPrimitive);
                 return ToV8Date(v8Context, longObject);
+            }
+            else if (IS_JAVA_BIG_INTEGER(jniEnv, obj)) {
+                // TODO
             }
             else if (IS_JAVA_REFERENCE(jniEnv, obj)) {
                 if (IS_JAVA_ARRAY(jniEnv, obj)) {

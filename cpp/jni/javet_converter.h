@@ -40,6 +40,10 @@ namespace Javet {
         
         // Primitive
 
+        static jclass jclassV8ValueBigInteger;
+        static jmethodID jmethodIDV8ValueBigIntegerConstructor;
+        static jmethodID jmethodIDV8ValueBigIntegerToPrimitive;
+
         static jclass jclassV8ValueBoolean;
         static jmethodID jmethodIDV8ValueBooleanToPrimitive;
 
