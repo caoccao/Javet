@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Object Converter" href="object_converter.html" /><link rel="prev" title="Converters" href="index.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Primitive Converter - Javet 1.1.4 documentation</title>
+        <title>Primitive Converter - Javet 1.1.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 1.1.4 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 1.1.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.1.4 documentation</span>
+  <span class="sidebar-brand-text">Javet 1.1.5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -296,8 +296,8 @@
 <h2>From Java to JavaScript<a class="headerlink" href="#from-java-to-javascript" title="Permalink to this headline">¶</a></h2>
 <div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
-<col style="width: 50%"/>
-<col style="width: 50%"/>
+<col style="width: 61%"/>
+<col style="width: 39%"/>
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Java</p></th>
@@ -323,7 +323,7 @@
 <tr class="row-odd"><td><p>int/Integer</p></td>
 <td><p>int</p></td>
 </tr>
-<tr class="row-even"><td><p>long/Long</p></td>
+<tr class="row-even"><td><p>long/Long/BigInteger</p></td>
 <td><p>bigint</p></td>
 </tr>
 <tr class="row-odd"><td><p>short/Short</p></td>
@@ -339,7 +339,7 @@
 </table></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">Optional</span></code>, <code class="docutils literal notranslate"><span class="pre">OptionalInt</span></code>, <code class="docutils literal notranslate"><span class="pre">OptionalDouble</span></code>, <code class="docutils literal notranslate"><span class="pre">OptionalLong</span></code> are supported except for Android.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Optional</span></code>, <code class="docutils literal notranslate"><span class="pre">OptionalInt</span></code>, <code class="docutils literal notranslate"><span class="pre">OptionalDouble</span></code>, <code class="docutils literal notranslate"><span class="pre">OptionalLong</span></code> are also supported.</p>
 </div>
 </div>
 <div class="section" id="from-javascript-to-java">
@@ -362,7 +362,7 @@
 <td><p>int</p></td>
 </tr>
 <tr class="row-even"><td><p>bigint</p></td>
-<td><p>long</p></td>
+<td><p>long/BigInteger</p></td>
 </tr>
 <tr class="row-odd"><td><p>number</p></td>
 <td><p>double</p></td>
@@ -375,9 +375,12 @@
 </tr>
 </tbody>
 </table></div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p><code class="docutils literal notranslate"><span class="pre">JavetPrimitiveConverter</span></code> is not supposed to be used in any cases.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">JavetPrimitiveConverter</span></code> is not supposed to be used in any cases.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">bigint</span></code> falls in the range of <code class="docutils literal notranslate"><span class="pre">long</span></code>, it is converted to <code class="docutils literal notranslate"><span class="pre">long</span></code>. Otherwise, it is converted to <code class="docutils literal notranslate"><span class="pre">BigInteger</span></code>.</p></li>
+</ul>
 </div>
 </div>
 </div>

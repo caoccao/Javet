@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 
 /**
@@ -54,6 +55,17 @@ public interface IV8Executable extends IV8Convertible {
      */
     @CheckReturnValue
     <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
+
+    /**
+     * Execute and return big integer.
+     *
+     * @return the big integer
+     * @throws JavetException the javet exception
+     * @since 1.1.5
+     */
+    default BigInteger executeBigInteger() throws JavetException {
+        return executePrimitive();
+    }
 
     /**
      * Execute and return boolean.

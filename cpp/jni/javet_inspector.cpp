@@ -15,6 +15,7 @@
  *   limitations under the License.
  */
 
+#include "javet_converter.h"
 #include "javet_inspector.h"
 #include "javet_logging.h"
 #include "javet_native.h"

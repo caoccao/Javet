@@ -19,6 +19,8 @@ package com.caoccao.javet.values.primitive;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
+import java.util.Objects;
+
 @SuppressWarnings("unchecked")
 public final class V8ValueString extends V8ValuePrimitive<String> {
     public V8ValueString(V8Runtime v8Runtime) throws JavetException {
@@ -26,7 +28,7 @@ public final class V8ValueString extends V8ValuePrimitive<String> {
     }
 
     public V8ValueString(V8Runtime v8Runtime, String value) throws JavetException {
-        super(v8Runtime, value);
+        super(v8Runtime, Objects.requireNonNull(value));
     }
 
     @Override

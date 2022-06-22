@@ -25,7 +25,7 @@ repositories {
 }
 
 group = "com.caoccao.javet"
-version = "1.1.4"
+version = "1.1.5"
 
 dependencies {
     testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.44.v20210927")

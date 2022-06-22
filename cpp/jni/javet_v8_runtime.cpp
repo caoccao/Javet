@@ -18,6 +18,8 @@
 #include <chrono>
 #include <thread>
 #include "javet_callbacks.h"
+#include "javet_converter.h"
+#include "javet_exceptions.h"
 #include "javet_inspector.h"
 #include "javet_v8_runtime.h"
 
@@ -53,6 +55,7 @@ namespace Javet {
         : v8Locker(nullptr) {
 #endif
         externalV8Runtime = nullptr;
+        externalException = nullptr;
         v8Isolate = nullptr;
         this->v8PlatformPointer = v8PlatformPointer;
     }
@@ -257,6 +260,18 @@ namespace Javet {
 
     inline void V8Runtime::Register(const V8LocalContext & v8Context) {
         v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
+    }
+
+    jobject V8Runtime::SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value) {
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8Value);
+        if (v8TryCatch.HasCaught()) {
+            if (externalV8Value != nullptr) {
+                jniEnv->DeleteLocalRef(externalV8Value);
+            }
+            return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
+        }
+        return externalV8Value;
     }
 
     inline void V8Runtime::Unregister(const V8LocalContext & v8Context) {

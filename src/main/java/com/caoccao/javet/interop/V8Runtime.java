@@ -47,6 +47,7 @@ import com.caoccao.javet.values.reference.*;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -588,6 +589,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         assert byteBuffer.isDirect() : "Byte buffer must be direct.";
         return (V8ValueArrayBuffer) v8Native.createV8Value(
                 handle, V8ValueReferenceType.ArrayBuffer.getId(), byteBuffer);
+    }
+
+    @Override
+    public V8ValueBigInteger createV8ValueBigInteger(BigInteger bigInteger) throws JavetException {
+        return new V8ValueBigInteger(this, bigInteger);
+    }
+
+    @Override
+    public V8ValueBigInteger createV8ValueBigInteger(String bigIntegerValue) throws JavetException {
+        return new V8ValueBigInteger(this, bigIntegerValue);
     }
 
     @Override

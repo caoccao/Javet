@@ -27,6 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -100,6 +101,18 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
     public void beforeEach() throws JavetException {
         super.beforeEach();
         v8Runtime.getGlobalObject().bind(anonymous);
+    }
+
+    @Test
+    public void testBigInteger() throws JavetException {
+        String bigIntegerValue = "36893488147419103488";
+        assertEquals(
+                new BigInteger(bigIntegerValue).toString(),
+                converter.toObject(v8Runtime.createV8ValueBigInteger(bigIntegerValue)).toString());
+        V8ValueBigInteger v8ValueBigInteger = converter.toV8Value(v8Runtime, new BigInteger(bigIntegerValue));
+        assertEquals(
+                new BigInteger(bigIntegerValue).toString(),
+                v8ValueBigInteger.getValue().toString());
     }
 
     @Test

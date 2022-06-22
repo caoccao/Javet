@@ -25,6 +25,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -154,6 +155,18 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     public V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return add(v8Runtime.createV8ValueArrayBuffer(byteBuffer));
+    }
+
+    @Override
+    public V8ValueBigInteger createV8ValueBigInteger(BigInteger bigInteger) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return add(v8Runtime.createV8ValueBigInteger(bigInteger));
+    }
+
+    @Override
+    public V8ValueBigInteger createV8ValueBigInteger(String bigIntegerValue) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return add(v8Runtime.createV8ValueBigInteger(bigIntegerValue));
     }
 
     @Override
