@@ -18,22 +18,71 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8Value;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
     @Test
-    public void testBigInt() throws JavetException {
-        try (V8ValueBigInteger v8ValueBigInteger = v8Runtime.getExecutor("2n ** 65n").execute()) {
-            assertNotNull(v8ValueBigInteger);
-            assertEquals("36893488147419103232", v8ValueBigInteger.toString());
+    public void testBigIntNegative() throws JavetException {
+        Random random = new Random();
+        BigInteger baseBigInteger = BigInteger.valueOf(2L).pow(65).multiply(BigInteger.valueOf(-1L));
+        final int rounds = 5;
+        for (int i = 0; i < rounds; i++) {
+            BigInteger deltaBigInteger = BigInteger.valueOf(random.nextLong());
+            BigInteger expectedBigInteger = baseBigInteger.subtract(deltaBigInteger);
+            try (V8ValueBigInteger v8ValueBigInteger =
+                         v8Runtime.getExecutor("-1n * (2n ** 65n) - " + deltaBigInteger + "n").execute()) {
+                assertNotNull(v8ValueBigInteger);
+                assertEquals(expectedBigInteger.toString(), v8ValueBigInteger.toString());
+                assertEquals(-1, v8ValueBigInteger.getValue().signum());
+                assertEquals(-1, v8ValueBigInteger.getSignum());
+                v8Runtime.getGlobalObject().set("a", v8ValueBigInteger);
+                assertTrue(v8Runtime.getExecutor("a === " + expectedBigInteger + "n").executeBoolean());
+                assertEquals(expectedBigInteger.toString(), v8Runtime.getGlobalObject().getBigInteger("a").toString());
+            }
+        }
+    }
+
+    @Test
+    public void testBigIntObject() throws JavetException {
+        assertEquals(
+                "36893488147419103488",
+                v8Runtime.getExecutor("BigInt(36893488147419103488n)").executeBigInteger().toString());
+    }
+
+    @Test
+    public void testBigIntPositive() throws JavetException {
+        Random random = new Random();
+        BigInteger baseBigInteger = BigInteger.valueOf(2L).pow(65);
+        final int rounds = 5;
+        for (int i = 0; i < rounds; i++) {
+            BigInteger deltaBigInteger = BigInteger.valueOf(random.nextLong());
+            BigInteger expectedBigInteger = baseBigInteger.add(deltaBigInteger);
+            try (V8ValueBigInteger v8ValueBigInteger =
+                         v8Runtime.getExecutor("2n ** 65n + " + deltaBigInteger + "n").execute()) {
+                assertNotNull(v8ValueBigInteger);
+                assertEquals(expectedBigInteger.toString(), v8ValueBigInteger.toString());
+                assertEquals(1, v8ValueBigInteger.getValue().signum());
+                assertEquals(1, v8ValueBigInteger.getSignum());
+                v8Runtime.getGlobalObject().set("a", v8ValueBigInteger);
+                assertTrue(v8Runtime.getExecutor("a === " + expectedBigInteger + "n").executeBoolean());
+                assertEquals(expectedBigInteger.toString(), v8Runtime.getGlobalObject().getBigInteger("a").toString());
+            }
+        }
+    }
+
+    @Test
+    public void testDowngradeToLong() throws JavetException {
+        long[] longArray = new long[]{Long.MAX_VALUE, 123456L, 1L, 0L, -1L, -123456L, Long.MIN_VALUE};
+        for (long l : longArray) {
+            V8ValueBigInteger v8ValueBigInteger = v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(l));
+            assertEquals(BigInteger.valueOf(l).toString(), v8ValueBigInteger.getValue().toString());
+            v8Runtime.getGlobalObject().set("a", v8ValueBigInteger);
+            assertEquals(l, v8Runtime.getGlobalObject().getLong("a"));
         }
     }
 }

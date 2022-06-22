@@ -42,7 +42,8 @@ namespace Javet {
 
         static jclass jclassV8ValueBigInteger;
         static jmethodID jmethodIDV8ValueBigIntegerConstructor;
-        static jmethodID jmethodIDV8ValueBigIntegerToPrimitive;
+        static jmethodID jmethodIDV8ValueBigIntegerGetLongArray;
+        static jmethodID jmethodIDV8ValueBigIntegerGetSignum;
 
         static jclass jclassV8ValueBoolean;
         static jmethodID jmethodIDV8ValueBooleanToPrimitive;
@@ -226,24 +227,26 @@ namespace Javet {
 
         jobject ToJavetScriptingError(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 
-        static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& managedBoolean) {
-            return v8::Boolean::New(v8Context->GetIsolate(), managedBoolean);
+        V8LocalBigInt ToV8BigInt(JNIEnv* jniEnv, const V8LocalContext& v8Context, jint& mSignum, jlongArray& mLongArray);
+
+        static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& mBoolean) {
+            return v8::Boolean::New(v8Context->GetIsolate(), mBoolean);
         }
 
-        static inline V8LocalValue ToV8Date(const V8LocalContext& v8Context, jlong& managedLong) {
-            return v8::Date::New(v8Context, (double)managedLong).ToLocalChecked();
+        static inline V8LocalValue ToV8Date(const V8LocalContext& v8Context, jlong& mLong) {
+            return v8::Date::New(v8Context, (double)mLong).ToLocalChecked();
         }
 
-        static inline V8LocalNumber ToV8Double(const V8LocalContext& v8Context, jdouble& managedDouble) {
-            return v8::Number::New(v8Context->GetIsolate(), managedDouble);
+        static inline V8LocalNumber ToV8Double(const V8LocalContext& v8Context, jdouble& mDouble) {
+            return v8::Number::New(v8Context->GetIsolate(), mDouble);
         }
 
-        static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, jint& managedInteger) {
-            return v8::Integer::New(v8Context->GetIsolate(), managedInteger);
+        static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, jint& mInteger) {
+            return v8::Integer::New(v8Context->GetIsolate(), mInteger);
         }
 
-        static inline V8LocalBigInt ToV8Long(const V8LocalContext& v8Context, jlong& managedLong) {
-            return v8::BigInt::New(v8Context->GetIsolate(), managedLong);
+        static inline V8LocalBigInt ToV8Long(const V8LocalContext& v8Context, jlong& mLong) {
+            return v8::BigInt::New(v8Context->GetIsolate(), mLong);
         }
 
         static inline V8LocalPrimitive ToV8Null(const V8LocalContext& v8Context) {
@@ -275,7 +278,7 @@ namespace Javet {
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(JNIEnv* jniEnv, const V8LocalContext& v8Context,
             jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule);
 
-        V8LocalString ToV8String(JNIEnv* jniEnv, const V8LocalContext& v8Context, jstring& managedString);
+        V8LocalString ToV8String(JNIEnv* jniEnv, const V8LocalContext& v8Context, jstring& mString);
 
         V8LocalValue ToV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj);
 

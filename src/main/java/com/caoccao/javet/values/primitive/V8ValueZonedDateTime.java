@@ -21,6 +21,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> {
@@ -33,7 +34,7 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
     }
 
     public V8ValueZonedDateTime(V8Runtime v8Runtime, ZonedDateTime value) throws JavetException {
-        super(v8Runtime, value);
+        super(v8Runtime, Objects.requireNonNull(value));
     }
 
     @Override

@@ -76,8 +76,9 @@ namespace Javet {
             // Primitive
 
             jclassV8ValueBigInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueBigInteger"));
-            jmethodIDV8ValueBigIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueBigInteger, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
-            jmethodIDV8ValueBigIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueBigInteger, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/math/BigInteger;");
+            jmethodIDV8ValueBigIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueBigInteger, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;I[J)V");
+            jmethodIDV8ValueBigIntegerGetLongArray = jniEnv->GetMethodID(jclassV8ValueBigInteger, "getLongArray", "()[J");
+            jmethodIDV8ValueBigIntegerGetSignum = jniEnv->GetMethodID(jclassV8ValueBigInteger, "getSignum", "()I");
 
             jclassV8ValueBoolean = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueBoolean"));
             jmethodIDV8ValueBooleanToPrimitive = jniEnv->GetMethodID(jclassV8ValueBoolean, JAVA_METHOD_TO_PRIMITIVE, "()Z");
@@ -353,13 +354,20 @@ namespace Javet {
                 return jniEnv->CallObjectMethod(v8Runtime->externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueInteger, v8Value->Int32Value(v8Context).FromMaybe(0));
             }
             if (v8Value->IsBigInt() || v8Value->IsBigIntObject()) {
-                auto v8ValueBigInt = v8Value->ToBigInt(v8Context).ToLocalChecked();
-                int wordCount = v8ValueBigInt->WordCount();
-                if (wordCount == 1) {
-                    return jniEnv->CallObjectMethod(v8Runtime->externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueLong, v8ValueBigInt->Int64Value());
+                V8LocalBigInt v8LocalBigInt = v8Value->ToBigInt(v8Context).ToLocalChecked();
+                int wordCount = v8LocalBigInt->WordCount();
+                if (wordCount <= 1) {
+                    return jniEnv->CallObjectMethod(v8Runtime->externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueLong, v8LocalBigInt->Int64Value());
                 }
-                else if (wordCount > 1) {
-                    return ToExternalV8ValuePrimitive(jniEnv, jclassV8ValueBigInteger, jmethodIDV8ValueBigIntegerConstructor, v8Runtime->externalV8Runtime, v8Context, v8Value);
+                else {
+                    int signBit;
+                    jlongArray mLongArray = jniEnv->NewLongArray(wordCount);
+                    jboolean isCopy;
+                    jlong* mLongArrayPointer = jniEnv->GetLongArrayElements(mLongArray, &isCopy);
+                    v8LocalBigInt->ToWordsArray(&signBit, &wordCount, reinterpret_cast<uint64_t*>(mLongArrayPointer));
+                    jniEnv->ReleaseLongArrayElements(mLongArray, mLongArrayPointer, 0);
+                    jint signum = signBit == 0 ? 1 : -1;
+                    return jniEnv->NewObject(jclassV8ValueBigInteger, jmethodIDV8ValueBigIntegerConstructor, v8Runtime->externalV8Runtime, signum, mLongArray);
                 }
             }
             if (v8Value->IsDate()) {
@@ -426,6 +434,26 @@ namespace Javet {
             return javetScriptingError;
         }
 
+        V8LocalBigInt ToV8BigInt(JNIEnv* jniEnv, const V8LocalContext& v8Context, jint& mSignum, jlongArray& mLongArray) {
+            if (mSignum == 0) {
+                return v8::BigInt::New(v8Context->GetIsolate(), 0);
+            }
+            else {
+                jsize wordCount = jniEnv->GetArrayLength(mLongArray);
+                if (wordCount == 0) {
+                    return v8::BigInt::New(v8Context->GetIsolate(), 0);
+                }
+                else {
+                    jboolean isCopy;
+                    jlong* mLongArrayPointer = jniEnv->GetLongArrayElements(mLongArray, &isCopy);
+                    int signBit = mSignum > 0 ? 0 : 1;
+                    V8LocalBigInt v8LocalBigInt = v8::BigInt::NewFromWords(v8Context, signBit, wordCount, reinterpret_cast<uint64_t*>(mLongArrayPointer)).ToLocalChecked();
+                    jniEnv->ReleaseLongArrayElements(mLongArray, mLongArrayPointer, 0);
+                    return v8LocalBigInt;
+                }
+            }
+        }
+
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(JNIEnv* jniEnv, const V8LocalContext& v8Context,
             jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule) {
             return std::make_unique<v8::ScriptOrigin>(
@@ -442,15 +470,15 @@ namespace Javet {
                 V8LocalPrimitiveArray());
         }
 
-        V8LocalString ToV8String(JNIEnv* jniEnv, const V8LocalContext& v8Context, jstring& managedString) {
-            if (managedString == nullptr) {
+        V8LocalString ToV8String(JNIEnv* jniEnv, const V8LocalContext& v8Context, jstring& mString) {
+            if (mString == nullptr) {
                 return V8LocalString();
             }
-            const uint16_t* unmanagedString = jniEnv->GetStringChars(managedString, nullptr);
-            int length = jniEnv->GetStringLength(managedString);
+            const uint16_t* unmanagedString = jniEnv->GetStringChars(mString, nullptr);
+            int length = jniEnv->GetStringLength(mString);
             auto twoByteString = v8::String::NewFromTwoByte(
                 v8Context->GetIsolate(), unmanagedString, v8::NewStringType::kNormal, length);
-            jniEnv->ReleaseStringChars(managedString, unmanagedString);
+            jniEnv->ReleaseStringChars(mString, unmanagedString);
             if (twoByteString.IsEmpty()) {
                 return V8LocalString();
             }
@@ -486,7 +514,9 @@ namespace Javet {
                 return ToV8Date(v8Context, longObject);
             }
             else if (IS_JAVA_BIG_INTEGER(jniEnv, obj)) {
-                // TODO
+                jint signum = jniEnv->CallIntMethod(obj, jmethodIDV8ValueBigIntegerGetSignum);
+                jlongArray longArray = (jlongArray)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueBigIntegerGetLongArray);
+                return ToV8BigInt(jniEnv, v8Context, signum, longArray);
             }
             else if (IS_JAVA_REFERENCE(jniEnv, obj)) {
                 if (IS_JAVA_ARRAY(jniEnv, obj)) {

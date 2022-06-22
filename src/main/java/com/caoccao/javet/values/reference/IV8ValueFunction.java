@@ -25,6 +25,8 @@ import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
+import java.math.BigInteger;
+
 /**
  * The interface V8 value function.
  *
@@ -85,6 +87,19 @@ public interface IV8ValueFunction extends IV8ValueObject {
      */
     @CheckReturnValue
     <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException;
+
+    /**
+     * Call a function by objects and return big integer.
+     *
+     * @param receiver the receiver
+     * @param objects  the objects
+     * @return the big integer
+     * @throws JavetException the javet exception
+     * @since 1.1.5
+     */
+    default BigInteger callBigInteger(IV8ValueObject receiver, Object... objects) throws JavetException {
+        return callPrimitive(receiver, objects);
+    }
 
     /**
      * Call a function by objects and return boolean.

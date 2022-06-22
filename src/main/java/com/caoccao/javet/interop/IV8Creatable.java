@@ -23,6 +23,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 
@@ -63,6 +64,26 @@ public interface IV8Creatable {
      */
     @CheckReturnValue
     V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException;
+
+    /**
+     * Create V8 value big integer.
+     *
+     * @param bigInteger the big integer
+     * @return the V8 value big integer
+     * @throws JavetException the javet exception
+     * @since 1.1.5
+     */
+    V8ValueBigInteger createV8ValueBigInteger(BigInteger bigInteger) throws JavetException;
+
+    /**
+     * Create V8 value big integer.
+     *
+     * @param bigIntegerValue the big integer value
+     * @return the V8 value big integer
+     * @throws JavetException the javet exception
+     * @since 1.1.5
+     */
+    V8ValueBigInteger createV8ValueBigInteger(String bigIntegerValue) throws JavetException;
 
     /**
      * Create V8 value boolean.

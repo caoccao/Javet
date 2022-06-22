@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -99,6 +100,17 @@ public interface IV8ValuePromise extends IV8ValueObject {
      */
     @CheckReturnValue
     <Value extends V8Value> Value getResult() throws JavetException;
+
+    /**
+     * Gets result big integer.
+     *
+     * @return the result big integer
+     * @throws JavetException the javet exception
+     * @since 1.1.5
+     */
+    default BigInteger getResultBigInteger() throws JavetException {
+        return getResultPrimitive();
+    }
 
     /**
      * Gets result boolean.

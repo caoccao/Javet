@@ -30,6 +30,7 @@ import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -338,6 +339,18 @@ public interface IV8ValueObject extends IV8ValueReference {
      */
     @CheckReturnValue
     <T extends V8Value> T get(Object key) throws JavetException;
+
+    /**
+     * Gets big integer.
+     *
+     * @param key the key
+     * @return the big integer
+     * @throws JavetException the javet exception
+     * @since 1.1.5
+     */
+    default BigInteger getBigInteger(Object key) throws JavetException {
+        return getPrimitive(key);
+    }
 
     /**
      * Gets property value as boolean by key object.

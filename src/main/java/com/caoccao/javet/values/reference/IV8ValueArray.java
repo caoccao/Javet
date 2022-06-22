@@ -23,6 +23,7 @@ import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
@@ -36,6 +37,10 @@ public interface IV8ValueArray extends IV8ValueObject {
 
     @CheckReturnValue
     <T extends V8Value> T pop() throws JavetException;
+
+    default BigInteger popBigInteger() throws JavetException {
+        return popPrimitive();
+    }
 
     default Boolean popBoolean() throws JavetException {
         return popPrimitive();
