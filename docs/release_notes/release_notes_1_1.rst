@@ -2,13 +2,18 @@
 Release Notes 1.1.x
 ===================
 
+1.1.6
+--------------
+
+* Fixed improper error handling for custom error objects
+
 1.1.5 V8 v10.3
 --------------
 
 * Upgraded Node.js to ``v16.15.1`` `(2022-06-01) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.15.1>`_
 * Upgraded V8 to ``v10.3.174.14`` `(2022-06-14) <https://v8.dev/blog/v8-release-103>`_
-* Fixed JNI pending exception for Andoird by caching it in the runtime.
-* Added ``V8ValueBigInteger`` to primitive types and ``JavetPrimitiveConverter``.
+* Fixed JNI pending exception for Andoird by caching it in the runtime
+* Added ``V8ValueBigInteger`` to primitive types and ``JavetPrimitiveConverter``
 
 1.1.4 V8 v10.2
 --------------

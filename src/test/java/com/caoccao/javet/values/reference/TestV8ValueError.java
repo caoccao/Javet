@@ -20,10 +20,12 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.exceptions.JavetScriptingError;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,6 +40,46 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
                 assertNotNull(iV8ValueArray);
                 assertEquals(0, iV8ValueArray.getLength());
             }
+        }
+    }
+
+    @Test
+    public void testInvokeWithBuiltInError() {
+        try {
+            v8Runtime.getExecutor("var test = () => { throw new Error('test'); };").executeVoid();
+            v8Runtime.getGlobalObject().invokeVoid("test");
+            fail("Failed to catch the error.");
+        } catch (JavetException e) {
+            assertTrue(e instanceof JavetExecutionException);
+            JavetExecutionException javetExecutionException = (JavetExecutionException) e;
+            assertEquals("Error: test", javetExecutionException.getMessage());
+        }
+    }
+
+    @Test
+    public void testInvokeWithCustomError() {
+        try {
+            v8Runtime.getExecutor("function AssertionError(message) {" +
+                    " this.message = message;" +
+                    " this.stack = 'abc';" +
+                    " this.x = 123;" +
+                    " this.y = 'def';" +
+                    " }").executeVoid();
+            v8Runtime.getExecutor("var test = () => { throw new AssertionError('test'); };").executeVoid();
+            v8Runtime.getGlobalObject().invokeVoid("test");
+            fail("Failed to catch the assertion error.");
+        } catch (JavetException e) {
+            assertTrue(e instanceof JavetExecutionException);
+            JavetExecutionException javetExecutionException = (JavetExecutionException) e;
+            JavetScriptingError javetScriptingError = javetExecutionException.getScriptingError();
+            assertEquals("test", javetExecutionException.getMessage());
+            assertEquals("test", javetScriptingError.getMessage());
+            assertEquals("test", javetScriptingError.getDetailedMessage());
+            assertEquals("abc", javetScriptingError.getStack());
+            Map<String, Object> context = javetScriptingError.getContext();
+            assertEquals(2, context.size());
+            assertEquals(123, context.get("x"));
+            assertEquals("def", context.get("y"));
         }
     }
 
