@@ -5,6 +5,8 @@ Release Notes 1.1.x
 1.1.6
 --------------
 
+* Upgraded Node.js to ``v16.16.0`` `(2022-07-07) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.16.0>`_
+* Upgraded V8 to ``v10.4.132.20`` `(2022-07-14) <https://v8.dev/blog/v8-release-104>`_
 * Fixed improper error handling for custom error objects
 * Added ``waitForEngineMaxRetryCount`` to ``JavetEngineConfig``
 * Added ``EngineNotAvailable`` (901) to ``JavetError``
