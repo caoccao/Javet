@@ -22,6 +22,7 @@ import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
+import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.executors.IV8Executor;
@@ -31,10 +32,16 @@ import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -86,6 +93,72 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
         assertEquals(0, javetEnginePool.getAverageReferenceCount());
         assertEquals(0, javetEnginePool.getAverageV8ModuleCount());
+    }
+
+    @Test
+    @Tag("performance")
+    public void testDaemonThread() throws InterruptedException {
+        javetEngineConfig.setWaitForEngineMaxRetryCount(5);
+        IJavetLogger javetLogger = javetEngineConfig.getJavetLogger();
+        final Random random = new Random();
+        final int threadCount = 100;
+        final int semaphorePermits = 10;
+        final int loopCount = 10;
+        final boolean testEmbeddedEngine = true;
+        final Semaphore semaphore = new Semaphore(semaphorePermits);
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        final IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void run() {
+                while (!semaphore.tryAcquire()) {
+                    try {
+                        long sleepTimeInMillis = random.nextInt(2) + 2;
+                        TimeUnit.MILLISECONDS.sleep(sleepTimeInMillis);
+                    } catch (InterruptedException e) {
+                        javetLogger.logError("[{0}] is interrupted.", Thread.currentThread().getId());
+                        return;
+                    }
+                }
+                long sleepTimeInMillis = random.nextInt(4) + 2;
+                javetLogger.logInfo(
+                        "[{0}] availablePermits is {1}, sleep {2}ms.",
+                        Thread.currentThread().getId(),
+                        semaphore.availablePermits(),
+                        Long.toString(sleepTimeInMillis));
+                if (testEmbeddedEngine) {
+                    try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
+                        V8Runtime v8Runtime = javetEngine.getV8Runtime();
+                        v8Runtime.getExecutor("1+1").executeVoid();
+                        javetLogger.logInfo("[{0}] Execution is successful.", Thread.currentThread().getId());
+                    } catch (JavetException e) {
+                        javetLogger.logError("[{0}] {1}", Thread.currentThread().getId(), e.getMessage());
+                    }
+                }
+                try {
+                    TimeUnit.MILLISECONDS.sleep(sleepTimeInMillis);
+                } catch (InterruptedException e) {
+                    javetLogger.logError("[{0}] is interrupted.", Thread.currentThread().getId());
+                }
+                semaphore.release();
+            }
+        };
+        for (int i = 0; i < threadCount; ++i) {
+            executorService.submit(() -> {
+                for (int j = 0; j < loopCount; ++j) {
+                    try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
+                        V8Runtime v8Runtime = javetEngine.getV8Runtime();
+                        v8Runtime.getGlobalObject().bind(anonymous);
+                        v8Runtime.getExecutor("run();").executeVoid();
+                        v8Runtime.getGlobalObject().unbind(anonymous);
+                    } catch (JavetException e) {
+                        javetLogger.logError("[{0}] {1}", Thread.currentThread().getId(), e.getMessage());
+                    }
+                }
+            });
+        }
+        executorService.shutdown();
+        assertTrue(executorService.awaitTermination(10, TimeUnit.MINUTES));
+        javetLogger.logInfo("Completed.");
     }
 
     @Test
@@ -183,7 +256,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
     @Test
     public void testSingleThreadedExecution() throws Exception {
         List<V8HeapStatistics> v8HeapStatisticsList = new ArrayList<>();
-        IV8RuntimeObserver observer =
+        IV8RuntimeObserver<?> observer =
                 v8Runtime -> v8HeapStatisticsList.add(v8Runtime.getV8HeapStatistics());
         assertEquals(0, javetEnginePool.observe(observer));
         try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {

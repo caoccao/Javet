@@ -70,4 +70,10 @@ public enum JavetErrorType {
      * @since 0.8.5
      */
     Runtime,
+    /**
+     * Engine javet error type.
+     *
+     * @since 1.1.6
+     */
+    Engine,
 }

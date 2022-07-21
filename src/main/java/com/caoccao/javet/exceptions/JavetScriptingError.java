@@ -17,10 +17,10 @@
 package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueError;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -74,6 +74,18 @@ public final class JavetScriptingError {
                 final V8Runtime v8Runtime = v8ValueError.getV8Runtime();
                 v8ValueError.forEach((V8Value key, V8Value value) -> {
                     context.put(key.toString(), v8Runtime.toObject(value));
+                });
+            } else if (v8Value instanceof V8ValueObject) {
+                V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
+                detailedMessage = v8ValueObject.getString(V8ValueError.MESSAGE);
+                message = detailedMessage;
+                stack = v8ValueObject.getString(V8ValueError.STACK);
+                final V8Runtime v8Runtime = v8ValueObject.getV8Runtime();
+                v8ValueObject.forEach((V8Value key, V8Value value) -> {
+                    String keyString = key.toString();
+                    if (!V8ValueError.MESSAGE.equals(keyString) && !V8ValueError.STACK.equals(keyString)) {
+                        context.put(keyString, v8Runtime.toObject(value));
+                    }
                 });
             }
         } catch (JavetException e) {
