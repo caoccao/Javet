@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.enums.JSRuntimeType;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -110,6 +112,12 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      * @since 1.0.5
      */
     protected Random random;
+    /**
+     * The Semaphore.
+     *
+     * @since 1.1.6
+     */
+    protected Semaphore semaphore;
 
     /**
      * Instantiates a new Javet engine pool.
@@ -137,6 +145,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         active = false;
         quitting = false;
         random = new Random();
+        semaphore = null;
         startDaemon();
     }
 
@@ -183,29 +192,40 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         JavetEngine<R> engine = null;
         long startTime = System.currentTimeMillis();
         long lastTime = startTime;
+        int retryCount = 0;
         while (!quitting) {
-            try {
-                Integer index = idleEngineIndexList.poll();
-                if (index == null) {
-                    index = releasedEngineIndexList.poll();
-                    if (index != null) {
-                        engine = createEngine();
-                        engine.setIndex(index);
-                        engines[index] = engine;
+            if (semaphore.tryAcquire()) {
+                try {
+                    Integer index = idleEngineIndexList.poll();
+                    if (index == null) {
+                        index = releasedEngineIndexList.poll();
+                        if (index != null) {
+                            engine = createEngine();
+                            engine.setIndex(index);
+                            engines[index] = engine;
+                            break;
+                        }
+                    } else {
+                        engine = engines[index];
+                        if (engine == null) {
+                            logger.error("Idle engine cannot be null.");
+                            engine = createEngine();
+                            engine.setIndex(index);
+                            engines[index] = engine;
+                        }
                         break;
                     }
-                } else {
-                    engine = engines[index];
-                    if (engine == null) {
-                        logger.error("Idle engine cannot be null.");
-                        engine = createEngine();
-                        engine.setIndex(index);
-                        engines[index] = engine;
-                    }
-                    break;
+                    semaphore.release();
+                } catch (Throwable t) {
+                    logger.logError(t, "Failed to create a new engine.");
                 }
-            } catch (Throwable t) {
-                logger.logError(t, "Failed to create a new engine.");
+            }
+            ++retryCount;
+            if (retryCount >= config.getWaitForEngineMaxRetryCount()) {
+                logger.logError("Failed to get an engine after {0} tries in {1}ms.",
+                        config.getWaitForEngineMaxRetryCount(),
+                        Long.toString(System.currentTimeMillis() - startTime));
+                throw new JavetException(JavetError.EngineNotAvailable);
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(
@@ -312,6 +332,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
             engine.sendGCNotification();
         }
         idleEngineIndexList.add(engine.getIndex());
+        semaphore.release();
         wakeUpDaemon();
         logger.debug("JavetEnginePool.releaseEngine() ends.");
     }
@@ -422,6 +443,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         for (int i = 0; i < engines.length; ++i) {
             releasedEngineIndexList.add(i);
         }
+        semaphore = new Semaphore(engines.length);
         quitting = false;
         config.setExecutorService(Executors.newCachedThreadPool());
         daemonThread = new Thread(this);
@@ -461,6 +483,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         }
         active = false;
         quitting = false;
+        semaphore = null;
         logger.debug("JavetEnginePool.stopDaemon() ends.");
     }
 

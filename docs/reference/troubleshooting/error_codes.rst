@@ -53,6 +53,7 @@ Code Type        Name                                   Format
 804  Runtime     RuntimeLeakageDetected                 ${count} runtime(s) leakage is detected                                                                                                                          
 805  Runtime     RuntimeCloseFailure                    Failed to close the runtime with error message ${message}                                                                                                        
 806  Runtime     RuntimeOutOfMemory                     Runtime is out of memory because ${message} with ${heapStatistics}                                                                                               
+901  Engine      EngineNotAvailable                     Engine is not available.                                                                                                                                         
 ==== =========== ====================================== =================================================================================================================================================================
 
 

@@ -391,6 +391,14 @@ public class JavetError {
             806, JavetErrorType.Runtime, "Runtime is out of memory because ${message} with ${heapStatistics}");
 
     /**
+     * The constant EngineNotAvailable.
+     *
+     * @since 1.1.6
+     */
+    public static final JavetError EngineNotAvailable = new JavetError(
+            901, JavetErrorType.Engine, "Engine is not available.");
+
+    /**
      * The Code.
      *
      * @since 0.8.5

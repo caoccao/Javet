@@ -6,6 +6,8 @@ Release Notes 1.1.x
 --------------
 
 * Fixed improper error handling for custom error objects
+* Added ``waitForEngineMaxRetryCount`` to ``JavetEngineConfig``
+* Added ``EngineNotAvailable`` (901) to ``JavetError``
 
 1.1.5 V8 v10.3
 --------------

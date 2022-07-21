@@ -92,6 +92,12 @@ public final class JavetEngineConfig {
      */
     public static final int MAX_POOL_SIZE = 4096;
     /**
+     * The constant DEFAULT_WAIT_FOR_ENGINE_MAX_RETRY_COUNT.
+     *
+     * @since 1.1.6
+     */
+    public static final int DEFAULT_WAIT_FOR_ENGINE_MAX_RETRY_COUNT = 500;
+    /**
      * The constant DEFAULT_WAIT_FOR_ENGINE_SHEEP_INTERVAL_MILLIS.
      *
      * @since 1.0.5
@@ -120,6 +126,7 @@ public final class JavetEngineConfig {
     private boolean poolSizeFrozen;
     private int resetEngineTimeoutSeconds;
     private int waitForEngineLogIntervalMillis;
+    private int waitForEngineMaxRetryCount;
     private int[] waitForEngineSleepIntervalMillis;
 
     /**
@@ -145,6 +152,7 @@ public final class JavetEngineConfig {
         setPoolDaemonCheckIntervalMillis(DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS);
         setResetEngineTimeoutSeconds(DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS);
         setWaitForEngineLogIntervalMillis(DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS);
+        setWaitForEngineMaxRetryCount(DEFAULT_WAIT_FOR_ENGINE_MAX_RETRY_COUNT);
         setWaitForEngineSleepIntervalMillis(DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS);
     }
 
@@ -288,6 +296,16 @@ public final class JavetEngineConfig {
      */
     public int getWaitForEngineLogIntervalMillis() {
         return waitForEngineLogIntervalMillis;
+    }
+
+    /**
+     * Gets wait for engine max retry count.
+     *
+     * @return the wait for engine max retry count
+     * @since 1.1.6
+     */
+    public int getWaitForEngineMaxRetryCount() {
+        return waitForEngineMaxRetryCount;
     }
 
     /**
@@ -536,6 +554,18 @@ public final class JavetEngineConfig {
      */
     public JavetEngineConfig setWaitForEngineLogIntervalMillis(int waitForEngineLogIntervalMillis) {
         this.waitForEngineLogIntervalMillis = waitForEngineLogIntervalMillis;
+        return this;
+    }
+
+    /**
+     * Sets wait for engine max retry count.
+     *
+     * @param waitForEngineMaxRetryCount the wait for engine max retry count
+     * @return the self
+     * @since 1.1.6
+     */
+    public JavetEngineConfig setWaitForEngineMaxRetryCount(int waitForEngineMaxRetryCount) {
+        this.waitForEngineMaxRetryCount = waitForEngineMaxRetryCount;
         return this;
     }
 
