@@ -2,7 +2,7 @@
 Release Notes 1.1.x
 ===================
 
-1.1.6
+1.1.6 V8 v10.4
 --------------
 
 * Upgraded Node.js to ``v16.16.0`` `(2022-07-07) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.16.0>`_
