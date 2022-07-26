@@ -30,21 +30,11 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     }
 
     public boolean isFinite() {
-        /* if defined ANDROID
-        return Math.abs(value) <= Double.MAX_VALUE;
-        /* end if */
-        /* if not defined ANDROID */
         return Double.isFinite(value);
-        /* end if */
     }
 
     public boolean isInfinite() {
-        /* if defined ANDROID
-        return value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY;
-        /* end if */
-        /* if not defined ANDROID */
         return Double.isInfinite(value);
-        /* end if */
     }
 
     public boolean isNaN() {
