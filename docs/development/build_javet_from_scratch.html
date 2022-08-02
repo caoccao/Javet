@@ -244,6 +244,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/can_i18n_be_supported.html">Can i18n be Supported?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
 </ul>
@@ -306,12 +307,18 @@
 <span class="na">v8_monolithic</span> <span class="o">=</span> <span class="s">true</span>
 <span class="na">v8_use_external_startup_data</span> <span class="o">=</span> <span class="s">false</span>
 <span class="na">is_component_build</span> <span class="o">=</span> <span class="s">false</span>
-<span class="na">v8_enable_i18n_support</span><span class="o">=</span> <span class="s">false</span>
+<span class="na">v8_enable_i18n_support</span> <span class="o">=</span> <span class="s">false</span>
 <span class="na">v8_enable_pointer_compression</span> <span class="o">=</span> <span class="s">false</span>
 <span class="na">v8_static_library</span> <span class="o">=</span> <span class="s">true</span>
 <span class="na">symbol_level</span> <span class="o">=</span> <span class="s">0</span>
 <span class="na">use_custom_libcxx</span> <span class="o">=</span> <span class="s">false</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>To enable i18n support, please set <code class="docutils literal notranslate"><span class="pre">v8_enable_i18n_support</span> <span class="pre">=</span> <span class="pre">true</span></code>.</p></li>
+</ul>
 </div>
 </div>
 <div class="section" id="build-v8-for-linux">

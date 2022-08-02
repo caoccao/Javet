@@ -6,6 +6,7 @@ Release Notes 1.1.x
 --------------
 
 * Fixed ``pom.xml`` for Android 
+* Added optional i18n support for V8 mode
 
 1.1.6 V8 v10.4
 --------------

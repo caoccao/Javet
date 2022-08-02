@@ -57,6 +57,10 @@ x86     ``x86/libjavet-v8-android-x86.v.*.*.*.so``
 x86_64  ``x86_64/libjavet-v8-android-x86_64.v.*.*.*.so``
 ======= ==============================================================================================================
 
+.. note::
+
+    * To enable i18n support for V8 mode, please append ``-DENABLE_I18N`` to the command.
+
 Build Javet
 ===========
 
