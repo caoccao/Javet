@@ -76,6 +76,18 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals(1, value2);
             }
 
+            public void expectListOfStrings(List<String> list) {
+                assertNotNull(list);
+                assertEquals(2, list.size());
+                assertEquals("a", list.get(0));
+                assertNull(list.get(1));
+                try {
+                    ((AutoCloseable) list).close();
+                } catch (Exception e) {
+                    fail(e.getMessage());
+                }
+            }
+
             public void expectLong(Long value1, long value2) {
                 assertNotNull(value1);
                 assertEquals(1, value1);
@@ -382,6 +394,17 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
         v8Runtime.getGlobalObject().delete("AutoCloseable");
         v8Runtime.getGlobalObject().delete("IJavetClosable");
+    }
+
+    @Test
+    public void testListOfStrings() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = "a.expectListOfStrings({\n" +
+                "  get: (index) => index == 0? 'a': null,\n" +
+                "  size: () => 2,\n" +
+                "});";
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test
