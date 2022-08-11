@@ -19,14 +19,19 @@ package com.caoccao.javet.values.primitive;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
+import java.math.BigDecimal;
+
 @SuppressWarnings("unchecked")
 public class V8ValueDouble extends V8ValuePrimitive<Double> {
+    protected String cachedToString;
+
     public V8ValueDouble(V8Runtime v8Runtime) throws JavetException {
         this(v8Runtime, 0D);
     }
 
     public V8ValueDouble(V8Runtime v8Runtime, double value) throws JavetException {
         super(v8Runtime, value);
+        cachedToString = null;
     }
 
     public boolean isFinite() {
@@ -48,5 +53,13 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
 
     public double toPrimitive() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        if (cachedToString == null) {
+            cachedToString = new BigDecimal(value).toPlainString();
+        }
+        return cachedToString;
     }
 }
