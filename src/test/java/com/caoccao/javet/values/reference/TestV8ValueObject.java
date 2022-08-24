@@ -102,6 +102,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.bind(iJavetAnonymous1);
             assertEquals("abc", v8Runtime.getExecutor("a['testProperty']").executeString());
             assertEquals("abc", v8Runtime.getExecutor("a.testFunction()").executeString());
+            assertEquals("abc", v8Runtime.getExecutor("a.testFunction(123)").executeString(), "Redundant parameters should be dropped.");
             v8ValueObject.unbind(iJavetAnonymous1);
         } finally {
             v8Runtime.lowMemoryNotification();
@@ -123,6 +124,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.bind(iJavetAnonymous2);
             assertEquals("abc", v8Runtime.getExecutor("a['test']()").executeString());
             assertEquals("abc", v8Runtime.getExecutor("a.test()").executeString());
+            assertEquals("abc", v8Runtime.getExecutor("a.test(123)").executeString(), "Redundant parameters should be dropped.");
             v8ValueObject.unbind(iJavetAnonymous2);
         } finally {
             v8Runtime.lowMemoryNotification();

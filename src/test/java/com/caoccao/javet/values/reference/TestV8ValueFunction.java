@@ -541,7 +541,13 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertFalse(mockCallbackReceiver.isCalled());
             String resultString = v8Runtime.getExecutor(
                     "const a = joinWithoutThis(true, 1.23, 2, 3n, '4', new Date(1611710223719), '6'); a;").executeString();
-            assertEquals("true,1.23,2,3,4,2021-01-27T01:17:03.719Z[UTC],6", resultString);
+            assertEquals("true,1.23,2,3,4,2021-01-27T01:17:03.719Z[UTC],6", resultString, "Exact parameters should work.");
+            resultString = v8Runtime.getExecutor(
+                    "const b = joinWithoutThis(true, 1.23, 2, 3n, '4', new Date(1611710223719), '6', 123, 'abc'); b;").executeString();
+            assertEquals("true,1.23,2,3,4,2021-01-27T01:17:03.719Z[UTC],6", resultString, "Redundant parameters should work.");
+            resultString = v8Runtime.getExecutor(
+                    "const c = joinWithoutThis(true, 1.23, 2, 3n, '4'); c;").executeString();
+            assertEquals("true,1.23,2,3,4", resultString, "Absent parameters should work.");
             globalObject.delete("joinWithoutThis");
         }
         assertTrue(mockCallbackReceiver.isCalled());
@@ -1134,7 +1140,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 return stream.filter(o -> o instanceof String);
             }
         };
-
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8Runtime.getGlobalObject().set("a", v8ValueObject);
             v8ValueObject.bind(anonymous);

@@ -602,8 +602,8 @@ How about Bind?
 Tips
 ====
 
-How to Avoid Argument Type or Count Mismatches?
------------------------------------------------
+How to Avoid Argument Type Mismatches?
+--------------------------------------
 
 JavaScript function tolerates argument type or count mismatches because of its nature as a dynamic scripting language. But, Java is a strongly typed and static language. In the function callback from JavaScript to Java, argument type and count must conform with the corresponding Java method. Otherwise, the Java reflection API throws an exception. Javet performs throughout checks against those mismatches. The Javet checks sometimes cause unexpected behaviors in the applications. So, how to achieve the JavaScript flavored variable arguments?
 
@@ -626,5 +626,13 @@ The solution is very simple: Declare varargs in Java.
     * Declaring ``V8Value... v8Values`` can bypass the Javet argument type and count checks so that applications take the full responsibility.
     * Applications may check the argument count, throw excessive arguments, assign default arguments, etc.
     * Applications may test the argument type, perform custom type conversion, etc.
+
+How to Handle Argument Count Mismatches?
+----------------------------------------
+
+Javet follows 2 simple rules for the argument count mismatches so that the Java callback function behaves the same as the JavaScript function does.
+
+* Redundant parameters will be dropped.
+* Absent parameters will be filled by the default values.
 
 Please review the :extsource3:`test cases <../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java>` for more detail.

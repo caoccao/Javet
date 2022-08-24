@@ -865,8 +865,8 @@
 </div>
 <div class="section" id="tips">
 <h2>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="how-to-avoid-argument-type-or-count-mismatches">
-<h3>How to Avoid Argument Type or Count Mismatches?<a class="headerlink" href="#how-to-avoid-argument-type-or-count-mismatches" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="how-to-avoid-argument-type-mismatches">
+<h3>How to Avoid Argument Type Mismatches?<a class="headerlink" href="#how-to-avoid-argument-type-mismatches" title="Permalink to this headline">¶</a></h3>
 <p>JavaScript function tolerates argument type or count mismatches because of its nature as a dynamic scripting language. But, Java is a strongly typed and static language. In the function callback from JavaScript to Java, argument type and count must conform with the corresponding Java method. Otherwise, the Java reflection API throws an exception. Javet performs throughout checks against those mismatches. The Javet checks sometimes cause unexpected behaviors in the applications. So, how to achieve the JavaScript flavored variable arguments?</p>
 <p>The solution is very simple: Declare varargs in Java.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Function</span>
@@ -888,6 +888,14 @@
 <li><p>Applications may test the argument type, perform custom type conversion, etc.</p></li>
 </ul>
 </div>
+</div>
+<div class="section" id="how-to-handle-argument-count-mismatches">
+<h3>How to Handle Argument Count Mismatches?<a class="headerlink" href="#how-to-handle-argument-count-mismatches" title="Permalink to this headline">¶</a></h3>
+<p>Javet follows 2 simple rules for the argument count mismatches so that the Java callback function behaves the same as the JavaScript function does.</p>
+<ul class="simple">
+<li><p>Redundant parameters will be dropped.</p></li>
+<li><p>Absent parameters will be filled by the default values.</p></li>
+</ul>
 <p>Please review the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java">test cases</a> for more detail.</p>
 </div>
 </div>
@@ -980,7 +988,8 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#tips">Tips</a><ul>
-<li><a class="reference internal" href="#how-to-avoid-argument-type-or-count-mismatches">How to Avoid Argument Type or Count Mismatches?</a></li>
+<li><a class="reference internal" href="#how-to-avoid-argument-type-mismatches">How to Avoid Argument Type Mismatches?</a></li>
+<li><a class="reference internal" href="#how-to-handle-argument-count-mismatches">How to Handle Argument Count Mismatches?</a></li>
 </ul>
 </li>
 </ul>

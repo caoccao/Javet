@@ -58,7 +58,7 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     @Override
     public String toString() {
         if (cachedToString == null) {
-            cachedToString = new BigDecimal(value).toPlainString();
+            cachedToString = new BigDecimal(value.toString()).toPlainString();
         }
         return cachedToString;
     }
