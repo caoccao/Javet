@@ -202,6 +202,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @param <E>                 the type parameter
      * @param v8Runtime           the V8 runtime
      * @param targetObject        the target object
+     * @param thisObject          this object
      * @param executables         the executables
      * @param javetVirtualObjects the javet virtual objects
      * @return the object
@@ -209,12 +210,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.10
      */
     protected static <E extends AccessibleObject> Object execute(
-            V8Runtime v8Runtime, Object targetObject, List<E> executables, JavetVirtualObject[] javetVirtualObjects)
-            throws Throwable {
+            V8Runtime v8Runtime,
+            Object targetObject,
+            V8ValueObject thisObject,
+            List<E> executables,
+            JavetVirtualObject[] javetVirtualObjects) throws Throwable {
         List<ScoredExecutable<E>> scoredExecutables = new ArrayList<>();
         for (E executable : executables) {
             ScoredExecutable<E> scoredExecutable = new ScoredExecutable<>(
-                    v8Runtime, targetObject, executable, javetVirtualObjects);
+                    v8Runtime, targetObject, thisObject, executable, javetVirtualObjects);
             scoredExecutable.calculateScore();
             double score = scoredExecutable.getScore();
             if (score > 0) {
@@ -222,7 +226,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         if (!scoredExecutables.isEmpty()) {
-            Collections.sort(scoredExecutables, (o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
+            scoredExecutables.sort((o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
             Throwable lastException = null;
             for (ScoredExecutable<E> scoredExecutable : scoredExecutables) {
                 try {
@@ -264,11 +268,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             if (aliasMethodName.length() > 0) {
                 methodName = aliasMethodName;
             }
-            List<Method> methods = map.get(methodName);
-            if (methods == null) {
-                methods = new ArrayList<>();
-                map.put(methodName, methods);
-            }
+            List<Method> methods = map.computeIfAbsent(methodName, k -> new ArrayList<>());
             methods.add(method);
         } else {
             String methodName = method.getName();
@@ -279,30 +279,18 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 if (capitalizedPrefixLength == 1) {
                     aliasMethodName = methodName.substring(startIndex, startIndex + capitalizedPrefixLength).toLowerCase(Locale.ROOT)
                             + methodName.substring(startIndex + capitalizedPrefixLength);
-                    List<Method> methods = map.get(aliasMethodName);
-                    if (methods == null) {
-                        methods = new ArrayList<>();
-                        map.put(aliasMethodName, methods);
-                    }
+                    List<Method> methods = map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>());
                     methods.add(method);
                 } else {
                     for (int i = 1; i < capitalizedPrefixLength; ++i) {
                         aliasMethodName = methodName.substring(startIndex, startIndex + i).toLowerCase(Locale.ROOT)
                                 + methodName.substring(startIndex + i);
-                        List<Method> methods = map.get(aliasMethodName);
-                        if (methods == null) {
-                            methods = new ArrayList<>();
-                            map.put(aliasMethodName, methods);
-                        }
+                        List<Method> methods = map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>());
                         methods.add(method);
                     }
                 }
             } else {
-                List<Method> methods = map.get(aliasMethodName);
-                if (methods == null) {
-                    methods = new ArrayList<>();
-                    map.put(aliasMethodName, methods);
-                }
+                List<Method> methods = map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>());
                 methods.add(method);
             }
         }
@@ -315,7 +303,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         try {
             v8Values = arguments.toArray();
             return v8Runtime.toV8Value(execute(
-                    v8Runtime, null, constructors, V8ValueUtils.convertToVirtualObjects(v8Values)));
+                    v8Runtime, null, (V8ValueObject) target, constructors, V8ValueUtils.convertToVirtualObjects(v8Values)));
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -383,7 +371,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             if (methods != null && !methods.isEmpty()) {
                 JavetUniversalInterceptor javetUniversalInterceptor =
                         new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
-                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke());
+                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke((V8ValueObject) target));
             }
             if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
@@ -405,17 +393,21 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     for (Method method : genericGetters) {
                         Class<?>[] parameterTypes = method.getParameterTypes();
                         Class<?> parameterType = parameterTypes[0];
-                        Object key = propertyObject;
-                        boolean isCallable = parameterType.isAssignableFrom(propertyObject.getClass());
-                        if (!isCallable && parameterType.isPrimitive()) {
+                        Object key = null;
+                        if (V8Value.class.isAssignableFrom(parameterType)
+                                && parameterType.isAssignableFrom(property.getClass())) {
+                            key = property;
+                        }
+                        if (key == null && parameterType.isAssignableFrom(propertyObject.getClass())) {
+                            key = propertyObject;
+                        }
+                        if (key == null && parameterType.isPrimitive()) {
                             key = JavetTypeUtils.toExactPrimitive(parameterType, propertyObject);
-                            isCallable = key != null;
                         }
-                        if (!isCallable) {
+                        if (key == null) {
                             key = JavetTypeUtils.toApproximatePrimitive(parameterType, propertyObject);
-                            isCallable = key != null;
                         }
-                        if (isCallable) {
+                        if (key != null) {
                             Object callee = Modifier.isStatic(method.getModifiers()) ? null : targetObject;
                             Object value = method.invoke(callee, key);
                             if (value != null) {
@@ -507,20 +499,24 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     for (Method method : genericGetters) {
                         Class<?>[] parameterTypes = method.getParameterTypes();
                         Class<?> parameterType = parameterTypes[0];
-                        Object parameter = propertyObject;
-                        boolean isCallable = parameterType.isAssignableFrom(propertyObject.getClass());
-                        if (!isCallable && parameterType.isPrimitive()) {
-                            parameter = JavetTypeUtils.toExactPrimitive(parameterType, propertyObject);
-                            isCallable = parameter != null;
+                        Object key = null;
+                        if (V8Value.class.isAssignableFrom(parameterType)
+                                && parameterType.isAssignableFrom(property.getClass())) {
+                            key = property;
                         }
-                        if (!isCallable) {
-                            parameter = JavetTypeUtils.toApproximatePrimitive(parameterType, propertyObject);
-                            isCallable = parameter != null;
+                        if (key == null && parameterType.isAssignableFrom(propertyObject.getClass())) {
+                            key = propertyObject;
                         }
-                        if (isCallable) {
+                        if (key == null && parameterType.isPrimitive()) {
+                            key = JavetTypeUtils.toExactPrimitive(parameterType, propertyObject);
+                        }
+                        if (key == null) {
+                            key = JavetTypeUtils.toApproximatePrimitive(parameterType, propertyObject);
+                        }
+                        if (key != null) {
                             Object callee = Modifier.isStatic(method.getModifiers()) ? null : targetObject;
                             try {
-                                isFound = method.invoke(callee, parameter) != null;
+                                isFound = method.invoke(callee, key) != null;
                                 if (isFound) {
                                     break;
                                 }
@@ -841,9 +837,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         if (!isSet && (!genericSetters.isEmpty() || !settersMap.isEmpty())) {
-            Object propertyObject, valueObject;
+            Object keyObject, valueObject;
             try {
-                propertyObject = v8Runtime.toObject(propertyKey);
+                keyObject = v8Runtime.toObject(propertyKey);
                 valueObject = v8Runtime.toObject(propertyValue);
             } catch (JavetException e) {
                 throw e;
@@ -851,35 +847,41 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 throw new JavetException(JavetError.CallbackUnknownFailure,
                         SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
             }
-            if (!genericSetters.isEmpty() && propertyObject != null && !(propertyObject instanceof V8Value)) {
+            if (!genericSetters.isEmpty() && keyObject != null && !(keyObject instanceof V8Value)) {
                 try {
                     for (Method method : genericSetters) {
                         Class<?>[] parameterTypes = method.getParameterTypes();
                         Class<?> keyParameterType = parameterTypes[0];
                         Class<?> valueParameterType = parameterTypes[1];
-                        Object key = propertyObject;
-                        Object value = valueObject;
-                        boolean isCallable = keyParameterType.isAssignableFrom(propertyObject.getClass());
-                        if (!isCallable && keyParameterType.isPrimitive()) {
-                            key = JavetTypeUtils.toExactPrimitive(keyParameterType, propertyObject);
-                            isCallable = key != null;
+                        Object key = null;
+                        Object value = null;
+                        if (V8Value.class.isAssignableFrom(keyParameterType)
+                                && keyParameterType.isAssignableFrom(propertyKey.getClass())) {
+                            key = propertyKey;
                         }
-                        if (!isCallable) {
-                            key = JavetTypeUtils.toApproximatePrimitive(keyParameterType, propertyObject);
-                            isCallable = key != null;
+                        if (V8Value.class.isAssignableFrom(valueParameterType)
+                                && valueParameterType.isAssignableFrom(propertyValue.getClass())) {
+                            value = propertyValue;
                         }
-                        if (isCallable) {
-                            isCallable = valueParameterType.isAssignableFrom(valueObject.getClass());
-                            if (!isCallable && valueParameterType.isPrimitive()) {
-                                value = JavetTypeUtils.toExactPrimitive(valueParameterType, valueObject);
-                                isCallable = value != null;
-                            }
-                            if (!isCallable) {
-                                value = JavetTypeUtils.toApproximatePrimitive(valueParameterType, propertyObject);
-                                isCallable = value != null;
-                            }
+                        if (key == null && keyParameterType.isAssignableFrom(keyObject.getClass())) {
+                            key = keyObject;
                         }
-                        if (isCallable) {
+                        if (value == null && valueParameterType.isAssignableFrom(valueObject.getClass())) {
+                            value = valueObject;
+                        }
+                        if (key == null && keyParameterType.isPrimitive()) {
+                            key = JavetTypeUtils.toExactPrimitive(keyParameterType, keyObject);
+                        }
+                        if (value == null && valueParameterType.isPrimitive()) {
+                            value = JavetTypeUtils.toExactPrimitive(valueParameterType, valueObject);
+                        }
+                        if (key == null) {
+                            key = JavetTypeUtils.toApproximatePrimitive(keyParameterType, keyObject);
+                        }
+                        if (value == null) {
+                            value = JavetTypeUtils.toApproximatePrimitive(valueParameterType, valueObject);
+                        }
+                        if (key != null) {
                             Object callee = Modifier.isStatic(method.getModifiers()) ? null : targetObject;
                             method.invoke(callee, key, value);
                             isSet = true;
@@ -891,13 +893,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                             SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
                 }
             }
-            if (!isSet && (propertyObject instanceof String)) {
-                String propertyName = (String) propertyObject;
+            if (!isSet && (keyObject instanceof String)) {
+                String propertyName = (String) keyObject;
                 List<Method> methods = settersMap.get(propertyName);
                 if (methods != null) {
                     JavetUniversalInterceptor javetUniversalInterceptor =
                             new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
-                    javetUniversalInterceptor.invoke(propertyValue);
+                    javetUniversalInterceptor.invoke((V8ValueObject) target, propertyValue);
                     isSet = true;
                 }
             }
@@ -927,7 +929,10 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          * @since 0.9.6
          */
         public JavetUniversalInterceptor(
-                V8Runtime v8Runtime, Object targetObject, String jsMethodName, List<Method> methods) {
+                V8Runtime v8Runtime,
+                Object targetObject,
+                String jsMethodName,
+                List<Method> methods) {
             this.jsMethodName = jsMethodName;
             this.methods = methods;
             this.targetObject = targetObject;
@@ -945,7 +950,8 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             try {
                 return new JavetCallbackContext(
                         this,
-                        getClass().getMethod(METHOD_NAME_INVOKE, V8Value[].class));
+                        getClass().getMethod(METHOD_NAME_INVOKE, V8ValueObject.class, V8Value[].class),
+                        true);
             } catch (NoSuchMethodException ignored) {
             }
             return null;
@@ -984,14 +990,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         /**
          * Invoke.
          *
-         * @param v8Values the V8 values
+         * @param thisObject this object
+         * @param v8Values   the V8 values
          * @return the object
          * @throws JavetException the javet exception
          * @since 0.9.6
          */
-        public Object invoke(V8Value... v8Values) throws JavetException {
+        public Object invoke(V8ValueObject thisObject, V8Value... v8Values) throws JavetException {
             try {
-                return execute(v8Runtime, targetObject, methods, V8ValueUtils.convertToVirtualObjects(v8Values));
+                return execute(v8Runtime, targetObject, thisObject, methods, V8ValueUtils.convertToVirtualObjects(v8Values));
             } catch (JavetException e) {
                 throw e;
             } catch (InvocationTargetException e) {
@@ -1018,8 +1025,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     public static class ScoredExecutable<E extends AccessibleObject> {
         private final E executable;
-        private final JavetVirtualObject[] javetVirtualObjects;
         private final Object targetObject;
+        private final V8ValueObject thisObject;
+        private JavetVirtualObject[] javetVirtualObjects;
         private double score;
 
         /**
@@ -1027,16 +1035,22 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          *
          * @param v8Runtime           the V8 runtime
          * @param targetObject        the target object
+         * @param thisObject          this object
          * @param executable          the executable
          * @param javetVirtualObjects the javet virtual objects
          * @since 0.9.10
          */
         public ScoredExecutable(
-                V8Runtime v8Runtime, Object targetObject, E executable, JavetVirtualObject[] javetVirtualObjects) {
+                V8Runtime v8Runtime,
+                Object targetObject,
+                V8ValueObject thisObject,
+                E executable,
+                JavetVirtualObject[] javetVirtualObjects) {
             this.executable = executable;
             this.javetVirtualObjects = javetVirtualObjects;
             this.score = 0;
             this.targetObject = targetObject;
+            this.thisObject = thisObject;
         }
 
         /**
@@ -1046,12 +1060,27 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          * @since 0.9.10
          */
         public void calculateScore() throws JavetException {
+            final boolean isConstructor = executable instanceof Constructor;
             // Max score is 1. Min score is 0.
-            Class<?>[] parameterTypes = executable instanceof Constructor ?
-                    ((Constructor) executable).getParameterTypes() : ((Method) executable).getParameterTypes();
+            Class<?>[] parameterTypes = isConstructor ?
+                    ((Constructor<?>) executable).getParameterTypes() : ((Method) executable).getParameterTypes();
+            boolean isExecutableVarArgs = isConstructor ?
+                    ((Constructor<?>) executable).isVarArgs() : ((Method) executable).isVarArgs();
+            boolean thisObjectRequired = false;
+            if (!isConstructor) {
+                Method method = (Method) executable;
+                if (method.isAnnotationPresent(V8Function.class)) {
+                    V8Function v8Function = method.getAnnotation(V8Function.class);
+                    thisObjectRequired = v8Function.thisObjectRequired();
+                }
+            }
+            if (thisObjectRequired) {
+                JavetVirtualObject[] javetVirtualObjectsWithThis = new JavetVirtualObject[javetVirtualObjects.length + 1];
+                javetVirtualObjectsWithThis[0] = new JavetVirtualObject(thisObject);
+                System.arraycopy(javetVirtualObjects, 0, javetVirtualObjectsWithThis, 1, javetVirtualObjects.length);
+                javetVirtualObjects = javetVirtualObjectsWithThis;
+            }
             final int parameterCount = parameterTypes.length;
-            boolean isExecutableVarArgs = executable instanceof Constructor ?
-                    ((Constructor) executable).isVarArgs() : ((Method) executable).isVarArgs();
             score = 0;
             final int length = javetVirtualObjects.length;
             if (length == 0) {
@@ -1151,9 +1180,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     }
                     if (totalScore > 0) {
                         score = totalScore / length;
-                        if (executable instanceof Constructor) {
+                        if (isConstructor) {
                             if (targetObject != null &&
-                                    ((Constructor) executable).getDeclaringClass() != targetObject.getClass()) {
+                                    ((Constructor<?>) executable).getDeclaringClass() != targetObject.getClass()) {
                                 score *= 0.9;
                             }
                         } else {
@@ -1178,13 +1207,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             final int length = javetVirtualObjects.length;
             Object callee = Modifier.isStatic(((Member) executable).getModifiers()) ? null : targetObject;
             Class<?>[] parameterTypes = executable instanceof Constructor ?
-                    ((Constructor) executable).getParameterTypes() : ((Method) executable).getParameterTypes();
+                    ((Constructor<?>) executable).getParameterTypes() : ((Method) executable).getParameterTypes();
             final int parameterCount = parameterTypes.length;
             boolean isExecutableVarArgs = executable instanceof Constructor ?
-                    ((Constructor) executable).isVarArgs() : ((Method) executable).isVarArgs();
+                    ((Constructor<?>) executable).isVarArgs() : ((Method) executable).isVarArgs();
             if (length == 0) {
                 if (isExecutableVarArgs) {
-                    Class<?> componentType = parameterTypes[parameterCount - 1];
+                    Class<?> componentType = parameterTypes[parameterCount - 1].getComponentType();
                     Object varObject = Array.newInstance(componentType, 0);
                     if (executable instanceof Constructor) {
                         return ((Constructor<?>) executable).newInstance(varObject);

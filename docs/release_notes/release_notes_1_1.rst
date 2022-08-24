@@ -8,6 +8,7 @@ Release Notes 1.1.x
 * Fixed ``pom.xml`` for Android 
 * Added optional i18n support for V8 mode
 * Added virtual varargs support to the callback
+* Added support to ``V8Value`` and ``this`` for proxy based converters
 
 1.1.6 V8 v10.4
 --------------

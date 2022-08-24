@@ -26,6 +26,9 @@ import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -497,6 +500,46 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
         v8Runtime.getGlobalObject().delete("set");
         javetProxyConverter.getConfig().setProxySetEnabled(false);
+    }
+
+    @Test
+    public void testV8ValuesAsArguments() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            private final Map<String, String> map = new HashMap<>();
+
+            @V8Function(thisObjectRequired = true)
+            public V8Value callVarargsWithThis(V8ValueObject thisObject, V8Value... v8Values) {
+                return thisObject;
+            }
+
+            @V8Function
+            public int callVarargsWithoutThis(V8Value... v8Values) {
+                return v8Values.length;
+            }
+
+            @V8Getter
+            public V8Value getter(V8ValueString v8ValueKey) throws JavetException {
+                String value = map.get(v8ValueKey.getValue());
+                return value == null
+                        ? v8ValueKey.getV8Runtime().createV8ValueUndefined()
+                        : v8ValueKey.getV8Runtime().createV8ValueString(value);
+            }
+
+            @V8Setter
+            public void setter(V8ValueString v8ValueKey, V8ValueString v8ValueValue) throws JavetException {
+                map.put(v8ValueKey.getValue(), v8ValueValue.getValue());
+            }
+        };
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        v8Runtime.getExecutor("a['x'] = 'abc';").executeVoid();
+        v8Runtime.getExecutor("a['y'] = '123';").executeVoid();
+        assertEquals("abc", v8Runtime.getExecutor("a['x']").executeString());
+        assertEquals("123", v8Runtime.getExecutor("a['y']").executeString());
+        assertTrue(v8Runtime.getExecutor("a['z']").execute().isUndefined());
+        assertEquals(0, v8Runtime.getExecutor("a.callVarargsWithoutThis()").executeInteger());
+        assertEquals(3, v8Runtime.getExecutor("a.callVarargsWithoutThis(1,2,3)").executeInteger());
+        assertTrue(v8Runtime.getExecutor("a.callVarargsWithThis(1,2,3) === a").executeBoolean());
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     interface IStringJoiner extends AutoCloseable {

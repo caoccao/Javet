@@ -111,6 +111,9 @@ public class JavetProxyConverter extends JavetObjectConverter {
     @CheckReturnValue
     protected <T extends V8Value> T toV8Value(
             V8Runtime v8Runtime, Object object, final int depth) throws JavetException {
+        if (object instanceof V8Value) {
+            return (T) object;
+        }
         V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
         if (v8Value != null && !(v8Value.isUndefined())) {
             return (T) v8Value;
