@@ -425,7 +425,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = false;
-        if (!classDefinition.classMode) {
+        if (classDefinition.proxyMode == JavetProxyMode.Object) {
             if (classDefinition.targetTypeMap) {
                 isFound = ((Map<?, ?>) targetObject).containsKey(v8Runtime.toObject(property));
             } else if (classDefinition.targetTypeSet) {
@@ -509,20 +509,22 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     protected void initialize() {
         StringBuilder sb = new StringBuilder();
-        boolean classMode = false;
+        JavetProxyMode proxyMode = JavetProxyMode.Object;
         Class<T> targetClass = (Class<T>) targetObject.getClass();
         if (targetObject instanceof Class) {
             Class<?> objectClass = (Class<?>) targetObject;
-            classMode = isClassMode(objectClass);
+            if (isClassMode(objectClass)) {
+                proxyMode = JavetProxyMode.Class;
+            }
             sb.append(objectClass.getName());
         } else {
             sb.append(targetClass.getName());
         }
-        sb.append(DELIMITER).append(classMode);
+        sb.append(DELIMITER).append(proxyMode.name());
         String cacheKey = sb.toString();
         classDefinition = CLASS_DEFINITION_CACHE.get(cacheKey);
         if (classDefinition == null) {
-            classDefinition = new ClassDefinition(classMode, targetClass);
+            classDefinition = new ClassDefinition(proxyMode, targetClass);
             if (targetObject instanceof Class) {
                 initializeFieldsAndMethods((Class<?>) targetObject, classDefinition, true);
             }
@@ -544,7 +546,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         V8ConversionMode conversionMode = classDefinition.targetClass.isAnnotationPresent(V8Convert.class)
                 ? classDefinition.targetClass.getAnnotation(V8Convert.class).mode()
                 : V8ConversionMode.Transparent;
-        if (!classDefinition.classMode) {
+        if (classDefinition.proxyMode == JavetProxyMode.Object) {
             if (classDefinition.targetTypeMap) {
                 classDefinition.uniqueKeySet.addAll(((Map<String, ?>) targetObject).keySet());
             } else if (classDefinition.targetTypeSet) {
@@ -552,7 +554,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         do {
-            if (classDefinition.classMode) {
+            if (classDefinition.proxyMode == JavetProxyMode.Class) {
                 for (Constructor<?> constructor : currentClass.getConstructors()) {
                     if (isAllowed(conversionMode, constructor)) {
                         classDefinition.constructors.add(constructor);
@@ -657,16 +659,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     }
 
     /**
-     * Is class mode.
-     *
-     * @return true : class mode, false : not class mode
-     * @since 0.9.9
-     */
-    public boolean isClassMode() {
-        return classDefinition.classMode;
-    }
-
-    /**
      * Is generic getter.
      *
      * @param method the method
@@ -723,7 +715,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @V8Function
     @Override
     public V8Value ownKeys(V8Value target) throws JavetException {
-        if (!classDefinition.classMode) {
+        if (classDefinition.proxyMode == JavetProxyMode.Object) {
             Object[] keys = null;
             if (classDefinition.targetTypeMap) {
                 keys = ((Map<?, ?>) targetObject).keySet().toArray();
@@ -879,12 +871,6 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     static class ClassDefinition {
         /**
-         * The Class mode.
-         *
-         * @since 0.9.9
-         */
-        public boolean classMode;
-        /**
          * The Constructors.
          *
          * @since 0.9.8
@@ -921,6 +907,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
          */
         public Map<String, List<Method>> methodsMap;
         /**
+         * The Proxy mode.
+         *
+         * @since 0.9.9
+         */
+        public JavetProxyMode proxyMode;
+        /**
          * The Setters map.
          *
          * @since 0.9.6
@@ -954,18 +946,18 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         /**
          * Instantiates a new Class definition.
          *
-         * @param classMode   the class mode
+         * @param proxyMode   the proxy mode
          * @param targetClass the target class
          * @since 1.1.7
          */
-        public ClassDefinition(boolean classMode, Class<?> targetClass) {
-            this.classMode = classMode;
+        public ClassDefinition(JavetProxyMode proxyMode, Class<?> targetClass) {
             constructors = new ArrayList<>();
             fieldMap = new LinkedHashMap<>();
             genericGetters = new ArrayList<>();
             genericSetters = new ArrayList<>();
             gettersMap = new LinkedHashMap<>();
             methodsMap = new LinkedHashMap<>();
+            this.proxyMode = proxyMode;
             settersMap = new LinkedHashMap<>();
             this.targetClass = targetClass;
             targetTypeMap = Map.class.isAssignableFrom(targetClass);

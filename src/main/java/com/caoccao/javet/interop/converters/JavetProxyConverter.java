@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.proxy.JavetProxyMode;
 import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
@@ -78,18 +79,23 @@ public class JavetProxyConverter extends JavetObjectConverter {
     @CheckReturnValue
     protected <T extends V8Value> T toProxiedV8Value(V8Runtime v8Runtime, Object object) throws JavetException {
         V8Value v8Value;
-        boolean classMode = false;
+        JavetProxyMode proxyMode = JavetProxyMode.Object;
         if (object instanceof Class) {
-            classMode = JavetUniversalProxyHandler.isClassMode((Class<?>) object);
+            if (JavetUniversalProxyHandler.isClassMode((Class<?>) object)) {
+                proxyMode = JavetProxyMode.Class;
+            }
         }
         try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
             V8ValueProxy v8ValueProxy;
-            if (classMode) {
-                try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(DUMMY_FUNCTION_STRING)) {
-                    v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueFunction);
-                }
-            } else {
-                v8ValueProxy = v8Scope.createV8ValueProxy();
+            switch (proxyMode) {
+                case Class:
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(DUMMY_FUNCTION_STRING)) {
+                        v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueFunction);
+                    }
+                    break;
+                default:
+                    v8ValueProxy = v8Scope.createV8ValueProxy();
+                    break;
             }
             try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
                 JavetUniversalProxyHandler<Object> javetUniversalProxyHandler =
