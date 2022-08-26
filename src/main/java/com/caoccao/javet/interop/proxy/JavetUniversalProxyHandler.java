@@ -32,6 +32,7 @@ import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,18 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 1.0.6
      */
     public static final String FUNCTION_NAME_LENGTH = "length";
+    /**
+     * The constant CLASS_DEFINITION_MAP.
+     *
+     * @since 1.1.7
+     */
+    protected static final Map<String, ClassDefinition> CLASS_DEFINITION_CACHE = new ConcurrentHashMap<>();
+    /**
+     * The constant DELIMITER.
+     *
+     * @since 1.1.7
+     */
+    protected static final String DELIMITER = "|";
     /**
      * The constant GETTER_PREFIX_ARRAY.
      *
@@ -111,77 +124,11 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     protected static final Class<?> V8_VALUE_PROXY_CLASS = V8ValueProxy.class;
     /**
-     * The Class mode.
+     * The Class definition.
      *
-     * @since 0.9.9
+     * @since 1.1.7
      */
-    protected boolean classMode;
-    /**
-     * The Constructors.
-     *
-     * @since 0.9.8
-     */
-    protected List<Constructor<?>> constructors;
-    /**
-     * The Field map.
-     *
-     * @since 0.9.7
-     */
-    protected Map<String, Field> fieldMap;
-    /**
-     * The Generic getters.
-     *
-     * @since 0.9.6
-     */
-    protected List<Method> genericGetters;
-    /**
-     * The Generic setters.
-     *
-     * @since 0.9.6
-     */
-    protected List<Method> genericSetters;
-    /**
-     * The Getters map.
-     *
-     * @since 0.9.6
-     */
-    protected Map<String, List<Method>> gettersMap;
-    /**
-     * The Is target type map.
-     *
-     * @since 0.9.7
-     */
-    protected boolean isTargetTypeMap;
-    /**
-     * The Is target type set.
-     *
-     * @since 0.9.7
-     */
-    protected boolean isTargetTypeSet;
-    /**
-     * The Methods map.
-     *
-     * @since 0.9.6
-     */
-    protected Map<String, List<Method>> methodsMap;
-    /**
-     * The Setters map.
-     *
-     * @since 0.9.6
-     */
-    protected Map<String, List<Method>> settersMap;
-    /**
-     * The Target class.
-     *
-     * @since 0.9.6
-     */
-    protected Class<T> targetClass;
-    /**
-     * The Unique key set.
-     *
-     * @since 0.9.7
-     */
-    protected Set<String> uniqueKeySet;
+    protected ClassDefinition classDefinition;
 
     /**
      * Instantiates a new Javet universal proxy handler.
@@ -192,8 +139,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      */
     public JavetUniversalProxyHandler(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, Objects.requireNonNull(targetObject));
-        this.targetClass = (Class<T>) targetObject.getClass();
         initialize();
+    }
+
+    /**
+     * Clear class definition cache.
+     *
+     * @since 1.1.7
+     */
+    public static void clearClassDefinitionCache() {
+        CLASS_DEFINITION_CACHE.clear();
     }
 
     /**
@@ -303,7 +258,11 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         try {
             v8Values = arguments.toArray();
             return v8Runtime.toV8Value(execute(
-                    v8Runtime, null, (V8ValueObject) target, constructors, V8ValueUtils.convertToVirtualObjects(v8Values)));
+                    v8Runtime,
+                    null,
+                    (V8ValueObject) target,
+                    classDefinition.constructors,
+                    V8ValueUtils.convertToVirtualObjects(v8Values)));
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -326,24 +285,24 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             if (JavetStringUtils.isDigital(propertyString)) {
                 final int index = Integer.parseInt(propertyString);
                 if (index >= 0) {
-                    if (targetClass.isArray()) {
+                    if (classDefinition.targetClass.isArray()) {
                         if (index < Array.getLength(targetObject)) {
                             return v8Runtime.toV8Value(Array.get(targetObject, index));
                         }
-                    } else if (List.class.isAssignableFrom(targetClass)) {
+                    } else if (List.class.isAssignableFrom(classDefinition.targetClass)) {
                         List<?> list = (List<?>) targetObject;
                         if (index < list.size()) {
                             return v8Runtime.toV8Value(list.get(index));
                         }
                     }
                 }
-            } else if (targetClass.isArray() && FUNCTION_NAME_LENGTH.equals(propertyString)) {
+            } else if (classDefinition.targetClass.isArray() && FUNCTION_NAME_LENGTH.equals(propertyString)) {
                 return v8Runtime.toV8Value(Array.getLength(targetObject));
             }
         }
-        if (!fieldMap.isEmpty() && property instanceof V8ValueString) {
+        if (!classDefinition.fieldMap.isEmpty() && property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            Field field = fieldMap.get(propertyName);
+            Field field = classDefinition.fieldMap.get(propertyName);
             if (field != null) {
                 try {
                     Object callee = Modifier.isStatic(field.getModifiers()) ? null : targetObject;
@@ -361,13 +320,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            List<Method> methods = methodsMap.get(propertyName);
+            List<Method> methods = classDefinition.methodsMap.get(propertyName);
             if (methods != null && !methods.isEmpty()) {
                 JavetUniversalInterceptor javetUniversalInterceptor =
                         new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
                 return v8Runtime.createV8ValueFunction(javetUniversalInterceptor.getCallbackContext());
             }
-            methods = gettersMap.get(propertyName);
+            methods = classDefinition.gettersMap.get(propertyName);
             if (methods != null && !methods.isEmpty()) {
                 JavetUniversalInterceptor javetUniversalInterceptor =
                         new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
@@ -382,15 +341,15 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
-                    && (targetObject instanceof Iterable || targetClass.isArray())) {
+                    && (targetObject instanceof Iterable || classDefinition.targetClass.isArray())) {
                 return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             }
         }
-        if (!genericGetters.isEmpty()) {
+        if (!classDefinition.genericGetters.isEmpty()) {
             try {
                 Object propertyObject = v8Runtime.toObject(property);
                 if (propertyObject != null && !(propertyObject instanceof V8Value)) {
-                    for (Method method : genericGetters) {
+                    for (Method method : classDefinition.genericGetters) {
                         Class<?>[] parameterTypes = method.getParameterTypes();
                         Class<?> parameterType = parameterTypes[0];
                         Object key = null;
@@ -466,19 +425,19 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = false;
-        if (!classMode) {
-            if (isTargetTypeMap) {
+        if (!classDefinition.classMode) {
+            if (classDefinition.targetTypeMap) {
                 isFound = ((Map<?, ?>) targetObject).containsKey(v8Runtime.toObject(property));
-            } else if (isTargetTypeSet) {
+            } else if (classDefinition.targetTypeSet) {
                 isFound = ((Set<?>) targetObject).contains(v8Runtime.toObject(property));
             } else if (property instanceof V8ValueString) {
                 String indexString = ((V8ValueString) property).toPrimitive();
                 if (JavetStringUtils.isDigital(indexString)) {
                     final int index = Integer.parseInt(indexString);
                     if (index >= 0) {
-                        if (targetClass.isArray()) {
+                        if (classDefinition.targetClass.isArray()) {
                             isFound = index < Array.getLength(targetObject);
-                        } else if (List.class.isAssignableFrom(targetClass)) {
+                        } else if (List.class.isAssignableFrom(classDefinition.targetClass)) {
                             isFound = index < ((List<?>) targetObject).size();
                         }
                     }
@@ -487,16 +446,16 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
         }
         if (!isFound && (property instanceof V8ValueString)) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            isFound = fieldMap.containsKey(propertyName)
-                    || methodsMap.containsKey(propertyName)
-                    || gettersMap.containsKey(propertyName)
-                    || settersMap.containsKey(propertyName);
+            isFound = classDefinition.fieldMap.containsKey(propertyName)
+                    || classDefinition.methodsMap.containsKey(propertyName)
+                    || classDefinition.gettersMap.containsKey(propertyName)
+                    || classDefinition.settersMap.containsKey(propertyName);
         }
-        if (!isFound && !genericGetters.isEmpty()) {
+        if (!isFound && !classDefinition.genericGetters.isEmpty()) {
             try {
                 Object propertyObject = v8Runtime.toObject(property);
                 if (propertyObject != null && !(propertyObject instanceof V8Value)) {
-                    for (Method method : genericGetters) {
+                    for (Method method : classDefinition.genericGetters) {
                         Class<?>[] parameterTypes = method.getParameterTypes();
                         Class<?> parameterType = parameterTypes[0];
                         Object key = null;
@@ -540,7 +499,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.9
      */
     public boolean hasConstructors() {
-        return !constructors.isEmpty();
+        return !classDefinition.constructors.isEmpty();
     }
 
     /**
@@ -549,48 +508,54 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.7
      */
     protected void initialize() {
-        constructors = new ArrayList<>();
-        fieldMap = new LinkedHashMap<>();
-        genericGetters = new ArrayList<>();
-        genericSetters = new ArrayList<>();
-        methodsMap = new LinkedHashMap<>();
-        gettersMap = new LinkedHashMap<>();
-        settersMap = new LinkedHashMap<>();
-        uniqueKeySet = new LinkedHashSet<>();
-        isTargetTypeMap = Map.class.isAssignableFrom(targetClass);
-        isTargetTypeSet = Set.class.isAssignableFrom(targetClass);
-        classMode = false;
+        StringBuilder sb = new StringBuilder();
+        boolean classMode = false;
+        Class<T> targetClass = (Class<T>) targetObject.getClass();
         if (targetObject instanceof Class) {
             Class<?> objectClass = (Class<?>) targetObject;
             classMode = isClassMode(objectClass);
-            initializeFieldsAndMethods(objectClass, true);
+            sb.append(objectClass.getName());
+        } else {
+            sb.append(targetClass.getName());
         }
-        initializeFieldsAndMethods(targetClass, false);
+        sb.append(DELIMITER).append(classMode);
+        String cacheKey = sb.toString();
+        classDefinition = CLASS_DEFINITION_CACHE.get(cacheKey);
+        if (classDefinition == null) {
+            classDefinition = new ClassDefinition(classMode, targetClass);
+            if (targetObject instanceof Class) {
+                initializeFieldsAndMethods((Class<?>) targetObject, classDefinition, true);
+            }
+            initializeFieldsAndMethods(targetClass, classDefinition, false);
+            CLASS_DEFINITION_CACHE.put(cacheKey, classDefinition);
+        }
     }
 
     /**
      * Initialize fields and methods.
      *
-     * @param currentClass the current class
-     * @param staticMode   the static mode
+     * @param currentClass    the current class
+     * @param classDefinition the class definition
+     * @param staticMode      the static mode
      * @since 0.9.6
      */
-    protected void initializeFieldsAndMethods(Class<?> currentClass, boolean staticMode) {
-        V8ConversionMode conversionMode = targetClass.isAnnotationPresent(V8Convert.class)
-                ? targetClass.getAnnotation(V8Convert.class).mode()
+    protected void initializeFieldsAndMethods(
+            Class<?> currentClass, ClassDefinition classDefinition, boolean staticMode) {
+        V8ConversionMode conversionMode = classDefinition.targetClass.isAnnotationPresent(V8Convert.class)
+                ? classDefinition.targetClass.getAnnotation(V8Convert.class).mode()
                 : V8ConversionMode.Transparent;
-        if (!classMode) {
-            if (isTargetTypeMap) {
-                uniqueKeySet.addAll(((Map<String, ?>) targetObject).keySet());
-            } else if (isTargetTypeSet) {
-                uniqueKeySet.addAll((Set<String>) targetObject);
+        if (!classDefinition.classMode) {
+            if (classDefinition.targetTypeMap) {
+                classDefinition.uniqueKeySet.addAll(((Map<String, ?>) targetObject).keySet());
+            } else if (classDefinition.targetTypeSet) {
+                classDefinition.uniqueKeySet.addAll((Set<String>) targetObject);
             }
         }
         do {
-            if (classMode) {
+            if (classDefinition.classMode) {
                 for (Constructor<?> constructor : currentClass.getConstructors()) {
                     if (isAllowed(conversionMode, constructor)) {
-                        constructors.add(constructor);
+                        classDefinition.constructors.add(constructor);
                     }
                 }
             }
@@ -613,13 +578,13 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                         fieldName = aliasFieldName;
                     }
                 }
-                if (fieldMap.containsKey(fieldName)) {
+                if (classDefinition.fieldMap.containsKey(fieldName)) {
                     continue;
                 }
                 JavetReflectionUtils.safeSetAccessible(field);
-                fieldMap.put(fieldName, field);
-                if (!isTargetTypeMap && !isTargetTypeSet) {
-                    uniqueKeySet.add(fieldName);
+                classDefinition.fieldMap.put(fieldName, field);
+                if (!classDefinition.targetTypeMap && !classDefinition.targetTypeSet) {
+                    classDefinition.uniqueKeySet.add(fieldName);
                 }
             }
             // All public methods are in the scope.
@@ -636,23 +601,23 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 }
                 JavetReflectionUtils.safeSetAccessible(method);
                 if (isGenericGetter(method)) {
-                    genericGetters.add(method);
+                    classDefinition.genericGetters.add(method);
                 } else if (isGenericSetter(method)) {
-                    genericSetters.add(method);
+                    classDefinition.genericSetters.add(method);
                 } else {
                     final int getterPrefixLength = getGetterPrefixLength(method);
                     if (getterPrefixLength > 0) {
-                        addMethod(method, getterPrefixLength, gettersMap);
-                        if (!isTargetTypeMap && !isTargetTypeSet) {
+                        addMethod(method, getterPrefixLength, classDefinition.gettersMap);
+                        if (!classDefinition.targetTypeMap && !classDefinition.targetTypeSet) {
                             String aliasMethodName = method.getName().substring(getterPrefixLength);
                             Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
                             if (matcher.find()) {
                                 final int capitalizedPrefixLength = matcher.group().length();
                                 if (capitalizedPrefixLength == 1) {
-                                    uniqueKeySet.add(aliasMethodName.substring(0, capitalizedPrefixLength).toLowerCase(Locale.ROOT)
+                                    classDefinition.uniqueKeySet.add(aliasMethodName.substring(0, capitalizedPrefixLength).toLowerCase(Locale.ROOT)
                                             + aliasMethodName.substring(capitalizedPrefixLength));
                                 } else {
-                                    uniqueKeySet.add(aliasMethodName.substring(0, capitalizedPrefixLength - 1).toLowerCase(Locale.ROOT)
+                                    classDefinition.uniqueKeySet.add(aliasMethodName.substring(0, capitalizedPrefixLength - 1).toLowerCase(Locale.ROOT)
                                             + aliasMethodName.substring(capitalizedPrefixLength - 1));
                                 }
                             }
@@ -660,11 +625,11 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                     } else {
                         final int setterPrefixLength = getSetterPrefixLength(method);
                         if (setterPrefixLength > 0) {
-                            addMethod(method, setterPrefixLength, settersMap);
+                            addMethod(method, setterPrefixLength, classDefinition.settersMap);
                         }
                     }
                 }
-                addMethod(method, 0, methodsMap);
+                addMethod(method, 0, classDefinition.methodsMap);
             }
             if (currentClass == Object.class) {
                 break;
@@ -698,7 +663,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
      * @since 0.9.9
      */
     public boolean isClassMode() {
-        return classMode;
+        return classDefinition.classMode;
     }
 
     /**
@@ -758,14 +723,14 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
     @V8Function
     @Override
     public V8Value ownKeys(V8Value target) throws JavetException {
-        if (!classMode) {
+        if (!classDefinition.classMode) {
             Object[] keys = null;
-            if (isTargetTypeMap) {
+            if (classDefinition.targetTypeMap) {
                 keys = ((Map<?, ?>) targetObject).keySet().toArray();
-            } else if (isTargetTypeSet) {
+            } else if (classDefinition.targetTypeSet) {
                 keys = ((Set<?>) targetObject).toArray();
-            } else if (targetClass.isArray() || Collection.class.isAssignableFrom(targetClass)) {
-                final int length = targetClass.isArray()
+            } else if (classDefinition.targetClass.isArray() || Collection.class.isAssignableFrom(classDefinition.targetClass)) {
+                final int length = classDefinition.targetClass.isArray()
                         ? Array.getLength(targetObject)
                         : ((List<?>) targetObject).size();
                 keys = new Object[length];
@@ -790,7 +755,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 }
             }
         }
-        return v8Runtime.toV8Value(uniqueKeySet.toArray());
+        return v8Runtime.toV8Value(classDefinition.uniqueKeySet.toArray());
     }
 
     @V8Function
@@ -802,12 +767,12 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             if (JavetStringUtils.isDigital(indexString)) {
                 final int index = Integer.parseInt(indexString);
                 if (index >= 0) {
-                    if (targetClass.isArray()) {
+                    if (classDefinition.targetClass.isArray()) {
                         if (index < Array.getLength(targetObject)) {
                             Array.set(targetObject, index, v8Runtime.toObject(propertyValue));
                             isSet = true;
                         }
-                    } else if (List.class.isAssignableFrom(targetClass)) {
+                    } else if (List.class.isAssignableFrom(classDefinition.targetClass)) {
                         List<?> list = (List<?>) targetObject;
                         if (index < list.size()) {
                             list.set(index, v8Runtime.toObject(propertyValue));
@@ -817,9 +782,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 }
             }
         }
-        if (!fieldMap.isEmpty() && propertyKey instanceof V8ValueString) {
+        if (!classDefinition.fieldMap.isEmpty() && propertyKey instanceof V8ValueString) {
             String propertyName = ((V8ValueString) propertyKey).toPrimitive();
-            Field field = fieldMap.get(propertyName);
+            Field field = classDefinition.fieldMap.get(propertyName);
             if (field != null) {
                 final int fieldModifiers = field.getModifiers();
                 if (!Modifier.isFinal(fieldModifiers)) {
@@ -836,7 +801,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 }
             }
         }
-        if (!isSet && (!genericSetters.isEmpty() || !settersMap.isEmpty())) {
+        if (!isSet && (!classDefinition.genericSetters.isEmpty() || !classDefinition.settersMap.isEmpty())) {
             Object keyObject, valueObject;
             try {
                 keyObject = v8Runtime.toObject(propertyKey);
@@ -847,9 +812,9 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
                 throw new JavetException(JavetError.CallbackUnknownFailure,
                         SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
             }
-            if (!genericSetters.isEmpty() && keyObject != null && !(keyObject instanceof V8Value)) {
+            if (!classDefinition.genericSetters.isEmpty() && keyObject != null && !(keyObject instanceof V8Value)) {
                 try {
-                    for (Method method : genericSetters) {
+                    for (Method method : classDefinition.genericSetters) {
                         Class<?>[] parameterTypes = method.getParameterTypes();
                         Class<?> keyParameterType = parameterTypes[0];
                         Class<?> valueParameterType = parameterTypes[1];
@@ -895,7 +860,7 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
             if (!isSet && (keyObject instanceof String)) {
                 String propertyName = (String) keyObject;
-                List<Method> methods = settersMap.get(propertyName);
+                List<Method> methods = classDefinition.settersMap.get(propertyName);
                 if (methods != null) {
                     JavetUniversalInterceptor javetUniversalInterceptor =
                             new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
@@ -905,6 +870,108 @@ public class JavetUniversalProxyHandler<T> extends BaseJavetProxyHandler<T> {
             }
         }
         return v8Runtime.createV8ValueBoolean(isSet);
+    }
+
+    /**
+     * The type Class definition.
+     *
+     * @since 1.1.7
+     */
+    static class ClassDefinition {
+        /**
+         * The Class mode.
+         *
+         * @since 0.9.9
+         */
+        public boolean classMode;
+        /**
+         * The Constructors.
+         *
+         * @since 0.9.8
+         */
+        public List<Constructor<?>> constructors;
+        /**
+         * The Field map.
+         *
+         * @since 0.9.7
+         */
+        public Map<String, Field> fieldMap;
+        /**
+         * The Generic getters.
+         *
+         * @since 0.9.6
+         */
+        public List<Method> genericGetters;
+        /**
+         * The Generic setters.
+         *
+         * @since 0.9.6
+         */
+        public List<Method> genericSetters;
+        /**
+         * The Getters map.
+         *
+         * @since 0.9.6
+         */
+        public Map<String, List<Method>> gettersMap;
+        /**
+         * The Methods map.
+         *
+         * @since 0.9.6
+         */
+        public Map<String, List<Method>> methodsMap;
+        /**
+         * The Setters map.
+         *
+         * @since 0.9.6
+         */
+        public Map<String, List<Method>> settersMap;
+        /**
+         * The Target class.
+         *
+         * @since 0.9.6
+         */
+        public Class<?> targetClass;
+        /**
+         * The target type map.
+         *
+         * @since 0.9.7
+         */
+        public boolean targetTypeMap;
+        /**
+         * The target type set.
+         *
+         * @since 0.9.7
+         */
+        public boolean targetTypeSet;
+        /**
+         * The Unique key set.
+         *
+         * @since 0.9.7
+         */
+        public Set<String> uniqueKeySet;
+
+        /**
+         * Instantiates a new Class definition.
+         *
+         * @param classMode   the class mode
+         * @param targetClass the target class
+         * @since 1.1.7
+         */
+        public ClassDefinition(boolean classMode, Class<?> targetClass) {
+            this.classMode = classMode;
+            constructors = new ArrayList<>();
+            fieldMap = new LinkedHashMap<>();
+            genericGetters = new ArrayList<>();
+            genericSetters = new ArrayList<>();
+            gettersMap = new LinkedHashMap<>();
+            methodsMap = new LinkedHashMap<>();
+            settersMap = new LinkedHashMap<>();
+            this.targetClass = targetClass;
+            targetTypeMap = Map.class.isAssignableFrom(targetClass);
+            targetTypeSet = Set.class.isAssignableFrom(targetClass);
+            uniqueKeySet = new LinkedHashSet<>();
+        }
     }
 
     /**
