@@ -184,7 +184,8 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>java.lang.Object</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#invoke-com.caoccao.javet.values.V8Value...-">invoke</a></span>(<a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>...&nbsp;v8Values)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#invoke-com.caoccao.javet.values.reference.V8ValueObject-com.caoccao.javet.values.V8Value...-">invoke</a></span>(<a href="../../../../../com/caoccao/javet/values/reference/V8ValueObject.html" title="class in com.caoccao.javet.values.reference">V8ValueObject</a>&nbsp;thisObject,
+      <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>...&nbsp;v8Values)</code>
 <div class="block">Invoke.</div>
 </td>
 </tr>
@@ -304,17 +305,19 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="invoke-com.caoccao.javet.values.V8Value...-">
+<a name="invoke-com.caoccao.javet.values.reference.V8ValueObject-com.caoccao.javet.values.V8Value...-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>invoke</h4>
-<pre>public&nbsp;java.lang.Object&nbsp;invoke(<a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>...&nbsp;v8Values)
+<pre>public&nbsp;java.lang.Object&nbsp;invoke(<a href="../../../../../com/caoccao/javet/values/reference/V8ValueObject.html" title="class in com.caoccao.javet.values.reference">V8ValueObject</a>&nbsp;thisObject,
+                               <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>...&nbsp;v8Values)
                         throws <a href="../../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></pre>
 <div class="block">Invoke.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>thisObject</code> - this object</dd>
 <dd><code>v8Values</code> - the V8 values</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the object</dd>

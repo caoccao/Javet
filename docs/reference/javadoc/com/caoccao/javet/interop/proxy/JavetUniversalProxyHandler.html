@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":9,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10};
+var methods = {"i0":10,"i1":9,"i2":10,"i3":9,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":9,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -173,21 +173,21 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#classMode">classMode</a></span></code>
-<div class="block">The Class mode.</div>
+<td class="colFirst"><code>protected static java.util.Map&lt;java.lang.String,com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#CLASS_DEFINITION_CACHE">CLASS_DEFINITION_CACHE</a></span></code>
+<div class="block">The constant CLASS_DEFINITION_MAP.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected java.util.List&lt;java.lang.reflect.Constructor&lt;?&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#constructors">constructors</a></span></code>
-<div class="block">The Constructors.</div>
+<td class="colFirst"><code>protected com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#classDefinition">classDefinition</a></span></code>
+<div class="block">The Class definition.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.lang.reflect.Field&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#fieldMap">fieldMap</a></span></code>
-<div class="block">The Field map.</div>
+<td class="colFirst"><code>protected static java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#DELIMITER">DELIMITER</a></span></code>
+<div class="block">The constant DELIMITER.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -203,57 +203,21 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected java.util.List&lt;java.lang.reflect.Method&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#genericGetters">genericGetters</a></span></code>
-<div class="block">The Generic getters.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>protected java.util.List&lt;java.lang.reflect.Method&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#genericSetters">genericSetters</a></span></code>
-<div class="block">The Generic setters.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>protected static java.lang.String[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#GETTER_PREFIX_ARRAY">GETTER_PREFIX_ARRAY</a></span></code>
 <div class="block">The constant GETTER_PREFIX_ARRAY.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#gettersMap">gettersMap</a></span></code>
-<div class="block">The Getters map.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isTargetTypeMap">isTargetTypeMap</a></span></code>
-<div class="block">The Is target type map.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>protected boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isTargetTypeSet">isTargetTypeSet</a></span></code>
-<div class="block">The Is target type set.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>protected static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#METHOD_NAME_CONSTRUCT">METHOD_NAME_CONSTRUCT</a></span></code>
 <div class="block">The constant METHOD_NAME_CONSTRUCT.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#METHOD_NAME_CONSTRUCTOR">METHOD_NAME_CONSTRUCTOR</a></span></code>
 <div class="block">The constant METHOD_NAME_CONSTRUCTOR.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#methodsMap">methodsMap</a></span></code>
-<div class="block">The Methods map.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -269,42 +233,24 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#settersMap">settersMap</a></span></code>
-<div class="block">The Setters map.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected java.lang.Class&lt;<a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="type parameter in JavetUniversalProxyHandler">T</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#targetClass">targetClass</a></span></code>
-<div class="block">The Target class.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>protected java.util.Set&lt;java.lang.String&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#uniqueKeySet">uniqueKeySet</a></span></code>
-<div class="block">The Unique key set.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>protected static java.lang.Class&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#V8_VALUE_CLASS">V8_VALUE_CLASS</a></span></code>
 <div class="block">The constant V8_VALUE_CLASS.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static java.lang.Class&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#V8_VALUE_FUNCTION_CLASS">V8_VALUE_FUNCTION_CLASS</a></span></code>
 <div class="block">The constant V8_VALUE_FUNCTION_CLASS.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static java.lang.Class&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#V8_VALUE_OBJECT_CLASS">V8_VALUE_OBJECT_CLASS</a></span></code>
 <div class="block">The constant V8_VALUE_OBJECT_CLASS.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static java.lang.Class&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#V8_VALUE_PROXY_CLASS">V8_VALUE_PROXY_CLASS</a></span></code>
 <div class="block">The constant V8_VALUE_PROXY_CLASS.</div>
@@ -361,6 +307,12 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 </td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>static void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#clearClassDefinitionCache--">clearClassDefinitionCache</a></span>()</code>
+<div class="block">Clear class definition cache.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#construct-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.reference.V8ValueArray-com.caoccao.javet.values.V8Value-">construct</a></span>(<a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&nbsp;target,
          <a href="../../../../../com/caoccao/javet/values/reference/V8ValueArray.html" title="class in com.caoccao.javet.values.reference">V8ValueArray</a>&nbsp;arguments,
@@ -368,16 +320,17 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 <div class="block">Construct.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>protected static &lt;E extends java.lang.reflect.AccessibleObject&gt;<br>java.lang.Object</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#execute-com.caoccao.javet.interop.V8Runtime-java.lang.Object-java.util.List-com.caoccao.javet.utils.JavetVirtualObject:A-">execute</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#execute-com.caoccao.javet.interop.V8Runtime-java.lang.Object-com.caoccao.javet.values.reference.V8ValueObject-java.util.List-com.caoccao.javet.utils.JavetVirtualObject:A-">execute</a></span>(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
        java.lang.Object&nbsp;targetObject,
+       <a href="../../../../../com/caoccao/javet/values/reference/V8ValueObject.html" title="class in com.caoccao.javet.values.reference">V8ValueObject</a>&nbsp;thisObject,
        java.util.List&lt;E&gt;&nbsp;executables,
        <a href="../../../../../com/caoccao/javet/utils/JavetVirtualObject.html" title="class in com.caoccao.javet.utils">JavetVirtualObject</a>[]&nbsp;javetVirtualObjects)</code>
 <div class="block">Execute.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#get-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">get</a></span>(<a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&nbsp;target,
    <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&nbsp;property,
@@ -385,55 +338,50 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 <div class="block">Get by property.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>protected int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#getGetterPrefixLength-java.lang.reflect.Method-">getGetterPrefixLength</a></span>(java.lang.reflect.Method&nbsp;method)</code>
 <div class="block">Gets getter prefix length.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>protected int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#getSetterPrefixLength-java.lang.reflect.Method-">getSetterPrefixLength</a></span>(java.lang.reflect.Method&nbsp;method)</code>
 <div class="block">Gets setter prefix length.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/values/primitive/V8ValueBoolean.html" title="class in com.caoccao.javet.values.primitive">V8ValueBoolean</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#has-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">has</a></span>(<a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&nbsp;target,
    <a href="../../../../../com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a>&nbsp;property)</code>
 <div class="block">Has property</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#hasConstructors--">hasConstructors</a></span>()</code>
 <div class="block">Has constructors.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#initialize--">initialize</a></span>()</code>
 <div class="block">Initialize.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>protected void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#initializeFieldsAndMethods-java.lang.Class-boolean-">initializeFieldsAndMethods</a></span>(java.lang.Class&lt;?&gt;&nbsp;currentClass,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#initializeFieldsAndMethods-java.lang.Class-com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition-boolean-">initializeFieldsAndMethods</a></span>(java.lang.Class&lt;?&gt;&nbsp;currentClass,
+                          com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition&nbsp;classDefinition,
                           boolean&nbsp;staticMode)</code>
 <div class="block">Initialize fields and methods.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isAllowed-com.caoccao.javet.enums.V8ConversionMode-java.lang.reflect.AccessibleObject-">isAllowed</a></span>(<a href="../../../../../com/caoccao/javet/enums/V8ConversionMode.html" title="enum in com.caoccao.javet.enums">V8ConversionMode</a>&nbsp;conversionMode,
          java.lang.reflect.AccessibleObject&nbsp;accessibleObject)</code>
 <div class="block">Is allowed.</div>
-</td>
-</tr>
-<tr id="i11" class="rowColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isClassMode--">isClassMode</a></span>()</code>
-<div class="block">Is class mode.</div>
 </td>
 </tr>
 <tr id="i12" class="altColor">
@@ -540,6 +488,36 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 <dd>1.0.6</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../constant-values.html#com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.FUNCTION_NAME_LENGTH">Constant Field Values</a></dd>
+</dl>
+</li>
+</ul>
+<a name="CLASS_DEFINITION_CACHE">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>CLASS_DEFINITION_CACHE</h4>
+<pre>protected static final&nbsp;java.util.Map&lt;java.lang.String,com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition&gt; CLASS_DEFINITION_CACHE</pre>
+<div class="block">The constant CLASS_DEFINITION_MAP.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.1.7</dd>
+</dl>
+</li>
+</ul>
+<a name="DELIMITER">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>DELIMITER</h4>
+<pre>protected static final&nbsp;java.lang.String DELIMITER</pre>
+<div class="block">The constant DELIMITER.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.1.7</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../constant-values.html#com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.DELIMITER">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -673,171 +651,17 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 </dl>
 </li>
 </ul>
-<a name="classMode">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>classMode</h4>
-<pre>protected&nbsp;boolean classMode</pre>
-<div class="block">The Class mode.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.9</dd>
-</dl>
-</li>
-</ul>
-<a name="constructors">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>constructors</h4>
-<pre>protected&nbsp;java.util.List&lt;java.lang.reflect.Constructor&lt;?&gt;&gt; constructors</pre>
-<div class="block">The Constructors.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.8</dd>
-</dl>
-</li>
-</ul>
-<a name="fieldMap">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>fieldMap</h4>
-<pre>protected&nbsp;java.util.Map&lt;java.lang.String,java.lang.reflect.Field&gt; fieldMap</pre>
-<div class="block">The Field map.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.7</dd>
-</dl>
-</li>
-</ul>
-<a name="genericGetters">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>genericGetters</h4>
-<pre>protected&nbsp;java.util.List&lt;java.lang.reflect.Method&gt; genericGetters</pre>
-<div class="block">The Generic getters.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.6</dd>
-</dl>
-</li>
-</ul>
-<a name="genericSetters">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>genericSetters</h4>
-<pre>protected&nbsp;java.util.List&lt;java.lang.reflect.Method&gt; genericSetters</pre>
-<div class="block">The Generic setters.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.6</dd>
-</dl>
-</li>
-</ul>
-<a name="gettersMap">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>gettersMap</h4>
-<pre>protected&nbsp;java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt; gettersMap</pre>
-<div class="block">The Getters map.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.6</dd>
-</dl>
-</li>
-</ul>
-<a name="isTargetTypeMap">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>isTargetTypeMap</h4>
-<pre>protected&nbsp;boolean isTargetTypeMap</pre>
-<div class="block">The Is target type map.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.7</dd>
-</dl>
-</li>
-</ul>
-<a name="isTargetTypeSet">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>isTargetTypeSet</h4>
-<pre>protected&nbsp;boolean isTargetTypeSet</pre>
-<div class="block">The Is target type set.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.7</dd>
-</dl>
-</li>
-</ul>
-<a name="methodsMap">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>methodsMap</h4>
-<pre>protected&nbsp;java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt; methodsMap</pre>
-<div class="block">The Methods map.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.6</dd>
-</dl>
-</li>
-</ul>
-<a name="settersMap">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>settersMap</h4>
-<pre>protected&nbsp;java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt; settersMap</pre>
-<div class="block">The Setters map.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.6</dd>
-</dl>
-</li>
-</ul>
-<a name="targetClass">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>targetClass</h4>
-<pre>protected&nbsp;java.lang.Class&lt;<a href="../../../../../com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="type parameter in JavetUniversalProxyHandler">T</a>&gt; targetClass</pre>
-<div class="block">The Target class.</div>
-<dl>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.6</dd>
-</dl>
-</li>
-</ul>
-<a name="uniqueKeySet">
+<a name="classDefinition">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>uniqueKeySet</h4>
-<pre>protected&nbsp;java.util.Set&lt;java.lang.String&gt; uniqueKeySet</pre>
-<div class="block">The Unique key set.</div>
+<h4>classDefinition</h4>
+<pre>protected&nbsp;com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition classDefinition</pre>
+<div class="block">The Class definition.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.7</dd>
+<dd>1.1.7</dd>
 </dl>
 </li>
 </ul>
@@ -877,7 +701,21 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="execute-com.caoccao.javet.interop.V8Runtime-java.lang.Object-java.util.List-com.caoccao.javet.utils.JavetVirtualObject:A-">
+<a name="clearClassDefinitionCache--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>clearClassDefinitionCache</h4>
+<pre>public static&nbsp;void&nbsp;clearClassDefinitionCache()</pre>
+<div class="block">Clear class definition cache.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.1.7</dd>
+</dl>
+</li>
+</ul>
+<a name="execute-com.caoccao.javet.interop.V8Runtime-java.lang.Object-com.caoccao.javet.values.reference.V8ValueObject-java.util.List-com.caoccao.javet.utils.JavetVirtualObject:A-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -885,6 +723,7 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 <h4>execute</h4>
 <pre>protected static&nbsp;&lt;E extends java.lang.reflect.AccessibleObject&gt;&nbsp;java.lang.Object&nbsp;execute(<a href="../../../../../com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a>&nbsp;v8Runtime,
                                                                                          java.lang.Object&nbsp;targetObject,
+                                                                                         <a href="../../../../../com/caoccao/javet/values/reference/V8ValueObject.html" title="class in com.caoccao.javet.values.reference">V8ValueObject</a>&nbsp;thisObject,
                                                                                          java.util.List&lt;E&gt;&nbsp;executables,
                                                                                          <a href="../../../../../com/caoccao/javet/utils/JavetVirtualObject.html" title="class in com.caoccao.javet.utils">JavetVirtualObject</a>[]&nbsp;javetVirtualObjects)
                                                                                   throws java.lang.Throwable</pre>
@@ -895,6 +734,7 @@ extends <a href="../../../../../com/caoccao/javet/interop/proxy/BaseJavetProxyHa
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>v8Runtime</code> - the V8 runtime</dd>
 <dd><code>targetObject</code> - the target object</dd>
+<dd><code>thisObject</code> - this object</dd>
 <dd><code>executables</code> - the executables</dd>
 <dd><code>javetVirtualObjects</code> - the javet virtual objects</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1081,18 +921,20 @@ public&nbsp;<a href="../../../../../com/caoccao/javet/values/primitive/V8ValueBo
 </dl>
 </li>
 </ul>
-<a name="initializeFieldsAndMethods-java.lang.Class-boolean-">
+<a name="initializeFieldsAndMethods-java.lang.Class-com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition-boolean-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>initializeFieldsAndMethods</h4>
 <pre>protected&nbsp;void&nbsp;initializeFieldsAndMethods(java.lang.Class&lt;?&gt;&nbsp;currentClass,
+                                          com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition&nbsp;classDefinition,
                                           boolean&nbsp;staticMode)</pre>
 <div class="block">Initialize fields and methods.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>currentClass</code> - the current class</dd>
+<dd><code>classDefinition</code> - the class definition</dd>
 <dd><code>staticMode</code> - the static mode</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>0.9.6</dd>
@@ -1114,22 +956,6 @@ public&nbsp;<a href="../../../../../com/caoccao/javet/values/primitive/V8ValueBo
 <dd><code>accessibleObject</code> - the accessible object</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>true : allowed, false : disallowed</dd>
-</dl>
-</li>
-</ul>
-<a name="isClassMode--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>isClassMode</h4>
-<pre>public&nbsp;boolean&nbsp;isClassMode()</pre>
-<div class="block">Is class mode.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>true : class mode, false : not class mode</dd>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.9.9</dd>
 </dl>
 </li>
 </ul>

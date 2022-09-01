@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -73,13 +73,13 @@ var activeTableTab = "activeTableTab";
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#fields.inherited.from.class.com.caoccao.javet.values.primitive.V8ValuePrimitive">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
@@ -140,6 +140,17 @@ extends <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimit
 <!--   -->
 </a>
 <h3>Field Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Field and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/primitive/V8ValueDouble.html#cachedToString">cachedToString</a></span></code>&nbsp;</td>
+</tr>
+</table>
 <ul class="blockList">
 <li class="blockList"><a name="fields.inherited.from.class.com.caoccao.javet.values.primitive.V8ValuePrimitive">
 <!--   -->
@@ -211,13 +222,17 @@ extends <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimit
 <td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/primitive/V8ValueDouble.html#toPrimitive--">toPrimitive</a></span>()</code>&nbsp;</td>
 </tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/primitive/V8ValueDouble.html#toString--">toString</a></span>()</code>&nbsp;</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.com.caoccao.javet.values.primitive.V8ValuePrimitive">
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.caoccao.javet.values.primitive.<a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html" title="class in com.caoccao.javet.values.primitive">V8ValuePrimitive</a></h3>
-<code><a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#close--">close</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#equals-com.caoccao.javet.values.V8Value-">equals</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#getValue--">getValue</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#isEmpty--">isEmpty</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#isPresent--">isPresent</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#sameValue-com.caoccao.javet.values.V8Value-">sameValue</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#strictEquals-com.caoccao.javet.values.V8Value-">strictEquals</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#toString--">toString</a></code></li>
+<code><a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#close--">close</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#equals-com.caoccao.javet.values.V8Value-">equals</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#getValue--">getValue</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#isEmpty--">isEmpty</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#isPresent--">isPresent</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#sameValue-com.caoccao.javet.values.V8Value-">sameValue</a>, <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#strictEquals-com.caoccao.javet.values.V8Value-">strictEquals</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.com.caoccao.javet.values.V8Value">
@@ -248,6 +263,23 @@ extends <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimit
 <div class="details">
 <ul class="blockList">
 <li class="blockList">
+<!-- ============ FIELD DETAIL =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="field.detail">
+<!--   -->
+</a>
+<h3>Field Detail</h3>
+<a name="cachedToString">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>cachedToString</h4>
+<pre>protected&nbsp;java.lang.String cachedToString</pre>
+</li>
+</ul>
+</li>
+</ul>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <ul class="blockList">
 <li class="blockList"><a name="constructor.detail">
@@ -343,10 +375,23 @@ extends <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimit
 <a name="toPrimitive--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>toPrimitive</h4>
 <pre>public&nbsp;double&nbsp;toPrimitive()</pre>
+</li>
+</ul>
+<a name="toString--">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>toString</h4>
+<pre>public&nbsp;java.lang.String&nbsp;toString()</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html#toString--">toString</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimitive.html" title="class in com.caoccao.javet.values.primitive">V8ValuePrimitive</a>&lt;java.lang.Double&gt;</code></dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -402,13 +447,13 @@ extends <a href="../../../../../com/caoccao/javet/values/primitive/V8ValuePrimit
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#fields.inherited.from.class.com.caoccao.javet.values.primitive.V8ValuePrimitive">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
