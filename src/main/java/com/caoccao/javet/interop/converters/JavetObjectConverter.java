@@ -37,8 +37,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.BaseStream;
 
 /**
@@ -105,12 +104,6 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      */
     protected static final String PUBLIC_PROPERTY_CONSTRUCTOR = "constructor";
     /**
-     * The Custom object lock.
-     *
-     * @since 0.9.12
-     */
-    protected ReentrantReadWriteLock customObjectLock;
-    /**
      * The Custom object map.
      *
      * @since 0.9.12
@@ -124,8 +117,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      */
     public JavetObjectConverter() {
         super();
-        customObjectLock = new ReentrantReadWriteLock();
-        customObjectMap = new HashMap<>();
+        customObjectMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -177,17 +169,11 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             return false;
         }
         String customObjectClassName = customObjectClass.getName();
-        Lock readLock = customObjectLock.readLock();
-        try {
-            readLock.lock();
-            if (customObjectMap.containsKey(customObjectClassName)) {
-                return false;
-            }
-        } finally {
-            readLock.unlock();
+        if (customObjectMap.containsKey(customObjectClassName)) {
+            return false;
         }
         try {
-            Constructor defaultConstructor = customObjectClass.getConstructor();
+            Constructor<?> defaultConstructor = customObjectClass.getConstructor();
             Method methodFromMap = customObjectClass.getMethod(methodNameFromMap, Map.class);
             if (Modifier.isStatic(methodFromMap.getModifiers())) {
                 return false;
@@ -197,13 +183,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 return false;
             }
             AccessibleObject[] executables = new AccessibleObject[]{defaultConstructor, methodFromMap, methodToMap};
-            Lock writeLock = customObjectLock.writeLock();
-            try {
-                writeLock.lock();
-                customObjectMap.put(customObjectClass.getName(), executables);
-            } finally {
-                writeLock.unlock();
-            }
+            customObjectMap.put(customObjectClass.getName(), executables);
         } catch (Throwable t) {
             // Do nothing.
             t.printStackTrace(System.err);
@@ -301,9 +281,9 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 if (PUBLIC_PROPERTY_CONSTRUCTOR.equals(keyString)) {
                     map.put(PUBLIC_PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
                 } else if (value.isUndefined()) {
-                    return;
+                    // Pass
                 } else if (config.isSkipFunctionInObject() && value instanceof V8ValueFunction) {
-                    return;
+                    // Pass
                 } else {
                     Object object = toObject(value, depth + 1);
                     map.put(keyString, object);
@@ -313,20 +293,12 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     && v8ValueObject.hasPrivateProperty(PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME)) {
                 String customObjectClassName =
                         v8ValueObject.getPrivatePropertyString(PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME);
-                Lock readLock = customObjectLock.readLock();
-                Constructor defaultConstructor = null;
+                Constructor<?> defaultConstructor = null;
                 Method methodFromMap = null;
-                try {
-                    readLock.lock();
-                    AccessibleObject[] executables = customObjectMap.get(customObjectClassName);
-                    if (executables != null) {
-                        defaultConstructor = (Constructor) executables[EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR];
-                        methodFromMap = (Method) executables[EXECUTABLE_INDEX_FROM_MAP];
-                    }
-                } catch (Throwable t) {
-                    // Do nothing
-                } finally {
-                    readLock.unlock();
+                AccessibleObject[] executables = customObjectMap.get(customObjectClassName);
+                if (executables != null) {
+                    defaultConstructor = (Constructor<?>) executables[EXECUTABLE_INDEX_DEFAULT_CONSTRUCTOR];
+                    methodFromMap = (Method) executables[EXECUTABLE_INDEX_FROM_MAP];
                 }
                 if (defaultConstructor != null) {
                     try {
@@ -523,16 +495,10 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
         } else if (!customObjectMap.isEmpty()) {
             String customObjectClassName = object.getClass().getName();
-            Lock readLock = customObjectLock.readLock();
             Method methodToMap = null;
-            try {
-                readLock.lock();
-                AccessibleObject[] executables = customObjectMap.get(customObjectClassName);
-                if (executables != null) {
-                    methodToMap = (Method) executables[EXECUTABLE_INDEX_TO_MAP];
-                }
-            } finally {
-                readLock.unlock();
+            AccessibleObject[] executables = customObjectMap.get(customObjectClassName);
+            if (executables != null) {
+                methodToMap = (Method) executables[EXECUTABLE_INDEX_TO_MAP];
             }
             if (methodToMap != null) {
                 try {
@@ -540,7 +506,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     v8Value = toV8Value(v8Runtime, map);
                     ((V8ValueObject) v8Value).setPrivateProperty(
                             PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME, customObjectClassName);
-                } catch (Throwable t) {
+                } catch (Throwable ignored) {
                 }
             }
         }
@@ -558,12 +524,6 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         if (customObjectClass == null) {
             return false;
         }
-        Lock writeLock = customObjectLock.writeLock();
-        try {
-            writeLock.lock();
-            return customObjectMap.remove(customObjectClass.getName()) != null;
-        } finally {
-            writeLock.unlock();
-        }
+        return customObjectMap.remove(customObjectClass.getName()) != null;
     }
 }

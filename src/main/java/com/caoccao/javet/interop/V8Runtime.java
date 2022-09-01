@@ -367,12 +367,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.3
      */
     void addReference(IV8ValueReference iV8ValueReference) {
-        Lock readLock = referenceLock.readLock();
+        Lock writeLock = referenceLock.writeLock();
         try {
-            readLock.lock();
+            writeLock.lock();
             referenceMap.put(iV8ValueReference.getHandle(), iV8ValueReference);
         } finally {
-            readLock.unlock();
+            writeLock.unlock();
         }
     }
 
@@ -383,12 +383,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.1
      */
     public void addV8Module(IV8Module iV8Module) {
-        Lock readLock = v8ModuleLock.readLock();
+        Lock writeLock = v8ModuleLock.writeLock();
         try {
-            readLock.lock();
+            writeLock.lock();
             v8ModuleMap.put(iV8Module.getResourceName(), iV8Module);
         } finally {
-            readLock.unlock();
+            writeLock.unlock();
         }
     }
 
@@ -855,13 +855,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.12
      */
     public int getCallbackContextCount() {
-        Lock readLock = callbackContextLock.readLock();
-        try {
-            readLock.lock();
-            return callbackContextMap.size();
-        } finally {
-            readLock.unlock();
-        }
+        return callbackContextMap.size();
     }
 
     /**
@@ -1121,13 +1115,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     public int getReferenceCount() {
-        Lock readLock = referenceLock.readLock();
-        try {
-            readLock.lock();
-            return referenceMap.size();
-        } finally {
-            readLock.unlock();
-        }
+        return referenceMap.size();
     }
 
     /**
@@ -1275,13 +1263,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.1
      */
     public int getV8ModuleCount() {
-        Lock readLock = v8ModuleLock.readLock();
-        try {
-            readLock.lock();
-            return v8ModuleMap.size();
-        } finally {
-            readLock.unlock();
-        }
+        return v8ModuleMap.size();
     }
 
     /**

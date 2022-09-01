@@ -87,15 +87,12 @@ public class JavetProxyConverter extends JavetObjectConverter {
         }
         try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
             V8ValueProxy v8ValueProxy;
-            switch (proxyMode) {
-                case Class:
-                    try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(DUMMY_FUNCTION_STRING)) {
-                        v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueFunction);
-                    }
-                    break;
-                default:
-                    v8ValueProxy = v8Scope.createV8ValueProxy();
-                    break;
+            if (proxyMode == JavetProxyMode.Class) {
+                try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(DUMMY_FUNCTION_STRING)) {
+                    v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueFunction);
+                }
+            } else {
+                v8ValueProxy = v8Scope.createV8ValueProxy();
             }
             try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
                 JavetUniversalProxyHandler<Object> javetUniversalProxyHandler =
