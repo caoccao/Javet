@@ -120,12 +120,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     static final int V8_VALUE_NUMBER_UPPER_BOUND = 128; // Exclusive
     /**
-     * The Binding context weak hash map.
-     *
-     * @since 0.9.2
-     */
-    final Map<Class<?>, BindingContext> bindingContextWeakHashMap;
-    /**
      * The Callback context lock.
      *
      * @since 0.9.12
@@ -292,7 +286,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
         assert handle != 0;
-        bindingContextWeakHashMap = Collections.synchronizedMap(new WeakHashMap<>());
         callbackContextLock = new ReentrantReadWriteLock();
         callbackContextMap = new HashMap<>();
         converter = DEFAULT_CONVERTER;
@@ -819,16 +812,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     <T extends V8Value> T get(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return (T) v8Native.get(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
-    }
-
-    /**
-     * Gets the internal binding context weak hash map.
-     *
-     * @return the binding context weak hash map
-     * @since 0.9.2
-     */
-    public Map<Class<?>, BindingContext> getBindingContextWeakHashMap() {
-        return bindingContextWeakHashMap;
     }
 
     /**
