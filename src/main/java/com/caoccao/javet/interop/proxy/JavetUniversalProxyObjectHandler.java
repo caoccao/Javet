@@ -19,31 +19,24 @@ package com.caoccao.javet.interop.proxy;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
-import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.utils.JavetStringUtils;
-import com.caoccao.javet.utils.JavetTypeUtils;
-import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The type Javet universal proxy handler.
+ * The type Javet universal proxy object handler.
  *
  * @param <T> the type parameter
  * @since 0.9.6
@@ -52,20 +45,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T> {
 
     /**
-     * The constant CLASS_DESCRIPTOR_MAP.
-     *
-     * @since 1.1.7
-     */
-    protected static final Map<Class<?>, ClassDescriptor> CLASS_DESCRIPTOR_MAP = new ConcurrentHashMap<>();
-    /**
      * The constant FUNCTION_NAME_LENGTH.
      *
      * @since 1.0.6
      */
     protected static final String FUNCTION_NAME_LENGTH = "length";
+    /**
+     * The constant classDescriptorMap.
+     *
+     * @since 1.1.7
+     */
+    protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
-     * Instantiates a new Javet universal proxy handler.
+     * Instantiates a new Javet universal proxy object handler.
      *
      * @param v8Runtime    the V8 runtime
      * @param targetObject the target object
@@ -73,12 +66,6 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
      */
     public JavetUniversalProxyObjectHandler(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, Objects.requireNonNull(targetObject));
-        initialize();
-    }
-
-    @Override
-    public void clearClassDescriptorCache() {
-        CLASS_DESCRIPTOR_MAP.clear();
     }
 
     @V8Function
@@ -90,6 +77,11 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
         result = result == null ? getFromSymbol(property) : result;
         result = result == null ? getFromGetter(property) : result;
         return result == null ? v8Runtime.createV8ValueUndefined() : result;
+    }
+
+    @Override
+    public ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorCache() {
+        return classDescriptorMap;
     }
 
     /**
@@ -183,21 +175,37 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
         return false;
     }
 
-    /**
-     * Initialize.
-     *
-     * @since 0.9.7
-     */
+    @Override
     protected void initialize() {
         Class<T> targetClass = (Class<T>) targetObject.getClass();
-        classDescriptor = CLASS_DESCRIPTOR_MAP.get(targetClass);
+        classDescriptor = classDescriptorMap.get(targetClass);
         if (classDescriptor == null) {
             classDescriptor = new ClassDescriptor(V8ProxyMode.Object, targetClass);
             if (targetObject instanceof Class) {
                 initializeFieldsAndMethods((Class<?>) targetObject, true);
             }
+            initializeCollection();
             initializeFieldsAndMethods(targetClass, false);
-            CLASS_DESCRIPTOR_MAP.put(targetClass, classDescriptor);
+            classDescriptorMap.put(targetClass, classDescriptor);
+        }
+    }
+
+    /**
+     * Initialize collection.
+     *
+     * @since 1.1.7
+     */
+    protected void initializeCollection() {
+        if (classDescriptor.isTargetTypeMap()) {
+            ((Map<Object, ?>) targetObject).keySet().stream()
+                    .map(Object::toString)
+                    .filter(Objects::nonNull)
+                    .forEach(classDescriptor.getUniqueKeySet()::add);
+        } else if (classDescriptor.isTargetTypeSet()) {
+            ((Set<Object>) targetObject).stream()
+                    .map(Object::toString)
+                    .filter(Objects::nonNull)
+                    .forEach(classDescriptor.getUniqueKeySet()::add);
         }
     }
 
@@ -210,17 +218,6 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
      */
     protected void initializeFieldsAndMethods(Class<?> currentClass, boolean staticMode) {
         V8ConversionMode conversionMode = classDescriptor.getConversionMode();
-        if (classDescriptor.isTargetTypeMap()) {
-            ((Map<Object, ?>) targetObject).keySet().stream()
-                    .map(Object::toString)
-                    .filter(Objects::nonNull)
-                    .forEach(classDescriptor.getUniqueKeySet()::add);
-        } else if (classDescriptor.isTargetTypeSet()) {
-            ((Set<Object>) targetObject).stream()
-                    .map(Object::toString)
-                    .filter(Objects::nonNull)
-                    .forEach(classDescriptor.getUniqueKeySet()::add);
-        }
         do {
             initializePublicFields(currentClass, conversionMode, staticMode);
             initializePublicMethods(currentClass, conversionMode, staticMode);

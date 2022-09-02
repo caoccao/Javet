@@ -25,14 +25,12 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueObject;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type Javet universal proxy class handler.
@@ -42,17 +40,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class JavetUniversalProxyClassHandler<T extends Class<?>> extends BaseJavetProxyHandler<T> {
     /**
-     * The constant CLASS_DESCRIPTOR_MAP.
-     *
-     * @since 1.1.7
-     */
-    protected static final Map<Class<?>, ClassDescriptor> CLASS_DESCRIPTOR_MAP = new ConcurrentHashMap<>();
-    /**
      * The constant METHOD_NAME_CONSTRUCTOR.
      *
      * @since 0.9.8
      */
     protected static final String METHOD_NAME_CONSTRUCTOR = "constructor";
+    /**
+     * The constant classDescriptorMap.
+     *
+     * @since 1.1.7
+     */
+    protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
      * Instantiates a new Javet universal proxy handler.
@@ -63,38 +61,35 @@ public class JavetUniversalProxyClassHandler<T extends Class<?>> extends BaseJav
      */
     public JavetUniversalProxyClassHandler(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, targetObject);
-        initialize();
-    }
-
-    @Override
-    public void clearClassDescriptorCache() {
-        CLASS_DESCRIPTOR_MAP.clear();
     }
 
     @V8Function
     @Override
     public V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException {
-        V8Value[] v8Values = null;
-        try {
-            v8Values = arguments.toArray();
-            return v8Runtime.toV8Value(execute(
-                    v8Runtime,
-                    null,
-                    (V8ValueObject) target,
-                    classDescriptor.getConstructors(),
-                    V8ValueUtils.convertToVirtualObjects(v8Values)));
-        } catch (JavetException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new JavetException(JavetError.CallbackMethodFailure,
-                    SimpleMap.of(
-                            JavetError.PARAMETER_METHOD_NAME, METHOD_NAME_CONSTRUCTOR,
-                            JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
-        } finally {
-            if (v8Values != null) {
-                JavetResourceUtils.safeClose((Object[]) v8Values);
+        if (!classDescriptor.getConstructors().isEmpty()) {
+            V8Value[] v8Values = null;
+            try {
+                v8Values = arguments.toArray();
+                return v8Runtime.toV8Value(execute(
+                        v8Runtime,
+                        null,
+                        (V8ValueObject) target,
+                        classDescriptor.getConstructors(),
+                        V8ValueUtils.convertToVirtualObjects(v8Values)));
+            } catch (JavetException e) {
+                throw e;
+            } catch (Throwable t) {
+                throw new JavetException(JavetError.CallbackMethodFailure,
+                        SimpleMap.of(
+                                JavetError.PARAMETER_METHOD_NAME, METHOD_NAME_CONSTRUCTOR,
+                                JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
+            } finally {
+                if (v8Values != null) {
+                    JavetResourceUtils.safeClose((Object[]) v8Values);
+                }
             }
         }
+        return v8Runtime.createV8ValueUndefined();
     }
 
     @V8Function
@@ -106,6 +101,11 @@ public class JavetUniversalProxyClassHandler<T extends Class<?>> extends BaseJav
         return result == null ? v8Runtime.createV8ValueUndefined() : result;
     }
 
+    @Override
+    public ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorCache() {
+        return classDescriptorMap;
+    }
+
     @V8Function
     @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
@@ -114,19 +114,15 @@ public class JavetUniversalProxyClassHandler<T extends Class<?>> extends BaseJav
         return v8Runtime.createV8ValueBoolean(isFound);
     }
 
-    /**
-     * Initialize.
-     *
-     * @since 1.1.7
-     */
+    @Override
     protected void initialize() {
-        classDescriptor = CLASS_DESCRIPTOR_MAP.get(targetObject);
+        classDescriptor = classDescriptorMap.get(targetObject);
         if (classDescriptor == null) {
             classDescriptor = new ClassDescriptor(V8ProxyMode.Class, targetObject);
             Class<?> targetClass = targetObject.getClass();
             initializeFieldsAndMethods(targetObject, true);
             initializeFieldsAndMethods(targetClass, false);
-            CLASS_DESCRIPTOR_MAP.put(targetObject, classDescriptor);
+            classDescriptorMap.put(targetObject, classDescriptor);
         }
     }
 
@@ -139,8 +135,10 @@ public class JavetUniversalProxyClassHandler<T extends Class<?>> extends BaseJav
      */
     protected void initializeFieldsAndMethods(Class<?> currentClass, boolean staticMode) {
         V8ConversionMode conversionMode = classDescriptor.getConversionMode();
-        do {
+        if (staticMode) {
             initializeConstructors(currentClass, conversionMode);
+        }
+        do {
             initializePublicFields(currentClass, conversionMode, staticMode);
             initializePublicMethods(currentClass, conversionMode, staticMode);
             if (currentClass == Object.class) {

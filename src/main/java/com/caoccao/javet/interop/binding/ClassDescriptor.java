@@ -32,6 +32,12 @@ import java.util.*;
  */
 public class ClassDescriptor {
     /**
+     * The Apply functions.
+     *
+     * @since 1.1.7
+     */
+    protected List<Method> applyFunctions;
+    /**
      * The Constructors.
      *
      * @since 0.9.8
@@ -112,6 +118,7 @@ public class ClassDescriptor {
      * @since 1.1.7
      */
     public ClassDescriptor(V8ProxyMode proxyMode, Class<?> targetClass) {
+        applyFunctions = new ArrayList<>();
         constructors = new ArrayList<>();
         fieldMap = new LinkedHashMap<>();
         genericGetters = new ArrayList<>();
@@ -124,6 +131,16 @@ public class ClassDescriptor {
         targetTypeMap = Map.class.isAssignableFrom(targetClass);
         targetTypeSet = Set.class.isAssignableFrom(targetClass);
         uniqueKeySet = new LinkedHashSet<>();
+    }
+
+    /**
+     * Gets apply functions.
+     *
+     * @return the apply functions
+     * @since 1.1.7
+     */
+    public List<Method> getApplyFunctions() {
+        return applyFunctions;
     }
 
     /**

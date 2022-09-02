@@ -157,9 +157,9 @@ implements <a href="../../../../../com/caoccao/javet/values/reference/IV8ValueOb
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected static <a href="../../../../../com/caoccao/javet/interop/binding/BindingContextStore.html" title="class in com.caoccao.javet.interop.binding">BindingContextStore</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/reference/V8ValueObject.html#bindingContextStore">bindingContextStore</a></span></code>
-<div class="block">The constant bindingContextStore.</div>
+<td class="colFirst"><code>protected static <a href="../../../../../com/caoccao/javet/utils/ThreadSafeMap.html" title="class in com.caoccao.javet.utils">ThreadSafeMap</a>&lt;java.lang.Class&lt;?&gt;,<a href="../../../../../com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding">BindingContext</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/reference/V8ValueObject.html#bindingContextMap">bindingContextMap</a></span></code>
+<div class="block">The constant bindingContextMap.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -328,9 +328,9 @@ implements <a href="../../../../../com/caoccao/javet/values/reference/IV8ValueOb
 </td>
 </tr>
 <tr id="i12" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../../com/caoccao/javet/interop/binding/BindingContextStore.html" title="class in com.caoccao.javet.interop.binding">BindingContextStore</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/reference/V8ValueObject.html#getBindingContextStore--">getBindingContextStore</a></span>()</code>
-<div class="block">Gets binding context store.</div>
+<td class="colFirst"><code>static <a href="../../../../../com/caoccao/javet/utils/ThreadSafeMap.html" title="class in com.caoccao.javet.utils">ThreadSafeMap</a>&lt;java.lang.Class&lt;?&gt;,<a href="../../../../../com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding">BindingContext</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/values/reference/V8ValueObject.html#getBindingContextMap--">getBindingContextMap</a></span>()</code>
+<div class="block">Gets binding context map.</div>
 </td>
 </tr>
 <tr id="i13" class="rowColor">
@@ -670,14 +670,14 @@ implements <a href="../../../../../com/caoccao/javet/values/reference/IV8ValueOb
 </dl>
 </li>
 </ul>
-<a name="bindingContextStore">
+<a name="bindingContextMap">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>bindingContextStore</h4>
-<pre>protected static final&nbsp;<a href="../../../../../com/caoccao/javet/interop/binding/BindingContextStore.html" title="class in com.caoccao.javet.interop.binding">BindingContextStore</a> bindingContextStore</pre>
-<div class="block">The constant bindingContextStore.</div>
+<h4>bindingContextMap</h4>
+<pre>protected static final&nbsp;<a href="../../../../../com/caoccao/javet/utils/ThreadSafeMap.html" title="class in com.caoccao.javet.utils">ThreadSafeMap</a>&lt;java.lang.Class&lt;?&gt;,<a href="../../../../../com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding">BindingContext</a>&gt; bindingContextMap</pre>
+<div class="block">The constant bindingContextMap.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.1.7</dd>
@@ -721,17 +721,17 @@ implements <a href="../../../../../com/caoccao/javet/values/reference/IV8ValueOb
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getBindingContextStore--">
+<a name="getBindingContextMap--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getBindingContextStore</h4>
-<pre>public static&nbsp;<a href="../../../../../com/caoccao/javet/interop/binding/BindingContextStore.html" title="class in com.caoccao.javet.interop.binding">BindingContextStore</a>&nbsp;getBindingContextStore()</pre>
-<div class="block">Gets binding context store.</div>
+<h4>getBindingContextMap</h4>
+<pre>public static&nbsp;<a href="../../../../../com/caoccao/javet/utils/ThreadSafeMap.html" title="class in com.caoccao.javet.utils">ThreadSafeMap</a>&lt;java.lang.Class&lt;?&gt;,<a href="../../../../../com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding">BindingContext</a>&gt;&nbsp;getBindingContextMap()</pre>
+<div class="block">Gets binding context map.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the binding context store</dd>
+<dd>the binding context map</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.1.7</dd>
 </dl>

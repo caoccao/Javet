@@ -20,6 +20,7 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.enums.V8ConversionMode;
+import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
@@ -348,6 +349,18 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testFunctionApply() throws JavetException {
+        MockProxyFunction mockProxyFunction = new MockProxyFunction();
+        v8Runtime.getGlobalObject().set("a", mockProxyFunction);
+        assertEquals(100, v8Runtime.getExecutor("a()").executeInteger());
+        assertEquals(3, v8Runtime.getExecutor("a(1, 2)").executeInteger());
+        assertEquals(4, v8Runtime.getExecutor("a(1, 2, 3, 'a', 0, 0n, 0n)").executeInteger());
+        assertEquals("ab", v8Runtime.getExecutor("a('a', 'b')").executeString());
+        assertEquals("abc", v8Runtime.getExecutor("a.echo('abc')").executeString());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
     public void testGetter() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private String name;
@@ -630,6 +643,33 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         @V8Setter
         public boolean xSetter(String key, String value) {
             return map.put(key, value) != null;
+        }
+    }
+
+    @V8Convert(proxyMode = V8ProxyMode.Function)
+    public static class MockProxyFunction {
+        @V8ProxyFunctionApply
+        public int apply() {
+            return 100;
+        }
+
+        @V8ProxyFunctionApply
+        public int apply(int a, int b) {
+            return a + b;
+        }
+
+        @V8ProxyFunctionApply
+        public String apply(String a, String b) {
+            return a + b;
+        }
+
+        @V8ProxyFunctionApply
+        public int apply(int a, int b, int c, V8Value... v8Values) {
+            return v8Values.length;
+        }
+
+        public String echo(String text) {
+            return text;
         }
     }
 

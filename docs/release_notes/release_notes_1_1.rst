@@ -9,6 +9,7 @@ Release Notes 1.1.x
 * Added optional i18n support for V8 mode
 * Added virtual varargs support to the callback
 * Added support to ``V8Value`` and ``this`` for proxy based converters
+* Added proxy function handler for proxy ``handler.apply()``
 
 1.1.6 V8 v10.4
 --------------

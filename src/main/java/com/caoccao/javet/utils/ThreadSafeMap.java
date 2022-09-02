@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.binding;
+package com.caoccao.javet.utils;
 
 import java.util.Collections;
 import java.util.Map;
@@ -23,37 +23,46 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The type Binding context store.
+ * The type Thread safe map.
  *
  * @since 1.1.7
  */
-public final class BindingContextStore {
-    private Map<Class<?>, BindingContext> bindingContextMap;
+public final class ThreadSafeMap<TKey, TValue> {
+    private Map<TKey, TValue> map;
 
     private Type type;
 
     /**
-     * Instantiates a new Binding context store.
+     * Instantiates a new Thread safe map.
+     *
+     * @since 1.1.7
+     */
+    public ThreadSafeMap() {
+        this(Type.Permanent);
+    }
+
+    /**
+     * Instantiates a new Thread safe map.
      *
      * @param type the type
      * @since 1.1.7
      */
-    public BindingContextStore(Type type) {
+    public ThreadSafeMap(Type type) {
         setType(type);
     }
 
     public void clear() {
-        bindingContextMap.clear();
+        map.clear();
     }
 
     /**
-     * Get binding context.
+     * Get value.
      *
-     * @param classKey the class key
-     * @return the binding context
+     * @param key the key
+     * @return the value
      */
-    public BindingContext get(Class<?> classKey) {
-        return bindingContextMap.get(classKey);
+    public TValue get(TKey key) {
+        return map.get(key);
     }
 
     /**
@@ -67,14 +76,14 @@ public final class BindingContextStore {
     }
 
     /**
-     * Put binding context.
+     * Put value by key.
      *
-     * @param classKey       the class key
-     * @param bindingContext the binding context
-     * @return the binding context
+     * @param key   the key
+     * @param value the value
+     * @return the value
      */
-    public BindingContext put(Class<?> classKey, BindingContext bindingContext) {
-        return bindingContextMap.put(classKey, bindingContext);
+    public TValue put(TKey key, TValue value) {
+        return map.put(key, value);
     }
 
     /**
@@ -88,19 +97,19 @@ public final class BindingContextStore {
         if (this.type == null) {
             switch (type) {
                 case Weak:
-                    bindingContextMap = Collections.synchronizedMap(new WeakHashMap<>());
+                    map = Collections.synchronizedMap(new WeakHashMap<>());
                     break;
                 default:
-                    bindingContextMap = new ConcurrentHashMap<>();
+                    map = new ConcurrentHashMap<>();
                     break;
             }
         } else if (this.type != type) {
             switch (type) {
                 case Weak:
-                    bindingContextMap = Collections.synchronizedMap(new WeakHashMap<>(bindingContextMap));
+                    map = Collections.synchronizedMap(new WeakHashMap<>(map));
                     break;
                 default:
-                    bindingContextMap = new ConcurrentHashMap<>(bindingContextMap);
+                    map = new ConcurrentHashMap<>(map);
                     break;
             }
         }

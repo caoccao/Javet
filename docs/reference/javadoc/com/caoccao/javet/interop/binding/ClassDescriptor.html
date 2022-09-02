@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -47,7 +47,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../../com/caoccao/javet/interop/binding/BindingContextStore.Type.html" title="enum in com.caoccao.javet.interop.binding"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../../com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../../../com/caoccao/javet/interop/binding/MethodDescriptor.html" title="class in com.caoccao.javet.interop.binding"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -133,72 +133,78 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected java.util.List&lt;java.lang.reflect.Method&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#applyFunctions">applyFunctions</a></span></code>
+<div class="block">The Apply functions.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected java.util.List&lt;java.lang.reflect.Constructor&lt;?&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#constructors">constructors</a></span></code>
 <div class="block">The Constructors.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.lang.reflect.Field&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#fieldMap">fieldMap</a></span></code>
 <div class="block">The Field map.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected java.util.List&lt;java.lang.reflect.Method&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#genericGetters">genericGetters</a></span></code>
 <div class="block">The Generic getters.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.util.List&lt;java.lang.reflect.Method&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#genericSetters">genericSetters</a></span></code>
 <div class="block">The Generic setters.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#gettersMap">gettersMap</a></span></code>
 <div class="block">The Getters map.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#methodsMap">methodsMap</a></span></code>
 <div class="block">The Methods map.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../../../../../com/caoccao/javet/enums/V8ProxyMode.html" title="enum in com.caoccao.javet.enums">V8ProxyMode</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#proxyMode">proxyMode</a></span></code>
 <div class="block">The Proxy mode.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#settersMap">settersMap</a></span></code>
 <div class="block">The Setters map.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected java.lang.Class&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#targetClass">targetClass</a></span></code>
 <div class="block">The Target class.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#targetTypeMap">targetTypeMap</a></span></code>
 <div class="block">The target type map.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#targetTypeSet">targetTypeSet</a></span></code>
 <div class="block">The target type set.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.util.Set&lt;java.lang.String&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#uniqueKeySet">uniqueKeySet</a></span></code>
 <div class="block">The Unique key set.</div>
@@ -240,78 +246,84 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>java.util.List&lt;java.lang.reflect.Method&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getApplyFunctions--">getApplyFunctions</a></span>()</code>
+<div class="block">Gets apply functions.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>java.util.List&lt;java.lang.reflect.Constructor&lt;?&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getConstructors--">getConstructors</a></span>()</code>
 <div class="block">Gets constructors.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/enums/V8ConversionMode.html" title="enum in com.caoccao.javet.enums">V8ConversionMode</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getConversionMode--">getConversionMode</a></span>()</code>
 <div class="block">Gets conversion mode.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>java.util.Map&lt;java.lang.String,java.lang.reflect.Field&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getFieldMap--">getFieldMap</a></span>()</code>
 <div class="block">Gets field map.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>java.util.List&lt;java.lang.reflect.Method&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getGenericGetters--">getGenericGetters</a></span>()</code>
 <div class="block">Gets generic getters.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>java.util.List&lt;java.lang.reflect.Method&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getGenericSetters--">getGenericSetters</a></span>()</code>
 <div class="block">Gets generic setters.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getGettersMap--">getGettersMap</a></span>()</code>
 <div class="block">Gets getters map.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getMethodsMap--">getMethodsMap</a></span>()</code>
 <div class="block">Gets methods map.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/caoccao/javet/enums/V8ProxyMode.html" title="enum in com.caoccao.javet.enums">V8ProxyMode</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getProxyMode--">getProxyMode</a></span>()</code>
 <div class="block">Gets proxy mode.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>java.util.Map&lt;java.lang.String,java.util.List&lt;java.lang.reflect.Method&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getSettersMap--">getSettersMap</a></span>()</code>
 <div class="block">Gets setters map.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>java.lang.Class&lt;?&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getTargetClass--">getTargetClass</a></span>()</code>
 <div class="block">Gets target class.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>java.util.Set&lt;java.lang.String&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#getUniqueKeySet--">getUniqueKeySet</a></span>()</code>
 <div class="block">Gets unique key set.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#isTargetTypeMap--">isTargetTypeMap</a></span>()</code>
 <div class="block">Is target type map.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/caoccao/javet/interop/binding/ClassDescriptor.html#isTargetTypeSet--">isTargetTypeSet</a></span>()</code>
 <div class="block">Is target type set.</div>
@@ -339,6 +351,20 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Field Detail</h3>
+<a name="applyFunctions">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>applyFunctions</h4>
+<pre>protected&nbsp;java.util.List&lt;java.lang.reflect.Method&gt; applyFunctions</pre>
+<div class="block">The Apply functions.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.1.7</dd>
+</dl>
+</li>
+</ul>
 <a name="constructors">
 <!--   -->
 </a>
@@ -541,6 +567,22 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a name="getApplyFunctions--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getApplyFunctions</h4>
+<pre>public&nbsp;java.util.List&lt;java.lang.reflect.Method&gt;&nbsp;getApplyFunctions()</pre>
+<div class="block">Gets apply functions.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the apply functions</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>1.1.7</dd>
+</dl>
+</li>
+</ul>
 <a name="getConstructors--">
 <!--   -->
 </a>
@@ -776,7 +818,7 @@ extends java.lang.Object</pre>
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../../com/caoccao/javet/interop/binding/BindingContextStore.Type.html" title="enum in com.caoccao.javet.interop.binding"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../../com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../../../com/caoccao/javet/interop/binding/MethodDescriptor.html" title="class in com.caoccao.javet.interop.binding"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">

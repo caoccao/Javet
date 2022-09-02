@@ -25,6 +25,7 @@ import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
 import com.caoccao.javet.interop.proxy.JavetUniversalProxyClassHandler;
+import com.caoccao.javet.interop.proxy.JavetUniversalProxyFunctionHandler;
 import com.caoccao.javet.interop.proxy.JavetUniversalProxyObjectHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
@@ -107,12 +108,13 @@ public class JavetProxyConverter extends JavetObjectConverter {
                     break;
             }
             try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                IJavetProxyHandler<?> javetProxyHandler = null;
+                IJavetProxyHandler<?> javetProxyHandler;
                 switch (proxyMode) {
                     case Class:
                         javetProxyHandler = new JavetUniversalProxyClassHandler<>(v8Runtime, (Class<?>) object);
                         break;
                     case Function:
+                        javetProxyHandler = new JavetUniversalProxyFunctionHandler<>(v8Runtime, object);
                         break;
                     default:
                         javetProxyHandler = new JavetUniversalProxyObjectHandler<>(v8Runtime, object);

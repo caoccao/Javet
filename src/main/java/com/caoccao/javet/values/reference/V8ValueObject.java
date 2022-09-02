@@ -27,10 +27,10 @@ import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.BindingContext;
-import com.caoccao.javet.interop.binding.BindingContextStore;
 import com.caoccao.javet.interop.binding.MethodDescriptor;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
@@ -59,12 +59,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String METHOD_PREFIX_SET = "set";
     protected static final String PROPERTY_PROTOTYPE = "prototype";
     /**
-     * The constant bindingContextStore.
+     * The constant bindingContextMap.
      *
      * @since 1.1.7
      */
-    protected static final BindingContextStore bindingContextStore =
-            new BindingContextStore(BindingContextStore.Type.Permanent);
+    protected static final ThreadSafeMap<Class<?>, BindingContext> bindingContextMap = new ThreadSafeMap<>();
 
     /**
      * Instantiates a new V8 value object.
@@ -79,13 +78,13 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     /**
-     * Gets binding context store.
+     * Gets binding context map.
      *
-     * @return the binding context store
+     * @return the binding context map
      * @since 1.1.7
      */
-    public static BindingContextStore getBindingContextStore() {
-        return bindingContextStore;
+    public static ThreadSafeMap<Class<?>, BindingContext> getBindingContextMap() {
+        return bindingContextMap;
     }
 
     @Override
@@ -323,7 +322,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     BindingContext getBindingContext(Class<?> callbackReceiverClass) throws JavetException {
         Objects.requireNonNull(callbackReceiverClass);
-        BindingContext bindingContext = bindingContextStore.get(callbackReceiverClass);
+        BindingContext bindingContext = bindingContextMap.get(callbackReceiverClass);
         if (bindingContext == null) {
             bindingContext = new BindingContext();
             Map<String, MethodDescriptor> propertyGetterMap = bindingContext.getPropertyGetterMap();
@@ -427,7 +426,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                 }
             }
-            bindingContextStore.put(callbackReceiverClass, bindingContext);
+            bindingContextMap.put(callbackReceiverClass, bindingContext);
         }
         return bindingContext;
     }

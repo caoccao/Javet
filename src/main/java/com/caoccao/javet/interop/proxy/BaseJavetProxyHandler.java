@@ -22,10 +22,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
-import com.caoccao.javet.utils.JavetReflectionUtils;
-import com.caoccao.javet.utils.JavetTypeUtils;
-import com.caoccao.javet.utils.JavetVirtualObject;
-import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -96,6 +93,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
     public BaseJavetProxyHandler(V8Runtime v8Runtime, T targetObject) {
         this.targetObject = targetObject;
         this.v8Runtime = Objects.requireNonNull(v8Runtime);
+        initialize();
     }
 
     /**
@@ -189,11 +187,12 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
     }
 
     /**
-     * Clear class descriptor cache.
+     * Gets class descriptor cache.
      *
+     * @return the thread safe map
      * @since 1.1.7
      */
-    public abstract void clearClassDescriptorCache();
+    public abstract ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorCache();
 
     /**
      * Gets from field.
@@ -422,6 +421,13 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
     }
 
     /**
+     * Initialize.
+     *
+     * @since 1.1.7
+     */
+    protected abstract void initialize();
+
+    /**
      * Initialize constructors.
      *
      * @param currentClass   the current class
@@ -436,6 +442,14 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
         }
     }
 
+    /**
+     * Initialize public fields.
+     *
+     * @param currentClass   the current class
+     * @param conversionMode the conversion mode
+     * @param staticMode     the static mode
+     * @since 1.1.7
+     */
     protected void initializePublicFields(
             Class<?> currentClass, V8ConversionMode conversionMode, boolean staticMode) {
         for (Field field : currentClass.getFields()) {
@@ -493,6 +507,8 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
                 classDescriptor.getGenericGetters().add(method);
             } else if (isGenericSetter(method)) {
                 classDescriptor.getGenericSetters().add(method);
+            } else if (isApplyFunction(method)) {
+                classDescriptor.getApplyFunctions().add(method);
             } else {
                 final int getterPrefixLength = getGetterPrefixLength(method);
                 if (getterPrefixLength > 0) {
@@ -530,6 +546,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      * @param conversionMode   the conversion mode
      * @param accessibleObject the accessible object
      * @return true : allowed, false : disallowed
+     * @since 1.1.7
      */
     protected boolean isAllowed(V8ConversionMode conversionMode, AccessibleObject accessibleObject) {
         switch (conversionMode) {
@@ -540,6 +557,17 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
             default:
                 return true;
         }
+    }
+
+    /**
+     * Is apply function.
+     *
+     * @param method the method
+     * @return true: yes, false: no
+     * @since 1.1.7
+     */
+    protected boolean isApplyFunction(Method method) {
+        return method.isAnnotationPresent(V8ProxyFunctionApply.class);
     }
 
     /**
@@ -589,6 +617,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      * @param propertyValue the property value
      * @return true: set, false: not set
      * @throws JavetException the javet exception
+     * @since 1.1.7
      */
     protected boolean setToField(V8Value propertyKey, V8Value propertyValue) throws JavetException {
         if (!classDescriptor.getFieldMap().isEmpty() && propertyKey instanceof V8ValueString) {
@@ -621,6 +650,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      * @param propertyValue the property value
      * @return true : set, false: not set
      * @throws JavetException the javet exception
+     * @since 1.1.7
      */
     protected boolean setToSetter(V8Value target, V8Value propertyKey, V8Value propertyValue) throws JavetException {
         if (!classDescriptor.getGenericSetters().isEmpty() || !classDescriptor.getSettersMap().isEmpty()) {
