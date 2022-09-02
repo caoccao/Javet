@@ -24,7 +24,6 @@ import com.caoccao.javet.interfaces.IEnumBitset;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interfaces.IV8ModuleResolver;
-import com.caoccao.javet.interop.binding.BindingContext;
 import com.caoccao.javet.interop.callback.IJavetGCCallback;
 import com.caoccao.javet.interop.callback.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -54,9 +53,6 @@ import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * The representation of a V8 isolate (and V8 context).
@@ -124,7 +120,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @since 0.9.12
      */
-    final ReadWriteLock callbackContextLock;
+    final Object callbackContextLock;
     /**
      * The Callback context map.
      * <p>
@@ -147,6 +143,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.3
      */
     final List<IJavetGCCallback> gcPrologueCallbacks;
+    /**
+     * The Reference lock.
+     *
+     * @since 0.9.12
+     */
+    final Object referenceLock;
     /**
      * The Reference map.
      *
@@ -176,7 +178,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @since 0.9.12
      */
-    final ReadWriteLock v8ModuleLock;
+    final Object v8ModuleLock;
     /**
      * The V8 module map.
      *
@@ -250,12 +252,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     IJavetPromiseRejectCallback promiseRejectCallback;
     /**
-     * The Reference lock.
-     *
-     * @since 0.9.12
-     */
-    ReadWriteLock referenceLock;
-    /**
      * The V8 inspector.
      *
      * @since 0.7.3
@@ -286,7 +282,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
         assert handle != 0;
-        callbackContextLock = new ReentrantReadWriteLock();
+        callbackContextLock = new Object();
         callbackContextMap = new HashMap<>();
         converter = DEFAULT_CONVERTER;
         gcEpilogueCallbacks = new CopyOnWriteArrayList<>();
@@ -297,12 +293,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         logger = new JavetDefaultLogger(getClass().getName());
         this.pooled = pooled;
         promiseRejectCallback = new JavetPromiseRejectCallback(logger);
-        referenceLock = new ReentrantReadWriteLock();
+        referenceLock = new Object();
         referenceMap = new HashMap<>();
         this.v8Host = Objects.requireNonNull(v8Host);
         v8Inspector = null;
         this.v8Native = Objects.requireNonNull(v8Native);
-        v8ModuleLock = new ReentrantReadWriteLock();
+        v8ModuleLock = new Object();
         v8ModuleMap = new HashMap<>();
         v8ModuleResolver = null;
         v8Internal = new V8Internal(this);
@@ -360,12 +356,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.3
      */
     void addReference(IV8ValueReference iV8ValueReference) {
-        Lock writeLock = referenceLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (referenceLock) {
             referenceMap.put(iV8ValueReference.getHandle(), iV8ValueReference);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -376,12 +368,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.1
      */
     public void addV8Module(IV8Module iV8Module) {
-        Lock writeLock = v8ModuleLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (v8ModuleLock) {
             v8ModuleMap.put(iV8Module.getResourceName(), iV8Module);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -552,12 +540,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.1
      */
     public boolean containsV8Module(String resourceName) {
-        Lock readLock = v8ModuleLock.readLock();
-        try {
-            readLock.lock();
+        synchronized (v8ModuleLock) {
             return v8ModuleMap.containsKey(resourceName);
-        } finally {
-            readLock.unlock();
         }
     }
 
@@ -621,12 +605,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
         V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Native.createV8Value(
                 handle, V8ValueReferenceType.Function.getId(), Objects.requireNonNull(javetCallbackContext));
-        Lock writeLock = callbackContextLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (callbackContextLock) {
             callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
-        } finally {
-            writeLock.unlock();
         }
         return v8ValueFunction;
     }
@@ -822,12 +802,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.12
      */
     public JavetCallbackContext getCallbackContext(long handle) {
-        Lock readLock = callbackContextLock.readLock();
-        try {
-            readLock.lock();
+        synchronized (callbackContextLock) {
             return callbackContextMap.get(handle);
-        } finally {
-            readLock.unlock();
         }
     }
 
@@ -1223,14 +1199,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
         if (resourceName != null && resourceName.length() > 0) {
-            Lock readLock = v8ModuleLock.readLock();
-            try {
-                readLock.lock();
+            synchronized (v8ModuleLock) {
                 if (v8ModuleMap.containsKey(resourceName)) {
                     return v8ModuleMap.get(resourceName);
                 }
-            } finally {
-                readLock.unlock();
             }
             if (v8ModuleResolver != null) {
                 return v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
@@ -1844,12 +1816,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.3
      */
     public void removeCallbackContext(long handle) {
-        Lock writeLock = callbackContextLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (callbackContextLock) {
             callbackContextMap.remove(handle);
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -1859,9 +1827,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.3
      */
     void removeCallbackContexts() {
-        Lock writeLock = callbackContextLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (callbackContextLock) {
             if (!callbackContextMap.isEmpty()) {
                 final int callbackContextCount = callbackContextMap.size();
                 for (long handle : callbackContextMap.keySet()) {
@@ -1871,8 +1837,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                         Integer.toString(callbackContextCount));
                 callbackContextMap.clear();
             }
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -1928,9 +1892,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     void removeReference(IV8ValueReference iV8ValueReference) throws JavetException {
         final long referenceHandle = iV8ValueReference.getHandle();
-        Lock writeLock = referenceLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (referenceLock) {
             if (referenceMap.containsKey(referenceHandle)) {
                 final int referenceType = iV8ValueReference.getType().getId();
                 if (referenceType == V8ValueReferenceType.Module.getId()) {
@@ -1939,8 +1901,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 v8Native.removeReferenceHandle(referenceHandle, referenceType);
                 referenceMap.remove(referenceHandle);
             }
-        } finally {
-            writeLock.unlock();
         }
         if (gcScheduled) {
             lowMemoryNotification();
@@ -1955,9 +1915,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     void removeReferences() throws JavetException {
-        Lock writeLock = referenceLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (referenceLock) {
             if (!referenceMap.isEmpty()) {
                 final int referenceCount = getReferenceCount();
                 final int v8ModuleCount = getV8ModuleCount();
@@ -1984,8 +1942,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 }
                 referenceMap.clear();
             }
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -1999,12 +1955,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public void removeV8Module(String resourceName, boolean forceClose) throws JavetException {
         IV8Module iV8Module;
-        Lock writeLock = v8ModuleLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (v8ModuleLock) {
             iV8Module = v8ModuleMap.remove(resourceName);
-        } finally {
-            writeLock.unlock();
         }
         if (forceClose && iV8Module != null) {
             iV8Module.close(true);
@@ -2063,9 +2015,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.3
      */
     public void removeV8Modules(boolean forceClose) throws JavetException {
-        Lock writeLock = v8ModuleLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (v8ModuleLock) {
             if (!v8ModuleMap.isEmpty()) {
                 logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
                 for (IV8Module iV8Module : v8ModuleMap.values()) {
@@ -2076,8 +2026,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 }
                 v8ModuleMap.clear();
             }
-        } finally {
-            writeLock.unlock();
         }
     }
 
@@ -2193,17 +2141,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         assert (propertyName instanceof V8ValueString || propertyName instanceof V8ValueSymbol);
         boolean isAccessorSet = v8Native.setAccessor(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
                 propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
-        Lock writeLock = callbackContextLock.writeLock();
-        try {
-            writeLock.lock();
+        synchronized (callbackContextLock) {
             if (javetCallbackContextGetter != null && javetCallbackContextGetter.isValid()) {
                 callbackContextMap.put(javetCallbackContextGetter.getHandle(), javetCallbackContextGetter);
             }
             if (javetCallbackContextSetter != null && javetCallbackContextSetter.isValid()) {
                 callbackContextMap.put(javetCallbackContextSetter.getHandle(), javetCallbackContextSetter);
             }
-        } finally {
-            writeLock.unlock();
         }
         return isAccessorSet;
     }
