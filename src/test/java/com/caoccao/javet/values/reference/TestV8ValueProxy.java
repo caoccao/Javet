@@ -19,7 +19,8 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
-import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
+import com.caoccao.javet.interop.proxy.JavetUniversalProxyClassHandler;
+import com.caoccao.javet.interop.proxy.JavetUniversalProxyObjectHandler;
 import com.caoccao.javet.mock.MockPojo;
 import com.caoccao.javet.mock.MockPojoWithGenericGetterAndSetter;
 import org.junit.jupiter.api.Test;
@@ -101,8 +102,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
 
     @Test
     public void testUniversalProxyHandlerInInstanceMode() throws JavetException {
-        JavetUniversalProxyHandler<MockPojo> handler =
-                new JavetUniversalProxyHandler<>(v8Runtime, new MockPojo());
+        JavetUniversalProxyObjectHandler<MockPojo> handler =
+                new JavetUniversalProxyObjectHandler<>(v8Runtime, new MockPojo());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
                 assertNotNull(v8ValueProxy);
@@ -179,8 +180,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
 
     @Test
     public void testUniversalProxyHandlerInStaticMode() throws JavetException {
-        JavetUniversalProxyHandler<Class> handler =
-                new JavetUniversalProxyHandler<>(v8Runtime, MockPojo.class);
+        JavetUniversalProxyClassHandler<Class<?>> handler =
+                new JavetUniversalProxyClassHandler<>(v8Runtime, MockPojo.class);
         assertEquals(MockPojo.class, handler.getTargetObject());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
@@ -223,8 +224,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
 
     @Test
     public void testUniversalProxyHandlerWithGenericGetterAndSetter() throws JavetException {
-        JavetUniversalProxyHandler<MockPojoWithGenericGetterAndSetter> handler =
-                new JavetUniversalProxyHandler<>(v8Runtime, new MockPojoWithGenericGetterAndSetter());
+        JavetUniversalProxyObjectHandler<MockPojoWithGenericGetterAndSetter> handler =
+                new JavetUniversalProxyObjectHandler<>(v8Runtime, new MockPojoWithGenericGetterAndSetter());
         handler.getTargetObject().set("c", "3");
         handler.getTargetObject().set("d", "4");
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {

@@ -120,7 +120,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Inspector.html#addListeners-com.caoccao.javet.interop.IV8InspectorListener...-">addListeners(IV8InspectorListener...)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Inspector.html" title="class in com.caoccao.javet.interop">V8Inspector</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#addMethod-java.lang.reflect.Method-int-java.util.Map-">addMethod(Method, int, Map&lt;String, List&lt;Method&gt;&gt;)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#addMethod-java.lang.reflect.Method-int-java.util.Map-">addMethod(Method, int, Map&lt;String, List&lt;Method&gt;&gt;)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Add method.</div>
 </dd>
@@ -343,10 +343,6 @@
 <dl>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/primitive/V8ValueDouble.html#cachedToString">cachedToString</a></span> - Variable in class com.caoccao.javet.values.primitive.<a href="com/caoccao/javet/values/primitive/V8ValueDouble.html" title="class in com.caoccao.javet.values.primitive">V8ValueDouble</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html#calculateScore--">calculateScore()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.ScoredExecutable</a></dt>
-<dd>
-<div class="block">Calculate score double.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#call-long-long-int-java.lang.Object-boolean-java.lang.Object:A-">call(long, long, int, Object, boolean, Object[])</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Internal.html#call-com.caoccao.javet.values.reference.IV8ValueObject-com.caoccao.javet.values.reference.IV8ValueObject-boolean-com.caoccao.javet.values.V8Value...-">call(IV8ValueObject, IV8ValueObject, boolean, V8Value...)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Internal.html" title="class in com.caoccao.javet.interop">V8Internal</a></dt>
@@ -493,20 +489,36 @@
 <dd>
 <div class="block">Circular structure.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#CLASS_DEFINITION_CACHE">CLASS_DEFINITION_CACHE</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#CLASS_DESCRIPTOR_MAP">CLASS_DESCRIPTOR_MAP</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
 <dd>
-<div class="block">The constant CLASS_DEFINITION_MAP.</div>
+<div class="block">The constant CLASS_DESCRIPTOR_MAP.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#classDefinition">classDefinition</a></span> - Variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#CLASS_DESCRIPTOR_MAP">CLASS_DESCRIPTOR_MAP</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
 <dd>
-<div class="block">The Class definition.</div>
+<div class="block">The constant CLASS_DESCRIPTOR_MAP.</div>
+</dd>
+<dt><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding"><span class="typeNameLink">ClassDescriptor</span></a> - Class in <a href="com/caoccao/javet/interop/binding/package-summary.html">com.caoccao.javet.interop.binding</a></dt>
+<dd>
+<div class="block">The type Class descriptor.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#ClassDescriptor-com.caoccao.javet.enums.V8ProxyMode-java.lang.Class-">ClassDescriptor(V8ProxyMode, Class&lt;?&gt;)</a></span> - Constructor for class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Instantiates a new Class descriptor.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#classDescriptor">classDescriptor</a></span> - Variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">The Class descriptor.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/BindingContextStore.html#clear--">clear()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/BindingContextStore.html" title="class in com.caoccao.javet.interop.binding">BindingContextStore</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#clearClassDefinitionCache--">clearClassDefinitionCache()</a></span> - Static method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#clearClassDescriptorCache--">clearClassDescriptorCache()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
-<div class="block">Clear class definition cache.</div>
+<div class="block">Clear class descriptor cache.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#clearClassDescriptorCache--">clearClassDescriptorCache()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#clearClassDescriptorCache--">clearClassDescriptorCache()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#clearInternalStatistic--">clearInternalStatistic()</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#clearInternalStatistic--">clearInternalStatistic()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
@@ -812,8 +824,12 @@
 <dd>
 <div class="block">Construct.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#construct-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.reference.V8ValueArray-com.caoccao.javet.values.V8Value-">construct(V8Value, V8ValueArray, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#construct-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.reference.V8ValueArray-com.caoccao.javet.values.V8Value-">construct(V8Value, V8ValueArray, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#constructors">constructors</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Constructors.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#containsV8Module-java.lang.String-">containsV8Module(String)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
 <dd>
 <div class="block">Contains a V8 module by resource name.</div>
@@ -1216,10 +1232,6 @@
 <dd>
 <div class="block">Delete property by undefined.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#DELIMITER">DELIMITER</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
-<dd>
-<div class="block">The constant DELIMITER.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/entities/JavetEntitySymbol.html#description">description</a></span> - Variable in class com.caoccao.javet.entities.<a href="com/caoccao/javet/entities/JavetEntitySymbol.html" title="class in com.caoccao.javet.entities">JavetEntitySymbol</a></dt>
 <dd>
 <div class="block">The Description.</div>
@@ -1393,11 +1405,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#execute-long-java.lang.String-boolean-java.lang.String-int-int-int-boolean-boolean-">execute(long, String, boolean, String, int, int, int, boolean, boolean)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#execute-com.caoccao.javet.interop.V8Runtime-java.lang.Object-com.caoccao.javet.values.reference.V8ValueObject-java.util.List-com.caoccao.javet.utils.JavetVirtualObject:A-">execute(V8Runtime, Object, V8ValueObject, List&lt;E&gt;, JavetVirtualObject[])</a></span> - Static method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
-<dd>
-<div class="block">Execute.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html#execute--">execute()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.ScoredExecutable</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#execute-com.caoccao.javet.interop.V8Runtime-java.lang.Object-com.caoccao.javet.values.reference.V8ValueObject-java.util.List-com.caoccao.javet.utils.JavetVirtualObject:A-">execute(V8Runtime, Object, V8ValueObject, List&lt;E&gt;, JavetVirtualObject[])</a></span> - Static method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Execute.</div>
 </dd>
@@ -1474,6 +1482,10 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetError.html#FailedToReadPath">FailedToReadPath</a></span> - Static variable in class com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetError.html" title="class in com.caoccao.javet.exceptions">JavetError</a></dt>
 <dd>
 <div class="block">The constant FailedToReadPath.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#fieldMap">fieldMap</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Field map.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Flags.html#FLAG_ALLOW_NATIVES_SYNTAX">FLAG_ALLOW_NATIVES_SYNTAX</a></span> - Static variable in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></dt>
 <dd>
@@ -1659,11 +1671,11 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueSet.html#FUNCTION_KEYS">FUNCTION_KEYS</a></span> - Static variable in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueSet.html" title="class in com.caoccao.javet.values.reference">V8ValueSet</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#FUNCTION_NAME_LENGTH">FUNCTION_NAME_LENGTH</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#FUNCTION_NAME_LENGTH">FUNCTION_NAME_LENGTH</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
 <dd>
 <div class="block">The constant FUNCTION_NAME_LENGTH.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#FUNCTION_NAME_TO_V8_VALUE">FUNCTION_NAME_TO_V8_VALUE</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#FUNCTION_NAME_TO_V8_VALUE">FUNCTION_NAME_TO_V8_VALUE</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">The constant FUNCTION_NAME_TO_V8_VALUE.</div>
 </dd>
@@ -1727,6 +1739,14 @@
 </a>
 <h2 class="title">G</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#genericGetters">genericGetters</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Generic getters.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#genericSetters">genericSetters</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Generic setters.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interfaces/IJavaSupplier.html#get--">get()</a></span> - Method in interface com.caoccao.javet.interfaces.<a href="com/caoccao/javet/interfaces/IJavaSupplier.html" title="interface in com.caoccao.javet.interfaces">IJavaSupplier</a></dt>
 <dd>
 <div class="block">Gets a result.</div>
@@ -1745,7 +1765,9 @@
 <dd>
 <div class="block">Get by property.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#get-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">get(V8Value, V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#get-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">get(V8Value, V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#get-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">get(V8Value, V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Internal.html#get-com.caoccao.javet.values.reference.IV8ValueObject-com.caoccao.javet.values.V8Value-">get(IV8ValueObject, V8Value)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Internal.html" title="class in com.caoccao.javet.interop">V8Internal</a></dt>
 <dd>&nbsp;</dd>
@@ -1857,10 +1879,6 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueArrayBuffer.html#getByteOrder--">getByteOrder()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueArrayBuffer.html" title="class in com.caoccao.javet.values.reference">V8ValueArrayBuffer</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#getCallbackContext--">getCallbackContext()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.JavetUniversalInterceptor</a></dt>
-<dd>
-<div class="block">Gets callback context.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#getCallbackContext-long-">getCallbackContext(long)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
 <dd>
 <div class="block">Gets a callback context by a handle.</div>
@@ -1907,9 +1925,17 @@
 <dd>
 <div class="block">Get console arguments.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getConstructors--">getConstructors()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets constructors.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/exceptions/JavetScriptingError.html#getContext--">getContext()</a></span> - Method in class com.caoccao.javet.exceptions.<a href="com/caoccao/javet/exceptions/JavetScriptingError.html" title="class in com.caoccao.javet.exceptions">JavetScriptingError</a></dt>
 <dd>
 <div class="block">Gets context.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getConversionMode--">getConversionMode()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets conversion mode.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Runtime.html#getConverter--">getConverter()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Runtime.html" title="class in com.caoccao.javet.interop">V8Runtime</a></dt>
 <dd>
@@ -2053,6 +2079,10 @@
 <dd>
 <div class="block">Gets external memory.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getFieldMap--">getFieldMap()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets field map.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#getFlags--">getFlags()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
 <div class="block">Gets flags.</div>
@@ -2073,13 +2103,45 @@
 <dd>
 <div class="block">Gets format.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#getFromCollection-com.caoccao.javet.values.V8Value-">getFromCollection(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
+<dd>
+<div class="block">Gets from collection.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#getFromField-com.caoccao.javet.values.V8Value-">getFromField(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Gets from field.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#getFromGetter-com.caoccao.javet.values.V8Value-">getFromGetter(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Gets from getter.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#getFromMethod-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">getFromMethod(V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Gets from method.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#getFromSymbol-com.caoccao.javet.values.V8Value-">getFromSymbol(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
+<dd>
+<div class="block">Gets from symbol.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/BindingContext.html#getFunctionMap--">getFunctionMap()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/BindingContext.html" title="class in com.caoccao.javet.interop.binding">BindingContext</a></dt>
 <dd>
 <div class="block">Gets function map.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#getGetterPrefixLength-java.lang.reflect.Method-">getGetterPrefixLength(Method)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getGenericGetters--">getGenericGetters()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets generic getters.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getGenericSetters--">getGenericSetters()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets generic setters.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#getGetterPrefixLength-java.lang.reflect.Method-">getGetterPrefixLength(Method)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Gets getter prefix length.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getGettersMap--">getGettersMap()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets getters map.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#getGlobalName--">getGlobalName()</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>
@@ -2235,10 +2297,6 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueFunction.html#getJSFunctionType--">getJSFunctionType()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueFunction.html" title="class in com.caoccao.javet.values.reference">V8ValueFunction</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#getJSMethodName--">getJSMethodName()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.JavetUniversalInterceptor</a></dt>
-<dd>
-<div class="block">Gets JS method name.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html#getJSRuntimeType--">getJSRuntimeType()</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineConfig.html" title="class in com.caoccao.javet.interop.engine">JavetEngineConfig</a></dt>
 <dd>
 <div class="block">Gets JS runtime type.</div>
@@ -2401,9 +2459,9 @@
 <dd>
 <div class="block">Gets method name set from lambdas.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#getMethods--">getMethods()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.JavetUniversalInterceptor</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getMethodsMap--">getMethodsMap()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
 <dd>
-<div class="block">Gets methods.</div>
+<div class="block">Gets methods map.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/receivers/IJavetCallbackReceiver.html#getMethodVarargs-java.lang.String-">getMethodVarargs(String)</a></span> - Method in interface com.caoccao.javet.utils.receivers.<a href="com/caoccao/javet/utils/receivers/IJavetCallbackReceiver.html" title="interface in com.caoccao.javet.utils.receivers">IJavetCallbackReceiver</a></dt>
 <dd>
@@ -2681,6 +2739,10 @@
 <dd>
 <div class="block">Gets prototype of.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getProxyMode--">getProxyMode()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets proxy mode.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html#getReadOnlySpacePhysicalSize--">getReadOnlySpacePhysicalSize()</a></span> - Method in class com.caoccao.javet.interop.monitoring.<a href="com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8SharedMemoryStatistics</a></dt>
 <dd>
 <div class="block">Gets read only space physical size.</div>
@@ -2799,10 +2861,6 @@
 <dd>
 <div class="block">Gets the runtime options.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html#getScore--">getScore()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.ScoredExecutable</a></dt>
-<dd>
-<div class="block">Gets score.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/executors/V8FileExecutor.html#getScriptFile--">getScriptFile()</a></span> - Method in class com.caoccao.javet.interop.executors.<a href="com/caoccao/javet/interop/executors/V8FileExecutor.html" title="class in com.caoccao.javet.interop.executors">V8FileExecutor</a></dt>
 <dd>
 <div class="block">Gets script file.</div>
@@ -2837,9 +2895,13 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html#getSearch--">getSearch()</a></span> - Method in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInSymbol</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#getSetterPrefixLength-java.lang.reflect.Method-">getSetterPrefixLength(Method)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#getSetterPrefixLength-java.lang.reflect.Method-">getSetterPrefixLength(Method)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Gets setter prefix length.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getSettersMap--">getSettersMap()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets setters map.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#getSize-long-long-int-">getSize(long, long, int)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
@@ -2933,19 +2995,23 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueProxy.html#getTarget--">getTarget()</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueProxy.html" title="class in com.caoccao.javet.values.reference">V8ValueProxy</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getTargetClass--">getTargetClass()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets target class.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#getTargetObject--">getTargetObject()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/IJavetProxyHandler.html#getTargetObject--">getTargetObject()</a></span> - Method in interface com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/IJavetProxyHandler.html" title="interface in com.caoccao.javet.interop.proxy">IJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Gets target object.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#getTargetObject--">getTargetObject()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.JavetUniversalInterceptor</a></dt>
-<dd>
-<div class="block">Gets target object.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#GETTER_PREFIX_ARRAY">GETTER_PREFIX_ARRAY</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#GETTER_PREFIX_ARRAY">GETTER_PREFIX_ARRAY</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">The constant GETTER_PREFIX_ARRAY.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#gettersMap">gettersMap</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Getters map.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/IJavetEngineGuard.html#getTimeoutMillis--">getTimeoutMillis()</a></span> - Method in interface com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/IJavetEngineGuard.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngineGuard</a></dt>
 <dd>
@@ -3038,6 +3104,10 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/IV8ValueObject.html#getUndefined-java.lang.Object-">getUndefined(Object)</a></span> - Method in interface com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/IV8ValueObject.html" title="interface in com.caoccao.javet.values.reference">IV8ValueObject</a></dt>
 <dd>
 <div class="block">Gets undefined by key object.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#getUniqueKeySet--">getUniqueKeySet()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Gets unique key set.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html#getUnscopables--">getUnscopables()</a></span> - Method in class com.caoccao.javet.values.reference.builtin.<a href="com/caoccao/javet/values/reference/builtin/V8ValueBuiltInSymbol.html" title="class in com.caoccao.javet.values.reference.builtin">V8ValueBuiltInSymbol</a></dt>
 <dd>&nbsp;</dd>
@@ -3267,7 +3337,9 @@
 <dd>
 <div class="block">Has property</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#has-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">has(V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#has-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">has(V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#has-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">has(V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Internal.html#has-com.caoccao.javet.values.reference.IV8ValueObject-com.caoccao.javet.values.V8Value-">has(IV8ValueObject, V8Value)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Internal.html" title="class in com.caoccao.javet.interop">V8Internal</a></dt>
 <dd>&nbsp;</dd>
@@ -3281,9 +3353,17 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueWeakSet.html#has-java.lang.Object-">has(Object)</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueWeakSet.html" title="class in com.caoccao.javet.values.reference">V8ValueWeakSet</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#hasConstructors--">hasConstructors()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#hasFromCollection-com.caoccao.javet.values.V8Value-">hasFromCollection(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
 <dd>
-<div class="block">Has constructors.</div>
+<div class="block">Has from collection.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#hasFromGeneric-com.caoccao.javet.values.V8Value-">hasFromGeneric(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Has from generic.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#hasFromRegular-com.caoccao.javet.values.V8Value-">hasFromRegular(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Has from regular.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/IV8ValuePromise.html#hasHandler--">hasHandler()</a></span> - Method in interface com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/IV8ValuePromise.html" title="interface in com.caoccao.javet.values.reference">IV8ValuePromise</a></dt>
 <dd>
@@ -3495,13 +3575,31 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetDefaultLogger.html#info-java.lang.String-">info(String)</a></span> - Method in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetDefaultLogger.html" title="class in com.caoccao.javet.utils">JavetDefaultLogger</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#initialize--">initialize()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#initialize--">initialize()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
 <dd>
 <div class="block">Initialize.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#initializeFieldsAndMethods-java.lang.Class-com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler.ClassDefinition-boolean-">initializeFieldsAndMethods(Class&lt;?&gt;, JavetUniversalProxyHandler.ClassDefinition, boolean)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#initialize--">initialize()</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
+<dd>
+<div class="block">Initialize.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#initializeConstructors-java.lang.Class-com.caoccao.javet.enums.V8ConversionMode-">initializeConstructors(Class&lt;?&gt;, V8ConversionMode)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Initialize constructors.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#initializeFieldsAndMethods-java.lang.Class-boolean-">initializeFieldsAndMethods(Class&lt;?&gt;, boolean)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
 <dd>
 <div class="block">Initialize fields and methods.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#initializeFieldsAndMethods-java.lang.Class-boolean-">initializeFieldsAndMethods(Class&lt;?&gt;, boolean)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
+<dd>
+<div class="block">Initialize fields and methods.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#initializePublicFields-java.lang.Class-com.caoccao.javet.enums.V8ConversionMode-boolean-">initializePublicFields(Class&lt;?&gt;, V8ConversionMode, boolean)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#initializePublicMethods-java.lang.Class-com.caoccao.javet.enums.V8ConversionMode-boolean-">initializePublicMethods(Class&lt;?&gt;, V8ConversionMode, boolean)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Initialize public methods.</div>
 </dd>
 <dt><a href="com/caoccao/javet/node/modules/INodeModule.html" title="interface in com.caoccao.javet.node.modules"><span class="typeNameLink">INodeModule</span></a> - Interface in <a href="com/caoccao/javet/node/modules/package-summary.html">com.caoccao.javet.node.modules</a></dt>
 <dd>&nbsp;</dd>
@@ -3533,10 +3631,6 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/DynamicProxyV8ValueObjectInvocationHandler.html#invoke-java.lang.Object-java.lang.reflect.Method-java.lang.Object:A-">invoke(Object, Method, Object[])</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/DynamicProxyV8ValueObjectInvocationHandler.html" title="class in com.caoccao.javet.interop.proxy">DynamicProxyV8ValueObjectInvocationHandler</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#invoke-com.caoccao.javet.values.reference.V8ValueObject-com.caoccao.javet.values.V8Value...-">invoke(V8ValueObject, V8Value...)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.JavetUniversalInterceptor</a></dt>
-<dd>
-<div class="block">Invoke.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Internal.html#invoke-com.caoccao.javet.values.reference.IV8ValueObject-java.lang.String-boolean-com.caoccao.javet.values.V8Value...-">invoke(IV8ValueObject, String, boolean, V8Value...)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Internal.html" title="class in com.caoccao.javet.interop">V8Internal</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/IV8ValueObject.html#invoke-java.lang.String-java.lang.Object...-">invoke(String, Object...)</a></span> - Method in interface com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/IV8ValueObject.html" title="interface in com.caoccao.javet.values.reference">IV8ValueObject</a></dt>
@@ -3631,7 +3725,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEnginePool.html#isActive--">isActive()</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEnginePool.html" title="class in com.caoccao.javet.interop.engine">JavetEnginePool</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isAllowed-com.caoccao.javet.enums.V8ConversionMode-java.lang.reflect.AccessibleObject-">isAllowed(V8ConversionMode, AccessibleObject)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#isAllowed-com.caoccao.javet.enums.V8ConversionMode-java.lang.reflect.AccessibleObject-">isAllowed(V8ConversionMode, AccessibleObject)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Is allowed.</div>
 </dd>
@@ -3661,7 +3755,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/JSScopeType.html#isClass--">isClass()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/JSScopeType.html" title="enum in com.caoccao.javet.enums">JSScopeType</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isClassMode-java.lang.Class-">isClassMode(Class&lt;?&gt;)</a></span> - Static method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8ProxyMode.html#isClassMode-java.lang.Class-">isClassMode(Class&lt;?&gt;)</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8ProxyMode.html" title="enum in com.caoccao.javet.enums">V8ProxyMode</a></dt>
 <dd>
 <div class="block">Is class mode.</div>
 </dd>
@@ -3773,11 +3867,11 @@
 <dd>
 <div class="block">Is generator object.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isGenericGetter-java.lang.reflect.Method-">isGenericGetter(Method)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#isGenericGetter-java.lang.reflect.Method-">isGenericGetter(Method)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Is generic getter.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isGenericSetter-java.lang.reflect.Method-">isGenericSetter(Method)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#isGenericSetter-java.lang.reflect.Method-">isGenericSetter(Method)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">Is generic setter.</div>
 </dd>
@@ -3909,6 +4003,14 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/loader/JavetLibLoadingListener.html#isSuppressingError-com.caoccao.javet.enums.JSRuntimeType-">isSuppressingError(JSRuntimeType)</a></span> - Method in class com.caoccao.javet.interop.loader.<a href="com/caoccao/javet/interop/loader/JavetLibLoadingListener.html" title="class in com.caoccao.javet.interop.loader">JavetLibLoadingListener</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#isTargetTypeMap--">isTargetTypeMap()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Is target type map.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#isTargetTypeSet--">isTargetTypeSet()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">Is target type set.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/MethodDescriptor.html#isThisObjectRequired--">isThisObjectRequired()</a></span> - Method in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/MethodDescriptor.html" title="class in com.caoccao.javet.interop.binding">MethodDescriptor</a></dt>
 <dd>
 <div class="block">Is this object required boolean.</div>
@@ -3936,10 +4038,6 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/JSRuntimeType.html#isV8--">isV8()</a></span> - Method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a></dt>
 <dd>
 <div class="block">Is V8 mode.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#isV8BindingEnabled-java.lang.String-">isV8BindingEnabled(String)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
-<dd>
-<div class="block">Is V8 binding enabled.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/callback/JavetCallbackContext.html#isValid--">isValid()</a></span> - Method in class com.caoccao.javet.interop.callback.<a href="com/caoccao/javet/interop/callback/JavetCallbackContext.html" title="class in com.caoccao.javet.interop.callback">JavetCallbackContext</a></dt>
 <dd>
@@ -4351,8 +4449,6 @@
 <dd>
 <div class="block">Instantiates a new Javet proxy converter.</div>
 </dd>
-<dt><a href="com/caoccao/javet/interop/proxy/JavetProxyMode.html" title="enum in com.caoccao.javet.interop.proxy"><span class="typeNameLink">JavetProxyMode</span></a> - Enum in <a href="com/caoccao/javet/interop/proxy/package-summary.html">com.caoccao.javet.interop.proxy</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/caoccao/javet/interop/proxy/JavetProxySymbolIterableConverter.html" title="class in com.caoccao.javet.interop.proxy"><span class="typeNameLink">JavetProxySymbolIterableConverter</span></a>&lt;<a href="com/caoccao/javet/interop/proxy/JavetProxySymbolIterableConverter.html" title="type parameter in JavetProxySymbolIterableConverter">T</a>&gt; - Class in <a href="com/caoccao/javet/interop/proxy/package-summary.html">com.caoccao.javet.interop.proxy</a></dt>
 <dd>
 <div class="block">The type Javet proxy symbol iterable converter.</div>
@@ -4407,25 +4503,21 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetTypeUtils.html#JavetTypeUtils--">JavetTypeUtils()</a></span> - Constructor for class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetTypeUtils.html" title="class in com.caoccao.javet.utils">JavetTypeUtils</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html#JavetUniversalInterceptor-com.caoccao.javet.interop.V8Runtime-java.lang.Object-java.lang.String-java.util.List-">JavetUniversalInterceptor(V8Runtime, Object, String, List&lt;Method&gt;)</a></span> - Constructor for class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.JavetUniversalInterceptor</a></dt>
+<dt><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy"><span class="typeNameLink">JavetUniversalProxyClassHandler</span></a>&lt;<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="type parameter in JavetUniversalProxyClassHandler">T</a> extends java.lang.Class&lt;?&gt;&gt; - Class in <a href="com/caoccao/javet/interop/proxy/package-summary.html">com.caoccao.javet.interop.proxy</a></dt>
 <dd>
-<div class="block">Instantiates a new Javet universal interceptor.</div>
+<div class="block">The type Javet universal proxy class handler.</div>
 </dd>
-<dt><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy"><span class="typeNameLink">JavetUniversalProxyHandler</span></a>&lt;<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="type parameter in JavetUniversalProxyHandler">T</a>&gt; - Class in <a href="com/caoccao/javet/interop/proxy/package-summary.html">com.caoccao.javet.interop.proxy</a></dt>
-<dd>
-<div class="block">The type Javet universal proxy handler.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#JavetUniversalProxyHandler-com.caoccao.javet.interop.V8Runtime-T-">JavetUniversalProxyHandler(V8Runtime, T)</a></span> - Constructor for class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#JavetUniversalProxyClassHandler-com.caoccao.javet.interop.V8Runtime-T-">JavetUniversalProxyClassHandler(V8Runtime, T)</a></span> - Constructor for class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
 <dd>
 <div class="block">Instantiates a new Javet universal proxy handler.</div>
 </dd>
-<dt><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.JavetUniversalInterceptor.html" title="class in com.caoccao.javet.interop.proxy"><span class="typeNameLink">JavetUniversalProxyHandler.JavetUniversalInterceptor</span></a> - Class in <a href="com/caoccao/javet/interop/proxy/package-summary.html">com.caoccao.javet.interop.proxy</a></dt>
+<dt><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy"><span class="typeNameLink">JavetUniversalProxyObjectHandler</span></a>&lt;<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="type parameter in JavetUniversalProxyObjectHandler">T</a>&gt; - Class in <a href="com/caoccao/javet/interop/proxy/package-summary.html">com.caoccao.javet.interop.proxy</a></dt>
 <dd>
-<div class="block">The type Javet universal interceptor.</div>
+<div class="block">The type Javet universal proxy handler.</div>
 </dd>
-<dt><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html" title="class in com.caoccao.javet.interop.proxy"><span class="typeNameLink">JavetUniversalProxyHandler.ScoredExecutable</span></a>&lt;<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html" title="type parameter in JavetUniversalProxyHandler.ScoredExecutable">E</a> extends java.lang.reflect.AccessibleObject&gt; - Class in <a href="com/caoccao/javet/interop/proxy/package-summary.html">com.caoccao.javet.interop.proxy</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#JavetUniversalProxyObjectHandler-com.caoccao.javet.interop.V8Runtime-T-">JavetUniversalProxyObjectHandler(V8Runtime, T)</a></span> - Constructor for class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
 <dd>
-<div class="block">The type Scored executable.</div>
+<div class="block">Instantiates a new Javet universal proxy handler.</div>
 </dd>
 <dt><a href="com/caoccao/javet/utils/JavetVirtualObject.html" title="class in com.caoccao.javet.utils"><span class="typeNameLink">JavetVirtualObject</span></a> - Class in <a href="com/caoccao/javet/utils/package-summary.html">com.caoccao.javet.utils</a></dt>
 <dd>
@@ -4603,11 +4695,7 @@
 <dd>
 <div class="block">The Method.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#METHOD_NAME_CONSTRUCT">METHOD_NAME_CONSTRUCT</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
-<dd>
-<div class="block">The constant METHOD_NAME_CONSTRUCT.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#METHOD_NAME_CONSTRUCTOR">METHOD_NAME_CONSTRUCTOR</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#METHOD_NAME_CONSTRUCTOR">METHOD_NAME_CONSTRUCTOR</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
 <dd>
 <div class="block">The constant METHOD_NAME_CONSTRUCTOR.</div>
 </dd>
@@ -4640,6 +4728,10 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/MethodDescriptor.html#MethodDescriptor-java.lang.reflect.Method-boolean-com.caoccao.javet.enums.V8ValueSymbolType-">MethodDescriptor(Method, boolean, V8ValueSymbolType)</a></span> - Constructor for class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/MethodDescriptor.html" title="class in com.caoccao.javet.interop.binding">MethodDescriptor</a></dt>
 <dd>
 <div class="block">Instantiates a new Method descriptor.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#methodsMap">methodsMap</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Methods map.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html#minus-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics-">minus(V8HeapSpaceStatistics)</a></span> - Method in class com.caoccao.javet.interop.monitoring.<a href="com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8HeapSpaceStatistics</a></dt>
 <dd>
@@ -4821,7 +4913,9 @@
 <dd>
 <div class="block">Own keys V8 value.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#ownKeys-com.caoccao.javet.values.V8Value-">ownKeys(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#ownKeys-com.caoccao.javet.values.V8Value-">ownKeys(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#ownKeys-com.caoccao.javet.values.V8Value-">ownKeys(V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a name="I:P">
@@ -4943,7 +5037,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8ValueReferenceType.html#parse-int-">parse(int)</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8ValueReferenceType.html" title="enum in com.caoccao.javet.enums">V8ValueReferenceType</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#PATTERN_CAPITALIZED_PREFIX">PATTERN_CAPITALIZED_PREFIX</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#PATTERN_CAPITALIZED_PREFIX">PATTERN_CAPITALIZED_PREFIX</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">The constant PATTERN_CAPITALIZED_PREFIX.</div>
 </dd>
@@ -5160,6 +5254,10 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html#proxyMapEnabled">proxyMapEnabled</a></span> - Variable in class com.caoccao.javet.interop.converters.<a href="com/caoccao/javet/interop/converters/JavetConverterConfig.html" title="class in com.caoccao.javet.interop.converters">JavetConverterConfig</a></dt>
 <dd>
 <div class="block">The Proxy map enabled.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#proxyMode">proxyMode</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Proxy mode.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/IV8Native.html#proxyRevoke-long-long-int-">proxyRevoke(long, long, int)</a></span> - Method in interface com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/IV8Native.html" title="interface in com.caoccao.javet.interop">IV8Native</a></dt>
 <dd>&nbsp;</dd>
@@ -5495,10 +5593,6 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/V8Value.html#sameValue-com.caoccao.javet.values.V8Value-">sameValue(V8Value)</a></span> - Method in class com.caoccao.javet.values.<a href="com/caoccao/javet/values/V8Value.html" title="class in com.caoccao.javet.values">V8Value</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html#ScoredExecutable-com.caoccao.javet.interop.V8Runtime-java.lang.Object-com.caoccao.javet.values.reference.V8ValueObject-E-com.caoccao.javet.utils.JavetVirtualObject:A-">ScoredExecutable(V8Runtime, Object, V8ValueObject, E, JavetVirtualObject[])</a></span> - Constructor for class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.ScoredExecutable.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler.ScoredExecutable</a></dt>
-<dd>
-<div class="block">Instantiates a new Scored executable.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/executors/V8FileExecutor.html#scriptFile">scriptFile</a></span> - Variable in class com.caoccao.javet.interop.executors.<a href="com/caoccao/javet/interop/executors/V8FileExecutor.html" title="class in com.caoccao.javet.interop.executors">V8FileExecutor</a></dt>
 <dd>
 <div class="block">The Script file.</div>
@@ -5543,7 +5637,9 @@
 <dd>
 <div class="block">Set value by property.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#set-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">set(V8Value, V8Value, V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html#set-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">set(V8Value, V8Value, V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyClassHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyClassHandler</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#set-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">set(V8Value, V8Value, V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Internal.html#set-com.caoccao.javet.values.reference.IV8ValueObject-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">set(IV8ValueObject, V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Internal.html" title="class in com.caoccao.javet.interop">V8Internal</a></dt>
 <dd>&nbsp;</dd>
@@ -5923,9 +6019,13 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/V8ValueFunction.html#setSourceCode-java.lang.String-">setSourceCode(String)</a></span> - Method in class com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/V8ValueFunction.html" title="class in com.caoccao.javet.values.reference">V8ValueFunction</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#SETTER_PREFIX_ARRAY">SETTER_PREFIX_ARRAY</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#SETTER_PREFIX_ARRAY">SETTER_PREFIX_ARRAY</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">The constant SETTER_PREFIX_ARRAY.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#settersMap">settersMap</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Setters map.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/IJavetEngineGuard.html#setTimeoutMillis-long-">setTimeoutMillis(long)</a></span> - Method in interface com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/IJavetEngineGuard.html" title="interface in com.caoccao.javet.interop.engine">IJavetEngineGuard</a></dt>
 <dd>
@@ -5933,6 +6033,18 @@
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/engine/JavetEngineGuard.html#setTimeoutMillis-long-">setTimeoutMillis(long)</a></span> - Method in class com.caoccao.javet.interop.engine.<a href="com/caoccao/javet/interop/engine/JavetEngineGuard.html" title="class in com.caoccao.javet.interop.engine">JavetEngineGuard</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html#setToCollection-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">setToCollection(V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyObjectHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyObjectHandler</a></dt>
+<dd>
+<div class="block">Sets to collection.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#setToField-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">setToField(V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Sets to field.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#setToSetter-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-com.caoccao.javet.values.V8Value-">setToSetter(V8Value, V8Value, V8Value)</a></span> - Method in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
+<dd>
+<div class="block">Sets to setter.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/logging/JavetStandardConsoleInterceptor.html#setTrace-java.io.PrintStream-">setTrace(PrintStream)</a></span> - Method in class com.caoccao.javet.interception.logging.<a href="com/caoccao/javet/interception/logging/JavetStandardConsoleInterceptor.html" title="class in com.caoccao.javet.interception.logging">JavetStandardConsoleInterceptor</a></dt>
 <dd>
 <div class="block">Sets trace.</div>
@@ -6113,6 +6225,10 @@
 </a>
 <h2 class="title">T</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#targetClass">targetClass</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Target class.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html#targetObject">targetObject</a></span> - Variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxyHandler</a></dt>
 <dd>
 <div class="block">The Target object.</div>
@@ -6120,6 +6236,14 @@
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/BaseJavetProxySymbolConverter.html#targetObject">targetObject</a></span> - Variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/BaseJavetProxySymbolConverter.html" title="class in com.caoccao.javet.interop.proxy">BaseJavetProxySymbolConverter</a></dt>
 <dd>
 <div class="block">The Target object.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#targetTypeMap">targetTypeMap</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The target type map.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#targetTypeSet">targetTypeSet</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The target type set.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/utils/JavetOSUtils.html#TEMP_DIRECTORY">TEMP_DIRECTORY</a></span> - Static variable in class com.caoccao.javet.utils.<a href="com/caoccao/javet/utils/JavetOSUtils.html" title="class in com.caoccao.javet.utils">JavetOSUtils</a></dt>
 <dd>&nbsp;</dd>
@@ -6497,6 +6621,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/values/reference/IV8Module.html#Uninstantiated">Uninstantiated</a></span> - Static variable in interface com.caoccao.javet.values.reference.<a href="com/caoccao/javet/values/reference/IV8Module.html" title="interface in com.caoccao.javet.values.reference">IV8Module</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/ClassDescriptor.html#uniqueKeySet">uniqueKeySet</a></span> - Variable in class com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/ClassDescriptor.html" title="class in com.caoccao.javet.interop.binding">ClassDescriptor</a></dt>
+<dd>
+<div class="block">The Unique key set.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/V8Host.html#unloadLibrary--">unloadLibrary()</a></span> - Method in class com.caoccao.javet.interop.<a href="com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></dt>
 <dd>
 <div class="block">Unload library.</div>
@@ -6531,22 +6659,6 @@
 </a>
 <h2 class="title">V</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#V8_VALUE_CLASS">V8_VALUE_CLASS</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
-<dd>
-<div class="block">The constant V8_VALUE_CLASS.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#V8_VALUE_FUNCTION_CLASS">V8_VALUE_FUNCTION_CLASS</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
-<dd>
-<div class="block">The constant V8_VALUE_FUNCTION_CLASS.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#V8_VALUE_OBJECT_CLASS">V8_VALUE_OBJECT_CLASS</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
-<dd>
-<div class="block">The constant V8_VALUE_OBJECT_CLASS.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html#V8_VALUE_PROXY_CLASS">V8_VALUE_PROXY_CLASS</a></span> - Static variable in class com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetUniversalProxyHandler.html" title="class in com.caoccao.javet.interop.proxy">JavetUniversalProxyHandler</a></dt>
-<dd>
-<div class="block">The constant V8_VALUE_PROXY_CLASS.</div>
-</dd>
 <dt><a href="com/caoccao/javet/enums/V8AllocationSpace.html" title="enum in com.caoccao.javet.enums"><span class="typeNameLink">V8AllocationSpace</span></a> - Enum in <a href="com/caoccao/javet/enums/package-summary.html">com.caoccao.javet.enums</a></dt>
 <dd>
 <div class="block">The enum V8 allocation space.</div>
@@ -6683,6 +6795,10 @@
 <dt><a href="com/caoccao/javet/annotations/V8Property.html" title="annotation in com.caoccao.javet.annotations"><span class="typeNameLink">V8Property</span></a> - Annotation Type in <a href="com/caoccao/javet/annotations/package-summary.html">com.caoccao.javet.annotations</a></dt>
 <dd>
 <div class="block">The interface V8 property is for auto-registering JS property interception.</div>
+</dd>
+<dt><a href="com/caoccao/javet/enums/V8ProxyMode.html" title="enum in com.caoccao.javet.enums"><span class="typeNameLink">V8ProxyMode</span></a> - Enum in <a href="com/caoccao/javet/enums/package-summary.html">com.caoccao.javet.enums</a></dt>
+<dd>
+<div class="block">The enum V8 proxy mode.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interception/BaseJavetInterceptor.html#v8Runtime">v8Runtime</a></span> - Variable in class com.caoccao.javet.interception.<a href="com/caoccao/javet/interception/BaseJavetInterceptor.html" title="class in com.caoccao.javet.interception">BaseJavetInterceptor</a></dt>
 <dd>
@@ -7094,6 +7210,10 @@
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8ProxyMode.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8ProxyMode.html" title="enum in com.caoccao.javet.enums">V8ProxyMode</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this type with the specified name.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8ValueInternalType.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8ValueInternalType.html" title="enum in com.caoccao.javet.enums">V8ValueInternalType</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
@@ -7107,10 +7227,6 @@
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/BindingContextStore.Type.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/BindingContextStore.Type.html" title="enum in com.caoccao.javet.interop.binding">BindingContextStore.Type</a></dt>
-<dd>
-<div class="block">Returns the enum constant of this type with the specified name.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetProxyMode.html#valueOf-java.lang.String-">valueOf(String)</a></span> - Static method in enum com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetProxyMode.html" title="enum in com.caoccao.javet.interop.proxy">JavetProxyMode</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this type with the specified name.</div>
 </dd>
@@ -7163,6 +7279,11 @@ the order they are declared.</div>
 <div class="block">Returns an array containing the constants of this enum type, in
 the order they are declared.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8ProxyMode.html#values--">values()</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8ProxyMode.html" title="enum in com.caoccao.javet.enums">V8ProxyMode</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum type, in
+the order they are declared.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/enums/V8ValueInternalType.html#values--">values()</a></span> - Static method in enum com.caoccao.javet.enums.<a href="com/caoccao/javet/enums/V8ValueInternalType.html" title="enum in com.caoccao.javet.enums">V8ValueInternalType</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum type, in
@@ -7179,11 +7300,6 @@ the order they are declared.</div>
 the order they are declared.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/binding/BindingContextStore.Type.html#values--">values()</a></span> - Static method in enum com.caoccao.javet.interop.binding.<a href="com/caoccao/javet/interop/binding/BindingContextStore.Type.html" title="enum in com.caoccao.javet.interop.binding">BindingContextStore.Type</a></dt>
-<dd>
-<div class="block">Returns an array containing the constants of this enum type, in
-the order they are declared.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="com/caoccao/javet/interop/proxy/JavetProxyMode.html#values--">values()</a></span> - Static method in enum com.caoccao.javet.interop.proxy.<a href="com/caoccao/javet/interop/proxy/JavetProxyMode.html" title="enum in com.caoccao.javet.interop.proxy">JavetProxyMode</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum type, in
 the order they are declared.</div>

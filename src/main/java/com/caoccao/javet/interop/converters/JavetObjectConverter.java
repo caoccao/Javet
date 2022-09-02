@@ -28,7 +28,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
-import com.caoccao.javet.interop.proxy.JavetUniversalProxyHandler;
+import com.caoccao.javet.interop.proxy.JavetUniversalProxyObjectHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
@@ -341,11 +341,12 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                     V8ValueProxy v8ValueProxy = v8Scope.createV8ValueProxy();
                     try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                        JavetUniversalProxyHandler<Map<?, ?>> javetUniversalProxyHandler =
-                                new JavetUniversalProxyHandler<>(v8Runtime, (Map<?, ?>) object);
+                        JavetUniversalProxyObjectHandler<Map<?, ?>> javetProxyHandler =
+                                new JavetUniversalProxyObjectHandler<>(v8Runtime, (Map<?, ?>) object);
                         List<JavetCallbackContext> javetCallbackContexts =
-                                iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                        iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+                                iV8ValueObjectHandler.bind(javetProxyHandler);
+                        iV8ValueObjectHandler.setPrivateProperty(
+                                PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                     }
                     v8Value = v8ValueProxy;
                     v8Scope.setEscapable();
@@ -369,11 +370,12 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                     V8ValueProxy v8ValueProxy = v8Scope.createV8ValueProxy();
                     try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                        JavetUniversalProxyHandler<Set<?>> javetUniversalProxyHandler =
-                                new JavetUniversalProxyHandler<>(v8Runtime, (Set<?>) object);
+                        JavetUniversalProxyObjectHandler<Set<?>> javetProxyHandler =
+                                new JavetUniversalProxyObjectHandler<>(v8Runtime, (Set<?>) object);
                         List<JavetCallbackContext> javetCallbackContexts =
-                                iV8ValueObjectHandler.bind(javetUniversalProxyHandler);
-                        iV8ValueObjectHandler.setPrivateProperty(PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+                                iV8ValueObjectHandler.bind(javetProxyHandler);
+                        iV8ValueObjectHandler.setPrivateProperty(
+                                PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
                     }
                     v8Value = v8ValueProxy;
                     v8Scope.setEscapable();
