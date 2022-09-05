@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":9,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":9,"i16":9,"i17":9,"i18":10,"i19":10,"i20":10,"i21":10,"i22":9,"i23":10,"i24":10,"i25":9,"i26":9,"i27":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":9,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":9,"i15":9,"i16":9,"i17":10,"i18":10,"i19":10,"i20":10,"i21":9,"i22":10,"i23":9,"i24":9,"i25":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -47,7 +47,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../../com/caoccao/javet/interop/V8Inspector.html" title="class in com.caoccao.javet.interop"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -185,120 +185,108 @@ implements java.lang.AutoCloseable</pre>
 </td>
 </tr>
 <tr id="i8" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getFlags--">getFlags</a></span>()</code>
-<div class="block">Gets flags.</div>
-</td>
-</tr>
-<tr id="i9" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getInstance-com.caoccao.javet.enums.JSRuntimeType-">getInstance</a></span>(<a href="../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a>&nbsp;jsRuntimeType)</code>
 <div class="block">Gets instance by JS runtime type.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>long[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getInternalStatistic--">getInternalStatistic</a></span>()</code>
 <div class="block">Get internal statistic for test purpose.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getJavetVersion--">getJavetVersion</a></span>()</code>
 <div class="block">Gets javet version.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/caoccao/javet/enums/JSRuntimeType.html" title="enum in com.caoccao.javet.enums">JSRuntimeType</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getJSRuntimeType--">getJSRuntimeType</a></span>()</code>
 <div class="block">Gets JS runtime type.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/caoccao/javet/exceptions/JavetException.html" title="class in com.caoccao.javet.exceptions">JavetException</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getLastException--">getLastException</a></span>()</code>
 <div class="block">Gets last exception.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/caoccao/javet/interfaces/IJavetLogger.html" title="interface in com.caoccao.javet.interfaces">IJavetLogger</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getLogger--">getLogger</a></span>()</code>
 <div class="block">Gets logger.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>static double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getMemoryUsageThresholdRatio--">getMemoryUsageThresholdRatio</a></span>()</code>
 <div class="block">Gets memory usage threshold ratio.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getNodeInstance--">getNodeInstance</a></span>()</code>
 <div class="block">Gets Node instance.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../com/caoccao/javet/interop/V8Host.html" title="class in com.caoccao.javet.interop">V8Host</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getV8Instance--">getV8Instance</a></span>()</code>
 <div class="block">Gets V8 instance.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getV8RuntimeCount--">getV8RuntimeCount</a></span>()</code>
 <div class="block">Gets V8 runtime count.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../../com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics.html" title="class in com.caoccao.javet.interop.monitoring">V8SharedMemoryStatistics</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#getV8SharedMemoryStatistics--">getV8SharedMemoryStatistics</a></span>()</code>
 <div class="block">Gets V8 shared memory statistics.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#isIsolateCreated--">isIsolateCreated</a></span>()</code>
 <div class="block">Is isolate created.</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#isLibraryLoaded--">isLibraryLoaded</a></span>()</code>
 <div class="block">Is library loaded.</div>
 </td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>static boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#isLibraryReloadable--">isLibraryReloadable</a></span>()</code>
 <div class="block">Determines whether the JNI library is reloadable or not.</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#loadLibrary--">loadLibrary</a></span>()</code>
 <div class="block">Load library.</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#setFlags--">setFlags</a></span>()</code>
-<div class="block">Sets flags.</div>
-</td>
-</tr>
-<tr id="i25" class="rowColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#setLibraryReloadable-boolean-">setLibraryReloadable</a></span>(boolean&nbsp;libraryReloadable)</code>
 <div class="block">Sets whether the JNI library is reloadable or not.</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>static void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#setMemoryUsageThresholdRatio-double-">setMemoryUsageThresholdRatio</a></span>(double&nbsp;memoryUsageThresholdRatio)</code>
 <div class="block">Sets memory usage threshold ratio.</div>
 </td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/caoccao/javet/interop/V8Host.html#unloadLibrary--">unloadLibrary</a></span>()</code>
 <div class="block">Unload library.</div>
@@ -594,22 +582,6 @@ implements java.lang.AutoCloseable</pre>
 </dl>
 </li>
 </ul>
-<a name="getFlags--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getFlags</h4>
-<pre>public&nbsp;<a href="../../../../com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop">V8Flags</a>&nbsp;getFlags()</pre>
-<div class="block">Gets flags.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the flags</dd>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.7.0</dd>
-</dl>
-</li>
-</ul>
 <a name="getInternalStatistic--">
 <!--   -->
 </a>
@@ -772,22 +744,6 @@ implements java.lang.AutoCloseable</pre>
 </dl>
 </li>
 </ul>
-<a name="setFlags--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setFlags</h4>
-<pre>public&nbsp;boolean&nbsp;setFlags()</pre>
-<div class="block">Sets flags.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>true : flags are set, false: flags are not set</dd>
-<dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>0.7.0</dd>
-</dl>
-</li>
-</ul>
 <a name="unloadLibrary--">
 <!--   -->
 </a>
@@ -833,7 +789,7 @@ implements java.lang.AutoCloseable</pre>
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../com/caoccao/javet/interop/V8Flags.html" title="class in com.caoccao.javet.interop"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../com/caoccao/javet/interop/NodeRuntime.html" title="class in com.caoccao.javet.interop"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../../com/caoccao/javet/interop/V8Inspector.html" title="class in com.caoccao.javet.interop"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">

@@ -18,9 +18,11 @@ package com.caoccao.javet;
 
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interop.loader.JavetLibLoader;
-import com.caoccao.javet.interop.V8Flags;
 import com.caoccao.javet.interop.V8Host;
+import com.caoccao.javet.interop.loader.JavetLibLoader;
+import com.caoccao.javet.interop.options.NodeRuntimeOptions;
+import com.caoccao.javet.interop.options.V8Flags;
+import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,8 +33,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class BaseTestJavet {
     public static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 10;
@@ -59,31 +60,27 @@ public abstract class BaseTestJavet {
                     jsRuntimeType = JSRuntimeType.V8;
                 }
             }
+            for (V8Flags v8Flags : new V8Flags[]{NodeRuntimeOptions.V8_FLAGS, V8RuntimeOptions.V8_FLAGS}) {
+                if (!v8Flags.isSealed()) {
+                    v8Flags.setAllowNativesSyntax(true);
+                    v8Flags.setExposeGC(false);
+                    v8Flags.setExposeInspectorScripts(true);
+                    v8Flags.setMaxHeapSize(768);
+                    v8Flags.setMaxOldSpaceSize(512);
+                    v8Flags.setUseStrict(true);
+                    v8Flags.setTrackRetainingPath(true);
+                }
+            }
             if (jsRuntimeType.isNode()) {
                 v8Host = V8Host.getNodeInstance();
+                assertTrue(NodeRuntimeOptions.V8_FLAGS.isSealed());
             } else {
                 v8Host = V8Host.getV8Instance();
+                assertTrue(V8RuntimeOptions.V8_FLAGS.isSealed());
             }
             assertEquals(jsRuntimeType, v8Host.getJSRuntimeType());
         } catch (Exception e) {
             fail(e.getMessage());
-        }
-    }
-
-    @BeforeAll
-    public static void beforeAll() {
-        for (V8Host v8Host : new V8Host[]{V8Host.getNodeInstance(), V8Host.getV8Instance()}) {
-            V8Flags flags = v8Host.getFlags();
-            if (!flags.isSealed()) {
-                flags.setAllowNativesSyntax(true);
-                flags.setExposeGC(false);
-                flags.setExposeInspectorScripts(true);
-                flags.setMaxHeapSize(768);
-                flags.setMaxOldSpaceSize(512);
-                flags.setUseStrict(true);
-                flags.setTrackRetainingPath(true);
-            }
-            v8Host.setFlags();
         }
     }
 

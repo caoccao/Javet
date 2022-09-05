@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop;
+package com.caoccao.javet.interop.options;
 
 import com.caoccao.javet.utils.JavetStringUtils;
 
@@ -228,7 +228,7 @@ public final class V8Flags {
     /**
      * Sets allow natives syntax.
      *
-     * @param allowNativesSyntax the allow natives syntax
+     * @param allowNativesSyntax allow natives syntax
      * @return the self
      * @since 0.7.0
      */

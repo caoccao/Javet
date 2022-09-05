@@ -29,6 +29,12 @@ public final class V8RuntimeOptions extends RuntimeOptions<V8RuntimeOptions> {
      */
     public static final String GLOBAL_THIS = "globalThis";
     /**
+     * The constant V8_FLAGS.
+     *
+     * @since 1.1.7
+     */
+    public static final V8Flags V8_FLAGS = new V8Flags();
+    /**
      * The Global name.
      *
      * @since 1.0.0

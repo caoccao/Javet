@@ -22,6 +22,12 @@ package com.caoccao.javet.interop.options;
  * @since 1.0.0
  */
 public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions> {
+    /**
+     * The constant V8_FLAGS.
+     *
+     * @since 1.1.7
+     */
+    public static final V8Flags V8_FLAGS = new V8Flags();
     private String[] consoleArguments;
 
     /**

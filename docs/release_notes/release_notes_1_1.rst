@@ -2,11 +2,13 @@
 Release Notes 1.1.x
 ===================
 
-1.1.7
+1.1.7 V8 v10.5
 --------------
 
+* Upgraded V8 to ``v10.5.218.7`` `(2022-08-17) <https://v8.dev/blog/v8-release-105>`_
 * Fixed ``pom.xml`` for Android 
 * Added optional i18n support for V8 mode
+* Refactored V8 flags initialization
 * Added virtual varargs support to the callback
 * Added support to ``V8Value`` and ``this`` for proxy based converters
 * Added proxy function handler for proxy ``handler.apply()``

@@ -205,23 +205,42 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 .setResourceName("./case.js").setModule(true).execute()) {
             fail("Failed to report SyntaxError.");
         } catch (JavetExecutionException e) {
-            assertEquals(
-                    "Error: SyntaxError: Unexpected identifier\n" +
-                            "Resource: undefined\n" +
-                            "Source Code: \n" +
-                            "Line Number: 0\n" +
-                            "Column: -1, -1\n" +
-                            "Position: -1, -1",
-                    e.getScriptingError().toString());
             assertTrue(e.getCause() instanceof JavetCompilationException);
-            assertEquals(
-                    "SyntaxError: Unexpected identifier\n" +
-                            "Resource: ./test.js\n" +
-                            "Source Code: a b c\n" +
-                            "Line Number: 1\n" +
-                            "Column: 2, 3\n" +
-                            "Position: 2, 3",
-                    ((JavetCompilationException) e.getCause()).getScriptingError().toString());
+            if (v8Runtime.getJSRuntimeType().isV8()) {
+                assertEquals(
+                        "Error: SyntaxError: Unexpected identifier 'b'\n" +
+                                "Resource: undefined\n" +
+                                "Source Code: \n" +
+                                "Line Number: 0\n" +
+                                "Column: -1, -1\n" +
+                                "Position: -1, -1",
+                        e.getScriptingError().toString());
+                assertEquals(
+                        "SyntaxError: Unexpected identifier 'b'\n" +
+                                "Resource: ./test.js\n" +
+                                "Source Code: a b c\n" +
+                                "Line Number: 1\n" +
+                                "Column: 2, 3\n" +
+                                "Position: 2, 3",
+                        ((JavetCompilationException) e.getCause()).getScriptingError().toString());
+            } else {
+                assertEquals(
+                        "Error: SyntaxError: Unexpected identifier\n" +
+                                "Resource: undefined\n" +
+                                "Source Code: \n" +
+                                "Line Number: 0\n" +
+                                "Column: -1, -1\n" +
+                                "Position: -1, -1",
+                        e.getScriptingError().toString());
+                assertEquals(
+                        "SyntaxError: Unexpected identifier\n" +
+                                "Resource: ./test.js\n" +
+                                "Source Code: a b c\n" +
+                                "Line Number: 1\n" +
+                                "Column: 2, 3\n" +
+                                "Position: 2, 3",
+                        ((JavetCompilationException) e.getCause()).getScriptingError().toString());
+            }
         }
         assertTrue(resolver.isCalled());
     }
@@ -259,7 +278,11 @@ public class TestV8Module extends BaseTestJavetRuntime {
         } catch (JavetCompilationException e) {
             assertFalse(v8Runtime.containsV8Module("./test.js"));
             assertEquals(0, v8Runtime.getV8ModuleCount());
-            assertEquals("SyntaxError: Unexpected identifier", e.getScriptingError().getMessage());
+            if (v8Runtime.getJSRuntimeType().isV8()) {
+                assertEquals("SyntaxError: Unexpected identifier 'b'", e.getScriptingError().getMessage());
+            } else {
+                assertEquals("SyntaxError: Unexpected identifier", e.getScriptingError().getMessage());
+            }
         }
     }
 

@@ -23,6 +23,7 @@ import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.loader.JavetLibLoader;
 import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
+import com.caoccao.javet.interop.options.V8Flags;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.SimpleMap;
 
@@ -43,7 +44,6 @@ public final class V8Host implements AutoCloseable {
     private static final long INVALID_HANDLE = 0L;
     private static boolean libraryReloadable = false;
     private static volatile double memoryUsageThresholdRatio = 0.7;
-    private final V8Flags flags;
     private final JSRuntimeType jsRuntimeType;
     private final IJavetLogger logger;
     private final V8Notifier v8Notifier;
@@ -59,7 +59,6 @@ public final class V8Host implements AutoCloseable {
         javetClassLoader = null;
         lastException = null;
         libraryLoaded = false;
-        flags = new V8Flags();
         logger = new JavetDefaultLogger(getClass().getName());
         v8RuntimeMap = new ConcurrentHashMap<>();
         v8Native = null;
@@ -265,7 +264,6 @@ public final class V8Host implements AutoCloseable {
         }
         final long handle = v8Native.createV8Runtime(runtimeOptions);
         isolateCreated = true;
-        flags.seal();
         V8Runtime v8Runtime;
         if (jsRuntimeType.isNode()) {
             v8Runtime = new NodeRuntime(this, handle, pooled, v8Native, runtimeOptions);
@@ -300,16 +298,6 @@ public final class V8Host implements AutoCloseable {
         // Javet {@link V8Notifier} listens to this notification to notify {@link V8Runtime} to perform GC.
         v8Notifier.registerListeners();
         return this;
-    }
-
-    /**
-     * Gets flags.
-     *
-     * @return the flags
-     * @since 0.7.0
-     */
-    public V8Flags getFlags() {
-        return flags;
     }
 
     /**
@@ -437,26 +425,6 @@ public final class V8Host implements AutoCloseable {
             }
         }
         return libraryLoaded;
-    }
-
-    /**
-     * Sets flags.
-     *
-     * @return true : flags are set, false: flags are not set
-     * @since 0.7.0
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean setFlags() {
-        if (libraryLoaded && !isolateCreated) {
-            String v8FlagsString = flags.toString();
-            logger.logDebug(
-                    "[{0}] Setting V8 flags: {1}.",
-                    jsRuntimeType.getName(),
-                    v8FlagsString);
-            v8Native.setFlags(v8FlagsString);
-            return true;
-        }
-        return false;
     }
 
     /**
