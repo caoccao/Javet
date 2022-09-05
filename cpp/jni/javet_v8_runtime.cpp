@@ -244,8 +244,8 @@ namespace Javet {
             if (mGlobalName != nullptr) {
                 auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8::Context::New(v8Isolate), mGlobalName);
                 v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
-    }
-}
+            }
+        }
         auto v8LocalContext = v8::Context::New(v8Isolate, nullptr, v8ObjectTemplate);
 #endif
         Register(v8LocalContext);
@@ -275,7 +275,7 @@ namespace Javet {
         v8Isolate = v8::Isolate::New(createParams);
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
-        }
+    }
 
     inline void V8Runtime::Register(const V8LocalContext & v8Context) {
         v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
@@ -301,5 +301,5 @@ namespace Javet {
         CloseV8Context();
         CloseV8Isolate();
     }
-    }
+}
 
