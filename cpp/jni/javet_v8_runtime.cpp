@@ -48,7 +48,7 @@ namespace Javet {
             jfieldID jfieldIDRuntimeOptionsV8Flags = jniEnv->GetStaticFieldID(jclassRuntimeOptions, "V8_FLAGS", "Lcom/caoccao/javet/interop/options/V8Flags;");
             jobject mV8Flags = jniEnv->GetStaticObjectField(jclassRuntimeOptions, jfieldIDRuntimeOptionsV8Flags);
             jstring mV8FlagsString = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsToString);
-            jniEnv->CallVoidMethod(mV8Flags, jmethodIDV8FlagsSeal);
+            jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsSeal));
             char const* utfChars = jniEnv->GetStringUTFChars(mV8FlagsString, nullptr);
             v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(mV8FlagsString));
             jniEnv->ReleaseStringUTFChars(mV8FlagsString, utfChars);
