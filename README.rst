@@ -83,7 +83,7 @@ Gradle Groovy DSL
 .. code-block:: groovy
 
     implementation 'com.caoccao.javet:javet:1.1.7' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-macos:1.1.7' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-macos:1.1.0' // Mac OS (x86_64 and arm64)
     implementation 'com.caoccao.javet:javet-android:1.1.7' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
