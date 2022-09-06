@@ -17,6 +17,7 @@
 package com.caoccao.javet.annotations;
 
 import com.caoccao.javet.enums.V8ConversionMode;
+import com.caoccao.javet.enums.V8ProxyMode;
 
 import java.lang.annotation.*;
 
@@ -36,4 +37,6 @@ public @interface V8Convert {
      * @since 1.0.6
      */
     V8ConversionMode mode() default V8ConversionMode.Transparent;
+
+    V8ProxyMode proxyMode() default V8ProxyMode.Object;
 }

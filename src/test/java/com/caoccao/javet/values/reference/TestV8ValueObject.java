@@ -27,6 +27,7 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueDouble;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -101,6 +102,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.bind(iJavetAnonymous1);
             assertEquals("abc", v8Runtime.getExecutor("a['testProperty']").executeString());
             assertEquals("abc", v8Runtime.getExecutor("a.testFunction()").executeString());
+            assertEquals("abc", v8Runtime.getExecutor("a.testFunction(123)").executeString(), "Redundant parameters should be dropped.");
             v8ValueObject.unbind(iJavetAnonymous1);
         } finally {
             v8Runtime.lowMemoryNotification();
@@ -122,6 +124,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.bind(iJavetAnonymous2);
             assertEquals("abc", v8Runtime.getExecutor("a['test']()").executeString());
             assertEquals("abc", v8Runtime.getExecutor("a.test()").executeString());
+            assertEquals("abc", v8Runtime.getExecutor("a.test(123)").executeString(), "Redundant parameters should be dropped.");
             v8ValueObject.unbind(iJavetAnonymous2);
         } finally {
             v8Runtime.lowMemoryNotification();
@@ -193,6 +196,13 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 assertEquals(index, value.getValue());
             }));
         }
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
+                "const b = {'2147483648': '2**31'}; b;").execute()) {
+            assertEquals(1, v8ValueObject.forEach((V8Value key, V8Value value) -> {
+                assertTrue(key instanceof V8ValueDouble);
+                assertEquals("2147483648", key.toString());
+            }));
+        }
     }
 
     @Test
@@ -216,18 +226,20 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
-                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {
+                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, " +
+                        "'中文': '測試', '1234567890': '1234567890'}; x;").execute()) {
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
                 assertNotNull(iV8ValueArray);
-                assertEquals(7, iV8ValueArray.getLength());
+                assertEquals(8, iV8ValueArray.getLength());
                 // Order is preserved since ES2015.
-                assertEquals("a", iV8ValueArray.getPropertyString(0));
-                assertEquals("b", iV8ValueArray.getPropertyString(1));
-                assertEquals("c", iV8ValueArray.getPropertyString(2));
-                assertEquals("d", iV8ValueArray.getPropertyString(3));
-                assertEquals("e", iV8ValueArray.getPropertyString(4));
-                assertEquals("g", iV8ValueArray.getPropertyString(5));
-                assertEquals("中文", iV8ValueArray.getPropertyString(6));
+                assertEquals(1234567890, iV8ValueArray.getPropertyInteger(0));
+                assertEquals("a", iV8ValueArray.getPropertyString(1));
+                assertEquals("b", iV8ValueArray.getPropertyString(2));
+                assertEquals("c", iV8ValueArray.getPropertyString(3));
+                assertEquals("d", iV8ValueArray.getPropertyString(4));
+                assertEquals("e", iV8ValueArray.getPropertyString(5));
+                assertEquals("g", iV8ValueArray.getPropertyString(6));
+                assertEquals("中文", iV8ValueArray.getPropertyString(7));
             }
         }
     }
@@ -274,18 +286,20 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     @Test
     public void testGetPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
-                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, '中文': '測試'}; x;").execute()) {
+                "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, " +
+                        "'中文': '測試', '1234567890': '1234567890'}; x;").execute()) {
             try (IV8ValueArray iV8ValueArray = v8ValueObject.getPropertyNames()) {
                 assertNotNull(iV8ValueArray);
-                assertEquals(7, iV8ValueArray.getLength());
+                assertEquals(8, iV8ValueArray.getLength());
                 // Order is preserved since ES2015.
-                assertEquals("a", iV8ValueArray.getPropertyString(0));
-                assertEquals("b", iV8ValueArray.getPropertyString(1));
-                assertEquals("c", iV8ValueArray.getPropertyString(2));
-                assertEquals("d", iV8ValueArray.getPropertyString(3));
-                assertEquals("e", iV8ValueArray.getPropertyString(4));
-                assertEquals("g", iV8ValueArray.getPropertyString(5));
-                assertEquals("中文", iV8ValueArray.getPropertyString(6));
+                assertEquals(1234567890, iV8ValueArray.getPropertyInteger(0));
+                assertEquals("a", iV8ValueArray.getPropertyString(1));
+                assertEquals("b", iV8ValueArray.getPropertyString(2));
+                assertEquals("c", iV8ValueArray.getPropertyString(3));
+                assertEquals("d", iV8ValueArray.getPropertyString(4));
+                assertEquals("e", iV8ValueArray.getPropertyString(5));
+                assertEquals("g", iV8ValueArray.getPropertyString(6));
+                assertEquals("中文", iV8ValueArray.getPropertyString(7));
             }
         }
     }

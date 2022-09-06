@@ -17,6 +17,7 @@
 package com.caoccao.javet.utils;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * The type Javet string utils.
@@ -57,17 +58,11 @@ public final class JavetStringUtils {
     public static String join(CharSequence delimiter, CharSequence... elements) {
         Objects.requireNonNull(delimiter);
         Objects.requireNonNull(elements);
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
+        StringJoiner stringJoiner = new StringJoiner(delimiter);
         for (CharSequence cs : elements) {
-            if (first) {
-                sb.append(cs);
-                first = false;
-            } else {
-                sb.append(delimiter).append(cs);
-            }
+            stringJoiner.add(cs);
         }
-        return sb.toString();
+        return stringJoiner.toString();
     }
 
     /**
@@ -81,16 +76,10 @@ public final class JavetStringUtils {
     public static String join(CharSequence delimiter, Iterable<? extends CharSequence> elements) {
         Objects.requireNonNull(delimiter);
         Objects.requireNonNull(elements);
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
+        StringJoiner stringJoiner = new StringJoiner(delimiter);
         for (CharSequence cs : elements) {
-            if (first) {
-                sb.append(cs);
-                first = false;
-            } else {
-                sb.append(delimiter).append(cs);
-            }
+            stringJoiner.add(cs);
         }
-        return sb.toString();
+        return stringJoiner.toString();
     }
 }

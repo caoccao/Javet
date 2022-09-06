@@ -38,6 +38,7 @@
 #include <src/objects/shared-function-info-inl.h>
 #include <src/strings/string-builder-inl.h>
 #include <src/handles/handles-inl.h>
+#include <src/flags/flags.h>
 #include <src/inspector/v8-debugger.h>
 #include <src/inspector/v8-inspector-impl.h>
 
@@ -53,6 +54,7 @@
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
 using V8internalBlockingBehavior = v8::internal::BlockingBehavior;
 using V8InternalBuiltin = v8::internal::Builtin;
+using V8InternalFlagList = v8::internal::FlagList;
 using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilder;
 using V8InternalIsolate = v8::internal::Isolate;
 using V8InternalJSFunction = v8::internal::JSFunction;

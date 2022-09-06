@@ -376,15 +376,14 @@ public final class V8FunctionCallback {
                             }
                         }
                     } else {
-                        if (method.getParameterCount() != length) {
-                            throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
-                                    SimpleMap.of(
-                                            JavetError.PARAMETER_METHOD_NAME, method.getName(),
-                                            JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, length,
-                                            JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, method.getParameterCount()));
-                        }
                         for (int i = 0; i < parameterTypes.length; ++i) {
-                            objectValues.add(convert(converter, parameterTypes[i], (V8Value) values.get(i)));
+                            /*
+                             * Virtual varargs support.
+                             * Redundant parameters will be dropped.
+                             * Absent parameters will be filled by the default values.
+                             */
+                            V8Value v8Value = i < length ? (V8Value) values.get(i) : null;
+                            objectValues.add(convert(converter, parameterTypes[i], v8Value));
                         }
                     }
                     resultObject = method.invoke(callbackReceiver, objectValues.toArray());

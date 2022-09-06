@@ -102,6 +102,11 @@ if(DEFINED V8_DIR)
         ${V8_DIR}
         ${V8_DIR}/include
         ${V8_RELEASE_DIR}/gen)
+    if(DEFINED ENABLE_I18N)
+        add_definitions(-DENABLE_I18N -DV8_INTL_SUPPORT)
+        list(APPEND includeDirs
+            ${V8_DIR}/third_party/icu/source/common)
+    endif()
     list(APPEND importLibraries v8_monolith)
     set(JAVET_LIB_TYPE "v8")
 endif()

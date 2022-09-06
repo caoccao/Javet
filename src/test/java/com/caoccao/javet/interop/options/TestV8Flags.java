@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop;
+package com.caoccao.javet.interop.options;
 
+import com.caoccao.javet.interop.options.V8Flags;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1542,15 +1542,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
     return v8MaybeBool.FromMaybe(false);
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setFlags
-(JNIEnv* jniEnv, jobject caller, jstring flags) {
-    if (flags) {
-        char const* utfChars = jniEnv->GetStringUTFChars(flags, nullptr);
-        v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(flags));
-        jniEnv->ReleaseStringUTFChars(flags, utfChars);
-    }
-}
-
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setPrivateProperty
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mKey, jobject mValue) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

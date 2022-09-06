@@ -297,17 +297,6 @@ class V8Native implements IV8Native {
     public native boolean setAccessor(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object propertyName, Object getter, Object setter);
 
-    /**
-     * Sets flags.
-     * <p>
-     * Famous flags:
-     * --use_strict     type: bool  default: false
-     *
-     * @param flags the flags
-     */
-    @Override
-    public native void setFlags(String flags);
-
     @Override
     public native boolean setPrivateProperty(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);

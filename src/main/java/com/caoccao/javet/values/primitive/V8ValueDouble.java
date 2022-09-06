@@ -19,32 +19,27 @@ package com.caoccao.javet.values.primitive;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
+import java.math.BigDecimal;
+
 @SuppressWarnings("unchecked")
 public class V8ValueDouble extends V8ValuePrimitive<Double> {
+    protected String cachedToString;
+
     public V8ValueDouble(V8Runtime v8Runtime) throws JavetException {
         this(v8Runtime, 0D);
     }
 
     public V8ValueDouble(V8Runtime v8Runtime, double value) throws JavetException {
         super(v8Runtime, value);
+        cachedToString = null;
     }
 
     public boolean isFinite() {
-        /* if defined ANDROID
-        return Math.abs(value) <= Double.MAX_VALUE;
-        /* end if */
-        /* if not defined ANDROID */
         return Double.isFinite(value);
-        /* end if */
     }
 
     public boolean isInfinite() {
-        /* if defined ANDROID
-        return value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY;
-        /* end if */
-        /* if not defined ANDROID */
         return Double.isInfinite(value);
-        /* end if */
     }
 
     public boolean isNaN() {
@@ -58,5 +53,13 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
 
     public double toPrimitive() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        if (cachedToString == null) {
+            cachedToString = new BigDecimal(value.toString()).toPlainString();
+        }
+        return cachedToString;
     }
 }

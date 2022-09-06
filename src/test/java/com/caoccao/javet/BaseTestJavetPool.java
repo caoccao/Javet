@@ -17,6 +17,7 @@
 package com.caoccao.javet;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
 import org.junit.jupiter.api.AfterEach;
@@ -25,18 +26,18 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class BaseTestJavetPool extends BaseTestJavet {
-    protected IJavetEnginePool javetEnginePool;
+    protected IJavetEnginePool<?> javetEnginePool;
 
     @AfterEach
     public void afterEach() throws JavetException {
         javetEnginePool.close();
         v8Host.clearInternalStatistic();
-        assertEquals(0, v8Host.getNodeInstance().getV8RuntimeCount());
+        assertEquals(0, V8Host.getInstance(javetEnginePool.getConfig().getJSRuntimeType()).getV8RuntimeCount());
     }
 
     @BeforeEach
     public void beforeEach() {
-        javetEnginePool = new JavetEnginePool();
+        javetEnginePool = new JavetEnginePool<>();
         javetEnginePool.getConfig().setEngineGuardCheckIntervalMillis(1);
         javetEnginePool.getConfig().setJSRuntimeType(v8Host.getJSRuntimeType());
     }

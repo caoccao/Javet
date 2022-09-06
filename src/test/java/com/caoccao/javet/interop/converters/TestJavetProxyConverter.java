@@ -20,12 +20,16 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.enums.V8ConversionMode;
+import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,6 +78,18 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertNotNull(value1);
                 assertEquals(1, value1);
                 assertEquals(1, value2);
+            }
+
+            public void expectListOfStrings(List<String> list) {
+                assertNotNull(list);
+                assertEquals(2, list.size());
+                assertEquals("a", list.get(0));
+                assertNull(list.get(1));
+                try {
+                    ((AutoCloseable) list).close();
+                } catch (Exception e) {
+                    fail(e.getMessage());
+                }
             }
 
             public void expectLong(Long value1, long value2) {
@@ -333,6 +349,18 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testFunctionApply() throws JavetException {
+        MockProxyFunction mockProxyFunction = new MockProxyFunction();
+        v8Runtime.getGlobalObject().set("a", mockProxyFunction);
+        assertEquals(100, v8Runtime.getExecutor("a()").executeInteger());
+        assertEquals(3, v8Runtime.getExecutor("a(1, 2)").executeInteger());
+        assertEquals(4, v8Runtime.getExecutor("a(1, 2, 3, 'a', 0, 0n, 0n)").executeInteger());
+        assertEquals("ab", v8Runtime.getExecutor("a('a', 'b')").executeString());
+        assertEquals("abc", v8Runtime.getExecutor("a.echo('abc')").executeString());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
     public void testGetter() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private String name;
@@ -382,6 +410,17 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
         v8Runtime.getGlobalObject().delete("AutoCloseable");
         v8Runtime.getGlobalObject().delete("IJavetClosable");
+    }
+
+    @Test
+    public void testListOfStrings() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = "a.expectListOfStrings({\n" +
+                "  get: (index) => index == 0? 'a': null,\n" +
+                "  size: () => 2,\n" +
+                "});";
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test
@@ -476,6 +515,46 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         javetProxyConverter.getConfig().setProxySetEnabled(false);
     }
 
+    @Test
+    public void testV8ValuesAsArguments() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            private final Map<String, String> map = new HashMap<>();
+
+            @V8Function(thisObjectRequired = true)
+            public V8Value callVarargsWithThis(V8ValueObject thisObject, V8Value... v8Values) {
+                return thisObject;
+            }
+
+            @V8Function
+            public int callVarargsWithoutThis(V8Value... v8Values) {
+                return v8Values.length;
+            }
+
+            @V8Getter
+            public V8Value getter(V8ValueString v8ValueKey) throws JavetException {
+                String value = map.get(v8ValueKey.getValue());
+                return value == null
+                        ? v8ValueKey.getV8Runtime().createV8ValueUndefined()
+                        : v8ValueKey.getV8Runtime().createV8ValueString(value);
+            }
+
+            @V8Setter
+            public void setter(V8ValueString v8ValueKey, V8ValueString v8ValueValue) throws JavetException {
+                map.put(v8ValueKey.getValue(), v8ValueValue.getValue());
+            }
+        };
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        v8Runtime.getExecutor("a['x'] = 'abc';").executeVoid();
+        v8Runtime.getExecutor("a['y'] = '123';").executeVoid();
+        assertEquals("abc", v8Runtime.getExecutor("a['x']").executeString());
+        assertEquals("123", v8Runtime.getExecutor("a['y']").executeString());
+        assertTrue(v8Runtime.getExecutor("a['z']").execute().isUndefined());
+        assertEquals(0, v8Runtime.getExecutor("a.callVarargsWithoutThis()").executeInteger());
+        assertEquals(3, v8Runtime.getExecutor("a.callVarargsWithoutThis(1,2,3)").executeInteger());
+        assertTrue(v8Runtime.getExecutor("a.callVarargsWithThis(1,2,3) === a").executeBoolean());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
     interface IStringJoiner extends AutoCloseable {
         String join(String a, String b);
     }
@@ -564,6 +643,33 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         @V8Setter
         public boolean xSetter(String key, String value) {
             return map.put(key, value) != null;
+        }
+    }
+
+    @V8Convert(proxyMode = V8ProxyMode.Function)
+    public static class MockProxyFunction {
+        @V8ProxyFunctionApply
+        public int apply() {
+            return 100;
+        }
+
+        @V8ProxyFunctionApply
+        public int apply(int a, int b) {
+            return a + b;
+        }
+
+        @V8ProxyFunctionApply
+        public String apply(String a, String b) {
+            return a + b;
+        }
+
+        @V8ProxyFunctionApply
+        public int apply(int a, int b, int c, V8Value... v8Values) {
+            return v8Values.length;
+        }
+
+        public String echo(String text) {
+            return text;
         }
     }
 

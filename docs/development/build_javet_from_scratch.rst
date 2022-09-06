@@ -22,11 +22,15 @@ Also, please make sure ``args.gn`` file looks like the following.
     v8_monolithic = true
     v8_use_external_startup_data = false
     is_component_build = false
-    v8_enable_i18n_support= false
+    v8_enable_i18n_support = false
     v8_enable_pointer_compression = false
     v8_static_library = true
     symbol_level = 0
     use_custom_libcxx = false
+
+.. note::
+
+    * To enable i18n support, please set ``v8_enable_i18n_support = true``.
 
 Build V8 for Linux
 ------------------

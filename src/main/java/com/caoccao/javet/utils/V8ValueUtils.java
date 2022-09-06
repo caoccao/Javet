@@ -18,6 +18,8 @@ package com.caoccao.javet.utils;
 
 import com.caoccao.javet.values.V8Value;
 
+import java.util.StringJoiner;
+
 /**
  * The type V8 value utils.
  *
@@ -49,17 +51,11 @@ public final class V8ValueUtils {
         if (delimiter == null) {
             delimiter = EMPTY;
         }
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
+        StringJoiner stringJoiner = new StringJoiner(delimiter);
         for (V8Value v8Value : v8Values) {
-            if (first) {
-                sb.append(v8Value.toString());
-                first = false;
-            } else {
-                sb.append(delimiter).append(v8Value.toString());
-            }
+            stringJoiner.add(v8Value.toString());
         }
-        return sb.toString();
+        return stringJoiner.toString();
     }
 
     /**

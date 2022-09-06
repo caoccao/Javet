@@ -21,6 +21,7 @@
 #include "javet_converter.h"
 #include "javet_exceptions.h"
 #include "javet_inspector.h"
+#include "javet_v8_internal.h"
 #include "javet_v8_runtime.h"
 
 namespace Javet {
@@ -33,10 +34,28 @@ namespace Javet {
 #ifdef ENABLE_NODE
         jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions"));
         jmethodNodeRuntimeOptionsGetConsoleArguments = jniEnv->GetMethodID(jclassRuntimeOptions, "getConsoleArguments", "()[Ljava/lang/String;");
+        bool isFrozen = false;
 #else
         jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions"));
         jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
+        bool isFrozen = V8InternalFlagList::IsFrozen(); // Since V8 v10.5
 #endif
+        // Set V8 flags
+        if (!isFrozen) {
+            jclass jclassV8Flags = jniEnv->FindClass("com/caoccao/javet/interop/options/V8Flags");
+            jmethodID jmethodIDV8FlagsToString = jniEnv->GetMethodID(jclassV8Flags, "toString", "()Ljava/lang/String;");
+            jmethodID jmethodIDV8FlagsSeal = jniEnv->GetMethodID(jclassV8Flags, "seal", "()Lcom/caoccao/javet/interop/options/V8Flags;");
+            jfieldID jfieldIDRuntimeOptionsV8Flags = jniEnv->GetStaticFieldID(jclassRuntimeOptions, "V8_FLAGS", "Lcom/caoccao/javet/interop/options/V8Flags;");
+            jobject mV8Flags = jniEnv->GetStaticObjectField(jclassRuntimeOptions, jfieldIDRuntimeOptionsV8Flags);
+            jstring mV8FlagsString = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsToString);
+            jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsSeal));
+            char const* utfChars = jniEnv->GetStringUTFChars(mV8FlagsString, nullptr);
+            v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(mV8FlagsString));
+            jniEnv->ReleaseStringUTFChars(mV8FlagsString, utfChars);
+            jniEnv->DeleteLocalRef(mV8FlagsString);
+            jniEnv->DeleteLocalRef(mV8Flags);
+            jniEnv->DeleteLocalRef(jclassV8Flags);
+        }
     }
 
     void GlobalAccessorGetterCallback(
@@ -262,7 +281,7 @@ namespace Javet {
         v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
     }
 
-    jobject V8Runtime::SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value) {
+    jobject V8Runtime::SafeToExternalV8Value(JNIEnv * jniEnv, const V8LocalContext & v8Context, const V8LocalValue & v8Value) {
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8Value);
         if (v8TryCatch.HasCaught()) {

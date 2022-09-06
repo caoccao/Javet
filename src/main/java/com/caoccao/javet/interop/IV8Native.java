@@ -203,16 +203,6 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object propertyName, Object getter, Object setter);
 
-    /**
-     * Sets flags.
-     * <p>
-     * Famous flags:
-     * --use_strict     type: bool  default: false
-     *
-     * @param flags the flags
-     */
-    void setFlags(String flags);
-
     boolean setPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);
 
     boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);

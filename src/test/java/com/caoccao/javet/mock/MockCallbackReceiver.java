@@ -168,8 +168,12 @@ public class MockCallbackReceiver extends JavetCallbackReceiver {
         lines.add(i.toString());
         lines.add(l.toString());
         lines.add(s);
-        lines.add(z.withZoneSameInstant(ZoneId.of("UTC")).toString());
-        lines.add(v.getValue());
+        if (z != null) {
+            lines.add(z.withZoneSameInstant(ZoneId.of("UTC")).toString());
+        }
+        if (v != null) {
+            lines.add(v.getValue());
+        }
         return String.join(",", lines);
     }
 
