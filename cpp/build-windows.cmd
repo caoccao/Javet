@@ -1,12 +1,12 @@
 @echo off
 REM Usage for V8: build -DV8_DIR=C:\v8 
 REM Usage for Node: build -DNODE_DIR=C:\node 
-SET JAVET_VERSION=1.1.7
+SET JAVET_VERSION=2.0.0
 rd /s/q build
 mkdir build
 cd build
 mkdir ..\..\build\libs
-cmake ..\ -G "Visual Studio 16 2019" -A x64 -DJAVET_VERSION=%JAVET_VERSION% %* ^
+cmake ..\ -G "Visual Studio 17 2022" -A x64 -DJAVET_VERSION=%JAVET_VERSION% %* ^
   && cmake --build . -- /p:CharacterSet=Unicode /p:Configuration=Release /p:Platform=x64
 IF %ERRORLEVEL% EQU 0 (
 copy /y Release\*.lib ..\..\build\libs

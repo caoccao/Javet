@@ -27,10 +27,10 @@ Maven (Optional)
 
 Maven v3.6.3+ is used for packaging bundle to maven central.
 
-Visual Studio Community 2019 (Optional)
+Visual Studio Community 2022 (Optional)
 =======================================
 
-Visual Studio Community 2019 is used for JNI development.
+Visual Studio Community 2022 is used for JNI development.
 
 Python 3.8+ (Optional)
 ======================
