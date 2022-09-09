@@ -23,14 +23,14 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Install Pip
-      run: choco install pip
+    - name: Install Pip3
+      run: choco install pip3
 
     - name: Install Sphinx
       run: choco install sphinx
 
     - name: Install Python dependencies
-      run: pip install -r .\docs\requirements.txt
+      run: pip3 install -r .\docs\requirements.txt
 
     - name: Build docs
       run: cd docs && make html && cd ..
