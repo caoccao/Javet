@@ -25,31 +25,13 @@
  * Those missing symbols are declared in this file.
  */
 
-#define NODE_WANT_INTERNALS 1
-
-#include "node_main_instance.h"
-#include "node_native_module_env.h"
+#include "node_snapshot_builder.h"
 
 namespace node {
 
-    v8::StartupData* NodeMainInstance::GetEmbeddedSnapshotBlob() {
+    const SnapshotData* SnapshotBuilder::GetEmbeddedSnapshotData() {
         return nullptr;
     }
 
-    const std::vector<size_t>* NodeMainInstance::GetIsolateDataIndices() {
-        return nullptr;
-    }
-
-    const EnvSerializeInfo* NodeMainInstance::GetEnvSerializeInfo() {
-        return nullptr;
-    }
-
-    namespace native_module {
-
-        const bool has_code_cache = false;
-
-        void NativeModuleEnv::InitializeCodeCache() {}
-
-    }
 }
 #endif

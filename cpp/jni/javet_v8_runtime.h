@@ -25,6 +25,20 @@
 #include "javet_v8.h"
 
 namespace Javet {
+#ifdef ENABLE_NODE
+    namespace NodeNative {
+        static std::vector<std::string> GlobalNodeArgs;
+        static std::vector<std::string> GlobalNodeEnvArgs;
+    }
+#endif
+    namespace V8Native {
+#ifdef ENABLE_NODE
+        static std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
+#else
+        static std::unique_ptr<V8Platform> GlobalV8Platform;
+#endif
+    }
+
     class V8Runtime;
     class V8Scope;
 
@@ -56,7 +70,7 @@ namespace Javet {
         std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
 #ifdef ENABLE_NODE
-        V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer, std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator);
+        V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer);
 #else
         V8Runtime(V8Platform* v8PlatformPointer);
 #endif
@@ -158,10 +172,7 @@ namespace Javet {
         V8PersistentContext v8PersistentContext;
 #ifdef ENABLE_NODE
         // The following Node objects must be live as long as V8 context lives.
-        std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator;
-        std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> nodeEnvironment;
-        std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
-        uv_loop_t uvLoop;
+        std::unique_ptr<node::CommonEnvironmentSetup> nodeSetup;
 #endif
     };
 }

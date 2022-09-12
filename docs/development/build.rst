@@ -44,8 +44,9 @@ Windows Environment
 -------------------
 
 * Latest Windows 10
+* Visual Studio 2019 Community
 * Visual Studio 2022 Community
-* CMake 3.23+ (comes with Visual Studio)
+* CMake 3.23+ (comes with Visual Studio 2022)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
 * Gradle 7.2+

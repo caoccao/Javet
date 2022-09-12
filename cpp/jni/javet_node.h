@@ -21,7 +21,7 @@
 
 #pragma warning(disable: 4275)
 #pragma warning(disable: 4251)
-// #define NODE_WANT_INTERNALS 1
+#define NODE_WANT_INTERNALS 1
 // #include <node_binding.h>
 #include <node.h>
 #include <uv.h>

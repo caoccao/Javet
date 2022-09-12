@@ -150,7 +150,11 @@ Build Node.js on Windows
 .. code-block:: shell
 
     cd %NODE_HOME%
-    vcbuild.bat static without-intl
+    vcbuild.bat static without-intl vs2019
+
+.. caution::
+
+    Node.js v18 is not compatible with Visual Studio 2022 for now.
 
 Build Javet
 ===========
