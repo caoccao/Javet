@@ -13,14 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:1.1.7 -f docker/linux-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:2.0.0 -f docker/linux-x86_64/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
 
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
-RUN echo Cache V8
 RUN apt-get update
 RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack cmake
 RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
@@ -63,11 +62,11 @@ RUN ninja -C out.gn/x64.release v8_monolith
 RUN rm patch_v8_build.py
 RUN echo V8 build is completed.
 
-# Prepare Node.js v16
+# Prepare Node.js v18
 WORKDIR /
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v16.16.0
+RUN git checkout v18.9.0
 RUN echo Node.js preparation is completed.
 
 # Build Node.js

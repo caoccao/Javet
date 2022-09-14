@@ -68,6 +68,12 @@ namespace Javet {
 #endif
 
     namespace V8Native {
+#ifdef ENABLE_NODE
+        static std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
+#else
+        static std::unique_ptr<V8Platform> GlobalV8Platform;
+#endif
+
         static jclass jclassByteBuffer;
 
         static jclass jclassV8Host;
@@ -122,12 +128,10 @@ namespace Javet {
             else {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
-                Javet::NodeNative::GlobalNodeArgs.push_back(DEFAULT_SCRIPT_NAME);
+                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
+                std::vector<std::string> execArgs;
                 std::vector<std::string> errors;
-                int exitCode = node::InitializeNodeWithArgs(
-                    &Javet::NodeNative::GlobalNodeArgs,
-                    &Javet::NodeNative::GlobalNodeEnvArgs,
-                    &errors);
+                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
                 if (exitCode != 0) {
                     LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
                 }

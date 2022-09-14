@@ -195,6 +195,12 @@ public class NodeRuntime extends V8Runtime {
         }
     }
 
+    @Override
+    public void resetContext() throws JavetException {
+        // Reset context is no longer safe from Node.js v18.
+        resetIsolate();
+    }
+
     /**
      * Sets purge event loop before close.
      *

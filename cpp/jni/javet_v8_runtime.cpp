@@ -26,10 +26,8 @@
 
 namespace Javet {
 #ifdef ENABLE_NODE
-    namespace NodeNative {
-        static std::mutex MutexForNodeResetNodeSetup;
-        static auto OneMillisecond = std::chrono::milliseconds(1);
-    }
+    static std::mutex mutexForNodeResetEnvrironment;
+    static auto oneMillisecond = std::chrono::milliseconds(1);
 #endif
 
     void Initialize(JNIEnv* jniEnv) {
@@ -67,9 +65,10 @@ namespace Javet {
     }
 
 #ifdef ENABLE_NODE
-    V8Runtime::V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer)
-        : nodeSetup(nullptr), v8Locker(nullptr) {
+    V8Runtime::V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer, std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator)
+        : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), v8Locker(nullptr), uvLoop() {
         purgeEventLoopBeforeClose = false;
+        this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
 #else
     V8Runtime::V8Runtime(V8Platform * v8PlatformPointer)
         : v8Locker(nullptr) {
@@ -98,7 +97,7 @@ namespace Javet {
             hasMoreTasks = uv_loop_alive(&uvLoop);
             if (hasMoreTasks) {
                 // Sleep a while to give CPU cycles to other threads.
-                std::this_thread::sleep_for(Javet::NodeNative::OneMillisecond);
+                std::this_thread::sleep_for(oneMillisecond);
             }
             else {
                 auto v8Locker = GetUniqueV8Locker();
@@ -136,7 +135,9 @@ namespace Javet {
                 hasMoreTasks = uv_loop_alive(&uvLoop);
                 if (!hasMoreTasks) {
                     // node::EmitProcessBeforeExit is thread-safe.
-                    node::EmitProcessBeforeExit(nodeEnvironment.get());
+                    if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) {
+                        break;
+                    }
                     hasMoreTasks = uv_loop_alive(&uvLoop);
                 }
             } while (hasMoreTasks == true);
@@ -156,7 +157,7 @@ namespace Javet {
         }
         {
             // node::FreeEnvironment is not thread-safe.
-            std::lock_guard<std::mutex> lock(Javet::NodeNative::MutexForNodeResetNodeSetup);
+            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
             nodeEnvironment.reset();
         }
 #endif
@@ -206,18 +207,38 @@ namespace Javet {
         V8HandleScope v8HandleScope(v8Isolate);
 #ifdef ENABLE_NODE
         // node::NewContext is thread-safe.
-        V8LocalContext v8LocalContext = nodeSetup->context();
+        V8LocalContext v8LocalContext = node::NewContext(v8Isolate);
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
+        std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
+        std::vector<std::string> execArgs;
+        if (mRuntimeOptions != nullptr) {
+            jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
+            if (mConsoleArguments != nullptr) {
+                int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
+                LOG_DEBUG("Node.js console argument count is " << consoleArgumentCount);
+                for (int i = 0; i < consoleArgumentCount; ++i) {
+                    jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
+                    auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                    auto umConsoleArgument = *consoleArgumentPointer.get();
+                    LOG_DEBUG("    " << i << ": " << umConsoleArgument);
+                    if (umConsoleArgument == "-v" || umConsoleArgument == "--version") {
+                        LOG_DIRECT(NODE_VERSION);
+                    }
+                    args.push_back(umConsoleArgument);
+                }
+            }
+        }
+        {
+            // node::CreateEnvironment is not thread-safe.
+            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
+        }
         // node::LoadEnvironment is thread-safe.
         auto v8MaybeLocalValue = node::LoadEnvironment(
-            nodeSetup->env(),
+            nodeEnvironment.get(),
             "const publicRequire = require('module').createRequire(process.cwd() + '/');"
             "globalThis.require = publicRequire;"
-            "globalThis.embedVars = { nön_ascıı: '🏳️‍🌈' };"
         );
-        if (v8MaybeLocalValue.IsEmpty()) {
-            LOG_ERROR("Failed to load Node.js environment.");
-        }
 #else
         auto v8ObjectTemplate = v8::ObjectTemplate::New(v8Isolate);
         if (mRuntimeOptions != nullptr) {
@@ -237,30 +258,26 @@ namespace Javet {
 
     void V8Runtime::CreateV8Isolate() {
 #ifdef ENABLE_NODE
-        std::vector<std::string> errors;
-        {
-            // node::CreateEnvironment is not thread-safe.
-            std::lock_guard<std::mutex> lock(Javet::NodeNative::MutexForNodeResetNodeSetup);
-            nodeSetup.reset(node::CommonEnvironmentSetup::Create(
-                Javet::V8Native::GlobalV8Platform.get(),
-                &errors,
-                Javet::NodeNative::GlobalNodeArgs,
-                Javet::NodeNative::GlobalNodeEnvArgs).release());
+        int errorCode = uv_loop_init(&uvLoop);
+        if (errorCode != 0) {
+            LOG_ERROR("Failed to init uv loop. Reason: " << uv_err_name(errorCode));
         }
-        if (!nodeSetup) {
-            LOG_ERROR("Failed to init Node.js.");
-            for (const std::string& error : errors) {
-                LOG_ERROR("  * " << error);
-            }
-    }
-        v8Isolate = nodeSetup.get()->isolate();
+        // node::NewIsolate is thread-safe.
+        v8Isolate = node::NewIsolate(nodeArrayBufferAllocator, &uvLoop, v8PlatformPointer);
+        {
+            auto internalV8Locker = GetUniqueV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Isolate);
+            // node::CreateIsolateData is thread-safe.
+            nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, nodeArrayBufferAllocator.get()));
+        }
 #else
         v8::Isolate::CreateParams createParams;
         createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
         v8Isolate = v8::Isolate::New(createParams);
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
-}
+    }
 
     inline void V8Runtime::Register(const V8LocalContext & v8Context) {
         v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));

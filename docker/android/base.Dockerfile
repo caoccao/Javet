@@ -13,14 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-android:1.1.7 -f docker/android/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-android:2.0.0 -f docker/android/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
 
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
-RUN echo Cache V8
 RUN apt-get update
 RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack cmake
 RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
