@@ -271,6 +271,7 @@ namespace Javet {
             // node::CreateIsolateData is thread-safe.
             nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, nodeArrayBufferAllocator.get()));
         }
+        v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
 #else
         v8::Isolate::CreateParams createParams;
         createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
