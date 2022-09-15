@@ -19,7 +19,6 @@
 
 #ifdef ENABLE_NODE
 
-#pragma warning(disable: 4005)
 #pragma warning(disable: 4251)
 #pragma warning(disable: 4267)
 #pragma warning(disable: 4275)
@@ -27,8 +26,29 @@
 #include <node.h>
 #include <uv.h>
 #include <env-inl.h>
+// Hack Begins (The hack is for resolving the conflicts between Node.js and V8)
 #define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
 #define V8_TRACING_TRACE_EVENT_H_
+#undef CHECK
+#undef CHECK_EQ
+#undef CHECK_GE
+#undef CHECK_GT
+#undef CHECK_IMPLIES
+#undef CHECK_LE
+#undef CHECK_LT
+#undef CHECK_NE
+#undef DCHECK
+#undef DCHECK_EQ
+#undef DCHECK_GE
+#undef DCHECK_GT
+#undef DCHECK_IMPLIES
+#undef DCHECK_LE
+#undef DCHECK_LT
+#undef DCHECK_NE
+#undef DCHECK_NOT_NULL
+#undef DCHECK_NULL
+#undef UNREACHABLE
+// Hack Ends
 #pragma warning(default: 4251)
 #pragma warning(default: 4267)
 #pragma warning(default: 4275)

@@ -109,7 +109,7 @@ namespace Javet {
                 node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
             }
-        } while (hasMoreTasks && !nodeEnvironment->is_stopping());
+        } while (hasMoreTasks);
 #else
         // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
         v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
