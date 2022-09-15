@@ -123,10 +123,10 @@ namespace Javet {
         auto v8LocalContext = GetV8LocalContext();
         Unregister(v8LocalContext);
         v8GlobalObject.Reset();
+        v8::SealHandleScope v8SealHandleScope(v8Isolate);
 #ifdef ENABLE_NODE
         if (!purgeEventLoopBeforeClose) {
             auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-            v8::SealHandleScope v8SealHandleScope(v8Isolate);
             if (!nodeEnvironment->is_stopping()) {
                 nodeEnvironment->set_trace_sync_io(nodeEnvironment->options()->trace_sync_io);
                 bool hasMoreTasks;
@@ -140,11 +140,10 @@ namespace Javet {
                     hasMoreTasks = uv_loop_alive(&uvLoop);
                     if (!hasMoreTasks && !nodeEnvironment->is_stopping()) {
                         // node::EmitProcessBeforeExit is thread-safe.
-                        if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) {
-                            break;
-                        }
-                        if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) {
-                            break;
+                        if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) { break; }
+                        {
+                            V8HandleScope innerHandleScope(v8Isolate);
+                            if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) { break; }
                         }
                         hasMoreTasks = uv_loop_alive(&uvLoop);
                     }
