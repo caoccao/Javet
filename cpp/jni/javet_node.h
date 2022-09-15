@@ -19,14 +19,19 @@
 
 #ifdef ENABLE_NODE
 
-#pragma warning(disable: 4275)
+#pragma warning(disable: 4005)
 #pragma warning(disable: 4251)
+#pragma warning(disable: 4267)
+#pragma warning(disable: 4275)
 #define NODE_WANT_INTERNALS 1
-// #include <node_binding.h>
 #include <node.h>
 #include <uv.h>
-#pragma warning(default: 4275)
+#include <env-inl.h>
+#define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
+#define V8_TRACING_TRACE_EVENT_H_
 #pragma warning(default: 4251)
+#pragma warning(default: 4267)
+#pragma warning(default: 4275)
 
 #ifdef _WIN32
 #pragma comment(lib, "Crypt32.lib")

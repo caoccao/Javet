@@ -17,12 +17,9 @@
 
 #pragma once
 
-#include <jni.h>
 #include <mutex>
 #include "javet_logging.h"
 #include "javet_native.h"
-#include "javet_node.h"
-#include "javet_v8.h"
 
 namespace Javet {
     class V8Runtime;

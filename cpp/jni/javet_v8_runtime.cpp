@@ -109,7 +109,7 @@ namespace Javet {
                 node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
             }
-        } while (hasMoreTasks == true);
+        } while (hasMoreTasks && !nodeEnvironment->is_stopping());
 #else
         // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
         v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
@@ -127,24 +127,40 @@ namespace Javet {
         if (!purgeEventLoopBeforeClose) {
             auto v8ContextScope = GetV8ContextScope(v8LocalContext);
             v8::SealHandleScope v8SealHandleScope(v8Isolate);
-            bool hasMoreTasks;
-            do {
-                uv_run(&uvLoop, UV_RUN_DEFAULT);
-                // DrainTasks is thread-safe.
-                v8PlatformPointer->DrainTasks(v8Isolate);
-                hasMoreTasks = uv_loop_alive(&uvLoop);
-                if (!hasMoreTasks) {
-                    // node::EmitProcessBeforeExit is thread-safe.
-                    if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) {
-                        break;
-                    }
+            if (!nodeEnvironment->is_stopping()) {
+                nodeEnvironment->set_trace_sync_io(nodeEnvironment->options()->trace_sync_io);
+                bool hasMoreTasks;
+                nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_START);
+                do {
+                    if (nodeEnvironment->is_stopping()) { break; }
+                    uv_run(&uvLoop, UV_RUN_DEFAULT);
+                    if (nodeEnvironment->is_stopping()) { break; }
+                    // DrainTasks is thread-safe.
+                    v8PlatformPointer->DrainTasks(v8Isolate);
                     hasMoreTasks = uv_loop_alive(&uvLoop);
-                }
-            } while (hasMoreTasks == true);
+                    if (!hasMoreTasks && !nodeEnvironment->is_stopping()) {
+                        // node::EmitProcessBeforeExit is thread-safe.
+                        if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) {
+                            break;
+                        }
+                        if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) {
+                            break;
+                        }
+                        hasMoreTasks = uv_loop_alive(&uvLoop);
+                    }
+                } while (hasMoreTasks && !nodeEnvironment->is_stopping());
+                nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_EXIT);
+            }
         }
         int errorCode = 0;
-        // node::EmitExit is thread-safe.
-        errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(1);
+        if (!nodeEnvironment->is_stopping()) {
+            nodeEnvironment->set_trace_sync_io(false);
+            nodeEnvironment->set_snapshot_serialize_callback(V8LocalFunction());
+            nodeEnvironment->PrintInfoForSnapshotIfDebug();
+            nodeEnvironment->VerifyNoStrongBaseObjects();
+            // node::EmitExit is thread-safe.
+            errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(1);
+        }
         if (errorCode != 0) {
             LOG_ERROR("node::EmitExit() returns " << errorCode << ".");
         }
