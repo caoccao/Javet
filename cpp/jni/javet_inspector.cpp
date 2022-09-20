@@ -25,11 +25,16 @@
 
 namespace Javet {
     namespace Inspector {
-        static inline std::unique_ptr<v8_inspector::StringView> ConvertFromStdStringToStringViewPointer(const std::string& stdString) {
-            return std::make_unique<v8_inspector::StringView>(reinterpret_cast<const uint8_t*>(stdString.c_str()), stdString.length());
+        static inline std::unique_ptr<v8_inspector::StringView> ConvertFromStdStringToStringViewPointer(
+            const std::string& stdString) {
+            return std::make_unique<v8_inspector::StringView>(
+                reinterpret_cast<const uint8_t*>(stdString.c_str()),
+                stdString.length());
         }
 
-        static inline std::unique_ptr<std::string> ConvertFromStringBufferToStdStringPointer(v8::Isolate* v8Isolate, v8_inspector::StringBuffer* stringBuffer) {
+        static inline std::unique_ptr<std::string> ConvertFromStringBufferToStdStringPointer(
+            v8::Isolate* v8Isolate,
+            v8_inspector::StringBuffer* stringBuffer) {
             auto stringViewMessage = stringBuffer->string();
             int length = static_cast<int>(stringViewMessage.length());
             V8LocalString v8StringMessage;
@@ -48,7 +53,6 @@ namespace Javet {
         }
 
         void Initialize(JNIEnv* jniEnv) {
-
             jclassV8Inspector = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Inspector"));
             jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");
             jmethodIDV8InspectorGetName = jniEnv->GetMethodID(jclassV8Inspector, "getName", "()Ljava/lang/String;");
@@ -84,15 +88,16 @@ namespace Javet {
             }
         }
 
-        JavetInspectorClient::JavetInspectorClient(Javet::V8Runtime* v8Runtime, const std::string& name, const jobject& mV8Inspector) {
+        JavetInspectorClient::JavetInspectorClient(Javet::V8Runtime* v8Runtime, const std::string& name, const jobject& mV8Inspector)
+            : javetInspectorChannel(nullptr), v8Inspector(nullptr), v8InspectorSession(nullptr) {
             activateMessageLoop = false;
             runningMessageLoop = false;
             this->mV8Inspector = mV8Inspector;
             this->v8Runtime = v8Runtime;
             auto v8Context = v8Runtime->GetV8LocalContext();
             javetInspectorChannel.reset(new JavetInspectorChannel(v8Runtime, mV8Inspector));
-            v8Inspector = v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this);
-            v8InspectorSession = v8Inspector->connect(CONTEXT_GROUP_ID, javetInspectorChannel.get(), v8_inspector::StringView());
+            v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
+            v8InspectorSession.reset(v8Inspector->connect(CONTEXT_GROUP_ID, javetInspectorChannel.get(), v8_inspector::StringView()).release());
             v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
             auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
             v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
