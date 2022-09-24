@@ -149,12 +149,11 @@ public interface IV8ValuePromise extends IV8ValueObject {
      * Gets result object.
      *
      * @param <T> the type parameter
-     * @param key the key
      * @return the result object
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    default <T> T getResultObject(Object key) throws JavetException {
+    default <T> T getResultObject() throws JavetException {
         try {
             return getV8Runtime().toObject(getResult(), true);
         } catch (JavetException e) {
