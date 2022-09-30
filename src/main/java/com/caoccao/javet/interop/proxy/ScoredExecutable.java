@@ -280,6 +280,9 @@ final class ScoredExecutable<E extends AccessibleObject> {
                             && parameterType.isAssignableFrom(v8Value.getClass())) {
                         parameter = v8Value;
                         conversionRequired = false;
+                    } else if (object != null && parameterType.isAssignableFrom(object.getClass())) {
+                        parameter = object;
+                        conversionRequired = false;
                     } else if (parameterType.isInterface()) {
                         if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
                             DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
@@ -331,6 +334,9 @@ final class ScoredExecutable<E extends AccessibleObject> {
                         if (V8_VALUE_CLASS.isAssignableFrom(componentType)
                                 && componentType.isAssignableFrom(v8Value.getClass())) {
                             parameter = v8Value;
+                            conversionRequired = false;
+                        } else if (object != null && componentType.isAssignableFrom(object.getClass())) {
+                            parameter = object;
                             conversionRequired = false;
                         } else if (componentType.isInterface()) {
                             if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
