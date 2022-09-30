@@ -220,6 +220,9 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertArrayEquals(
                     new String[]{"a", "b", "c"},
                     utils.split(",", "a,b,c").toArray(new String[0]));
+            assertEquals(
+                    "StringUtils",
+                    v8Runtime.getExecutor("'' + stringUtils").executeString());
             v8Runtime.getGlobalObject().delete("stringUtils");
         }
     }
@@ -722,6 +725,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
 
         public void setUtils(IStringUtils utils) {
             this.utils = utils;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName();
         }
     }
 
