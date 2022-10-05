@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  *
  * @since 0.9.10
  */
-public class DynamicProxyV8ValueFunctionInvocationHandler implements InvocationHandler, IJavetClosable {
+public final class DynamicProxyV8ValueFunctionInvocationHandler implements InvocationHandler, IJavetClosable {
     private static final String METHOD_NAME_CLOSE = "close";
     private V8ValueFunction v8ValueFunction;
 
@@ -55,7 +55,8 @@ public class DynamicProxyV8ValueFunctionInvocationHandler implements InvocationH
         if (args == null) {
             args = new Object[0];
         }
-        if (method.getName().equals(METHOD_NAME_CLOSE) && args.length == 0) {
+        String methodName = method.getName();
+        if (methodName.equals(METHOD_NAME_CLOSE) && args.length == 0) {
             close();
         } else if (v8ValueFunction != null && !v8ValueFunction.isClosed()) {
             result = v8ValueFunction.callObject(null, args);
