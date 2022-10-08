@@ -55,7 +55,7 @@ RUN echo V8 preparation is completed.
 
 # Build V8
 WORKDIR /google/v8
-RUN python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
 COPY ./scripts/python/patch_v8_build.py .
 RUN ninja -C out.gn/x64.release v8_monolith || python3 patch_v8_build.py -p ./
 RUN ninja -C out.gn/x64.release v8_monolith

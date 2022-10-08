@@ -93,7 +93,7 @@ RUN del /q winsdksetup.exe
 # Build V8
 WORKDIR /google/v8
 RUN setx /M PATH "C:\Python27;C:\Python27\Scripts;%PATH%"
-RUN python tools/dev/v8gen.py x64.release -vv -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false
+RUN python tools/dev/v8gen.py x64.release -vv -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
 RUN ninja -C out.gn/x64.release v8_monolith || EXIT 0
 COPY ./scripts/python/patch_v8_build.py .
 RUN ["C:\\Program Files\\Python39\\python.exe", "C:\\google\\v8\\patch_v8_build.py", "-p", "C:\\google\\v8\\"]
