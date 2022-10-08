@@ -100,7 +100,6 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      * Execute.
      *
      * @param <E>                 the type parameter
-     * @param v8Runtime           the V8 runtime
      * @param targetObject        the target object
      * @param thisObject          this object
      * @param executables         the executables
@@ -110,7 +109,6 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      * @since 0.9.10
      */
     protected static <E extends AccessibleObject> Object execute(
-            V8Runtime v8Runtime,
             Object targetObject,
             V8ValueObject thisObject,
             List<E> executables,
@@ -118,7 +116,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
         List<ScoredExecutable<E>> scoredExecutables = new ArrayList<>();
         for (E executable : executables) {
             ScoredExecutable<E> scoredExecutable = new ScoredExecutable<>(
-                    v8Runtime, targetObject, thisObject, executable, javetVirtualObjects);
+                    targetObject, thisObject, executable, javetVirtualObjects);
             scoredExecutable.calculateScore();
             double score = scoredExecutable.getScore();
             if (score > 0) {
