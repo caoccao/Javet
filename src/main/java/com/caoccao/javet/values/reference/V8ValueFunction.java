@@ -117,7 +117,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
         boolean success = false;
         if (getJSFunctionType().isUserDefined()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
-            success = checkV8Runtime().getV8Internal().setSourceCode(this, sourceCodeString);
+            checkV8Runtime();
+            v8Runtime.lowMemoryNotification();
+            success = v8Runtime.getV8Internal().setSourceCode(this, sourceCodeString);
             v8Runtime.lowMemoryNotification();
         }
         return success;

@@ -18,7 +18,6 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.JavetVirtualObject;
 import com.caoccao.javet.values.V8Value;
@@ -70,7 +69,6 @@ final class ScoredExecutable<E extends AccessibleObject> {
     /**
      * Instantiates a new Scored executable.
      *
-     * @param v8Runtime           the V8 runtime
      * @param targetObject        the target object
      * @param thisObject          this object
      * @param executable          the executable
@@ -78,7 +76,6 @@ final class ScoredExecutable<E extends AccessibleObject> {
      * @since 0.9.10
      */
     public ScoredExecutable(
-            V8Runtime v8Runtime,
             Object targetObject,
             V8ValueObject thisObject,
             E executable,
@@ -280,6 +277,9 @@ final class ScoredExecutable<E extends AccessibleObject> {
                             && parameterType.isAssignableFrom(v8Value.getClass())) {
                         parameter = v8Value;
                         conversionRequired = false;
+                    } else if (object != null && parameterType.isAssignableFrom(object.getClass())) {
+                        parameter = object;
+                        conversionRequired = false;
                     } else if (parameterType.isInterface()) {
                         if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
                             DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
@@ -331,6 +331,8 @@ final class ScoredExecutable<E extends AccessibleObject> {
                         if (V8_VALUE_CLASS.isAssignableFrom(componentType)
                                 && componentType.isAssignableFrom(v8Value.getClass())) {
                             parameter = v8Value;
+                            conversionRequired = false;
+                        } else if (object != null && componentType.isAssignableFrom(object.getClass())) {
                             conversionRequired = false;
                         } else if (componentType.isInterface()) {
                             if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {

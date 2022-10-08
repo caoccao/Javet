@@ -71,7 +71,6 @@ public class JavetUniversalProxyClassHandler<T extends Class<?>> extends BaseJav
             try {
                 v8Values = arguments.toArray();
                 return v8Runtime.toV8Value(execute(
-                        v8Runtime,
                         null,
                         (V8ValueObject) target,
                         classDescriptor.getConstructors(),

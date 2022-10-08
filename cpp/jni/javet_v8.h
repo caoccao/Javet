@@ -44,6 +44,7 @@ using V8LocalBoolean = v8::Local<v8::Boolean>;
 using V8LocalContext = v8::Local<v8::Context>;
 using V8LocalData = v8::Local<v8::Data>;
 using V8LocalFixedArray = v8::Local<v8::FixedArray>;
+using V8LocalFunction = v8::Local<v8::Function>;
 using V8LocalInteger = v8::Local<v8::Integer>;
 using V8LocalMap = v8::Local<v8::Map>;
 using V8LocalModule = v8::Local<v8::Module>;

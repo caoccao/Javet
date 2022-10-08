@@ -68,11 +68,7 @@ set(importLibraries)
 set(JAVET_LIB_PREFIX)
 set(JAVET_LIB_TYPE)
 set(JAVET_LIB_SYSTEM)
-if(DEFINED V8_DIR)
-    set(CMAKE_CXX_STANDARD 17)
-else()
-    set(CMAKE_CXX_STANDARD 14)
-endif()
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
 if(DEFINED ENABLE_LOGGING)
@@ -117,6 +113,7 @@ if(DEFINED NODE_DIR)
         ${NODE_DIR}/deps/v8/include
         ${NODE_DIR}/src)
     list(APPEND importLibraries
+        base64 base64_avx base64_avx2 base64_sse41 base64_sse42 base64_ssse3
         brotli cares histogram llhttp nghttp2 nghttp3 ngtcp2 openssl torque_base uvwasi
         v8_base_without_compiler v8_compiler v8_init v8_initializers
         v8_libbase v8_libplatform v8_snapshot v8_zlib zlib)

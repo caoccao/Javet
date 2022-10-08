@@ -120,8 +120,7 @@ final class JavetUniversalInterceptor {
      */
     public Object invoke(V8ValueObject thisObject, V8Value... v8Values) throws JavetException {
         try {
-            return JavetUniversalProxyObjectHandler.execute(
-                    v8Runtime,
+            return BaseJavetProxyHandler.execute(
                     targetObject,
                     thisObject,
                     methods,

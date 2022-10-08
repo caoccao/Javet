@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.interop.proxy;
 
+import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -29,7 +30,7 @@ import java.lang.reflect.Method;
  *
  * @since 0.9.10
  */
-public class DynamicProxyV8ValueObjectInvocationHandler implements InvocationHandler, IJavetClosable {
+public final class DynamicProxyV8ValueObjectInvocationHandler implements InvocationHandler, IJavetClosable {
     private static final String METHOD_NAME_CLOSE = "close";
     private V8ValueObject v8ValueObject;
 
@@ -55,10 +56,17 @@ public class DynamicProxyV8ValueObjectInvocationHandler implements InvocationHan
         if (args == null) {
             args = new Object[0];
         }
-        if (method.getName().equals(METHOD_NAME_CLOSE) && args.length == 0) {
+        String methodName = method.getName();
+        if (methodName.equals(METHOD_NAME_CLOSE) && args.length == 0) {
             close();
         } else if (v8ValueObject != null && !v8ValueObject.isClosed()) {
-            result = v8ValueObject.invokeObject(method.getName(), args);
+            if (method.isAnnotationPresent(V8Function.class)) {
+                String aliasMethodName = method.getAnnotation(V8Function.class).name();
+                if (aliasMethodName != null && aliasMethodName.length() > 0) {
+                    methodName = aliasMethodName;
+                }
+            }
+            result = v8ValueObject.invokeObject(methodName, args);
         }
         return result;
     }

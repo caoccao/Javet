@@ -22,7 +22,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
-import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
@@ -40,6 +39,12 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
      * @since 1.0.4
      */
     protected static final String METHOD_NAME_TO_V8_VALUE = "toV8Value";
+    /**
+     * The constant NULL.
+     *
+     * @since 2.0.0
+     */
+    protected static final String NULL = "null";
     /**
      * The constant OBJECT_CONVERTER.
      *

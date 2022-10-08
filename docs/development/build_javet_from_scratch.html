@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Test Javet" href="test.html" /><link rel="prev" title="Build Javet with Pre-built Binaries" href="build_javet_with_pre_built_binaries.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Build Javet from Scratch - Javet 1.1.7 documentation</title>
+        <title>Build Javet from Scratch - Javet 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 1.1.7 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 2.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 1.1.7 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -221,7 +221,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_1_1.html">Release Notes 1.1.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_2_0.html">Release Notes 2.0.x</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -312,6 +312,7 @@
 <span class="na">v8_static_library</span> <span class="o">=</span> <span class="s">true</span>
 <span class="na">symbol_level</span> <span class="o">=</span> <span class="s">0</span>
 <span class="na">use_custom_libcxx</span> <span class="o">=</span> <span class="s">false</span>
+<span class="na">v8_enable_sandbox</span><span class="o">=</span><span class="s">false</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -359,21 +360,21 @@ gn gen --ide<span class="o">=</span>vs out.gn<span class="se">\x</span><span cla
 <h3>Build V8 for Android<a class="headerlink" href="#build-v8-for-android" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
 <span class="nb">cd</span> <span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
-python tools/dev/v8gen.py arm.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="arm"'</span> <span class="s1">'v8_target_cpu="arm"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
+python3 tools/dev/v8gen.py arm.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="arm"'</span> <span class="s1">'v8_target_cpu="arm"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
 ninja -C out.gn/arm.release v8_monolith
-python <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
+python3 <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
 ninja -C out.gn/arm.release v8_monolith
-python tools/dev/v8gen.py arm64.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="arm64"'</span> <span class="s1">'v8_target_cpu="arm64"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
+python3 tools/dev/v8gen.py arm64.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="arm64"'</span> <span class="s1">'v8_target_cpu="arm64"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
 ninja -C out.gn/arm64.release v8_monolith
-python <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
+python3 <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
 ninja -C out.gn/arm64.release v8_monolith
-python tools/dev/v8gen.py ia32.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="x86"'</span> <span class="s1">'v8_target_cpu="x86"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
+python3 tools/dev/v8gen.py ia32.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="x86"'</span> <span class="s1">'v8_target_cpu="x86"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
 ninja -C out.gn/ia32.release v8_monolith
-python <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
+python3 <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
 ninja -C out.gn/ia32.release v8_monolith
-python tools/dev/v8gen.py x64.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="x64"'</span> <span class="s1">'v8_target_cpu="x64"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
+python3 tools/dev/v8gen.py x64.release -- <span class="s1">'target_os="android"'</span> <span class="s1">'target_cpu="x64"'</span> <span class="s1">'v8_target_cpu="x64"'</span> <span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span> <span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span> <span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span> <span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span> <span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span> <span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span>
 ninja -C out.gn/x64.release v8_monolith
-python <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
+python3 <span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py -p ./
 ninja -C out.gn/x64.release v8_monolith
 </pre></div>
 </div>
@@ -432,8 +433,12 @@ make -j4
 <div class="section" id="build-node-js-on-windows">
 <h3>Build Node.js on Windows<a class="headerlink" href="#build-node-js-on-windows" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> %NODE_HOME%
-vcbuild.bat static without-intl
+vcbuild.bat static without-intl vs2019
 </pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Node.js v18 is not compatible with Visual Studio 2022 for now.</p>
 </div>
 </div>
 </div>

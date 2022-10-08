@@ -60,7 +60,6 @@ public class JavetUniversalProxyFunctionHandler<T> extends JavetUniversalProxyOb
             try {
                 v8Values = arguments.toArray();
                 return v8Runtime.toV8Value(execute(
-                        v8Runtime,
                         targetObject,
                         null,
                         classDescriptor.getApplyFunctions(),

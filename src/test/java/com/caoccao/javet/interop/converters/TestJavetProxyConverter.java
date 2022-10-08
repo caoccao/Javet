@@ -85,10 +85,12 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals(2, list.size());
                 assertEquals("a", list.get(0));
                 assertNull(list.get(1));
-                try {
-                    ((AutoCloseable) list).close();
-                } catch (Exception e) {
-                    fail(e.getMessage());
+                if (list instanceof AutoCloseable) {
+                    try {
+                        ((AutoCloseable) list).close();
+                    } catch (Exception e) {
+                        fail(e.getMessage());
+                    }
                 }
             }
 
@@ -218,6 +220,9 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertArrayEquals(
                     new String[]{"a", "b", "c"},
                     utils.split(",", "a,b,c").toArray(new String[0]));
+            assertEquals(
+                    "StringUtils",
+                    v8Runtime.getExecutor("'' + stringUtils").executeString());
             v8Runtime.getGlobalObject().delete("stringUtils");
         }
     }
@@ -415,11 +420,13 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     @Test
     public void testListOfStrings() throws JavetException {
         v8Runtime.getGlobalObject().set("a", anonymous);
-        String codeString = "a.expectListOfStrings({\n" +
+        String codeStringWithCast = "a.expectListOfStrings({\n" +
                 "  get: (index) => index == 0? 'a': null,\n" +
                 "  size: () => 2,\n" +
                 "});";
-        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getExecutor(codeStringWithCast).executeVoid();
+        String codeStringWithoutCast = "a.expectListOfStrings(['a', null]);";
+        v8Runtime.getExecutor(codeStringWithoutCast).executeVoid();
         v8Runtime.getGlobalObject().delete("a");
     }
 
@@ -718,6 +725,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
 
         public void setUtils(IStringUtils utils) {
             this.utils = utils;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName();
         }
     }
 
