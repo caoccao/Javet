@@ -21,6 +21,7 @@ import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -55,12 +56,16 @@ public class JavetUniversalProxyClassHandler<T extends Class<?>> extends BaseJav
     /**
      * Instantiates a new Javet universal proxy handler.
      *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
+     * @param v8Runtime            the V8 runtime
+     * @param dynamicObjectFactory the dynamic object factory
+     * @param targetObject         the target object
      * @since 0.9.6
      */
-    public JavetUniversalProxyClassHandler(V8Runtime v8Runtime, T targetObject) {
-        super(v8Runtime, targetObject);
+    public JavetUniversalProxyClassHandler(
+            V8Runtime v8Runtime,
+            IJavetDynamicObjectFactory dynamicObjectFactory,
+            T targetObject) {
+        super(v8Runtime, dynamicObjectFactory, targetObject);
     }
 
     @V8Function
@@ -71,6 +76,7 @@ public class JavetUniversalProxyClassHandler<T extends Class<?>> extends BaseJav
             try {
                 v8Values = arguments.toArray();
                 return v8Runtime.toV8Value(execute(
+                        dynamicObjectFactory,
                         null,
                         (V8ValueObject) target,
                         classDescriptor.getConstructors(),

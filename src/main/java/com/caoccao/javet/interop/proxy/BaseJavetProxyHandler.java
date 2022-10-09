@@ -20,6 +20,7 @@ import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.utils.*;
@@ -71,6 +72,12 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      */
     protected ClassDescriptor classDescriptor;
     /**
+     * The dynamic object factory.
+     *
+     * @since 2.0.1
+     */
+    protected IJavetDynamicObjectFactory dynamicObjectFactory;
+    /**
      * The Target object.
      *
      * @since 0.9.6
@@ -86,11 +93,16 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
     /**
      * Instantiates a new Base javet proxy handler.
      *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
+     * @param v8Runtime            the V8 runtime
+     * @param dynamicObjectFactory the javet dynamic object factory
+     * @param targetObject         the target object
      * @since 0.9.6
      */
-    public BaseJavetProxyHandler(V8Runtime v8Runtime, T targetObject) {
+    public BaseJavetProxyHandler(
+            V8Runtime v8Runtime,
+            IJavetDynamicObjectFactory dynamicObjectFactory,
+            T targetObject) {
+        this.dynamicObjectFactory = dynamicObjectFactory;
         this.targetObject = targetObject;
         this.v8Runtime = Objects.requireNonNull(v8Runtime);
         initialize();
@@ -99,16 +111,18 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
     /**
      * Execute.
      *
-     * @param <E>                 the type parameter
-     * @param targetObject        the target object
-     * @param thisObject          this object
-     * @param executables         the executables
-     * @param javetVirtualObjects the javet virtual objects
+     * @param <E>                  the type parameter
+     * @param dynamicObjectFactory the dynamic object factory
+     * @param targetObject         the target object
+     * @param thisObject           this object
+     * @param executables          the executables
+     * @param javetVirtualObjects  the javet virtual objects
      * @return the object
      * @throws Throwable the throwable
      * @since 0.9.10
      */
     protected static <E extends AccessibleObject> Object execute(
+            IJavetDynamicObjectFactory dynamicObjectFactory,
             Object targetObject,
             V8ValueObject thisObject,
             List<E> executables,
@@ -116,7 +130,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
         List<ScoredExecutable<E>> scoredExecutables = new ArrayList<>();
         for (E executable : executables) {
             ScoredExecutable<E> scoredExecutable = new ScoredExecutable<>(
-                    targetObject, thisObject, executable, javetVirtualObjects);
+                    dynamicObjectFactory, targetObject, thisObject, executable, javetVirtualObjects);
             scoredExecutable.calculateScore();
             double score = scoredExecutable.getScore();
             if (score > 0) {
@@ -285,14 +299,14 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
             String propertyName = ((V8ValueString) property).toPrimitive();
             List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
             if (methods != null && !methods.isEmpty()) {
-                JavetUniversalInterceptor javetUniversalInterceptor =
-                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
+                JavetUniversalInterceptor javetUniversalInterceptor = new JavetUniversalInterceptor(
+                        v8Runtime, dynamicObjectFactory, targetObject, propertyName, methods);
                 return v8Runtime.createV8ValueFunction(javetUniversalInterceptor.getCallbackContext());
             }
             methods = classDescriptor.getGettersMap().get(propertyName);
             if (methods != null && !methods.isEmpty()) {
-                JavetUniversalInterceptor javetUniversalInterceptor =
-                        new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
+                JavetUniversalInterceptor javetUniversalInterceptor = new JavetUniversalInterceptor(
+                        v8Runtime, dynamicObjectFactory, targetObject, propertyName, methods);
                 return v8Runtime.toV8Value(javetUniversalInterceptor.invoke((V8ValueObject) target));
             }
             if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
@@ -561,7 +575,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      * Is apply function.
      *
      * @param method the method
-     * @return true: yes, false: no
+     * @return true : yes, false: no
      * @since 1.1.7
      */
     protected boolean isApplyFunction(Method method) {
@@ -613,7 +627,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      *
      * @param propertyKey   the property key
      * @param propertyValue the property value
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 1.1.7
      */
@@ -711,8 +725,8 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
                 String propertyName = (String) keyObject;
                 List<Method> methods = classDescriptor.getSettersMap().get(propertyName);
                 if (methods != null) {
-                    JavetUniversalInterceptor javetUniversalInterceptor =
-                            new JavetUniversalInterceptor(v8Runtime, targetObject, propertyName, methods);
+                    JavetUniversalInterceptor javetUniversalInterceptor = new JavetUniversalInterceptor(
+                            v8Runtime, dynamicObjectFactory, targetObject, propertyName, methods);
                     javetUniversalInterceptor.invoke((V8ValueObject) target, propertyValue);
                     return true;
                 }

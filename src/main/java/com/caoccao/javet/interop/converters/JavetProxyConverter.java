@@ -111,13 +111,16 @@ public class JavetProxyConverter extends JavetObjectConverter {
                 IJavetProxyHandler<?> javetProxyHandler;
                 switch (proxyMode) {
                     case Class:
-                        javetProxyHandler = new JavetUniversalProxyClassHandler<>(v8Runtime, (Class<?>) object);
+                        javetProxyHandler = new JavetUniversalProxyClassHandler<>(
+                                v8Runtime, null, (Class<?>) object);
                         break;
                     case Function:
-                        javetProxyHandler = new JavetUniversalProxyFunctionHandler<>(v8Runtime, object);
+                        javetProxyHandler = new JavetUniversalProxyFunctionHandler<>(
+                                v8Runtime, null, object);
                         break;
                     default:
-                        javetProxyHandler = new JavetUniversalProxyObjectHandler<>(v8Runtime, object);
+                        javetProxyHandler = new JavetUniversalProxyObjectHandler<>(
+                                v8Runtime, null, object);
                         break;
                 }
                 List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetProxyHandler);

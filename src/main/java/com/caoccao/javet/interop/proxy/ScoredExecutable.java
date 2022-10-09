@@ -18,6 +18,7 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.JavetVirtualObject;
 import com.caoccao.javet.values.V8Value;
@@ -60,6 +61,7 @@ final class ScoredExecutable<E extends AccessibleObject> {
      * @since 0.9.10
      */
     private static final Class<?> V8_VALUE_PROXY_CLASS = V8ValueProxy.class;
+    private final IJavetDynamicObjectFactory dynamicObjectFactory;
     private final E executable;
     private final Object targetObject;
     private final V8ValueObject thisObject;
@@ -69,18 +71,21 @@ final class ScoredExecutable<E extends AccessibleObject> {
     /**
      * Instantiates a new Scored executable.
      *
-     * @param targetObject        the target object
-     * @param thisObject          this object
-     * @param executable          the executable
-     * @param javetVirtualObjects the javet virtual objects
+     * @param dynamicObjectFactory the dynamic object factory
+     * @param targetObject         the target object
+     * @param thisObject           this object
+     * @param executable           the executable
+     * @param javetVirtualObjects  the javet virtual objects
      * @since 0.9.10
      */
     public ScoredExecutable(
+            IJavetDynamicObjectFactory dynamicObjectFactory,
             Object targetObject,
             V8ValueObject thisObject,
             E executable,
             JavetVirtualObject[] javetVirtualObjects) {
         this.executable = executable;
+        this.dynamicObjectFactory = dynamicObjectFactory;
         this.javetVirtualObjects = javetVirtualObjects;
         this.score = 0;
         this.targetObject = targetObject;
@@ -138,10 +143,14 @@ final class ScoredExecutable<E extends AccessibleObject> {
                 for (int i = 0; i < fixedParameterCount; i++) {
                     Class<?> parameterType = parameterTypes[i];
                     final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                    final Object object = javetVirtualObjects[i].getObject();
                     if (v8Value != null) {
                         if (V8_VALUE_CLASS.isAssignableFrom(parameterType)
                                 && parameterType.isAssignableFrom(v8Value.getClass())) {
                             totalScore += 1;
+                            continue;
+                        } else if (object != null && parameterType.isAssignableFrom(object.getClass())) {
+                            totalScore += 0.9;
                             continue;
                         } else if (parameterType.isInterface()) {
                             if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
@@ -152,9 +161,12 @@ final class ScoredExecutable<E extends AccessibleObject> {
                                 totalScore += 0.85;
                                 continue;
                             }
+                        } else if (dynamicObjectFactory != null
+                                && dynamicObjectFactory.isSupported(parameterType, v8Value)) {
+                            totalScore += 0.5;
+                            continue;
                         }
                     }
-                    final Object object = javetVirtualObjects[i].getObject();
                     if (object == null) {
                         if (parameterType.isPrimitive()) {
                             totalScore = 0;
@@ -177,10 +189,14 @@ final class ScoredExecutable<E extends AccessibleObject> {
                     Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
                     for (int i = fixedParameterCount; i < length; ++i) {
                         final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                        final Object object = javetVirtualObjects[i].getObject();
                         if (v8Value != null) {
                             if (V8_VALUE_CLASS.isAssignableFrom(componentType)
                                     && componentType.isAssignableFrom(v8Value.getClass())) {
                                 totalScore += 0.95;
+                                continue;
+                            } else if (object != null && componentType.isAssignableFrom(object.getClass())) {
+                                totalScore += 0.85;
                                 continue;
                             } else if (componentType.isInterface()) {
                                 if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
@@ -191,9 +207,12 @@ final class ScoredExecutable<E extends AccessibleObject> {
                                     totalScore += 0.85;
                                     continue;
                                 }
+                            } else if (dynamicObjectFactory != null
+                                    && dynamicObjectFactory.isSupported(componentType, v8Value)) {
+                                totalScore += 0.5;
+                                continue;
                             }
                         }
-                        final Object object = javetVirtualObjects[i].getObject();
                         if (object == null) {
                             if (componentType.isPrimitive()) {
                                 totalScore = 0;
@@ -278,7 +297,6 @@ final class ScoredExecutable<E extends AccessibleObject> {
                         parameter = v8Value;
                         conversionRequired = false;
                     } else if (object != null && parameterType.isAssignableFrom(object.getClass())) {
-                        parameter = object;
                         conversionRequired = false;
                     } else if (parameterType.isInterface()) {
                         if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {

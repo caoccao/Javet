@@ -18,6 +18,7 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
@@ -36,6 +37,7 @@ import java.util.List;
  */
 final class JavetUniversalInterceptor {
     private static final String METHOD_NAME_INVOKE = "invoke";
+    private final IJavetDynamicObjectFactory dynamicObjectFactory;
     private final String jsMethodName;
     private final List<Method> methods;
     private final Object targetObject;
@@ -44,17 +46,20 @@ final class JavetUniversalInterceptor {
     /**
      * Instantiates a new Javet universal interceptor.
      *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
-     * @param jsMethodName the JS method name
-     * @param methods      the methods
+     * @param v8Runtime            the V8 runtime
+     * @param dynamicObjectFactory the dynamic object factory
+     * @param targetObject         the target object
+     * @param jsMethodName         the JS method name
+     * @param methods              the methods
      * @since 0.9.6
      */
     public JavetUniversalInterceptor(
             V8Runtime v8Runtime,
+            IJavetDynamicObjectFactory dynamicObjectFactory,
             Object targetObject,
             String jsMethodName,
             List<Method> methods) {
+        this.dynamicObjectFactory = dynamicObjectFactory;
         this.jsMethodName = jsMethodName;
         this.methods = methods;
         this.targetObject = targetObject;
@@ -121,6 +126,7 @@ final class JavetUniversalInterceptor {
     public Object invoke(V8ValueObject thisObject, V8Value... v8Values) throws JavetException {
         try {
             return BaseJavetProxyHandler.execute(
+                    dynamicObjectFactory,
                     targetObject,
                     thisObject,
                     methods,

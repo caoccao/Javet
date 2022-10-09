@@ -20,6 +20,7 @@ import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
@@ -60,12 +61,16 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
     /**
      * Instantiates a new Javet universal proxy object handler.
      *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
+     * @param v8Runtime            the V8 runtime
+     * @param dynamicObjectFactory the dynamic object factory
+     * @param targetObject         the target object
      * @since 0.9.6
      */
-    public JavetUniversalProxyObjectHandler(V8Runtime v8Runtime, T targetObject) {
-        super(v8Runtime, Objects.requireNonNull(targetObject));
+    public JavetUniversalProxyObjectHandler(
+            V8Runtime v8Runtime,
+            IJavetDynamicObjectFactory dynamicObjectFactory,
+            T targetObject) {
+        super(v8Runtime, dynamicObjectFactory, Objects.requireNonNull(targetObject));
     }
 
     @V8Function
@@ -151,7 +156,7 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
      * Has from collection.
      *
      * @param property the property
-     * @return true: has, false: not has
+     * @return true : has, false: not has
      * @throws JavetException the javet exception
      */
     protected boolean hasFromCollection(V8Value property) throws JavetException {
@@ -283,7 +288,7 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
      *
      * @param propertyKey   the property key
      * @param propertyValue the property value
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      */
     protected boolean setToCollection(V8Value propertyKey, V8Value propertyValue) throws JavetException {
