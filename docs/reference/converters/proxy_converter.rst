@@ -198,10 +198,10 @@ Voilà! It works.
 
     The JavaScript implementation is backed up by ``V8ValueFunction`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoCloseable`` as the sample shows so that the orphan ``V8ValueFunction`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueFunction`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
 
-Dynamic: Anonymous Object
--------------------------
+Dynamic: Anonymous Object for Interface
+---------------------------------------
 
-This feature is similar to the dynamic anonymous function, but is an enhanced version because it allows implementing all methods exposed by the Java interface.
+This feature is similar to the dynamic anonymous function, but is an enhanced version because it allows implementing all methods exposed by a Java interface.
 
 1. Define a simple interface ``IStringUtils`` for joining two strings.
 
@@ -263,6 +263,75 @@ This feature is similar to the dynamic anonymous function, but is an enhanced ve
         v8Runtime.getGlobalObject().delete("stringUtils");
     }
     v8Runtime.lowMemoryNotification();
+
+Voilà aussi! It works again.
+
+Dynamic: Anonymous Object for Class
+-----------------------------------
+
+This feature is similar to the dynamic anonymous object for interface, but it allows implementing all methods exposed by a non-final Java class.
+
+1. Add ``ByteBuddy`` to the dependency. You may skip this step if your project has already referenced ``ByteBuddy``.
+
+.. code-block:: xml
+
+    <!-- Maven -->
+    <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>1.12.17</version>
+    </dependency>
+
+.. code-block:: kotlin
+
+    // Gradle Kotlin DSL
+    implementation("net.bytebuddy:byte-buddy:1.12.17")
+
+.. code-block:: groovy
+
+    // Gradle Groovy DSL
+    implementation 'net.bytebuddy:byte-buddy:1.12.17'
+
+2. Copy :extsource3:`JavetDynamicObjectFactory.java <../../../src/test/java/com/caoccao/javet/interop/proxy/JavetDynamicObjectFactory.java>` to your project. As Javet doesn't reference ``ByteBuddy`` directly, ``JavetDynamicObjectFactory`` has to stay at the test project.
+
+3. Define a simple class ``DynamicClass`` for adding two integers.
+
+.. code-block:: java
+
+    public class DynamicClass {
+        public int add(int a, int b) {
+            return 0;
+        }
+    }
+
+4. Create an instance of a class which takes an instance of the ``DynamicClass``.
+
+.. code-block:: java
+
+    IJavetAnonymous anonymous = new IJavetAnonymous() {
+        @V8Function
+        public void test(DynamicClass dynamicClass) throws Exception {
+            assertEquals(3, dynamicClass.add(1, 2), "Add should work.");
+            ((AutoCloseable) dynamicClass).close();
+        }
+    };
+
+5. Inject the implementation from JavaScript. Please note that dynamic object support is disabled by default and ``JavetDynamicObjectFactory`` needs to be set to the converter config for ``JavetProxyConverter`` to enable this feature.
+
+.. code-block:: java
+
+    try {
+        javetProxyConverter.getConfig().setDynamicObjectFactory(JavetDynamicObjectFactory.getInstance());
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = "a.test({\n" +
+                "  add: (a, b) => a + b,\n" +
+                "});";
+        v8Runtime.getExecutor(codeString).executeVoid();
+        v8Runtime.getGlobalObject().delete("a");
+    } finally {
+        javetProxyConverter.getConfig().setDynamicObjectFactory(null);
+        v8Runtime.lowMemoryNotification();
+    }
 
 Voilà aussi! It works again.
 
