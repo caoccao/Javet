@@ -112,15 +112,15 @@ public class JavetProxyConverter extends JavetObjectConverter {
                 switch (proxyMode) {
                     case Class:
                         javetProxyHandler = new JavetUniversalProxyClassHandler<>(
-                                v8Runtime, null, (Class<?>) object);
+                                v8Runtime, config.getDynamicObjectFactory(), (Class<?>) object);
                         break;
                     case Function:
                         javetProxyHandler = new JavetUniversalProxyFunctionHandler<>(
-                                v8Runtime, null, object);
+                                v8Runtime, config.getDynamicObjectFactory(), object);
                         break;
                     default:
                         javetProxyHandler = new JavetUniversalProxyObjectHandler<>(
-                                v8Runtime, null, object);
+                                v8Runtime, config.getDynamicObjectFactory(), object);
                         break;
                 }
                 List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetProxyHandler);

@@ -49,14 +49,14 @@ import java.util.*;
  */
 @SuppressWarnings("unchecked")
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
+    public static final String METHOD_PREFIX_GET = "get";
+    public static final String METHOD_PREFIX_IS = "is";
+    public static final String METHOD_PREFIX_SET = "set";
     protected static final String FUNCTION_ADD = "add";
     protected static final String FUNCTION_DELETE = "delete";
     protected static final String FUNCTION_GET = "get";
     protected static final String FUNCTION_HAS = "has";
     protected static final String FUNCTION_SET = "set";
-    protected static final String METHOD_PREFIX_GET = "get";
-    protected static final String METHOD_PREFIX_IS = "is";
-    protected static final String METHOD_PREFIX_SET = "set";
     protected static final String PROPERTY_PROTOTYPE = "prototype";
     /**
      * The constant bindingContextMap.
