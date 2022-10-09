@@ -16,18 +16,50 @@
 
 package com.caoccao.javet.interop.options;
 
+import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
+
 /**
  * The type Runtime options.
  *
  * @param <Options> the type parameter
  * @since 1.0.0
  */
-public abstract class RuntimeOptions<Options extends RuntimeOptions> {
+public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
+    /**
+     * The dynamic object factory.
+     *
+     * @since 2.0.1
+     */
+    protected IJavetDynamicObjectFactory dynamicObjectFactory;
+
     /**
      * Instantiates a new Runtime options.
      *
      * @since 1.0.0
      */
     public RuntimeOptions() {
+        dynamicObjectFactory = null;
+    }
+
+    /**
+     * Gets dynamic object factory.
+     *
+     * @return the dynamic object factory
+     * @since 2.0.1
+     */
+    public IJavetDynamicObjectFactory getDynamicObjectFactory() {
+        return dynamicObjectFactory;
+    }
+
+    /**
+     * Sets dynamic object factory.
+     *
+     * @param dynamicObjectFactory the dynamic object factory
+     * @return the self
+     * @since 2.0.1
+     */
+    public RuntimeOptions<Options> setDynamicObjectFactory(IJavetDynamicObjectFactory dynamicObjectFactory) {
+        this.dynamicObjectFactory = dynamicObjectFactory;
+        return this;
     }
 }
