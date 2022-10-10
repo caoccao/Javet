@@ -104,7 +104,7 @@ Static: Pattern
 Static: Enum
 ------------
 
-Static class usually does not have an instance. The universal proxy based converter is smart enough to handle that.
+Static class usually does not have an instance. The dynamic proxy based converter is smart enough to handle that.
 
 .. code-block:: java
 

@@ -16,7 +16,7 @@
 
 package com.caoccao.javet.interop.options;
 
-import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
+import com.caoccao.javet.interop.proxy.IJavetDynamicObjectFactory;
 
 /**
  * The type Runtime options.

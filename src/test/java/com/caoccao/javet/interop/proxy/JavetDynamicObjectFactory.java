@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -46,7 +45,7 @@ import java.util.concurrent.Callable;
  */
 public final class JavetDynamicObjectFactory implements IJavetDynamicObjectFactory {
     private static final JavetDynamicObjectFactory instance = new JavetDynamicObjectFactory();
-    private IJavetLogger logger;
+    private final IJavetLogger logger;
 
     private JavetDynamicObjectFactory() {
         logger = new JavetDefaultLogger(getClass().getName());
@@ -65,9 +64,10 @@ public final class JavetDynamicObjectFactory implements IJavetDynamicObjectFacto
     @Override
     public Object toObject(Class<?> type, V8Value v8Value) {
         if (v8Value instanceof V8ValueObject) {
+            V8ValueObject v8ValueObject = null;
             try {
-                V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
                 DynamicObjectAutoCloseableInvocationHandler invocationHandler;
+                v8ValueObject = v8Value.toClone();
                 if (AutoCloseable.class.isAssignableFrom(type)) {
                     invocationHandler = new DynamicObjectAutoCloseableInvocationHandler(type, v8ValueObject);
                 } else {
@@ -77,6 +77,7 @@ public final class JavetDynamicObjectFactory implements IJavetDynamicObjectFacto
                 return invocationHandler.getDynamicObject();
             } catch (Throwable t) {
                 logger.logError(t, "Failed to create dynamic object for {0}.", type.getName());
+                JavetResourceUtils.safeClose(v8ValueObject);
             }
         }
         return null;
