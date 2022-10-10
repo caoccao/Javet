@@ -24,9 +24,9 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
-import com.caoccao.javet.interop.proxy.JavetUniversalProxyClassHandler;
-import com.caoccao.javet.interop.proxy.JavetUniversalProxyFunctionHandler;
-import com.caoccao.javet.interop.proxy.JavetUniversalProxyObjectHandler;
+import com.caoccao.javet.interop.proxy.JavetDynamicProxyClassHandler;
+import com.caoccao.javet.interop.proxy.JavetDynamicProxyFunctionHandler;
+import com.caoccao.javet.interop.proxy.JavetDynamicProxyObjectHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.reference.IV8ValueObject;
@@ -111,15 +111,15 @@ public class JavetProxyConverter extends JavetObjectConverter {
                 IJavetProxyHandler<?> javetProxyHandler;
                 switch (proxyMode) {
                     case Class:
-                        javetProxyHandler = new JavetUniversalProxyClassHandler<>(
+                        javetProxyHandler = new JavetDynamicProxyClassHandler<>(
                                 v8Runtime, config.getDynamicObjectFactory(), (Class<?>) object);
                         break;
                     case Function:
-                        javetProxyHandler = new JavetUniversalProxyFunctionHandler<>(
+                        javetProxyHandler = new JavetDynamicProxyFunctionHandler<>(
                                 v8Runtime, config.getDynamicObjectFactory(), object);
                         break;
                     default:
-                        javetProxyHandler = new JavetUniversalProxyObjectHandler<>(
+                        javetProxyHandler = new JavetDynamicProxyObjectHandler<>(
                                 v8Runtime, config.getDynamicObjectFactory(), object);
                         break;
                 }

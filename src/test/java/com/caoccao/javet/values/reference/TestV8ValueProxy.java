@@ -19,8 +19,8 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
-import com.caoccao.javet.interop.proxy.JavetUniversalProxyClassHandler;
-import com.caoccao.javet.interop.proxy.JavetUniversalProxyObjectHandler;
+import com.caoccao.javet.interop.proxy.JavetDynamicProxyClassHandler;
+import com.caoccao.javet.interop.proxy.JavetDynamicProxyObjectHandler;
 import com.caoccao.javet.mock.MockPojo;
 import com.caoccao.javet.mock.MockPojoWithGenericGetterAndSetter;
 import org.junit.jupiter.api.Test;
@@ -31,79 +31,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueProxy extends BaseTestJavetRuntime {
     @Test
-    public void testEmptyHandler() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
-            try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
-                assertNotNull(v8ValueProxy);
-                assertFalse(v8ValueProxy.isRevoked());
-                assertEquals(1, v8ValueProxy.getInteger("a"));
-                assertEquals(2, v8ValueProxy.getInteger("b"));
-                assertTrue(v8ValueProxy.get("c").isUndefined());
-                v8ValueObject.set("c", 3);
-                assertEquals(3, v8ValueProxy.getInteger("c"));
-                assertEquals("{\"a\":1,\"b\":2,\"c\":3}", v8ValueProxy.toJsonString());
-                v8ValueProxy.revoke();
-                assertTrue(v8ValueProxy.isRevoked());
-            }
-        }
-    }
-
-    @Test
-    public void testEmptyTargetAndEmptyHandler() throws JavetException {
-        try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy()) {
-            assertNotNull(v8ValueProxy);
-            assertFalse(v8ValueProxy.isRevoked());
-            try (IV8ValueObject iV8ValueObject = v8ValueProxy.getTarget()) {
-                try (IV8ValueArray iV8ValueArray = iV8ValueObject.getOwnPropertyNames()) {
-                    assertEquals(0, iV8ValueArray.getLength());
-                }
-                iV8ValueObject.set("a", 1);
-            }
-            assertEquals("{\"a\":1}", v8ValueProxy.toJsonString());
-        }
-    }
-
-    @Test
-    public void testHandlerGet() throws JavetException {
-        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("var x = {a:1,b:2}; x;").execute()) {
-            try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
-                assertNotNull(v8ValueProxy);
-                assertFalse(v8ValueProxy.isRevoked());
-                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                    iV8ValueObjectHandler.bindFunction("get", "(target, prop, receiver) => {" +
-                            "  if (prop in target) {" +
-                            "    return target[prop] + 1;" +
-                            "  }" +
-                            "  return undefined;" +
-                            "};");
-                }
-                assertEquals(2, v8ValueProxy.getInteger("a"));
-                assertEquals(3, v8ValueProxy.getInteger("b"));
-                v8ValueProxy.revoke();
-                assertTrue(v8ValueProxy.isRevoked());
-                try {
-                    v8ValueProxy.get("a");
-                    fail("Failed to report TypeError.");
-                } catch (JavetExecutionException e) {
-                    assertEquals("TypeError: Cannot perform 'get' on a proxy that has been revoked", e.getMessage());
-                }
-            }
-        }
-    }
-
-    @Test
-    public void testNativeProxyCreation() throws JavetException {
-        try (V8ValueProxy v8ValueProxy = v8Runtime.getExecutor(
-                "const b = {}; const a = new Proxy(RegExp, b); a;").execute()) {
-            assertNotNull(v8ValueProxy);
-            assertFalse(v8ValueProxy.isRevoked());
-        }
-    }
-
-    @Test
-    public void testUniversalProxyHandlerInInstanceMode() throws JavetException {
-        JavetUniversalProxyObjectHandler<MockPojo> handler =
-                new JavetUniversalProxyObjectHandler<>(v8Runtime, null, new MockPojo());
+    public void testDynamicProxyHandlerInInstanceMode() throws JavetException {
+        JavetDynamicProxyObjectHandler<MockPojo> handler =
+                new JavetDynamicProxyObjectHandler<>(v8Runtime, null, new MockPojo());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
                 assertNotNull(v8ValueProxy);
@@ -179,9 +109,9 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testUniversalProxyHandlerInStaticMode() throws JavetException {
-        JavetUniversalProxyClassHandler<Class<?>> handler =
-                new JavetUniversalProxyClassHandler<>(v8Runtime, null, MockPojo.class);
+    public void testDynamicProxyHandlerInStaticMode() throws JavetException {
+        JavetDynamicProxyClassHandler<Class<?>> handler =
+                new JavetDynamicProxyClassHandler<>(v8Runtime, null, MockPojo.class);
         assertEquals(MockPojo.class, handler.getTargetObject());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
@@ -223,9 +153,9 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testUniversalProxyHandlerWithGenericGetterAndSetter() throws JavetException {
-        JavetUniversalProxyObjectHandler<MockPojoWithGenericGetterAndSetter> handler =
-                new JavetUniversalProxyObjectHandler<>(v8Runtime, null, new MockPojoWithGenericGetterAndSetter());
+    public void testDynamicProxyHandlerWithGenericGetterAndSetter() throws JavetException {
+        JavetDynamicProxyObjectHandler<MockPojoWithGenericGetterAndSetter> handler =
+                new JavetDynamicProxyObjectHandler<>(v8Runtime, null, new MockPojoWithGenericGetterAndSetter());
         handler.getTargetObject().set("c", "3");
         handler.getTargetObject().set("d", "4");
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
@@ -260,6 +190,76 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().delete("y");
         } finally {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testEmptyHandler() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
+            try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
+                assertNotNull(v8ValueProxy);
+                assertFalse(v8ValueProxy.isRevoked());
+                assertEquals(1, v8ValueProxy.getInteger("a"));
+                assertEquals(2, v8ValueProxy.getInteger("b"));
+                assertTrue(v8ValueProxy.get("c").isUndefined());
+                v8ValueObject.set("c", 3);
+                assertEquals(3, v8ValueProxy.getInteger("c"));
+                assertEquals("{\"a\":1,\"b\":2,\"c\":3}", v8ValueProxy.toJsonString());
+                v8ValueProxy.revoke();
+                assertTrue(v8ValueProxy.isRevoked());
+            }
+        }
+    }
+
+    @Test
+    public void testEmptyTargetAndEmptyHandler() throws JavetException {
+        try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy()) {
+            assertNotNull(v8ValueProxy);
+            assertFalse(v8ValueProxy.isRevoked());
+            try (IV8ValueObject iV8ValueObject = v8ValueProxy.getTarget()) {
+                try (IV8ValueArray iV8ValueArray = iV8ValueObject.getOwnPropertyNames()) {
+                    assertEquals(0, iV8ValueArray.getLength());
+                }
+                iV8ValueObject.set("a", 1);
+            }
+            assertEquals("{\"a\":1}", v8ValueProxy.toJsonString());
+        }
+    }
+
+    @Test
+    public void testHandlerGet() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("var x = {a:1,b:2}; x;").execute()) {
+            try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
+                assertNotNull(v8ValueProxy);
+                assertFalse(v8ValueProxy.isRevoked());
+                try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
+                    iV8ValueObjectHandler.bindFunction("get", "(target, prop, receiver) => {" +
+                            "  if (prop in target) {" +
+                            "    return target[prop] + 1;" +
+                            "  }" +
+                            "  return undefined;" +
+                            "};");
+                }
+                assertEquals(2, v8ValueProxy.getInteger("a"));
+                assertEquals(3, v8ValueProxy.getInteger("b"));
+                v8ValueProxy.revoke();
+                assertTrue(v8ValueProxy.isRevoked());
+                try {
+                    v8ValueProxy.get("a");
+                    fail("Failed to report TypeError.");
+                } catch (JavetExecutionException e) {
+                    assertEquals("TypeError: Cannot perform 'get' on a proxy that has been revoked", e.getMessage());
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testNativeProxyCreation() throws JavetException {
+        try (V8ValueProxy v8ValueProxy = v8Runtime.getExecutor(
+                "const b = {}; const a = new Proxy(RegExp, b); a;").execute()) {
+            assertNotNull(v8ValueProxy);
+            assertFalse(v8ValueProxy.isRevoked());
         }
     }
 }

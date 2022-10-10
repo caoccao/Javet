@@ -20,7 +20,6 @@ import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.utils.*;
@@ -299,15 +298,15 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
             String propertyName = ((V8ValueString) property).toPrimitive();
             List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
             if (methods != null && !methods.isEmpty()) {
-                JavetUniversalInterceptor javetUniversalInterceptor = new JavetUniversalInterceptor(
-                        v8Runtime, dynamicObjectFactory, targetObject, propertyName, methods);
-                return v8Runtime.createV8ValueFunction(javetUniversalInterceptor.getCallbackContext());
+                JavetDynamicProxyInterceptor dynamicProxyInterceptor = new JavetDynamicProxyInterceptor(
+                        dynamicObjectFactory, targetObject, propertyName, methods);
+                return v8Runtime.createV8ValueFunction(dynamicProxyInterceptor.getCallbackContext());
             }
             methods = classDescriptor.getGettersMap().get(propertyName);
             if (methods != null && !methods.isEmpty()) {
-                JavetUniversalInterceptor javetUniversalInterceptor = new JavetUniversalInterceptor(
-                        v8Runtime, dynamicObjectFactory, targetObject, propertyName, methods);
-                return v8Runtime.toV8Value(javetUniversalInterceptor.invoke((V8ValueObject) target));
+                JavetDynamicProxyInterceptor dynamicProxyInterceptor = new JavetDynamicProxyInterceptor(
+                        dynamicObjectFactory, targetObject, propertyName, methods);
+                return v8Runtime.toV8Value(dynamicProxyInterceptor.invoke((V8ValueObject) target));
             }
             if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
@@ -725,9 +724,9 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
                 String propertyName = (String) keyObject;
                 List<Method> methods = classDescriptor.getSettersMap().get(propertyName);
                 if (methods != null) {
-                    JavetUniversalInterceptor javetUniversalInterceptor = new JavetUniversalInterceptor(
-                            v8Runtime, dynamicObjectFactory, targetObject, propertyName, methods);
-                    javetUniversalInterceptor.invoke((V8ValueObject) target, propertyValue);
+                    JavetDynamicProxyInterceptor dynamicProxyInterceptor = new JavetDynamicProxyInterceptor(
+                            dynamicObjectFactory, targetObject, propertyName, methods);
+                    dynamicProxyInterceptor.invoke((V8ValueObject) target, propertyValue);
                     return true;
                 }
             }

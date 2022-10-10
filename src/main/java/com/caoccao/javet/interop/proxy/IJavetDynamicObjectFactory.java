@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interfaces;
+package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueObject;

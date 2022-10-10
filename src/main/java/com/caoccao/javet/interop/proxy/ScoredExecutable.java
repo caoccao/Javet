@@ -18,7 +18,6 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.JavetVirtualObject;
 import com.caoccao.javet.values.V8Value;

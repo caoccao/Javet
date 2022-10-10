@@ -19,7 +19,6 @@ package com.caoccao.javet.interop.proxy;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
@@ -28,12 +27,12 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
 /**
- * The type Javet universal proxy function handler.
+ * The type Javet dynamic proxy function handler.
  *
  * @param <T> the type parameter
  * @since 1.1.7
  */
-public class JavetUniversalProxyFunctionHandler<T> extends JavetUniversalProxyObjectHandler<T> {
+public class JavetDynamicProxyFunctionHandler<T> extends JavetDynamicProxyObjectHandler<T> {
 
     /**
      * The constant METHOD_NAME_APPLY.
@@ -43,14 +42,14 @@ public class JavetUniversalProxyFunctionHandler<T> extends JavetUniversalProxyOb
     protected static final String METHOD_NAME_APPLY = "apply";
 
     /**
-     * Instantiates a new Javet universal proxy function handler.
+     * Instantiates a new Javet dynamic proxy function handler.
      *
      * @param v8Runtime            the V8 runtime
      * @param dynamicObjectFactory the dynamic object factory
      * @param targetObject         the target object
      * @since 1.1.7
      */
-    public JavetUniversalProxyFunctionHandler(
+    public JavetDynamicProxyFunctionHandler(
             V8Runtime v8Runtime,
             IJavetDynamicObjectFactory dynamicObjectFactory,
             T targetObject) {

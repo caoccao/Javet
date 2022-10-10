@@ -83,15 +83,15 @@ public final class JavetDynamicProxyFactory {
     public Object toObject(Class<?> type, V8Value v8Value) throws JavetException {
         if (type.isInterface()) {
             if (v8Value instanceof V8ValueFunction) {
-                DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
-                        new DynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
+                JavetDynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
+                        new JavetDynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
                 return Proxy.newProxyInstance(
                         getClass().getClassLoader(),
                         new Class[]{type, AutoCloseable.class},
                         invocationHandler);
             } else if (v8Value instanceof V8ValueObject && !(v8Value instanceof V8ValueProxy)) {
-                DynamicProxyV8ValueObjectInvocationHandler invocationHandler =
-                        new DynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
+                JavetDynamicProxyV8ValueObjectInvocationHandler invocationHandler =
+                        new JavetDynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
                 return Proxy.newProxyInstance(
                         getClass().getClassLoader(),
                         new Class[]{type, AutoCloseable.class},

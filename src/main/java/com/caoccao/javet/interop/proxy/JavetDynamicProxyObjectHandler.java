@@ -20,7 +20,6 @@ import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
@@ -37,13 +36,13 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 /**
- * The type Javet universal proxy object handler.
+ * The type Javet dynamic proxy object handler.
  *
  * @param <T> the type parameter
  * @since 0.9.6
  */
 @SuppressWarnings("unchecked")
-public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T> {
+public class JavetDynamicProxyObjectHandler<T> extends BaseJavetProxyHandler<T> {
 
     /**
      * The constant FUNCTION_NAME_LENGTH.
@@ -59,14 +58,14 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
     protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
-     * Instantiates a new Javet universal proxy object handler.
+     * Instantiates a new Javet dynamic proxy object handler.
      *
      * @param v8Runtime            the V8 runtime
      * @param dynamicObjectFactory the dynamic object factory
      * @param targetObject         the target object
      * @since 0.9.6
      */
-    public JavetUniversalProxyObjectHandler(
+    public JavetDynamicProxyObjectHandler(
             V8Runtime v8Runtime,
             IJavetDynamicObjectFactory dynamicObjectFactory,
             T targetObject) {

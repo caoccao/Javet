@@ -18,8 +18,6 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetDynamicObjectFactory;
-import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.V8ValueUtils;
@@ -31,30 +29,27 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * The type Javet universal interceptor.
+ * The type Javet dynamic proxy interceptor.
  *
  * @since 0.9.6
  */
-final class JavetUniversalInterceptor {
+final class JavetDynamicProxyInterceptor {
     private static final String METHOD_NAME_INVOKE = "invoke";
     private final IJavetDynamicObjectFactory dynamicObjectFactory;
     private final String jsMethodName;
     private final List<Method> methods;
     private final Object targetObject;
-    private final V8Runtime v8Runtime;
 
     /**
-     * Instantiates a new Javet universal interceptor.
+     * Instantiates a new Javet dynamic proxy interceptor.
      *
-     * @param v8Runtime            the V8 runtime
      * @param dynamicObjectFactory the dynamic object factory
      * @param targetObject         the target object
      * @param jsMethodName         the JS method name
      * @param methods              the methods
      * @since 0.9.6
      */
-    public JavetUniversalInterceptor(
-            V8Runtime v8Runtime,
+    public JavetDynamicProxyInterceptor(
             IJavetDynamicObjectFactory dynamicObjectFactory,
             Object targetObject,
             String jsMethodName,
@@ -63,7 +58,6 @@ final class JavetUniversalInterceptor {
         this.jsMethodName = jsMethodName;
         this.methods = methods;
         this.targetObject = targetObject;
-        this.v8Runtime = v8Runtime;
     }
 
 
