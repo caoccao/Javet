@@ -116,7 +116,9 @@ if(DEFINED NODE_DIR)
         base64 brotli cares histogram llhttp nghttp2 nghttp3 ngtcp2 openssl torque_base uvwasi
         v8_base_without_compiler v8_compiler v8_init v8_initializers
         v8_libbase v8_libplatform v8_snapshot v8_zlib zlib)
-    if(NOT CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+    if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+        list(APPEND importLibraries base64_neon64)
+    else()
         list(APPEND importLibraries base64_avx base64_avx2 base64_sse41 base64_sse42 base64_ssse3)
     endif()
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
