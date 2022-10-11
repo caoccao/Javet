@@ -78,6 +78,16 @@ public final class V8Internal {
         return v8Runtime.equals(iV8ValueReference1, iV8ValueReference2);
     }
 
+    @SuppressWarnings("RedundantThrows")
+    public String functionGetSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.functionGetSourceCode(iV8ValueFunction);
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    public boolean functionSetSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
+        return v8Runtime.functionSetSourceCode(iV8ValueFunction, sourceCode);
+    }
+
     @CheckReturnValue
     public <T extends V8Value> T get(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return v8Runtime.get(iV8ValueObject, key);
@@ -138,11 +148,6 @@ public final class V8Internal {
 
     public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
         return v8Runtime.getSize(iV8ValueKeyContainer);
-    }
-
-    @SuppressWarnings("RedundantThrows")
-    public String getSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
-        return v8Runtime.getSourceCode(iV8ValueFunction);
     }
 
     public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
@@ -300,11 +305,6 @@ public final class V8Internal {
     public boolean setPrototype(
             IV8ValueObject iV8ValueObject, IV8ValueObject iV8ValueObjectPrototype) throws JavetException {
         return v8Runtime.setPrototype(iV8ValueObject, iV8ValueObjectPrototype);
-    }
-
-    @SuppressWarnings("RedundantThrows")
-    public boolean setSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
-        return v8Runtime.setSourceCode(iV8ValueFunction, sourceCode);
     }
 
     public void setWeak(IV8ValueReference iV8ValueReference) {

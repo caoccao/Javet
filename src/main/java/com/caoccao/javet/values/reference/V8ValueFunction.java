@@ -102,7 +102,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public String getSourceCode() throws JavetException {
         if (getJSFunctionType().isUserDefined()) {
-            return checkV8Runtime().getV8Internal().getSourceCode(this);
+            return checkV8Runtime().getV8Internal().functionGetSourceCode(this);
         }
         return null;
     }
@@ -119,7 +119,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
             checkV8Runtime();
             v8Runtime.lowMemoryNotification();
-            success = v8Runtime.getV8Internal().setSourceCode(this, sourceCodeString);
+            success = v8Runtime.getV8Internal().functionSetSourceCode(this, sourceCodeString);
             v8Runtime.lowMemoryNotification();
         }
         return success;

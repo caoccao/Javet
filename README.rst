@@ -24,9 +24,9 @@ Javet
 
 If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
-💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because my `MacBook Air mid-2012 <https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html>`_ will be soon deprecated by new version of V8. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (x86_64) device. Or, if you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will also be great. Thank you for supporting Javet. There is no new official releases after v1.1.7. Please contact the maintainer for the new private releases.
+💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because my `MacBook Air mid-2012 <https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html>`_ will be soon deprecated by new version of V8. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (x86_64) device. Or, if you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will also be great. Thank you for supporting Javet. There is no new official releases after v2.0.0. Please contact the maintainer for the new private releases.
 
-💖 If you use Mac OS (arm64), there is no new releases after v1.1.7. That's because I don't have any Mac OS (arm64) device to produce any new builds. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (arm64) device.
+💖 If you use Mac OS (arm64), there is no new releases after v2.0.0. That's because I don't have any Mac OS (arm64) device to produce any new builds. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (arm64) device.
 
 Major Features
 ==============

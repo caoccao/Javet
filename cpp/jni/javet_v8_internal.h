@@ -58,6 +58,7 @@ using V8InternalFlagList = v8::internal::FlagList;
 using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilder;
 using V8InternalIsolate = v8::internal::Isolate;
 using V8InternalJSFunction = v8::internal::JSFunction;
+using V8InternalObject = v8::internal::Object;
 using V8InternalRobustnessFlag = v8::internal::RobustnessFlag;
 using V8InternalScopeType = v8::internal::ScopeType;
 using V8InternalScript = v8::internal::Script;

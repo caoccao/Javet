@@ -94,6 +94,12 @@ class V8Native implements IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     @Override
+    public native String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean functionSetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
+
+    @Override
     public native Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     @Override
@@ -135,9 +141,6 @@ class V8Native implements IV8Native {
 
     @Override
     public native int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    @Override
-    public native String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
@@ -307,9 +310,6 @@ class V8Native implements IV8Native {
     @Override
     public native boolean setPrototype(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
-
-    @Override
-    public native boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
 
     @Override
     public native void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);

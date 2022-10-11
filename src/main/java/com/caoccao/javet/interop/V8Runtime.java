@@ -779,6 +779,34 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets source code from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the source code
+     * @throws JavetException the javet exception
+     * @since 0.8.8
+     */
+    @SuppressWarnings("RedundantThrows")
+    String functionGetSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Native.functionGetSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
+     * Sets source code of a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @param sourceCode       the source code
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 0.8.8
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean functionSetSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
+        return v8Native.functionSetSourceCode(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), sourceCode);
+    }
+
+    /**
      * Get a property from an object by a property key.
      *
      * @param <T>            the type parameter
@@ -1097,19 +1125,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
         return v8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType().getId());
-    }
-
-    /**
-     * Gets source code from a function.
-     *
-     * @param iV8ValueFunction the V8 value function
-     * @return the source code
-     * @throws JavetException the javet exception
-     * @since 0.8.8
-     */
-    @SuppressWarnings("RedundantThrows")
-    String getSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
-        return v8Native.getSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
     /**
@@ -2238,21 +2253,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.setPrototype(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
                 iV8ValueObjectPrototype.getHandle());
-    }
-
-    /**
-     * Sets source code of a function.
-     *
-     * @param iV8ValueFunction the V8 value function
-     * @param sourceCode       the source code
-     * @return true : success, false : failure
-     * @throws JavetException the javet exception
-     * @since 0.8.8
-     */
-    @SuppressWarnings("RedundantThrows")
-    boolean setSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
-        return v8Native.setSourceCode(
-                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), sourceCode);
     }
 
     /**

@@ -65,6 +65,10 @@ public interface IV8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean functionSetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
+
     Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     Object getGlobalObject(long v8RuntimeHandle);
@@ -92,8 +96,6 @@ public interface IV8Native {
     Object getPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
 
@@ -208,8 +210,6 @@ public interface IV8Native {
     boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     boolean setPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
-
-    boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
 
     void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
