@@ -785,12 +785,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @param sourceIV8ValueFunction the source V8 value function
      * @since 2.0.1
      */
-    public void functionCopyScopeInfoFrom(
+    void functionCopyScopeInfoFrom(
             IV8ValueFunction targetIV8ValueFunction,
             IV8ValueFunction sourceIV8ValueFunction) {
         v8Native.functionCopyScopeInfoFrom(handle,
                 targetIV8ValueFunction.getHandle(), targetIV8ValueFunction.getType().getId(),
                 sourceIV8ValueFunction.getHandle(), sourceIV8ValueFunction.getType().getId());
+    }
+
+    /**
+     * Gets script source from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the script source
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    IV8ValueFunction.ScriptSource functionGetScriptSource(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return (IV8ValueFunction.ScriptSource) v8Native.functionGetScriptSource(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
     /**

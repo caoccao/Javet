@@ -593,6 +593,48 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testCopyScopeInfoFrom() throws JavetException {
+        String dummyCodeString = "() => undefined;";
+        String originalCodeString = "(() => {\n" +
+                "  const a = 1;\n" +
+                "  return () => a + 1;\n" +
+                "})();";
+        String crackedCodeString = "(() => {\n" +
+                "  const a = 'a';\n" +
+                "  return () => a + 2;\n" +
+                "})();";
+        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString);
+             V8ValueFunction dummyV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString)) {
+            IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals(originalCodeString, originalScriptSource.getCode());
+            assertEquals(33, originalScriptSource.getStartPosition());
+            assertEquals(44, originalScriptSource.getEndPosition());
+            IV8ValueFunction.ScriptSource dummyScriptSource = dummyV8ValueFunction.getScriptSource();
+            assertEquals(dummyCodeString, dummyScriptSource.getCode());
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+            // Back up the original scope info to a dummy function.
+            dummyV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction);
+            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString)) {
+                assertEquals("a2", crackedV8ValueFunction.callString(null));
+                // Replace the original scope info with the cracked scope info.
+                originalV8ValueFunction.copyScopeInfoFrom(crackedV8ValueFunction);
+                originalScriptSource = originalV8ValueFunction.getScriptSource();
+                assertEquals(crackedCodeString, originalScriptSource.getCode());
+                assertEquals(35, originalScriptSource.getStartPosition());
+                assertEquals(46, originalScriptSource.getEndPosition());
+                assertEquals(3, originalV8ValueFunction.callInteger(null));
+            }
+            // Restore the original scope info from the dummy function.
+            originalV8ValueFunction.copyScopeInfoFrom(dummyV8ValueFunction);
+            originalScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals(originalCodeString, originalScriptSource.getCode());
+            assertEquals(33, originalScriptSource.getStartPosition());
+            assertEquals(44, originalScriptSource.getEndPosition());
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+        }
+    }
+
+    @Test
     public void testDoubleStream() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
@@ -699,6 +741,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             Arrays.stream(threads).forEach(Thread::start);
             while (completedCount.get() < threadCount) {
                 try {
+                    //noinspection BusyWait
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -1126,34 +1169,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             globalObject.delete("a");
         } finally {
             v8Runtime.lowMemoryNotification();
-        }
-    }
-
-    @Test
-    public void testScopeInfo() throws JavetException {
-        String dummyCodeString = "() => undefined;";
-        String originalCodeString = "(() => {\n" +
-                "  const a = 1;\n" +
-                "  return () => a + 1;\n" +
-                "})();";
-        String crackedCodeString = "(() => {\n" +
-                "  const a = 'a';\n" +
-                "  return () => a + 2;\n" +
-                "})();";
-        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString);
-             V8ValueFunction dummyV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString)) {
-            assertEquals(2, originalV8ValueFunction.callInteger(null));
-            // Back up the original scope info to a dummy function.
-            dummyV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction);
-            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString)) {
-                assertEquals("a2", crackedV8ValueFunction.callString(null));
-                // Replace the original scope info with the cracked scope info.
-                originalV8ValueFunction.copyScopeInfoFrom(crackedV8ValueFunction);
-                assertEquals(3, originalV8ValueFunction.callInteger(null));
-            }
-            // Restore the original scope info from the dummy function.
-            originalV8ValueFunction.copyScopeInfoFrom(dummyV8ValueFunction);
-            assertEquals(2, originalV8ValueFunction.callInteger(null));
         }
     }
 

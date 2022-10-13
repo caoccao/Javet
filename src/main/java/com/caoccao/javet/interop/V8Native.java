@@ -100,6 +100,9 @@ class V8Native implements IV8Native {
             long sourceV8ValueHandle, int sourceV8ValueType);
 
     @Override
+    public native Object functionGetScriptSource(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override

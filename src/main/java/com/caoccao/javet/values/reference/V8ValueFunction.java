@@ -109,6 +109,11 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public ScriptSource getScriptSource() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionGetScriptSource(this);
+    }
+
+    @Override
     public String getSourceCode() throws JavetException {
         if (getJSFunctionType().isUserDefined()) {
             return checkV8Runtime().getV8Internal().functionGetSourceCode(this);

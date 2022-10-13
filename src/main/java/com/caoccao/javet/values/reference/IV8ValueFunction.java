@@ -26,6 +26,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
  * The interface V8 value function.
@@ -320,6 +321,15 @@ public interface IV8ValueFunction extends IV8ValueObject {
     JSScopeType getJSScopeType() throws JavetException;
 
     /**
+     * Gets script source.
+     *
+     * @return the script source
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    ScriptSource getScriptSource() throws JavetException;
+
+    /**
      * Gets source code.
      *
      * @return the source code
@@ -387,5 +397,63 @@ public interface IV8ValueFunction extends IV8ValueObject {
             sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
         }
         return setSourceCode(sourceCodeString);
+    }
+
+    /**
+     * The type Script source.
+     *
+     * @since 2.0.1
+     */
+    final class ScriptSource {
+        private final String code;
+        private final int endPosition;
+        private final int startPosition;
+
+        /**
+         * Instantiates a new Script source.
+         *
+         * @param code          the code
+         * @param startPosition the start position
+         * @param endPosition   the end position
+         * @since 2.0.1
+         */
+        public ScriptSource(String code, int startPosition, int endPosition) {
+            Objects.requireNonNull(code, "Code cannot be null.");
+            assert startPosition >= 0 : "Start position must be no less than 0.";
+            assert endPosition > startPosition : "End position must be greater than start position.";
+            this.code = code;
+            this.startPosition = startPosition;
+            this.endPosition = endPosition;
+        }
+
+        /**
+         * Gets code.
+         *
+         * @return the code
+         * @since 2.0.1
+         */
+        public String getCode() {
+            return code;
+        }
+
+        /**
+         * Gets end position.
+         *
+         * @return the end position
+         * @since 2.0.1
+         */
+        public int getEndPosition() {
+            return endPosition;
+        }
+
+        /**
+         * Gets start position.
+         *
+         * @return the start position
+         * @since 2.0.1
+         */
+        public int getStartPosition() {
+            return startPosition;
+        }
     }
 }

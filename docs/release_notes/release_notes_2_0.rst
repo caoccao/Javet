@@ -7,7 +7,7 @@ Release Notes 2.0.x
 
 * Renamed ``JavetUniversalProxy*`` to ``JavetDynamicProxy*``
 * Added ``JavetDynamicObjectFactory`` based on ``ByteBuddy``
-* Added ``copyScopeInfoFrom`` to ``V8ValueFunction``
+* Added ``copyScopeInfoFrom``, ``getScriptSource`` to ``V8ValueFunction``
 
 2.0.0 Node.js v18.10
 --------------------

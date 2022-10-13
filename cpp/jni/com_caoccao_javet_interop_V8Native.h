@@ -153,6 +153,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScope
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionGetScriptSource
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScriptSource
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionGetSourceCode
  * Signature: (JJI)Ljava/lang/String;
  */
