@@ -990,6 +990,30 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(0, scriptSource.getStartPosition());
             assertEquals(crackedCodeString.length(), scriptSource.getEndPosition());
         }
+        String dummyCodeString = "() => undefined;";
+        originalCodeString = "(() => {\n" +
+                "  const a = 1;\n" +
+                "  return () => a + 1;\n" +
+                "})();";
+        crackedCodeString = "(() => {\n" +
+                "  const a = 'a';\n" +
+                "  return () => a + 2;\n" +
+                "})();";
+        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString);
+             V8ValueFunction dummyV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString)) {
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString);
+                 V8ValueFunction clonedV8ValueFunction = originalV8ValueFunction.toClone()) {
+                IV8ValueFunction.ScriptSource scriptSource = new IV8ValueFunction.ScriptSource(
+                        crackedCodeString, 35, 46);
+                clonedV8ValueFunction.setScriptSource(scriptSource);
+                assertEquals(3, clonedV8ValueFunction.callInteger(null));
+            }
+            IV8ValueFunction.ScriptSource scriptSource = new IV8ValueFunction.ScriptSource(
+                    originalCodeString, 33, 44);
+            originalV8ValueFunction.setScriptSource(scriptSource);
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+        }
     }
 
     @Test

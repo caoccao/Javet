@@ -28,7 +28,7 @@ import com.caoccao.javet.values.reference.*;
 import java.util.Objects;
 
 public final class V8Internal {
-    private V8Runtime v8Runtime;
+    private final V8Runtime v8Runtime;
 
     V8Internal(V8Runtime v8Runtime) {
         this.v8Runtime = Objects.requireNonNull(v8Runtime);

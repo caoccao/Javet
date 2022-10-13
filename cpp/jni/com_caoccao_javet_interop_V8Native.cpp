@@ -545,6 +545,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScope
             if (targetV8InternalShared.CanDiscardCompiled() && targetV8InternalShared.is_compiled()) {
                 auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
                 V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(targetV8InternalShared, v8InternalIsolate));
+                targetV8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
             }
         }
     }
