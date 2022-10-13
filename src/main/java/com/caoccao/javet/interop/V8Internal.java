@@ -78,6 +78,12 @@ public final class V8Internal {
         return v8Runtime.equals(iV8ValueReference1, iV8ValueReference2);
     }
 
+    public void functionCopyScopeInfoFrom(
+            IV8ValueFunction targetIV8ValueFunction,
+            IV8ValueFunction sourceIV8ValueFunction) {
+        v8Runtime.functionCopyScopeInfoFrom(targetIV8ValueFunction, sourceIV8ValueFunction);
+    }
+
     @SuppressWarnings("RedundantThrows")
     public String functionGetSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.functionGetSourceCode(iV8ValueFunction);

@@ -51,7 +51,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("unchecked")
 public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @Test
     public void testAnnotationBasedFunctions() throws JavetException {
@@ -156,9 +155,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
             assertFalse(v8ValueObject.hasOwnProperty("disabledFunction"));
-            assertThrows(JavetException.class, () -> {
-                v8Runtime.getExecutor("a.disabledFunction()").executeString();
-            });
+            assertThrows(JavetException.class, () -> v8Runtime.getExecutor("a.disabledFunction()").executeString());
             assertFalse(v8ValueObject.hasOwnProperty("disabledProperty"));
             try (V8Value v8Value = v8Runtime.getExecutor("a.disabledProperty").execute()) {
                 assertTrue(v8Value.isUndefined());
@@ -638,7 +635,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 if (v8ValueFunction.getJSScopeType().isClass()) {
                     try {
                         v8ValueFunction.callVoid(null);
-                    } catch (JavetException e) {
+                    } catch (JavetException ignored) {
                     }
                 }
                 String originalCodeString = v8ValueFunction.getSourceCode();
@@ -674,7 +671,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             Thread[] threads = new Thread[threadCount];
             for (int i = 0; i < threads.length; ++i) {
                 threads[i] = new Thread(() -> {
-                    try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+                    try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
                         V8Runtime v8Runtime = javetEngine.getV8Runtime();
                         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("(x) => 0")) {
                             V8ValueObject v8ValueObject = v8Runtime.getGlobalObject();
@@ -762,23 +759,23 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().bind(anonymous);
             StringBuilder sb = new StringBuilder();
             sb.append("// Header x\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("const a = [];\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("for (let i = 0; i < 5; ++i) {\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 0 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 1 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 2 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 3 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 4 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("}\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("// Footer");
             String sourceCode = sb.toString();
             v8Runtime.getExecutor(sourceCode).executeVoid();
@@ -1133,10 +1130,38 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testScopeInfo() throws JavetException {
+        String dummyCodeString = "() => undefined;";
+        String originalCodeString = "(() => {\n" +
+                "  const a = 1;\n" +
+                "  return () => a + 1;\n" +
+                "})();";
+        String crackedCodeString = "(() => {\n" +
+                "  const a = 'a';\n" +
+                "  return () => a + 2;\n" +
+                "})();";
+        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString);
+             V8ValueFunction dummyV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString)) {
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+            // Back up the original scope info to a dummy function.
+            dummyV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction);
+            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString)) {
+                assertEquals("a2", crackedV8ValueFunction.callString(null));
+                // Replace the original scope info with the cracked scope info.
+                originalV8ValueFunction.copyScopeInfoFrom(crackedV8ValueFunction);
+                assertEquals(3, originalV8ValueFunction.callInteger(null));
+            }
+            // Restore the original scope info from the dummy function.
+            originalV8ValueFunction.copyScopeInfoFrom(dummyV8ValueFunction);
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+        }
+    }
+
+    @Test
     public void testStream() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
-            public Stream test(Stream stream) {
+            public Stream<?> test(Stream<?> stream) {
                 return stream.filter(o -> o instanceof String);
             }
         };

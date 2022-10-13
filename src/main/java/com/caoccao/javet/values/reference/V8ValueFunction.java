@@ -25,6 +25,8 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
+import java.util.Objects;
+
 /**
  * The type V8 value function.
  *
@@ -81,6 +83,13 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public void copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        assert this != Objects.requireNonNull(sourceIV8ValueFunction) : "The source function cannot be the caller.";
+        checkV8Runtime().getV8Internal().functionCopyScopeInfoFrom(
+                this, sourceIV8ValueFunction);
+    }
+
+    @Override
     @CheckReturnValue
     public IV8ValueArray getInternalProperties() throws JavetException {
         return checkV8Runtime().getV8Internal().getInternalProperties(this);
@@ -118,9 +127,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
         if (getJSFunctionType().isUserDefined()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
             checkV8Runtime();
-            v8Runtime.lowMemoryNotification();
             success = v8Runtime.getV8Internal().functionSetSourceCode(this, sourceCodeString);
-            v8Runtime.lowMemoryNotification();
         }
         return success;
     }

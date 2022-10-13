@@ -65,6 +65,11 @@ public interface IV8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    void functionCopyScopeInfoFrom(
+            long v8RuntimeHandle,
+            long targetV8ValueHandle, int targetV8ValueType,
+            long sourceV8ValueHandle, int sourceV8ValueType);
+
     String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean functionSetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
