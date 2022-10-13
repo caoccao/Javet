@@ -110,7 +110,10 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     public ScriptSource getScriptSource() throws JavetException {
-        return checkV8Runtime().getV8Internal().functionGetScriptSource(this);
+        if (getJSFunctionType().isUserDefined()) {
+            return checkV8Runtime().getV8Internal().functionGetScriptSource(this);
+        }
+        return null;
     }
 
     @Override
@@ -127,12 +130,20 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public boolean setScriptSource(ScriptSource scriptSource) throws JavetException {
+        boolean success = false;
+        if (getJSFunctionType().isUserDefined() && scriptSource != null) {
+            success = checkV8Runtime().getV8Internal().functionSetScriptSource(this, scriptSource);
+        }
+        return success;
+    }
+
+    @Override
     public boolean setSourceCode(String sourceCodeString) throws JavetException {
         boolean success = false;
         if (getJSFunctionType().isUserDefined()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
-            checkV8Runtime();
-            success = v8Runtime.getV8Internal().functionSetSourceCode(this, sourceCodeString);
+            success = checkV8Runtime().getV8Internal().functionSetSourceCode(this, sourceCodeString);
         }
         return success;
     }

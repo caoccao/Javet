@@ -169,6 +169,14 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionSetScriptSource
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetScriptSource
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionSetSourceCode
  * Signature: (JJILjava/lang/String;)Z
  */

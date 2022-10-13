@@ -93,6 +93,11 @@ public final class V8Internal {
         return v8Runtime.functionGetSourceCode(iV8ValueFunction);
     }
 
+    public boolean functionSetScriptSource(
+            IV8ValueFunction iV8ValueFunction, IV8ValueFunction.ScriptSource scriptSource) throws JavetException {
+        return v8Runtime.functionSetScriptSource(iV8ValueFunction, scriptSource);
+    }
+
     @SuppressWarnings("RedundantThrows")
     public boolean functionSetSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
         return v8Runtime.functionSetSourceCode(iV8ValueFunction, sourceCode);

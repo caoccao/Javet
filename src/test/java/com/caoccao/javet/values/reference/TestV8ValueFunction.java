@@ -970,6 +970,29 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGetAndSetScriptSource() throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor("JSON.stringify").execute()) {
+            assertNull(v8ValueFunction.getScriptSource());
+        }
+        String originalCodeString = "() => undefined";
+        String crackedCodeString = "() => 1";
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(originalCodeString).execute()) {
+            IV8ValueFunction.ScriptSource scriptSource = v8ValueFunction.getScriptSource();
+            assertEquals(originalCodeString, scriptSource.getCode());
+            assertEquals(0, scriptSource.getStartPosition());
+            assertEquals(originalCodeString.length(), scriptSource.getEndPosition());
+            assertTrue(v8ValueFunction.call(null).isUndefined());
+            scriptSource = new IV8ValueFunction.ScriptSource(crackedCodeString);
+            assertTrue(v8ValueFunction.setScriptSource(scriptSource));
+            assertEquals(1, v8ValueFunction.callInteger(null));
+            scriptSource = v8ValueFunction.getScriptSource();
+            assertEquals(crackedCodeString, scriptSource.getCode());
+            assertEquals(0, scriptSource.getStartPosition());
+            assertEquals(crackedCodeString.length(), scriptSource.getEndPosition());
+        }
+    }
+
+    @Test
     public void testIntStream() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function

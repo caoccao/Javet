@@ -819,6 +819,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.functionGetSourceCode(handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
+    public boolean functionSetScriptSource(
+            IV8ValueFunction iV8ValueFunction, IV8ValueFunction.ScriptSource scriptSource) throws JavetException {
+        return v8Native.functionSetScriptSource(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), scriptSource);
+    }
+
     /**
      * Sets source code of a function.
      *

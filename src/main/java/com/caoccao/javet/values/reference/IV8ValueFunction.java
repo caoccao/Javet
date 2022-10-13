@@ -322,6 +322,10 @@ public interface IV8ValueFunction extends IV8ValueObject {
 
     /**
      * Gets script source.
+     * <p>
+     * A user-defined JavaScript function is part of a script from start position to end position.
+     * This method returns the source code of the whole script with the start position and end position.
+     * If it is not a user-defined JavaScript function, the return value is null.
      *
      * @return the script source
      * @throws JavetException the javet exception
@@ -359,6 +363,16 @@ public interface IV8ValueFunction extends IV8ValueObject {
     default boolean isGeneratorFunction() throws JavetException {
         return hasInternalType(V8ValueInternalType.GeneratorFunction);
     }
+
+    /**
+     * Sets script source.
+     *
+     * @param scriptSource the script source
+     * @return the script source
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean setScriptSource(ScriptSource scriptSource) throws JavetException;
 
     /**
      * Sets source code.
@@ -421,9 +435,20 @@ public interface IV8ValueFunction extends IV8ValueObject {
             Objects.requireNonNull(code, "Code cannot be null.");
             assert startPosition >= 0 : "Start position must be no less than 0.";
             assert endPosition > startPosition : "End position must be greater than start position.";
+            assert endPosition <= code.length() : "End position must be no greater than the length of the code.";
             this.code = code;
             this.startPosition = startPosition;
             this.endPosition = endPosition;
+        }
+
+        /**
+         * Instantiates a new Script source.
+         *
+         * @param code the code
+         * @since 2.0.1
+         */
+        public ScriptSource(String code) {
+            this(Objects.requireNonNull(code), 0, code.length());
         }
 
         /**
