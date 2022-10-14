@@ -602,28 +602,32 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     bool success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
-        v8::internal::DisallowGarbageCollection disallowGarbageCollection;
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
-        auto v8InternalShared = v8InternalFunction.shared();
-        if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-            auto v8InternalScopeInfo = v8InternalShared.scope_info();
-            if (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
-                auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-                auto mSourceCode = (jstring)jniEnv->CallObjectMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetCode);
-                auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
-                int startPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetStartPosition);
-                int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetEndPosition);
-                auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-                if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
-                    V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+        v8Context->GetIsolate()->LowMemoryNotification();
+        {
+            v8::internal::DisallowGarbageCollection disallowGarbageCollection;
+            auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+            auto v8InternalShared = v8InternalFunction.shared();
+            if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
+                auto v8InternalScopeInfo = v8InternalShared.scope_info();
+                if (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
+                    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+                    auto mSourceCode = (jstring)jniEnv->CallObjectMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetCode);
+                    auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
+                    int startPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetStartPosition);
+                    int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetEndPosition);
+                    auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
+                    if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
+                        V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
+                        v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                    }
+                    v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                    v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
+                    DELETE_LOCAL_REF(jniEnv, mSourceCode);
+                    success = true;
                 }
-                v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
-                DELETE_LOCAL_REF(jniEnv, mSourceCode);
-                success = true;
             }
         }
+        v8Context->GetIsolate()->LowMemoryNotification();
     }
     return success;
 }
