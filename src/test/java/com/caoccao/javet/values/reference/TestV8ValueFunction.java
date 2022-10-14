@@ -557,7 +557,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ValueSource(booleans = {false, true})
     public void testContextScope(boolean nativeEnabled) throws JavetException {
         EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
-                nativeEnabled ? IV8ValueFunction.SetSourceCodeOption.DEFAULT_NATIVE_OPTIONS : null;
+                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
@@ -846,7 +846,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ValueSource(booleans = {false, true})
     public void testGetAndSetMalformedSourceCode(boolean nativeEnabled) throws JavetException {
         EnumSet<IV8ValueFunction.SetSourceCodeOption> optionsWithoutTrim =
-                nativeEnabled ? IV8ValueFunction.SetSourceCodeOption.DEFAULT_NATIVE_OPTIONS : null;
+                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
         EnumSet<IV8ValueFunction.SetSourceCodeOption> optionsWithTrim = nativeEnabled
                 ? EnumSet.allOf(IV8ValueFunction.SetSourceCodeOption.class)
                 : EnumSet.of(IV8ValueFunction.SetSourceCodeOption.TrimTailingCharacters);
@@ -888,7 +888,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testGetAndSetRegularSourceCode(boolean nativeEnabled) throws JavetException {
         final int functionCount = 5;
         EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
-                nativeEnabled ? IV8ValueFunction.SetSourceCodeOption.DEFAULT_NATIVE_OPTIONS : null;
+                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
         String functionStatementTemplate = "var {0} = {1};\n";
         String functionNameTemplate = "f{0}";
         String[][] functionBodyTemplates = new String[][]{
