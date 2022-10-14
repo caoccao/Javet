@@ -386,7 +386,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @since 0.8.8
      */
     default boolean setSourceCode(String sourceCodeString) throws JavetException {
-        return setSourceCode(sourceCodeString, SetSourceCodeOption.DEFAULT_OPTIONS);
+        return setSourceCode(sourceCodeString, null);
     }
 
     /**
@@ -444,22 +444,22 @@ public interface IV8ValueFunction extends IV8ValueObject {
         TrimTailingCharacters;
 
         /**
-         * The constant DEFAULT_OPTIONS.
+         * The constant OPTIONS_GC.
          * <p>
          * Note: Be careful, it is mutable.
          *
          * @since 2.0.1
          */
-        public static final EnumSet<SetSourceCodeOption> DEFAULT_OPTIONS =
+        public static final EnumSet<SetSourceCodeOption> OPTIONS_GC =
                 EnumSet.of(EnforcePreGC, EnforcePostGC);
         /**
-         * The constant DEFAULT_NATIVE_OPTIONS.
+         * The constant OPTIONS_NATIVE_GC.
          * <p>
          * Note: Be careful, it is mutable.
          *
          * @since 2.0.1
          */
-        public static final EnumSet<SetSourceCodeOption> DEFAULT_NATIVE_OPTIONS =
+        public static final EnumSet<SetSourceCodeOption> OPTIONS_NATIVE_GC =
                 EnumSet.of(EnforcePreGC, EnforcePostGC, Native);
     }
 

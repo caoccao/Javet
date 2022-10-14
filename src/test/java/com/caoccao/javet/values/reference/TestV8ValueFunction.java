@@ -783,7 +783,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ValueSource(booleans = {false, true})
     public void testGetAndSetExtraLongSourceCode(boolean nativeEnabled) throws JavetException {
         EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
-                nativeEnabled ? IV8ValueFunction.SetSourceCodeOption.DEFAULT_NATIVE_OPTIONS : null;
+                nativeEnabled ? IV8ValueFunction.SetSourceCodeOption.OPTIONS_NATIVE_GC : null;
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private int callCount = 0;
 
