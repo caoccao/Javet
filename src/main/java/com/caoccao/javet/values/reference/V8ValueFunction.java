@@ -135,7 +135,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public boolean setScriptSource(ScriptSource scriptSource) throws JavetException {
         boolean success = false;
-        if (getJSFunctionType().isUserDefined() && scriptSource != null) {
+        if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction() && scriptSource != null) {
             success = checkV8Runtime().getV8Internal().functionSetScriptSource(this, scriptSource);
         }
         return success;
@@ -146,7 +146,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             String sourceCodeString,
             EnumSet<SetSourceCodeOption> options) throws JavetException {
         boolean success = false;
-        if (getJSFunctionType().isUserDefined()
+        if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
             if (options != null && options.contains(SetSourceCodeOption.TrimTailingCharacters)) {
                 sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
@@ -157,8 +157,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                 success = v8Internal.functionSetSourceCode(this, sourceCodeString);
             } else {
                 // The position calculation is performed below.
-                IV8ValueFunction.ScriptSource originalScriptSource =
-                        v8Internal.functionGetScriptSource(this);
+                ScriptSource originalScriptSource = v8Internal.functionGetScriptSource(this);
                 final int originalLength = originalScriptSource.getCode().length();
                 final int originalStartPosition = originalScriptSource.getStartPosition();
                 final int originalEndPosition = originalScriptSource.getEndPosition();
@@ -167,7 +166,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                 sb.append(originalScriptSource.getCode(), 0, originalStartPosition);
                 sb.append(sourceCodeString);
                 sb.append(originalScriptSource.getCode(), originalEndPosition, originalLength);
-                IV8ValueFunction.ScriptSource newScriptSource = new ScriptSource(
+                ScriptSource newScriptSource = new ScriptSource(
                         sb.toString(), originalStartPosition, originalStartPosition + sourceCodeString.length());
                 success = v8Internal.functionSetScriptSource(this, newScriptSource);
             }
