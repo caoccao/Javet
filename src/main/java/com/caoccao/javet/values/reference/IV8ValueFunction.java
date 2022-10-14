@@ -21,11 +21,11 @@ import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.math.BigInteger;
+import java.util.EnumSet;
 import java.util.Objects;
 
 /**
@@ -375,7 +375,21 @@ public interface IV8ValueFunction extends IV8ValueObject {
     boolean setScriptSource(ScriptSource scriptSource) throws JavetException;
 
     /**
-     * Sets source code.
+     * Sets source code with default options.
+     * 1. Do not perform the position calculation at the native layer.
+     * 2. Do not trim the tailing characters.
+     *
+     * @param sourceCodeString the source code string
+     * @return the source code
+     * @throws JavetException the javet exception
+     * @since 0.8.8
+     */
+    default boolean setSourceCode(String sourceCodeString) throws JavetException {
+        return setSourceCode(sourceCodeString, null);
+    }
+
+    /**
+     * Sets source code with options.
      * <p>
      * Note 1: The source code is shared among all function objects.
      * So the caller is responsible for restoring the original source code,
@@ -383,34 +397,38 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * of the next function call is incorrect.
      * Note 2: The source code must be verified by compile(). Malformed source
      * code will crash V8.
-     * Note 3: The source code must not end with any of ' ', ';', '\n',
+     * Note 3: Sometimes the source code must not end with any of ' ', ';', '\n',
      * though technically the source code is valid. Otherwise, V8 will crash.
      *
      * @param sourceCodeString the source code string
      * @return the source code
      * @throws JavetException the javet exception
-     * @since 0.8.8
+     * @since 2.0.1
      */
-    boolean setSourceCode(String sourceCodeString) throws JavetException;
+    boolean setSourceCode(
+            String sourceCodeString,
+            EnumSet<SetSourceCodeOption> options) throws JavetException;
 
     /**
-     * Sets source code with invalid tailing characters trimmed or not.
-     * <p>
-     * The source code must not end with ' ', '\n', '\r', 't', ';',
-     * otherwise, V8 will crash immediately.
+     * The enum Set source code option.
      *
-     * @param sourceCodeString      the source code string
-     * @param trimTailingCharacters the trim tailing characters
-     * @return the source code
-     * @throws JavetException the javet exception
-     * @since 1.0.0
+     * @since 2.0.1
      */
-    default boolean setSourceCode(
-            String sourceCodeString, boolean trimTailingCharacters) throws JavetException {
-        if (trimTailingCharacters) {
-            sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
-        }
-        return setSourceCode(sourceCodeString);
+    enum SetSourceCodeOption {
+        /**
+         * Native: The position calculation is performed at the native layer.
+         * This option is not enabled by default.
+         *
+         * @since 2.0.1
+         */
+        Native,
+        /**
+         * TrimTailingCharacters: Sometimes the source code must not end with ' ', '\n', '\r', 't', ';',
+         * otherwise, V8 will crash immediately.
+         *
+         * @since 2.0.1
+         */
+        TrimTailingCharacters;
     }
 
     /**

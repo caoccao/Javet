@@ -21,10 +21,13 @@ import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Internal;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
+import java.util.EnumSet;
 import java.util.Objects;
 
 /**
@@ -139,11 +142,35 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public boolean setSourceCode(String sourceCodeString) throws JavetException {
+    public boolean setSourceCode(
+            String sourceCodeString,
+            EnumSet<SetSourceCodeOption> options) throws JavetException {
         boolean success = false;
         if (getJSFunctionType().isUserDefined()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
-            success = checkV8Runtime().getV8Internal().functionSetSourceCode(this, sourceCodeString);
+            if (options != null && options.contains(SetSourceCodeOption.TrimTailingCharacters)) {
+                sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
+            }
+            V8Internal v8Internal = checkV8Runtime().getV8Internal();
+            if (options != null && options.contains(SetSourceCodeOption.Native)) {
+                // The position calculation is performed at the native layer.
+                success = v8Internal.functionSetSourceCode(this, sourceCodeString);
+            } else {
+                // The position calculation is performed below.
+                IV8ValueFunction.ScriptSource originalScriptSource =
+                        v8Internal.functionGetScriptSource(this);
+                final int originalLength = originalScriptSource.getCode().length();
+                final int originalStartPosition = originalScriptSource.getStartPosition();
+                final int originalEndPosition = originalScriptSource.getEndPosition();
+                final int newLength = originalLength - (originalEndPosition - originalStartPosition) + sourceCodeString.length();
+                StringBuilder sb = new StringBuilder(newLength);
+                sb.append(originalScriptSource.getCode(), 0, originalStartPosition);
+                sb.append(sourceCodeString);
+                sb.append(originalScriptSource.getCode(), originalEndPosition, originalLength);
+                IV8ValueFunction.ScriptSource newScriptSource = new ScriptSource(
+                        sb.toString(), originalStartPosition, originalStartPosition + sourceCodeString.length());
+                success = v8Internal.functionSetScriptSource(this, newScriptSource);
+            }
         }
         return success;
     }

@@ -35,6 +35,8 @@ import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.text.MessageFormat;
 import java.time.ZoneId;
@@ -551,14 +553,17 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         v8Runtime.lowMemoryNotification();
     }
 
-    @Test
-    public void testContextScope() throws JavetException {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void testContextScope(boolean nativeEnabled) throws JavetException {
+        EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
+                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
                 assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
                 assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                if (v8ValueFunction.setSourceCode("() => a + 2")) {
+                if (v8ValueFunction.setSourceCode("() => a + 2", options)) {
                     assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                     return v8ValueFunction.callInteger(null);
                 } else {
@@ -774,8 +779,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
     }
 
-    @Test
-    public void testGetAndSetExtraLongSourceCode() throws JavetException {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void testGetAndSetExtraLongSourceCode(boolean nativeEnabled) throws JavetException {
+        EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
+                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private int callCount = 0;
 
@@ -788,10 +796,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                 String originalCodeString = v8ValueFunction.getSourceCode();
                 String newCodeString = originalCodeString + " /*\n測試\nI am longer\n*/ + 1";
-                v8ValueFunction.setSourceCode(newCodeString);
+                v8ValueFunction.setSourceCode(newCodeString, options);
                 int result = v8ValueFunction.callInteger(null, 1);
                 assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                v8ValueFunction.setSourceCode(originalCodeString);
+                v8ValueFunction.setSourceCode(originalCodeString, options);
                 ++callCount;
                 return result;
             }
@@ -834,17 +842,24 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
     }
 
-    @Test
-    public void testGetAndSetMalformedSourceCode() throws JavetException {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void testGetAndSetMalformedSourceCode(boolean nativeEnabled) throws JavetException {
+        EnumSet<IV8ValueFunction.SetSourceCodeOption> optionsWithoutTrim =
+                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
+        EnumSet<IV8ValueFunction.SetSourceCodeOption> optionsWithTrim =
+                nativeEnabled
+                        ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native, IV8ValueFunction.SetSourceCodeOption.TrimTailingCharacters)
+                        : EnumSet.of(IV8ValueFunction.SetSourceCodeOption.TrimTailingCharacters);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public String test(V8ValueFunction v8ValueFunction) throws JavetException {
                 v8ValueFunction.callString(null);
                 String originalSourceCode = v8ValueFunction.getSourceCode();
-                v8ValueFunction.setSourceCode("() => 'a' \n ;\n  ", true);
+                v8ValueFunction.setSourceCode("() => 'a' \n ;\n  ", optionsWithTrim);
                 String resultString = v8ValueFunction.callString(null);
                 assertEquals("a", resultString);
-                v8ValueFunction.setSourceCode(originalSourceCode);
+                v8ValueFunction.setSourceCode(originalSourceCode, optionsWithoutTrim);
                 return resultString;
             }
         };
@@ -869,9 +884,12 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
      *
      * @throws JavetException the javet exception
      */
-    @Test
-    public void testGetAndSetRegularSourceCode() throws JavetException {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void testGetAndSetRegularSourceCode(boolean nativeEnabled) throws JavetException {
         final int functionCount = 5;
+        EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
+                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
         String functionStatementTemplate = "var {0} = {1};\n";
         String functionNameTemplate = "f{0}";
         String[][] functionBodyTemplates = new String[][]{
@@ -946,11 +964,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                             "Calling the function to build the cache and the result should match.");
                     assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
                             "The cache is ready and the scope type should be [Function].");
-                    assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i)),
+                    assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i), options),
                             "Updating the source code should pass.");
                     assertEquals(i + 1, v8ValueFunction.callInteger(null),
                             "Calling the new function and the result should match.");
-                    assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i)),
+                    assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i), options),
                             "Restoring the source code should pass.");
                     assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
                             "The cache is refreshed and the scope type should be [Function].");
