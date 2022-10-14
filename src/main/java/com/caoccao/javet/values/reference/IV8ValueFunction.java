@@ -35,6 +35,7 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public interface IV8ValueFunction extends IV8ValueObject {
+
     /**
      * Call a function by objects and return V8 value.
      *
@@ -385,7 +386,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @since 0.8.8
      */
     default boolean setSourceCode(String sourceCodeString) throws JavetException {
-        return setSourceCode(sourceCodeString, null);
+        return setSourceCode(sourceCodeString, SetSourceCodeOption.DEFAULT_OPTIONS);
     }
 
     /**
@@ -416,6 +417,18 @@ public interface IV8ValueFunction extends IV8ValueObject {
      */
     enum SetSourceCodeOption {
         /**
+         * EnforcePreGC: The GC is called before the set call happens.
+         *
+         * @since 2.0.1
+         */
+        EnforcePreGC,
+        /**
+         * EnforcePostGC: The GC is called after the set call happens.
+         *
+         * @since 2.0.1
+         */
+        EnforcePostGC,
+        /**
          * Native: The position calculation is performed at the native layer.
          * This option is not enabled by default.
          *
@@ -429,6 +442,25 @@ public interface IV8ValueFunction extends IV8ValueObject {
          * @since 2.0.1
          */
         TrimTailingCharacters;
+
+        /**
+         * The constant DEFAULT_OPTIONS.
+         * <p>
+         * Note: Be careful, it is mutable.
+         *
+         * @since 2.0.1
+         */
+        public static final EnumSet<SetSourceCodeOption> DEFAULT_OPTIONS =
+                EnumSet.of(EnforcePreGC, EnforcePostGC);
+        /**
+         * The constant DEFAULT_NATIVE_OPTIONS.
+         * <p>
+         * Note: Be careful, it is mutable.
+         *
+         * @since 2.0.1
+         */
+        public static final EnumSet<SetSourceCodeOption> DEFAULT_NATIVE_OPTIONS =
+                EnumSet.of(EnforcePreGC, EnforcePostGC, Native);
     }
 
     /**

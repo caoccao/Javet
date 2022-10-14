@@ -602,32 +602,28 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     bool success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
-        v8Context->GetIsolate()->LowMemoryNotification();
-        {
-            v8::internal::DisallowGarbageCollection disallowGarbageCollection;
-            auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
-            auto v8InternalShared = v8InternalFunction.shared();
-            if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-                auto v8InternalScopeInfo = v8InternalShared.scope_info();
-                if (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
-                    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-                    auto mSourceCode = (jstring)jniEnv->CallObjectMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetCode);
-                    auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
-                    int startPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetStartPosition);
-                    int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetEndPosition);
-                    auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-                    if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
-                        V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-                        v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                    }
-                    v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                    v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
-                    DELETE_LOCAL_REF(jniEnv, mSourceCode);
-                    success = true;
+        v8::internal::DisallowGarbageCollection disallowGarbageCollection;
+        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto v8InternalShared = v8InternalFunction.shared();
+        if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
+            auto v8InternalScopeInfo = v8InternalShared.scope_info();
+            if (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
+                auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+                auto mSourceCode = (jstring)jniEnv->CallObjectMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetCode);
+                auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
+                int startPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetStartPosition);
+                int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetEndPosition);
+                auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
+                if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
+                    V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
+                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
                 }
+                v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
+                DELETE_LOCAL_REF(jniEnv, mSourceCode);
+                success = true;
             }
         }
-        v8Context->GetIsolate()->LowMemoryNotification();
     }
     return success;
 }
@@ -637,89 +633,85 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     bool success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
-        v8Context->GetIsolate()->LowMemoryNotification();
-        {
-            v8::internal::DisallowGarbageCollection disallowGarbageCollection;
-            auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
-            auto v8InternalShared = v8InternalFunction.shared();
-            if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-                auto v8InternalScopeInfo = v8InternalShared.scope_info();
-                while (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE && v8InternalScopeInfo.HasPositionInfo()) {
-                    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-                    auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-                    auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
-                    const int startPosition = v8InternalShared.StartPosition();
-                    const int endPosition = v8InternalShared.EndPosition();
-                    const int sourceLength = v8InternalSource.length();
+        v8::internal::DisallowGarbageCollection disallowGarbageCollection;
+        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto v8InternalShared = v8InternalFunction.shared();
+        if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
+            auto v8InternalScopeInfo = v8InternalShared.scope_info();
+            while (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE && v8InternalScopeInfo.HasPositionInfo()) {
+                auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+                auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
+                auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
+                const int startPosition = v8InternalShared.StartPosition();
+                const int endPosition = v8InternalShared.EndPosition();
+                const int sourceLength = v8InternalSource.length();
 
-                    // Build the new source code.
-                    auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
+                // Build the new source code.
+                auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
 
-                    V8LocalString newSourceCode;
-                    if (startPosition > 0) {
-                        int utf8Length = 0;
-                        auto stdStringHeader(v8InternalSource.ToCString(
-                            V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-                            0, startPosition, &utf8Length));
-                        auto v8MaybeLocalStringHeader = v8::String::NewFromUtf8(
-                            v8Context->GetIsolate(), stdStringHeader.get(), v8::NewStringType::kNormal, utf8Length);
-                        if (v8MaybeLocalStringHeader.IsEmpty()) {
-                            Javet::Exceptions::HandlePendingException(
-                                jniEnv, v8Runtime, v8Context, "header could not be extracted from the source code");
-                            break;
-                        }
-                        newSourceCode = v8MaybeLocalStringHeader.ToLocalChecked();
+                V8LocalString newSourceCode;
+                if (startPosition > 0) {
+                    int utf8Length = 0;
+                    auto stdStringHeader(v8InternalSource.ToCString(
+                        V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
+                        0, startPosition, &utf8Length));
+                    auto v8MaybeLocalStringHeader = v8::String::NewFromUtf8(
+                        v8Context->GetIsolate(), stdStringHeader.get(), v8::NewStringType::kNormal, utf8Length);
+                    if (v8MaybeLocalStringHeader.IsEmpty()) {
+                        Javet::Exceptions::HandlePendingException(
+                            jniEnv, v8Runtime, v8Context, "header could not be extracted from the source code");
+                        break;
                     }
+                    newSourceCode = v8MaybeLocalStringHeader.ToLocalChecked();
+                }
+                if (newSourceCode.IsEmpty()) {
+                    newSourceCode = umSourceCode;
+                }
+                else {
+                    newSourceCode = v8::String::Concat(v8Context->GetIsolate(), newSourceCode, umSourceCode);
+                }
+                if (endPosition < sourceLength) {
+                    int utf8Length = 0;
+                    auto stdStringFooter(v8InternalSource.ToCString(
+                        V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
+                        endPosition, sourceLength - endPosition, &utf8Length));
+                    auto v8MaybeLocalStringFooter = v8::String::NewFromUtf8(
+                        v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length);
+                    if (v8MaybeLocalStringFooter.IsEmpty()) {
+                        Javet::Exceptions::HandlePendingException(
+                            jniEnv, v8Runtime, v8Context, "footer could not be extracted from the source code");
+                        break;
+                    }
+                    auto v8LocalStringFooter = v8MaybeLocalStringFooter.ToLocalChecked();
                     if (newSourceCode.IsEmpty()) {
-                        newSourceCode = umSourceCode;
+                        newSourceCode = v8LocalStringFooter;
                     }
                     else {
-                        newSourceCode = v8::String::Concat(v8Context->GetIsolate(), newSourceCode, umSourceCode);
+                        newSourceCode = v8::String::Concat(v8Context->GetIsolate(), newSourceCode, v8LocalStringFooter);
                     }
-                    if (endPosition < sourceLength) {
-                        int utf8Length = 0;
-                        auto stdStringFooter(v8InternalSource.ToCString(
-                            V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-                            endPosition, sourceLength - endPosition, &utf8Length));
-                        auto v8MaybeLocalStringFooter = v8::String::NewFromUtf8(
-                            v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length);
-                        if (v8MaybeLocalStringFooter.IsEmpty()) {
-                            Javet::Exceptions::HandlePendingException(
-                                jniEnv, v8Runtime, v8Context, "footer could not be extracted from the source code");
-                            break;
-                        }
-                        auto v8LocalStringFooter = v8MaybeLocalStringFooter.ToLocalChecked();
-                        if (newSourceCode.IsEmpty()) {
-                            newSourceCode = v8LocalStringFooter;
-                        }
-                        else {
-                            newSourceCode = v8::String::Concat(v8Context->GetIsolate(), newSourceCode, v8LocalStringFooter);
-                        }
-                    }
-
-                    // Discard compiled data and set lazy compile.
-                    if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
-                        V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-                        v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                    }
-
-                    /*
-                     * Set the source and update the start and end position.
-                     * Note: The source code is shared among all script objects, but position info is not.
-                     * So the caller is responsible for restoring the original source code,
-                     * otherwise the next script execution will likely fail because the position info
-                     * of the next script is incorrect.
-                     */
-                    const int newSourceLength = umSourceCode->Length();
-                    const int newEndPosition = startPosition + newSourceLength;
-                    v8InternalScript.set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                    v8InternalScopeInfo.SetPositionInfo(startPosition, newEndPosition);
-                    success = true;
-                    break;
                 }
+
+                // Discard compiled data and set lazy compile.
+                if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
+                    V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
+                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                }
+
+                /*
+                 * Set the source and update the start and end position.
+                 * Note: The source code is shared among all script objects, but position info is not.
+                 * So the caller is responsible for restoring the original source code,
+                 * otherwise the next script execution will likely fail because the position info
+                 * of the next script is incorrect.
+                 */
+                const int newSourceLength = umSourceCode->Length();
+                const int newEndPosition = startPosition + newSourceLength;
+                v8InternalScript.set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                v8InternalScopeInfo.SetPositionInfo(startPosition, newEndPosition);
+                success = true;
+                break;
             }
         }
-        v8Context->GetIsolate()->LowMemoryNotification();
     }
     return success;
 }

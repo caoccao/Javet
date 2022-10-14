@@ -148,27 +148,46 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
         boolean success = false;
         if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
-            if (options != null && options.contains(SetSourceCodeOption.TrimTailingCharacters)) {
+            boolean enforcePreGC = false;
+            boolean enforcePostGC = false;
+            boolean trimTailingCharacters = false;
+            boolean performNativeCalculation = false;
+            if (options != null) {
+                enforcePreGC = options.contains(SetSourceCodeOption.EnforcePreGC);
+                enforcePostGC = options.contains(SetSourceCodeOption.EnforcePostGC);
+                trimTailingCharacters = options.contains(SetSourceCodeOption.TrimTailingCharacters);
+                performNativeCalculation = options.contains(SetSourceCodeOption.Native);
+            }
+            if (trimTailingCharacters) {
                 sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
             }
             V8Internal v8Internal = checkV8Runtime().getV8Internal();
-            if (options != null && options.contains(SetSourceCodeOption.Native)) {
-                // The position calculation is performed at the native layer.
-                success = v8Internal.functionSetSourceCode(this, sourceCodeString);
-            } else {
-                // The position calculation is performed below.
-                ScriptSource originalScriptSource = v8Internal.functionGetScriptSource(this);
-                final int originalLength = originalScriptSource.getCode().length();
-                final int originalStartPosition = originalScriptSource.getStartPosition();
-                final int originalEndPosition = originalScriptSource.getEndPosition();
-                final int newLength = originalLength - (originalEndPosition - originalStartPosition) + sourceCodeString.length();
-                StringBuilder sb = new StringBuilder(newLength);
-                sb.append(originalScriptSource.getCode(), 0, originalStartPosition);
-                sb.append(sourceCodeString);
-                sb.append(originalScriptSource.getCode(), originalEndPosition, originalLength);
-                ScriptSource newScriptSource = new ScriptSource(
-                        sb.toString(), originalStartPosition, originalStartPosition + sourceCodeString.length());
-                success = v8Internal.functionSetScriptSource(this, newScriptSource);
+            if (enforcePreGC) {
+                v8Runtime.lowMemoryNotification();
+            }
+            try {
+                if (performNativeCalculation) {
+                    // The position calculation is performed at the native layer.
+                    success = v8Internal.functionSetSourceCode(this, sourceCodeString);
+                } else {
+                    // The position calculation is performed below.
+                    ScriptSource originalScriptSource = v8Internal.functionGetScriptSource(this);
+                    final int originalLength = originalScriptSource.getCode().length();
+                    final int originalStartPosition = originalScriptSource.getStartPosition();
+                    final int originalEndPosition = originalScriptSource.getEndPosition();
+                    final int newLength = originalLength - (originalEndPosition - originalStartPosition) + sourceCodeString.length();
+                    StringBuilder sb = new StringBuilder(newLength);
+                    sb.append(originalScriptSource.getCode(), 0, originalStartPosition);
+                    sb.append(sourceCodeString);
+                    sb.append(originalScriptSource.getCode(), originalEndPosition, originalLength);
+                    ScriptSource newScriptSource = new ScriptSource(
+                            sb.toString(), originalStartPosition, originalStartPosition + sourceCodeString.length());
+                    success = v8Internal.functionSetScriptSource(this, newScriptSource);
+                }
+            } finally {
+                if (enforcePostGC) {
+                    v8Runtime.lowMemoryNotification();
+                }
             }
         }
         return success;
