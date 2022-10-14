@@ -620,6 +620,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
                 }
                 v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
                 v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
+                DELETE_LOCAL_REF(jniEnv, mSourceCode);
                 success = true;
             }
         }

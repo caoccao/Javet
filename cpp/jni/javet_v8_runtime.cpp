@@ -52,8 +52,8 @@ namespace Javet {
             char const* utfChars = jniEnv->GetStringUTFChars(mV8FlagsString, nullptr);
             v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(mV8FlagsString));
             jniEnv->ReleaseStringUTFChars(mV8FlagsString, utfChars);
-            jniEnv->DeleteLocalRef(mV8FlagsString);
-            jniEnv->DeleteLocalRef(mV8Flags);
+            DELETE_LOCAL_REF(jniEnv, mV8FlagsString);
+            DELETE_LOCAL_REF(jniEnv, mV8Flags);
             jniEnv->DeleteLocalRef(jclassV8Flags);
         }
     }
@@ -307,9 +307,7 @@ namespace Javet {
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8Value);
         if (v8TryCatch.HasCaught()) {
-            if (externalV8Value != nullptr) {
-                jniEnv->DeleteLocalRef(externalV8Value);
-            }
+            DELETE_LOCAL_REF(jniEnv, externalV8Value);
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
         }
         return externalV8Value;
