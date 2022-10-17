@@ -424,6 +424,8 @@ public interface IV8ValueFunction extends IV8ValueObject {
 
     /**
      * The type Script source.
+     * <p>
+     * It is immutable.
      *
      * @since 2.0.1
      */
@@ -471,6 +473,16 @@ public interface IV8ValueFunction extends IV8ValueObject {
         }
 
         /**
+         * Gets code snippet from the start position to the end position.
+         *
+         * @return the code snippet
+         * @since 2.0.1
+         */
+        public String getCodeSnippet() {
+            return code.substring(startPosition, endPosition);
+        }
+
+        /**
          * Gets end position.
          *
          * @return the end position
@@ -497,7 +509,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
          * @return a new script source
          * @since 2.0.1
          */
-        public ScriptSource replace(String codeSnippet) {
+        public ScriptSource setCodeSnippet(String codeSnippet) {
             if (codeSnippet != null && codeSnippet.length() > 0) {
                 final int originalCodeLength = code.length();
                 final int codeSnippetLength = codeSnippet.length();

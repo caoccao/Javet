@@ -167,7 +167,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                     success = v8Internal.functionSetSourceCode(this, sourceCodeString);
                 } else {
                     ScriptSource originalScriptSource = v8Internal.functionGetScriptSource(this);
-                    ScriptSource newScriptSource = originalScriptSource.replace(sourceCodeString);
+                    ScriptSource newScriptSource = originalScriptSource.setCodeSnippet(sourceCodeString);
                     success = v8Internal.functionSetScriptSource(this, newScriptSource);
                 }
             } finally {
