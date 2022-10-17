@@ -599,6 +599,59 @@ How about Bind?
     // func.bind(object); func(a, b, c); without return
     object.set("func", func); object.invokeVoid("func", a, b, c);
 
+Context and Scope Info
+======================
+
+Below is the quote from the V8 source code for the context and scope info. Javet allows ``copyContextFrom()`` and ``copyScopeInfoFrom()`` to borrow the context and scope info from another function. This simulates the live editing in the debug mode. Please note that ``setScriptSource()`` is required if the lexical context is different, otherwise a compilation error will be thrown.
+
+.. note::
+
+    JSFunctions are pairs (context, function code), sometimes also called
+    closures. A Context object is used to represent function contexts and
+    dynamically pushed 'with' contexts (or 'scopes' in ECMA-262 speak).
+
+    At runtime, the contexts build a stack in parallel to the execution
+    stack, with the top-most context being the current context. All contexts
+    have the following slots:
+
+    [ scope_info     ]  This is the scope info describing the current context. It
+                        contains the names of statically allocated context slots,
+                        and stack-allocated locals.  The names are needed for
+                        dynamic lookups in the presence of 'with' or 'eval', and
+                        for the debugger.
+
+    [ previous       ]  A pointer to the previous context.
+
+    [ extension      ]  Additional data. This slot is only available when
+                        ScopeInfo::HasContextExtensionSlot returns true.
+
+                        For native contexts, it contains the global object.
+                        For module contexts, it contains the module object.
+                        For await contexts, it contains the generator object.
+                        For var block contexts, it may contain an "extension
+                        object".
+                        For with contexts, it contains an "extension object".
+
+                        An "extension object" is used to dynamically extend a
+                        context with additional variables, namely in the
+                        implementation of the 'with' construct and the 'eval'
+                        construct.  For instance, Context::Lookup also searches
+                        the extension object for properties.  (Storing the
+                        extension object is the original purpose of this context
+                        slot, hence the name.)
+
+    In addition, function contexts with sloppy eval may have statically
+    allocated context slots to store local variables/functions that are accessed
+    from inner functions (via static context addresses) or through 'eval'
+    (dynamic context lookups).
+    The native context contains additional slots for fast access to native
+    properties.
+
+    Finally, with Harmony scoping, the JSFunction representing a top level
+    script will have the ScriptContext rather than a FunctionContext.
+    Script contexts from all top-level scripts are gathered in
+    ScriptContextTable.
+
 Tips
 ====
 

@@ -615,10 +615,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(2, originalV8ValueFunction.callInteger(null), "Populate the context.");
             assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
             assertTrue(crackedV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
+            assertTrue(crackedV8ValueFunction.copyContextFrom(originalV8ValueFunction));
             IV8ValueFunction.ScriptSource crackedScriptSource = new IV8ValueFunction.ScriptSource(
                     crackedCodeString, 35, 46);
             crackedV8ValueFunction.setScriptSource(crackedScriptSource);
-            assertTrue(crackedV8ValueFunction.copyContextFrom(originalV8ValueFunction));
             assertEquals(3, crackedV8ValueFunction.callInteger(null),
                     "The cracked function should be () => a + 2.");
             assertEquals(2, originalV8ValueFunction.callInteger(null),
