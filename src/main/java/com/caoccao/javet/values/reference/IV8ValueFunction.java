@@ -514,19 +514,17 @@ public interface IV8ValueFunction extends IV8ValueObject {
 
         @Override
         protected SetSourceCodeOptions clone() {
-            SetSourceCodeOptions options = new SetSourceCodeOptions();
-            options.setNativeCalculation(isNativeCalculation());
-            options.setPreGC(isPreGC());
-            options.setPostGC(isPostGC());
-            options.setTrimTailingCharacters(isTrimTailingCharacters());
-            return options;
+            return new SetSourceCodeOptions()
+                    .setNativeCalculation(isNativeCalculation())
+                    .setPreGC(isPreGC())
+                    .setPostGC(isPostGC())
+                    .setTrimTailingCharacters(isTrimTailingCharacters());
         }
 
         /**
          * NativeCalculation: The position calculation is performed at the native layer.
-         * This option is not enabled by default.
          *
-         * @return true : native, false: non-native
+         * @return true : enabled, false: disabled
          * @since 2.0.1
          */
         public boolean isNativeCalculation() {

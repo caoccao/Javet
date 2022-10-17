@@ -850,7 +850,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         IV8ValueFunction.SetSourceCodeOptions optionsWithoutTrim = nativeEnabled
                 ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
                 : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
-        IV8ValueFunction.SetSourceCodeOptions optionsWithTrim = optionsWithoutTrim.withTrimTailingCharacters(true);
+        IV8ValueFunction.SetSourceCodeOptions optionsWithTrim =
+                optionsWithoutTrim.withTrimTailingCharacters(true);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public String test(V8ValueFunction v8ValueFunction) throws JavetException {
