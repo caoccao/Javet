@@ -462,6 +462,16 @@ public interface IV8ValueFunction extends IV8ValueObject {
             this(Objects.requireNonNull(code), 0, code.length());
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ScriptSource that = (ScriptSource) o;
+            return getEndPosition() == that.getEndPosition()
+                    && getStartPosition() == that.getStartPosition()
+                    && getCode().equals(that.getCode());
+        }
+
         /**
          * Gets code.
          *
@@ -500,6 +510,11 @@ public interface IV8ValueFunction extends IV8ValueObject {
          */
         public int getStartPosition() {
             return startPosition;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getCode(), getEndPosition(), getStartPosition());
         }
 
         /**
