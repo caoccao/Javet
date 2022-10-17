@@ -27,7 +27,6 @@ import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
-import java.util.EnumSet;
 import java.util.Objects;
 
 /**
@@ -144,29 +143,20 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public boolean setSourceCode(
             String sourceCodeString,
-            EnumSet<SetSourceCodeOption> options) throws JavetException {
+            SetSourceCodeOptions options) throws JavetException {
+        Objects.requireNonNull(options, "Options cannot be null.");
         boolean success = false;
         if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
-            boolean enforcePreGC = false;
-            boolean enforcePostGC = false;
-            boolean trimTailingCharacters = false;
-            boolean performNativeCalculation = false;
-            if (options != null) {
-                enforcePreGC = options.contains(SetSourceCodeOption.EnforcePreGC);
-                enforcePostGC = options.contains(SetSourceCodeOption.EnforcePostGC);
-                trimTailingCharacters = options.contains(SetSourceCodeOption.TrimTailingCharacters);
-                performNativeCalculation = options.contains(SetSourceCodeOption.Native);
-            }
-            if (trimTailingCharacters) {
+            if (options.isTrimTailingCharacters()) {
                 sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
             }
             V8Internal v8Internal = checkV8Runtime().getV8Internal();
-            if (enforcePreGC) {
+            if (options.isPreGC()) {
                 v8Runtime.lowMemoryNotification();
             }
             try {
-                if (performNativeCalculation) {
+                if (options.isNativeCalculation()) {
                     // The position calculation is performed at the native layer.
                     success = v8Internal.functionSetSourceCode(this, sourceCodeString);
                 } else {
@@ -185,7 +175,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                     success = v8Internal.functionSetScriptSource(this, newScriptSource);
                 }
             } finally {
-                if (enforcePostGC) {
+                if (options.isPostGC()) {
                     v8Runtime.lowMemoryNotification();
                 }
             }

@@ -556,8 +556,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     public void testContextScope(boolean nativeEnabled) throws JavetException {
-        EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
-                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
+        IV8ValueFunction.SetSourceCodeOptions options = nativeEnabled
+                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
+                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
@@ -782,8 +783,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     public void testGetAndSetExtraLongSourceCode(boolean nativeEnabled) throws JavetException {
-        EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
-                nativeEnabled ? IV8ValueFunction.SetSourceCodeOption.OPTIONS_NATIVE_GC : null;
+        IV8ValueFunction.SetSourceCodeOptions options = nativeEnabled
+                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
+                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private int callCount = 0;
 
@@ -845,11 +847,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     public void testGetAndSetMalformedSourceCode(boolean nativeEnabled) throws JavetException {
-        EnumSet<IV8ValueFunction.SetSourceCodeOption> optionsWithoutTrim =
-                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
-        EnumSet<IV8ValueFunction.SetSourceCodeOption> optionsWithTrim = nativeEnabled
-                ? EnumSet.allOf(IV8ValueFunction.SetSourceCodeOption.class)
-                : EnumSet.of(IV8ValueFunction.SetSourceCodeOption.TrimTailingCharacters);
+        IV8ValueFunction.SetSourceCodeOptions optionsWithoutTrim = nativeEnabled
+                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
+                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
+        IV8ValueFunction.SetSourceCodeOptions optionsWithTrim = optionsWithoutTrim.withTrimTailingCharacters(true);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public String test(V8ValueFunction v8ValueFunction) throws JavetException {
@@ -887,8 +888,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ValueSource(booleans = {false, true})
     public void testGetAndSetRegularSourceCode(boolean nativeEnabled) throws JavetException {
         final int functionCount = 5;
-        EnumSet<IV8ValueFunction.SetSourceCodeOption> options =
-                nativeEnabled ? EnumSet.of(IV8ValueFunction.SetSourceCodeOption.Native) : null;
+        IV8ValueFunction.SetSourceCodeOptions options = nativeEnabled
+                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
+                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
         String functionStatementTemplate = "var {0} = {1};\n";
         String functionNameTemplate = "f{0}";
         String[][] functionBodyTemplates = new String[][]{

@@ -25,7 +25,6 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.math.BigInteger;
-import java.util.EnumSet;
 import java.util.Objects;
 
 /**
@@ -386,7 +385,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @since 0.8.8
      */
     default boolean setSourceCode(String sourceCodeString) throws JavetException {
-        return setSourceCode(sourceCodeString, null);
+        return setSourceCode(sourceCodeString, SetSourceCodeOptions.DEFAULT);
     }
 
     /**
@@ -402,66 +401,12 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * though technically the source code is valid. Otherwise, V8 will crash.
      *
      * @param sourceCodeString the source code string
+     * @param options          the options
      * @return the source code
      * @throws JavetException the javet exception
      * @since 2.0.1
      */
-    boolean setSourceCode(
-            String sourceCodeString,
-            EnumSet<SetSourceCodeOption> options) throws JavetException;
-
-    /**
-     * The enum Set source code option.
-     *
-     * @since 2.0.1
-     */
-    enum SetSourceCodeOption {
-        /**
-         * EnforcePreGC: The GC is called before the set call happens.
-         *
-         * @since 2.0.1
-         */
-        EnforcePreGC,
-        /**
-         * EnforcePostGC: The GC is called after the set call happens.
-         *
-         * @since 2.0.1
-         */
-        EnforcePostGC,
-        /**
-         * Native: The position calculation is performed at the native layer.
-         * This option is not enabled by default.
-         *
-         * @since 2.0.1
-         */
-        Native,
-        /**
-         * TrimTailingCharacters: Sometimes the source code must not end with ' ', '\n', '\r', 't', ';',
-         * otherwise, V8 will crash immediately.
-         *
-         * @since 2.0.1
-         */
-        TrimTailingCharacters;
-
-        /**
-         * The constant OPTIONS_GC.
-         * <p>
-         * Note: Be careful, it is mutable.
-         *
-         * @since 2.0.1
-         */
-        public static final EnumSet<SetSourceCodeOption> OPTIONS_GC =
-                EnumSet.of(EnforcePreGC, EnforcePostGC);
-        /**
-         * The constant OPTIONS_NATIVE_GC.
-         * <p>
-         * Note: Be careful, it is mutable.
-         *
-         * @since 2.0.1
-         */
-        public static final EnumSet<SetSourceCodeOption> OPTIONS_NATIVE_GC =
-                EnumSet.of(EnforcePreGC, EnforcePostGC, Native);
-    }
+    boolean setSourceCode(String sourceCodeString, SetSourceCodeOptions options) throws JavetException;
 
     /**
      * The type Script source.
@@ -529,6 +474,158 @@ public interface IV8ValueFunction extends IV8ValueObject {
          */
         public int getStartPosition() {
             return startPosition;
+        }
+    }
+
+    /**
+     * The enum Set source code options.
+     *
+     * @since 2.0.1
+     */
+    final class SetSourceCodeOptions implements Cloneable {
+        /**
+         * The constant DEFAULT with all options disabled.
+         *
+         * @since 2.0.1
+         */
+        public static final SetSourceCodeOptions DEFAULT = new SetSourceCodeOptions();
+        /**
+         * The constant GC with PreGC and PostGC enabled.
+         *
+         * @since 2.0.1
+         */
+        public static final SetSourceCodeOptions GC = new SetSourceCodeOptions()
+                .setPreGC(true).setPostGC(true);
+        /**
+         * The constant NATIVE_GC with PreGC, PostGC and NativeCalculation enabled.
+         *
+         * @since 2.0.1
+         */
+        public static final SetSourceCodeOptions NATIVE_GC = new SetSourceCodeOptions()
+                .setPreGC(true).setPostGC(true).setNativeCalculation(true);
+        private boolean nativeCalculation;
+        private boolean postGC;
+        private boolean preGC;
+        private boolean trimTailingCharacters;
+
+        private SetSourceCodeOptions() {
+            setPreGC(false).setPostGC(false).setNativeCalculation(false).setTrimTailingCharacters(false);
+        }
+
+        @Override
+        protected SetSourceCodeOptions clone() {
+            SetSourceCodeOptions options = new SetSourceCodeOptions();
+            options.setNativeCalculation(isNativeCalculation());
+            options.setPreGC(isPreGC());
+            options.setPostGC(isPostGC());
+            options.setTrimTailingCharacters(isTrimTailingCharacters());
+            return options;
+        }
+
+        /**
+         * NativeCalculation: The position calculation is performed at the native layer.
+         * This option is not enabled by default.
+         *
+         * @return true : native, false: non-native
+         * @since 2.0.1
+         */
+        public boolean isNativeCalculation() {
+            return nativeCalculation;
+        }
+
+        /**
+         * PostGC: The GC is called after the set call happens.
+         *
+         * @return true : enabled, false: disabled
+         * @since 2.0.1
+         */
+        public boolean isPostGC() {
+            return postGC;
+        }
+
+        /**
+         * PreGC: The GC is called before the set call happens.
+         *
+         * @return true : enabled, false: disabled
+         * @since 2.0.1
+         */
+        public boolean isPreGC() {
+            return preGC;
+        }
+
+        /**
+         * TrimTailingCharacters: Sometimes the source code must not end with ' ', '\n', '\r', 't', ';',
+         * otherwise, V8 will crash immediately.
+         *
+         * @return true : enabled, false: disabled
+         * @since 2.0.1
+         */
+        public boolean isTrimTailingCharacters() {
+            return trimTailingCharacters;
+        }
+
+        private SetSourceCodeOptions setNativeCalculation(boolean nativeCalculation) {
+            this.nativeCalculation = nativeCalculation;
+            return this;
+        }
+
+        private SetSourceCodeOptions setPostGC(boolean postGC) {
+            this.postGC = postGC;
+            return this;
+        }
+
+        private SetSourceCodeOptions setPreGC(boolean preGC) {
+            this.preGC = preGC;
+            return this;
+        }
+
+        private SetSourceCodeOptions setTrimTailingCharacters(boolean trimTailingCharacters) {
+            this.trimTailingCharacters = trimTailingCharacters;
+            return this;
+        }
+
+        /**
+         * Returns a new immutable options with NativeCalculation set.
+         *
+         * @param nativeCalculation the native calculation
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withNativeCalculation(boolean nativeCalculation) {
+            return clone().setNativeCalculation(nativeCalculation);
+        }
+
+        /**
+         * Returns a new immutable options with PostGC set.
+         *
+         * @param postGC the post gc
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withPostGC(boolean postGC) {
+            return clone().setPostGC(postGC);
+        }
+
+        /**
+         * Returns a new immutable options with PreGC set.
+         *
+         * @param preGC the pre gc
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withPreGC(boolean preGC) {
+            return clone().setPreGC(preGC);
+        }
+
+        /**
+         * Returns a new immutable options with TrimTrailingCharacters set.
+         *
+         * @param trimTrailingCharacters the trim trailing characters
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withTrimTailingCharacters(boolean trimTrailingCharacters) {
+            return clone().setTrimTailingCharacters(trimTrailingCharacters);
         }
     }
 }
