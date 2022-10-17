@@ -779,16 +779,35 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Copies scope info from source function to target function.
+     * Copies the context from source function to target function.
      *
      * @param targetIV8ValueFunction the target V8 value function
      * @param sourceIV8ValueFunction the source V8 value function
+     * @return true : copied, false : not copied
+     * @throws JavetException the javet exception
      * @since 2.0.1
      */
-    void functionCopyScopeInfoFrom(
+    boolean functionCopyContextFrom(
             IV8ValueFunction targetIV8ValueFunction,
-            IV8ValueFunction sourceIV8ValueFunction) {
-        v8Native.functionCopyScopeInfoFrom(handle,
+            IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        return v8Native.functionCopyContextFrom(handle,
+                targetIV8ValueFunction.getHandle(), targetIV8ValueFunction.getType().getId(),
+                sourceIV8ValueFunction.getHandle(), sourceIV8ValueFunction.getType().getId());
+    }
+
+    /**
+     * Copies the scope info from source function to target function.
+     *
+     * @param targetIV8ValueFunction the target V8 value function
+     * @param sourceIV8ValueFunction the source V8 value function
+     * @return true : copied, false : not copied
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean functionCopyScopeInfoFrom(
+            IV8ValueFunction targetIV8ValueFunction,
+            IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        return v8Native.functionCopyScopeInfoFrom(handle,
                 targetIV8ValueFunction.getHandle(), targetIV8ValueFunction.getType().getId(),
                 sourceIV8ValueFunction.getHandle(), sourceIV8ValueFunction.getType().getId());
     }

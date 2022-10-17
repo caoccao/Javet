@@ -78,10 +78,16 @@ public final class V8Internal {
         return v8Runtime.equals(iV8ValueReference1, iV8ValueReference2);
     }
 
-    public void functionCopyScopeInfoFrom(
+    public boolean functionCopyContextFrom(
             IV8ValueFunction targetIV8ValueFunction,
-            IV8ValueFunction sourceIV8ValueFunction) {
-        v8Runtime.functionCopyScopeInfoFrom(targetIV8ValueFunction, sourceIV8ValueFunction);
+            IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        return v8Runtime.functionCopyContextFrom(targetIV8ValueFunction, sourceIV8ValueFunction);
+    }
+
+    public boolean functionCopyScopeInfoFrom(
+            IV8ValueFunction targetIV8ValueFunction,
+            IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        return v8Runtime.functionCopyScopeInfoFrom(targetIV8ValueFunction, sourceIV8ValueFunction);
     }
 
     public IV8ValueFunction.ScriptSource functionGetScriptSource(IV8ValueFunction iV8ValueFunction) throws JavetException {

@@ -281,16 +281,30 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Copy scope info from the source V8 value function.
+     * Copy the context from the source V8 value function.
      * <p>
-     * This allows changing an existing function on the fly.
+     * This allows changing the existing function context on the fly.
      * It is similar to the live edit in a JavaScript debug tool.
      *
      * @param sourceIV8ValueFunction the source V8 value function
+     * @return true : copied, false : not copied
      * @throws JavetException the javet exception
      * @since 2.0.1
      */
-    void copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException;
+    boolean copyContextFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException;
+
+    /**
+     * Copy the scope info from the source V8 value function.
+     * <p>
+     * This allows changing the existing function scope info on the fly.
+     * It is similar to the live edit in a JavaScript debug tool.
+     *
+     * @param sourceIV8ValueFunction the source V8 value function
+     * @return true : copied, false : not copied
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException;
 
     /**
      * Gets internal properties.

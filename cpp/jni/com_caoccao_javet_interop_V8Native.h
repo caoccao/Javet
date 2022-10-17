@@ -145,10 +145,18 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    functionCopyScopeInfoFrom
- * Signature: (JJIJI)V
+ * Method:    functionCopyContextFrom
+ * Signature: (JJIJI)Z
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScopeInfoFrom
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyContextFrom
+  (JNIEnv *, jobject, jlong, jlong, jint, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionCopyScopeInfoFrom
+ * Signature: (JJIJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScopeInfoFrom
   (JNIEnv *, jobject, jlong, jlong, jint, jlong, jint);
 
 /*

@@ -528,11 +528,29 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScopeInfoFrom
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyContextFrom
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle,
     jlong targetV8ValueHandle, jint targetV8ValueType,
     jlong sourceV8ValueHandle, jint sourceV8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, targetV8ValueHandle);
+    jboolean success = false;
+    if (IS_V8_FUNCTION(targetV8ValueType) && IS_V8_FUNCTION(sourceV8ValueType)) {
+        auto sourceV8PersistentValuePointer = TO_V8_PERSISTENT_VALUE_POINTER(sourceV8ValueHandle);
+        auto sourceV8LocalValue = sourceV8PersistentValuePointer->Get(v8Context->GetIsolate());
+        auto targetV8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto sourceV8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*sourceV8LocalValue));
+        targetV8InternalFunction.set_context(sourceV8InternalFunction.context());
+        success = true;
+    }
+    return success;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScopeInfoFrom
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle,
+    jlong targetV8ValueHandle, jint targetV8ValueType,
+    jlong sourceV8ValueHandle, jint sourceV8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, targetV8ValueHandle);
+    jboolean success = false;
     if (IS_V8_FUNCTION(targetV8ValueType) && IS_V8_FUNCTION(sourceV8ValueType)) {
         auto sourceV8PersistentValuePointer = TO_V8_PERSISTENT_VALUE_POINTER(sourceV8ValueHandle);
         auto sourceV8LocalValue = sourceV8PersistentValuePointer->Get(v8Context->GetIsolate());
@@ -541,14 +559,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScope
         auto targetV8InternalShared = targetV8InternalFunction.shared();
         auto sourceV8InternalShared = sourceV8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(sourceV8InternalShared) && IS_USER_DEFINED_FUNCTION(targetV8InternalShared)) {
-            targetV8InternalShared.CopyFrom(sourceV8InternalShared);
             if (targetV8InternalShared.CanDiscardCompiled() && targetV8InternalShared.is_compiled()) {
                 auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
                 V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(targetV8InternalShared, v8InternalIsolate));
-                targetV8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                targetV8InternalShared.set_allows_lazy_compilation(true);
             }
+            targetV8InternalShared.CopyFrom(sourceV8InternalShared);
+            success = true;
         }
     }
+    return success;
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScriptSource
@@ -600,7 +620,7 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetScriptSource
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mScriptSource) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    bool success = false;
+    jboolean success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
         v8::internal::DisallowGarbageCollection disallowGarbageCollection;
         auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
@@ -616,7 +636,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
                 auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
                 if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
                     V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                    v8InternalShared.set_allows_lazy_compilation(true);
                 }
                 v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
                 v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
@@ -631,7 +651,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSourceCode
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mSourceCode) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    bool success = false;
+    jboolean success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
         v8::internal::DisallowGarbageCollection disallowGarbageCollection;
         auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
@@ -694,7 +714,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                 // Discard compiled data and set lazy compile.
                 if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
                     V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-                    v8InternalFunction.set_code(v8InternalIsolate->builtins()->code(V8InternalBuiltin::kCompileLazy), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                    v8InternalShared.set_allows_lazy_compilation(true);
                 }
 
                 /*

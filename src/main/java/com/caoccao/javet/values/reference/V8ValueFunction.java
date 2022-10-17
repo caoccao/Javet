@@ -85,10 +85,17 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public void copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+    public boolean copyContextFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
         assert this != Objects.requireNonNull(sourceIV8ValueFunction) : "The source function cannot be the caller.";
-        checkV8Runtime().getV8Internal().functionCopyScopeInfoFrom(
-                this, sourceIV8ValueFunction);
+        assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : "The source function cannot be in another V8 runtime.";
+        return v8Runtime.getV8Internal().functionCopyContextFrom(this, sourceIV8ValueFunction);
+    }
+
+    @Override
+    public boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        assert this != Objects.requireNonNull(sourceIV8ValueFunction) : "The source function cannot be the caller.";
+        assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : "The source function cannot be in another V8 runtime.";
+        return v8Runtime.getV8Internal().functionCopyScopeInfoFrom(this, sourceIV8ValueFunction);
     }
 
     @Override
