@@ -164,21 +164,10 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             }
             try {
                 if (options.isNativeCalculation()) {
-                    // The position calculation is performed at the native layer.
                     success = v8Internal.functionSetSourceCode(this, sourceCodeString);
                 } else {
-                    // The position calculation is performed below.
                     ScriptSource originalScriptSource = v8Internal.functionGetScriptSource(this);
-                    final int originalLength = originalScriptSource.getCode().length();
-                    final int originalStartPosition = originalScriptSource.getStartPosition();
-                    final int originalEndPosition = originalScriptSource.getEndPosition();
-                    final int newLength = originalLength - (originalEndPosition - originalStartPosition) + sourceCodeString.length();
-                    StringBuilder sb = new StringBuilder(newLength);
-                    sb.append(originalScriptSource.getCode(), 0, originalStartPosition);
-                    sb.append(sourceCodeString);
-                    sb.append(originalScriptSource.getCode(), originalEndPosition, originalLength);
-                    ScriptSource newScriptSource = new ScriptSource(
-                            sb.toString(), originalStartPosition, originalStartPosition + sourceCodeString.length());
+                    ScriptSource newScriptSource = originalScriptSource.replace(sourceCodeString);
                     success = v8Internal.functionSetScriptSource(this, newScriptSource);
                 }
             } finally {

@@ -489,6 +489,28 @@ public interface IV8ValueFunction extends IV8ValueObject {
         public int getStartPosition() {
             return startPosition;
         }
+
+        /**
+         * Returns a new script source with the code snippet replaced and positions re-calculated.
+         *
+         * @param codeSnippet the code snippet
+         * @return a new script source
+         * @since 2.0.1
+         */
+        public ScriptSource replace(String codeSnippet) {
+            if (codeSnippet != null && codeSnippet.length() > 0) {
+                final int originalCodeLength = code.length();
+                final int codeSnippetLength = codeSnippet.length();
+                final int newCodeLength = originalCodeLength - (endPosition - startPosition) + codeSnippetLength;
+                StringBuilder sb = new StringBuilder(newCodeLength);
+                sb.append(code, 0, startPosition);
+                sb.append(codeSnippet);
+                sb.append(code, endPosition, originalCodeLength);
+                return new ScriptSource(
+                        sb.toString(), startPosition, startPosition + codeSnippetLength);
+            }
+            return this;
+        }
     }
 
     /**
