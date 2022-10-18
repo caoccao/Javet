@@ -73,6 +73,10 @@ namespace Javet {
 
         // Reference
 
+        static jclass jclassV8Context;
+        static jmethodID jmethodIDV8ContextConstructor;
+        static jmethodID jmethodIDV8ContextGetHandle;
+
         static jclass jclassV8Module;
         static jmethodID jmethodIDV8ModuleConstructor;
         static jmethodID jmethodIDV8ModuleGetHandle;
@@ -200,6 +204,8 @@ namespace Javet {
             return std::make_unique<std::string>(*v8StringUtf8Value, v8StringUtf8Value.length());
         }
 
+        jobject ToExternalV8Context(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalContext& v8ContextValue);
+
         jobject ToExternalV8Module(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalModule& v8Module);
 
         jobject ToExternalV8Script(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalScript& v8Script);
@@ -232,6 +238,8 @@ namespace Javet {
         static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& mBoolean) {
             return v8::Boolean::New(v8Context->GetIsolate(), mBoolean);
         }
+
+        V8LocalContext ToV8Context(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj);
 
         static inline V8LocalValue ToV8Date(const V8LocalContext& v8Context, jlong& mLong) {
             return v8::Date::New(v8Context, (double)mLong).ToLocalChecked();

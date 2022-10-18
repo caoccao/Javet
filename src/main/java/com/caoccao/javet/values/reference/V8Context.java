@@ -16,65 +16,48 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.values.V8Value;
-
-import java.util.Objects;
 
 /**
- * The type V8 script.
+ * The type V8 context.
  *
- * @since 0.8.0
+ * @since 2.0.1
  */
 @SuppressWarnings("unchecked")
-public class V8Script extends V8ValueReference implements IV8Script {
-    /**
-     * The Resource name.
-     *
-     * @since 0.8.0
-     */
-    protected String resourceName;
+public class V8Context extends V8ValueReference implements IV8Context {
 
     /**
-     * Instantiates a new V8 script.
+     * Instantiates a new V8 context.
      *
      * @param v8Runtime the V8 runtime
      * @param handle    the handle
      * @throws JavetException the javet exception
-     * @since 0.8.0
+     * @since 2.0.1
      */
-    V8Script(V8Runtime v8Runtime, long handle) throws JavetException {
+    V8Context(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
-        resourceName = null;
     }
 
     @Override
-    @CheckReturnValue
-    public <T extends V8Value> T execute(boolean resultRequired) throws JavetException {
-        return checkV8Runtime().getV8Internal().scriptRun(this, resultRequired);
-    }
-
-    @Override
-    public String getResourceName() {
-        return resourceName;
+    public int getLength() {
+        // TODO
+        return 0;
     }
 
     @Override
     public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Script;
+        return V8ValueReferenceType.Context;
     }
 
     @Override
-    public void setResourceName(String resourceName) {
-        Objects.requireNonNull(resourceName);
-        this.resourceName = resourceName;
+    public void setLength(int length) {
+        // TODO
     }
 
     @Override
-    public V8Script toClone() throws JavetException {
+    public V8Context toClone() throws JavetException {
         return this;
     }
 }

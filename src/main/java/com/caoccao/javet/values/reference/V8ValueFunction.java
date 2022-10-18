@@ -50,6 +50,12 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     protected static final String ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER =
             "The source function cannot be the caller.";
     /**
+     * The constant ERROR_V8_CONTEXT_CANNOT_BE_NULL.
+     *
+     * @since 2.0.1
+     */
+    protected static final String ERROR_V8_CONTEXT_CANNOT_BE_NULL = "V8 context cannot be null.";
+    /**
      * The JS function type.
      *
      * @since 0.8.8
@@ -99,13 +105,6 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public boolean copyContextFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
-        assert this != Objects.requireNonNull(sourceIV8ValueFunction) : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER;
-        assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME;
-        return v8Runtime.getV8Internal().functionCopyContextFrom(this, sourceIV8ValueFunction);
-    }
-
-    @Override
     public boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
         assert this != Objects.requireNonNull(sourceIV8ValueFunction) : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER;
         assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME;
@@ -113,6 +112,11 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             return false;
         }
         return v8Runtime.getV8Internal().functionCopyScopeInfoFrom(this, sourceIV8ValueFunction);
+    }
+
+    @Override
+    public V8Context getContext() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionGetContext(this);
     }
 
     @Override
@@ -153,6 +157,12 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Function;
+    }
+
+    @Override
+    public boolean setContext(V8Context v8Context) throws JavetException {
+        Objects.requireNonNull(v8Context, ERROR_V8_CONTEXT_CANNOT_BE_NULL);
+        return checkV8Runtime().getV8Internal().functionSetContext(this, v8Context);
     }
 
     @Override

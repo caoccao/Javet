@@ -35,6 +35,7 @@
 #define IS_JAVA_ARGUMENTS(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueArguments)
 #define IS_JAVA_ARRAY(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueArray)
 #define IS_JAVA_ARRAY_BUFFER(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueArrayBuffer)
+#define IS_JAVA_CONTEXT(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8Context)
 #define IS_JAVA_DATA_VIEW(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueDataView)
 #define IS_JAVA_MODULE(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueModule)
 #define IS_JAVA_FUNCTION(jniEnv, obj) jniEnv->IsInstanceOf(obj, jclassV8ValueFunction)
@@ -107,6 +108,10 @@ namespace Javet {
             jmethodIDV8ValueZonedDateTimeToPrimitive = jniEnv->GetMethodID(jclassV8ValueZonedDateTime, JAVA_METHOD_TO_PRIMITIVE, "()J");
 
             // Reference
+
+            jclassV8Context = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8Context"));
+            jmethodIDV8ContextConstructor = jniEnv->GetMethodID(jclassV8Context, JAVA_CONSTRUCTOR_AND_SIGNATURE_FROM_HANDLE);
+            jmethodIDV8ContextGetHandle = jniEnv->GetMethodID(jclassV8Context, JAVA_METHOD_AND_SIGNATURE_GET_HANDLE);
 
             jclassV8Module = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8Module"));
             jmethodIDV8ModuleConstructor = jniEnv->GetMethodID(jclassV8Module, JAVA_CONSTRUCTOR_AND_SIGNATURE_FROM_HANDLE);
@@ -219,6 +224,10 @@ namespace Javet {
                 return ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8Array);
             }
             return nullptr;
+        }
+
+        jobject ToExternalV8Context(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalContext& v8ContextValue) {
+            return jniEnv->NewObject(jclassV8Context, jmethodIDV8ContextConstructor, externalV8Runtime, ToV8PersistentDataReference(v8Context, v8ContextValue));
         }
 
         jobject ToExternalV8Module(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalModule& v8Module) {
@@ -599,6 +608,14 @@ namespace Javet {
                 return V8LocalString();
             }
             return twoByteString.ToLocalChecked();
+        }
+
+        V8LocalContext ToV8Context(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj) {
+            if (IS_JAVA_CONTEXT(jniEnv, obj)) {
+                auto v8PersistentContext = TO_V8_PERSISTENT_CONTEXT_POINTER(jniEnv->CallLongMethod(obj, jmethodIDV8ContextGetHandle));
+                return v8PersistentContext->Get(v8Context->GetIsolate());
+            }
+            return V8LocalContext();
         }
 
         V8LocalValue ToV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj) {

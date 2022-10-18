@@ -119,6 +119,7 @@ namespace Javet {
                 WeakSet = 15,
                 Script = 20,
                 Module = 21,
+                Context = 22,
                 DataView = 30,
                 ArrayBuffer = 31,
                 SharedArrayBuffer = 32,

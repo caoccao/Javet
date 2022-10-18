@@ -602,7 +602,7 @@ How about Bind?
 Context and Scope Info
 ======================
 
-Below is the quote from the V8 source code for the context and scope info. Javet allows ``copyContextFrom()`` and ``copyScopeInfoFrom()`` to borrow the context and scope info from another function. This simulates the live editing in the debug mode. Please note that ``setScriptSource()`` is required if the lexical context is different, otherwise a compilation error will be thrown.
+Below is the quote from the V8 source code for the context and scope info. Javet allows ``getContext()``, ``setContext()`` and ``copyScopeInfoFrom()`` to borrow the context and scope info from another function. This simulates the live editing in the debug mode. Please note that ``setScriptSource()`` is required if the lexical context is different, otherwise a compilation error will be thrown.
 
 .. note::
 

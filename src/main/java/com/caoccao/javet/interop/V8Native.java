@@ -94,22 +94,22 @@ class V8Native implements IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     @Override
-    public native boolean functionCopyContextFrom(
-            long v8RuntimeHandle,
-            long targetV8ValueHandle, int targetV8ValueType,
-            long sourceV8ValueHandle, int sourceV8ValueType);
-
-    @Override
     public native boolean functionCopyScopeInfoFrom(
             long v8RuntimeHandle,
             long targetV8ValueHandle, int targetV8ValueType,
             long sourceV8ValueHandle, int sourceV8ValueType);
 
     @Override
+    public native Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object functionGetScriptSource(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
 
     @Override
     public native boolean functionSetScriptSource(

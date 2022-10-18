@@ -281,19 +281,6 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Copy the context from the source V8 value function.
-     * <p>
-     * This allows changing the existing function context on the fly.
-     * It is similar to the live edit in a JavaScript debug tool.
-     *
-     * @param sourceIV8ValueFunction the source V8 value function
-     * @return true : copied, false : not copied
-     * @throws JavetException the javet exception
-     * @since 2.0.1
-     */
-    boolean copyContextFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException;
-
-    /**
      * Copy the scope info from the source V8 value function.
      * <p>
      * This allows changing the existing function scope info on the fly.
@@ -305,6 +292,15 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @since 2.0.1
      */
     boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException;
+
+    /**
+     * Gets the V8 context.
+     *
+     * @return the V8 context
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    V8Context getContext() throws JavetException;
 
     /**
      * Gets internal properties.
@@ -379,10 +375,20 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
+     * Sets the V8 context.
+     *
+     * @param v8Context the V8 context
+     * @return the V8 context
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean setContext(V8Context v8Context) throws JavetException;
+
+    /**
      * Sets script source.
      *
      * @param scriptSource the script source
-     * @return the script source
+     * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 2.0.1
      */
@@ -392,9 +398,10 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * Sets source code with default options.
      * 1. Do not perform the position calculation at the native layer.
      * 2. Do not trim the tailing characters.
+     * 3. Do not call GC before of after the call.
      *
      * @param sourceCodeString the source code string
-     * @return the source code
+     * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 0.8.8
      */

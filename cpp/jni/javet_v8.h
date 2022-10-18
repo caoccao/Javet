@@ -114,6 +114,7 @@ using V8ScriptCompilerSource = v8::ScriptCompiler::Source;
 // To V8 Persistent
 
 #define TO_V8_PERSISTENT_ARRAY_POINTER(handle) *reinterpret_cast<V8PersistentArray*>(handle)
+#define TO_V8_PERSISTENT_CONTEXT_POINTER(handle) reinterpret_cast<V8PersistentContext*>(handle)
 #define TO_V8_PERSISTENT_DATA_POINTER(handle) reinterpret_cast<V8PersistentData*>(handle)
 #define TO_V8_PERSISTENT_FUNCTION_POINTER(handle) reinterpret_cast<V8PersistentFunction*>(handle)
 #define TO_V8_PERSISTENT_MAP_POINTER(handle) *reinterpret_cast<V8PersistentMap*>(handle)

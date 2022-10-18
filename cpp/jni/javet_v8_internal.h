@@ -54,6 +54,7 @@
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
 using V8internalBlockingBehavior = v8::internal::BlockingBehavior;
 using V8InternalBuiltin = v8::internal::Builtin;
+using V8InternalContext = v8::internal::Context;
 using V8InternalFlagList = v8::internal::FlagList;
 using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilder;
 using V8InternalIsolate = v8::internal::Isolate;

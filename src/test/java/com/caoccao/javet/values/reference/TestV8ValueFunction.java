@@ -599,36 +599,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testCopyContextFrom() throws JavetException {
-        String originalCodeString = "(() => {\n" +
-                "  let a = 1;\n" +
-                "  return () => a + 1;\n" +
-                "})();";
-        String crackedCodeString = "() => {\n" +
-                "  a++;\n" +
-                "  return a + 2;\n" +
-                "}";
-        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString)) {
-            IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
-            assertEquals("() => a + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
-            assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
-            assertEquals(2, originalV8ValueFunction.callInteger(null), "Populate the context.");
-            assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
-            IV8ValueFunction.ScriptSource crackedScriptSource = originalScriptSource.setCodeSnippet(crackedCodeString);
-            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedScriptSource.getCode())) {
-                assertTrue(crackedV8ValueFunction.copyContextFrom(originalV8ValueFunction));
-                // Variable 'a' in the closure context is incremented by the next function call.
-                assertEquals(4, crackedV8ValueFunction.callInteger(null),
-                        "The cracked function should be " + crackedCodeString + ".");
-            }
-            assertEquals(3, originalV8ValueFunction.callInteger(null),
-                    "The original function should be () => a + 1.");
-            IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
-            assertEquals(originalScriptSource, newScriptSource, "The script source should match.");
-        }
-    }
-
-    @Test
     public void testCopyScopeInfoFrom() throws JavetException {
         String dummyCodeString = "() => undefined;";
         String originalCodeString = "(() => {\n" +
@@ -807,6 +777,38 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                         "}; b;").execute()) {
             assertTrue(v8ValueFunction.isGeneratorFunction());
             assertTrue(v8ValueFunction.isAsyncFunction());
+        }
+    }
+
+    @Test
+    public void testGetAndSetContext() throws JavetException {
+        String originalCodeString = "(() => {\n" +
+                "  let a = 1;\n" +
+                "  return () => a + 1;\n" +
+                "})();";
+        String crackedCodeString = "() => {\n" +
+                "  a++;\n" +
+                "  return a + 2;\n" +
+                "}";
+        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString)) {
+            IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals("() => a + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
+            assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
+            assertEquals(2, originalV8ValueFunction.callInteger(null), "Populate the context.");
+            assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
+            IV8ValueFunction.ScriptSource crackedScriptSource = originalScriptSource.setCodeSnippet(crackedCodeString);
+            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedScriptSource.getCode());
+                 V8Context v8Context = originalV8ValueFunction.getContext()) {
+                assertNotNull(v8Context);
+                assertTrue(crackedV8ValueFunction.setContext(v8Context));
+                // Variable 'a' in the closure context is incremented by the next function call.
+                assertEquals(4, crackedV8ValueFunction.callInteger(null),
+                        "The cracked function should be " + crackedCodeString + ".");
+            }
+            assertEquals(3, originalV8ValueFunction.callInteger(null),
+                    "The original function should be () => a + 1.");
+            IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals(originalScriptSource, newScriptSource, "The script source should match.");
         }
     }
 
