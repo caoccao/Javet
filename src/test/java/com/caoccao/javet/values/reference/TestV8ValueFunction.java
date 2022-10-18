@@ -616,7 +616,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
             IV8ValueFunction.ScriptSource crackedScriptSource = originalScriptSource.setCodeSnippet(crackedCodeString);
             try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedScriptSource.getCode())) {
-                crackedV8ValueFunction.setScriptSource(crackedScriptSource);
                 assertTrue(crackedV8ValueFunction.copyContextFrom(originalV8ValueFunction));
                 // Variable 'a' in the closure context is incremented by the next function call.
                 assertEquals(4, crackedV8ValueFunction.callInteger(null),

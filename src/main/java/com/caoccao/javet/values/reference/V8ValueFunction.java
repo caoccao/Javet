@@ -36,6 +36,20 @@ import java.util.Objects;
  */
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     /**
+     * The constant ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME.
+     *
+     * @since 2.0.1
+     */
+    protected static final String ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME =
+            "The source function cannot be in another V8 runtime.";
+    /**
+     * The constant ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER.
+     *
+     * @since 2.0.1
+     */
+    protected static final String ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER =
+            "The source function cannot be the caller.";
+    /**
      * The JS function type.
      *
      * @since 0.8.8
@@ -86,15 +100,18 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @Override
     public boolean copyContextFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
-        assert this != Objects.requireNonNull(sourceIV8ValueFunction) : "The source function cannot be the caller.";
-        assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : "The source function cannot be in another V8 runtime.";
+        assert this != Objects.requireNonNull(sourceIV8ValueFunction) : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER;
+        assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME;
         return v8Runtime.getV8Internal().functionCopyContextFrom(this, sourceIV8ValueFunction);
     }
 
     @Override
     public boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
-        assert this != Objects.requireNonNull(sourceIV8ValueFunction) : "The source function cannot be the caller.";
-        assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : "The source function cannot be in another V8 runtime.";
+        assert this != Objects.requireNonNull(sourceIV8ValueFunction) : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER;
+        assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME;
+        if (!getJSFunctionType().isUserDefined() || !sourceIV8ValueFunction.getJSFunctionType().isUserDefined()) {
+            return false;
+        }
         return v8Runtime.getV8Internal().functionCopyScopeInfoFrom(this, sourceIV8ValueFunction);
     }
 
