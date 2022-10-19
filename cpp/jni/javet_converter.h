@@ -23,6 +23,7 @@
 #include "javet_monitor.h"
 #include "javet_native.h"
 #include "javet_v8.h"
+#include "javet_v8_internal.h"
 #include "javet_v8_runtime.h"
 
 namespace Javet {
@@ -210,7 +211,9 @@ namespace Javet {
 
         jobject ToExternalV8Script(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalScript& v8Script);
 
-        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue v8Value);
+        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8InternalObject& v8InternalObject);
+
+        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8Value);
 
         jobject ToExternalV8ValueArray(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args);
 
@@ -291,5 +294,13 @@ namespace Javet {
         V8LocalValue ToV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj);
 
         std::unique_ptr<V8LocalValue[]> ToV8Values(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mValues);
+
+        static inline V8InternalJSFunction ToV8InternalJSFunction(const V8LocalValue& v8LocalValue) {
+            return V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        }
+
+        static inline V8InternalContext ToV8InternalContext(const V8LocalContext& v8LocalContext) {
+            return V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
+        }
     }
 }

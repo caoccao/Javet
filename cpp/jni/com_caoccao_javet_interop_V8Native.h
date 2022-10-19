@@ -89,6 +89,38 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    contextGet
+ * Signature: (JJII)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_contextGet
+  (JNIEnv *, jobject, jlong, jlong, jint, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    contextGetLength
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_contextGetLength
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    contextIsContextType
+ * Signature: (JJII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_contextIsContextType
+  (JNIEnv *, jobject, jlong, jlong, jint, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    contextSetLength
+ * Signature: (JJII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_contextSetLength
+  (JNIEnv *, jobject, jlong, jlong, jint, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    createV8Inspector
  * Signature: (JLjava/lang/Object;)V
  */

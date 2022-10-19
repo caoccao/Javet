@@ -16,9 +16,12 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ContextType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.V8Value;
 
 /**
  * The type V8 context.
@@ -27,6 +30,13 @@ import com.caoccao.javet.interop.V8Runtime;
  */
 @SuppressWarnings("unchecked")
 public class V8Context extends V8ValueReference implements IV8Context {
+
+    /**
+     * The constant ERROR_ELEMENT_LENGTH_MUST_BE_NON_NEGATIVE.
+     *
+     * @since 2.0.1
+     */
+    protected static final String ERROR_ELEMENT_LENGTH_MUST_BE_NON_NEGATIVE = "Element length must be non-negative.";
 
     /**
      * Instantiates a new V8 context.
@@ -41,9 +51,14 @@ public class V8Context extends V8ValueReference implements IV8Context {
     }
 
     @Override
-    public int getLength() {
-        // TODO
-        return 0;
+    @CheckReturnValue
+    public <T extends V8Value> T get(int index) throws JavetException {
+        return checkV8Runtime().getV8Internal().contextGet(this, index);
+    }
+
+    @Override
+    public int getLength() throws JavetException {
+        return checkV8Runtime().getV8Internal().contextGetLength(this);
     }
 
     @Override
@@ -52,8 +67,14 @@ public class V8Context extends V8ValueReference implements IV8Context {
     }
 
     @Override
-    public void setLength(int length) {
-        // TODO
+    public boolean isContextType(V8ContextType v8ContextType) throws JavetException {
+        return checkV8Runtime().getV8Internal().contextIsContextType(this, v8ContextType.getId());
+    }
+
+    @Override
+    public boolean setLength(int length) throws JavetException {
+        assert length >= 0 : ERROR_ELEMENT_LENGTH_MUST_BE_NON_NEGATIVE;
+        return checkV8Runtime().getV8Internal().contextSetLength(this, length);
     }
 
     @Override

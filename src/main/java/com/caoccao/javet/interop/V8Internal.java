@@ -64,6 +64,23 @@ public final class V8Internal {
         return v8Runtime.cloneV8Value(iV8ValueReference);
     }
 
+    @CheckReturnValue
+    public <T extends V8Value> T contextGet(IV8Context iV8Context, int index) throws JavetException {
+        return v8Runtime.contextGet(iV8Context, index);
+    }
+
+    public int contextGetLength(IV8Context iV8Context) throws JavetException {
+        return v8Runtime.contextGetLength(iV8Context);
+    }
+
+    public boolean contextIsContextType(IV8Context iV8Context, int contextTypeId) throws JavetException {
+        return v8Runtime.contextIsContextType(iV8Context, contextTypeId);
+    }
+
+    public boolean contextSetLength(IV8Context iV8Context, int length) throws JavetException {
+        return v8Runtime.contextSetLength(iV8Context, length);
+    }
+
     public boolean delete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return v8Runtime.delete(iV8ValueObject, key);
     }

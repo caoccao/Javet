@@ -551,6 +551,57 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         }
     }
 
+    /**
+     * Gets element by index.
+     *
+     * @param <T>        the type parameter
+     * @param iV8Context the V8 context
+     * @return the t
+     * @throws JavetException the javet exception
+     */
+    @CheckReturnValue
+    <T extends V8Value> T contextGet(IV8Context iV8Context, int index) throws JavetException {
+        return (T) v8Native.contextGet(handle, iV8Context.getHandle(), iV8Context.getType().getId(), index);
+    }
+
+    /**
+     * Gets the context element length.
+     *
+     * @param iV8Context the V8 context
+     * @return the element length
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    int contextGetLength(IV8Context iV8Context) throws JavetException {
+        return v8Native.contextGetLength(handle, iV8Context.getHandle(), iV8Context.getType().getId());
+    }
+
+    /**
+     * Tests the given context type.
+     *
+     * @param iV8Context    the V8 context
+     * @param contextTypeId the context type id
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     */
+    public boolean contextIsContextType(IV8Context iV8Context, int contextTypeId) throws JavetException {
+        return v8Native.contextIsContextType(
+                handle, iV8Context.getHandle(), iV8Context.getType().getId(), contextTypeId);
+    }
+
+    /**
+     * Sets the content element length.
+     *
+     * @param iV8Context the V8 context
+     * @param length     the element length
+     * @return true : success, false: failure
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean contextSetLength(IV8Context iV8Context, int length) throws JavetException {
+        return v8Native.contextSetLength(handle, iV8Context.getHandle(), iV8Context.getType().getId(), length);
+    }
+
     @Override
     @CheckReturnValue
     public V8ValueArray createV8ValueArray() throws JavetException {

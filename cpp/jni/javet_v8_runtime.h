@@ -140,6 +140,8 @@ namespace Javet {
 
         void Register(const V8LocalContext& v8Context);
 
+        jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8InternalObject& v8InternalObject);
+
         jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value);
 
         inline void Unlock() {

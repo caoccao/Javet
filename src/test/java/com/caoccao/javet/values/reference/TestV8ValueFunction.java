@@ -800,10 +800,26 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedScriptSource.getCode());
                  V8Context v8Context = originalV8ValueFunction.getContext()) {
                 assertNotNull(v8Context);
+                assertEquals(3, v8Context.getLength());
+                assertTrue(v8Context.isDeclarationContext());
+                assertTrue(v8Context.isFunctionContext());
+                assertFalse(v8Context.isModuleContext());
+                assertFalse(v8Context.isScriptContext());
+                assertTrue(v8Context.getUndefined(0).isUndefined());
+                try (V8Context v8Context1 = v8Context.get(1)) {
+                    assertNotNull(v8Context1);
+                    assertTrue(v8Context1.getLength() > 0);
+                    assertTrue(v8Context1.isDeclarationContext());
+                    assertTrue(v8Context.isFunctionContext());
+                    assertFalse(v8Context.isModuleContext());
+                    assertFalse(v8Context.isScriptContext());
+                }
+                assertEquals(1, v8Context.getInteger(2), "Initial value of 'a' should be 1.");
                 assertTrue(crackedV8ValueFunction.setContext(v8Context));
                 // Variable 'a' in the closure context is incremented by the next function call.
                 assertEquals(4, crackedV8ValueFunction.callInteger(null),
                         "The cracked function should be " + crackedCodeString + ".");
+                assertEquals(2, v8Context.getInteger(2), "Updated value of 'a' should be 2.");
             }
             assertEquals(3, originalV8ValueFunction.callInteger(null),
                     "The original function should be () => a + 1.");

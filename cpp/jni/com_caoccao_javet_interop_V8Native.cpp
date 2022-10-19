@@ -27,7 +27,6 @@
 #include "javet_node.h"
 #include "javet_v8.h"
 #include "javet_v8_runtime.h"
-#include "javet_v8_internal.h"
 
  /*
   * Development Guide:
@@ -304,6 +303,69 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_contextGet
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jint index) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_CONTEXT(v8ValueType)) {
+        V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
+        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        if (index >= 0 && index < v8InternalContext.length()) {
+            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+            auto v8InternalObject = v8InternalContext.get(index);
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8InternalObject);
+        }
+    }
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+}
+
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_contextGetLength
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_CONTEXT(v8ValueType)) {
+        V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
+        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        return v8InternalContext.length();
+    }
+    return 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_contextIsContextType
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jint contextTypeId) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_CONTEXT(v8ValueType)) {
+        V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
+        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        using namespace Javet::Enums::V8ContextType;
+        switch (contextTypeId) {
+        case Await: return v8InternalContext.IsAwaitContext(); // 0
+        case Block: return v8InternalContext.IsBlockContext(); // 1
+        case Catch: return v8InternalContext.IsCatchContext(); // 2
+        case DebugEvaluate: return v8InternalContext.IsDebugEvaluateContext(); // 3
+        case Declaration: return v8InternalContext.is_declaration_context(); // 4
+        case Eval: return v8InternalContext.IsEvalContext(); // 5
+        case Function: return v8InternalContext.IsFunctionContext(); // 6
+        case Module: return v8InternalContext.IsModuleContext(); // 7
+        case Script: return v8InternalContext.IsScriptContext(); // 8
+        case With: return v8InternalContext.IsWithContext(); // 9
+        default:return false;
+        }
+    }
+    return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_contextSetLength
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jint length) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    jboolean success = false;
+    if (IS_V8_CONTEXT(v8ValueType)) {
+        V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
+        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        v8InternalContext.set_length(length);
+        success = true;
+    }
+    return success;
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
@@ -537,8 +599,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyS
     if (IS_V8_FUNCTION(targetV8ValueType) && IS_V8_FUNCTION(sourceV8ValueType)) {
         auto sourceV8PersistentValuePointer = TO_V8_PERSISTENT_VALUE_POINTER(sourceV8ValueHandle);
         auto sourceV8LocalValue = sourceV8PersistentValuePointer->Get(v8Context->GetIsolate());
-        auto targetV8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
-        auto sourceV8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*sourceV8LocalValue));
+        auto targetV8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
+        auto sourceV8InternalFunction = Javet::Converter::ToV8InternalJSFunction(sourceV8LocalValue);
         auto targetV8InternalShared = targetV8InternalFunction.shared();
         auto sourceV8InternalShared = sourceV8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(sourceV8InternalShared) && IS_USER_DEFINED_FUNCTION(targetV8InternalShared)) {
@@ -559,9 +621,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCon
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_FUNCTION(v8ValueType)) {
         auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
-        auto v8ContextValue = v8::Utils::ToLocal(v8::internal::handle(v8InternalFunction.context(), v8InternalIsolate));
-        return Javet::Converter::ToExternalV8Context(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8ContextValue);
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
+        auto v8InternalContext = V8InternalContext::cast(v8InternalFunction.context());
+        auto v8LocalContext = v8::Utils::ToLocal(v8::internal::handle(v8InternalContext, v8InternalIsolate));
+        return Javet::Converter::ToExternalV8Context(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8LocalContext);
     }
     return nullptr;
 }
@@ -570,7 +633,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScr
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_FUNCTION(v8ValueType)) {
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
             auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
@@ -598,8 +661,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetCo
     jboolean success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
         V8LocalContext v8ContextValue = Javet::Converter::ToV8Context(jniEnv, v8Context, mV8ContextValue);
-        V8InternalContext v8InternalContext = V8InternalContext::cast(*v8::Utils::OpenHandle(*v8ContextValue));
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         v8InternalFunction.set_context(v8InternalContext);
         success = true;
     }
@@ -610,7 +673,7 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_FUNCTION(v8ValueType)) {
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
             auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
@@ -632,7 +695,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
     jboolean success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
         v8::internal::DisallowGarbageCollection disallowGarbageCollection;
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
             auto v8InternalScopeInfo = v8InternalShared.scope_info();
@@ -663,7 +726,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
     jboolean success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
         v8::internal::DisallowGarbageCollection disallowGarbageCollection;
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
             auto v8InternalScopeInfo = v8InternalShared.scope_info();
@@ -862,7 +925,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSFunctionType
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     using namespace Javet::Enums::JSFunctionType;
     if (IS_V8_FUNCTION(v8ValueType)) {
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (v8InternalShared.native()) {
             return JSFunctionType::Native;
@@ -881,7 +944,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSScopeType
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_FUNCTION(v8ValueType)) {
-        auto v8InternalFunction = V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         auto v8InternalScopeInfo = v8InternalShared.scope_info();
         return v8InternalScopeInfo.scope_type();

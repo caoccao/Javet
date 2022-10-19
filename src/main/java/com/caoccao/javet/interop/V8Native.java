@@ -70,6 +70,18 @@ class V8Native implements IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     @Override
+    public native Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
+
+    @Override
+    public native int contextGetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean contextIsContextType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int contextTypeId);
+
+    @Override
+    public native boolean contextSetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int length);
+
+    @Override
     public native void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
 
     @Override

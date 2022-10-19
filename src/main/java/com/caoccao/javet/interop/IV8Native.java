@@ -48,6 +48,14 @@ public interface IV8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
+
+    int contextGetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean contextIsContextType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int contextTypeId);
+
+    boolean contextSetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int length);
+
     void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
 
     long createV8Runtime(Object runtimeOptions);

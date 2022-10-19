@@ -238,7 +238,32 @@ namespace Javet {
             return jniEnv->NewObject(jclassV8Script, jmethodIDV8ScriptConstructor, externalV8Runtime, ToV8PersistentScriptReference(v8Context, v8Script));
         }
 
-        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue v8Value) {
+        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8InternalObject& v8InternalObject) {
+            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+            if (v8InternalObject.IsJSObject() || v8InternalObject.IsPrimitive()
+                || v8InternalObject.IsJSArray() || v8InternalObject.IsJSTypedArray()) {
+                auto v8LocalObject = v8::Utils::ToLocal(v8::internal::handle(v8InternalObject, v8InternalIsolate));
+                return ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalObject);
+            }
+            else if (v8InternalObject.IsContext()) {
+                auto v8InternalContext = V8InternalContext::cast(v8InternalObject);
+                auto v8LocalContext = v8::Utils::ToLocal(v8::internal::handle(v8InternalContext, v8InternalIsolate));
+                return ToExternalV8Context(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8LocalContext);
+            }
+            else if (v8InternalObject.IsModule()) {
+                auto v8LocalModule = v8::Utils::ToLocal(v8::internal::handle(V8InternalModule::cast(v8InternalObject), v8InternalIsolate));
+                return ToExternalV8Module(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8LocalModule);
+            }
+            else if (v8InternalObject.IsScript()) {
+                LOG_DEBUG("Converter: Script is not supported.");
+            }
+            else if (v8InternalObject.IsCode()) {
+                LOG_DEBUG("Converter: Code is not supported.");
+            }
+            return ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+        }
+
+        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8Value) {
             using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType::V8ValueReferenceType;
             if (v8Value->IsUndefined()) {
                 return ToExternalV8ValueUndefined(jniEnv, v8Runtime);
