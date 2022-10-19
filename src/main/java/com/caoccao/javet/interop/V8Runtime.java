@@ -410,13 +410,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
     <T extends V8Value> T call(
-            IV8ValueObject iV8ValueObject,
-            IV8ValueObject receiver,
-            boolean returnResult,
+            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult,
             V8Value... v8Values)
             throws JavetException {
         return (T) v8Native.call(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), receiver, returnResult, v8Values);
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
+                receiver, returnResult, v8Values);
     }
 
     /**
@@ -917,7 +916,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 2.0.1
      */
     @SuppressWarnings("RedundantThrows")
-    public boolean functionSetContext(
+    boolean functionSetContext(
             IV8ValueFunction iV8ValueFunction, V8Context v8Context) throws JavetException {
         return v8Native.functionSetContext(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), v8Context);
@@ -933,7 +932,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 2.0.1
      */
     @SuppressWarnings("RedundantThrows")
-    public boolean functionSetScriptSource(
+    boolean functionSetScriptSource(
             IV8ValueFunction iV8ValueFunction, IV8ValueFunction.ScriptSource scriptSource) throws JavetException {
         return v8Native.functionSetScriptSource(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), scriptSource);
