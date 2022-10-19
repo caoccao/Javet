@@ -560,6 +560,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      */
     @CheckReturnValue
+    @SuppressWarnings("RedundantThrows")
     <T extends V8Value> T contextGet(IV8Context iV8Context, int index) throws JavetException {
         return (T) v8Native.contextGet(handle, iV8Context.getHandle(), iV8Context.getType().getId(), index);
     }
@@ -572,6 +573,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 2.0.1
      */
+    @SuppressWarnings("RedundantThrows")
     int contextGetLength(IV8Context iV8Context) throws JavetException {
         return v8Native.contextGetLength(handle, iV8Context.getHandle(), iV8Context.getType().getId());
     }
@@ -584,7 +586,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return true : yes, false : no
      * @throws JavetException the javet exception
      */
-    public boolean contextIsContextType(IV8Context iV8Context, int contextTypeId) throws JavetException {
+    @SuppressWarnings("RedundantThrows")
+    boolean contextIsContextType(IV8Context iV8Context, int contextTypeId) throws JavetException {
         return v8Native.contextIsContextType(
                 handle, iV8Context.getHandle(), iV8Context.getType().getId(), contextTypeId);
     }
@@ -598,6 +601,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 2.0.1
      */
+    @SuppressWarnings("RedundantThrows")
     boolean contextSetLength(IV8Context iV8Context, int length) throws JavetException {
         return v8Native.contextSetLength(handle, iV8Context.getHandle(), iV8Context.getType().getId(), length);
     }

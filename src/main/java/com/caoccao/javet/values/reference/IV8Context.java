@@ -208,6 +208,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isAwaitContext() throws JavetException {
         return isContextType(V8ContextType.Await);
@@ -218,6 +219,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isBlockContext() throws JavetException {
         return isContextType(V8ContextType.Block);
@@ -228,6 +230,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isCatchContext() throws JavetException {
         return isContextType(V8ContextType.Catch);
@@ -248,6 +251,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isDebugEvaluateContext() throws JavetException {
         return isContextType(V8ContextType.DebugEvaluate);
@@ -258,6 +262,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isDeclarationContext() throws JavetException {
         return isContextType(V8ContextType.Declaration);
@@ -268,6 +273,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isEvalContext() throws JavetException {
         return isContextType(V8ContextType.Eval);
@@ -278,6 +284,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isFunctionContext() throws JavetException {
         return isContextType(V8ContextType.Function);
@@ -288,6 +295,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isModuleContext() throws JavetException {
         return isContextType(V8ContextType.Module);
@@ -298,6 +306,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isScriptContext() throws JavetException {
         return isContextType(V8ContextType.Script);
@@ -308,6 +317,7 @@ public interface IV8Context extends IV8ValueReference {
      *
      * @return true : yes, false : no
      * @throws JavetException the javet exception
+     * @since 2.0.1
      */
     default boolean isWithContext() throws JavetException {
         return isContextType(V8ContextType.With);
