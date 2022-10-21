@@ -1065,6 +1065,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertTrue(v8ValueFunction.call(null).isUndefined());
             scriptSource = new IV8ValueFunction.ScriptSource(crackedCodeString);
             assertTrue(v8ValueFunction.setScriptSource(scriptSource, true));
+            assertFalse(v8ValueFunction.setScriptSource(scriptSource));
             assertEquals(1, v8ValueFunction.callInteger(null));
             scriptSource = v8ValueFunction.getScriptSource();
             assertEquals(crackedCodeString, scriptSource.getCode());
@@ -1089,14 +1090,18 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(2, crackedV8ValueFunction.callInteger(null));
             IV8ValueFunction.ScriptSource crackedScriptSource = new IV8ValueFunction.ScriptSource(
                     crackedCodeString, 35, 46);
-            crackedV8ValueFunction.setScriptSource(crackedScriptSource, true);
+            assertTrue(crackedV8ValueFunction.setScriptSource(crackedScriptSource, true));
+            assertFalse(crackedV8ValueFunction.setScriptSource(crackedScriptSource));
             assertEquals(3, crackedV8ValueFunction.callInteger(null));
             assertEquals(2, originalV8ValueFunction.callInteger(null));
             IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
             assertNotEquals(crackedScriptSource.getCode(), newScriptSource.getCode());
-            crackedV8ValueFunction.setScriptSource(originalScriptSource, true);
+            assertTrue(crackedV8ValueFunction.setScriptSource(originalScriptSource, true));
             assertEquals(2, crackedV8ValueFunction.callInteger(null));
             assertEquals(2, originalV8ValueFunction.callInteger(null));
+            // Restore the position because memory for position is shared between these 2 functions.
+            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
+            assertEquals(originalScriptSource, originalV8ValueFunction.getScriptSource());
         }
     }
 

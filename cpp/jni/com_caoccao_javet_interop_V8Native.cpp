@@ -710,21 +710,30 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
                 int startPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetStartPosition);
                 int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetEndPosition);
                 auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-                if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
-                    V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::Handle(v8InternalShared, v8InternalIsolate));
-                    v8InternalShared.set_allows_lazy_compilation(true);
+                auto v8InternalSource = v8::Utils::OpenHandle(*umSourceCode);
+                bool sourceCodeEquals = v8InternalScript.source().StrictEquals(*v8InternalSource);
+                bool positionEquals = startPosition == v8InternalShared.StartPosition() && endPosition == v8InternalShared.EndPosition();
+                if (!sourceCodeEquals || !positionEquals) {
+                    if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
+                        V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::Handle(v8InternalShared, v8InternalIsolate));
+                        v8InternalShared.set_allows_lazy_compilation(true);
+                    }
+                    if (!sourceCodeEquals) {
+                        if (mCloneScript) {
+                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8::internal::Handle(v8InternalScript, v8InternalIsolate));
+                            clonedV8InternalScript->set_source(*v8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                            v8InternalShared.set_script(*clonedV8InternalScript);
+                        }
+                        else {
+                            v8InternalScript.set_source(*v8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                        }
+                    }
+                    if (!positionEquals) {
+                        v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
+                    }
+                    success = true;
                 }
-                if (mCloneScript) {
-                    auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8::internal::Handle(v8InternalScript, v8InternalIsolate));
-                    clonedV8InternalScript->set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                    v8InternalShared.set_script(*clonedV8InternalScript);
-                }
-                else {
-                    v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                }
-                v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
                 DELETE_LOCAL_REF(jniEnv, mSourceCode);
-                success = true;
             }
         }
     }
@@ -794,12 +803,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                     }
                 }
 
-                // Discard compiled data and set lazy compile.
-                if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
-                    V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::Handle(v8InternalShared, v8InternalIsolate));
-                    v8InternalShared.set_allows_lazy_compilation(true);
-                }
-
                 /*
                  * Set the source and update the start and end position.
                  * Note: The source code is shared among all script objects, but position info is not.
@@ -809,16 +812,32 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                  */
                 const int newSourceLength = umSourceCode->Length();
                 const int newEndPosition = startPosition + newSourceLength;
-                if (mCloneScript) {
-                    auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8::internal::Handle(v8InternalScript, v8InternalIsolate));
-                    clonedV8InternalScript->set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                    v8InternalShared.set_script(*clonedV8InternalScript);
+
+                auto newV8InternalSource = v8::Utils::OpenHandle(*newSourceCode);
+                bool sourceCodeEquals = v8InternalSource.StrictEquals(*newV8InternalSource);
+                bool positionEquals = startPosition == v8InternalShared.StartPosition() && newEndPosition == v8InternalShared.EndPosition();
+
+                if (!sourceCodeEquals || !positionEquals) {
+                    // Discard compiled data and set lazy compile.
+                    if (v8InternalShared.CanDiscardCompiled() && v8InternalShared.is_compiled()) {
+                        V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::Handle(v8InternalShared, v8InternalIsolate));
+                        v8InternalShared.set_allows_lazy_compilation(true);
+                    }
+                    if (!sourceCodeEquals) {
+                        if (mCloneScript) {
+                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8::internal::Handle(v8InternalScript, v8InternalIsolate));
+                            clonedV8InternalScript->set_source(*newV8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                            v8InternalShared.set_script(*clonedV8InternalScript);
+                        }
+                        else {
+                            v8InternalScript.set_source(*newV8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                        }
+                    }
+                    if (!positionEquals) {
+                        v8InternalScopeInfo.SetPositionInfo(startPosition, newEndPosition);
+                    }
+                    success = true;
                 }
-                else {
-                    v8InternalScript.set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                }
-                v8InternalScopeInfo.SetPositionInfo(startPosition, newEndPosition);
-                success = true;
                 break;
             }
         }
