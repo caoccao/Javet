@@ -125,11 +125,11 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean functionSetScriptSource(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object scriptSource);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object scriptSource, boolean cloneScript);
 
     @Override
     public native boolean functionSetSourceCode(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
     @Override
     public native Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);

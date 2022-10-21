@@ -927,15 +927,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param iV8ValueFunction the V8 value function
      * @param scriptSource     the script source
+     * @param cloneScript      the clone script
      * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 2.0.1
      */
     @SuppressWarnings("RedundantThrows")
     boolean functionSetScriptSource(
-            IV8ValueFunction iV8ValueFunction, IV8ValueFunction.ScriptSource scriptSource) throws JavetException {
+            IV8ValueFunction iV8ValueFunction,
+            IV8ValueFunction.ScriptSource scriptSource,
+            boolean cloneScript)
+            throws JavetException {
         return v8Native.functionSetScriptSource(
-                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), scriptSource);
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), scriptSource, cloneScript);
     }
 
     /**
@@ -943,14 +947,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param iV8ValueFunction the V8 value function
      * @param sourceCode       the source code
+     * @param cloneScript      the clone script
      * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 0.8.8
      */
     @SuppressWarnings("RedundantThrows")
-    boolean functionSetSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
+    boolean functionSetSourceCode(
+            IV8ValueFunction iV8ValueFunction, String sourceCode, boolean cloneScript)
+            throws JavetException {
         return v8Native.functionSetSourceCode(
-                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), sourceCode);
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), sourceCode, cloneScript);
     }
 
     /**

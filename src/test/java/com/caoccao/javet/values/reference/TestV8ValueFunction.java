@@ -54,6 +54,21 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueFunction extends BaseTestJavetRuntime {
+    protected IV8ValueFunction.SetSourceCodeOptions getOptions(int id) {
+        switch (id) {
+            case 1:
+                return IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
+            case 2:
+                return IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC;
+            case 11:
+                return IV8ValueFunction.SetSourceCodeOptions.DEFAULT.withCloneScript(true);
+            case 12:
+                return IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC.withCloneScript(true);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     @Test
     public void testAnnotationBasedFunctions() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
@@ -554,11 +569,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = {false, true})
-    public void testContextScope(boolean nativeEnabled) throws JavetException {
-        IV8ValueFunction.SetSourceCodeOptions options = nativeEnabled
-                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
-                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
+    @ValueSource(ints = {1, 2, 11, 12})
+    public void testContextScope(int optionId) throws JavetException {
+        IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
@@ -782,6 +795,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testGetAndSetContext() throws JavetException {
+        String dummyCodeString = "() => undefined;";
         String originalCodeString = "(() => {\n" +
                 "  let a = 1;\n" +
                 "  return () => a + 1;\n" +
@@ -797,7 +811,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(2, originalV8ValueFunction.callInteger(null), "Populate the context.");
             assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
             IV8ValueFunction.ScriptSource crackedScriptSource = originalScriptSource.setCodeSnippet(crackedCodeString);
-            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedScriptSource.getCode());
+            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString);
                  V8Context v8Context = originalV8ValueFunction.getContext()) {
                 assertNotNull(v8Context);
                 assertEquals(3, v8Context.getLength());
@@ -815,12 +829,15 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertFalse(v8Context.isScriptContext());
                 }
                 assertEquals(1, v8Context.getInteger(2), "Initial value of 'a' should be 1.");
+                assertTrue(crackedV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
+                assertTrue(crackedV8ValueFunction.setScriptSource(crackedScriptSource, true));
                 assertTrue(crackedV8ValueFunction.setContext(v8Context));
                 // Variable 'a' in the closure context is incremented by the next function call.
                 assertEquals(4, crackedV8ValueFunction.callInteger(null),
                         "The cracked function should be " + crackedCodeString + ".");
                 assertEquals(2, v8Context.getInteger(2), "Updated value of 'a' should be 2.");
             }
+            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
             assertEquals(3, originalV8ValueFunction.callInteger(null),
                     "The original function should be () => a + 1.");
             IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
@@ -829,11 +846,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = {false, true})
-    public void testGetAndSetExtraLongSourceCode(boolean nativeEnabled) throws JavetException {
-        IV8ValueFunction.SetSourceCodeOptions options = nativeEnabled
-                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
-                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
+    @ValueSource(ints = {1, 2, 11, 12})
+    public void testGetAndSetExtraLongSourceCode(int optionId) throws JavetException {
+        IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private int callCount = 0;
 
@@ -896,8 +911,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ValueSource(booleans = {false, true})
     public void testGetAndSetMalformedSourceCode(boolean nativeEnabled) throws JavetException {
         IV8ValueFunction.SetSourceCodeOptions optionsWithoutTrim = nativeEnabled
-                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
-                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
+                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC.withCloneScript(false)
+                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT.withCloneScript(false);
         IV8ValueFunction.SetSourceCodeOptions optionsWithTrim =
                 optionsWithoutTrim.withTrimTailingCharacters(true);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
@@ -934,12 +949,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
      * @throws JavetException the javet exception
      */
     @ParameterizedTest
-    @ValueSource(booleans = {false, true})
-    public void testGetAndSetRegularSourceCode(boolean nativeEnabled) throws JavetException {
+    @ValueSource(ints = {1, 2, 11, 12})
+    public void testGetAndSetRegularSourceCode(int optionId) throws JavetException {
         final int functionCount = 5;
-        IV8ValueFunction.SetSourceCodeOptions options = nativeEnabled
-                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC
-                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
+        IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
         String functionStatementTemplate = "var {0} = {1};\n";
         String functionNameTemplate = "f{0}";
         String[][] functionBodyTemplates = new String[][]{
@@ -1051,7 +1064,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(originalCodeString.length(), scriptSource.getEndPosition());
             assertTrue(v8ValueFunction.call(null).isUndefined());
             scriptSource = new IV8ValueFunction.ScriptSource(crackedCodeString);
-            assertTrue(v8ValueFunction.setScriptSource(scriptSource));
+            assertTrue(v8ValueFunction.setScriptSource(scriptSource, true));
             assertEquals(1, v8ValueFunction.callInteger(null));
             scriptSource = v8ValueFunction.getScriptSource();
             assertEquals(crackedCodeString, scriptSource.getCode());
@@ -1069,15 +1082,20 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 "})();";
         try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString);
              V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString)) {
+            IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
             assertEquals(2, originalV8ValueFunction.callInteger(null));
             assertTrue(crackedV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
-            IV8ValueFunction.ScriptSource scriptSource = new IV8ValueFunction.ScriptSource(
+            assertTrue(crackedV8ValueFunction.copyContextFrom(originalV8ValueFunction));
+            assertEquals(2, crackedV8ValueFunction.callInteger(null));
+            IV8ValueFunction.ScriptSource crackedScriptSource = new IV8ValueFunction.ScriptSource(
                     crackedCodeString, 35, 46);
-            originalV8ValueFunction.setScriptSource(scriptSource);
-            assertEquals(3, originalV8ValueFunction.callInteger(null));
-            scriptSource = new IV8ValueFunction.ScriptSource(
-                    originalCodeString, 33, 44);
-            originalV8ValueFunction.setScriptSource(scriptSource);
+            crackedV8ValueFunction.setScriptSource(crackedScriptSource, true);
+            assertEquals(3, crackedV8ValueFunction.callInteger(null));
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+            IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
+            assertNotEquals(crackedScriptSource.getCode(), newScriptSource.getCode());
+            crackedV8ValueFunction.setScriptSource(originalScriptSource, true);
+            assertEquals(2, crackedV8ValueFunction.callInteger(null));
             assertEquals(2, originalV8ValueFunction.callInteger(null));
         }
     }

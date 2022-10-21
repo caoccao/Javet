@@ -119,12 +119,15 @@ public final class V8Internal {
     }
 
     public boolean functionSetScriptSource(
-            IV8ValueFunction iV8ValueFunction, IV8ValueFunction.ScriptSource scriptSource) throws JavetException {
-        return v8Runtime.functionSetScriptSource(iV8ValueFunction, scriptSource);
+            IV8ValueFunction iV8ValueFunction, IV8ValueFunction.ScriptSource scriptSource, boolean cloneScript)
+            throws JavetException {
+        return v8Runtime.functionSetScriptSource(iV8ValueFunction, scriptSource, cloneScript);
     }
 
-    public boolean functionSetSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
-        return v8Runtime.functionSetSourceCode(iV8ValueFunction, sourceCode);
+    public boolean functionSetSourceCode(
+            IV8ValueFunction iV8ValueFunction, String sourceCode, boolean cloneScript)
+            throws JavetException {
+        return v8Runtime.functionSetSourceCode(iV8ValueFunction, sourceCode, cloneScript);
     }
 
     @CheckReturnValue

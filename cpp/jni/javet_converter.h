@@ -295,12 +295,16 @@ namespace Javet {
 
         std::unique_ptr<V8LocalValue[]> ToV8Values(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mValues);
 
+        static inline V8InternalContext ToV8InternalContext(const V8LocalContext& v8LocalContext) {
+            return V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
+        }
+
         static inline V8InternalJSFunction ToV8InternalJSFunction(const V8LocalValue& v8LocalValue) {
             return V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
         }
 
-        static inline V8InternalContext ToV8InternalContext(const V8LocalContext& v8LocalContext) {
-            return V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
+        static inline V8InternalScript ToV8InternalScript(const V8LocalScript& v8LocalScript) {
+            return V8InternalScript::cast(*v8::Utils::OpenHandle(*v8LocalScript));
         }
     }
 }

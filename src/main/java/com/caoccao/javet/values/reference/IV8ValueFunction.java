@@ -409,7 +409,20 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @throws JavetException the javet exception
      * @since 2.0.1
      */
-    boolean setScriptSource(ScriptSource scriptSource) throws JavetException;
+    default boolean setScriptSource(ScriptSource scriptSource) throws JavetException {
+        return setScriptSource(scriptSource, false);
+    }
+
+    /**
+     * Sets script source.
+     *
+     * @param scriptSource the script source
+     * @param cloneScript  the clone script
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean setScriptSource(ScriptSource scriptSource, boolean cloneScript) throws JavetException;
 
     /**
      * Sets source code with default options.
@@ -590,22 +603,36 @@ public interface IV8ValueFunction extends IV8ValueObject {
          */
         public static final SetSourceCodeOptions NATIVE_GC = new SetSourceCodeOptions()
                 .setPreGC(true).setPostGC(true).setNativeCalculation(true);
+        private boolean cloneScript;
         private boolean nativeCalculation;
         private boolean postGC;
         private boolean preGC;
         private boolean trimTailingCharacters;
 
         private SetSourceCodeOptions() {
-            setPreGC(false).setPostGC(false).setNativeCalculation(false).setTrimTailingCharacters(false);
+            setCloneScript(false).setPreGC(false).setPostGC(false);
+            setNativeCalculation(false).setTrimTailingCharacters(false);
         }
 
         @Override
         protected SetSourceCodeOptions clone() {
             return new SetSourceCodeOptions()
+                    .setCloneScript(isCloneScript())
                     .setNativeCalculation(isNativeCalculation())
                     .setPreGC(isPreGC())
                     .setPostGC(isPostGC())
                     .setTrimTailingCharacters(isTrimTailingCharacters());
+        }
+
+        /**
+         * CloneScript: Clone the script so that the original script is not affected.
+         * <p>
+         * When this option is turned on, it is called LiveEdit in V8.
+         *
+         * @return true : enabled, false: disabled
+         */
+        public boolean isCloneScript() {
+            return cloneScript;
         }
 
         /**
@@ -649,6 +676,11 @@ public interface IV8ValueFunction extends IV8ValueObject {
             return trimTailingCharacters;
         }
 
+        private SetSourceCodeOptions setCloneScript(boolean cloneScript) {
+            this.cloneScript = cloneScript;
+            return this;
+        }
+
         private SetSourceCodeOptions setNativeCalculation(boolean nativeCalculation) {
             this.nativeCalculation = nativeCalculation;
             return this;
@@ -667,6 +699,17 @@ public interface IV8ValueFunction extends IV8ValueObject {
         private SetSourceCodeOptions setTrimTailingCharacters(boolean trimTailingCharacters) {
             this.trimTailingCharacters = trimTailingCharacters;
             return this;
+        }
+
+        /**
+         * Returns a new immutable options with CloneScript set.
+         *
+         * @param cloneScript the clone script
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withCloneScript(boolean cloneScript) {
+            return clone().setCloneScript(cloneScript);
         }
 
         /**

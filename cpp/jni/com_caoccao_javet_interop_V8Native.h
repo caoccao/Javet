@@ -218,18 +218,18 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetCo
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionSetScriptSource
- * Signature: (JJILjava/lang/Object;)Z
+ * Signature: (JJILjava/lang/Object;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetScriptSource
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionSetSourceCode
- * Signature: (JJILjava/lang/String;)Z
+ * Signature: (JJILjava/lang/String;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSourceCode
-  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

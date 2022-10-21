@@ -694,7 +694,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetCo
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetScriptSource
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mScriptSource) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mScriptSource, jboolean mCloneScript) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     jboolean success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
@@ -714,7 +714,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
                     V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::Handle(v8InternalShared, v8InternalIsolate));
                     v8InternalShared.set_allows_lazy_compilation(true);
                 }
-                v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                if (mCloneScript) {
+                    auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8::internal::Handle(v8InternalScript, v8InternalIsolate));
+                    clonedV8InternalScript->set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                    v8InternalShared.set_script(*clonedV8InternalScript);
+                }
+                else {
+                    v8InternalScript.set_source(*v8::Utils::OpenHandle(*umSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                }
                 v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
                 DELETE_LOCAL_REF(jniEnv, mSourceCode);
                 success = true;
@@ -725,7 +732,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSourceCode
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mSourceCode) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jstring mSourceCode, jboolean mCloneScript) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     jboolean success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
@@ -802,7 +809,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                  */
                 const int newSourceLength = umSourceCode->Length();
                 const int newEndPosition = startPosition + newSourceLength;
-                v8InternalScript.set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                if (mCloneScript) {
+                    auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8::internal::Handle(v8InternalScript, v8InternalIsolate));
+                    clonedV8InternalScript->set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                    v8InternalShared.set_script(*clonedV8InternalScript);
+                }
+                else {
+                    v8InternalScript.set_source(*v8::Utils::OpenHandle(*newSourceCode), V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                }
                 v8InternalScopeInfo.SetPositionInfo(startPosition, newEndPosition);
                 success = true;
                 break;

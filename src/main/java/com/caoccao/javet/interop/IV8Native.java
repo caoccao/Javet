@@ -86,9 +86,11 @@ public interface IV8Native {
 
     boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
 
-    boolean functionSetScriptSource(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object scriptSource);
+    boolean functionSetScriptSource(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object scriptSource, boolean cloneScript);
 
-    boolean functionSetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
+    boolean functionSetSourceCode(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
     Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 

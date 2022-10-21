@@ -166,10 +166,11 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public boolean setScriptSource(ScriptSource scriptSource) throws JavetException {
+    public boolean setScriptSource(ScriptSource scriptSource, boolean cloneScript) throws JavetException {
         boolean success = false;
         if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction() && scriptSource != null) {
-            success = checkV8Runtime().getV8Internal().functionSetScriptSource(this, scriptSource);
+            success = checkV8Runtime().getV8Internal().functionSetScriptSource(
+                    this, scriptSource, cloneScript);
         }
         return success;
     }
@@ -191,11 +192,15 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             }
             try {
                 if (options.isNativeCalculation()) {
-                    success = v8Internal.functionSetSourceCode(this, sourceCodeString);
+                    success = v8Internal.functionSetSourceCode(
+                            this, sourceCodeString, options.isCloneScript());
                 } else {
                     ScriptSource originalScriptSource = v8Internal.functionGetScriptSource(this);
                     ScriptSource newScriptSource = originalScriptSource.setCodeSnippet(sourceCodeString);
-                    success = v8Internal.functionSetScriptSource(this, newScriptSource);
+                    if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()) {
+                        success = v8Internal.functionSetScriptSource(
+                                this, newScriptSource, options.isCloneScript());
+                    }
                 }
             } finally {
                 if (options.isPostGC()) {
