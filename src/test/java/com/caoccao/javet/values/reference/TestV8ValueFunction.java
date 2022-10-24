@@ -1058,11 +1058,17 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         String originalCodeString = "() => undefined";
         String crackedCodeString = "() => 1";
         try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(originalCodeString).execute()) {
+            assertFalse(
+                    v8ValueFunction.canDiscardCompiled(),
+                    "The function shouldn't support discard compiled.");
             IV8ValueFunction.ScriptSource scriptSource = v8ValueFunction.getScriptSource();
             assertEquals(originalCodeString, scriptSource.getCode());
             assertEquals(0, scriptSource.getStartPosition());
             assertEquals(originalCodeString.length(), scriptSource.getEndPosition());
             assertTrue(v8ValueFunction.call(null).isUndefined());
+            assertTrue(
+                    v8ValueFunction.canDiscardCompiled(),
+                    "The function should support discard compiled.");
             scriptSource = new IV8ValueFunction.ScriptSource(crackedCodeString);
             assertTrue(v8ValueFunction.setScriptSource(scriptSource, true));
             assertFalse(v8ValueFunction.setScriptSource(scriptSource));
@@ -1083,21 +1089,45 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 "})();";
         try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString);
              V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString)) {
+            assertFalse(
+                    originalV8ValueFunction.canDiscardCompiled(),
+                    "The original function should support discard compiled.");
+            assertFalse(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function shouldn't support discard compiled.");
             IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
             assertEquals(2, originalV8ValueFunction.callInteger(null));
+            assertTrue(
+                    originalV8ValueFunction.canDiscardCompiled(),
+                    "The original function should support discard compiled.");
             assertTrue(crackedV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
+            assertTrue(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function should support discard compiled because the scope info was from the original function.");
             assertTrue(crackedV8ValueFunction.copyContextFrom(originalV8ValueFunction));
             assertEquals(2, crackedV8ValueFunction.callInteger(null));
             IV8ValueFunction.ScriptSource crackedScriptSource = new IV8ValueFunction.ScriptSource(
                     crackedCodeString, 35, 46);
             assertTrue(crackedV8ValueFunction.setScriptSource(crackedScriptSource, true));
+            assertFalse(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function shouldn't support discard compiled.");
             assertFalse(crackedV8ValueFunction.setScriptSource(crackedScriptSource));
             assertEquals(3, crackedV8ValueFunction.callInteger(null));
+            assertTrue(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function should support discard compiled.");
             assertEquals(2, originalV8ValueFunction.callInteger(null));
             IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
             assertNotEquals(crackedScriptSource.getCode(), newScriptSource.getCode());
             assertTrue(crackedV8ValueFunction.setScriptSource(originalScriptSource, true));
+            assertFalse(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function shouldn't support discard compiled.");
             assertEquals(2, crackedV8ValueFunction.callInteger(null));
+            assertTrue(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function should support discard compiled.");
             assertEquals(2, originalV8ValueFunction.callInteger(null));
             // Restore the position because memory for position is shared between these 2 functions.
             assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));

@@ -281,6 +281,15 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
+     * Can discard compiled byte code.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean canDiscardCompiled() throws JavetException;
+
+    /**
      * Copy the context from the source V8 value function.
      * <p>
      * This allows changing the existing function context on the fly.

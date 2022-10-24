@@ -105,6 +105,11 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public boolean canDiscardCompiled() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionCanDiscardCompiled(this);
+    }
+
+    @Override
     public boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
         assert this != Objects.requireNonNull(sourceIV8ValueFunction) : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER;
         assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME;

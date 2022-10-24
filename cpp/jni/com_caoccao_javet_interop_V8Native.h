@@ -177,6 +177,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionCanDiscardCompiled
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCanDiscardCompiled
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionCopyScopeInfoFrom
  * Signature: (JJIJI)Z
  */

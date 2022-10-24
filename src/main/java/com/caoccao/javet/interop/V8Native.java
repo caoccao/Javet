@@ -106,6 +106,9 @@ class V8Native implements IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     @Override
+    public native boolean functionCanDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native boolean functionCopyScopeInfoFrom(
             long v8RuntimeHandle,
             long targetV8ValueHandle, int targetV8ValueType,

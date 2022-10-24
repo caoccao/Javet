@@ -94,6 +94,10 @@ public final class V8Internal {
         return v8Runtime.equals(iV8ValueReference1, iV8ValueReference2);
     }
 
+    public boolean functionCanDiscardCompiled(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionCanDiscardCompiled(iV8ValueFunction);
+    }
+
     public boolean functionCopyScopeInfoFrom(
             IV8ValueFunction targetIV8ValueFunction,
             IV8ValueFunction sourceIV8ValueFunction) throws JavetException {

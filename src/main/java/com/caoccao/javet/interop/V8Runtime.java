@@ -847,6 +847,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Can discard compiled byte code of a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return true : yes, false : no
+     * @since 2.0.1
+     */
+    boolean functionCanDiscardCompiled(IV8ValueFunction iV8ValueFunction) {
+        return v8Native.functionCanDiscardCompiled(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
      * Copies the scope info from source function to target function.
      *
      * @param targetIV8ValueFunction the target V8 value function

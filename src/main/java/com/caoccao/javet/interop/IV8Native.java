@@ -73,6 +73,8 @@ public interface IV8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    boolean functionCanDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     boolean functionCopyScopeInfoFrom(
             long v8RuntimeHandle,
             long targetV8ValueHandle, int targetV8ValueType,
