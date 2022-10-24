@@ -117,6 +117,10 @@ public final class V8Internal {
         return v8Runtime.functionGetSourceCode(iV8ValueFunction);
     }
 
+    public boolean functionIsCompiled(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionIsCompiled(iV8ValueFunction);
+    }
+
     public boolean functionSetContext(
             IV8ValueFunction iV8ValueFunction, V8Context v8Context) throws JavetException {
         return v8Runtime.functionSetContext(iV8ValueFunction, v8Context);

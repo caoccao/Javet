@@ -390,6 +390,15 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
+     * Is this function compiled.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean isCompiled() throws JavetException;
+
+    /**
      * Is generator function.
      *
      * @return true : yes, false: no

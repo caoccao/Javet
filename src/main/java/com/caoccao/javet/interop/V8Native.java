@@ -124,6 +124,9 @@ class V8Native implements IV8Native {
     public native String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native boolean functionIsCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
 
     @Override

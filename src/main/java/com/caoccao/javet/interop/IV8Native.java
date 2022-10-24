@@ -86,6 +86,8 @@ public interface IV8Native {
 
     String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    boolean functionIsCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
 
     boolean functionSetScriptSource(

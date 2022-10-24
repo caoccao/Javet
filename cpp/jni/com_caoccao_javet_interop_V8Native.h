@@ -217,6 +217,14 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionIsCompiled
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionIsCompiled
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionSetContext
  * Signature: (JJILjava/lang/Object;)Z
  */
