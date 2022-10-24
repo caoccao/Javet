@@ -654,6 +654,31 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testDiscardCompiled() throws JavetException {
+        final int rounds = 3;
+        String codeString = "() => 1";
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
+            assertFalse(v8ValueFunction.isCompiled());
+            assertFalse(
+                    v8ValueFunction.canDiscardCompiled(),
+                    "The function shouldn't support discard compiled.");
+            for (int i = 0; i < rounds; ++i) {
+                assertEquals(1, v8ValueFunction.callInteger(null));
+                assertTrue(v8ValueFunction.isCompiled());
+                assertTrue(
+                        v8ValueFunction.canDiscardCompiled(),
+                        "The function should support discard compiled.");
+                assertTrue(v8ValueFunction.discardCompiled(), "Discard should work.");
+                assertFalse(v8ValueFunction.discardCompiled(), "Discard should not work.");
+                assertFalse(v8ValueFunction.isCompiled());
+                assertFalse(
+                        v8ValueFunction.canDiscardCompiled(),
+                        "The function shouldn't support discard compiled.");
+            }
+        }
+    }
+
+    @Test
     public void testDoubleStream() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function

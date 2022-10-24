@@ -104,6 +104,10 @@ public final class V8Internal {
         return v8Runtime.functionCopyScopeInfoFrom(targetIV8ValueFunction, sourceIV8ValueFunction);
     }
 
+    public boolean functionDiscardCompiled(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionDiscardCompiled(iV8ValueFunction);
+    }
+
     @CheckReturnValue
     public V8Context functionGetContext(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.functionGetContext(iV8ValueFunction);

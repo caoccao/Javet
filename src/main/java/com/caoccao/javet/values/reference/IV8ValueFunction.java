@@ -320,6 +320,15 @@ public interface IV8ValueFunction extends IV8ValueObject {
     boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException;
 
     /**
+     * Discard compiled byte code.
+     *
+     * @return true : discarded, false : not discarded
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean discardCompiled() throws JavetException;
+
+    /**
      * Gets the V8 context.
      *
      * @return the V8 context

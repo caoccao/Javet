@@ -80,6 +80,8 @@ public interface IV8Native {
             long targetV8ValueHandle, int targetV8ValueType,
             long sourceV8ValueHandle, int sourceV8ValueType);
 
+    boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object functionGetScriptSource(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

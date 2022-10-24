@@ -115,6 +115,9 @@ class V8Native implements IV8Native {
             long sourceV8ValueHandle, int sourceV8ValueType);
 
     @Override
+    public native boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override

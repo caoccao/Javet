@@ -193,6 +193,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyS
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionDiscardCompiled
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionDiscardCompiled
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionGetContext
  * Signature: (JJI)Ljava/lang/Object;
  */

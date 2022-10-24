@@ -120,6 +120,11 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public boolean discardCompiled() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionDiscardCompiled(this);
+    }
+
+    @Override
     public V8Context getContext() throws JavetException {
         return checkV8Runtime().getV8Internal().functionGetContext(this);
     }
