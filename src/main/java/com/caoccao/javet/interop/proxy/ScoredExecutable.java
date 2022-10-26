@@ -60,6 +60,7 @@ final class ScoredExecutable<E extends AccessibleObject> {
      * @since 0.9.10
      */
     private static final Class<?> V8_VALUE_PROXY_CLASS = V8ValueProxy.class;
+    private final IJavetDynamicObjectFactory dynamicObjectFactory;
     private final E executable;
     private final Object targetObject;
     private final V8ValueObject thisObject;
@@ -69,18 +70,21 @@ final class ScoredExecutable<E extends AccessibleObject> {
     /**
      * Instantiates a new Scored executable.
      *
-     * @param targetObject        the target object
-     * @param thisObject          this object
-     * @param executable          the executable
-     * @param javetVirtualObjects the javet virtual objects
+     * @param dynamicObjectFactory the dynamic object factory
+     * @param targetObject         the target object
+     * @param thisObject           this object
+     * @param executable           the executable
+     * @param javetVirtualObjects  the javet virtual objects
      * @since 0.9.10
      */
     public ScoredExecutable(
+            IJavetDynamicObjectFactory dynamicObjectFactory,
             Object targetObject,
             V8ValueObject thisObject,
             E executable,
             JavetVirtualObject[] javetVirtualObjects) {
         this.executable = executable;
+        this.dynamicObjectFactory = dynamicObjectFactory;
         this.javetVirtualObjects = javetVirtualObjects;
         this.score = 0;
         this.targetObject = targetObject;
@@ -135,26 +139,30 @@ final class ScoredExecutable<E extends AccessibleObject> {
             if (isVarArgs || isFixedArgs) {
                 double totalScore = 0;
                 final int fixedParameterCount = isExecutableVarArgs ? parameterCount - 1 : parameterCount;
+                final JavetDynamicProxyFactory dynamicProxyFactory = JavetDynamicProxyFactory.getInstance();
                 for (int i = 0; i < fixedParameterCount; i++) {
                     Class<?> parameterType = parameterTypes[i];
                     final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                    final Object object = javetVirtualObjects[i].getObject();
                     if (v8Value != null) {
                         if (V8_VALUE_CLASS.isAssignableFrom(parameterType)
                                 && parameterType.isAssignableFrom(v8Value.getClass())) {
                             totalScore += 1;
                             continue;
-                        } else if (parameterType.isInterface()) {
-                            if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                totalScore += 0.95;
-                                continue;
-                            } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
-                                    && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                totalScore += 0.85;
-                                continue;
-                            }
+                        } else if (object != null && parameterType.isAssignableFrom(object.getClass())) {
+                            totalScore += 0.9;
+                            continue;
+                        } else if (dynamicProxyFactory.isSupportedFunction(parameterType, v8Value)) {
+                            totalScore += 0.95;
+                            continue;
+                        } else if (dynamicProxyFactory.isSupportedObject(parameterType, v8Value)) {
+                            totalScore += 0.85;
+                            continue;
+                        } else if (dynamicObjectFactory != null && dynamicObjectFactory.isSupported(parameterType, v8Value)) {
+                            totalScore += 0.5;
+                            continue;
                         }
                     }
-                    final Object object = javetVirtualObjects[i].getObject();
                     if (object == null) {
                         if (parameterType.isPrimitive()) {
                             totalScore = 0;
@@ -177,23 +185,26 @@ final class ScoredExecutable<E extends AccessibleObject> {
                     Class<?> componentType = parameterTypes[fixedParameterCount].getComponentType();
                     for (int i = fixedParameterCount; i < length; ++i) {
                         final V8Value v8Value = javetVirtualObjects[i].getV8Value();
+                        final Object object = javetVirtualObjects[i].getObject();
                         if (v8Value != null) {
                             if (V8_VALUE_CLASS.isAssignableFrom(componentType)
                                     && componentType.isAssignableFrom(v8Value.getClass())) {
                                 totalScore += 0.95;
                                 continue;
-                            } else if (componentType.isInterface()) {
-                                if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                    totalScore += 0.95;
-                                    continue;
-                                } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
-                                        && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                    totalScore += 0.85;
-                                    continue;
-                                }
+                            } else if (object != null && componentType.isAssignableFrom(object.getClass())) {
+                                totalScore += 0.85;
+                                continue;
+                            } else if (dynamicProxyFactory.isSupportedFunction(componentType, v8Value)) {
+                                totalScore += 0.95;
+                                continue;
+                            } else if (dynamicProxyFactory.isSupportedObject(componentType, v8Value)) {
+                                totalScore += 0.85;
+                                continue;
+                            } else if (dynamicObjectFactory != null && dynamicObjectFactory.isSupported(componentType, v8Value)) {
+                                totalScore += 0.5;
+                                continue;
                             }
                         }
-                        final Object object = javetVirtualObjects[i].getObject();
                         if (object == null) {
                             if (componentType.isPrimitive()) {
                                 totalScore = 0;
@@ -266,6 +277,7 @@ final class ScoredExecutable<E extends AccessibleObject> {
         } else {
             List<Object> parameters = new ArrayList<>();
             final int fixedParameterCount = isExecutableVarArgs ? parameterCount - 1 : parameterCount;
+            final JavetDynamicProxyFactory dynamicProxyFactory = JavetDynamicProxyFactory.getInstance();
             for (int i = 0; i < fixedParameterCount; i++) {
                 Class<?> parameterType = parameterTypes[i];
                 final V8Value v8Value = javetVirtualObjects[i].getV8Value();
@@ -278,27 +290,14 @@ final class ScoredExecutable<E extends AccessibleObject> {
                         parameter = v8Value;
                         conversionRequired = false;
                     } else if (object != null && parameterType.isAssignableFrom(object.getClass())) {
-                        parameter = object;
                         conversionRequired = false;
-                    } else if (parameterType.isInterface()) {
-                        if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
-                            DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
-                                    new DynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
-                            parameter = Proxy.newProxyInstance(
-                                    getClass().getClassLoader(),
-                                    new Class[]{parameterType, AutoCloseable.class},
-                                    invocationHandler);
-                            conversionRequired = false;
-                        } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
-                                && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
-                            DynamicProxyV8ValueObjectInvocationHandler invocationHandler =
-                                    new DynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
-                            parameter = Proxy.newProxyInstance(
-                                    getClass().getClassLoader(),
-                                    new Class[]{parameterType, AutoCloseable.class},
-                                    invocationHandler);
-                            conversionRequired = false;
-                        }
+                    } else if (dynamicProxyFactory.isSupportedFunction(parameterType, v8Value)
+                            || dynamicProxyFactory.isSupportedObject(parameterType, v8Value)) {
+                        parameter = dynamicProxyFactory.toObject(parameterType, v8Value);
+                        conversionRequired = false;
+                    } else if (dynamicObjectFactory != null && dynamicObjectFactory.isSupported(parameterType, v8Value)) {
+                        parameter = dynamicObjectFactory.toObject(parameterType, v8Value);
+                        conversionRequired = false;
                     }
                 }
                 if (conversionRequired && object != null && !parameterType.isAssignableFrom(object.getClass())) {
@@ -334,25 +333,13 @@ final class ScoredExecutable<E extends AccessibleObject> {
                             conversionRequired = false;
                         } else if (object != null && componentType.isAssignableFrom(object.getClass())) {
                             conversionRequired = false;
-                        } else if (componentType.isInterface()) {
-                            if (V8_VALUE_FUNCTION_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                DynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
-                                        new DynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
-                                parameter = Proxy.newProxyInstance(
-                                        getClass().getClassLoader(),
-                                        new Class[]{componentType, AutoCloseable.class},
-                                        invocationHandler);
-                                conversionRequired = false;
-                            } else if (!V8_VALUE_PROXY_CLASS.isAssignableFrom(v8Value.getClass())
-                                    && V8_VALUE_OBJECT_CLASS.isAssignableFrom(v8Value.getClass())) {
-                                DynamicProxyV8ValueObjectInvocationHandler invocationHandler =
-                                        new DynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
-                                parameter = Proxy.newProxyInstance(
-                                        getClass().getClassLoader(),
-                                        new Class[]{componentType, AutoCloseable.class},
-                                        invocationHandler);
-                                conversionRequired = false;
-                            }
+                        } else if (dynamicProxyFactory.isSupportedFunction(componentType, v8Value)
+                                || dynamicProxyFactory.isSupportedObject(componentType, v8Value)) {
+                            parameter = dynamicProxyFactory.toObject(componentType, v8Value);
+                            conversionRequired = false;
+                        } else if (dynamicObjectFactory != null && dynamicObjectFactory.isSupported(componentType, v8Value)) {
+                            parameter = dynamicObjectFactory.toObject(componentType, v8Value);
+                            conversionRequired = false;
                         }
                     }
                     if (conversionRequired && object != null && !componentType.isAssignableFrom(object.getClass())) {

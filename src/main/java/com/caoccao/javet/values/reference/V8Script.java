@@ -24,11 +24,29 @@ import com.caoccao.javet.values.V8Value;
 
 import java.util.Objects;
 
+/**
+ * The type V8 script.
+ *
+ * @since 0.8.0
+ */
 @SuppressWarnings("unchecked")
 public class V8Script extends V8ValueReference implements IV8Script {
+    /**
+     * The Resource name.
+     *
+     * @since 0.8.0
+     */
     protected String resourceName;
 
-    public V8Script(V8Runtime v8Runtime, long handle) throws JavetException {
+    /**
+     * Instantiates a new V8 script.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
+    V8Script(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
         resourceName = null;
     }
@@ -39,6 +57,7 @@ public class V8Script extends V8ValueReference implements IV8Script {
         return checkV8Runtime().getV8Internal().scriptRun(this, resultRequired);
     }
 
+    @Override
     public String getResourceName() {
         return resourceName;
     }
@@ -48,6 +67,7 @@ public class V8Script extends V8ValueReference implements IV8Script {
         return V8ValueReferenceType.Script;
     }
 
+    @Override
     public void setResourceName(String resourceName) {
         Objects.requireNonNull(resourceName);
         this.resourceName = resourceName;

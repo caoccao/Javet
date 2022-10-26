@@ -279,8 +279,13 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws E              the exception
      * @since 0.8.10
      */
-    <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetUniConsumer<Key, E> consumer) throws JavetException, E;
+    default <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniConsumer<Key, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach(consumer);
+        }
+    }
 
     /**
      * Invoke the uni-indexed-consumer for each of the keys.
@@ -293,8 +298,13 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws E              the exception
      * @since 0.8.10
      */
-    <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E;
+    default <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach(consumer);
+        }
+    }
 
     /**
      * Invoke the bi-consumer for each of the keys.
@@ -308,8 +318,17 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws E              the exception
      * @since 0.8.9
      */
-    <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
-            IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E;
+    default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach((Key key) -> {
+                try (Value value = get(key)) {
+                    consumer.accept(key, value);
+                }
+            });
+        }
+    }
 
     /**
      * Invoke the bi-indexed-consumer for each of the keys.
@@ -323,8 +342,17 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws E              the exception
      * @since 0.8.10
      */
-    <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
-            IJavetBiIndexedConsumer<Key, Value, E> consumer) throws JavetException, E;
+    default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiIndexedConsumer<Key, Value, E> consumer) throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            return iV8ValueArray.forEach((int index, Key key) -> {
+                try (Value value = get(key)) {
+                    consumer.accept(index, key, value);
+                }
+            });
+        }
+    }
 
     /**
      * Get property value by key object.
@@ -341,10 +369,10 @@ public interface IV8ValueObject extends IV8ValueReference {
     <T extends V8Value> T get(Object key) throws JavetException;
 
     /**
-     * Gets big integer.
+     * Gets property value as big integer by key object.
      *
      * @param key the key
-     * @return the big integer
+     * @return the property value as big integer
      * @throws JavetException the javet exception
      * @since 1.1.5
      */

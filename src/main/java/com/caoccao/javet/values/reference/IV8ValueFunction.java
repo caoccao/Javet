@@ -21,11 +21,11 @@ import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
  * The interface V8 value function.
@@ -34,6 +34,7 @@ import java.math.BigInteger;
  */
 @SuppressWarnings("unchecked")
 public interface IV8ValueFunction extends IV8ValueObject {
+
     /**
      * Call a function by objects and return V8 value.
      *
@@ -280,6 +281,63 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
+     * Can discard compiled byte code.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean canDiscardCompiled() throws JavetException;
+
+    /**
+     * Copy the context from the source V8 value function.
+     * <p>
+     * This allows changing the existing function context on the fly.
+     * It is similar to the live edit in a JavaScript debug tool.
+     *
+     * @param sourceIV8ValueFunction the source V8 value function
+     * @return true : copied, false : not copied
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    default boolean copyContextFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        try (V8Context v8Context = sourceIV8ValueFunction.getContext()) {
+            return setContext(v8Context);
+        }
+    }
+
+    /**
+     * Copy the scope info from the source V8 value function.
+     * <p>
+     * This allows changing the existing function scope info on the fly.
+     * It is similar to the live edit in a JavaScript debug tool.
+     *
+     * @param sourceIV8ValueFunction the source V8 value function
+     * @return true : copied, false : not copied
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException;
+
+    /**
+     * Discard compiled byte code.
+     *
+     * @return true : discarded, false : not discarded
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean discardCompiled() throws JavetException;
+
+    /**
+     * Gets the V8 context.
+     *
+     * @return the V8 context
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    V8Context getContext() throws JavetException;
+
+    /**
      * Gets internal properties.
      *
      * @return the internal properties
@@ -308,6 +366,19 @@ public interface IV8ValueFunction extends IV8ValueObject {
     JSScopeType getJSScopeType() throws JavetException;
 
     /**
+     * Gets script source.
+     * <p>
+     * A user-defined JavaScript function is part of a script from start position to end position.
+     * This method returns the source code of the whole script with the start position and end position.
+     * If it is not a user-defined JavaScript function, the return value is null.
+     *
+     * @return the script source
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    ScriptSource getScriptSource() throws JavetException;
+
+    /**
      * Gets source code.
      *
      * @return the source code
@@ -328,6 +399,15 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
+     * Is this function compiled.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean isCompiled() throws JavetException;
+
+    /**
      * Is generator function.
      *
      * @return true : yes, false: no
@@ -339,7 +419,55 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
-     * Sets source code.
+     * Sets the V8 context.
+     *
+     * @param v8Context the V8 context
+     * @return the V8 context
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean setContext(V8Context v8Context) throws JavetException;
+
+    /**
+     * Sets script source.
+     *
+     * @param scriptSource the script source
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    default boolean setScriptSource(ScriptSource scriptSource) throws JavetException {
+        return setScriptSource(scriptSource, false);
+    }
+
+    /**
+     * Sets script source.
+     *
+     * @param scriptSource the script source
+     * @param cloneScript  the clone script
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    boolean setScriptSource(ScriptSource scriptSource, boolean cloneScript) throws JavetException;
+
+    /**
+     * Sets source code with default options.
+     * 1. Do not perform the position calculation at the native layer.
+     * 2. Do not trim the tailing characters.
+     * 3. Do not call GC before of after the call.
+     *
+     * @param sourceCodeString the source code string
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 0.8.8
+     */
+    default boolean setSourceCode(String sourceCodeString) throws JavetException {
+        return setSourceCode(sourceCodeString, SetSourceCodeOptions.DEFAULT);
+    }
+
+    /**
+     * Sets source code with options.
      * <p>
      * Note 1: The source code is shared among all function objects.
      * So the caller is responsible for restoring the original source code,
@@ -347,33 +475,312 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * of the next function call is incorrect.
      * Note 2: The source code must be verified by compile(). Malformed source
      * code will crash V8.
-     * Note 3: The source code must not end with any of ' ', ';', '\n',
+     * Note 3: Sometimes the source code must not end with any of ' ', ';', '\n',
      * though technically the source code is valid. Otherwise, V8 will crash.
      *
      * @param sourceCodeString the source code string
+     * @param options          the options
      * @return the source code
      * @throws JavetException the javet exception
-     * @since 0.8.8
+     * @since 2.0.1
      */
-    boolean setSourceCode(String sourceCodeString) throws JavetException;
+    boolean setSourceCode(String sourceCodeString, SetSourceCodeOptions options) throws JavetException;
 
     /**
-     * Sets source code with invalid tailing characters trimmed or not.
+     * The type Script source.
      * <p>
-     * The source code must not end with ' ', '\n', '\r', 't', ';',
-     * otherwise, V8 will crash immediately.
+     * It is immutable.
      *
-     * @param sourceCodeString      the source code string
-     * @param trimTailingCharacters the trim tailing characters
-     * @return the source code
-     * @throws JavetException the javet exception
-     * @since 1.0.0
+     * @since 2.0.1
      */
-    default boolean setSourceCode(
-            String sourceCodeString, boolean trimTailingCharacters) throws JavetException {
-        if (trimTailingCharacters) {
-            sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
+    final class ScriptSource {
+        private final String code;
+        private final int endPosition;
+        private final int startPosition;
+
+        /**
+         * Instantiates a new Script source.
+         *
+         * @param code          the code
+         * @param startPosition the start position
+         * @param endPosition   the end position
+         * @since 2.0.1
+         */
+        public ScriptSource(String code, int startPosition, int endPosition) {
+            Objects.requireNonNull(code, "Code cannot be null.");
+            assert startPosition >= 0 : "Start position must be no less than 0.";
+            assert endPosition > startPosition : "End position must be greater than start position.";
+            assert endPosition <= code.length() : "End position must be no greater than the length of the code.";
+            this.code = code;
+            this.startPosition = startPosition;
+            this.endPosition = endPosition;
         }
-        return setSourceCode(sourceCodeString);
+
+        /**
+         * Instantiates a new Script source.
+         *
+         * @param code the code
+         * @since 2.0.1
+         */
+        public ScriptSource(String code) {
+            this(Objects.requireNonNull(code), 0, code.length());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ScriptSource that = (ScriptSource) o;
+            return getEndPosition() == that.getEndPosition()
+                    && getStartPosition() == that.getStartPosition()
+                    && getCode().equals(that.getCode());
+        }
+
+        /**
+         * Gets code.
+         *
+         * @return the code
+         * @since 2.0.1
+         */
+        public String getCode() {
+            return code;
+        }
+
+        /**
+         * Gets code snippet from the start position to the end position.
+         *
+         * @return the code snippet
+         * @since 2.0.1
+         */
+        public String getCodeSnippet() {
+            return code.substring(startPosition, endPosition);
+        }
+
+        /**
+         * Gets end position.
+         *
+         * @return the end position
+         * @since 2.0.1
+         */
+        public int getEndPosition() {
+            return endPosition;
+        }
+
+        /**
+         * Gets start position.
+         *
+         * @return the start position
+         * @since 2.0.1
+         */
+        public int getStartPosition() {
+            return startPosition;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getCode(), getEndPosition(), getStartPosition());
+        }
+
+        /**
+         * Returns a new script source with the code snippet replaced and positions re-calculated.
+         *
+         * @param codeSnippet the code snippet
+         * @return a new script source
+         * @since 2.0.1
+         */
+        public ScriptSource setCodeSnippet(String codeSnippet) {
+            if (codeSnippet != null && codeSnippet.length() > 0) {
+                final int originalCodeLength = code.length();
+                final int codeSnippetLength = codeSnippet.length();
+                final int newCodeLength = originalCodeLength - (endPosition - startPosition) + codeSnippetLength;
+                StringBuilder sb = new StringBuilder(newCodeLength);
+                sb.append(code, 0, startPosition);
+                sb.append(codeSnippet);
+                sb.append(code, endPosition, originalCodeLength);
+                return new ScriptSource(
+                        sb.toString(), startPosition, startPosition + codeSnippetLength);
+            }
+            return this;
+        }
+    }
+
+    /**
+     * The enum Set source code options.
+     *
+     * @since 2.0.1
+     */
+    final class SetSourceCodeOptions implements Cloneable {
+        /**
+         * The constant DEFAULT with all options disabled.
+         *
+         * @since 2.0.1
+         */
+        public static final SetSourceCodeOptions DEFAULT = new SetSourceCodeOptions();
+        /**
+         * The constant GC with PreGC and PostGC enabled.
+         *
+         * @since 2.0.1
+         */
+        public static final SetSourceCodeOptions GC = new SetSourceCodeOptions()
+                .setPreGC(true).setPostGC(true);
+        /**
+         * The constant NATIVE_GC with PreGC, PostGC and NativeCalculation enabled.
+         *
+         * @since 2.0.1
+         */
+        public static final SetSourceCodeOptions NATIVE_GC = new SetSourceCodeOptions()
+                .setPreGC(true).setPostGC(true).setNativeCalculation(true);
+        private boolean cloneScript;
+        private boolean nativeCalculation;
+        private boolean postGC;
+        private boolean preGC;
+        private boolean trimTailingCharacters;
+
+        private SetSourceCodeOptions() {
+            setCloneScript(false).setPreGC(false).setPostGC(false);
+            setNativeCalculation(false).setTrimTailingCharacters(false);
+        }
+
+        @Override
+        protected SetSourceCodeOptions clone() {
+            return new SetSourceCodeOptions()
+                    .setCloneScript(isCloneScript())
+                    .setNativeCalculation(isNativeCalculation())
+                    .setPreGC(isPreGC())
+                    .setPostGC(isPostGC())
+                    .setTrimTailingCharacters(isTrimTailingCharacters());
+        }
+
+        /**
+         * CloneScript: Clone the script so that the original script is not affected.
+         * <p>
+         * When this option is turned on, it is called LiveEdit in V8.
+         *
+         * @return true : enabled, false: disabled
+         */
+        public boolean isCloneScript() {
+            return cloneScript;
+        }
+
+        /**
+         * NativeCalculation: The position calculation is performed at the native layer.
+         *
+         * @return true : enabled, false: disabled
+         * @since 2.0.1
+         */
+        public boolean isNativeCalculation() {
+            return nativeCalculation;
+        }
+
+        /**
+         * PostGC: The GC is called after the set call happens.
+         *
+         * @return true : enabled, false: disabled
+         * @since 2.0.1
+         */
+        public boolean isPostGC() {
+            return postGC;
+        }
+
+        /**
+         * PreGC: The GC is called before the set call happens.
+         *
+         * @return true : enabled, false: disabled
+         * @since 2.0.1
+         */
+        public boolean isPreGC() {
+            return preGC;
+        }
+
+        /**
+         * TrimTailingCharacters: Sometimes the source code must not end with ' ', '\n', '\r', 't', ';',
+         * otherwise, V8 will crash immediately.
+         *
+         * @return true : enabled, false: disabled
+         * @since 2.0.1
+         */
+        public boolean isTrimTailingCharacters() {
+            return trimTailingCharacters;
+        }
+
+        private SetSourceCodeOptions setCloneScript(boolean cloneScript) {
+            this.cloneScript = cloneScript;
+            return this;
+        }
+
+        private SetSourceCodeOptions setNativeCalculation(boolean nativeCalculation) {
+            this.nativeCalculation = nativeCalculation;
+            return this;
+        }
+
+        private SetSourceCodeOptions setPostGC(boolean postGC) {
+            this.postGC = postGC;
+            return this;
+        }
+
+        private SetSourceCodeOptions setPreGC(boolean preGC) {
+            this.preGC = preGC;
+            return this;
+        }
+
+        private SetSourceCodeOptions setTrimTailingCharacters(boolean trimTailingCharacters) {
+            this.trimTailingCharacters = trimTailingCharacters;
+            return this;
+        }
+
+        /**
+         * Returns a new immutable options with CloneScript set.
+         *
+         * @param cloneScript the clone script
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withCloneScript(boolean cloneScript) {
+            return clone().setCloneScript(cloneScript);
+        }
+
+        /**
+         * Returns a new immutable options with NativeCalculation set.
+         *
+         * @param nativeCalculation the native calculation
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withNativeCalculation(boolean nativeCalculation) {
+            return clone().setNativeCalculation(nativeCalculation);
+        }
+
+        /**
+         * Returns a new immutable options with PostGC set.
+         *
+         * @param postGC the post gc
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withPostGC(boolean postGC) {
+            return clone().setPostGC(postGC);
+        }
+
+        /**
+         * Returns a new immutable options with PreGC set.
+         *
+         * @param preGC the pre gc
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withPreGC(boolean preGC) {
+            return clone().setPreGC(preGC);
+        }
+
+        /**
+         * Returns a new immutable options with TrimTrailingCharacters set.
+         *
+         * @param trimTrailingCharacters the trim trailing characters
+         * @return the new immutable options
+         * @since 2.0.1
+         */
+        public SetSourceCodeOptions withTrimTailingCharacters(boolean trimTrailingCharacters) {
+            return clone().setTrimTailingCharacters(trimTrailingCharacters);
+        }
     }
 }

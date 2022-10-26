@@ -35,6 +35,8 @@ import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.text.MessageFormat;
 import java.time.ZoneId;
@@ -51,8 +53,22 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("unchecked")
 public class TestV8ValueFunction extends BaseTestJavetRuntime {
+    protected IV8ValueFunction.SetSourceCodeOptions getOptions(int id) {
+        switch (id) {
+            case 1:
+                return IV8ValueFunction.SetSourceCodeOptions.DEFAULT;
+            case 2:
+                return IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC;
+            case 11:
+                return IV8ValueFunction.SetSourceCodeOptions.DEFAULT.withCloneScript(true);
+            case 12:
+                return IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC.withCloneScript(true);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     @Test
     public void testAnnotationBasedFunctions() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
@@ -156,9 +172,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals("test", v8Runtime.getExecutor("a.echo('test')").executeString());
             assertEquals(4, mockAnnotationBasedCallbackReceiver.getCount());
             assertFalse(v8ValueObject.hasOwnProperty("disabledFunction"));
-            assertThrows(JavetException.class, () -> {
-                v8Runtime.getExecutor("a.disabledFunction()").executeString();
-            });
+            assertThrows(JavetException.class, () -> v8Runtime.getExecutor("a.disabledFunction()").executeString());
             assertFalse(v8ValueObject.hasOwnProperty("disabledProperty"));
             try (V8Value v8Value = v8Runtime.getExecutor("a.disabledProperty").execute()) {
                 assertTrue(v8Value.isUndefined());
@@ -554,14 +568,16 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         v8Runtime.lowMemoryNotification();
     }
 
-    @Test
-    public void testContextScope() throws JavetException {
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 11, 12})
+    public void testContextScope(int optionId) throws JavetException {
+        IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
                 assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
                 assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                if (v8ValueFunction.setSourceCode("() => a + 2")) {
+                if (v8ValueFunction.setSourceCode("() => a + 2", options)) {
                     assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                     return v8ValueFunction.callInteger(null);
                 } else {
@@ -592,6 +608,73 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             fail(e.getScriptingError().toString());
         } finally {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testCopyScopeInfoFrom() throws JavetException {
+        String dummyCodeString = "() => undefined;";
+        String originalCodeString = "(() => {\n" +
+                "  const a = 1;\n" +
+                "  return () => a + 1;\n" +
+                "})();";
+        String crackedCodeString = "(() => {\n" +
+                "  const a = 'a';\n" +
+                "  return () => a + 2;\n" +
+                "})();";
+        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString);
+             V8ValueFunction dummyV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString)) {
+            IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals(originalCodeString, originalScriptSource.getCode());
+            assertEquals(33, originalScriptSource.getStartPosition());
+            assertEquals(44, originalScriptSource.getEndPosition());
+            IV8ValueFunction.ScriptSource dummyScriptSource = dummyV8ValueFunction.getScriptSource();
+            assertEquals(dummyCodeString, dummyScriptSource.getCode());
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+            // Back up the original scope info to a dummy function.
+            assertTrue(dummyV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
+            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString)) {
+                assertEquals("a2", crackedV8ValueFunction.callString(null));
+                // Replace the original scope info with the cracked scope info.
+                assertTrue(originalV8ValueFunction.copyScopeInfoFrom(crackedV8ValueFunction));
+                originalScriptSource = originalV8ValueFunction.getScriptSource();
+                assertEquals(crackedCodeString, originalScriptSource.getCode());
+                assertEquals(35, originalScriptSource.getStartPosition());
+                assertEquals(46, originalScriptSource.getEndPosition());
+                assertEquals(3, originalV8ValueFunction.callInteger(null));
+            }
+            // Restore the original scope info from the dummy function.
+            assertTrue(originalV8ValueFunction.copyScopeInfoFrom(dummyV8ValueFunction));
+            originalScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals(originalCodeString, originalScriptSource.getCode());
+            assertEquals(33, originalScriptSource.getStartPosition());
+            assertEquals(44, originalScriptSource.getEndPosition());
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+        }
+    }
+
+    @Test
+    public void testDiscardCompiled() throws JavetException {
+        final int rounds = 3;
+        String codeString = "() => 1";
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
+            assertFalse(v8ValueFunction.isCompiled());
+            assertFalse(
+                    v8ValueFunction.canDiscardCompiled(),
+                    "The function shouldn't support discard compiled.");
+            for (int i = 0; i < rounds; ++i) {
+                assertEquals(1, v8ValueFunction.callInteger(null));
+                assertTrue(v8ValueFunction.isCompiled());
+                assertTrue(
+                        v8ValueFunction.canDiscardCompiled(),
+                        "The function should support discard compiled.");
+                assertTrue(v8ValueFunction.discardCompiled(), "Discard should work.");
+                assertFalse(v8ValueFunction.discardCompiled(), "Discard should not work.");
+                assertFalse(v8ValueFunction.isCompiled());
+                assertFalse(
+                        v8ValueFunction.canDiscardCompiled(),
+                        "The function shouldn't support discard compiled.");
+            }
         }
     }
 
@@ -638,7 +721,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 if (v8ValueFunction.getJSScopeType().isClass()) {
                     try {
                         v8ValueFunction.callVoid(null);
-                    } catch (JavetException e) {
+                    } catch (JavetException ignored) {
                     }
                 }
                 String originalCodeString = v8ValueFunction.getSourceCode();
@@ -674,7 +757,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             Thread[] threads = new Thread[threadCount];
             for (int i = 0; i < threads.length; ++i) {
                 threads[i] = new Thread(() -> {
-                    try (IJavetEngine javetEngine = javetEnginePool.getEngine()) {
+                    try (IJavetEngine<?> javetEngine = javetEnginePool.getEngine()) {
                         V8Runtime v8Runtime = javetEngine.getV8Runtime();
                         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("(x) => 0")) {
                             V8ValueObject v8ValueObject = v8Runtime.getGlobalObject();
@@ -702,6 +785,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             Arrays.stream(threads).forEach(Thread::start);
             while (completedCount.get() < threadCount) {
                 try {
+                    //noinspection BusyWait
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -735,7 +819,61 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testGetAndSetExtraLongSourceCode() throws JavetException {
+    public void testGetAndSetContext() throws JavetException {
+        String dummyCodeString = "() => undefined;";
+        String originalCodeString = "(() => {\n" +
+                "  let a = 1;\n" +
+                "  return () => a + 1;\n" +
+                "})();";
+        String crackedCodeString = "() => {\n" +
+                "  a++;\n" +
+                "  return a + 2;\n" +
+                "}";
+        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString)) {
+            IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals("() => a + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
+            assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
+            assertEquals(2, originalV8ValueFunction.callInteger(null), "Populate the context.");
+            assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
+            IV8ValueFunction.ScriptSource crackedScriptSource = originalScriptSource.setCodeSnippet(crackedCodeString);
+            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString);
+                 V8Context v8Context = originalV8ValueFunction.getContext()) {
+                assertNotNull(v8Context);
+                assertEquals(3, v8Context.getLength());
+                assertTrue(v8Context.isDeclarationContext());
+                assertTrue(v8Context.isFunctionContext());
+                assertFalse(v8Context.isModuleContext());
+                assertFalse(v8Context.isScriptContext());
+                assertTrue(v8Context.getUndefined(0).isUndefined());
+                try (V8Context v8Context1 = v8Context.get(1)) {
+                    assertNotNull(v8Context1);
+                    assertTrue(v8Context1.getLength() > 0);
+                    assertTrue(v8Context1.isDeclarationContext());
+                    assertTrue(v8Context.isFunctionContext());
+                    assertFalse(v8Context.isModuleContext());
+                    assertFalse(v8Context.isScriptContext());
+                }
+                assertEquals(1, v8Context.getInteger(2), "Initial value of 'a' should be 1.");
+                assertTrue(crackedV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
+                assertTrue(crackedV8ValueFunction.setScriptSource(crackedScriptSource, true));
+                assertTrue(crackedV8ValueFunction.setContext(v8Context));
+                // Variable 'a' in the closure context is incremented by the next function call.
+                assertEquals(4, crackedV8ValueFunction.callInteger(null),
+                        "The cracked function should be " + crackedCodeString + ".");
+                assertEquals(2, v8Context.getInteger(2), "Updated value of 'a' should be 2.");
+            }
+            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
+            assertEquals(3, originalV8ValueFunction.callInteger(null),
+                    "The original function should be () => a + 1.");
+            IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals(originalScriptSource, newScriptSource, "The script source should match.");
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 11, 12})
+    public void testGetAndSetExtraLongSourceCode(int optionId) throws JavetException {
+        IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private int callCount = 0;
 
@@ -748,10 +886,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                 String originalCodeString = v8ValueFunction.getSourceCode();
                 String newCodeString = originalCodeString + " /*\n測試\nI am longer\n*/ + 1";
-                v8ValueFunction.setSourceCode(newCodeString);
+                v8ValueFunction.setSourceCode(newCodeString, options);
                 int result = v8ValueFunction.callInteger(null, 1);
                 assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                v8ValueFunction.setSourceCode(originalCodeString);
+                v8ValueFunction.setSourceCode(originalCodeString, options);
                 ++callCount;
                 return result;
             }
@@ -762,23 +900,23 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().bind(anonymous);
             StringBuilder sb = new StringBuilder();
             sb.append("// Header x\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("const a = [];\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("for (let i = 0; i < 5; ++i) {\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 0 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 1 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 2 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 3 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("  a.push(intercept( x => /* comment */ x + i + 4 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("}\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder + "\n"));
+            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
             sb.append("// Footer");
             String sourceCode = sb.toString();
             v8Runtime.getExecutor(sourceCode).executeVoid();
@@ -794,17 +932,23 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
     }
 
-    @Test
-    public void testGetAndSetMalformedSourceCode() throws JavetException {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void testGetAndSetMalformedSourceCode(boolean nativeEnabled) throws JavetException {
+        IV8ValueFunction.SetSourceCodeOptions optionsWithoutTrim = nativeEnabled
+                ? IV8ValueFunction.SetSourceCodeOptions.NATIVE_GC.withCloneScript(false)
+                : IV8ValueFunction.SetSourceCodeOptions.DEFAULT.withCloneScript(false);
+        IV8ValueFunction.SetSourceCodeOptions optionsWithTrim =
+                optionsWithoutTrim.withTrimTailingCharacters(true);
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
             public String test(V8ValueFunction v8ValueFunction) throws JavetException {
                 v8ValueFunction.callString(null);
                 String originalSourceCode = v8ValueFunction.getSourceCode();
-                v8ValueFunction.setSourceCode("() => 'a' \n ;\n  ", true);
+                v8ValueFunction.setSourceCode("() => 'a' \n ;\n  ", optionsWithTrim);
                 String resultString = v8ValueFunction.callString(null);
                 assertEquals("a", resultString);
-                v8ValueFunction.setSourceCode(originalSourceCode);
+                v8ValueFunction.setSourceCode(originalSourceCode, optionsWithoutTrim);
                 return resultString;
             }
         };
@@ -829,9 +973,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
      *
      * @throws JavetException the javet exception
      */
-    @Test
-    public void testGetAndSetRegularSourceCode() throws JavetException {
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 11, 12})
+    public void testGetAndSetRegularSourceCode(int optionId) throws JavetException {
         final int functionCount = 5;
+        IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
         String functionStatementTemplate = "var {0} = {1};\n";
         String functionNameTemplate = "f{0}";
         String[][] functionBodyTemplates = new String[][]{
@@ -906,11 +1052,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                             "Calling the function to build the cache and the result should match.");
                     assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
                             "The cache is ready and the scope type should be [Function].");
-                    assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i)),
+                    assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i), options),
                             "Updating the source code should pass.");
                     assertEquals(i + 1, v8ValueFunction.callInteger(null),
                             "Calling the new function and the result should match.");
-                    assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i)),
+                    assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i), options),
                             "Restoring the source code should pass.");
                     assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
                             "The cache is refreshed and the scope type should be [Function].");
@@ -926,6 +1072,103 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 }
             }
             v8Runtime.resetContext();
+        }
+    }
+
+    @Test
+    public void testGetAndSetScriptSource() throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor("JSON.stringify").execute()) {
+            assertNull(v8ValueFunction.getScriptSource());
+        }
+        String originalCodeString = "() => undefined";
+        String crackedCodeString = "() => 1";
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(originalCodeString).execute()) {
+            assertFalse(v8ValueFunction.isCompiled());
+            assertFalse(
+                    v8ValueFunction.canDiscardCompiled(),
+                    "The function shouldn't support discard compiled.");
+            IV8ValueFunction.ScriptSource scriptSource = v8ValueFunction.getScriptSource();
+            assertEquals(originalCodeString, scriptSource.getCode());
+            assertEquals(0, scriptSource.getStartPosition());
+            assertEquals(originalCodeString.length(), scriptSource.getEndPosition());
+            assertTrue(v8ValueFunction.call(null).isUndefined());
+            assertTrue(v8ValueFunction.isCompiled());
+            assertTrue(
+                    v8ValueFunction.canDiscardCompiled(),
+                    "The function should support discard compiled.");
+            scriptSource = new IV8ValueFunction.ScriptSource(crackedCodeString);
+            assertTrue(v8ValueFunction.setScriptSource(scriptSource, true));
+            assertFalse(v8ValueFunction.setScriptSource(scriptSource));
+            assertEquals(1, v8ValueFunction.callInteger(null));
+            scriptSource = v8ValueFunction.getScriptSource();
+            assertEquals(crackedCodeString, scriptSource.getCode());
+            assertEquals(0, scriptSource.getStartPosition());
+            assertEquals(crackedCodeString.length(), scriptSource.getEndPosition());
+        }
+        String dummyCodeString = "() => undefined;";
+        originalCodeString = "(() => {\n" +
+                "  const a = 1;\n" +
+                "  return () => a + 1;\n" +
+                "})();";
+        crackedCodeString = "(() => {\n" +
+                "  const a = 'a';\n" +
+                "  return () => a + 2;\n" +
+                "})();";
+        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString);
+             V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString)) {
+            assertFalse(originalV8ValueFunction.isCompiled());
+            assertFalse(
+                    originalV8ValueFunction.canDiscardCompiled(),
+                    "The original function should support discard compiled.");
+            assertFalse(crackedV8ValueFunction.isCompiled());
+            assertFalse(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function shouldn't support discard compiled.");
+            IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+            assertTrue(originalV8ValueFunction.isCompiled());
+            assertTrue(
+                    originalV8ValueFunction.canDiscardCompiled(),
+                    "The original function should support discard compiled.");
+            assertTrue(crackedV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
+            assertTrue(
+                    crackedV8ValueFunction.isCompiled(),
+                    "The cracked function should be compiled because the scope info was from the original function.");
+            assertTrue(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function should support discard compiled because the scope info was from the original function.");
+            assertTrue(crackedV8ValueFunction.copyContextFrom(originalV8ValueFunction));
+            assertEquals(2, crackedV8ValueFunction.callInteger(null));
+            IV8ValueFunction.ScriptSource crackedScriptSource = new IV8ValueFunction.ScriptSource(
+                    crackedCodeString, 35, 46);
+            assertTrue(crackedV8ValueFunction.setScriptSource(crackedScriptSource, true));
+            assertFalse(crackedV8ValueFunction.isCompiled());
+            assertFalse(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function shouldn't support discard compiled.");
+            assertFalse(crackedV8ValueFunction.setScriptSource(crackedScriptSource));
+            assertEquals(3, crackedV8ValueFunction.callInteger(null));
+            assertTrue(crackedV8ValueFunction.isCompiled());
+            assertTrue(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function should support discard compiled.");
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+            IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
+            assertNotEquals(crackedScriptSource.getCode(), newScriptSource.getCode());
+            assertTrue(crackedV8ValueFunction.setScriptSource(originalScriptSource, true));
+            assertFalse(crackedV8ValueFunction.isCompiled());
+            assertFalse(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function shouldn't support discard compiled.");
+            assertEquals(2, crackedV8ValueFunction.callInteger(null));
+            assertTrue(crackedV8ValueFunction.isCompiled());
+            assertTrue(
+                    crackedV8ValueFunction.canDiscardCompiled(),
+                    "The cracked function should support discard compiled.");
+            assertEquals(2, originalV8ValueFunction.callInteger(null));
+            // Restore the position because memory for position is shared between these 2 functions.
+            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
+            assertEquals(originalScriptSource, originalV8ValueFunction.getScriptSource());
         }
     }
 
@@ -1136,7 +1379,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testStream() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
-            public Stream test(Stream stream) {
+            public Stream<?> test(Stream<?> stream) {
                 return stream.filter(o -> o instanceof String);
             }
         };

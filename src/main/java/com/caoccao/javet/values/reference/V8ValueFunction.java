@@ -21,9 +21,13 @@ import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Internal;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
+
+import java.util.Objects;
 
 /**
  * The type V8 value function.
@@ -31,6 +35,26 @@ import com.caoccao.javet.values.virtual.V8VirtualValueList;
  * @since 0.7.0
  */
 public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
+    /**
+     * The constant ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME.
+     *
+     * @since 2.0.1
+     */
+    protected static final String ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME =
+            "The source function cannot be in another V8 runtime.";
+    /**
+     * The constant ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER.
+     *
+     * @since 2.0.1
+     */
+    protected static final String ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER =
+            "The source function cannot be the caller.";
+    /**
+     * The constant ERROR_V8_CONTEXT_CANNOT_BE_NULL.
+     *
+     * @since 2.0.1
+     */
+    protected static final String ERROR_V8_CONTEXT_CANNOT_BE_NULL = "V8 context cannot be null.";
     /**
      * The JS function type.
      *
@@ -81,6 +105,31 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public boolean canDiscardCompiled() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionCanDiscardCompiled(this);
+    }
+
+    @Override
+    public boolean copyScopeInfoFrom(IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        assert this != Objects.requireNonNull(sourceIV8ValueFunction) : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_THE_CALLER;
+        assert checkV8Runtime() == sourceIV8ValueFunction.getV8Runtime() : ERROR_THE_SOURCE_FUNCTION_CANNOT_BE_IN_ANOTHER_V8_RUNTIME;
+        if (!getJSFunctionType().isUserDefined() || !sourceIV8ValueFunction.getJSFunctionType().isUserDefined()) {
+            return false;
+        }
+        return v8Runtime.getV8Internal().functionCopyScopeInfoFrom(this, sourceIV8ValueFunction);
+    }
+
+    @Override
+    public boolean discardCompiled() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionDiscardCompiled(this);
+    }
+
+    @Override
+    public V8Context getContext() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionGetContext(this);
+    }
+
+    @Override
     @CheckReturnValue
     public IV8ValueArray getInternalProperties() throws JavetException {
         return checkV8Runtime().getV8Internal().getInternalProperties(this);
@@ -100,9 +149,17 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public ScriptSource getScriptSource() throws JavetException {
+        if (getJSFunctionType().isUserDefined()) {
+            return checkV8Runtime().getV8Internal().functionGetScriptSource(this);
+        }
+        return null;
+    }
+
+    @Override
     public String getSourceCode() throws JavetException {
         if (getJSFunctionType().isUserDefined()) {
-            return checkV8Runtime().getV8Internal().getSourceCode(this);
+            return checkV8Runtime().getV8Internal().functionGetSourceCode(this);
         }
         return null;
     }
@@ -113,14 +170,58 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public boolean setSourceCode(String sourceCodeString) throws JavetException {
+    public boolean isCompiled() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionIsCompiled(this);
+    }
+
+    @Override
+    public boolean setContext(V8Context v8Context) throws JavetException {
+        Objects.requireNonNull(v8Context, ERROR_V8_CONTEXT_CANNOT_BE_NULL);
+        return checkV8Runtime().getV8Internal().functionSetContext(this, v8Context);
+    }
+
+    @Override
+    public boolean setScriptSource(ScriptSource scriptSource, boolean cloneScript) throws JavetException {
         boolean success = false;
-        if (getJSFunctionType().isUserDefined()
+        if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction() && scriptSource != null) {
+            success = checkV8Runtime().getV8Internal().functionSetScriptSource(
+                    this, scriptSource, cloneScript);
+        }
+        return success;
+    }
+
+    @Override
+    public boolean setSourceCode(
+            String sourceCodeString,
+            SetSourceCodeOptions options) throws JavetException {
+        Objects.requireNonNull(options, "Options cannot be null.");
+        boolean success = false;
+        if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()
                 && sourceCodeString != null && sourceCodeString.length() > 0) {
-            checkV8Runtime();
-            v8Runtime.lowMemoryNotification();
-            success = v8Runtime.getV8Internal().setSourceCode(this, sourceCodeString);
-            v8Runtime.lowMemoryNotification();
+            if (options.isTrimTailingCharacters()) {
+                sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
+            }
+            V8Internal v8Internal = checkV8Runtime().getV8Internal();
+            if (options.isPreGC()) {
+                v8Runtime.lowMemoryNotification();
+            }
+            try {
+                if (options.isNativeCalculation()) {
+                    success = v8Internal.functionSetSourceCode(
+                            this, sourceCodeString, options.isCloneScript());
+                } else {
+                    ScriptSource originalScriptSource = v8Internal.functionGetScriptSource(this);
+                    ScriptSource newScriptSource = originalScriptSource.setCodeSnippet(sourceCodeString);
+                    if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()) {
+                        success = v8Internal.functionSetScriptSource(
+                                this, newScriptSource, options.isCloneScript());
+                    }
+                }
+            } finally {
+                if (options.isPostGC()) {
+                    v8Runtime.lowMemoryNotification();
+                }
+            }
         }
         return success;
     }

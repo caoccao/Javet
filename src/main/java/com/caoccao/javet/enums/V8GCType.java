@@ -29,7 +29,7 @@ public enum V8GCType implements IEnumBitset {
      *
      * @since 1.0.3
      */
-    GCTypeScavenge(1 << 0),
+    GCTypeScavenge(1),
     /**
      * GC type mark sweep compact.
      *
@@ -49,7 +49,7 @@ public enum V8GCType implements IEnumBitset {
      */
     GCTypeProcessWeakCallbacks(1 << 3);
 
-    private int value;
+    private final int value;
 
     V8GCType(int value) {
         this.value = value;

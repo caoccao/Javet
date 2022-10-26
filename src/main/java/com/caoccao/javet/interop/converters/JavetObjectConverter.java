@@ -28,7 +28,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
-import com.caoccao.javet.interop.proxy.JavetUniversalProxyObjectHandler;
+import com.caoccao.javet.interop.proxy.JavetDynamicProxyObjectHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
@@ -341,8 +341,9 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                     V8ValueProxy v8ValueProxy = v8Scope.createV8ValueProxy();
                     try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                        JavetUniversalProxyObjectHandler<Map<?, ?>> javetProxyHandler =
-                                new JavetUniversalProxyObjectHandler<>(v8Runtime, (Map<?, ?>) object);
+                        JavetDynamicProxyObjectHandler<Map<?, ?>> javetProxyHandler =
+                                new JavetDynamicProxyObjectHandler<>(
+                                        v8Runtime, null, (Map<?, ?>) object);
                         List<JavetCallbackContext> javetCallbackContexts =
                                 iV8ValueObjectHandler.bind(javetProxyHandler);
                         iV8ValueObjectHandler.setPrivateProperty(
@@ -370,8 +371,9 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                     V8ValueProxy v8ValueProxy = v8Scope.createV8ValueProxy();
                     try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                        JavetUniversalProxyObjectHandler<Set<?>> javetProxyHandler =
-                                new JavetUniversalProxyObjectHandler<>(v8Runtime, (Set<?>) object);
+                        JavetDynamicProxyObjectHandler<Set<?>> javetProxyHandler =
+                                new JavetDynamicProxyObjectHandler<>(
+                                        v8Runtime, null, (Set<?>) object);
                         List<JavetCallbackContext> javetCallbackContexts =
                                 iV8ValueObjectHandler.bind(javetProxyHandler);
                         iV8ValueObjectHandler.setPrivateProperty(

@@ -52,8 +52,8 @@ namespace Javet {
             char const* utfChars = jniEnv->GetStringUTFChars(mV8FlagsString, nullptr);
             v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(mV8FlagsString));
             jniEnv->ReleaseStringUTFChars(mV8FlagsString, utfChars);
-            jniEnv->DeleteLocalRef(mV8FlagsString);
-            jniEnv->DeleteLocalRef(mV8Flags);
+            DELETE_LOCAL_REF(jniEnv, mV8FlagsString);
+            DELETE_LOCAL_REF(jniEnv, mV8Flags);
             jniEnv->DeleteLocalRef(jclassV8Flags);
         }
     }
@@ -303,13 +303,21 @@ namespace Javet {
         v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
     }
 
+    jobject V8Runtime::SafeToExternalV8Value(JNIEnv * jniEnv, const V8LocalContext & v8Context, const V8InternalObject & v8InternalObject) {
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8InternalObject);
+        if (v8TryCatch.HasCaught()) {
+            DELETE_LOCAL_REF(jniEnv, externalV8Value);
+            return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
+        }
+        return externalV8Value;
+    }
+
     jobject V8Runtime::SafeToExternalV8Value(JNIEnv * jniEnv, const V8LocalContext & v8Context, const V8LocalValue & v8Value) {
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8Value);
         if (v8TryCatch.HasCaught()) {
-            if (externalV8Value != nullptr) {
-                jniEnv->DeleteLocalRef(externalV8Value);
-            }
+            DELETE_LOCAL_REF(jniEnv, externalV8Value);
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
         }
         return externalV8Value;

@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interop.converters;
 
+import com.caoccao.javet.interop.proxy.IJavetDynamicObjectFactory;
+
 /**
  * The type Javet converter config.
  *
@@ -78,6 +80,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     protected short defaultShort;
     /**
+     * The Dynamic object factory.
+     *
+     * @since 2.0.1
+     */
+    protected IJavetDynamicObjectFactory dynamicObjectFactory;
+    /**
      * The Extract function source code.
      *
      * @since 0.9.4
@@ -122,6 +130,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         defaultInt = 0;
         defaultLong = 0L;
         defaultShort = 0;
+        dynamicObjectFactory = null;
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
         proxyMapEnabled = false;
@@ -206,6 +215,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public short getDefaultShort() {
         return defaultShort;
+    }
+
+    public IJavetDynamicObjectFactory getDynamicObjectFactory() {
+        return dynamicObjectFactory;
     }
 
     /**
@@ -360,6 +373,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     public JavetConverterConfig<T> setDefaultShort(short defaultShort) {
         this.defaultShort = defaultShort;
         return this;
+    }
+
+    public void setDynamicObjectFactory(IJavetDynamicObjectFactory dynamicObjectFactory) {
+        this.dynamicObjectFactory = dynamicObjectFactory;
     }
 
     /**

@@ -32,6 +32,8 @@
     javaVMPointer->GetEnv((void**)&jniEnv, SUPPORTED_JNI_VERSION); \
     javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
 
+#define DELETE_LOCAL_REF(jniEnv, localRef) if (localRef != nullptr) { jniEnv->DeleteLocalRef(localRef); }
+
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \

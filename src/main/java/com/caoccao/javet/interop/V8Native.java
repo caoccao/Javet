@@ -70,6 +70,18 @@ class V8Native implements IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     @Override
+    public native Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
+
+    @Override
+    public native int contextGetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean contextIsContextType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int contextTypeId);
+
+    @Override
+    public native boolean contextSetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int length);
+
+    @Override
     public native void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
 
     @Override
@@ -92,6 +104,41 @@ class V8Native implements IV8Native {
             long v8RuntimeHandle, String script, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
+
+    @Override
+    public native boolean functionCanDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean functionCopyScopeInfoFrom(
+            long v8RuntimeHandle,
+            long targetV8ValueHandle, int targetV8ValueType,
+            long sourceV8ValueHandle, int sourceV8ValueType);
+
+    @Override
+    public native boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native Object functionGetScriptSource(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean functionIsCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
+
+    @Override
+    public native boolean functionSetScriptSource(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object scriptSource, boolean cloneScript);
+
+    @Override
+    public native boolean functionSetSourceCode(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
     @Override
     public native Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
@@ -135,9 +182,6 @@ class V8Native implements IV8Native {
 
     @Override
     public native int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    @Override
-    public native String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
@@ -307,9 +351,6 @@ class V8Native implements IV8Native {
     @Override
     public native boolean setPrototype(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
-
-    @Override
-    public native boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
 
     @Override
     public native void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);

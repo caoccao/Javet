@@ -55,7 +55,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
     protected JavetEnginePool<?> javetEnginePool;
 
     @AfterEach
-    private void afterEach() throws JavetException {
+    public void afterEach() throws JavetException {
         assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
         assertEquals(0, javetEnginePool.getAverageReferenceCount());
         assertEquals(0, javetEnginePool.getAverageV8ModuleCount());
@@ -80,7 +80,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
     }
 
     @BeforeEach
-    private void beforeEach() {
+    public void beforeEach() {
         javetEnginePool = new JavetEnginePool<>();
         assertTrue(javetEnginePool.isActive());
         assertFalse(javetEnginePool.isClosed());

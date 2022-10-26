@@ -35,6 +35,7 @@ public enum V8ValueReferenceType {
     WeakSet(15, "WeakSet"),
     Script(20, "Script"),
     Module(21, "Module"),
+    Context(22, "Context"),
     DataView(30, "DataView"),
     ArrayBuffer(31, "ArrayBuffer"),
     SharedArrayBuffer(32, "SharedArrayBuffer"),
