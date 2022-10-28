@@ -868,7 +868,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                         "The cracked function should be " + crackedCodeString + ".");
                 assertEquals(2, v8Context.getInteger(2), "Updated value of 'a' should be 2.");
             }
-            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
+            assertFalse(originalV8ValueFunction.setScriptSource(originalScriptSource));
             assertEquals(3, originalV8ValueFunction.callInteger(null),
                     "The original function should be () => a + 1.");
             IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
@@ -1172,9 +1172,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     crackedV8ValueFunction.canDiscardCompiled(),
                     "The cracked function should support discard compiled.");
             assertEquals(2, originalV8ValueFunction.callInteger(null));
-            // Restore the position because memory for position is shared between these 2 functions.
-            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
             assertEquals(originalScriptSource, originalV8ValueFunction.getScriptSource());
+            assertFalse(
+                    originalV8ValueFunction.setScriptSource(originalScriptSource),
+                    "The original function remains unchanged.");
         }
     }
 

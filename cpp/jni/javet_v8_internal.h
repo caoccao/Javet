@@ -36,6 +36,7 @@
 #include <src/api/api-inl.h>
 #include <src/objects/js-function-inl.h>
 #include <src/objects/shared-function-info-inl.h>
+#include <src/objects/string-set-inl.h>
 #include <src/strings/string-builder-inl.h>
 #include <src/handles/handles-inl.h>
 #include <src/flags/flags.h>
