@@ -630,11 +630,17 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(44, originalScriptSource.getEndPosition());
             IV8ValueFunction.ScriptSource dummyScriptSource = dummyV8ValueFunction.getScriptSource();
             assertEquals(dummyCodeString, dummyScriptSource.getCode());
+            assertFalse(originalV8ValueFunction.isCompiled());
+            assertFalse(dummyV8ValueFunction.isCompiled());
             assertEquals(2, originalV8ValueFunction.callInteger(null));
+            assertTrue(originalV8ValueFunction.isCompiled());
             // Back up the original scope info to a dummy function.
             assertTrue(dummyV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
+            assertTrue(dummyV8ValueFunction.isCompiled());
             try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString)) {
+                assertFalse(crackedV8ValueFunction.isCompiled());
                 assertEquals("a2", crackedV8ValueFunction.callString(null));
+                assertTrue(crackedV8ValueFunction.isCompiled());
                 // Replace the original scope info with the cracked scope info.
                 assertTrue(originalV8ValueFunction.copyScopeInfoFrom(crackedV8ValueFunction));
                 originalScriptSource = originalV8ValueFunction.getScriptSource();

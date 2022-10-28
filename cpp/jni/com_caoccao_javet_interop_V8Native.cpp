@@ -617,12 +617,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyS
         auto targetV8InternalShared = targetV8InternalFunction.shared();
         auto sourceV8InternalShared = sourceV8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(sourceV8InternalShared) && IS_USER_DEFINED_FUNCTION(targetV8InternalShared)) {
-            if (targetV8InternalShared.CanDiscardCompiled()) {
-                auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-                V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::Handle(targetV8InternalShared, v8InternalIsolate));
-                targetV8InternalShared.set_allows_lazy_compilation(true);
-            }
-            targetV8InternalShared.CopyFrom(sourceV8InternalShared);
+            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+            auto targetV8InternalSharedHandle = v8InternalIsolate->factory()->CloneSharedFunctionInfo(
+                v8::internal::Handle(sourceV8InternalShared, v8InternalIsolate));
+            targetV8InternalFunction.set_shared(*targetV8InternalSharedHandle, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
             success = true;
         }
     }

@@ -5,6 +5,7 @@ Release Notes 2.0.x
 2.0.2 V8 v10.8
 --------------
 
+* Revised ``IV8ValueFunction.copyScopeInfoFrom()`` to clone the scope info
 
 2.0.1 V8 v10.7
 --------------
