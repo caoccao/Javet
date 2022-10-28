@@ -59,8 +59,6 @@ WORKDIR /
 RUN wget https://dl.google.com/android/repository/android-ndk-r23b-linux.zip
 RUN unzip android-ndk-r23b-linux.zip
 RUN rm android-ndk-r23b-linux.zip
-
-# Prepare Android SDK
 WORKDIR /google/v8/third_party/android_sdk/public/cmdline-tools/latest/bin
 RUN yes | ./sdkmanager --licenses
 RUN ./sdkmanager "build-tools;30.0.2" "platforms;android-30"

@@ -1,0 +1,36 @@
+name: Ubuntu ARM64 Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "**.rst"
+      - "docs/**"
+  push:
+    paths-ignore:
+      - "**.rst"
+      - "docs/**"
+
+jobs:
+  javet_ubuntu_x86_64:
+    name: Javet Ubuntu arm64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Ensure multi-arch container support
+        run: apt install qemu-user-static
+
+      - name: Build docker image
+        run: docker build --platform linux/arm64 -t javet:local -f docker/ubuntu-arm64/build.Dockerfile .
+
+      - name: Copy the artifact
+        run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet:local cp -rf /Javet/build/libs /output
+
+      - name: Upload the artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: javet-ubuntu-arm64
+          path: build/libs/javet*.jar
