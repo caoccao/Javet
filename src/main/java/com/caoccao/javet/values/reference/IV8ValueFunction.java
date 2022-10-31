@@ -19,12 +19,16 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
+import com.caoccao.javet.enums.V8ScopeType;
 import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -149,7 +153,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @param <T>          the type parameter
      * @param receiver     the receiver
      * @param returnResult the return result
-     * @param v8Values     the v 8 values
+     * @param v8Values     the V8 values
      * @return the t
      * @throws JavetException the javet exception
      * @since 0.8.5
@@ -366,6 +370,45 @@ public interface IV8ValueFunction extends IV8ValueObject {
     JSScopeType getJSScopeType() throws JavetException;
 
     /**
+     * Gets scope infos.
+     *
+     * @return the scope infos
+     * @throws JavetException the javet exception
+     * @since 2.0.2
+     */
+    @CheckReturnValue
+    default ScopeInfos getScopeInfos() throws JavetException {
+        return getScopeInfos(false, false);
+    }
+
+    /**
+     * Gets scope infos.
+     *
+     * @param includeGlobalVariables the include global variables
+     * @return the scope infos
+     * @throws JavetException the javet exception
+     * @since 2.0.2
+     */
+    @CheckReturnValue
+    default ScopeInfos getScopeInfos(boolean includeGlobalVariables) throws JavetException {
+        return getScopeInfos(includeGlobalVariables, false);
+    }
+
+    /**
+     * Gets scope infos.
+     *
+     * @param includeGlobalVariables the include global variables
+     * @param includeScopeTypeGlobal the include scope type global
+     * @return the scope infos
+     * @throws JavetException the javet exception
+     * @since 2.0.2
+     */
+    @CheckReturnValue
+    ScopeInfos getScopeInfos(
+            boolean includeGlobalVariables,
+            boolean includeScopeTypeGlobal) throws JavetException;
+
+    /**
      * Gets script source.
      * <p>
      * A user-defined JavaScript function is part of a script from start position to end position.
@@ -485,6 +528,129 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @since 2.0.1
      */
     boolean setSourceCode(String sourceCodeString, SetSourceCodeOptions options) throws JavetException;
+
+    /**
+     * The type Scope info.
+     *
+     * @since 2.0.2
+     */
+    final class ScopeInfo implements IJavetClosable {
+        private final V8ValueObject scopeObject;
+        private final V8ScopeType type;
+
+        /**
+         * Instantiates a new Scope info.
+         *
+         * @param type        the type
+         * @param scopeObject the scope object
+         * @since 2.0.2
+         */
+        public ScopeInfo(V8ScopeType type, V8ValueObject scopeObject) {
+            this.type = type;
+            this.scopeObject = scopeObject;
+        }
+
+        @Override
+        public void close() throws JavetException {
+            scopeObject.close();
+        }
+
+        /**
+         * Gets scope object.
+         *
+         * @return the scope object
+         * @since 2.0.2
+         */
+        public V8ValueObject getScopeObject() {
+            return scopeObject;
+        }
+
+        /**
+         * Gets type.
+         *
+         * @return the type
+         * @since 2.0.2
+         */
+        public V8ScopeType getType() {
+            return type;
+        }
+
+        @Override
+        public boolean isClosed() {
+            return scopeObject.isClosed();
+        }
+    }
+
+    /**
+     * The type Scope infos.
+     *
+     * @since 2.0.2
+     */
+    final class ScopeInfos implements IJavetClosable {
+        private static final int INDEX_SCOPE_OBJECT = 1;
+        private static final int INDEX_SCOPE_TYPE = 0;
+        private final List<ScopeInfo> scopeInfos;
+
+        /**
+         * Instantiates a new Scope infos.
+         *
+         * @param iV8ValueArray the V8 value array
+         * @throws JavetException the javet exception
+         * @since 2.0.2
+         */
+        public ScopeInfos(IV8ValueArray iV8ValueArray) throws JavetException {
+            this.scopeInfos = createFrom(iV8ValueArray);
+        }
+
+        private static List<ScopeInfo> createFrom(IV8ValueArray iV8ValueArray) throws JavetException {
+            final List<ScopeInfo> values = new ArrayList<>();
+            if (iV8ValueArray != null) {
+                iV8ValueArray.forEach(v8Value -> {
+                    if (v8Value instanceof V8ValueArray) {
+                        V8ValueArray innerV8ValueArray = (V8ValueArray) v8Value;
+                        ScopeInfo scopeInfo = new ScopeInfo(
+                                V8ScopeType.parse(innerV8ValueArray.getInteger(INDEX_SCOPE_TYPE)),
+                                innerV8ValueArray.get(INDEX_SCOPE_OBJECT));
+                        values.add(scopeInfo);
+                    }
+                });
+            }
+            return values;
+        }
+
+        @Override
+        public void close() throws JavetException {
+            for (ScopeInfo value : scopeInfos) {
+                value.close();
+            }
+        }
+
+        /**
+         * Gets scope info by index.
+         *
+         * @param index the index
+         * @return the scope info
+         * @since 2.0.2
+         */
+        public ScopeInfo get(int index) {
+            return scopeInfos.get(index);
+        }
+
+        @Override
+        public boolean isClosed() {
+            return scopeInfos.stream().allMatch(ScopeInfo::isClosed);
+        }
+
+        /**
+         * Gets the size.
+         *
+         * @return the size
+         * @since 2.0.2
+         */
+        public int size() {
+            return scopeInfos.size();
+        }
+    }
 
     /**
      * The type Script source.

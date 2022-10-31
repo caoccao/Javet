@@ -904,6 +904,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets scope infos from a V8 value function.
+     *
+     * @param iV8ValueFunction       the V 8 value function
+     * @param includeGlobalVariables the include global variables
+     * @param includeScopeTypeGlobal the include scope type global
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     */
+    IV8ValueArray functionGetScopeInfos(
+            IV8ValueFunction iV8ValueFunction,
+            boolean includeGlobalVariables,
+            boolean includeScopeTypeGlobal)
+            throws JavetException {
+        return (IV8ValueArray) v8Native.functionGetScopeInfos(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(),
+                includeGlobalVariables, includeScopeTypeGlobal);
+    }
+
+    /**
      * Gets script source from a function.
      *
      * @param iV8ValueFunction the V8 value function

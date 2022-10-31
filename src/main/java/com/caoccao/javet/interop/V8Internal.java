@@ -113,6 +113,15 @@ public final class V8Internal {
         return v8Runtime.functionGetContext(iV8ValueFunction);
     }
 
+    @CheckReturnValue
+    public IV8ValueArray functionGetScopeInfos(
+            IV8ValueFunction iV8ValueFunction,
+            boolean includeGlobalVariables,
+            boolean includeScopeTypeGlobal)
+            throws JavetException {
+        return v8Runtime.functionGetScopeInfos(iV8ValueFunction, includeGlobalVariables, includeScopeTypeGlobal);
+    }
+
     public IV8ValueFunction.ScriptSource functionGetScriptSource(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.functionGetScriptSource(iV8ValueFunction);
     }

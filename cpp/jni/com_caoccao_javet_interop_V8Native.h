@@ -209,6 +209,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCon
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionGetScopeInfos
+ * Signature: (JJIZZ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScopeInfos
+  (JNIEnv *, jobject, jlong, jlong, jint, jboolean, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionGetScriptSource
  * Signature: (JJI)Ljava/lang/Object;
  */

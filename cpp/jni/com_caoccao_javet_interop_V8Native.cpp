@@ -624,10 +624,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyS
                 v8::internal::Handle(sourceV8InternalShared, v8InternalIsolate));
             // Clone the scope info
             auto sourceScopeInfo = sourceV8InternalShared.scope_info();
-            auto emptyBlocklistSetHandle = v8::internal::StringSet::New(v8InternalIsolate);
-            auto targetScopeInfoHandle = V8InternalScopeInfo::RecreateWithBlockList(
-                v8InternalIsolate, v8::internal::Handle(sourceScopeInfo, v8InternalIsolate), emptyBlocklistSetHandle);
-            targetV8InternalShared.set_raw_scope_info(*targetScopeInfoHandle);
+            auto emptyBlocklistHandle = V8InternalStringSet::New(v8InternalIsolate);
+            auto targetScopeInfo = *V8InternalScopeInfo::RecreateWithBlockList(
+                v8InternalIsolate, v8::internal::Handle(sourceScopeInfo, v8InternalIsolate), emptyBlocklistHandle);
+            targetV8InternalShared.set_raw_scope_info(targetScopeInfo);
             targetV8InternalFunction.set_shared(targetV8InternalShared, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
             success = true;
         }
@@ -665,6 +665,37 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCon
         }
     }
     return nullptr;
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScopeInfos
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType,
+    jboolean includeGlobalVariables, jboolean includeScopeTypeGlobal) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    V8LocalArray v8LocalArray = v8::Array::New(v8Context->GetIsolate());
+    if (IS_V8_FUNCTION(v8ValueType)) {
+        V8InternalDisallowGarbageCollection disallowGarbageCollection;
+        auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
+        auto v8InternalShared = v8InternalFunction.shared();
+        auto v8InternalScopeInfo = v8InternalShared.scope_info();
+        V8InternalScopeIterator scopeIterator(v8InternalIsolate, v8::internal::Handle(v8InternalFunction, v8InternalIsolate));
+        uint32_t index = 0;
+        for (; !scopeIterator.Done(); scopeIterator.Next()) {
+            auto type = scopeIterator.Type();
+            if (!includeScopeTypeGlobal && type == V8InternalScopeIterator::ScopeTypeGlobal) {
+                continue;
+            }
+            V8LocalArray innerV8LocalArray = v8::Array::New(v8Context->GetIsolate());
+            auto mode = includeGlobalVariables ? V8InternalScopeIterator::Mode::ALL : V8InternalScopeIterator::Mode::STACK;
+            auto scopeObject = scopeIterator.ScopeObject(mode);
+            auto v8LocalScopeObject = v8::Utils::ToLocal(scopeObject);
+            innerV8LocalArray->Set(v8Context, INDEX_SCOPE_TYPE, v8::Integer::New(v8Context->GetIsolate(), (int)type));
+            innerV8LocalArray->Set(v8Context, INDEX_SCOPE_OBJECT, v8LocalScopeObject);
+            v8LocalArray->Set(v8Context, index, innerV8LocalArray);
+            ++index;
+        }
+    }
+    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalArray);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScriptSource

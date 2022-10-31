@@ -17,25 +17,25 @@
 package com.caoccao.javet.enums;
 
 /**
- * The enum V8 context type.
- * @since 2.0.1
+ * The enum V8 scope type.
+ *
+ * @since 2.0.2
  */
-public enum V8ContextType {
-    Await(0, "Await"),
-    Block(1, "Block"),
-    Catch(2, "Catch"),
-    DebugEvaluate(3, "DebugEvaluate"),
-    Declaration(4, "Declaration"),
-    Eval(5, "Eval"),
-    Function(6, "Function"),
-    Module(7, "Module"),
-    Script(8, "Script"),
-    With(9, "With");
+public enum V8ScopeType {
+    Global(0, "Global"),
+    Local(1, "Local"),
+    With(2, "With"),
+    Closure(3, "Closure"),
+    Catch(4, "Catch"),
+    Block(5, "Block"),
+    Script(6, "Script"),
+    Eval(7, "Eval"),
+    Module(8, "Module");
 
-    private static final V8ContextType[] ALL_TYPES = new V8ContextType[10];
+    private static final V8ScopeType[] ALL_TYPES = new V8ScopeType[9];
 
     static {
-        for (V8ContextType type : values()) {
+        for (V8ScopeType type : values()) {
             ALL_TYPES[type.getId()] = type;
         }
     }
@@ -43,12 +43,12 @@ public enum V8ContextType {
     private final int id;
     private final String name;
 
-    V8ContextType(int id, String name) {
+    V8ScopeType(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public static V8ContextType parse(int id) {
+    public static V8ScopeType parse(int id) {
         return ALL_TYPES[id];
     }
 

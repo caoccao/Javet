@@ -121,6 +121,11 @@ class V8Native implements IV8Native {
     public native Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native Object functionGetScopeInfos(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            boolean includeGlobalVariables, boolean includeScopeTypeGlobal);
+
+    @Override
     public native Object functionGetScriptSource(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
