@@ -685,12 +685,15 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSco
             if (!includeScopeTypeGlobal && type == V8InternalScopeIterator::ScopeTypeGlobal) {
                 continue;
             }
-            V8LocalArray innerV8LocalArray = v8::Array::New(v8Context->GetIsolate());
+            V8LocalArray innerV8LocalArray = v8::Array::New(v8Context->GetIsolate(), INDEX_SCOPE_SIZE);
             auto mode = includeGlobalVariables ? V8InternalScopeIterator::Mode::ALL : V8InternalScopeIterator::Mode::STACK;
             auto scopeObject = scopeIterator.ScopeObject(mode);
             auto v8LocalScopeObject = v8::Utils::ToLocal(scopeObject);
-            innerV8LocalArray->Set(v8Context, INDEX_SCOPE_TYPE, v8::Integer::New(v8Context->GetIsolate(), (int)type));
+            innerV8LocalArray->Set(v8Context, INDEX_SCOPE_TYPE, Javet::Converter::ToV8Integer(v8Context, (int)type));
             innerV8LocalArray->Set(v8Context, INDEX_SCOPE_OBJECT, v8LocalScopeObject);
+            innerV8LocalArray->Set(v8Context, INDEX_SCOPE_HAS_CONTEXT, Javet::Converter::ToV8Boolean(v8Context, scopeIterator.HasContext()));
+            innerV8LocalArray->Set(v8Context, INDEX_SCOPE_START_POSITION, Javet::Converter::ToV8Integer(v8Context, scopeIterator.start_position()));
+            innerV8LocalArray->Set(v8Context, INDEX_SCOPE_END_POSITION, Javet::Converter::ToV8Integer(v8Context, scopeIterator.end_position()));
             v8LocalArray->Set(v8Context, index, innerV8LocalArray);
             ++index;
         }

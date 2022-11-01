@@ -535,24 +535,48 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @since 2.0.2
      */
     final class ScopeInfo implements IJavetClosable {
+        private final boolean context;
+        private final int endPosition;
         private final V8ValueObject scopeObject;
+        private final int startPosition;
         private final V8ScopeType type;
 
         /**
          * Instantiates a new Scope info.
          *
-         * @param type        the type
-         * @param scopeObject the scope object
+         * @param type          the type
+         * @param scopeObject   the scope object
+         * @param context       the context
+         * @param startPosition the start position
+         * @param endPosition   the end position
          * @since 2.0.2
          */
-        public ScopeInfo(V8ScopeType type, V8ValueObject scopeObject) {
-            this.type = type;
+        public ScopeInfo(
+                V8ScopeType type,
+                V8ValueObject scopeObject,
+                boolean context,
+                int startPosition,
+                int endPosition) {
+            this.context = context;
+            this.endPosition = endPosition;
             this.scopeObject = scopeObject;
+            this.startPosition = startPosition;
+            this.type = type;
         }
 
         @Override
         public void close() throws JavetException {
             scopeObject.close();
+        }
+
+        /**
+         * Gets end position.
+         *
+         * @return the end position
+         * @since 2.0.2
+         */
+        public int getEndPosition() {
+            return endPosition;
         }
 
         /**
@@ -566,6 +590,16 @@ public interface IV8ValueFunction extends IV8ValueObject {
         }
 
         /**
+         * Gets start position.
+         *
+         * @return the start position
+         * @since 2.0.2
+         */
+        public int getStartPosition() {
+            return startPosition;
+        }
+
+        /**
          * Gets type.
          *
          * @return the type
@@ -573,6 +607,16 @@ public interface IV8ValueFunction extends IV8ValueObject {
          */
         public V8ScopeType getType() {
             return type;
+        }
+
+        /**
+         * Has context.
+         *
+         * @return true : yes, false : no
+         * @since 2.0.2
+         */
+        public boolean hasContext() {
+            return context;
         }
 
         @Override
@@ -587,7 +631,10 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @since 2.0.2
      */
     final class ScopeInfos implements IJavetClosable {
+        private static final int INDEX_SCOPE_END_POSITION = 4;
+        private static final int INDEX_SCOPE_HAS_CONTEXT = 2;
         private static final int INDEX_SCOPE_OBJECT = 1;
+        private static final int INDEX_SCOPE_START_POSITION = 3;
         private static final int INDEX_SCOPE_TYPE = 0;
         private final List<ScopeInfo> scopeInfos;
 
@@ -610,7 +657,10 @@ public interface IV8ValueFunction extends IV8ValueObject {
                         V8ValueArray innerV8ValueArray = (V8ValueArray) v8Value;
                         ScopeInfo scopeInfo = new ScopeInfo(
                                 V8ScopeType.parse(innerV8ValueArray.getInteger(INDEX_SCOPE_TYPE)),
-                                innerV8ValueArray.get(INDEX_SCOPE_OBJECT));
+                                innerV8ValueArray.get(INDEX_SCOPE_OBJECT),
+                                innerV8ValueArray.getBoolean(INDEX_SCOPE_HAS_CONTEXT),
+                                innerV8ValueArray.getInteger(INDEX_SCOPE_START_POSITION),
+                                innerV8ValueArray.getInteger(INDEX_SCOPE_END_POSITION));
                         values.add(scopeInfo);
                     }
                 });

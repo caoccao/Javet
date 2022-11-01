@@ -1181,7 +1181,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testGetScopeInfos() throws JavetException {
+    public void testGetScopeInfosWith1Closure() throws JavetException {
         List<Boolean> options = Arrays.asList(true, false);
         Set<String> globalVariables = new HashSet<>(Arrays.asList((
                 "global,queueMicrotask,clearImmediate,setImmediate," +
@@ -1193,17 +1193,21 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             for (boolean includeGlobalVariables : options) {
                 try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(includeGlobalVariables)) {
                     assertEquals(2, scopeInfos.size());
-                    IV8ValueFunction.ScopeInfo scopeInfo0 = scopeInfos.get(0);
-                    IV8ValueFunction.ScopeInfo scopeInfo1 = scopeInfos.get(1);
-                    assertEquals(V8ScopeType.Closure, scopeInfo0.getType());
-                    assertEquals(V8ScopeType.Script, scopeInfo1.getType());
-                    Map<String, Object> map0 = v8Runtime.toObject(scopeInfo0.getScopeObject());
-                    Map<String, Object> map1 = v8Runtime.toObject(scopeInfo1.getScopeObject());
+                    assertEquals(V8ScopeType.Closure, scopeInfos.get(0).getType());
+                    assertEquals(V8ScopeType.Script, scopeInfos.get(1).getType());
+                    IntStream.range(0, scopeInfos.size()).forEach(i -> assertTrue(scopeInfos.get(i).hasContext()));
+                    assertEquals(1, scopeInfos.get(0).getStartPosition());
+                    assertEquals(61, scopeInfos.get(0).getEndPosition());
+                    assertEquals(0, scopeInfos.get(1).getStartPosition());
+                    assertEquals(0, scopeInfos.get(1).getEndPosition());
+                    Map<String, Object> map0 = v8Runtime.toObject(scopeInfos.get(0).getScopeObject());
+                    Map<String, Object> map1 = v8Runtime.toObject(scopeInfos.get(1).getScopeObject());
                     assertEquals(1, map0.size());
                     assertEquals(0, map1.size());
                     assertEquals(1, map0.get("a"));
                 }
-                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(includeGlobalVariables, true)) {
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
+                        includeGlobalVariables, true)) {
                     assertEquals(3, scopeInfos.size());
                     IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
                     try (IV8ValueArray iV8ValueArray = scopeInfo2.getScopeObject().getOwnPropertyNames()) {
@@ -1218,7 +1222,12 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 }
             }
         }
-        codeString = "let a = 1;\n" +
+    }
+
+    @Test
+    public void testGetScopeInfosWith2Closures() throws JavetException {
+        List<Boolean> options = Arrays.asList(true, false);
+        String codeString = "let a = 1;\n" +
                 "let ax = 1;\n" +
                 "function f1() {\n" +
                 "  let b = 2;\n" +
@@ -1236,15 +1245,13 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             for (boolean includeGlobalVariables : options) {
                 try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(includeGlobalVariables)) {
                     assertEquals(3, scopeInfos.size());
-                    IV8ValueFunction.ScopeInfo scopeInfo0 = scopeInfos.get(0);
-                    IV8ValueFunction.ScopeInfo scopeInfo1 = scopeInfos.get(1);
-                    IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
-                    assertEquals(V8ScopeType.Closure, scopeInfo0.getType());
-                    assertEquals(V8ScopeType.Closure, scopeInfo1.getType());
-                    assertEquals(V8ScopeType.Script, scopeInfo2.getType());
-                    Map<String, Object> map0 = v8Runtime.toObject(scopeInfo0.getScopeObject());
-                    Map<String, Object> map1 = v8Runtime.toObject(scopeInfo1.getScopeObject());
-                    Map<String, Object> map2 = v8Runtime.toObject(scopeInfo2.getScopeObject());
+                    assertEquals(V8ScopeType.Closure, scopeInfos.get(0).getType());
+                    assertEquals(V8ScopeType.Closure, scopeInfos.get(1).getType());
+                    assertEquals(V8ScopeType.Script, scopeInfos.get(2).getType());
+                    IntStream.range(0, scopeInfos.size()).forEach(i -> assertTrue(scopeInfos.get(i).hasContext()));
+                    Map<String, Object> map0 = v8Runtime.toObject(scopeInfos.get(0).getScopeObject());
+                    Map<String, Object> map1 = v8Runtime.toObject(scopeInfos.get(1).getScopeObject());
+                    Map<String, Object> map2 = v8Runtime.toObject(scopeInfos.get(2).getScopeObject());
                     assertEquals(1, map0.size());
                     assertEquals(1, map1.size());
                     assertEquals(2, map2.size());

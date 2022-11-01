@@ -242,6 +242,10 @@ namespace Javet {
             return v8::Boolean::New(v8Context->GetIsolate(), mBoolean);
         }
 
+        static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, bool b) {
+            return v8::Boolean::New(v8Context->GetIsolate(), b);
+        }
+
         V8LocalContext ToV8Context(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj);
 
         static inline V8LocalValue ToV8Date(const V8LocalContext& v8Context, jlong& mLong) {
@@ -254,6 +258,10 @@ namespace Javet {
 
         static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, jint& mInteger) {
             return v8::Integer::New(v8Context->GetIsolate(), mInteger);
+        }
+
+        static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, int integer) {
+            return v8::Integer::New(v8Context->GetIsolate(), integer);
         }
 
         static inline V8LocalBigInt ToV8Long(const V8LocalContext& v8Context, jlong& mLong) {
