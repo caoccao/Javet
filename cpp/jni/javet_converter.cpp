@@ -583,7 +583,7 @@ namespace Javet {
             return javetScriptingError;
         }
 
-        V8LocalBigInt ToV8BigInt(JNIEnv* jniEnv, const V8LocalContext& v8Context, jint& mSignum, jlongArray& mLongArray) {
+        V8LocalBigInt ToV8BigInt(JNIEnv* jniEnv, const V8LocalContext& v8Context, jint mSignum, jlongArray& mLongArray) {
             if (mSignum == 0) {
                 return v8::BigInt::New(v8Context->GetIsolate(), 0);
             }
@@ -602,6 +602,14 @@ namespace Javet {
                     return v8LocalBigInt;
                 }
             }
+        }
+
+        V8LocalContext ToV8Context(JNIEnv* jniEnv, const V8LocalContext& v8Context, const jobject& obj) {
+            if (IS_JAVA_CONTEXT(jniEnv, obj)) {
+                auto v8PersistentContext = TO_V8_PERSISTENT_CONTEXT_POINTER(jniEnv->CallLongMethod(obj, jmethodIDV8ContextGetHandle));
+                return v8PersistentContext->Get(v8Context->GetIsolate());
+            }
+            return V8LocalContext();
         }
 
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(JNIEnv* jniEnv, const V8LocalContext& v8Context,
@@ -633,14 +641,6 @@ namespace Javet {
                 return V8LocalString();
             }
             return twoByteString.ToLocalChecked();
-        }
-
-        V8LocalContext ToV8Context(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj) {
-            if (IS_JAVA_CONTEXT(jniEnv, obj)) {
-                auto v8PersistentContext = TO_V8_PERSISTENT_CONTEXT_POINTER(jniEnv->CallLongMethod(obj, jmethodIDV8ContextGetHandle));
-                return v8PersistentContext->Get(v8Context->GetIsolate());
-            }
-            return V8LocalContext();
         }
 
         V8LocalValue ToV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj) {

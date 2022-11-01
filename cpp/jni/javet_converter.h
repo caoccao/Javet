@@ -236,36 +236,28 @@ namespace Javet {
 
         jobject ToJavetScriptingError(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 
-        V8LocalBigInt ToV8BigInt(JNIEnv* jniEnv, const V8LocalContext& v8Context, jint& mSignum, jlongArray& mLongArray);
+        V8LocalBigInt ToV8BigInt(JNIEnv* jniEnv, const V8LocalContext& v8Context, jint mSignum, const jlongArray& mLongArray);
 
-        static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& mBoolean) {
-            return v8::Boolean::New(v8Context->GetIsolate(), mBoolean);
+        static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, bool boolValue) {
+            return v8::Boolean::New(v8Context->GetIsolate(), boolValue);
         }
 
-        static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, bool b) {
-            return v8::Boolean::New(v8Context->GetIsolate(), b);
+        V8LocalContext ToV8Context(JNIEnv* jniEnv, const V8LocalContext& v8Context, const jobject& obj);
+
+        static inline V8LocalValue ToV8Date(const V8LocalContext& v8Context, jlong longValue) {
+            return v8::Date::New(v8Context, (double)longValue).ToLocalChecked();
         }
 
-        V8LocalContext ToV8Context(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj);
-
-        static inline V8LocalValue ToV8Date(const V8LocalContext& v8Context, jlong& mLong) {
-            return v8::Date::New(v8Context, (double)mLong).ToLocalChecked();
+        static inline V8LocalNumber ToV8Double(const V8LocalContext& v8Context, double doubleValue) {
+            return v8::Number::New(v8Context->GetIsolate(), doubleValue);
         }
 
-        static inline V8LocalNumber ToV8Double(const V8LocalContext& v8Context, jdouble& mDouble) {
-            return v8::Number::New(v8Context->GetIsolate(), mDouble);
+        static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, int intValue) {
+            return v8::Integer::New(v8Context->GetIsolate(), intValue);
         }
 
-        static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, jint& mInteger) {
-            return v8::Integer::New(v8Context->GetIsolate(), mInteger);
-        }
-
-        static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, int integer) {
-            return v8::Integer::New(v8Context->GetIsolate(), integer);
-        }
-
-        static inline V8LocalBigInt ToV8Long(const V8LocalContext& v8Context, jlong& mLong) {
-            return v8::BigInt::New(v8Context->GetIsolate(), mLong);
+        static inline V8LocalBigInt ToV8Long(const V8LocalContext& v8Context, jlong longValue) {
+            return v8::BigInt::New(v8Context->GetIsolate(), longValue);
         }
 
         static inline V8LocalPrimitive ToV8Null(const V8LocalContext& v8Context) {
