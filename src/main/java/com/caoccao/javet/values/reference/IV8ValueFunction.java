@@ -30,6 +30,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The interface V8 value function.
@@ -684,6 +685,26 @@ public interface IV8ValueFunction extends IV8ValueObject {
          */
         public ScopeInfo get(int index) {
             return scopeInfos.get(index);
+        }
+
+        /**
+         * Has variables in closure.
+         *
+         * @return true : yes, false : no
+         * @since 2.0.2
+         */
+        public boolean hasVariablesInClosure() throws JavetException {
+            for (V8ValueObject v8ValueObject : scopeInfos.stream()
+                    .filter(scopeInfo -> scopeInfo.getType() == V8ScopeType.Closure)
+                    .map(ScopeInfo::getScopeObject)
+                    .collect(Collectors.toList())) {
+                try (IV8ValueArray iV8ValueArray = v8ValueObject.getOwnPropertyNames()) {
+                    if (iV8ValueArray.getLength() > 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         @Override
