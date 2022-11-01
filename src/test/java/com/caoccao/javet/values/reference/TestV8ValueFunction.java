@@ -1268,6 +1268,33 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGetScopeInfosWithoutClosures() throws JavetException {
+        List<Boolean> options = Arrays.asList(true, false);
+        String codeString = "function f1() {\n" +
+                "  let b = 2;\n" +
+                "  function f2() {\n" +
+                "    let c = 3;\n" +
+                "    return () => 1;\n" +
+                "  }\n" +
+                "  return f2();\n" +
+                "}\n" +
+                "f1();";
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
+            assertEquals(1, v8ValueFunction.callInteger(null));
+            for (boolean includeGlobalVariables : options) {
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(includeGlobalVariables)) {
+                    assertEquals(1, scopeInfos.size());
+                    assertEquals(V8ScopeType.Script, scopeInfos.get(0).getType());
+                    assertTrue(scopeInfos.get(0).hasContext());
+                    Map<String, Object> map0 = v8Runtime.toObject(scopeInfos.get(0).getScopeObject());
+                    assertEquals(0, map0.size());
+                    assertFalse(scopeInfos.hasVariablesInClosure());
+                }
+            }
+        }
+    }
+
+    @Test
     public void testIntStream() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
