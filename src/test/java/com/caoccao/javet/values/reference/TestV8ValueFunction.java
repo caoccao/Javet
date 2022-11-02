@@ -1194,7 +1194,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
             assertEquals(1, v8ValueFunction.callInteger(null));
             for (boolean includeGlobalVariables : options) {
-                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(includeGlobalVariables)) {
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
+                        IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables))) {
                     assertEquals(2, scopeInfos.size());
                     assertEquals(V8ScopeType.Closure, scopeInfos.get(0).getType());
                     assertEquals(V8ScopeType.Script, scopeInfos.get(1).getType());
@@ -1211,7 +1212,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertTrue(scopeInfos.hasVariablesInClosure());
                 }
                 try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
-                        includeGlobalVariables, true)) {
+                        IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables)
+                                .withIncludeScopeTypeGlobal(true))) {
                     assertEquals(3, scopeInfos.size());
                     assertTrue(scopeInfos.hasVariablesInClosure());
                     IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
@@ -1248,7 +1250,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
             assertEquals(6, v8ValueFunction.callInteger(null));
             for (boolean includeGlobalVariables : options) {
-                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(includeGlobalVariables)) {
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
+                        IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables))) {
                     assertEquals(3, scopeInfos.size());
                     assertEquals(V8ScopeType.Closure, scopeInfos.get(0).getType());
                     assertEquals(V8ScopeType.Closure, scopeInfos.get(1).getType());
@@ -1265,6 +1268,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertEquals(1, map2.get("a"));
                     assertEquals(1, map2.get("ax"));
                     assertTrue(scopeInfos.hasVariablesInClosure());
+                    List<List<String>> variablesList = scopeInfos.getVariablesInClosure();
+                    assertEquals(3, variablesList.size());
+                    assertEquals(Arrays.asList("c"), variablesList.get(0));
+                    assertEquals(Arrays.asList("b"), variablesList.get(1));
+                    assertEquals(0, variablesList.get(2).size());
                 }
             }
         }
@@ -1285,7 +1293,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
             assertEquals(1, v8ValueFunction.callInteger(null));
             for (boolean includeGlobalVariables : options) {
-                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(includeGlobalVariables)) {
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
+                        IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables))) {
                     assertEquals(1, scopeInfos.size());
                     assertEquals(V8ScopeType.Script, scopeInfos.get(0).getType());
                     assertTrue(scopeInfos.get(0).hasContext());

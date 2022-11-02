@@ -25,6 +25,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.primitive.V8ValueString;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -379,35 +380,19 @@ public interface IV8ValueFunction extends IV8ValueObject {
      */
     @CheckReturnValue
     default ScopeInfos getScopeInfos() throws JavetException {
-        return getScopeInfos(false, false);
+        return getScopeInfos(GetScopeInfosOptions.Default);
     }
 
     /**
      * Gets scope infos.
      *
-     * @param includeGlobalVariables the include global variables
+     * @param options the options
      * @return the scope infos
      * @throws JavetException the javet exception
      * @since 2.0.2
      */
     @CheckReturnValue
-    default ScopeInfos getScopeInfos(boolean includeGlobalVariables) throws JavetException {
-        return getScopeInfos(includeGlobalVariables, false);
-    }
-
-    /**
-     * Gets scope infos.
-     *
-     * @param includeGlobalVariables the include global variables
-     * @param includeScopeTypeGlobal the include scope type global
-     * @return the scope infos
-     * @throws JavetException the javet exception
-     * @since 2.0.2
-     */
-    @CheckReturnValue
-    ScopeInfos getScopeInfos(
-            boolean includeGlobalVariables,
-            boolean includeScopeTypeGlobal) throws JavetException;
+    ScopeInfos getScopeInfos(GetScopeInfosOptions options) throws JavetException;
 
     /**
      * Gets script source.
@@ -531,6 +516,91 @@ public interface IV8ValueFunction extends IV8ValueObject {
     boolean setSourceCode(String sourceCodeString, SetSourceCodeOptions options) throws JavetException;
 
     /**
+     * The type Get scope infos options.
+     *
+     * @since 2.0.2
+     */
+    final class GetScopeInfosOptions implements Cloneable {
+        /**
+         * The constant Default.
+         *
+         * @since 2.0.2
+         */
+        public static final GetScopeInfosOptions Default = new GetScopeInfosOptions();
+        private boolean includeGlobalVariables;
+        private boolean includeScopeTypeGlobal;
+
+        /**
+         * Instantiates a new Get scope infos options.
+         *
+         * @since 2.0.2
+         */
+        public GetScopeInfosOptions() {
+            setIncludeGlobalVariables(false);
+            setIncludeScopeTypeGlobal(false);
+        }
+
+        @Override
+        protected GetScopeInfosOptions clone() {
+            return new GetScopeInfosOptions()
+                    .setIncludeGlobalVariables(isIncludeGlobalVariables())
+                    .setIncludeScopeTypeGlobal(isIncludeScopeTypeGlobal());
+        }
+
+        /**
+         * Is include global variables boolean.
+         *
+         * @return true : yes, false : no
+         * @since 2.0.2
+         */
+        public boolean isIncludeGlobalVariables() {
+            return includeGlobalVariables;
+        }
+
+        /**
+         * Is include scope type global boolean.
+         *
+         * @return true : yes, false : no
+         * @since 2.0.2
+         */
+        public boolean isIncludeScopeTypeGlobal() {
+            return includeScopeTypeGlobal;
+        }
+
+        private GetScopeInfosOptions setIncludeGlobalVariables(boolean includeGlobalVariables) {
+            this.includeGlobalVariables = includeGlobalVariables;
+            return this;
+        }
+
+        private GetScopeInfosOptions setIncludeScopeTypeGlobal(boolean includeScopeTypeGlobal) {
+            this.includeScopeTypeGlobal = includeScopeTypeGlobal;
+            return this;
+        }
+
+        /**
+         * With include global variables.
+         *
+         * @param includeGlobalVariables the include global variables
+         * @return the self
+         * @since 2.0.2
+         */
+        public GetScopeInfosOptions withIncludeGlobalVariables(boolean includeGlobalVariables) {
+            return clone().setIncludeGlobalVariables(includeGlobalVariables);
+        }
+
+        /**
+         * With include scope type global.
+         *
+         * @param includeScopeTypeGlobal the include scope type global
+         * @return the self
+         * @since 2.0.2
+         */
+        public GetScopeInfosOptions withIncludeScopeTypeGlobal(boolean includeScopeTypeGlobal) {
+            return clone().setIncludeScopeTypeGlobal(includeScopeTypeGlobal);
+        }
+    }
+
+    /**
      * The type Scope info.
      *
      * @since 2.0.2
@@ -552,7 +622,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
          * @param endPosition   the end position
          * @since 2.0.2
          */
-        public ScopeInfo(
+        ScopeInfo(
                 V8ScopeType type,
                 V8ValueObject scopeObject,
                 boolean context,
@@ -646,7 +716,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
          * @throws JavetException the javet exception
          * @since 2.0.2
          */
-        public ScopeInfos(IV8ValueArray iV8ValueArray) throws JavetException {
+        ScopeInfos(IV8ValueArray iV8ValueArray) throws JavetException {
             this.scopeInfos = createFrom(iV8ValueArray);
         }
 
@@ -688,9 +758,35 @@ public interface IV8ValueFunction extends IV8ValueObject {
         }
 
         /**
+         * Gets variables in closure.
+         *
+         * @return the variables in closure
+         * @throws JavetException the javet exception
+         * @since 2.0.2
+         */
+        public List<List<String>> getVariablesInClosure() throws JavetException {
+            List<List<String>> variablesList = new ArrayList<>();
+            for (ScopeInfo scopeInfo : scopeInfos) {
+                List<String> variables = new ArrayList<>();
+                if (scopeInfo.getType() == V8ScopeType.Closure) {
+                    try (IV8ValueArray iV8ValueArray = scopeInfo.getScopeObject().getOwnPropertyNames()) {
+                        iV8ValueArray.forEach(v8Value -> {
+                            if (v8Value instanceof V8ValueString) {
+                                variables.add(((V8ValueString) v8Value).getValue());
+                            }
+                        });
+                    }
+                }
+                variablesList.add(variables);
+            }
+            return variablesList;
+        }
+
+        /**
          * Has variables in closure.
          *
          * @return true : yes, false : no
+         * @throws JavetException the javet exception
          * @since 2.0.2
          */
         public boolean hasVariablesInClosure() throws JavetException {

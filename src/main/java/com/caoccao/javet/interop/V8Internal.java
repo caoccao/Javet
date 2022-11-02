@@ -116,10 +116,9 @@ public final class V8Internal {
     @CheckReturnValue
     public IV8ValueArray functionGetScopeInfos(
             IV8ValueFunction iV8ValueFunction,
-            boolean includeGlobalVariables,
-            boolean includeScopeTypeGlobal)
+            IV8ValueFunction.GetScopeInfosOptions options)
             throws JavetException {
-        return v8Runtime.functionGetScopeInfos(iV8ValueFunction, includeGlobalVariables, includeScopeTypeGlobal);
+        return v8Runtime.functionGetScopeInfos(iV8ValueFunction, options);
     }
 
     public IV8ValueFunction.ScriptSource functionGetScriptSource(IV8ValueFunction iV8ValueFunction) throws JavetException {

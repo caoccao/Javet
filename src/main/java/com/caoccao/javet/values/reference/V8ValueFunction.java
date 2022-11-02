@@ -150,12 +150,10 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
 
     @CheckReturnValue
     @Override
-    public ScopeInfos getScopeInfos(
-            boolean includeGlobalVariables,
-            boolean includeScopeTypeGlobal)
+    public ScopeInfos getScopeInfos(GetScopeInfosOptions options)
             throws JavetException {
         try (IV8ValueArray iV8ValueArray = checkV8Runtime().getV8Internal().functionGetScopeInfos(
-                this, includeGlobalVariables, includeScopeTypeGlobal)) {
+                this, options)) {
             return new ScopeInfos(iV8ValueArray);
         }
     }
