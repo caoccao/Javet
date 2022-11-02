@@ -1217,14 +1217,12 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertEquals(3, scopeInfos.size());
                     assertTrue(scopeInfos.hasVariablesInClosure());
                     IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
-                    try (IV8ValueArray iV8ValueArray = scopeInfo2.getScopeObject().getOwnPropertyNames()) {
-                        List<String> keys = v8Runtime.toObject((V8ValueArray) iV8ValueArray);
-                        if (v8Runtime.getJSRuntimeType().isNode()) {
-                            assertEquals(14, keys.size());
-                            keys.forEach(key -> assertTrue(globalVariables.contains(key)));
-                        } else {
-                            assertEquals(0, keys.size());
-                        }
+                    List<String> keys = scopeInfo2.getScopeObject().getOwnPropertyNameStrings();
+                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                        assertEquals(14, keys.size());
+                        keys.forEach(key -> assertTrue(globalVariables.contains(key)));
+                    } else {
+                        assertEquals(0, keys.size());
                     }
                 }
             }
@@ -1272,7 +1270,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertEquals(3, variablesList.size());
                     assertEquals(Arrays.asList("c"), variablesList.get(0));
                     assertEquals(Arrays.asList("b"), variablesList.get(1));
-                    assertEquals(0, variablesList.get(2).size());
+                    assertNull(variablesList.get(2));
                 }
             }
         }

@@ -7,6 +7,7 @@ Release Notes 2.0.x
 
 * Revised ``IV8ValueFunction.copyScopeInfoFrom()`` to clone the scope info
 * Added ``ScopeInfos``, ``ScopeInfos``, ``getScopeInfos`` to ``IV8ValueFunction``
+* Added ``getOwnPropertyNameStrings`` to ``IV8ValueObject``
 
 2.0.1 V8 v10.7
 --------------

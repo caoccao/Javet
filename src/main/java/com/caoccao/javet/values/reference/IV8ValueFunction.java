@@ -25,7 +25,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
-import com.caoccao.javet.values.primitive.V8ValueString;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -767,17 +766,8 @@ public interface IV8ValueFunction extends IV8ValueObject {
         public List<List<String>> getVariablesInClosure() throws JavetException {
             List<List<String>> variablesList = new ArrayList<>();
             for (ScopeInfo scopeInfo : scopeInfos) {
-                List<String> variables = new ArrayList<>();
-                if (scopeInfo.getType() == V8ScopeType.Closure) {
-                    try (IV8ValueArray iV8ValueArray = scopeInfo.getScopeObject().getOwnPropertyNames()) {
-                        iV8ValueArray.forEach(v8Value -> {
-                            if (v8Value instanceof V8ValueString) {
-                                variables.add(((V8ValueString) v8Value).getValue());
-                            }
-                        });
-                    }
-                }
-                variablesList.add(variables);
+                variablesList.add(scopeInfo.getType() == V8ScopeType.Closure
+                        ? scopeInfo.getScopeObject().getOwnPropertyNameStrings() : null);
             }
             return variablesList;
         }
