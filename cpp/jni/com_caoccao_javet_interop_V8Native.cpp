@@ -659,8 +659,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCon
         auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         if (v8InternalFunction.has_context()) {
-            auto v8InternalContext = V8InternalContext::cast(v8InternalFunction.context());
-            auto v8LocalContext = v8::Utils::ToLocal(v8::internal::Handle(v8InternalContext, v8InternalIsolate));
+            auto v8InternalContextHandle = v8::internal::Handle(v8InternalFunction.context(), v8InternalIsolate);
+            auto v8LocalContext = v8::Utils::ToLocal(v8InternalContextHandle);
             return Javet::Converter::ToExternalV8Context(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8LocalContext);
         }
     }
