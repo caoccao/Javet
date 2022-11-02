@@ -837,7 +837,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 "  let b;\n" +
                 "  return () => {\n" +
                 "    a++;\n" +
-                "    return a + b + 2;\n" +
+                "    return a + 2 * b + 2;\n" +
                 "  }\n" +
                 "})()";
         try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString)) {
@@ -867,7 +867,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertEquals(3, v8Context.getInteger(3), "Initial value of 'b' should be 1.");
                 assertTrue(crackedV8ValueFunction.setContext(v8Context));
                 // Variable 'a' in the closure context is incremented by the next function call.
-                assertEquals(7, crackedV8ValueFunction.callInteger(null),
+                assertEquals(10, crackedV8ValueFunction.callInteger(null),
                         "The cracked function should be " + crackedCodeString + ".");
                 assertEquals(2, v8Context.getInteger(2), "Updated value of 'a' should be 2.");
                 assertEquals(3, v8Context.getInteger(3), "Updated value of 'b' should be 3.");
@@ -1232,21 +1232,24 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @Test
     public void testGetScopeInfosWith2Closures() throws JavetException {
         List<Boolean> options = Arrays.asList(true, false);
-        String codeString = "let a = 1;\n" +
+        String codeString = "let a1 = 1;\n" +
+                "let a2 = 2;\n" +
                 "let ax = 1;\n" +
                 "function f1() {\n" +
-                "  let b = 2;\n" +
+                "  let b1 = 10;\n" +
+                "  let b2 = 20;\n" +
                 "  let bx = 2;\n" +
                 "  function f2() {\n" +
-                "    let c = 3;\n" +
+                "    let c1 = 100;\n" +
+                "    let c2 = 200;\n" +
                 "    let cx = 3;\n" +
-                "    return () => a + b + c;\n" +
+                "    return () => a1 + a2 + b1 + b2 + c1 + c2;\n" +
                 "  }\n" +
                 "  return f2();\n" +
                 "}\n" +
                 "f1();";
         try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
-            assertEquals(6, v8ValueFunction.callInteger(null));
+            assertEquals(333, v8ValueFunction.callInteger(null));
             for (boolean includeGlobalVariables : options) {
                 try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
                         IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables))) {
@@ -1258,19 +1261,22 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     Map<String, Object> map0 = v8Runtime.toObject(scopeInfos.get(0).getScopeObject());
                     Map<String, Object> map1 = v8Runtime.toObject(scopeInfos.get(1).getScopeObject());
                     Map<String, Object> map2 = v8Runtime.toObject(scopeInfos.get(2).getScopeObject());
-                    assertEquals(1, map0.size());
-                    assertEquals(1, map1.size());
-                    assertEquals(2, map2.size());
-                    assertEquals(3, map0.get("c"));
-                    assertEquals(2, map1.get("b"));
-                    assertEquals(1, map2.get("a"));
+                    assertEquals(Arrays.asList("c1", "c2"), scopeInfos.get(0).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(Arrays.asList("b1", "b2"), scopeInfos.get(1).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(Arrays.asList("a1", "a2", "ax"), scopeInfos.get(2).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(100, map0.get("c1"));
+                    assertEquals(200, map0.get("c2"));
+                    assertEquals(10, map1.get("b1"));
+                    assertEquals(20, map1.get("b2"));
+                    assertEquals(1, map2.get("a1"));
+                    assertEquals(2, map2.get("a2"));
                     assertEquals(1, map2.get("ax"));
                     assertTrue(scopeInfos.hasVariablesInClosure());
                     List<List<String>> variablesList = scopeInfos.getVariablesInClosure();
                     assertEquals(3, variablesList.size());
-                    assertEquals(Arrays.asList("c"), variablesList.get(0));
-                    assertEquals(Arrays.asList("b"), variablesList.get(1));
-                    assertNull(variablesList.get(2));
+                    assertEquals(Arrays.asList("c1", "c2"), variablesList.get(0));
+                    assertEquals(Arrays.asList("b1", "b2"), variablesList.get(1));
+                    assertEquals(Arrays.asList("a1", "a2", "ax"), variablesList.get(2));
                 }
             }
         }

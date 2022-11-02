@@ -766,8 +766,7 @@ public interface IV8ValueFunction extends IV8ValueObject {
         public List<List<String>> getVariablesInClosure() throws JavetException {
             List<List<String>> variablesList = new ArrayList<>();
             for (ScopeInfo scopeInfo : scopeInfos) {
-                variablesList.add(scopeInfo.getType() == V8ScopeType.Closure
-                        ? scopeInfo.getScopeObject().getOwnPropertyNameStrings() : null);
+                variablesList.add(scopeInfo.getScopeObject().getOwnPropertyNameStrings());
             }
             return variablesList;
         }
