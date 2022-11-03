@@ -181,7 +181,7 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
     }
 
     @Override
-    public V8ValueBigInteger toClone() throws JavetException {
+    public V8ValueBigInteger toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

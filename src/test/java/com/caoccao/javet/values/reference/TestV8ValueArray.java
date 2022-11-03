@@ -20,6 +20,8 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.primitive.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueArray extends BaseTestJavetRuntime {
+
     @Test
     public void testForEach() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = new Array(0,1,2); a;").execute()) {
@@ -137,6 +140,32 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(true, v8ValueArray.popBoolean());
             assertEquals(0, v8ValueArray.getLength());
             assertEquals("", v8ValueArray.toString());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testToClone(boolean referenceCopy) throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const x = []; x;").execute()) {
+            v8ValueArray.push(1);
+            assertEquals("[1]", v8ValueArray.toJsonString());
+            try (V8ValueArray clonedV8ValueArray = v8ValueArray.toClone(referenceCopy)) {
+                assertEquals("[1]", clonedV8ValueArray.toJsonString());
+                assertNotEquals(v8ValueArray.getHandle(), clonedV8ValueArray.getHandle());
+                if (referenceCopy) {
+                    assertTrue(clonedV8ValueArray.strictEquals(v8ValueArray));
+                } else {
+                    assertFalse(clonedV8ValueArray.strictEquals(v8ValueArray));
+                }
+                clonedV8ValueArray.push(2);
+                assertEquals("[1,2]", clonedV8ValueArray.toJsonString());
+                if (referenceCopy) {
+                    assertEquals("[1,2]", v8ValueArray.toJsonString());
+                } else {
+                    assertEquals("[1]", v8ValueArray.toJsonString());
+                }
+                assertEquals(v8Runtime, clonedV8ValueArray.getV8Runtime());
+            }
         }
     }
 }

@@ -60,8 +60,10 @@ public final class V8Internal {
     }
 
     @CheckReturnValue
-    public <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws JavetException {
-        return v8Runtime.cloneV8Value(iV8ValueReference);
+    public <T extends V8Value> T cloneV8Value(
+            IV8ValueReference iV8ValueReference, boolean referenceCopy)
+            throws JavetException {
+        return v8Runtime.cloneV8Value(iV8ValueReference, referenceCopy);
     }
 
     @CheckReturnValue

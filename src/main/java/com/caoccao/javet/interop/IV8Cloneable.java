@@ -35,5 +35,19 @@ public interface IV8Cloneable {
      * @since 0.7.0
      */
     @CheckReturnValue
-    <T extends V8Value> T toClone() throws JavetException;
+    default <T extends V8Value> T toClone() throws JavetException {
+        return toClone(true);
+    }
+
+    /**
+     * Get a clone of the current V8 value.
+     *
+     * @param <T>           the type parameter
+     * @param referenceCopy the reference copy
+     * @return the cloned V8 value
+     * @throws JavetException the javet exception
+     * @since 2.0.2
+     */
+    @CheckReturnValue
+    <T extends V8Value> T toClone(boolean referenceCopy) throws JavetException;
 }

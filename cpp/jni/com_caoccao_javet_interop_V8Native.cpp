@@ -250,10 +250,28 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearWeak
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jboolean mReferenceCopy) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     V8TryCatch v8TryCatch(v8Context->GetIsolate());
-    auto clonedV8LocalValue = V8LocalValue::New(v8Context->GetIsolate(), v8LocalValue);
+    V8LocalValue clonedV8LocalValue;
+    if (!mReferenceCopy
+        && !v8LocalValue->IsFunction()
+        && !v8LocalValue->IsMap()
+        && !v8LocalValue->IsSet()
+        && !v8LocalValue->IsWeakMap()
+        && !v8LocalValue->IsWeakSet()
+        && v8LocalValue->IsObject()) {
+        /*
+         * Not all objects can be value copied.
+         * V8 performs the CHECK(is_clonable_js_type || is_clonable_wasm_type).
+         * The object actually is shadow copied.
+         */
+        clonedV8LocalValue = v8LocalValue.As<v8::Object>()->Clone();
+    }
+    else {
+        // Reference copy
+        clonedV8LocalValue = V8LocalValue::New(v8Context->GetIsolate(), v8LocalValue);
+    }
     if (v8TryCatch.HasCaught()) {
         return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
     }

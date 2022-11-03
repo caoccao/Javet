@@ -32,7 +32,7 @@ public final class V8ValueString extends V8ValuePrimitive<String> {
     }
 
     @Override
-    public V8ValueString toClone() throws JavetException {
+    public V8ValueString toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

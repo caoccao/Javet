@@ -453,15 +453,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param <T>               the type parameter
      * @param iV8ValueReference the V8 value reference
+     * @param referenceCopy     the reference copy
      * @return the cloned V8 value
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
-    <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws JavetException {
+    <T extends V8Value> T cloneV8Value(
+            IV8ValueReference iV8ValueReference,
+            boolean referenceCopy)
+            throws JavetException {
         return (T) v8Native.cloneV8Value(
-                handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
+                handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId(), referenceCopy);
     }
 
     @Override

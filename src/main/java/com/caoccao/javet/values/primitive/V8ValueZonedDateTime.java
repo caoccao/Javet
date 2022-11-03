@@ -38,7 +38,7 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
     }
 
     @Override
-    public V8ValueZonedDateTime toClone() throws JavetException {
+    public V8ValueZonedDateTime toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

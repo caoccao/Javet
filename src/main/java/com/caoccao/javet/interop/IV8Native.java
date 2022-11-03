@@ -39,7 +39,7 @@ public interface IV8Native {
 
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean referenceCopy);
 
     void closeV8Runtime(long v8RuntimeHandle);
 

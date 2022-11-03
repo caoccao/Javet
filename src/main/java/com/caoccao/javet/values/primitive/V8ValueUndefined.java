@@ -49,7 +49,7 @@ public final class V8ValueUndefined extends V8Value {
     }
 
     @Override
-    public V8ValueUndefined toClone() throws JavetException {
+    public V8ValueUndefined toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

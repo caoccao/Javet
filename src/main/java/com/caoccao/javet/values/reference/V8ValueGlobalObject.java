@@ -103,7 +103,7 @@ public final class V8ValueGlobalObject extends V8ValueObject {
     }
 
     @Override
-    public V8ValueGlobalObject toClone() {
+    public V8ValueGlobalObject toClone(boolean referenceCopy) {
         return this;
     }
 }

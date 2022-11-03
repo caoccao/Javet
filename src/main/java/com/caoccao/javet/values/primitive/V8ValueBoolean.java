@@ -30,7 +30,7 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
     }
 
     @Override
-    public V8ValueBoolean toClone() throws JavetException {
+    public V8ValueBoolean toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

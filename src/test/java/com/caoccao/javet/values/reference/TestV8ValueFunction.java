@@ -1534,4 +1534,17 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8Runtime.lowMemoryNotification();
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testToClone(boolean referenceCopy) throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("() => 1")) {
+            try (V8ValueFunction clonedV8ValueFunction = v8ValueFunction.toClone(referenceCopy)) {
+                assertEquals("() => 1", clonedV8ValueFunction.getSourceCode());
+                assertNotEquals(v8ValueFunction.getHandle(), clonedV8ValueFunction.getHandle());
+                assertTrue(clonedV8ValueFunction.strictEquals(v8ValueFunction));
+                assertEquals(v8Runtime, clonedV8ValueFunction.getV8Runtime());
+            }
+        }
+    }
 }

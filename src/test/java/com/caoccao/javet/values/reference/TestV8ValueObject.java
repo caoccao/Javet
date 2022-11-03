@@ -32,6 +32,8 @@ import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -42,7 +44,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unchecked")
 public class TestV8ValueObject extends BaseTestJavetRuntime {
-
     @Test
     public void testAnnotationBasedProperties() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
@@ -502,14 +503,27 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         v8Runtime.lowMemoryNotification();
     }
 
-    @Test
-    public void testToClone() throws JavetException {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testToClone(boolean referenceCopy) throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {
-            v8ValueObject.setProperty("a", "1");
+            assertTrue(v8ValueObject.set("a", "1"));
             assertEquals("{\"a\":\"1\"}", v8ValueObject.toJsonString());
-            try (V8ValueObject clonedV8ValueObject = v8ValueObject.toClone()) {
+            try (V8ValueObject clonedV8ValueObject = v8ValueObject.toClone(referenceCopy)) {
                 assertEquals("{\"a\":\"1\"}", clonedV8ValueObject.toJsonString());
                 assertNotEquals(v8ValueObject.getHandle(), clonedV8ValueObject.getHandle());
+                if (referenceCopy) {
+                    assertTrue(clonedV8ValueObject.strictEquals(v8ValueObject));
+                } else {
+                    assertFalse(clonedV8ValueObject.strictEquals(v8ValueObject));
+                }
+                assertTrue(clonedV8ValueObject.set("a", "2"));
+                assertEquals("{\"a\":\"2\"}", clonedV8ValueObject.toJsonString());
+                if (referenceCopy) {
+                    assertEquals("{\"a\":\"2\"}", v8ValueObject.toJsonString());
+                } else {
+                    assertEquals("{\"a\":\"1\"}", v8ValueObject.toJsonString());
+                }
                 assertEquals(v8Runtime, clonedV8ValueObject.getV8Runtime());
             }
         }
