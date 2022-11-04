@@ -17,8 +17,12 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
@@ -65,26 +69,66 @@ public final class V8ValueGlobalObject extends V8ValueObject {
 
     @CheckReturnValue
     public V8ValueBuiltInJson getBuiltInJson() throws JavetException {
-        V8ValueObject v8ValueObject = get(PROPERTY_JSON);
-        return new V8ValueBuiltInJson(v8Runtime, v8ValueObject.getHandle());
+        V8Value v8Value = get(PROPERTY_JSON);
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInJson(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        // In case the built-in JSON is removed.
+        v8Value = v8Runtime.getExecutor(PROPERTY_JSON).execute();
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInJson(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, PROPERTY_JSON));
     }
 
     @CheckReturnValue
     public V8ValueBuiltInObject getBuiltInObject() throws JavetException {
-        V8ValueObject v8ValueObject = get(PROPERTY_OBJECT);
-        return new V8ValueBuiltInObject(v8Runtime, v8ValueObject.getHandle());
+        V8Value v8Value = get(PROPERTY_OBJECT);
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInObject(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        // In case the built-in Object is removed.
+        v8Value = v8Runtime.getExecutor(PROPERTY_OBJECT).execute();
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInObject(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, PROPERTY_OBJECT));
     }
 
     @CheckReturnValue
     public V8ValueBuiltInPromise getBuiltInPromise() throws JavetException {
-        V8ValueObject v8ValueObject = get(PROPERTY_PROMISE);
-        return new V8ValueBuiltInPromise(v8Runtime, v8ValueObject.getHandle());
+        V8Value v8Value = get(PROPERTY_PROMISE);
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInPromise(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        // In case the built-in Promise is removed.
+        v8Value = v8Runtime.getExecutor(PROPERTY_PROMISE).execute();
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInPromise(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, PROPERTY_PROMISE));
     }
 
     @CheckReturnValue
     public V8ValueBuiltInSymbol getBuiltInSymbol() throws JavetException {
-        V8ValueObject v8ValueObject = get(PROPERTY_SYMBOL);
-        return new V8ValueBuiltInSymbol(v8Runtime, v8ValueObject.getHandle());
+        V8Value v8Value = get(PROPERTY_SYMBOL);
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInSymbol(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        // In case the built-in Symbol is removed.
+        v8Value = v8Runtime.getExecutor(PROPERTY_SYMBOL).execute();
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInSymbol(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, PROPERTY_SYMBOL));
     }
 
     @Override
