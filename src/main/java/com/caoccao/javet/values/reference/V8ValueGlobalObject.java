@@ -69,13 +69,7 @@ public final class V8ValueGlobalObject extends V8ValueObject {
 
     @CheckReturnValue
     public V8ValueBuiltInJson getBuiltInJson() throws JavetException {
-        V8Value v8Value = get(PROPERTY_JSON);
-        if (v8Value instanceof V8ValueObject) {
-            return new V8ValueBuiltInJson(v8Runtime, ((V8ValueObject) v8Value).getHandle());
-        }
-        JavetResourceUtils.safeClose(v8Value);
-        // In case the built-in JSON is removed.
-        v8Value = v8Runtime.getExecutor(PROPERTY_JSON).execute();
+        V8Value v8Value = v8Runtime.getExecutor(PROPERTY_JSON).execute();
         if (v8Value instanceof V8ValueObject) {
             return new V8ValueBuiltInJson(v8Runtime, ((V8ValueObject) v8Value).getHandle());
         }
@@ -85,13 +79,7 @@ public final class V8ValueGlobalObject extends V8ValueObject {
 
     @CheckReturnValue
     public V8ValueBuiltInObject getBuiltInObject() throws JavetException {
-        V8Value v8Value = get(PROPERTY_OBJECT);
-        if (v8Value instanceof V8ValueObject) {
-            return new V8ValueBuiltInObject(v8Runtime, ((V8ValueObject) v8Value).getHandle());
-        }
-        JavetResourceUtils.safeClose(v8Value);
-        // In case the built-in Object is removed.
-        v8Value = v8Runtime.getExecutor(PROPERTY_OBJECT).execute();
+        V8Value v8Value = v8Runtime.getExecutor(PROPERTY_OBJECT).execute();
         if (v8Value instanceof V8ValueObject) {
             return new V8ValueBuiltInObject(v8Runtime, ((V8ValueObject) v8Value).getHandle());
         }
@@ -101,13 +89,7 @@ public final class V8ValueGlobalObject extends V8ValueObject {
 
     @CheckReturnValue
     public V8ValueBuiltInPromise getBuiltInPromise() throws JavetException {
-        V8Value v8Value = get(PROPERTY_PROMISE);
-        if (v8Value instanceof V8ValueObject) {
-            return new V8ValueBuiltInPromise(v8Runtime, ((V8ValueObject) v8Value).getHandle());
-        }
-        JavetResourceUtils.safeClose(v8Value);
-        // In case the built-in Promise is removed.
-        v8Value = v8Runtime.getExecutor(PROPERTY_PROMISE).execute();
+        V8Value v8Value = v8Runtime.getExecutor(PROPERTY_PROMISE).execute();
         if (v8Value instanceof V8ValueObject) {
             return new V8ValueBuiltInPromise(v8Runtime, ((V8ValueObject) v8Value).getHandle());
         }
@@ -117,13 +99,7 @@ public final class V8ValueGlobalObject extends V8ValueObject {
 
     @CheckReturnValue
     public V8ValueBuiltInSymbol getBuiltInSymbol() throws JavetException {
-        V8Value v8Value = get(PROPERTY_SYMBOL);
-        if (v8Value instanceof V8ValueObject) {
-            return new V8ValueBuiltInSymbol(v8Runtime, ((V8ValueObject) v8Value).getHandle());
-        }
-        JavetResourceUtils.safeClose(v8Value);
-        // In case the built-in Symbol is removed.
-        v8Value = v8Runtime.getExecutor(PROPERTY_SYMBOL).execute();
+        V8Value v8Value = v8Runtime.getExecutor(PROPERTY_SYMBOL).execute();
         if (v8Value instanceof V8ValueObject) {
             return new V8ValueBuiltInSymbol(v8Runtime, ((V8ValueObject) v8Value).getHandle());
         }

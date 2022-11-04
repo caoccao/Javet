@@ -40,6 +40,7 @@ import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
@@ -53,6 +54,8 @@ import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
 
 /**
  * The representation of a V8 isolate (and V8 context).
@@ -655,9 +658,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
         Objects.requireNonNull(v8ValueArrayBuffer);
-        try (V8ValueFunction v8ValueFunction = getGlobalObject().get(PROPERTY_DATA_VIEW)) {
-            return v8ValueFunction.callAsConstructor(v8ValueArrayBuffer);
+        try (V8Value v8Value = getExecutor(PROPERTY_DATA_VIEW).execute()) {
+            if (v8Value instanceof V8ValueFunction) {
+                V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
+                return v8ValueFunction.callAsConstructor(v8ValueArrayBuffer);
+            }
         }
+        throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, PROPERTY_DATA_VIEW));
     }
 
     @Override
@@ -766,9 +773,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = getGlobalObject().get(type.getName())) {
-            return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
+        try (V8Value v8Value = getExecutor(type.getName()).execute()) {
+            if (v8Value instanceof V8ValueFunction) {
+                V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
+                return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
+            }
         }
+        throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, type.getName()));
     }
 
     @Override
