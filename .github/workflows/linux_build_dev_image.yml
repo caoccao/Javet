@@ -1,0 +1,49 @@
+name: Linux build dev image - Gradle deps, V8, Node
+
+concurrency:
+  group: linux_build_dev
+  cancel-in-progress: true
+
+# we need to provide some value for tags, else GH runs the workflow on every push to any branch, even if not tagged
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*"
+    branches:
+      - infra/redesign_docker_build
+
+env:
+  DOCKERHUB_USERNAME: amithgeorge
+  JAVET_V8_NODE_IMAGE_TAG: amithgeorge/javet-linux-dev:v8-10.7.193.16_node-18.12.0
+  JAVET_VERSION: 2.0.1
+
+jobs:
+  publish_v8_node:
+    name: Dev image with Gradle deps - Publish container image with V8, Node.js and Gradle dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set the IMAGE_TAG environment variable
+        run: |
+          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/javet-linux-dev:${{ env.JAVET_VERSION }}' >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        run: |
+          echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
+          docker build \
+            -t ${{ env.IMAGE_TAG }} \
+            --build-arg JAVET_V8_NODE_IMAGE_TAG=${{ env.JAVET_V8_NODE_IMAGE_TAG }} \
+            -f docker/linux-x86_64/gradle.Dockerfile .
+
+      - name: Publish the docker image
+        run: |
+          docker push ${{ env.IMAGE_TAG }}

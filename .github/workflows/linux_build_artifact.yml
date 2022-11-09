@@ -1,0 +1,44 @@
+name: Linux build artifact
+concurrency:
+  group: linux_build_artifact_${{ github.ref }}
+  cancel-in-progress: true
+on:
+  # trigger manually
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "**.rst"
+      - "docs/**"
+  push:
+    paths-ignore:
+      - "**.rst"
+      - "docs/**"
+    branches:
+      - infra/redesign_docker_build
+
+env:
+  JAVET_GRADLE_IMAGE_TAG: amithgeorge/javet-linux-dev:2.0.1
+
+jobs:
+  javet_linux_x86_64:
+    name: Javet Linux x86_64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Build the artifact
+        run: |
+          docker build -t javet:local \
+            --build-arg JAVET_GRADLE_IMAGE_TAG=${{ env.JAVET_GRADLE_IMAGE_TAG }} \
+            -f docker/linux-x86_64/artifact.Dockerfile .
+
+      - name: Copy the artifact
+        run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet:local cp -rf /Javet/build/libs /output
+
+      - name: Upload the artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: javet-linux-x86_64
+          path: build/libs/javet*.jar
