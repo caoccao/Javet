@@ -11,9 +11,6 @@ on:
       skip_base_node:
         default: false
         type: boolean
-  push:
-    branches:
-      - infra/redesign_docker_build
 
 env:
   DOCKERHUB_USERNAME: amithgeorge

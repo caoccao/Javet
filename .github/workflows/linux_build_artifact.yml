@@ -14,8 +14,6 @@ on:
     paths-ignore:
       - "**.rst"
       - "docs/**"
-    branches:
-      - infra/redesign_docker_build
 
 env:
   JAVET_GRADLE_IMAGE_TAG: amithgeorge/javet-linux-dev:2.0.1

@@ -10,8 +10,6 @@ on:
   push:
     tags:
       - "*"
-    branches:
-      - infra/redesign_docker_build
 
 env:
   DOCKERHUB_USERNAME: amithgeorge
