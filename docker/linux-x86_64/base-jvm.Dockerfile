@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:base-jvm-latest -f docker/linux-x86_64/base-jvm.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:x86_64-base-jvm-latest -f docker/linux-x86_64/base-jvm.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /

@@ -16,7 +16,7 @@ on:
       - "docs/**"
 
 env:
-  JAVET_VERSION: 2.0.1
+  JAVET_VERSION: x86_64-2.0.1
 
 jobs:
   javet_linux_x86_64:

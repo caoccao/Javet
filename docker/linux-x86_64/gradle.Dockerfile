@@ -14,11 +14,11 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t sjtucaocao/javet:2.0.1 \
-#  --build-arg JAVET_V8_NODE_IMAGE_TAG=sjtucaocao/javet:v8-10.7.193.16_node-18.12.0 \
+#  -t sjtucaocao/javet:x86_64-2.0.1 \
+#  --build-arg JAVET_V8_NODE_IMAGE_TAG=sjtucaocao/javet:x86_64-v8-10.7.193.16_node-18.12.0 \
 #  -f docker/linux-x86_64/gradle.Dockerfile .
 
-ARG JAVET_V8_NODE_IMAGE_TAG=sjtucaocao/javet:v8-10.7.193.16_node-18.12.0
+ARG JAVET_V8_NODE_IMAGE_TAG=sjtucaocao/javet:x86_64-v8-10.7.193.16_node-18.12.0
 FROM $JAVET_V8_NODE_IMAGE_TAG
 
 WORKDIR /Javet
