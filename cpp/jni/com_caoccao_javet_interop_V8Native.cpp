@@ -830,7 +830,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
                         }
                     }
                     if (!positionEquals) {
-                        v8InternalShared.SetPosition(startPosition, endPosition);
+                        v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
                     }
                     success = true;
                 }
@@ -935,7 +935,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                         }
                     }
                     if (!positionEquals) {
-                        v8InternalShared.SetPosition(startPosition, newEndPosition);
+                        v8InternalScopeInfo.SetPositionInfo(startPosition, newEndPosition);
                     }
                     success = true;
                 }

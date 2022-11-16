@@ -29,7 +29,7 @@
 #       The following dockerfile has been out of date because it still uses
 #       Visual Studio 2019 Community. Please contact the maintainer if you want an upgrade.
 
-# Usage: docker build -t sjtucaocao/javet-windows:2.0.1 -m 4G -f docker/windows-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-windows:2.0.2 -m 4G -f docker/windows-x86_64/base.Dockerfile .
 
 # https://hub.docker.com/_/microsoft-windows
 FROM mcr.microsoft.com/windows:20H2-amd64
@@ -64,7 +64,7 @@ ENV DEPOT_TOOLS_WIN_TOOLCHAIN=0
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 10.7.193.16
+RUN git checkout 10.8.168.20
 WORKDIR /google
 RUN gclient sync
 RUN echo V8 preparation is completed.
