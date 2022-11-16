@@ -14,11 +14,11 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t amithgeorge/javet-linux-dev:base-node-18.12.0 \
+#  -t sjtucaocao/javet:base-node-18.12.0 \
 #  --build-arg JAVET_NODE_VERSION=18.12.0 \
 #  -f docker/linux-x86_64/base-node.Dockerfile .
 
-FROM amithgeorge/javet-linux-dev:base-jvm-latest
+FROM sjtucaocao/javet:base-jvm-latest
 
 ARG JAVET_NODE_VERSION=18.12.0
 RUN if [ -z "$JAVET_NODE_VERSION" ]; then echo 'Build argument JAVET_NODE_VERSION must be specified. Exiting.'; exit 1; fi

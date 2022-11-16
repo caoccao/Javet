@@ -12,8 +12,7 @@ on:
       - "*"
 
 env:
-  DOCKERHUB_USERNAME: amithgeorge
-  JAVET_V8_NODE_IMAGE_TAG: amithgeorge/javet-linux-dev:v8-10.7.193.16_node-18.12.0
+  JAVET_V8_NODE_IMAGE_VERSION: v8-10.7.193.16_node-18.12.0
   JAVET_VERSION: 2.0.1
 
 jobs:
@@ -21,14 +20,15 @@ jobs:
     name: Dev image with Gradle deps - Publish container image with V8, Node.js and Gradle dependencies
     runs-on: ubuntu-latest
     steps:
-      - name: Set the IMAGE_TAG environment variable
+      - name: Set the IMAGE_TAG, JAVET_V8_NODE_IMAGE_TAG environment variable
         run: |
-          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/javet-linux-dev:${{ env.JAVET_VERSION }}' >> $GITHUB_ENV
+          echo 'IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_VERSION }}' >> $GITHUB_ENV
+          echo 'JAVET_V8_NODE_IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_V8_NODE_IMAGE_VERSION }}' >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Checkout the code

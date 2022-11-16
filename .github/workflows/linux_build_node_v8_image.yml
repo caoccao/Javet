@@ -13,7 +13,6 @@ on:
         type: boolean
 
 env:
-  DOCKERHUB_USERNAME: amithgeorge
   JAVET_V8_VERSION: 10.7.193.16
   JAVET_NODE_VERSION: 18.12.0
 
@@ -30,13 +29,13 @@ jobs:
       - name: Set the IMAGE_TAG environment variable
         if: inputs.skip_base_jvm == false
         run: |
-          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/javet-linux-dev:base-jvm-latest' >> $GITHUB_ENV
+          echo 'IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:base-jvm-latest' >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         if: inputs.skip_base_jvm == false
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Checkout the code
@@ -64,13 +63,13 @@ jobs:
       - name: Set the IMAGE_TAG environment variable
         if: inputs.skip_base_v8 == false
         run: |
-          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/javet-linux-dev:base-v8-${{ env.JAVET_V8_VERSION }}' >> $GITHUB_ENV
+          echo 'IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:base-v8-${{ env.JAVET_V8_VERSION }}' >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         if: inputs.skip_base_v8 == false
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Checkout the code
@@ -99,13 +98,13 @@ jobs:
       - name: Set the IMAGE_TAG environment variable
         if: inputs.skip_base_node == false
         run: |
-          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/javet-linux-dev:base-node-${{ env.JAVET_NODE_VERSION }}' >> $GITHUB_ENV
+          echo 'IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:base-node-${{ env.JAVET_NODE_VERSION }}' >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         if: inputs.skip_base_node == false
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Checkout the code
@@ -133,12 +132,12 @@ jobs:
     steps:
       - name: Set the IMAGE_TAG environment variable
         run: |
-          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/javet-linux-dev:v8-${{ env.JAVET_V8_VERSION }}_node-${{ env.JAVET_NODE_VERSION }}' >> $GITHUB_ENV
+          echo 'IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:v8-${{ env.JAVET_V8_VERSION }}_node-${{ env.JAVET_NODE_VERSION }}' >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Checkout the code

@@ -15,10 +15,10 @@
 
 # Usage: docker build \
 #  -t javet-local \
-#  --build-arg JAVET_GRADLE_IMAGE_TAG=amithgeorge/javet-linux-dev:2.0.1 \
+#  --build-arg JAVET_GRADLE_IMAGE_TAG=sjtucaocao/javet-linux-dev:2.0.1 \
 #  -f docker/linux-x86_64/artifact.Dockerfile .
 
-ARG JAVET_GRADLE_IMAGE_TAG=amithgeorge/javet-linux-dev:2.0.1
+ARG JAVET_GRADLE_IMAGE_TAG=sjtucaocao/javet-linux-dev:2.0.1
 FROM $JAVET_GRADLE_IMAGE_TAG
 
 WORKDIR /Javet

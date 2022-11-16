@@ -14,11 +14,11 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t amithgeorge/javet-linux-dev:base-v8-10.7.193.16 \
+#  -t sjtucaocao/javet:base-v8-10.7.193.16 \
 #  --build-arg JAVET_V8_VERSION=10.7.193.16 \
 #  -f docker/linux-x86_64/base-v8.Dockerfile .
 
-FROM amithgeorge/javet-linux-dev:base-jvm-latest
+FROM sjtucaocao/javet:base-jvm-latest
 
 ARG JAVET_V8_VERSION=10.7.193.16
 RUN if [ -z "$JAVET_V8_VERSION" ]; then echo 'Build argument JAVET_V8_VERSION must be specified. Exiting.'; exit 1; fi

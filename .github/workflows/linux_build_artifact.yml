@@ -16,7 +16,7 @@ on:
       - "docs/**"
 
 env:
-  JAVET_GRADLE_IMAGE_TAG: amithgeorge/javet-linux-dev:2.0.1
+  JAVET_VERSION: 2.0.1
 
 jobs:
   javet_linux_x86_64:
@@ -25,6 +25,10 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
+
+      - name: Set the JAVET_GRADLE_IMAGE_TAG environment variable
+        run: |
+          echo 'JAVET_GRADLE_IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_VERSION}}' >> $GITHUB_ENV
 
       - name: Build the artifact
         run: |
