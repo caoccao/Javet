@@ -107,7 +107,7 @@ RUN powershell -ExecutionPolicy Bypass -c "iex(New-Object Net.WebClient).Downloa
 RUN choco install -y nasm
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v18.12.0
+RUN git checkout v18.12.1
 RUN echo Node.js preparation is completed.
 
 # Build Node.js

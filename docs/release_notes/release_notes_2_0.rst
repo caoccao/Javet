@@ -5,6 +5,7 @@ Release Notes 2.0.x
 2.0.2 V8 v10.8
 --------------
 
+* Upgraded Node.js to ``v18.12.1`` `(2022-11-03) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.12.1>`_
 * Upgraded V8 to ``v10.8.168.20`` `(2022-11-15) <https://v8.dev/blog/v8-release-108>`_
 * Revised ``IV8ValueFunction.copyScopeInfoFrom()`` to clone the scope info
 * Added ``ScopeInfos``, ``ScopeInfos``, ``getScopeInfos`` to ``IV8ValueFunction``
