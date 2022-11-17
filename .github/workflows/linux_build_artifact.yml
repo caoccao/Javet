@@ -14,6 +14,8 @@ on:
     paths-ignore:
       - "**.rst"
       - "docs/**"
+    branches:
+      - infra/redesign_docker_build
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
