@@ -15,12 +15,15 @@
 
 # Usage: docker build \
 #  -t sjtucaocao/javet:x86_64-base-node-18.12.0 \
+#  --build-arg JAVET_REPO=sjtucaocao/javet \
 #  --build-arg JAVET_NODE_VERSION=18.12.0 \
 #  -f docker/linux-x86_64/base-node.Dockerfile .
 
-FROM sjtucaocao/javet:x86_64-base-jvm-latest
-
+ARG JAVET_REPO=sjtucaocao/javet
 ARG JAVET_NODE_VERSION=18.12.0
+FROM ${JAVET_REPO}:x86_64-base-jvm-latest
+
+ARG JAVET_NODE_VERSION
 RUN if [ -z "$JAVET_NODE_VERSION" ]; then echo 'Build argument JAVET_NODE_VERSION must be specified. Exiting.'; exit 1; fi
 
 # Prepare Node.js v18

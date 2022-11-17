@@ -87,6 +87,7 @@ jobs:
           echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
           docker build \
             -t ${{ env.IMAGE_TAG }} \
+            --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
             -f docker/linux-x86_64/base-v8.Dockerfile .
 
@@ -122,6 +123,7 @@ jobs:
           echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
           docker build \
             -t ${{ env.IMAGE_TAG }} \
+            --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
             -f docker/linux-x86_64/base-node.Dockerfile .
 
@@ -153,6 +155,7 @@ jobs:
           echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
           docker build \
             -t ${{ env.IMAGE_TAG }} \
+            --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
             --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
             -f docker/linux-x86_64/v8_node.Dockerfile .
