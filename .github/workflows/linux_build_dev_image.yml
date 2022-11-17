@@ -12,6 +12,8 @@ on:
       - "*"
 
 env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
   JAVET_V8_NODE_IMAGE_VERSION: x86_64-v8-10.7.193.16_node-18.12.0
   JAVET_VERSION: x86_64-2.0.1
 
@@ -22,8 +24,8 @@ jobs:
     steps:
       - name: Set the IMAGE_TAG, JAVET_V8_NODE_IMAGE_TAG environment variable
         run: |
-          echo 'IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_VERSION }}' >> $GITHUB_ENV
-          echo 'JAVET_V8_NODE_IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_V8_NODE_IMAGE_VERSION }}' >> $GITHUB_ENV
+          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_VERSION }}' >> $GITHUB_ENV
+          echo 'JAVET_V8_NODE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_V8_NODE_IMAGE_VERSION }}' >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a

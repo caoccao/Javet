@@ -16,6 +16,8 @@ on:
       - "docs/**"
 
 env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
   JAVET_VERSION: x86_64-2.0.1
 
 jobs:
@@ -28,7 +30,7 @@ jobs:
 
       - name: Set the JAVET_GRADLE_IMAGE_TAG environment variable
         run: |
-          echo 'JAVET_GRADLE_IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_VERSION}}' >> $GITHUB_ENV
+          echo 'JAVET_GRADLE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_VERSION}}' >> $GITHUB_ENV
 
       - name: Build the artifact
         run: |
