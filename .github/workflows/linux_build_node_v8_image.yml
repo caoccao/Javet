@@ -1,0 +1,165 @@
+name: Linux build V8 and Node image
+on:
+  workflow_dispatch:
+    inputs:
+      skip_base_jvm:
+        default: false
+        type: boolean
+      skip_base_v8:
+        default: false
+        type: boolean
+      skip_base_node:
+        default: false
+        type: boolean
+  push:
+    branches:
+      - infra/redesign_docker_build
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
+  JAVET_V8_VERSION: 10.7.193.16
+  JAVET_NODE_VERSION: 18.12.0
+
+# if we skip a job using a job level `if` condition, then any dependent jobs also don't run.
+# we can skip a step of the job, using a step level `if` condition.
+# however GitHub doesn't support skipping all subsequent steps of a job.
+# we need to add the condition to every step.
+
+jobs:
+  publish_base_jvm:
+    name: Ubuntu, build tools and JDK 8 - Publish container image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set the IMAGE_TAG environment variable
+        if: inputs.skip_base_jvm == false
+        run: |
+          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-jvm-latest' >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        if: inputs.skip_base_jvm == false
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Checkout the code
+        if: inputs.skip_base_jvm == false
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        if: inputs.skip_base_jvm == false
+        run: |
+          echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
+          docker build \
+            -t ${{ env.IMAGE_TAG }} \
+            -f docker/linux-x86_64/base-jvm.Dockerfile .
+
+      - name: Publish the docker image
+        if: inputs.skip_base_jvm == false
+        run: |
+          docker push ${{ env.IMAGE_TAG }}
+
+  publish_base_v8:
+    needs: [publish_base_jvm]
+    name: V8 - Publish container image with source and compiled binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set the IMAGE_TAG environment variable
+        if: inputs.skip_base_v8 == false
+        run: |
+          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-v8-${{ env.JAVET_V8_VERSION }}' >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        if: inputs.skip_base_v8 == false
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Checkout the code
+        if: inputs.skip_base_v8 == false
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        if: inputs.skip_base_v8 == false
+        run: |
+          echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
+          docker build \
+            -t ${{ env.IMAGE_TAG }} \
+            --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
+            --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
+            -f docker/linux-x86_64/base-v8.Dockerfile .
+
+      - name: Publish the docker image
+        if: inputs.skip_base_v8 == false
+        run: |
+          docker push ${{ env.IMAGE_TAG }}
+
+  publish_base_node:
+    needs: [publish_base_jvm]
+    name: Node.js - Publish container image with source and compiled binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set the IMAGE_TAG environment variable
+        if: inputs.skip_base_node == false
+        run: |
+          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node-${{ env.JAVET_NODE_VERSION }}' >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        if: inputs.skip_base_node == false
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Checkout the code
+        if: inputs.skip_base_node == false
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        if: inputs.skip_base_node == false
+        run: |
+          echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
+          docker build \
+            -t ${{ env.IMAGE_TAG }} \
+            --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
+            --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
+            -f docker/linux-x86_64/base-node.Dockerfile .
+
+      - name: Publish the docker image
+        if: inputs.skip_base_node == false
+        run: |
+          docker push ${{ env.IMAGE_TAG }}
+
+  publish_v8_node:
+    needs: [publish_base_v8, publish_base_node]
+    name: V8 and Node.js - Publish container image with V8 source and binaries and Node.js source and binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set the IMAGE_TAG environment variable
+        run: |
+          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-v8-${{ env.JAVET_V8_VERSION }}_node-${{ env.JAVET_NODE_VERSION }}' >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        run: |
+          echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
+          docker build \
+            -t ${{ env.IMAGE_TAG }} \
+            --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
+            --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
+            --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
+            -f docker/linux-x86_64/v8_node.Dockerfile .
+
+      - name: Publish the docker image
+        run: |
+          docker push ${{ env.IMAGE_TAG }}

@@ -1,0 +1,50 @@
+name: Linux build artifact
+concurrency:
+  group: linux_build_artifact_${{ github.ref }}
+  cancel-in-progress: true
+on:
+  # trigger manually
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "**.rst"
+      - "docs/**"
+  push:
+    paths-ignore:
+      - "**.rst"
+      - "docs/**"
+    branches:
+      - infra/redesign_docker_build
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
+  JAVET_VERSION: x86_64-2.0.1
+
+jobs:
+  javet_linux_x86_64:
+    name: Javet Linux x86_64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set the JAVET_GRADLE_IMAGE_TAG environment variable
+        run: |
+          echo 'JAVET_GRADLE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_VERSION}}' >> $GITHUB_ENV
+
+      - name: Build the artifact
+        run: |
+          docker build -t javet:local \
+            --build-arg JAVET_GRADLE_IMAGE_TAG=${{ env.JAVET_GRADLE_IMAGE_TAG }} \
+            -f docker/linux-x86_64/artifact.Dockerfile .
+
+      - name: Copy the artifact
+        run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet:local cp -rf /Javet/build/libs /output
+
+      - name: Upload the artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: javet-linux-x86_64
+          path: build/libs/javet*.jar
