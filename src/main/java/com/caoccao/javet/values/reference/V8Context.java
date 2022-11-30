@@ -78,7 +78,7 @@ public class V8Context extends V8ValueReference implements IV8Context {
     }
 
     @Override
-    public V8Context toClone() throws JavetException {
+    public V8Context toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 }

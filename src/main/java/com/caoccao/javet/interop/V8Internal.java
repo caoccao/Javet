@@ -60,8 +60,10 @@ public final class V8Internal {
     }
 
     @CheckReturnValue
-    public <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws JavetException {
-        return v8Runtime.cloneV8Value(iV8ValueReference);
+    public <T extends V8Value> T cloneV8Value(
+            IV8ValueReference iV8ValueReference, boolean referenceCopy)
+            throws JavetException {
+        return v8Runtime.cloneV8Value(iV8ValueReference, referenceCopy);
     }
 
     @CheckReturnValue
@@ -111,6 +113,14 @@ public final class V8Internal {
     @CheckReturnValue
     public V8Context functionGetContext(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.functionGetContext(iV8ValueFunction);
+    }
+
+    @CheckReturnValue
+    public IV8ValueArray functionGetScopeInfos(
+            IV8ValueFunction iV8ValueFunction,
+            IV8ValueFunction.GetScopeInfosOptions options)
+            throws JavetException {
+        return v8Runtime.functionGetScopeInfos(iV8ValueFunction, options);
     }
 
     public IV8ValueFunction.ScriptSource functionGetScriptSource(IV8ValueFunction iV8ValueFunction) throws JavetException {

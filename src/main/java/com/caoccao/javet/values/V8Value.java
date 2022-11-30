@@ -61,8 +61,4 @@ public abstract class V8Value extends V8Data implements IV8Value {
 
     @Override
     public abstract boolean strictEquals(V8Value v8Value) throws JavetException;
-
-    @Override
-    @CheckReturnValue
-    public abstract <T extends V8Value> T toClone() throws JavetException;
 }

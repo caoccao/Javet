@@ -66,10 +66,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearWeak
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    cloneV8Value
- * Signature: (JJI)Ljava/lang/Object;
+ * Signature: (JJIZ)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
-  (JNIEnv *, jobject, jlong, jlong, jint);
+  (JNIEnv *, jobject, jlong, jlong, jint, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -206,6 +206,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionDisca
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetContext
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionGetScopeInfos
+ * Signature: (JJIZZ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScopeInfos
+  (JNIEnv *, jobject, jlong, jlong, jint, jboolean, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

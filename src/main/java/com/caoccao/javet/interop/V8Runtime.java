@@ -40,6 +40,7 @@ import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
@@ -53,6 +54,8 @@ import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
 
 /**
  * The representation of a V8 isolate (and V8 context).
@@ -453,15 +456,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param <T>               the type parameter
      * @param iV8ValueReference the V8 value reference
+     * @param referenceCopy     the reference copy
      * @return the cloned V8 value
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
-    <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws JavetException {
+    <T extends V8Value> T cloneV8Value(
+            IV8ValueReference iV8ValueReference,
+            boolean referenceCopy)
+            throws JavetException {
         return (T) v8Native.cloneV8Value(
-                handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
+                handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId(), referenceCopy);
     }
 
     @Override
@@ -651,9 +658,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
         Objects.requireNonNull(v8ValueArrayBuffer);
-        try (V8ValueFunction v8ValueFunction = getGlobalObject().get(PROPERTY_DATA_VIEW)) {
-            return v8ValueFunction.callAsConstructor(v8ValueArrayBuffer);
+        try (V8Value v8Value = getExecutor(PROPERTY_DATA_VIEW).execute()) {
+            if (v8Value instanceof V8ValueFunction) {
+                V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
+                return v8ValueFunction.callAsConstructor(v8ValueArrayBuffer);
+            }
         }
+        throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, PROPERTY_DATA_VIEW));
     }
 
     @Override
@@ -762,9 +773,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
-        try (V8ValueFunction v8ValueFunction = getGlobalObject().get(type.getName())) {
-            return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
+        try (V8Value v8Value = getExecutor(type.getName()).execute()) {
+            if (v8Value instanceof V8ValueFunction) {
+                V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
+                return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
+            }
         }
+        throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, type.getName()));
     }
 
     @Override
@@ -901,6 +916,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     V8Context functionGetContext(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return (V8Context) v8Native.functionGetContext(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
+     * Gets scope infos from a V8 value function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @param options          the options
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     */
+    IV8ValueArray functionGetScopeInfos(
+            IV8ValueFunction iV8ValueFunction,
+            IV8ValueFunction.GetScopeInfosOptions options)
+            throws JavetException {
+        return (IV8ValueArray) v8Native.functionGetScopeInfos(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(),
+                options.isIncludeGlobalVariables(), options.isIncludeScopeTypeGlobal());
     }
 
     /**

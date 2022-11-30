@@ -16,6 +16,10 @@
 
 package com.caoccao.javet.enums;
 
+/**
+ * The enum V8 context type.
+ * @since 2.0.1
+ */
 public enum V8ContextType {
     Await(0, "Await"),
     Block(1, "Block"),

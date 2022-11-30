@@ -18,6 +18,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.enums.V8ScopeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
@@ -630,11 +631,17 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(44, originalScriptSource.getEndPosition());
             IV8ValueFunction.ScriptSource dummyScriptSource = dummyV8ValueFunction.getScriptSource();
             assertEquals(dummyCodeString, dummyScriptSource.getCode());
+            assertFalse(originalV8ValueFunction.isCompiled());
+            assertFalse(dummyV8ValueFunction.isCompiled());
             assertEquals(2, originalV8ValueFunction.callInteger(null));
+            assertTrue(originalV8ValueFunction.isCompiled());
             // Back up the original scope info to a dummy function.
             assertTrue(dummyV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
+            assertTrue(dummyV8ValueFunction.isCompiled());
             try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString)) {
+                assertFalse(crackedV8ValueFunction.isCompiled());
                 assertEquals("a2", crackedV8ValueFunction.callString(null));
+                assertTrue(crackedV8ValueFunction.isCompiled());
                 // Replace the original scope info with the cracked scope info.
                 assertTrue(originalV8ValueFunction.copyScopeInfoFrom(crackedV8ValueFunction));
                 originalScriptSource = originalV8ValueFunction.getScriptSource();
@@ -820,26 +827,29 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testGetAndSetContext() throws JavetException {
-        String dummyCodeString = "() => undefined;";
         String originalCodeString = "(() => {\n" +
                 "  let a = 1;\n" +
-                "  return () => a + 1;\n" +
+                "  let b = 3;\n" +
+                "  return () => a + b + 1;\n" +
                 "})();";
-        String crackedCodeString = "() => {\n" +
-                "  a++;\n" +
-                "  return a + 2;\n" +
-                "}";
+        String crackedCodeString = "(() => {\n" +
+                "  let a;\n" +
+                "  let b;\n" +
+                "  return () => {\n" +
+                "    a++;\n" +
+                "    return a + 2 * b + 2;\n" +
+                "  }\n" +
+                "})()";
         try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString)) {
             IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
-            assertEquals("() => a + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
+            assertEquals("() => a + b + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
             assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
-            assertEquals(2, originalV8ValueFunction.callInteger(null), "Populate the context.");
+            assertEquals(5, originalV8ValueFunction.callInteger(null), "Populate the context.");
             assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
-            IV8ValueFunction.ScriptSource crackedScriptSource = originalScriptSource.setCodeSnippet(crackedCodeString);
-            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(dummyCodeString);
+            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString);
                  V8Context v8Context = originalV8ValueFunction.getContext()) {
                 assertNotNull(v8Context);
-                assertEquals(3, v8Context.getLength());
+                assertEquals(4, v8Context.getLength());
                 assertTrue(v8Context.isDeclarationContext());
                 assertTrue(v8Context.isFunctionContext());
                 assertFalse(v8Context.isModuleContext());
@@ -854,17 +864,17 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertFalse(v8Context.isScriptContext());
                 }
                 assertEquals(1, v8Context.getInteger(2), "Initial value of 'a' should be 1.");
-                assertTrue(crackedV8ValueFunction.copyScopeInfoFrom(originalV8ValueFunction));
-                assertTrue(crackedV8ValueFunction.setScriptSource(crackedScriptSource, true));
+                assertEquals(3, v8Context.getInteger(3), "Initial value of 'b' should be 1.");
                 assertTrue(crackedV8ValueFunction.setContext(v8Context));
                 // Variable 'a' in the closure context is incremented by the next function call.
-                assertEquals(4, crackedV8ValueFunction.callInteger(null),
+                assertEquals(10, crackedV8ValueFunction.callInteger(null),
                         "The cracked function should be " + crackedCodeString + ".");
                 assertEquals(2, v8Context.getInteger(2), "Updated value of 'a' should be 2.");
+                assertEquals(3, v8Context.getInteger(3), "Updated value of 'b' should be 3.");
             }
-            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
-            assertEquals(3, originalV8ValueFunction.callInteger(null),
-                    "The original function should be () => a + 1.");
+            assertFalse(originalV8ValueFunction.setScriptSource(originalScriptSource));
+            assertEquals(6, originalV8ValueFunction.callInteger(null),
+                    "The original function should be () => a + b + 1.");
             IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
             assertEquals(originalScriptSource, newScriptSource, "The script source should match.");
         }
@@ -1166,9 +1176,137 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     crackedV8ValueFunction.canDiscardCompiled(),
                     "The cracked function should support discard compiled.");
             assertEquals(2, originalV8ValueFunction.callInteger(null));
-            // Restore the position because memory for position is shared between these 2 functions.
-            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
             assertEquals(originalScriptSource, originalV8ValueFunction.getScriptSource());
+            assertFalse(
+                    originalV8ValueFunction.setScriptSource(originalScriptSource),
+                    "The original function remains unchanged.");
+        }
+    }
+
+    @Test
+    public void testGetScopeInfosWith1Closure() throws JavetException {
+        List<Boolean> options = Arrays.asList(true, false);
+        Set<String> globalVariables = new HashSet<>(Arrays.asList((
+                "global,queueMicrotask,clearImmediate,setImmediate," +
+                        "structuredClone,clearInterval,clearTimeout,setInterval," +
+                        "setTimeout,atob,btoa,performance,fetch,require").split(",")));
+        String codeString = "(() => { let a = 1; return () => { const b = 0; return a; } })()";
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
+            assertEquals(1, v8ValueFunction.callInteger(null));
+            for (boolean includeGlobalVariables : options) {
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
+                        IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables))) {
+                    assertEquals(2, scopeInfos.size());
+                    assertEquals(V8ScopeType.Closure, scopeInfos.get(0).getType());
+                    assertEquals(V8ScopeType.Script, scopeInfos.get(1).getType());
+                    IntStream.range(0, scopeInfos.size()).forEach(i -> assertTrue(scopeInfos.get(i).hasContext()));
+                    assertEquals(1, scopeInfos.get(0).getStartPosition());
+                    assertEquals(61, scopeInfos.get(0).getEndPosition());
+                    assertEquals(0, scopeInfos.get(1).getStartPosition());
+                    assertEquals(0, scopeInfos.get(1).getEndPosition());
+                    Map<String, Object> map0 = v8Runtime.toObject(scopeInfos.get(0).getScopeObject());
+                    Map<String, Object> map1 = v8Runtime.toObject(scopeInfos.get(1).getScopeObject());
+                    assertEquals(1, map0.size());
+                    assertEquals(0, map1.size());
+                    assertEquals(1, map0.get("a"));
+                    assertTrue(scopeInfos.hasVariablesInClosure());
+                }
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
+                        IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables)
+                                .withIncludeScopeTypeGlobal(true))) {
+                    assertEquals(3, scopeInfos.size());
+                    assertTrue(scopeInfos.hasVariablesInClosure());
+                    IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
+                    List<String> keys = scopeInfo2.getScopeObject().getOwnPropertyNameStrings();
+                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                        assertEquals(14, keys.size());
+                        keys.forEach(key -> assertTrue(globalVariables.contains(key)));
+                    } else {
+                        assertEquals(0, keys.size());
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testGetScopeInfosWith2Closures() throws JavetException {
+        List<Boolean> options = Arrays.asList(true, false);
+        String codeString = "let a1 = 1;\n" +
+                "let a2 = 2;\n" +
+                "let ax = 1;\n" +
+                "function f1() {\n" +
+                "  let b1 = 10;\n" +
+                "  let b2 = 20;\n" +
+                "  let bx = 2;\n" +
+                "  function f2() {\n" +
+                "    let c1 = 100;\n" +
+                "    let c2 = 200;\n" +
+                "    let cx = 3;\n" +
+                "    return () => a1 + a2 + b1 + b2 + c1 + c2;\n" +
+                "  }\n" +
+                "  return f2();\n" +
+                "}\n" +
+                "f1();";
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
+            assertEquals(333, v8ValueFunction.callInteger(null));
+            for (boolean includeGlobalVariables : options) {
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
+                        IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables))) {
+                    assertEquals(3, scopeInfos.size());
+                    assertEquals(V8ScopeType.Closure, scopeInfos.get(0).getType());
+                    assertEquals(V8ScopeType.Closure, scopeInfos.get(1).getType());
+                    assertEquals(V8ScopeType.Script, scopeInfos.get(2).getType());
+                    IntStream.range(0, scopeInfos.size()).forEach(i -> assertTrue(scopeInfos.get(i).hasContext()));
+                    Map<String, Object> map0 = v8Runtime.toObject(scopeInfos.get(0).getScopeObject());
+                    Map<String, Object> map1 = v8Runtime.toObject(scopeInfos.get(1).getScopeObject());
+                    Map<String, Object> map2 = v8Runtime.toObject(scopeInfos.get(2).getScopeObject());
+                    assertEquals(Arrays.asList("c1", "c2"), scopeInfos.get(0).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(Arrays.asList("b1", "b2"), scopeInfos.get(1).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(Arrays.asList("a1", "a2", "ax"), scopeInfos.get(2).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(100, map0.get("c1"));
+                    assertEquals(200, map0.get("c2"));
+                    assertEquals(10, map1.get("b1"));
+                    assertEquals(20, map1.get("b2"));
+                    assertEquals(1, map2.get("a1"));
+                    assertEquals(2, map2.get("a2"));
+                    assertEquals(1, map2.get("ax"));
+                    assertTrue(scopeInfos.hasVariablesInClosure());
+                    List<List<String>> variablesList = scopeInfos.getVariablesInClosure();
+                    assertEquals(3, variablesList.size());
+                    assertEquals(Arrays.asList("c1", "c2"), variablesList.get(0));
+                    assertEquals(Arrays.asList("b1", "b2"), variablesList.get(1));
+                    assertEquals(Arrays.asList("a1", "a2", "ax"), variablesList.get(2));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testGetScopeInfosWithoutClosures() throws JavetException {
+        List<Boolean> options = Arrays.asList(true, false);
+        String codeString = "function f1() {\n" +
+                "  let b = 2;\n" +
+                "  function f2() {\n" +
+                "    let c = 3;\n" +
+                "    return () => 1;\n" +
+                "  }\n" +
+                "  return f2();\n" +
+                "}\n" +
+                "f1();";
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
+            assertEquals(1, v8ValueFunction.callInteger(null));
+            for (boolean includeGlobalVariables : options) {
+                try (IV8ValueFunction.ScopeInfos scopeInfos = v8ValueFunction.getScopeInfos(
+                        IV8ValueFunction.GetScopeInfosOptions.Default.withIncludeGlobalVariables(includeGlobalVariables))) {
+                    assertEquals(1, scopeInfos.size());
+                    assertEquals(V8ScopeType.Script, scopeInfos.get(0).getType());
+                    assertTrue(scopeInfos.get(0).hasContext());
+                    Map<String, Object> map0 = v8Runtime.toObject(scopeInfos.get(0).getScopeObject());
+                    assertEquals(0, map0.size());
+                    assertFalse(scopeInfos.hasVariablesInClosure());
+                }
+            }
         }
     }
 
@@ -1394,6 +1532,19 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().delete("a");
         } finally {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testToClone(boolean referenceCopy) throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("() => 1")) {
+            try (V8ValueFunction clonedV8ValueFunction = v8ValueFunction.toClone(referenceCopy)) {
+                assertEquals("() => 1", clonedV8ValueFunction.getSourceCode());
+                assertNotEquals(v8ValueFunction.getHandle(), clonedV8ValueFunction.getHandle());
+                assertTrue(clonedV8ValueFunction.strictEquals(v8ValueFunction));
+                assertEquals(v8Runtime, clonedV8ValueFunction.getV8Runtime());
+            }
         }
     }
 }

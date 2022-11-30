@@ -110,7 +110,7 @@ public class V8Module extends V8ValueReference implements IV8Module {
 
     @Override
     @CheckReturnValue
-    public V8Module toClone() throws JavetException {
+    public V8Module toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

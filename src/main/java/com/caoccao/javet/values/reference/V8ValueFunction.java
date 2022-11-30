@@ -148,6 +148,16 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
         return checkV8Runtime().getV8Internal().getJSScopeType(this);
     }
 
+    @CheckReturnValue
+    @Override
+    public ScopeInfos getScopeInfos(GetScopeInfosOptions options)
+            throws JavetException {
+        try (IV8ValueArray iV8ValueArray = checkV8Runtime().getV8Internal().functionGetScopeInfos(
+                this, options)) {
+            return new ScopeInfos(iV8ValueArray);
+        }
+    }
+
     @Override
     public ScriptSource getScriptSource() throws JavetException {
         if (getJSFunctionType().isUserDefined()) {

@@ -32,6 +32,7 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -483,6 +484,23 @@ public interface IV8ValueObject extends IV8ValueReference {
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    /**
+     * Gets own property name strings.
+     *
+     * @return the own property name strings
+     * @throws JavetException the javet exception
+     * @since 2.0.2
+     */
+    default List<String> getOwnPropertyNameStrings() throws JavetException {
+        List<String> ownPropertyNameStrings = new ArrayList<>();
+        forEach(v8Value -> {
+            if (v8Value instanceof V8ValueString) {
+                ownPropertyNameStrings.add(((V8ValueString) v8Value).getValue());
+            }
+        });
+        return ownPropertyNameStrings;
     }
 
     /**

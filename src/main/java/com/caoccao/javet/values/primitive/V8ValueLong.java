@@ -30,11 +30,11 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
     }
 
     public V8ValueLong(V8Runtime v8Runtime, String value) throws JavetException {
-        this(v8Runtime, Long.valueOf(value));
+        this(v8Runtime, Long.parseLong(value));
     }
 
     @Override
-    public V8ValueLong toClone() throws JavetException {
+    public V8ValueLong toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

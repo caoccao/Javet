@@ -74,7 +74,7 @@ public class V8Script extends V8ValueReference implements IV8Script {
     }
 
     @Override
-    public V8Script toClone() throws JavetException {
+    public V8Script toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 }

@@ -39,7 +39,7 @@ public interface IV8Native {
 
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean referenceCopy);
 
     void closeV8Runtime(long v8RuntimeHandle);
 
@@ -83,6 +83,10 @@ public interface IV8Native {
     boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object functionGetScopeInfos(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            boolean includeGlobalVariables, boolean includeScopeTypeGlobal);
 
     Object functionGetScriptSource(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

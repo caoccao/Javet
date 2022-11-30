@@ -22,6 +22,8 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -115,6 +117,24 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
                     "[\"1\",[\"2\"]]",
                     v8Runtime.getExecutor(
                             "JSON.stringify(o, (key, value) => value instanceof Set ? [...value] : value);").executeString());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testToClone(boolean referenceCopy) throws JavetException {
+        try (V8ValueSet v8ValueSet = v8Runtime.getExecutor("const o = new Set(); o;").execute()) {
+            v8ValueSet.add("1");
+            assertTrue(v8ValueSet.has("1"));
+            try (V8ValueSet clonedV8ValueSet = v8ValueSet.toClone(referenceCopy)) {
+                assertTrue(clonedV8ValueSet.has("1"));
+                assertNotEquals(v8ValueSet.getHandle(), clonedV8ValueSet.getHandle());
+                assertTrue(clonedV8ValueSet.strictEquals(v8ValueSet));
+                clonedV8ValueSet.add("2");
+                assertTrue(clonedV8ValueSet.has("2"));
+                assertTrue(v8ValueSet.has("2"));
+                assertEquals(v8Runtime, clonedV8ValueSet.getV8Runtime());
+            }
         }
     }
 }
