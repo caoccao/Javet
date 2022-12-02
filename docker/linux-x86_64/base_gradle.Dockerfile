@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t sjtucaocao/javet:x86_64-2.0.2 \
+#  -t sjtucaocao/javet:x86_64-2.0.3 \
 #  --build-arg BASE_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-base-node_18.12.1-v8_10.8.168.20 \
 #  -f docker/linux-x86_64/base_gradle.Dockerfile .
 
