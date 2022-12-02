@@ -39,7 +39,7 @@ public interface IV8Native {
 
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean referenceCopy);
 
     void closeV8Runtime(long v8RuntimeHandle);
 
@@ -47,6 +47,14 @@ public interface IV8Native {
             long v8RuntimeHandle, String script, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
+
+    Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
+
+    int contextGetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean contextIsContextType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int contextTypeId);
+
+    boolean contextSetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int length);
 
     void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
 
@@ -64,6 +72,35 @@ public interface IV8Native {
             long v8RuntimeHandle, String script, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
+
+    boolean functionCanDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean functionCopyScopeInfoFrom(
+            long v8RuntimeHandle,
+            long targetV8ValueHandle, int targetV8ValueType,
+            long sourceV8ValueHandle, int sourceV8ValueType);
+
+    boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object functionGetScopeInfos(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            boolean includeGlobalVariables, boolean includeScopeTypeGlobal);
+
+    Object functionGetScriptSource(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String functionGetSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean functionIsCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
+
+    boolean functionSetScriptSource(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object scriptSource, boolean cloneScript);
+
+    boolean functionSetSourceCode(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
     Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
@@ -92,8 +129,6 @@ public interface IV8Native {
     Object getPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    String getSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
 
@@ -208,8 +243,6 @@ public interface IV8Native {
     boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     boolean setPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
-
-    boolean setSourceCode(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode);
 
     void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 

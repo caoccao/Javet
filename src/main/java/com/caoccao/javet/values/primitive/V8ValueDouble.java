@@ -47,7 +47,7 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     }
 
     @Override
-    public V8ValueDouble toClone() throws JavetException {
+    public V8ValueDouble toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

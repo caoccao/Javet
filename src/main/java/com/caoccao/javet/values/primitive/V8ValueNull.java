@@ -49,7 +49,7 @@ public final class V8ValueNull extends V8Value {
     }
 
     @Override
-    public V8ValueNull toClone() {
+    public V8ValueNull toClone(boolean referenceCopy) {
         return this;
     }
 

@@ -223,9 +223,7 @@ namespace Javet {
                         promiseRejectEvent,
                         Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalPromise),
                         value);
-                    if (value != nullptr) {
-                        jniEnv->DeleteLocalRef(value);
-                    }
+                    DELETE_LOCAL_REF(jniEnv, value);
                     if (jniEnv->ExceptionCheck()) {
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in promise reject callback");
                     }
@@ -271,12 +269,8 @@ namespace Javet {
                         callbackContext,
                         thisObject,
                         externalArgs);
-                    if (thisObject != nullptr) {
-                        jniEnv->DeleteLocalRef(thisObject);
-                    }
-                    if (externalArgs != nullptr) {
-                        jniEnv->DeleteLocalRef(externalArgs);
-                    }
+                    DELETE_LOCAL_REF(jniEnv, thisObject);
+                    DELETE_LOCAL_REF(jniEnv, externalArgs);
                     if (jniEnv->ExceptionCheck()) {
                         if (mResult != nullptr) {
                             jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
@@ -330,9 +324,7 @@ namespace Javet {
                         callbackContext,
                         thisObject,
                         nullptr);
-                    if (thisObject != nullptr) {
-                        jniEnv->DeleteLocalRef(thisObject);
-                    }
+                    DELETE_LOCAL_REF(jniEnv, thisObject);
                     if (jniEnv->ExceptionCheck()) {
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property getter callback");
                     }
@@ -387,12 +379,8 @@ namespace Javet {
                             callbackContext,
                             thisObject,
                             mArguments);
-                        if (thisObject != nullptr) {
-                            jniEnv->DeleteLocalRef(thisObject);
-                        }
-                        if (mArguments != nullptr) {
-                            jniEnv->DeleteLocalRef(mArguments);
-                        }
+                        DELETE_LOCAL_REF(jniEnv, thisObject);
+                        DELETE_LOCAL_REF(jniEnv, mArguments);
                         if (jniEnv->ExceptionCheck()) {
                             Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property setter callback");
                         }

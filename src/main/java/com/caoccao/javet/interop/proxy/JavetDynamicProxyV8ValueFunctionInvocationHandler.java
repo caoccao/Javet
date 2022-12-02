@@ -16,38 +16,37 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.utils.JavetResourceUtils;
-import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * The type Dynamic proxy V8 value object invocation handler.
+ * The type Javet dynamic proxy V8 value function invocation handler.
  *
  * @since 0.9.10
  */
-public final class DynamicProxyV8ValueObjectInvocationHandler implements InvocationHandler, IJavetClosable {
+public final class JavetDynamicProxyV8ValueFunctionInvocationHandler implements InvocationHandler, IJavetClosable {
     private static final String METHOD_NAME_CLOSE = "close";
-    private V8ValueObject v8ValueObject;
+    private V8ValueFunction v8ValueFunction;
 
     /**
-     * Instantiates a new Dynamic proxy V8 value object invocation handler.
+     * Instantiates a new Javet dynamic proxy V8 value function invocation handler.
      *
-     * @param v8ValueObject the V8 value object
+     * @param v8ValueFunction the V8 value function
      * @since 0.9.10
      */
-    public DynamicProxyV8ValueObjectInvocationHandler(V8ValueObject v8ValueObject) {
-        this.v8ValueObject = v8ValueObject;
+    public JavetDynamicProxyV8ValueFunctionInvocationHandler(V8ValueFunction v8ValueFunction) {
+        this.v8ValueFunction = v8ValueFunction;
     }
 
     @Override
     public void close() throws JavetException {
-        JavetResourceUtils.safeClose(v8ValueObject);
-        v8ValueObject = null;
+        JavetResourceUtils.safeClose(v8ValueFunction);
+        v8ValueFunction = null;
     }
 
     @Override
@@ -59,20 +58,14 @@ public final class DynamicProxyV8ValueObjectInvocationHandler implements Invocat
         String methodName = method.getName();
         if (methodName.equals(METHOD_NAME_CLOSE) && args.length == 0) {
             close();
-        } else if (v8ValueObject != null && !v8ValueObject.isClosed()) {
-            if (method.isAnnotationPresent(V8Function.class)) {
-                String aliasMethodName = method.getAnnotation(V8Function.class).name();
-                if (aliasMethodName != null && aliasMethodName.length() > 0) {
-                    methodName = aliasMethodName;
-                }
-            }
-            result = v8ValueObject.invokeObject(methodName, args);
+        } else if (v8ValueFunction != null && !v8ValueFunction.isClosed()) {
+            result = v8ValueFunction.callObject(null, args);
         }
         return result;
     }
 
     @Override
     public boolean isClosed() {
-        return v8ValueObject == null || v8ValueObject.isClosed();
+        return v8ValueFunction == null || v8ValueFunction.isClosed();
     }
 }

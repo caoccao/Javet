@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Bridge Converter" href="bridge_converter.html" /><link rel="prev" title="Object Converter" href="object_converter.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Proxy Converter - Javet 2.0.0 documentation</title>
+        <title>Proxy Converter - Javet 2.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 2.0.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 2.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.0.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -385,7 +385,7 @@
 </div>
 <div class="section" id="static-enum">
 <h3>Static: Enum<a class="headerlink" href="#static-enum" title="Permalink to this headline">¶</a></h3>
-<p>Static class usually does not have an instance. The universal proxy based converter is smart enough to handle that.</p>
+<p>Static class usually does not have an instance. The dynamic proxy based converter is smart enough to handle that.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"JavetErrorType"</span><span class="p">,</span> <span class="n">JavetErrorType</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="n">JavetErrorType</span><span class="p">.</span><span class="na">Converter</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"JavetErrorType.Converter"</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
 <span class="n">assertThrows</span><span class="p">(</span>
@@ -474,9 +474,9 @@
 <p>The JavaScript implementation is backed up by <code class="docutils literal notranslate"><span class="pre">V8ValueFunction</span></code> which is an orphan object. After its internal <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is closed, it will no longer callable. It's recommended to have the interface implement <code class="docutils literal notranslate"><span class="pre">AutoCloseable</span></code> as the sample shows so that the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueFunction</span></code> can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueFunction</span></code> when the <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is being closed. Be careful, if you keep the application running for long while without recycling them in time, <code class="docutils literal notranslate"><span class="pre">OutOfMemoryError</span></code> may occur.</p>
 </div>
 </div>
-<div class="section" id="dynamic-anonymous-object">
-<h3>Dynamic: Anonymous Object<a class="headerlink" href="#dynamic-anonymous-object" title="Permalink to this headline">¶</a></h3>
-<p>This feature is similar to the dynamic anonymous function, but is an enhanced version because it allows implementing all methods exposed by the Java interface.</p>
+<div class="section" id="dynamic-anonymous-object-for-interface">
+<h3>Dynamic: Anonymous Object for Interface<a class="headerlink" href="#dynamic-anonymous-object-for-interface" title="Permalink to this headline">¶</a></h3>
+<p>This feature is similar to the dynamic anonymous function, but is an enhanced version because it allows implementing all methods exposed by a Java interface.</p>
 <ol class="arabic simple">
 <li><p>Define a simple interface <code class="docutils literal notranslate"><span class="pre">IStringUtils</span></code> for joining two strings.</p></li>
 </ol>
@@ -536,6 +536,70 @@
     <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"stringUtils"</span><span class="p">);</span>
 <span class="p">}</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Voilà aussi! It works again.</p>
+</div>
+<div class="section" id="dynamic-anonymous-object-for-class">
+<h3>Dynamic: Anonymous Object for Class<a class="headerlink" href="#dynamic-anonymous-object-for-class" title="Permalink to this headline">¶</a></h3>
+<p>This feature is similar to the dynamic anonymous object for interface, but it allows implementing all methods exposed by a non-final Java class.</p>
+<ol class="arabic simple">
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">ByteBuddy</span></code> to the dependency. You may skip this step if your project has already referenced <code class="docutils literal notranslate"><span class="pre">ByteBuddy</span></code>.</p></li>
+</ol>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="c">&lt;!-- Maven --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>net.bytebuddy<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>byte-buddy<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.12.17<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="c1">// Gradle Kotlin DSL</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">"net.bytebuddy:byte-buddy:1.12.17"</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="c1">// Gradle Groovy DSL</span>
+<span class="n">implementation</span> <span class="s1">'net.bytebuddy:byte-buddy:1.12.17'</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Copy <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/interop/proxy/JavetDynamicObjectFactory.java">JavetDynamicObjectFactory.java</a> to your project. As Javet doesn't reference <code class="docutils literal notranslate"><span class="pre">ByteBuddy</span></code> directly, <code class="docutils literal notranslate"><span class="pre">JavetDynamicObjectFactory</span></code> has to stay at the test project.</p></li>
+<li><p>Define a simple class <code class="docutils literal notranslate"><span class="pre">DynamicClass</span></code> for adding two integers.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicClass</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Create an instance of a class which takes an instance of the <code class="docutils literal notranslate"><span class="pre">DynamicClass</span></code>.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span> <span class="n">anonymous</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@V8Function</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="p">(</span><span class="n">DynamicClass</span> <span class="n">dynamicClass</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dynamicClass</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s">"Add should work."</span><span class="p">);</span>
+        <span class="p">((</span><span class="n">AutoCloseable</span><span class="p">)</span> <span class="n">dynamicClass</span><span class="p">).</span><span class="na">close</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Inject the implementation from JavaScript. Please note that dynamic object support is disabled by default and <code class="docutils literal notranslate"><span class="pre">JavetDynamicObjectFactory</span></code> needs to be set to the converter config for <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> to enable this feature.</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">{</span>
+    <span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setDynamicObjectFactory</span><span class="p">(</span><span class="n">JavetDynamicObjectFactory</span><span class="p">.</span><span class="na">getInstance</span><span class="p">());</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">anonymous</span><span class="p">);</span>
+    <span class="n">String</span> <span class="n">codeString</span> <span class="o">=</span> <span class="s">"a.test({\n"</span> <span class="o">+</span>
+            <span class="s">"  add: (a, b) =&gt; a + b,\n"</span> <span class="o">+</span>
+            <span class="s">"});"</span><span class="p">;</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="n">codeString</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+    <span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setDynamicObjectFactory</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Voilà aussi! It works again.</p>
@@ -682,7 +746,8 @@
 <li><a class="reference internal" href="#static-enum">Static: Enum</a></li>
 <li><a class="reference internal" href="#static-interface">Static: Interface</a></li>
 <li><a class="reference internal" href="#dynamic-anonymous-function">Dynamic: Anonymous Function</a></li>
-<li><a class="reference internal" href="#dynamic-anonymous-object">Dynamic: Anonymous Object</a></li>
+<li><a class="reference internal" href="#dynamic-anonymous-object-for-interface">Dynamic: Anonymous Object for Interface</a></li>
+<li><a class="reference internal" href="#dynamic-anonymous-object-for-class">Dynamic: Anonymous Object for Class</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#features">Features</a><ul>

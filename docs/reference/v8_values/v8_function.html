@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="V8 Promise" href="v8_promise.html" /><link rel="prev" title="V8 Collection" href="v8_collection.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>V8 Function - Javet 2.0.0 documentation</title>
+        <title>V8 Function - Javet 2.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 2.0.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 2.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.0.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -863,6 +863,54 @@
 </div>
 </div>
 </div>
+<div class="section" id="context-and-scope-info">
+<h2>Context and Scope Info<a class="headerlink" href="#context-and-scope-info" title="Permalink to this headline">¶</a></h2>
+<p>Below is the quote from the V8 source code for the context and scope info. Javet allows <code class="docutils literal notranslate"><span class="pre">getContext()</span></code>, <code class="docutils literal notranslate"><span class="pre">setContext()</span></code> and <code class="docutils literal notranslate"><span class="pre">copyScopeInfoFrom()</span></code> to borrow the context and scope info from another function. This simulates the live editing in the debug mode. Please note that <code class="docutils literal notranslate"><span class="pre">setScriptSource()</span></code> is required if the lexical context is different, otherwise a compilation error will be thrown.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>JSFunctions are pairs (context, function code), sometimes also called
+closures. A Context object is used to represent function contexts and
+dynamically pushed 'with' contexts (or 'scopes' in ECMA-262 speak).</p>
+<p>At runtime, the contexts build a stack in parallel to the execution
+stack, with the top-most context being the current context. All contexts
+have the following slots:</p>
+<dl class="simple">
+<dt>[ scope_info     ]  This is the scope info describing the current context. It</dt><dd><p>contains the names of statically allocated context slots,
+and stack-allocated locals.  The names are needed for
+dynamic lookups in the presence of 'with' or 'eval', and
+for the debugger.</p>
+</dd>
+</dl>
+<p>[ previous       ]  A pointer to the previous context.</p>
+<dl>
+<dt>[ extension      ]  Additional data. This slot is only available when</dt><dd><p>ScopeInfo::HasContextExtensionSlot returns true.</p>
+<p>For native contexts, it contains the global object.
+For module contexts, it contains the module object.
+For await contexts, it contains the generator object.
+For var block contexts, it may contain an "extension
+object".
+For with contexts, it contains an "extension object".</p>
+<p>An "extension object" is used to dynamically extend a
+context with additional variables, namely in the
+implementation of the 'with' construct and the 'eval'
+construct.  For instance, Context::Lookup also searches
+the extension object for properties.  (Storing the
+extension object is the original purpose of this context
+slot, hence the name.)</p>
+</dd>
+</dl>
+<p>In addition, function contexts with sloppy eval may have statically
+allocated context slots to store local variables/functions that are accessed
+from inner functions (via static context addresses) or through 'eval'
+(dynamic context lookups).
+The native context contains additional slots for fast access to native
+properties.</p>
+<p>Finally, with Harmony scoping, the JSFunction representing a top level
+script will have the ScriptContext rather than a FunctionContext.
+Script contexts from all top-level scripts are gathered in
+ScriptContextTable.</p>
+</div>
+</div>
 <div class="section" id="tips">
 <h2>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="how-to-avoid-argument-type-mismatches">
@@ -987,6 +1035,7 @@
 <li><a class="reference internal" href="#how-about-bind">How about Bind?</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#context-and-scope-info">Context and Scope Info</a></li>
 <li><a class="reference internal" href="#tips">Tips</a><ul>
 <li><a class="reference internal" href="#how-to-avoid-argument-type-mismatches">How to Avoid Argument Type Mismatches?</a></li>
 <li><a class="reference internal" href="#how-to-handle-argument-count-mismatches">How to Handle Argument Count Mismatches?</a></li>

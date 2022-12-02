@@ -32,17 +32,17 @@ import java.util.Map;
  * @since 0.7.0
  */
 public final class JavetScriptingError {
+    private final int endColumn;
+    private final int endPosition;
+    private final int lineNumber;
+    private final String resourceName;
+    private final String sourceLine;
+    private final int startColumn;
+    private final int startPosition;
     private Map<String, Object> context;
     private String detailedMessage;
-    private int endColumn;
-    private int endPosition;
-    private int lineNumber;
     private String message;
-    private String resourceName;
-    private String sourceLine;
     private String stack;
-    private int startColumn;
-    private int startPosition;
 
     /**
      * Instantiates a new Javet scripting error.

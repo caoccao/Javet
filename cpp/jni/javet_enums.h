@@ -20,6 +20,7 @@
 #define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
 #define IS_V8_ARRAY_BUFFER(type) (type == Javet::Enums::V8ValueReferenceType::ArrayBuffer)
 #define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
+#define IS_V8_CONTEXT(type) (type == Javet::Enums::V8ValueReferenceType::Context)
 #define IS_V8_FUNCTION(type) (type == Javet::Enums::V8ValueReferenceType::Function)
 #define IS_V8_MAP(type) (type == Javet::Enums::V8ValueReferenceType::Map)
 #define IS_V8_MODULE(type) (type == Javet::Enums::V8ValueReferenceType::Module)
@@ -37,6 +38,21 @@ namespace Javet {
             enum NodeScriptMode {
                 String = 0,
                 File = 1,
+            };
+        };
+
+        namespace V8ContextType {
+            enum V8ContextType {
+                Await = 0,
+                Block = 1,
+                Catch = 2,
+                DebugEvaluate = 3,
+                Declaration = 4,
+                Eval = 5,
+                Function = 6,
+                Module = 7,
+                Script = 8,
+                With = 9,
             };
         };
 
@@ -119,6 +135,7 @@ namespace Javet {
                 WeakSet = 15,
                 Script = 20,
                 Module = 21,
+                Context = 22,
                 DataView = 30,
                 ArrayBuffer = 31,
                 SharedArrayBuffer = 32,

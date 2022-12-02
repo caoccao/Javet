@@ -21,6 +21,8 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -146,6 +148,24 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
                     "[[\"x\",[[\"a\",\"1\"]]]]",
                     v8Runtime.getExecutor(
                             "JSON.stringify(o, (key, value) => value instanceof Map ? [...value] : value);").executeString());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testToClone(boolean referenceCopy) throws JavetException {
+        try (V8ValueMap v8ValueMap = v8Runtime.getExecutor("const o = new Map(); o;").execute()) {
+            assertTrue(v8ValueMap.set("a", "1"));
+            assertEquals("1", v8ValueMap.getString("a"));
+            try (V8ValueMap clonedV8ValueMap = v8ValueMap.toClone(referenceCopy)) {
+                assertEquals("1", clonedV8ValueMap.getString("a"));
+                assertNotEquals(v8ValueMap.getHandle(), clonedV8ValueMap.getHandle());
+                assertTrue(clonedV8ValueMap.strictEquals(v8ValueMap));
+                assertTrue(clonedV8ValueMap.set("a", "2"));
+                assertEquals("2", clonedV8ValueMap.getString("a"));
+                assertEquals("2", v8ValueMap.getString("a"));
+                assertEquals(v8Runtime, clonedV8ValueMap.getV8Runtime());
+            }
         }
     }
 }

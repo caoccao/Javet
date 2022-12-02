@@ -24,11 +24,29 @@ import com.caoccao.javet.values.V8Value;
 
 import java.util.Objects;
 
+/**
+ * The type V8 module.
+ *
+ * @since 0.8.0
+ */
 @SuppressWarnings("unchecked")
 public class V8Module extends V8ValueReference implements IV8Module {
+    /**
+     * The Resource name.
+     *
+     * @since 0.8.0
+     */
     protected String resourceName;
 
-    public V8Module(V8Runtime v8Runtime, long handle) throws JavetException {
+    /**
+     * Instantiates a new V8 module.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
+    V8Module(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
         resourceName = null;
     }
@@ -53,12 +71,14 @@ public class V8Module extends V8ValueReference implements IV8Module {
      *
      * @return the namespace
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     @CheckReturnValue
     public V8ValueObject getNamespace() throws JavetException {
         return checkV8Runtime().getV8Internal().moduleGetNamespace(this);
     }
 
+    @Override
     public String getResourceName() {
         return resourceName;
     }
@@ -83,14 +103,14 @@ public class V8Module extends V8ValueReference implements IV8Module {
         return checkV8Runtime().getV8Internal().moduleInstantiate(this);
     }
 
+    @Override
     public void setResourceName(String resourceName) {
-        Objects.requireNonNull(resourceName);
-        this.resourceName = resourceName;
+        this.resourceName = Objects.requireNonNull(resourceName);
     }
 
     @Override
     @CheckReturnValue
-    public V8Module toClone() throws JavetException {
+    public V8Module toClone(boolean referenceCopy) throws JavetException {
         return this;
     }
 

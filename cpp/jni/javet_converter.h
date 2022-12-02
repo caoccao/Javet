@@ -23,6 +23,7 @@
 #include "javet_monitor.h"
 #include "javet_native.h"
 #include "javet_v8.h"
+#include "javet_v8_internal.h"
 #include "javet_v8_runtime.h"
 
 namespace Javet {
@@ -72,6 +73,10 @@ namespace Javet {
         static jmethodID jmethodIDV8ValueZonedDateTimeToPrimitive;
 
         // Reference
+
+        static jclass jclassV8Context;
+        static jmethodID jmethodIDV8ContextConstructor;
+        static jmethodID jmethodIDV8ContextGetHandle;
 
         static jclass jclassV8Module;
         static jmethodID jmethodIDV8ModuleConstructor;
@@ -200,11 +205,15 @@ namespace Javet {
             return std::make_unique<std::string>(*v8StringUtf8Value, v8StringUtf8Value.length());
         }
 
+        jobject ToExternalV8Context(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalContext& v8ContextValue);
+
         jobject ToExternalV8Module(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalModule& v8Module);
 
         jobject ToExternalV8Script(JNIEnv* jniEnv, jobject externalV8Runtime, const V8LocalContext& v8Context, const V8LocalScript& v8Script);
 
-        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue v8Value);
+        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8InternalObject& v8InternalObject);
+
+        jobject ToExternalV8Value(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8Value);
 
         jobject ToExternalV8ValueArray(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args);
 
@@ -227,26 +236,28 @@ namespace Javet {
 
         jobject ToJavetScriptingError(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
 
-        V8LocalBigInt ToV8BigInt(JNIEnv* jniEnv, const V8LocalContext& v8Context, jint& mSignum, jlongArray& mLongArray);
+        V8LocalBigInt ToV8BigInt(JNIEnv* jniEnv, const V8LocalContext& v8Context, jint mSignum, const jlongArray& mLongArray);
 
-        static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, jboolean& mBoolean) {
-            return v8::Boolean::New(v8Context->GetIsolate(), mBoolean);
+        static inline V8LocalBoolean ToV8Boolean(const V8LocalContext& v8Context, bool boolValue) {
+            return v8::Boolean::New(v8Context->GetIsolate(), boolValue);
         }
 
-        static inline V8LocalValue ToV8Date(const V8LocalContext& v8Context, jlong& mLong) {
-            return v8::Date::New(v8Context, (double)mLong).ToLocalChecked();
+        V8LocalContext ToV8Context(JNIEnv* jniEnv, const V8LocalContext& v8Context, const jobject& obj);
+
+        static inline V8LocalValue ToV8Date(const V8LocalContext& v8Context, jlong longValue) {
+            return v8::Date::New(v8Context, (double)longValue).ToLocalChecked();
         }
 
-        static inline V8LocalNumber ToV8Double(const V8LocalContext& v8Context, jdouble& mDouble) {
-            return v8::Number::New(v8Context->GetIsolate(), mDouble);
+        static inline V8LocalNumber ToV8Double(const V8LocalContext& v8Context, double doubleValue) {
+            return v8::Number::New(v8Context->GetIsolate(), doubleValue);
         }
 
-        static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, jint& mInteger) {
-            return v8::Integer::New(v8Context->GetIsolate(), mInteger);
+        static inline V8LocalInteger ToV8Integer(const V8LocalContext& v8Context, int intValue) {
+            return v8::Integer::New(v8Context->GetIsolate(), intValue);
         }
 
-        static inline V8LocalBigInt ToV8Long(const V8LocalContext& v8Context, jlong& mLong) {
-            return v8::BigInt::New(v8Context->GetIsolate(), mLong);
+        static inline V8LocalBigInt ToV8Long(const V8LocalContext& v8Context, jlong longValue) {
+            return v8::BigInt::New(v8Context->GetIsolate(), longValue);
         }
 
         static inline V8LocalPrimitive ToV8Null(const V8LocalContext& v8Context) {
@@ -283,5 +294,17 @@ namespace Javet {
         V8LocalValue ToV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj);
 
         std::unique_ptr<V8LocalValue[]> ToV8Values(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mValues);
+
+        static inline V8InternalContext ToV8InternalContext(const V8LocalContext& v8LocalContext) {
+            return V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
+        }
+
+        static inline V8InternalJSFunction ToV8InternalJSFunction(const V8LocalValue& v8LocalValue) {
+            return V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+        }
+
+        static inline V8InternalScript ToV8InternalScript(const V8LocalScript& v8LocalScript) {
+            return V8InternalScript::cast(*v8::Utils::OpenHandle(*v8LocalScript));
+        }
     }
 }

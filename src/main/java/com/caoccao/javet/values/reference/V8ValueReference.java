@@ -137,8 +137,8 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
 
     @Override
     @CheckReturnValue
-    public <T extends V8Value> T toClone() throws JavetException {
-        return checkV8Runtime().getV8Internal().cloneV8Value(this);
+    public <T extends V8Value> T toClone(boolean referenceCopy) throws JavetException {
+        return checkV8Runtime().getV8Internal().cloneV8Value(this, referenceCopy);
     }
 
     @Override

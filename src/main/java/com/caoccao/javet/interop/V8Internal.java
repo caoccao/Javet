@@ -28,7 +28,7 @@ import com.caoccao.javet.values.reference.*;
 import java.util.Objects;
 
 public final class V8Internal {
-    private V8Runtime v8Runtime;
+    private final V8Runtime v8Runtime;
 
     V8Internal(V8Runtime v8Runtime) {
         this.v8Runtime = Objects.requireNonNull(v8Runtime);
@@ -55,14 +55,32 @@ public final class V8Internal {
         return v8Runtime.callAsConstructor(iV8ValueObject, v8Values);
     }
 
-    @SuppressWarnings("RedundantThrows")
     public void clearWeak(IV8ValueReference iV8ValueReference) throws JavetException {
         v8Runtime.clearWeak(iV8ValueReference);
     }
 
     @CheckReturnValue
-    public <T extends V8Value> T cloneV8Value(IV8ValueReference iV8ValueReference) throws JavetException {
-        return v8Runtime.cloneV8Value(iV8ValueReference);
+    public <T extends V8Value> T cloneV8Value(
+            IV8ValueReference iV8ValueReference, boolean referenceCopy)
+            throws JavetException {
+        return v8Runtime.cloneV8Value(iV8ValueReference, referenceCopy);
+    }
+
+    @CheckReturnValue
+    public <T extends V8Value> T contextGet(IV8Context iV8Context, int index) throws JavetException {
+        return v8Runtime.contextGet(iV8Context, index);
+    }
+
+    public int contextGetLength(IV8Context iV8Context) throws JavetException {
+        return v8Runtime.contextGetLength(iV8Context);
+    }
+
+    public boolean contextIsContextType(IV8Context iV8Context, int contextTypeId) throws JavetException {
+        return v8Runtime.contextIsContextType(iV8Context, contextTypeId);
+    }
+
+    public boolean contextSetLength(IV8Context iV8Context, int length) throws JavetException {
+        return v8Runtime.contextSetLength(iV8Context, length);
     }
 
     public boolean delete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
@@ -78,12 +96,67 @@ public final class V8Internal {
         return v8Runtime.equals(iV8ValueReference1, iV8ValueReference2);
     }
 
+    public boolean functionCanDiscardCompiled(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionCanDiscardCompiled(iV8ValueFunction);
+    }
+
+    public boolean functionCopyScopeInfoFrom(
+            IV8ValueFunction targetIV8ValueFunction,
+            IV8ValueFunction sourceIV8ValueFunction) throws JavetException {
+        return v8Runtime.functionCopyScopeInfoFrom(targetIV8ValueFunction, sourceIV8ValueFunction);
+    }
+
+    public boolean functionDiscardCompiled(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionDiscardCompiled(iV8ValueFunction);
+    }
+
+    @CheckReturnValue
+    public V8Context functionGetContext(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.functionGetContext(iV8ValueFunction);
+    }
+
+    @CheckReturnValue
+    public IV8ValueArray functionGetScopeInfos(
+            IV8ValueFunction iV8ValueFunction,
+            IV8ValueFunction.GetScopeInfosOptions options)
+            throws JavetException {
+        return v8Runtime.functionGetScopeInfos(iV8ValueFunction, options);
+    }
+
+    public IV8ValueFunction.ScriptSource functionGetScriptSource(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.functionGetScriptSource(iV8ValueFunction);
+    }
+
+    public String functionGetSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.functionGetSourceCode(iV8ValueFunction);
+    }
+
+    public boolean functionIsCompiled(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionIsCompiled(iV8ValueFunction);
+    }
+
+    public boolean functionSetContext(
+            IV8ValueFunction iV8ValueFunction, V8Context v8Context) throws JavetException {
+        return v8Runtime.functionSetContext(iV8ValueFunction, v8Context);
+    }
+
+    public boolean functionSetScriptSource(
+            IV8ValueFunction iV8ValueFunction, IV8ValueFunction.ScriptSource scriptSource, boolean cloneScript)
+            throws JavetException {
+        return v8Runtime.functionSetScriptSource(iV8ValueFunction, scriptSource, cloneScript);
+    }
+
+    public boolean functionSetSourceCode(
+            IV8ValueFunction iV8ValueFunction, String sourceCode, boolean cloneScript)
+            throws JavetException {
+        return v8Runtime.functionSetSourceCode(iV8ValueFunction, sourceCode, cloneScript);
+    }
+
     @CheckReturnValue
     public <T extends V8Value> T get(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return v8Runtime.get(iV8ValueObject, key);
     }
 
-    @SuppressWarnings("RedundantThrows")
     public int getIdentityHash(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Runtime.getIdentityHash(iV8ValueReference);
     }
@@ -140,11 +213,6 @@ public final class V8Internal {
         return v8Runtime.getSize(iV8ValueKeyContainer);
     }
 
-    @SuppressWarnings("RedundantThrows")
-    public String getSourceCode(IV8ValueFunction iV8ValueFunction) throws JavetException {
-        return v8Runtime.getSourceCode(iV8ValueFunction);
-    }
-
     public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
         return v8Runtime.has(iV8ValueObject, value);
     }
@@ -188,17 +256,14 @@ public final class V8Internal {
         return v8Runtime.moduleGetNamespace(iV8Module);
     }
 
-    @SuppressWarnings("RedundantThrows")
     public int moduleGetScriptId(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleGetScriptId(iV8Module);
     }
 
-    @SuppressWarnings("RedundantThrows")
     public int moduleGetStatus(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleGetStatus(iV8Module);
     }
 
-    @SuppressWarnings("RedundantThrows")
     public boolean moduleInstantiate(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleInstantiate(iV8Module);
     }
@@ -278,7 +343,6 @@ public final class V8Internal {
         return v8Runtime.set(iV8ValueObject, key, value);
     }
 
-    @SuppressWarnings("RedundantThrows")
     public boolean setAccessor(
             IV8ValueObject iV8ValueObject,
             V8Value propertyName,
@@ -300,11 +364,6 @@ public final class V8Internal {
     public boolean setPrototype(
             IV8ValueObject iV8ValueObject, IV8ValueObject iV8ValueObjectPrototype) throws JavetException {
         return v8Runtime.setPrototype(iV8ValueObject, iV8ValueObjectPrototype);
-    }
-
-    @SuppressWarnings("RedundantThrows")
-    public boolean setSourceCode(IV8ValueFunction iV8ValueFunction, String sourceCode) throws JavetException {
-        return v8Runtime.setSourceCode(iV8ValueFunction, sourceCode);
     }
 
     public void setWeak(IV8ValueReference iV8ValueReference) {

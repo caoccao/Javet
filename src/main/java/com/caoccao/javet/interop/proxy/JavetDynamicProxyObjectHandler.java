@@ -36,13 +36,13 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 /**
- * The type Javet universal proxy object handler.
+ * The type Javet dynamic proxy object handler.
  *
  * @param <T> the type parameter
  * @since 0.9.6
  */
 @SuppressWarnings("unchecked")
-public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T> {
+public class JavetDynamicProxyObjectHandler<T> extends BaseJavetProxyHandler<T> {
 
     /**
      * The constant FUNCTION_NAME_LENGTH.
@@ -58,14 +58,18 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
     protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
-     * Instantiates a new Javet universal proxy object handler.
+     * Instantiates a new Javet dynamic proxy object handler.
      *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
+     * @param v8Runtime            the V8 runtime
+     * @param dynamicObjectFactory the dynamic object factory
+     * @param targetObject         the target object
      * @since 0.9.6
      */
-    public JavetUniversalProxyObjectHandler(V8Runtime v8Runtime, T targetObject) {
-        super(v8Runtime, Objects.requireNonNull(targetObject));
+    public JavetDynamicProxyObjectHandler(
+            V8Runtime v8Runtime,
+            IJavetDynamicObjectFactory dynamicObjectFactory,
+            T targetObject) {
+        super(v8Runtime, dynamicObjectFactory, Objects.requireNonNull(targetObject));
     }
 
     @V8Function
@@ -151,7 +155,7 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
      * Has from collection.
      *
      * @param property the property
-     * @return true: has, false: not has
+     * @return true : has, false: not has
      * @throws JavetException the javet exception
      */
     protected boolean hasFromCollection(V8Value property) throws JavetException {
@@ -283,7 +287,7 @@ public class JavetUniversalProxyObjectHandler<T> extends BaseJavetProxyHandler<T
      *
      * @param propertyKey   the property key
      * @param propertyValue the property value
-     * @return true: set, false: not set
+     * @return true : set, false: not set
      * @throws JavetException the javet exception
      */
     protected boolean setToCollection(V8Value propertyKey, V8Value propertyValue) throws JavetException {
