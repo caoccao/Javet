@@ -1,0 +1,50 @@
+name: Linux Build (2/3) Dev Image
+
+concurrency:
+  group: linux_build_dev
+  cancel-in-progress: true
+
+# we need to provide some value for tags, else GH runs the workflow on every push to any branch, even if not tagged
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/**'
+      - 'docker/**'
+      - 'scripts/python/**'
+      - 'scripts/shell/**'
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
+  JAVET_NODE_VERSION: 18.12.1
+  JAVET_V8_VERSION: 10.8.168.20
+  JAVET_VERSION: 2.0.3
+
+jobs:
+  publish_dev_image:
+    name: Publish Dev Image with Gradle Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Build Dev Image with Gradle Dependencies
+        run: |
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
+          export BASE_NODE_V8_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node_${{ env.JAVET_NODE_VERSION }}-v8_${{ env.JAVET_V8_VERSION }}
+          docker build \
+            -t ${BASE_IMAGE_TAG} \
+            --build-arg BASE_NODE_V8_IMAGE_TAG=${BASE_NODE_V8_IMAGE_TAG} \
+            -f docker/linux-x86_64/base_gradle.Dockerfile .
+
+      - name: Publish Dev Image with Gradle Dependencies
+        run: |
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
+          docker push ${BASE_IMAGE_TAG}
