@@ -41,6 +41,37 @@ class ChangeJavetVersion(object):
       'build.gradle.kts', '\n',
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
+      '.github/workflows/linux_build_dev_image.yml', '\n',
+      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      '.github/workflows/linux_build_artifact.yml', '\n',
+      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      'docker/android/base.Dockerfile', '\n',
+      re.compile(r'javet-android:(?P<version>\d+\.\d+\.\d+) '))
+    self._update(
+      'docker/android/build.Dockerfile', '\n',
+      re.compile(r'javet-android:(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      'docker/linux-x86_64/artifact.Dockerfile', '\n',
+      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+) '),
+      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      'docker/linux-x86_64/base.Dockerfile', '\n',
+      re.compile(r'javet:(?P<version>\d+\.\d+\.\d+) '))
+    self._update(
+      'docker/linux-x86_64/build.Dockerfile', '\n',
+      re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      'docker/linux-x86_64/gradle.Dockerfile', '\n',
+      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+) '))
+    self._update(
+      'docker/windows-x86_64/base.Dockerfile', '\n',
+      re.compile(r'javet-windows:(?P<version>\d+\.\d+\.\d+) '))
+    self._update(
+      'docker/windows-x86_64/build.Dockerfile', '\n',
+      re.compile(r'javet-windows:(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
       'android/javet-android/build.gradle.kts', '\n',
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(

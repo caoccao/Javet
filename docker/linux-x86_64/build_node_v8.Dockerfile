@@ -14,20 +14,21 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t sjtucaocao/javet:x86_64-v8-10.7.193.16_node-18.12.0 \
+#  -t sjtucaocao/javet:x86_64-v8-10.8.168.20_node-18.12.1 \
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
-#  -f docker/linux-x86_64/base-node.Dockerfile .
+#  -f docker/linux-x86_64/base_node.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
-ARG JAVET_V8_VERSION=10.7.193.16
-ARG JAVET_NODE_VERSION=18.12.0
-FROM ${JAVET_REPO}:x86_64-base-v8-$JAVET_V8_VERSION as base-v8
+ARG JAVET_NODE_VERSION=18.12.1
+ARG JAVET_V8_VERSION=10.8.168.20
+
+FROM ${JAVET_REPO}:x86_64-base-v8-${JAVET_V8_VERSION} as base-v8
 
 # the ARG JAVET_NODE_VERSION needs to be declared twice due to how Dockerfile treats ARG and FROM
 # Reference - https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
 ARG JAVET_REPO
 ARG JAVET_NODE_VERSION
-FROM ${JAVET_REPO}:x86_64-base-node-$JAVET_NODE_VERSION as base-node
+FROM ${JAVET_REPO}:x86_64-base-node-${JAVET_NODE_VERSION} as base-node
 
 # we could base the final image off the `base-v8` image, that would save us time copying the /google folder
 # however, the resulting image is almost 1GB bigger than using base-jvm as the base

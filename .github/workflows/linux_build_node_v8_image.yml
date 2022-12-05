@@ -18,8 +18,8 @@ on:
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
-  JAVET_V8_VERSION: 10.7.193.16
-  JAVET_NODE_VERSION: 18.12.0
+  JAVET_NODE_VERSION: 18.12.1
+  JAVET_V8_VERSION: 10.8.168.20
 
 # if we skip a job using a job level `if` condition, then any dependent jobs also don't run.
 # we can skip a step of the job, using a step level `if` condition.
@@ -53,7 +53,7 @@ jobs:
           echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
           docker build \
             -t ${{ env.IMAGE_TAG }} \
-            -f docker/linux-x86_64/base-jvm.Dockerfile .
+            -f docker/linux-x86_64/base_jvm.Dockerfile .
 
       - name: Publish the docker image
         if: inputs.skip_base_jvm == false
@@ -89,7 +89,7 @@ jobs:
             -t ${{ env.IMAGE_TAG }} \
             --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
-            -f docker/linux-x86_64/base-v8.Dockerfile .
+            -f docker/linux-x86_64/base_v8.Dockerfile .
 
       - name: Publish the docker image
         if: inputs.skip_base_v8 == false
@@ -125,7 +125,7 @@ jobs:
             -t ${{ env.IMAGE_TAG }} \
             --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
-            -f docker/linux-x86_64/base-node.Dockerfile .
+            -f docker/linux-x86_64/base_node.Dockerfile .
 
       - name: Publish the docker image
         if: inputs.skip_base_node == false
@@ -158,7 +158,7 @@ jobs:
             --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
             --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
-            -f docker/linux-x86_64/v8_node.Dockerfile .
+            -f docker/linux-x86_64/build_node_v8.Dockerfile .
 
       - name: Publish the docker image
         run: |
