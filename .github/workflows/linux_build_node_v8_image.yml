@@ -11,15 +11,11 @@ on:
       skip_base_node:
         default: false
         type: boolean
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    paths-ignore:
-      - '**.rst'
-      - 'docs/**'
   push:
-    paths-ignore:
-      - '**.rst'
-      - 'docs/**'
+    paths:
+      - '.github/workflows/**'
+      - 'docker/**'
+      - 'scripts/shell/**'
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}

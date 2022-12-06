@@ -7,15 +7,11 @@ concurrency:
 # we need to provide some value for tags, else GH runs the workflow on every push to any branch, even if not tagged
 on:
   workflow_dispatch:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    paths-ignore:
-      - '**.rst'
-      - 'docs/**'
   push:
-    paths-ignore:
-      - '**.rst'
-      - 'docs/**'
+    paths:
+      - '.github/workflows/**'
+      - 'docker/**'
+      - 'scripts/shell/**'
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -40,16 +36,16 @@ jobs:
 
       - name: Build docker image
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
           export JAVET_NODE_V8_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-v8-${{ env.JAVET_V8_VERSION }}_node-${{ env.JAVET_NODE_VERSION }}
-          echo 'IMAGE_TAG is ${IMAGE_TAG}'
+          echo 'BASE_IMAGE_TAG is ${BASE_IMAGE_TAG}'
           echo 'JAVET_NODE_V8_IMAGE_TAG is ${JAVET_NODE_V8_IMAGE_TAG}'
           docker build \
-            -t ${IMAGE_TAG} \
+            -t ${BASE_IMAGE_TAG} \
             --build-arg JAVET_NODE_V8_IMAGE_TAG=${JAVET_NODE_V8_IMAGE_TAG} \
             -f docker/linux-x86_64/gradle.Dockerfile .
 
       - name: Publish the docker image
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
-          docker push ${IMAGE_TAG}
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
+          docker push ${BASE_IMAGE_TAG}
