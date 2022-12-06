@@ -7,6 +7,15 @@ concurrency:
 # we need to provide some value for tags, else GH runs the workflow on every push to any branch, even if not tagged
 on:
   workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - '**.rst'
+      - 'docs/**'
+  push:
+    paths-ignore:
+      - '**.rst'
+      - 'docs/**'
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
