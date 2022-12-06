@@ -42,7 +42,7 @@ class ChangeJavetVersion(object):
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
       '.github/workflows/linux_build_dev_image.yml', '\n',
-      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+)$'))
+      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       '.github/workflows/linux_build_artifact.yml', '\n',
       re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+)$'))

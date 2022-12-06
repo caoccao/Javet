@@ -18,20 +18,13 @@ env:
   DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
   JAVET_NODE_VERSION: 18.12.1
   JAVET_V8_VERSION: 10.8.168.20
-  JAVET_VERSION: x86_64-2.0.2
+  JAVET_VERSION: 2.0.2
 
 jobs:
   publish_v8_node:
     name: Dev image with Gradle deps - Publish container image with V8, Node.js and Gradle dependencies
     runs-on: ubuntu-latest
-    env:
-      JAVET_NODE_V8_IMAGE_VERSION: x86_64-v8-${{ JAVET_V8_VERSION }}_node-${{ JAVET_NODE_VERSION }}
     steps:
-      - name: Set the IMAGE_TAG, JAVET_NODE_V8_IMAGE_TAG environment variable
-        run: |
-          echo 'IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_VERSION }}' >> $GITHUB_ENV
-          echo 'JAVET_NODE_V8_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:${{ env.JAVET_NODE_V8_IMAGE_VERSION }}' >> $GITHUB_ENV
-
       - name: Login to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
@@ -43,12 +36,16 @@ jobs:
 
       - name: Build docker image
         run: |
-          echo 'IMAGE_TAG is ${{ env.IMAGE_TAG }}'
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
+          export JAVET_NODE_V8_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-v8-${{ JAVET_V8_VERSION }}_node-${{ JAVET_NODE_VERSION }}
+          echo 'BASE_IMAGE_TAG is ${BASE_IMAGE_TAG}'
+          echo 'JAVET_NODE_V8_IMAGE_TAG is ${JAVET_NODE_V8_IMAGE_TAG}'
           docker build \
-            -t ${{ env.IMAGE_TAG }} \
-            --build-arg JAVET_NODE_V8_IMAGE_TAG=${{ env.JAVET_NODE_V8_IMAGE_TAG }} \
+            -t ${BASE_IMAGE_TAG} \
+            --build-arg JAVET_NODE_V8_IMAGE_TAG=${JAVET_NODE_V8_IMAGE_TAG} \
             -f docker/linux-x86_64/gradle.Dockerfile .
 
       - name: Publish the docker image
         run: |
-          docker push ${{ env.IMAGE_TAG }}
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
+          docker push ${BASE_IMAGE_TAG}

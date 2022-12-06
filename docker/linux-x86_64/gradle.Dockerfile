@@ -19,7 +19,8 @@
 #  -f docker/linux-x86_64/gradle.Dockerfile .
 
 ARG JAVET_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-v8-10.8.168.20_node-18.12.1
-FROM $JAVET_NODE_V8_IMAGE_TAG
+
+FROM ${JAVET_NODE_V8_IMAGE_TAG}
 
 WORKDIR /Javet
 COPY . .
