@@ -41,11 +41,11 @@ class ChangeJavetVersion(object):
       'build.gradle.kts', '\n',
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
-      '.github/workflows/linux_build_dev_image.yml', '\n',
+      '.github/workflows/linux_build_artifact.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      '.github/workflows/linux_build_artifact.yml', '\n',
-      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+)$'))
+      '.github/workflows/linux_build_dev_image.yml', '\n',
+      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'docker/android/base.Dockerfile', '\n',
       re.compile(r'javet-android:(?P<version>\d+\.\d+\.\d+) '))
