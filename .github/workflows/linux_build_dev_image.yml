@@ -18,13 +18,14 @@ env:
   DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
   JAVET_NODE_VERSION: 18.12.1
   JAVET_V8_VERSION: 10.8.168.20
-  JAVET_NODE_V8_IMAGE_VERSION: x86_64-v8-${{ JAVET_V8_VERSION }}_node-${{ JAVET_NODE_VERSION }}
   JAVET_VERSION: x86_64-2.0.2
 
 jobs:
   publish_v8_node:
     name: Dev image with Gradle deps - Publish container image with V8, Node.js and Gradle dependencies
     runs-on: ubuntu-latest
+    env:
+      JAVET_NODE_V8_IMAGE_VERSION: x86_64-v8-${{ JAVET_V8_VERSION }}_node-${{ JAVET_NODE_VERSION }}
     steps:
       - name: Set the IMAGE_TAG, JAVET_NODE_V8_IMAGE_TAG environment variable
         run: |

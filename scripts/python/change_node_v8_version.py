@@ -86,8 +86,7 @@ class ChangeNodeVersion(ChangeVersion):
     self._update(
       'docker/linux-x86_64/base_node.Dockerfile', '\n',
       re.compile(r'node-(?P<version>\d+\.\d+\.\d+) '),
-      re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+) '),
-      re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
+      re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)'))
     self._update(
       'docker/linux-x86_64/build_node_v8.Dockerfile', '\n',
       re.compile(r'node-(?P<version>\d+\.\d+\.\d+)'),
@@ -98,6 +97,9 @@ class ChangeNodeVersion(ChangeVersion):
     self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      'src/test/java/com/caoccao/javet/interop/TestNodeRuntime.java', '\n',
+      re.compile(r'"v(?P<version>\d+\.\d+\.\d+)",'))
 
 class ChangeV8Version(ChangeVersion):
 
@@ -123,8 +125,7 @@ class ChangeV8Version(ChangeVersion):
     self._update(
       'docker/linux-x86_64/base_v8.Dockerfile', '\n',
       re.compile(r'v8-(?P<version>\d+\.\d+\.\d+\.\d+) '),
-      re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+) '),
-      re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
+      re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)'))
     self._update(
       'docker/linux-x86_64/build_node_v8.Dockerfile', '\n',
       re.compile(r'v8-(?P<version>\d+\.\d+\.\d+\.\d+)'),
@@ -135,6 +136,9 @@ class ChangeV8Version(ChangeVersion):
     self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
+    self._update(
+      'src/main/java/com/caoccao/javet/enums/JSRuntimeType.java', '\n',
+      re.compile(r'"(?P<version>\d+\.\d+\.\d+\.\d+)",'))
 
 def main():
   change_node_version = ChangeNodeVersion('18.12.1')
