@@ -24,6 +24,8 @@ ARG JAVET_V8_VERSION=10.8.168.20
 
 FROM ${JAVET_REPO}:x86_64-base-jvm-latest
 
+ARG JAVET_V8_VERSION
+
 RUN if [ -z "$JAVET_V8_VERSION" ]; then echo 'Build argument JAVET_V8_VERSION must be specified. Exiting.'; exit 1; fi
 
 # Prepare V8

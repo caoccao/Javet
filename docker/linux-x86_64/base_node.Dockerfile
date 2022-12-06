@@ -24,6 +24,8 @@ ARG JAVET_NODE_VERSION=18.12.1
 
 FROM ${JAVET_REPO}:x86_64-base-jvm-latest
 
+ARG JAVET_NODE_VERSION
+
 RUN if [ -z "$JAVET_NODE_VERSION" ]; then echo 'Build argument JAVET_NODE_VERSION must be specified. Exiting.'; exit 1; fi
 
 # Prepare Node.js v18
