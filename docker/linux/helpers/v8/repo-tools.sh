@@ -1,34 +1,37 @@
 #!/usr/bin/env sh
 
 fetch_depot_tools() {
-	maybe-verbose git clone --depth=10 \
+	git clone -q --depth=10 \
 		--branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
 	cd depot_tools
-	maybe-verbose git checkout remotes/origin/main
-	popd
+	git checkout -q remotes/origin/main
+	cd ..
 }
 
 fetch_v8_source() {
 	# reference - https://stackoverflow.com/a/47093174/30007
 	mkdir v8
 
-	cd v8
-	git init . &&
-		maybe-verbose git fetch https://chromium.googlesource.com/v8/v8.git +refs/tags/${JAVET_V8_VERSION}:v8_${JAVET_V8_VERSION} \
-			--depth 1
-	maybe-verbose git checkout tags/${JAVET_V8_VERSION}
-	cd ..
-
 	export PATH=$PWD/depot_tools:$PATH
 
-	maybe-verbose gclient root
-	gclient config --spec 'solutions = [{"name": "v8","url": "https://chromium.googlesource.com/v8/v8.git","deps_file": "DEPS","managed": False,"custom_deps": {},},]'
-	maybe-verbose gclient sync --no-history
-	maybe-verbose gclient runhooks
+	cd v8
+	git init .
+
+	git fetch -q --depth 1 https://chromium.googlesource.com/v8/v8.git \
+		+refs/tags/${JAVET_V8_VERSION}:v8_${JAVET_V8_VERSION}
+
+	git checkout -q tags/${JAVET_V8_VERSION}
+	cd ..
+
+	maybe-verbose.sh gclient root
+	local gclient_config='solutions = [{"name": "v8","url": "https://chromium.googlesource.com/v8/v8.git","deps_file": "DEPS","managed": False,"custom_deps": {},},]'
+	gclient config --spec "$gclient_config"
+	maybe-verbose.sh gclient sync --no-history
+	maybe-verbose.sh gclient runhooks
 
 	cd v8
 	sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
-	maybe-verbose ./build/install-build-deps.sh
+	maybe-verbose.sh ./build/install-build-deps.sh
 	sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
 	cd ..
 
@@ -38,10 +41,16 @@ fetch_v8_source() {
 run_final_sync() {
 	cp -r -f /google-temp /google
 
-	export PATH=$PWD/depot_tools:$PATH
-
 	cd google
-	maybe-verbose gclient sync --no-history
+
+	export PATH=$PWD/depot_tools:$PATH
+	chmod -R +x $PWD/depot_tools
+
+	if [ "${ANDROID}" = "android" ]; then
+		echo "\ntarget_os = ['android']" >>.gclient
+	fi
+
+	maybe-verbose.sh gclient sync --no-history
 	cd ..
 }
 
@@ -54,4 +63,19 @@ elif [ "$1" = "fetch_v8_source" ]; then
 elif [ "$1" = "run_final_sync" ]; then
 	shift
 	run_final_sync
+else
+	cat <<EOF
+	v8/repo-tools.sh [fetch_depot_tools|fetch_v8_source|run_final_sync]
+	USAGE:
+		v8/repo-tools.sh fetch_depot_tools
+			Clone the chromium project via Git
+
+		v8/repo-tools.sh fetch_v8_source
+			Git fetch the v8 codebase, run first GClient sync, and 
+			configure the project settings to control what parts get
+			"sync"ed in the next step
+
+		v8/repo-tools.sh run_final_sync
+			run final GClient sync with modified settings
+EOF
 fi

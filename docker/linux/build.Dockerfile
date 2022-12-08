@@ -13,9 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t javet:local -f docker/linux-x86_64/build.Dockerfile .
+# Usage: docker build \
+#	-t javet:local \
+#	--build-context gradle_javet_buildenv=docker/linux/base.Dockerfile \
+#	-f docker/linux/build.Dockerfile .
 
-FROM sjtucaocao/javet:2.0.2
+# OR for pulling from dockerhub instead of building v8 and Node from scratch
+
+# Usage: docker build \
+#	-t javet:local \
+#	--build-arg JAVET_GRADLE_IMAGE_TAG=sjtucaocao/javet \
+#	-f docker/linux/build.Dockerfile .
+
+ARG JAVET_GRADLE_IMAGE_TAG=gradle_javet_buildenv
+FROM $JAVET_GRADLE_IMAGE_TAG
 WORKDIR /
 
 # Copy Javet
