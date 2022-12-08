@@ -28,6 +28,7 @@ FROM ${JAVET_REPO}:x86_64-base-v8_${JAVET_V8_VERSION} as base-v8
 # Reference - https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
 ARG JAVET_REPO
 ARG JAVET_NODE_VERSION
+
 FROM ${JAVET_REPO}:x86_64-base-node_${JAVET_NODE_VERSION} as base-node
 
 # we could base the final image off the `base-v8` image, that would save us time copying the /google folder
