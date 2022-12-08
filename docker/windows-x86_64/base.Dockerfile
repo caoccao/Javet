@@ -31,6 +31,9 @@
 
 # Usage: docker build -t sjtucaocao/javet-windows:2.0.2 -m 4G -f docker/windows-x86_64/base.Dockerfile .
 
+ARG JAVET_NODE_VERSION=18.12.1
+ARG JAVET_V8_VERSION=10.8.168.20
+
 # https://hub.docker.com/_/microsoft-windows
 FROM mcr.microsoft.com/windows:20H2-amd64
 
@@ -64,7 +67,7 @@ ENV DEPOT_TOOLS_WIN_TOOLCHAIN=0
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 10.8.168.20
+RUN git checkout ${JAVET_V8_VERSION}
 WORKDIR /google
 RUN gclient sync
 RUN echo V8 preparation is completed.
@@ -107,7 +110,7 @@ RUN powershell -ExecutionPolicy Bypass -c "iex(New-Object Net.WebClient).Downloa
 RUN choco install -y nasm
 RUN git clone https://github.com/nodejs/node.git
 WORKDIR /node
-RUN git checkout v18.12.1
+RUN git checkout v${JAVET_NODE_VERSION}
 RUN echo Node.js preparation is completed.
 
 # Build Node.js
