@@ -13,9 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-android:2.0.2 -f docker/android/base.Dockerfile .
-
-ARG JAVET_V8_VERSION=10.8.168.20
+# Usage: docker build -t sjtucaocao/javet-android:2.0.0 -f docker/android/base.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
@@ -47,7 +45,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout ${JAVET_V8_VERSION}
+RUN git checkout 10.6.194.14
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
@@ -61,6 +59,8 @@ WORKDIR /
 RUN wget https://dl.google.com/android/repository/android-ndk-r23b-linux.zip
 RUN unzip android-ndk-r23b-linux.zip
 RUN rm android-ndk-r23b-linux.zip
+
+# Prepare Android SDK
 WORKDIR /google/v8/third_party/android_sdk/public/cmdline-tools/latest/bin
 RUN yes | ./sdkmanager --licenses
 RUN ./sdkmanager "build-tools;30.0.2" "platforms;android-30"
