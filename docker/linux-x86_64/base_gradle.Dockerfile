@@ -15,12 +15,12 @@
 
 # Usage: docker build \
 #  -t sjtucaocao/javet:x86_64-2.0.2 \
-#  --build-arg JAVET_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-node_18.12.1-v8_10.8.168.20 \
+#  --build-arg BASE_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-base-node_18.12.1-v8_10.8.168.20 \
 #  -f docker/linux-x86_64/base_gradle.Dockerfile .
 
-ARG JAVET_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-node_18.12.1-v8_10.8.168.20
+ARG BASE_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-base-node_18.12.1-v8_10.8.168.20
 
-FROM ${JAVET_NODE_V8_IMAGE_TAG}
+FROM ${BASE_NODE_V8_IMAGE_TAG}
 
 WORKDIR /Javet
 COPY . .

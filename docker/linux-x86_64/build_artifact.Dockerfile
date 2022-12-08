@@ -15,11 +15,12 @@
 
 # Usage: docker build \
 #  -t javet-local \
-#  --build-arg JAVET_GRADLE_IMAGE_TAG=sjtucaocao/javet:x86_64-2.0.2 \
+#  --build-arg BASE_GRADLE_IMAGE_TAG=sjtucaocao/javet:x86_64-2.0.2 \
 #  -f docker/linux-x86_64/build_artifact.Dockerfile .
 
-ARG JAVET_GRADLE_IMAGE_TAG=sjtucaocao/javet:x86_64-2.0.2
-FROM $JAVET_GRADLE_IMAGE_TAG
+ARG BASE_GRADLE_IMAGE_TAG=sjtucaocao/javet:x86_64-2.0.2
+
+FROM ${BASE_GRADLE_IMAGE_TAG}
 
 WORKDIR /Javet
 COPY . .
