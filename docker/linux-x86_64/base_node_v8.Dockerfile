@@ -16,7 +16,7 @@
 # Usage: docker build \
 #  -t sjtucaocao/javet:x86_64-v8-10.8.168.20_node-18.12.1 \
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
-#  -f docker/linux-x86_64/base_node.Dockerfile .
+#  -f docker/linux-x86_64/base_node_v8.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
 ARG JAVET_NODE_VERSION=18.12.1

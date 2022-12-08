@@ -43,7 +43,7 @@ jobs:
           docker build \
             -t ${BASE_IMAGE_TAG} \
             --build-arg JAVET_NODE_V8_IMAGE_TAG=${JAVET_NODE_V8_IMAGE_TAG} \
-            -f docker/linux-x86_64/gradle.Dockerfile .
+            -f docker/linux-x86_64/base_gradle.Dockerfile .
 
       - name: Publish the docker image
         run: |

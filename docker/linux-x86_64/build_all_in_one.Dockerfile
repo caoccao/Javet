@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t javet:local -f docker/linux-x86_64/build.Dockerfile .
+# Usage: docker build -t javet:local -f docker/linux-x86_64/build_all_in_one.Dockerfile .
 
 FROM sjtucaocao/javet:2.0.2
 WORKDIR /

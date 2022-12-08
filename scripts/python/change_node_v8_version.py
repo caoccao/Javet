@@ -81,18 +81,18 @@ class ChangeNodeVersion(ChangeVersion):
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      'docker/linux-x86_64/base.Dockerfile', '\n',
+      'docker/linux-x86_64/base_all_in_one.Dockerfile', '\n',
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'docker/linux-x86_64/base_node.Dockerfile', '\n',
       re.compile(r'node-(?P<version>\d+\.\d+\.\d+) '),
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)'))
     self._update(
-      'docker/linux-x86_64/build_node_v8.Dockerfile', '\n',
+      'docker/linux-x86_64/base_node_v8.Dockerfile', '\n',
       re.compile(r'node-(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      'docker/linux-x86_64/gradle.Dockerfile', '\n',
+      'docker/linux-x86_64/base_gradle.Dockerfile', '\n',
       re.compile(r'node-(?P<version>\d+\.\d+\.\d+)'))
     self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
@@ -120,18 +120,18 @@ class ChangeV8Version(ChangeVersion):
       'docker/android/base.Dockerfile', '\n',
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
-      'docker/linux-x86_64/base.Dockerfile', '\n',
+      'docker/linux-x86_64/base_all_in_one.Dockerfile', '\n',
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       'docker/linux-x86_64/base_v8.Dockerfile', '\n',
       re.compile(r'v8-(?P<version>\d+\.\d+\.\d+\.\d+) '),
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)'))
     self._update(
-      'docker/linux-x86_64/build_node_v8.Dockerfile', '\n',
+      'docker/linux-x86_64/base_node_v8.Dockerfile', '\n',
       re.compile(r'v8-(?P<version>\d+\.\d+\.\d+\.\d+)'),
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
-      'docker/linux-x86_64/gradle.Dockerfile', '\n',
+      'docker/linux-x86_64/base_gradle.Dockerfile', '\n',
       re.compile(r'v8-(?P<version>\d+\.\d+\.\d+\.\d+)'))
     self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
