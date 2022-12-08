@@ -85,7 +85,7 @@ class ChangeNodeVersion(ChangeVersion):
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'docker/linux-x86_64/base_node.Dockerfile', '\n',
-      re.compile(r'node_(?P<version>\d+\.\d+\.\d+) '),
+      re.compile(r'node_(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)'))
     self._update(
       'docker/linux-x86_64/base_node_v8.Dockerfile', '\n',
@@ -124,7 +124,7 @@ class ChangeV8Version(ChangeVersion):
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       'docker/linux-x86_64/base_v8.Dockerfile', '\n',
-      re.compile(r'v8_(?P<version>\d+\.\d+\.\d+\.\d+) '),
+      re.compile(r'v8_(?P<version>\d+\.\d+\.\d+\.\d+)'),
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)'))
     self._update(
       'docker/linux-x86_64/base_node_v8.Dockerfile', '\n',
