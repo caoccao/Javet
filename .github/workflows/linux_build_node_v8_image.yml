@@ -1,4 +1,4 @@
-name: Linux build V8 and Node image
+name: Linux Build Node and V8 Image
 on:
   workflow_dispatch:
     inputs:
@@ -15,6 +15,7 @@ on:
     paths:
       - '.github/workflows/**'
       - 'docker/**'
+      - 'scripts/python/**'
       - 'scripts/shell/**'
 
 env:

@@ -1,4 +1,4 @@
-name: Linux build dev image - Gradle deps, V8, Node
+name: Linux Build Dev Image
 
 concurrency:
   group: linux_build_dev
@@ -11,6 +11,7 @@ on:
     paths:
       - '.github/workflows/**'
       - 'docker/**'
+      - 'scripts/python/**'
       - 'scripts/shell/**'
 
 env:
