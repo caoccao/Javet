@@ -52,5 +52,3 @@ Final Image containing v8 and Node.js dependencies as well as Javet codebase and
 ```bash
 docker build -t sjtucaocao/gradle_javet_buildenv --target gradle_javet_buildenv -f docker/linux/base.Dockerfile .
 ```
-
-## Build for Specific Architectures
