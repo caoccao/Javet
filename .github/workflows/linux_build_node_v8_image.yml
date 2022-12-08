@@ -30,8 +30,8 @@ env:
 # we need to add the condition to every step.
 
 jobs:
-  publish_base_jvm:
-    name: Ubuntu, build tools and JDK 8 - Publish container image
+  publish_jvm_base_image:
+    name: Publish Ubuntu, Build Tools and JDK 8 Base Image
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
@@ -45,24 +45,24 @@ jobs:
         if: inputs.skip_base_jvm == false
         uses: actions/checkout@v3
 
-      - name: Build docker image
+      - name: Build Ubuntu, Build Tools and JDK 8 Base Image
         if: inputs.skip_base_jvm == false
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-jvm-latest
-          echo 'IMAGE_TAG is ${IMAGE_TAG}'
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-jvm-latest
+          echo 'BASE_IMAGE_TAG is ${BASE_IMAGE_TAG}'
           docker build \
-            -t ${IMAGE_TAG} \
+            -t ${BASE_IMAGE_TAG} \
             -f docker/linux-x86_64/base_jvm.Dockerfile .
 
-      - name: Publish the docker image
+      - name: Publish Ubuntu, Build Tools and JDK 8 Base Image
         if: inputs.skip_base_jvm == false
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-jvm-latest
-          docker push ${IMAGE_TAG}
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-jvm-latest
+          docker push ${BASE_IMAGE_TAG}
 
-  publish_base_v8:
-    needs: [publish_base_jvm]
-    name: V8 - Publish container image with source and compiled binaries
+  publish_v8_base_image:
+    needs: [publish_jvm_base_image]
+    name: Publish V8 Base Image
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
@@ -76,26 +76,26 @@ jobs:
         if: inputs.skip_base_v8 == false
         uses: actions/checkout@v3
 
-      - name: Build docker image
+      - name: Build V8 Base Image
         if: inputs.skip_base_v8 == false
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-v8-${{ env.JAVET_V8_VERSION }}
-          echo 'IMAGE_TAG is ${IMAGE_TAG}'
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-v8_${{ env.JAVET_V8_VERSION }}
+          echo 'BASE_IMAGE_TAG is ${BASE_IMAGE_TAG}'
           docker build \
-            -t ${IMAGE_TAG} \
+            -t ${BASE_IMAGE_TAG} \
             --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
             -f docker/linux-x86_64/base_v8.Dockerfile .
 
-      - name: Publish the docker image
+      - name: Publish V8 Base Image
         if: inputs.skip_base_v8 == false
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-v8-${{ env.JAVET_V8_VERSION }}
-          docker push ${IMAGE_TAG}
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-v8_${{ env.JAVET_V8_VERSION }}
+          docker push ${BASE_IMAGE_TAG}
 
-  publish_base_node:
-    needs: [publish_base_jvm]
-    name: Node.js - Publish container image with source and compiled binaries
+  publish_node_base_image:
+    needs: [publish_jvm_base_image]
+    name: Publish Node.js Base Image
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
@@ -109,26 +109,26 @@ jobs:
         if: inputs.skip_base_node == false
         uses: actions/checkout@v3
 
-      - name: Build docker image
+      - name: Build Node.js Base Image
         if: inputs.skip_base_node == false
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node-${{ env.JAVET_NODE_VERSION }}
-          echo 'IMAGE_TAG is ${IMAGE_TAG}'
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node_${{ env.JAVET_NODE_VERSION }}
+          echo 'BASE_IMAGE_TAG is ${BASE_IMAGE_TAG}'
           docker build \
-            -t ${IMAGE_TAG} \
+            -t ${BASE_IMAGE_TAG} \
             --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
             -f docker/linux-x86_64/base_node.Dockerfile .
 
-      - name: Publish the docker image
+      - name: Publish Node.js Base Image
         if: inputs.skip_base_node == false
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node-${{ env.JAVET_NODE_VERSION }}
-          docker push ${IMAGE_TAG}
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node_${{ env.JAVET_NODE_VERSION }}
+          docker push ${BASE_IMAGE_TAG}
 
-  publish_v8_node:
-    needs: [publish_base_v8, publish_base_node]
-    name: V8 and Node.js - Publish container image with V8 source and binaries and Node.js source and binaries
+  publish_node_v8_base_image:
+    needs: [publish_node_base_image, publish_v8_base_image]
+    name: Publish Node.js and V8 Base Image
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
@@ -140,18 +140,18 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
 
-      - name: Build docker image
+      - name: Build Node.js and V8 Base Image
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-v8-${{ env.JAVET_V8_VERSION }}_node-${{ env.JAVET_NODE_VERSION }}
-          echo 'IMAGE_TAG is ${IMAGE_TAG}'
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node_${{ env.JAVET_NODE_VERSION }}-v8_${{ env.JAVET_V8_VERSION }}
+          echo 'BASE_IMAGE_TAG is ${BASE_IMAGE_TAG}'
           docker build \
-            -t ${IMAGE_TAG} \
+            -t ${BASE_IMAGE_TAG} \
             --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
             --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
             -f docker/linux-x86_64/base_node_v8.Dockerfile .
 
-      - name: Publish the docker image
+      - name: Publish Node.js and V8 Base Image
         run: |
-          export IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-v8-${{ env.JAVET_V8_VERSION }}_node-${{ env.JAVET_NODE_VERSION }}
-          docker push ${IMAGE_TAG}
+          export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node_${{ env.JAVET_NODE_VERSION }}-v8_${{ env.JAVET_V8_VERSION }}
+          docker push ${BASE_IMAGE_TAG}

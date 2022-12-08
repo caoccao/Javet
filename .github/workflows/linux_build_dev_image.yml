@@ -22,8 +22,8 @@ env:
   JAVET_VERSION: 2.0.2
 
 jobs:
-  publish_v8_node:
-    name: Dev image with Gradle deps - Publish container image with V8, Node.js and Gradle dependencies
+  publish_dev_image:
+    name: Publish Dev Image with Gradle Dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
@@ -35,18 +35,18 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
 
-      - name: Build docker image
+      - name: Build Dev Image with Gradle Dependencies
         run: |
           export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
-          export JAVET_NODE_V8_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-v8-${{ env.JAVET_V8_VERSION }}_node-${{ env.JAVET_NODE_VERSION }}
+          export BASE_NODE_V8_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node_${{ env.JAVET_NODE_VERSION }}-v8_${{ env.JAVET_V8_VERSION }}
           echo 'BASE_IMAGE_TAG is ${BASE_IMAGE_TAG}'
-          echo 'JAVET_NODE_V8_IMAGE_TAG is ${JAVET_NODE_V8_IMAGE_TAG}'
+          echo 'BASE_NODE_V8_IMAGE_TAG is ${BASE_NODE_V8_IMAGE_TAG}'
           docker build \
             -t ${BASE_IMAGE_TAG} \
-            --build-arg JAVET_NODE_V8_IMAGE_TAG=${JAVET_NODE_V8_IMAGE_TAG} \
+            --build-arg BASE_NODE_V8_IMAGE_TAG=${BASE_NODE_V8_IMAGE_TAG} \
             -f docker/linux-x86_64/base_gradle.Dockerfile .
 
-      - name: Publish the docker image
+      - name: Publish Dev Image with Gradle Dependencies
         run: |
           export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
           docker push ${BASE_IMAGE_TAG}
