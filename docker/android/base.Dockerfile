@@ -15,6 +15,8 @@
 
 # Usage: docker build -t sjtucaocao/javet-android:2.0.2 -f docker/android/base.Dockerfile .
 
+ARG JAVET_V8_VERSION=10.8.168.20
+
 FROM ubuntu:20.04
 WORKDIR /
 
@@ -45,7 +47,7 @@ ENV PATH=/google/depot_tools:$PATH
 WORKDIR /google
 RUN fetch v8
 WORKDIR /google/v8
-RUN git checkout 10.8.168.20
+RUN git checkout ${JAVET_V8_VERSION}
 RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
 RUN ./build/install-build-deps.sh
 RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh

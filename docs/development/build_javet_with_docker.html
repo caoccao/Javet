@@ -320,9 +320,11 @@
 </div>
 <div class="section" id="build-javet-for-linux-on-linux-or-windows">
 <h2>Build Javet for Linux on Linux or Windows<a class="headerlink" href="#build-javet-for-linux-on-linux-or-windows" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="express-build">
+<h3>Express Build<a class="headerlink" href="#express-build" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/caoccao/Javet.git
 <span class="nb">cd</span> Javet
-docker build -f docker/linux-x86_64/build.Dockerfile .
+docker build -f docker/linux-x86_64/build_artifact.Dockerfile .
 </pre></div>
 </div>
 <div class="admonition note">
@@ -330,6 +332,27 @@ docker build -f docker/linux-x86_64/build.Dockerfile .
 <ul class="simple">
 <li><p>Docker will pull the corresponding image (~5GB) from Docker Hub.</p></li>
 <li><p>The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="full-build-multi-staged">
+<h3>Full Build - Multi-staged<a class="headerlink" href="#full-build-multi-staged" title="Permalink to this headline">¶</a></h3>
+<p>Please follow the instruction inside the following dockerfiles one by one to perform a full build.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">base_jvm.Dockerfile</span></code> - Build a base image with Linux and JVM.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base_node.Dockerfile</span></code> - Build a base image with Node.js.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base_v8.Dockerfile</span></code> - Build a base image with V8.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base_node_v8.Dockerfile</span></code> - Build a base image with Node.js and V8.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base_gradle.Dockerfile</span></code> - Build a base image with gradle dependencies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">build_artifact.Dockerfile</span></code> - Build and test the final artifact.</p></li>
+</ul>
+</div>
+<div class="section" id="full-build-all-in-one">
+<h3>Full Build - All-in-one<a class="headerlink" href="#full-build-all-in-one" title="Permalink to this headline">¶</a></h3>
+<p>Please follow the instruction inside the following dockerfiles one by one to perform a full build.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">base_all_in_one.Dockerfile</span></code> - Build a base image.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">build_all_in_one.Dockerfile</span></code> - Build and test the final artifact.</p></li>
 </ul>
 </div>
 </div>
@@ -431,7 +454,12 @@ docker build -f docker/android/build.Dockerfile .
 <li><a class="reference internal" href="#docker-hub-and-github">Docker Hub and Github</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#build-javet-for-linux-on-linux-or-windows">Build Javet for Linux on Linux or Windows</a></li>
+<li><a class="reference internal" href="#build-javet-for-linux-on-linux-or-windows">Build Javet for Linux on Linux or Windows</a><ul>
+<li><a class="reference internal" href="#express-build">Express Build</a></li>
+<li><a class="reference internal" href="#full-build-multi-staged">Full Build - Multi-staged</a></li>
+<li><a class="reference internal" href="#full-build-all-in-one">Full Build - All-in-one</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#build-javet-for-windows-on-windows">Build Javet for Windows on Windows</a></li>
 <li><a class="reference internal" href="#build-javet-for-android-on-linux-or-windows">Build Javet for Android on Linux or Windows</a></li>
 </ul>

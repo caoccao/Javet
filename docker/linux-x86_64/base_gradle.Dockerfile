@@ -13,29 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t javet:local -f docker/linux-x86_64/build.Dockerfile .
+# Usage: docker build \
+#  -t sjtucaocao/javet:x86_64-2.0.2 \
+#  --build-arg BASE_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-base-node_18.12.1-v8_10.8.168.20 \
+#  -f docker/linux-x86_64/base_gradle.Dockerfile .
 
-FROM sjtucaocao/javet:2.0.2
-WORKDIR /
+ARG BASE_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-base-node_18.12.1-v8_10.8.168.20
 
-# Copy Javet
-RUN mkdir Javet
+FROM ${BASE_NODE_V8_IMAGE_TAG}
+
 WORKDIR /Javet
 COPY . .
-
-# Build JNI
-WORKDIR /Javet/cpp
-RUN sh ./build-linux.sh -DV8_DIR=/google/v8
-RUN sh ./build-linux.sh -DNODE_DIR=/node
-
-# Build Jar
-WORKDIR /Javet
-RUN touch src/main/resources/libjavet-v8*
-RUN gradle build test --rerun-tasks --debug
-RUN touch src/main/resources/libjavet-node*
-RUN gradle test --rerun-tasks --debug
-
-VOLUME /output
-
-# Completed
-RUN echo Javet build is completed.
+RUN gradle dependencies && cd / && rm -rf /Javet

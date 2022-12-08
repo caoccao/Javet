@@ -32,16 +32,39 @@ Please make sure the network connection to the Docker Hub and Github is up and r
 Build Javet for Linux on Linux or Windows
 =========================================
 
+Express Build
+-------------
+
 .. code-block:: shell
 
     git clone https://github.com/caoccao/Javet.git
     cd Javet
-    docker build -f docker/linux-x86_64/build.Dockerfile .
+    docker build -f docker/linux-x86_64/build_artifact.Dockerfile .
 
 .. note::
 
    * Docker will pull the corresponding image (~5GB) from Docker Hub.
    * The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.
+
+Full Build - Multi-staged
+-------------------------
+
+Please follow the instruction inside the following dockerfiles one by one to perform a full build.
+
+* ``base_jvm.Dockerfile`` - Build a base image with Linux and JVM.
+* ``base_node.Dockerfile`` - Build a base image with Node.js.
+* ``base_v8.Dockerfile`` - Build a base image with V8.
+* ``base_node_v8.Dockerfile`` - Build a base image with Node.js and V8.
+* ``base_gradle.Dockerfile`` - Build a base image with gradle dependencies.
+* ``build_artifact.Dockerfile`` - Build and test the final artifact.
+
+Full Build - All-in-one
+-----------------------
+
+Please follow the instruction inside the following dockerfiles one by one to perform a full build.
+
+* ``base_all_in_one.Dockerfile`` - Build a base image.
+* ``build_all_in_one.Dockerfile`` - Build and test the final artifact.
 
 Build Javet for Windows on Windows
 ==================================
