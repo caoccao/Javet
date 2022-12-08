@@ -39,8 +39,6 @@ jobs:
         run: |
           export BASE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
           export BASE_NODE_V8_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-base-node_${{ env.JAVET_NODE_VERSION }}-v8_${{ env.JAVET_V8_VERSION }}
-          echo 'BASE_IMAGE_TAG is ${BASE_IMAGE_TAG}'
-          echo 'BASE_NODE_V8_IMAGE_TAG is ${BASE_NODE_V8_IMAGE_TAG}'
           docker build \
             -t ${BASE_IMAGE_TAG} \
             --build-arg BASE_NODE_V8_IMAGE_TAG=${BASE_NODE_V8_IMAGE_TAG} \
