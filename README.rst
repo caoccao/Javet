@@ -14,10 +14,10 @@ Javet
 .. |Donate| image:: https://img.shields.io/badge/Donate-green?style=for-the-badge
     :target: https://opencollective.com/javet
 
-.. |Linux Build| image:: https://img.shields.io/github/workflow/status/caoccao/Javet/Linux%20Build%20(2%2F2)%20Artifact?label=Linux%20Build&style=for-the-badge
+.. |Linux Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build_artifact.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/linux_build_artifact.yml
 
-.. |Android Build| image:: https://img.shields.io/github/workflow/status/caoccao/Javet/Android%20Build?label=Android%20Build&style=for-the-badge
+.. |Android Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/android_build.yml
 
 `Javet <https://github.com/caoccao/Javet/>`_ is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.

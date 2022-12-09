@@ -339,10 +339,9 @@ docker build -f docker/linux-x86_64/build_artifact.Dockerfile .
 <h3>Full Build - Multi-staged<a class="headerlink" href="#full-build-multi-staged" title="Permalink to this headline">¶</a></h3>
 <p>Please follow the instruction inside the following dockerfiles one by one to perform a full build.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">base_jvm.Dockerfile</span></code> - Build a base image with Linux and JVM.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base_jvm.Dockerfile</span></code> - Build a base image with Linux, build tools and JVM.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">base_node.Dockerfile</span></code> - Build a base image with Node.js.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">base_v8.Dockerfile</span></code> - Build a base image with V8.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">base_node_v8.Dockerfile</span></code> - Build a base image with Node.js and V8.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">base_gradle.Dockerfile</span></code> - Build a base image with gradle dependencies.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">build_artifact.Dockerfile</span></code> - Build and test the final artifact.</p></li>
 </ul>
