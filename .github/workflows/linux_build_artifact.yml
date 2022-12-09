@@ -17,13 +17,9 @@ on:
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
-<<<<<<< HEAD
   JAVET_NODE_VERSION: 18.12.1
   JAVET_V8_VERSION: 10.8.168.20
-  JAVET_VERSION: 2.0.2
-=======
   JAVET_VERSION: 2.0.3
->>>>>>> d98f2c94 (🔧 build(Version): Update version to v2.0.3)
 
 jobs:
   javet_linux_x86_64:
