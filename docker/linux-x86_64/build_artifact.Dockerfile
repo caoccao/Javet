@@ -37,6 +37,8 @@ ARG JAVET_V8_VERSION=10.8.168.20
 
 FROM ${JAVET_REPO}:x86_64-base-v8_${JAVET_V8_VERSION}
 
+WORKDIR /Javet
+COPY . .
 WORKDIR /Javet/cpp
 RUN sh ./build-linux.sh -DV8_DIR=/google/v8
 
