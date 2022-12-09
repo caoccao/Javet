@@ -1,4 +1,4 @@
-name: Linux Build (3/3) Artifact
+name: Linux Build (2/2) Artifact
 concurrency:
   group: linux_build_artifact_${{ github.ref }}
   cancel-in-progress: true

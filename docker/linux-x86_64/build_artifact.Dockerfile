@@ -1,4 +1,4 @@
-# Copyright (c) 2021 caoccao.com Sam Cao
+# Copyright (c) 2021-2022 caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,30 @@
 
 # Usage: docker build \
 #  -t javet-local \
-#  --build-arg BASE_GRADLE_IMAGE_TAG=sjtucaocao/javet:x86_64-2.0.2 \
+#  --build-arg JAVET_REPO=sjtucaocao/javet \
+#  --build-arg JAVET_NODE_VERSION=18.12.1 \
+#  --build-arg JAVET_V8_VERSION=10.8.168.20 \
 #  -f docker/linux-x86_64/build_artifact.Dockerfile .
 
-ARG BASE_GRADLE_IMAGE_TAG=sjtucaocao/javet:x86_64-2.0.2
+ARG JAVET_REPO=sjtucaocao/javet
+ARG JAVET_NODE_VERSION=18.12.1
+ARG JAVET_V8_VERSION=10.8.168.20
 
-FROM ${BASE_GRADLE_IMAGE_TAG}
+FROM ${JAVET_REPO}:x86_64-base-node_${JAVET_NODE_VERSION}
 
+RUN mkdir Javet
 WORKDIR /Javet
 COPY . .
+WORKDIR /Javet/cpp
+RUN sh ./build-linux.sh -DNODE_DIR=/node
 
+ARG JAVET_REPO
+ARG JAVET_V8_VERSION=10.8.168.20
+
+FROM ${JAVET_REPO}:x86_64-base-v8_${JAVET_V8_VERSION}
+
+WORKDIR /Javet/cpp
+RUN sh ./build-linux.sh -DV8_DIR=/google/v8
+
+WORKDIR /Javet
 RUN scripts/shell/build_javet_artifacts.sh
-

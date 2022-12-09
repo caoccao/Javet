@@ -51,10 +51,9 @@ Full Build - Multi-staged
 
 Please follow the instruction inside the following dockerfiles one by one to perform a full build.
 
-* ``base_jvm.Dockerfile`` - Build a base image with Linux and JVM.
+* ``base_jvm.Dockerfile`` - Build a base image with Linux, build tools and JVM.
 * ``base_node.Dockerfile`` - Build a base image with Node.js.
 * ``base_v8.Dockerfile`` - Build a base image with V8.
-* ``base_node_v8.Dockerfile`` - Build a base image with Node.js and V8.
 * ``base_gradle.Dockerfile`` - Build a base image with gradle dependencies.
 * ``build_artifact.Dockerfile`` - Build and test the final artifact.
 

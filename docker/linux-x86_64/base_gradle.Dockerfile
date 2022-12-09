@@ -1,4 +1,4 @@
-# Copyright (c) 2021 caoccao.com Sam Cao
+# Copyright (c) 2021-2022 caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,16 @@
 
 # Usage: docker build \
 #  -t sjtucaocao/javet:x86_64-2.0.2 \
-#  --build-arg BASE_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-base-node_18.12.1-v8_10.8.168.20 \
+#  --build-arg JAVET_REPO=sjtucaocao/javet \
 #  -f docker/linux-x86_64/base_gradle.Dockerfile .
 
-ARG BASE_NODE_V8_IMAGE_TAG=sjtucaocao/javet:x86_64-base-node_18.12.1-v8_10.8.168.20
+ARG JAVET_REPO=sjtucaocao/javet
 
-FROM ${BASE_NODE_V8_IMAGE_TAG}
+FROM ${JAVET_REPO}:x86_64-base-jvm
 
+RUN mkdir Javet
 WORKDIR /Javet
 COPY . .
-RUN gradle dependencies && cd / && rm -rf /Javet
+RUN gradle dependencies
+WORKDIR /
+RUN rm -rf /Javet

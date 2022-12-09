@@ -75,9 +75,6 @@ class ChangeNodeVersion(ChangeVersion):
       'README.rst', '\n',
       re.compile(r'Node\.js ``v(?P<version>\d+\.\d+\.\d+)``'))
     self._update(
-      '.github/workflows/linux_build_dev_image.yml', '\n',
-      re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
-    self._update(
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
@@ -87,13 +84,6 @@ class ChangeNodeVersion(ChangeVersion):
       'docker/linux-x86_64/base_node.Dockerfile', '\n',
       re.compile(r'node_(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)'))
-    self._update(
-      'docker/linux-x86_64/base_node_v8.Dockerfile', '\n',
-      re.compile(r'node_(?P<version>\d+\.\d+\.\d+)'),
-      re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
-    self._update(
-      'docker/linux-x86_64/base_gradle.Dockerfile', '\n',
-      re.compile(r'node_(?P<version>\d+\.\d+\.\d+)'))
     self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
@@ -111,9 +101,6 @@ class ChangeV8Version(ChangeVersion):
       'README.rst', '\n',
       re.compile(r'V8 ``v(?P<version>\d+\.\d+\.\d+\.\d+)``'))
     self._update(
-      '.github/workflows/linux_build_dev_image.yml', '\n',
-      re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
-    self._update(
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
@@ -126,13 +113,6 @@ class ChangeV8Version(ChangeVersion):
       'docker/linux-x86_64/base_v8.Dockerfile', '\n',
       re.compile(r'v8_(?P<version>\d+\.\d+\.\d+\.\d+)'),
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)'))
-    self._update(
-      'docker/linux-x86_64/base_node_v8.Dockerfile', '\n',
-      re.compile(r'v8_(?P<version>\d+\.\d+\.\d+\.\d+)'),
-      re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
-    self._update(
-      'docker/linux-x86_64/base_gradle.Dockerfile', '\n',
-      re.compile(r'v8_(?P<version>\d+\.\d+\.\d+\.\d+)'))
     self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))

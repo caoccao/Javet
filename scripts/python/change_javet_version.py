@@ -44,7 +44,7 @@ class ChangeJavetVersion(object):
       '.github/workflows/linux_build_artifact.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      '.github/workflows/linux_build_dev_image.yml', '\n',
+      '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'docker/android/base.Dockerfile', '\n',
