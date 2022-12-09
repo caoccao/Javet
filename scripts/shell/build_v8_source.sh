@@ -8,8 +8,7 @@ build_v8(){
     v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 \
     use_custom_libcxx=false v8_enable_sandbox=false
 
-  ninja -C out.gn/x64.release v8_monolith
-  python3 patch_v8_build.py -p ./
+  ninja -C out.gn/x64.release v8_monolith || python3 patch_v8_build.py -p ./
   ninja -C out.gn/x64.release v8_monolith
   rm patch_v8_build.py
   echo "V8 build is completed"
