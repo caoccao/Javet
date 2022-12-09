@@ -22,7 +22,7 @@
 ARG JAVET_REPO=sjtucaocao/javet
 ARG JAVET_NODE_VERSION=18.12.1
 
-FROM ${JAVET_REPO}:x86_64-base-jvm-latest
+FROM ${JAVET_REPO}:x86_64-base-jvm
 
 ARG JAVET_NODE_VERSION
 

@@ -42,10 +42,10 @@ class ChangeJavetVersion(object):
       re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
       '.github/workflows/linux_build_artifact.yml', '\n',
-      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
+      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
-      '.github/workflows/linux_build_dev_image.yml', '\n',
-      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
+      '.github/workflows/linux_build_node_v8_image.yml', '\n',
+      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
       'docker/android/base.Dockerfile', '\n',
       re.compile(r'javet-android:(?P<version>\d+\.\d+\.\d+) '))
@@ -53,15 +53,14 @@ class ChangeJavetVersion(object):
       'docker/android/build.Dockerfile', '\n',
       re.compile(r'javet-android:(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      'docker/linux-x86_64/build_artifact.Dockerfile', '\n',
-      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+) '),
-      re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+)$'))
-    self._update(
       'docker/linux-x86_64/base_all_in_one.Dockerfile', '\n',
       re.compile(r'javet:(?P<version>\d+\.\d+\.\d+) '))
     self._update(
       'docker/linux-x86_64/build_all_in_one.Dockerfile', '\n',
       re.compile(r'javet:(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      'docker/linux-x86_64/build_artifact.Dockerfile', '\n',
+      re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)'))
     self._update(
       'docker/linux-x86_64/base_gradle.Dockerfile', '\n',
       re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+) '))

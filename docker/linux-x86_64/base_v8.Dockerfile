@@ -22,7 +22,7 @@
 ARG JAVET_REPO=sjtucaocao/javet
 ARG JAVET_V8_VERSION=10.8.168.20
 
-FROM ${JAVET_REPO}:x86_64-base-jvm-latest
+FROM ${JAVET_REPO}:x86_64-base-jvm
 
 ARG JAVET_V8_VERSION
 
