@@ -17,6 +17,8 @@ on:
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
+  JAVET_NODE_VERSION: 18.12.1
+  JAVET_V8_VERSION: 10.8.168.20
   JAVET_VERSION: 2.0.2
 
 jobs:
@@ -29,9 +31,11 @@ jobs:
 
       - name: Build the Artifact
         run: |
-          export BASE_GRADLE_IMAGE_TAG=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }}:x86_64-${{ env.JAVET_VERSION }}
           docker build -t javet:local \
-            --build-arg BASE_GRADLE_IMAGE_TAG=${BASE_GRADLE_IMAGE_TAG} \
+            --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
+            --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
+            --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
+            --build-arg JAVET_VERSION=${{ env.JAVET_VERSION }} \
             -f docker/linux-x86_64/build_artifact.Dockerfile .
 
       - name: Copy the Artifact
