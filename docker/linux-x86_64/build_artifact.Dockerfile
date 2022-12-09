@@ -18,13 +18,15 @@
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
 #  --build-arg JAVET_NODE_VERSION=18.12.1 \
 #  --build-arg JAVET_V8_VERSION=10.8.168.20 \
+#  --build-arg JAVET_VERSION=2.0.2 \
 #  -f docker/linux-x86_64/build_artifact.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
 ARG JAVET_NODE_VERSION=18.12.1
 ARG JAVET_V8_VERSION=10.8.168.20
+ARG JAVET_VERSION=2.0.2
 
-FROM ${JAVET_REPO}:x86_64-base-node_${JAVET_NODE_VERSION}
+FROM ${JAVET_REPO}:x86_64-base-node_${JAVET_NODE_VERSION} as base-v8
 
 RUN mkdir Javet
 WORKDIR /Javet
@@ -33,14 +35,25 @@ WORKDIR /Javet/cpp
 RUN sh ./build-linux.sh -DNODE_DIR=/node
 
 ARG JAVET_REPO
-ARG JAVET_V8_VERSION=10.8.168.20
+ARG JAVET_V8_VERSION
 
-FROM ${JAVET_REPO}:x86_64-base-v8_${JAVET_V8_VERSION}
+FROM ${JAVET_REPO}:x86_64-base-v8_${JAVET_V8_VERSION} as base-node
 
+RUN mkdir Javet
 WORKDIR /Javet
 COPY . .
 WORKDIR /Javet/cpp
 RUN sh ./build-linux.sh -DV8_DIR=/google/v8
 
+ARG JAVET_REPO
+ARG JAVET_VERSION
+
+FROM ${JAVET_REPO}:x86_64-${JAVET_VERSION}
+
+RUN mkdir Javet
 WORKDIR /Javet
+COPY . .
+
+COPY --from=base-node /Javet/src/main/resources /Javet/src/main/resources
+COPY --from=base-v8 /Javet/src/main/resources /Javet/src/main/resources
 RUN scripts/shell/build_javet_artifacts.sh
