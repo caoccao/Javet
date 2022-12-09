@@ -36,9 +36,5 @@ RUN bash ./fetch_node_source.sh
 # Build Node.js
 WORKDIR /node
 COPY ./scripts/python/patch_node_build.py .
-RUN python3 patch_node_build.py -p ./
-RUN ./configure --enable-static --without-intl
-RUN python3 patch_node_build.py -p ./
-RUN rm patch_node_build.py
-RUN make -j4
-RUN echo Node.js build is completed.
+COPY ./scripts/shell/build_node_source.sh .
+RUN bash ./build_node_source.sh
