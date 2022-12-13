@@ -761,6 +761,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    scriptOrModuleGetCachedData
+ * Signature: (JJI)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_scriptOrModuleGetCachedData
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    scriptRun
  * Signature: (JJIZ)Ljava/lang/Object;
  */

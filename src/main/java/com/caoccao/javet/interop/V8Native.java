@@ -337,6 +337,9 @@ class V8Native implements IV8Native {
     public native boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     @Override
+    public native byte[] scriptOrModuleGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     @Override

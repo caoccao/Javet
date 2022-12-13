@@ -1745,6 +1745,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Get cached data from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    byte[] moduleGetCachedData(IV8Module iV8Module) throws JavetException {
+        return v8Native.scriptOrModuleGetCachedData(
+                handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
      * Gets an error from a module.
      *
      * @param iV8Module the V8 module
@@ -2354,6 +2368,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     boolean sameValue(IV8ValueObject iV8ValueObject1, IV8ValueObject iV8ValueObject2) {
         return v8Native.sameValue(handle, iV8ValueObject1.getHandle(), iV8ValueObject2.getHandle());
+    }
+
+    /**
+     * Get cached data from a script.
+     *
+     * @param iV8Script the V8 script
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    byte[] scriptGetCachedData(IV8Script iV8Script) throws JavetException {
+        return v8Native.scriptOrModuleGetCachedData(
+                handle, iV8Script.getHandle(), iV8Script.getType().getId());
     }
 
     /**

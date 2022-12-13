@@ -36,6 +36,18 @@ public class TestV8Script extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGetCachedData() throws JavetException {
+        IV8Executor iV8Executor = v8Runtime.getExecutor(
+                "1 + 1").setResourceName("./test.js");
+        try (V8Script v8Script = iV8Executor.compileV8Script()) {
+            assertNotNull(v8Script);
+            byte[] bytes = v8Script.getCachedData();
+            assertTrue(bytes != null && bytes.length > 0);
+            assertEquals(2, v8Script.executeInteger());
+        }
+    }
+
+    @Test
     public void testUnexpectedIdentifier() throws JavetException {
         try (V8Script v8Script = v8Runtime.getExecutor("a b c").compileV8Script()) {
             fail("Failed to report error.");

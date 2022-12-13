@@ -230,6 +230,8 @@ public interface IV8Native {
 
     boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
+    byte[] scriptOrModuleGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);

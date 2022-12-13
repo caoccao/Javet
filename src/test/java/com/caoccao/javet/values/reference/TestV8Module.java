@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Module extends BaseTestJavetRuntime {
+
     @Test
     public void testExecute() throws JavetException {
         IV8Executor iV8Executor = v8Runtime.getExecutor(
@@ -50,6 +51,23 @@ public class TestV8Module extends BaseTestJavetRuntime {
             try (V8ValueObject v8ValueObject = v8Module.getNamespace()) {
                 assertNotNull(v8ValueObject);
             }
+        }
+    }
+
+    @Test
+    public void testGetCachedData() throws JavetException {
+        IV8Executor iV8Executor = v8Runtime.getExecutor(
+                "Object.a = 1").setResourceName("./test.js");
+        try (V8Module v8Module = iV8Executor.compileV8Module()) {
+            byte[] uninitializedBytes = v8Module.getCachedData();
+            assertTrue(uninitializedBytes != null && uninitializedBytes.length > 0);
+            try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                byte[] initializedBytes = v8Module.getCachedData();
+                assertTrue(initializedBytes != null && initializedBytes.length > 0);
+                assertArrayEquals(initializedBytes, uninitializedBytes);
+            }
+            assertEquals(1, v8Runtime.getExecutor("Object.a").executeInteger());
         }
     }
 

@@ -1840,6 +1840,40 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
     return v8LocalValue1->SameValue(v8LocalValue2);
 }
 
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_scriptOrModuleGetCachedData
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    std::unique_ptr<v8::ScriptCompiler::CachedData> cachedDataPointer;
+    if (IS_V8_MODULE(v8ValueType)) {
+        RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        cachedDataPointer.reset(v8::ScriptCompiler::CreateCodeCache(v8LocalModule->GetUnboundModuleScript()));
+        if (v8TryCatch.HasCaught()) {
+            Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+            return nullptr;
+        }
+    }
+    else if (IS_V8_SCRIPT(v8ValueType)) {
+        RUNTIME_AND_SCRIPT_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+        if (!v8LocalScript.IsEmpty()) {
+            V8TryCatch v8TryCatch(v8Context->GetIsolate());
+            cachedDataPointer.reset(v8::ScriptCompiler::CreateCodeCache(v8LocalScript->GetUnboundScript()));
+            if (v8TryCatch.HasCaught()) {
+                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+                return nullptr;
+            }
+        }
+    }
+    if (cachedDataPointer) {
+        jbyteArray byteArray = jniEnv->NewByteArray((jsize)cachedDataPointer->length);
+        jboolean isCopy;
+        jbyte* dataPointer = jniEnv->GetByteArrayElements(byteArray, &isCopy);
+        memcpy(dataPointer, cachedDataPointer->data, cachedDataPointer->length);
+        jniEnv->ReleaseByteArrayElements(byteArray, dataPointer, JNI_COMMIT);
+        return byteArray;
+    }
+    return nullptr;
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptRun
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jboolean mResultRequired) {
     RUNTIME_AND_SCRIPT_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
