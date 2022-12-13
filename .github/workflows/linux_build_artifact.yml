@@ -29,9 +29,12 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Build the Artifact
         run: |
-          DOCKER_BUILDKIT=1 docker build -t javet:local \
+          docker buildx build -t javet:local \
             --build-arg JAVET_REPO=${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO_JAVET }} \
             --build-arg JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }} \
             --build-arg JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }} \
