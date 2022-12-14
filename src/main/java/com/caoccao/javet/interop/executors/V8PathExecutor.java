@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * The type V8 path executor.
@@ -49,7 +50,7 @@ public class V8PathExecutor extends V8StringExecutor {
      */
     public V8PathExecutor(V8Runtime v8Runtime, Path scriptPath) throws JavetException {
         super(v8Runtime);
-        this.scriptPath = scriptPath;
+        this.scriptPath = Objects.requireNonNull(scriptPath);
         setResourceName(scriptPath.toString());
     }
 

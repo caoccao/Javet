@@ -44,7 +44,7 @@ public interface IV8Native {
     void closeV8Runtime(long v8RuntimeHandle);
 
     Object compile(
-            long v8RuntimeHandle, String script, boolean returnResult,
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
@@ -69,7 +69,7 @@ public interface IV8Native {
     boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     Object execute(
-            long v8RuntimeHandle, String script, boolean returnResult,
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 

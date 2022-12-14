@@ -175,6 +175,10 @@ namespace Javet {
 
         void Initialize(JNIEnv* jniEnv);
 
+        V8ScriptCompilerCachedData* ToCachedDataPointer(JNIEnv* jniEnv, jbyteArray mCachedArray);
+
+        jbyteArray ToJavaByteArray(JNIEnv* jniEnv, V8ScriptCompilerCachedData* cachedDataPointer);
+
         static inline jstring ToJavaString(JNIEnv* jniEnv, const char* utfString) {
             return jniEnv->NewStringUTF(utfString);
         }

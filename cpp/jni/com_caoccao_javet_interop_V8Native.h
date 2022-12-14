@@ -82,10 +82,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    compile
- * Signature: (JLjava/lang/String;ZLjava/lang/String;IIIZZ)Ljava/lang/Object;
+ * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZZ)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
-  (JNIEnv *, jobject, jlong, jstring, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -170,10 +170,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    execute
- * Signature: (JLjava/lang/String;ZLjava/lang/String;IIIZZ)Ljava/lang/Object;
+ * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZZ)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
-  (JNIEnv *, jobject, jlong, jstring, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

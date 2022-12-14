@@ -58,6 +58,7 @@ using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
 using V8internalBlockingBehavior = v8::internal::BlockingBehavior;
 using V8InternalBuiltin = v8::internal::Builtin;
 using V8InternalContext = v8::internal::Context;
+using V8InternalDisallowCompilation = v8::internal::DisallowCompilation;
 using V8InternalDisallowGarbageCollection = v8::internal::DisallowGarbageCollection;
 using V8InternalFlagList = v8::internal::FlagList;
 using V8InternalHeapObject = v8::internal::HeapObject;

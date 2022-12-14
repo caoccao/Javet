@@ -29,7 +29,6 @@ import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
 
 import java.io.File;
-import java.nio.file.Path;
 
 /**
  * The interface V8 executor.
@@ -104,6 +103,14 @@ public interface IV8Executor extends IV8Executable {
     default void compileV8ScriptVoid() throws JavetException {
         compileV8Script(false);
     }
+
+    /**
+     * Get cached data.
+     *
+     * @return the cached data
+     * @since 2.0.3
+     */
+    byte[] getCachedData();
 
     /**
      * Gets resource name.

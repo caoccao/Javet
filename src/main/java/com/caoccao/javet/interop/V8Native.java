@@ -65,7 +65,7 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object compile(
-            long v8RuntimeHandle, String script, boolean returnResult,
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
@@ -101,7 +101,7 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object execute(
-            long v8RuntimeHandle, String script, boolean returnResult,
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 

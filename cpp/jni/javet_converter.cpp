@@ -208,6 +208,25 @@ namespace Javet {
             jmethodIDJavetScriptingErrorConstructor = jniEnv->GetMethodID(jclassJavetScriptingError, "<init>", "(Lcom/caoccao/javet/values/V8Value;Ljava/lang/String;Ljava/lang/String;IIIII)V");
         }
 
+        V8ScriptCompilerCachedData* ToCachedDataPointer(JNIEnv* jniEnv, jbyteArray mCachedArray) {
+            jsize length = jniEnv->GetArrayLength(mCachedArray);
+            uint8_t* bytes = new uint8_t[length];
+            jboolean isCopy;
+            jbyte* bytePointer = jniEnv->GetByteArrayElements(mCachedArray, &isCopy);
+            memcpy(bytes, bytePointer, length);
+            jniEnv->ReleaseByteArrayElements(mCachedArray, bytePointer, JNI_ABORT);
+            return new V8ScriptCompilerCachedData(bytes, length, V8ScriptCompilerCachedDataBufferPolicy::BufferOwned);
+        }
+
+        jbyteArray ToJavaByteArray(JNIEnv* jniEnv, V8ScriptCompilerCachedData* cachedDataPointer) {
+            jbyteArray byteArray = jniEnv->NewByteArray((jsize)cachedDataPointer->length);
+            jboolean isCopy;
+            jbyte* bytePointer = jniEnv->GetByteArrayElements(byteArray, &isCopy);
+            memcpy(bytePointer, cachedDataPointer->data, cachedDataPointer->length);
+            jniEnv->ReleaseByteArrayElements(byteArray, bytePointer, JNI_COMMIT);
+            return byteArray;
+        }
+
         jobject ToExternalV8ValueArray(
             JNIEnv* jniEnv, V8Runtime* v8Runtime,
             const V8LocalContext& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args) {

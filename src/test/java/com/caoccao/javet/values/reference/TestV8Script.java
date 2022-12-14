@@ -26,24 +26,34 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Script extends BaseTestJavetRuntime {
     @Test
+    public void testCachedData() throws JavetException {
+        byte[] cachedData;
+        IV8Executor iV8Executor = v8Runtime.getExecutor("1 + 1").setResourceName("./test.js");
+        try (V8Script v8Script = iV8Executor.compileV8Script()) {
+            assertNotNull(v8Script);
+            byte[] initializedCachedData = v8Script.getCachedData();
+            assertTrue(initializedCachedData != null && initializedCachedData.length > 0);
+            assertEquals(2, v8Script.executeInteger());
+            cachedData = initializedCachedData;
+        }
+        // Cached is only accepted if the source code matches.
+        iV8Executor = v8Runtime.getExecutor("1 + 1", cachedData).setResourceName("./test.js");
+        try (V8Script v8Script = iV8Executor.compileV8Script()) {
+            assertNotNull(v8Script);
+            byte[] uninitializedCachedData = v8Script.getCachedData();
+            assertTrue(uninitializedCachedData != null && uninitializedCachedData.length > 0);
+            assertEquals(2, v8Script.executeInteger());
+        }
+        assertEquals(2, iV8Executor.executeInteger());
+    }
+
+    @Test
     public void testExecute() throws JavetException {
         IV8Executor iV8Executor = v8Runtime.getExecutor(
                 "const a = 1; a;").setResourceName("./test.js");
         try (V8Script v8Script = iV8Executor.compileV8Script()) {
             assertNotNull(v8Script);
             assertEquals(1, v8Script.executeInteger());
-        }
-    }
-
-    @Test
-    public void testGetCachedData() throws JavetException {
-        IV8Executor iV8Executor = v8Runtime.getExecutor(
-                "1 + 1").setResourceName("./test.js");
-        try (V8Script v8Script = iV8Executor.compileV8Script()) {
-            assertNotNull(v8Script);
-            byte[] bytes = v8Script.getCachedData();
-            assertTrue(bytes != null && bytes.length > 0);
-            assertEquals(2, v8Script.executeInteger());
         }
     }
 
