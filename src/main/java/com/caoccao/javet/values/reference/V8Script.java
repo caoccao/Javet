@@ -59,7 +59,7 @@ public class V8Script extends V8ValueReference implements IV8Script {
 
     @Override
     public byte[] getCachedData() throws JavetException {
-        return checkV8Runtime().getV8Internal().scriptGetCachedData(this);
+        return checkV8Runtime().getV8Internal().getCachedData(this);
     }
 
     @Override

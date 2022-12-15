@@ -236,6 +236,29 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testCachedData() throws JavetException {
+        String codeString = "return a + b";
+        String[] arguments = new String[]{"a", "b"};
+        byte[] cachedData;
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
+        try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(arguments)) {
+            assertNotNull(v8ValueFunction);
+            byte[] initializedCachedData = v8ValueFunction.getCachedData();
+            assertTrue(initializedCachedData != null && initializedCachedData.length > 0);
+            assertEquals(2, v8ValueFunction.callInteger(null, 1, 1));
+            cachedData = initializedCachedData;
+        }
+        // Cached is only accepted if the source code matches.
+        iV8Executor = v8Runtime.getExecutor(codeString, cachedData).setResourceName("./test.js");
+        try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(arguments)) {
+            assertNotNull(v8ValueFunction);
+            byte[] uninitializedCachedData = v8ValueFunction.getCachedData();
+            assertTrue(uninitializedCachedData != null && uninitializedCachedData.length > 0);
+            assertEquals(2, v8ValueFunction.callInteger(null, 1, 1));
+        }
+    }
+
+    @Test
     public void testCallObject() throws JavetException {
         String prefixString = "const x = 1; ";
         String functionName = "function a";
@@ -567,6 +590,21 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
         assertTrue(mockCallbackReceiver.isCalled());
         v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testCompileV8ValueFunction() throws JavetException {
+        IV8Executor iV8Executor = v8Runtime.getExecutor("return a + b").setResourceName("./test.js");
+        try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(
+                new String[]{"a", "b"}, null)) {
+            assertEquals(3, v8ValueFunction.callInteger(null, 1, 2));
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("let x = {a:1,b:2}; x;").execute()) {
+            try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(
+                    null, new V8ValueObject[]{v8ValueObject})) {
+                assertEquals(3, v8ValueFunction.callInteger(null));
+            }
+        }
     }
 
     @ParameterizedTest

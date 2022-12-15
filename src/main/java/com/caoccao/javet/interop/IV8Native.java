@@ -48,6 +48,12 @@ public interface IV8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    Object compileFunction(
+            long v8RuntimeHandle, String script, byte[] cachedData,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean wasm,
+            String[] arguments, Object[] contextExtensions);
+
     Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
 
     int contextGetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -103,6 +109,8 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
     Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    byte[] getCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getGlobalObject(long v8RuntimeHandle);
 
@@ -229,8 +237,6 @@ public interface IV8Native {
     void resetV8Isolate(long v8RuntimeHandle, Object runtimeOptions);
 
     boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
-
-    byte[] scriptOrModuleGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 

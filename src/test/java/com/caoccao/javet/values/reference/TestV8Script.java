@@ -27,8 +27,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8Script extends BaseTestJavetRuntime {
     @Test
     public void testCachedData() throws JavetException {
+        String codeString = "1 + 1";
         byte[] cachedData;
-        IV8Executor iV8Executor = v8Runtime.getExecutor("1 + 1").setResourceName("./test.js");
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
         try (V8Script v8Script = iV8Executor.compileV8Script()) {
             assertNotNull(v8Script);
             byte[] initializedCachedData = v8Script.getCachedData();
@@ -37,7 +38,7 @@ public class TestV8Script extends BaseTestJavetRuntime {
             cachedData = initializedCachedData;
         }
         // Cached is only accepted if the source code matches.
-        iV8Executor = v8Runtime.getExecutor("1 + 1", cachedData).setResourceName("./test.js");
+        iV8Executor = v8Runtime.getExecutor(codeString, cachedData).setResourceName("./test.js");
         try (V8Script v8Script = iV8Executor.compileV8Script()) {
             assertNotNull(v8Script);
             byte[] uninitializedCachedData = v8Script.getCachedData();

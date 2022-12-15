@@ -70,6 +70,13 @@ class V8Native implements IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     @Override
+    public native Object compileFunction(
+            long v8RuntimeHandle, String script, byte[] cachedData,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean wasm,
+            String[] arguments, Object[] contextExtensions);
+
+    @Override
     public native Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
 
     @Override
@@ -147,6 +154,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    @Override
+    public native byte[] getCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object getGlobalObject(long v8RuntimeHandle);
@@ -335,9 +345,6 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
-
-    @Override
-    public native byte[] scriptOrModuleGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);

@@ -38,7 +38,7 @@ namespace Javet {
         static jmethodID jmethodIDV8RuntimeCreateV8ValueNull;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueUndefined;
         static jmethodID jmethodIDV8RuntimeCreateV8ValueZonedDateTime;
-        
+
         // Primitive
 
         static jclass jclassV8ValueBigInteger;
@@ -293,9 +293,17 @@ namespace Javet {
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(JNIEnv* jniEnv, const V8LocalContext& v8Context,
             jstring& mResourceName, jint& mResourceLineOffset, jint& mResourceColumnOffset, jint& mScriptId, jboolean& mIsWASM, jboolean& mIsModule);
 
+        static inline V8LocalString ToV8String(const V8LocalContext& v8Context, const char* str) {
+            return v8::String::NewFromUtf8(v8Context->GetIsolate(), str).ToLocalChecked();
+        }
+
         V8LocalString ToV8String(JNIEnv* jniEnv, const V8LocalContext& v8Context, jstring& mString);
 
         V8LocalValue ToV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobject& obj);
+
+        std::unique_ptr<V8LocalObject[]> ToV8Objects(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mObjects);
+
+        std::unique_ptr<V8LocalString[]> ToV8Strings(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mStrings);
 
         std::unique_ptr<V8LocalValue[]> ToV8Values(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mValues);
 

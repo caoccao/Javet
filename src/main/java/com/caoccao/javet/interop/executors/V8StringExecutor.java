@@ -22,8 +22,8 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
-
-import java.util.Objects;
+import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 /**
  * The type V8 string executor.
@@ -90,6 +90,15 @@ public class V8StringExecutor extends BaseV8Executor {
     @CheckReturnValue
     public V8Script compileV8Script(boolean resultRequired) throws JavetException {
         return v8Runtime.compileV8Script(getScriptString(), getCachedData(), v8ScriptOrigin, resultRequired);
+    }
+
+    @Override
+    @CheckReturnValue
+    public V8ValueFunction compileV8ValueFunction(
+            String[] arguments, V8ValueObject[] contextExtensions)
+            throws JavetException {
+        return v8Runtime.compileV8ValueFunction(
+                getScriptString(), getCachedData(), v8ScriptOrigin, arguments, contextExtensions);
     }
 
     @Override

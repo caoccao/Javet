@@ -157,6 +157,18 @@ public final class V8Internal {
         return v8Runtime.get(iV8ValueObject, key);
     }
 
+    public byte[] getCachedData(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.getCachedData(iV8ValueFunction);
+    }
+
+    public byte[] getCachedData(IV8Module iV8Module) throws JavetException {
+        return v8Runtime.getCachedData(iV8Module);
+    }
+
+    public byte[] getCachedData(IV8Script iV8Script) throws JavetException {
+        return v8Runtime.getCachedData(iV8Script);
+    }
+
     public int getIdentityHash(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Runtime.getIdentityHash(iV8ValueReference);
     }
@@ -246,10 +258,6 @@ public final class V8Internal {
         return v8Runtime.moduleEvaluate(iV8Module, resultRequired);
     }
 
-    public byte[] moduleGetCachedData(IV8Module iV8Module) throws JavetException {
-        return v8Runtime.moduleGetCachedData(iV8Module);
-    }
-
     @CheckReturnValue
     public V8ValueError moduleGetException(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleGetException(iV8Module);
@@ -336,10 +344,6 @@ public final class V8Internal {
 
     public boolean sameValue(IV8ValueObject iV8ValueObject1, IV8ValueObject iV8ValueObject2) {
         return v8Runtime.sameValue(iV8ValueObject1, iV8ValueObject2);
-    }
-
-    public byte[] scriptGetCachedData(IV8Script iV8Script) throws JavetException {
-        return v8Runtime.scriptGetCachedData(iV8Script);
     }
 
     public <T extends V8Value> T scriptRun(

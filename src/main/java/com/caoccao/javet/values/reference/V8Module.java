@@ -60,7 +60,7 @@ public class V8Module extends V8ValueReference implements IV8Module {
 
     @Override
     public byte[] getCachedData() throws JavetException {
-        return checkV8Runtime().getV8Internal().moduleGetCachedData(this);
+        return checkV8Runtime().getV8Internal().getCachedData(this);
     }
 
     @Override

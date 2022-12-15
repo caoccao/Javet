@@ -27,6 +27,8 @@ import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
+import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.io.File;
 
@@ -103,6 +105,43 @@ public interface IV8Executor extends IV8Executable {
     default void compileV8ScriptVoid() throws JavetException {
         compileV8Script(false);
     }
+
+    /**
+     * Compile V8 value function.
+     *
+     * @return the V8 value function
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @CheckReturnValue
+    default V8ValueFunction compileV8ValueFunction() throws JavetException {
+        return compileV8ValueFunction(null, null);
+    }
+
+    /**
+     * Compile V8 value function.
+     *
+     * @param arguments the arguments
+     * @return the V8 value function
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @CheckReturnValue
+    default V8ValueFunction compileV8ValueFunction(String[] arguments) throws JavetException {
+        return compileV8ValueFunction(arguments, null);
+    }
+
+    /**
+     * Compile V8 value function.
+     *
+     * @param arguments         the arguments
+     * @param contextExtensions the context extensions
+     * @return the V8 value function
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @CheckReturnValue
+    V8ValueFunction compileV8ValueFunction(String[] arguments, V8ValueObject[] contextExtensions) throws JavetException;
 
     /**
      * Get cached data.

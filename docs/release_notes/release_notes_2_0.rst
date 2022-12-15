@@ -5,8 +5,9 @@ Release Notes 2.0.x
 2.0.3 V8 v10.9
 --------------
 
-* Added ``getCachedData`` to ``IV8Executor``, ``V8Module`` and ``V8Script``
-* Added ``cachedData`` to ``V8StringExecutor`` so that module and script supports cached data
+* Added ``compileV8ValueFunction`` to ``IV8Executor``
+* Added ``getCachedData`` to ``IV8Executor``, ``V8ValueFunction``, ``V8Module`` and ``V8Script``
+* Added ``cachedData`` to ``V8StringExecutor`` so that function, module and script support cached data
 
 2.0.2 V8 v10.8
 --------------

@@ -548,6 +548,31 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Compile V8 value function.
+     *
+     * @param scriptString      the script string
+     * @param cachedData        the cached data
+     * @param v8ScriptOrigin    the V8 script origin
+     * @param arguments         the arguments
+     * @param contextExtensions the context extensions
+     * @return the V8 value function
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @CheckReturnValue
+    @SuppressWarnings("RedundantThrows")
+    public V8ValueFunction compileV8ValueFunction(
+            String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin,
+            String[] arguments, V8ValueObject[] contextExtensions)
+            throws JavetException {
+        return (V8ValueFunction) v8Native.compileFunction(
+                handle, scriptString, cachedData, v8ScriptOrigin.getResourceName(),
+                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(),
+                arguments, contextExtensions);
+    }
+
+    /**
      * Contains a V8 module by resource name.
      *
      * @param resourceName the resource name
@@ -1047,6 +1072,48 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     <T extends V8Value> T get(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return (T) v8Native.get(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
+    }
+
+    /**
+     * Get cached data from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    byte[] getCachedData(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Native.getCachedData(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
+     * Get cached data from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    byte[] getCachedData(IV8Module iV8Module) throws JavetException {
+        return v8Native.getCachedData(
+                handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
+     * Get cached data from a script.
+     *
+     * @param iV8Script the V8 script
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    byte[] getCachedData(IV8Script iV8Script) throws JavetException {
+        return v8Native.getCachedData(
+                handle, iV8Script.getHandle(), iV8Script.getType().getId());
     }
 
     /**
@@ -1762,20 +1829,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Get cached data from a module.
-     *
-     * @param iV8Module the V8 module
-     * @return the cached data
-     * @throws JavetException the javet exception
-     * @since 2.0.3
-     */
-    @SuppressWarnings("RedundantThrows")
-    byte[] moduleGetCachedData(IV8Module iV8Module) throws JavetException {
-        return v8Native.scriptOrModuleGetCachedData(
-                handle, iV8Module.getHandle(), iV8Module.getType().getId());
-    }
-
-    /**
      * Gets an error from a module.
      *
      * @param iV8Module the V8 module
@@ -2385,20 +2438,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     boolean sameValue(IV8ValueObject iV8ValueObject1, IV8ValueObject iV8ValueObject2) {
         return v8Native.sameValue(handle, iV8ValueObject1.getHandle(), iV8ValueObject2.getHandle());
-    }
-
-    /**
-     * Get cached data from a script.
-     *
-     * @param iV8Script the V8 script
-     * @return the cached data
-     * @throws JavetException the javet exception
-     * @since 2.0.3
-     */
-    @SuppressWarnings("RedundantThrows")
-    byte[] scriptGetCachedData(IV8Script iV8Script) throws JavetException {
-        return v8Native.scriptOrModuleGetCachedData(
-                handle, iV8Script.getHandle(), iV8Script.getType().getId());
     }
 
     /**

@@ -31,8 +31,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
 
     @Test
     public void testCachedData() throws JavetException {
+        String codeString = "Object.a = 1";
         byte[] cachedData;
-        IV8Executor iV8Executor = v8Runtime.getExecutor("Object.a = 1").setResourceName("./test.js");
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
         try (V8Module v8Module = iV8Executor.compileV8Module()) {
             byte[] uninitializedCachedData = v8Module.getCachedData();
             assertTrue(uninitializedCachedData != null && uninitializedCachedData.length > 0);
@@ -47,7 +48,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         }
         v8Runtime.getExecutor("Object.a = undefined").executeVoid();
         // Cached is only accepted if the source code matches.
-        iV8Executor = v8Runtime.getExecutor("Object.a = 1", cachedData).setResourceName("./test.js");
+        iV8Executor = v8Runtime.getExecutor(codeString, cachedData).setResourceName("./test.js");
         try (V8Module v8Module = iV8Executor.compileV8Module()) {
             byte[] uninitializedCachedData = v8Module.getCachedData();
             assertTrue(uninitializedCachedData != null && uninitializedCachedData.length > 0);

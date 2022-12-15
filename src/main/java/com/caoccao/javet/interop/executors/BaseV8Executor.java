@@ -57,18 +57,6 @@ public abstract class BaseV8Executor implements IV8Executor {
     }
 
     @Override
-    @CheckReturnValue
-    public abstract V8Module compileV8Module(boolean resultRequired) throws JavetException;
-
-    @Override
-    @CheckReturnValue
-    public abstract V8Script compileV8Script(boolean resultRequired) throws JavetException;
-
-    @Override
-    @CheckReturnValue
-    public abstract <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
-
-    @Override
     public V8Runtime getV8Runtime() {
         return v8Runtime;
     }

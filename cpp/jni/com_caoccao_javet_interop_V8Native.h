@@ -89,6 +89,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    compileFunction
+ * Signature: (JLjava/lang/String;[BLjava/lang/String;IIIZ[Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compileFunction
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jstring, jint, jint, jint, jboolean, jobjectArray, jobjectArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    contextGet
  * Signature: (JJII)Ljava/lang/Object;
  */
@@ -270,6 +278,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
   (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getCachedData
+ * Signature: (JJI)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_getCachedData
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -758,14 +774,6 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
   (JNIEnv *, jobject, jlong, jlong, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    scriptOrModuleGetCachedData
- * Signature: (JJI)[B
- */
-JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_scriptOrModuleGetCachedData
-  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
