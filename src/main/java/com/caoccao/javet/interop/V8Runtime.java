@@ -934,6 +934,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets arguments from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the arguments
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    String[] functionGetArguments(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Native.functionGetArguments(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
      * Gets the V8 context.
      *
      * @param iV8ValueFunction the V8 value function

@@ -88,6 +88,8 @@ public interface IV8Native {
 
     boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    String[] functionGetArguments(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object functionGetScopeInfos(

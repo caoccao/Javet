@@ -209,6 +209,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionDisca
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionGetArguments
+ * Signature: (JJI)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetArguments
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionGetContext
  * Signature: (JJI)Ljava/lang/Object;
  */

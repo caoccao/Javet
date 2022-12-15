@@ -334,6 +334,15 @@ public interface IV8ValueFunction extends IV8ValueObject {
     boolean discardCompiled() throws JavetException;
 
     /**
+     * Gets arguments.
+     *
+     * @return the arguments
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    String[] getArguments() throws JavetException;
+
+    /**
      * Gets cached data from a function.
      *
      * @return the cached data

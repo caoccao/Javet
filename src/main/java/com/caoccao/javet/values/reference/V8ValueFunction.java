@@ -125,6 +125,11 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public String[] getArguments() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionGetArguments(this);
+    }
+
+    @Override
     public byte[] getCachedData() throws JavetException {
         return checkV8Runtime().getV8Internal().getCachedData(this);
     }

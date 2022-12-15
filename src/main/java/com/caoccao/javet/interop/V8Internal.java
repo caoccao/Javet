@@ -110,6 +110,10 @@ public final class V8Internal {
         return v8Runtime.functionDiscardCompiled(iV8ValueFunction);
     }
 
+    public String[] functionGetArguments(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.functionGetArguments(iV8ValueFunction);
+    }
+
     @CheckReturnValue
     public V8Context functionGetContext(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.functionGetContext(iV8ValueFunction);

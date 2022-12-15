@@ -74,6 +74,7 @@ namespace Javet {
 #endif
 
         static jclass jclassByteBuffer;
+        static jclass jclassString;
 
         static jclass jclassV8Host;
         static jmethodID jmethodIDV8HostIsLibraryReloadable;
@@ -111,6 +112,7 @@ namespace Javet {
         */
         void Initialize(JNIEnv* jniEnv) {
             jclassByteBuffer = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/nio/ByteBuffer"));
+            jclassString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/lang/String"));
 
             jclassV8Host = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Host"));
             jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
@@ -763,6 +765,32 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionDisca
         }
     }
     return false;
+}
+
+JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetArguments
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_FUNCTION(v8ValueType)) {
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
+        auto v8InternalShared = v8InternalFunction.shared();
+        if (IS_USER_DEFINED_FUNCTION(v8InternalShared) && v8InternalShared.is_wrapped()) {
+            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+            auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
+            auto wrappedArguments = v8InternalScript.wrapped_arguments();
+            auto length = wrappedArguments.length();
+            if (length > 0) {
+                jobjectArray arguments = jniEnv->NewObjectArray(length, Javet::V8Native::jclassString, nullptr);
+                for (int i = 0; i < length; ++i) {
+                    auto v8InternalObjectHandle = v8::internal::Handle(wrappedArguments.get(i), v8InternalIsolate);
+                    auto v8LocalString = v8::Utils::ToLocal(v8InternalObjectHandle).As<v8::String>();
+                    jstring argument = Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalString);
+                    jniEnv->SetObjectArrayElement(arguments, i, argument);
+                }
+                return arguments;
+            }
+        }
+    }
+    return nullptr;
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetContext
