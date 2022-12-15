@@ -456,6 +456,17 @@ public interface IV8ValueFunction extends IV8ValueObject {
     }
 
     /**
+     * Is wrapped function.
+     * <p>
+     * Wrapped function means the source code is wrapped in the function.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    boolean isWrapped() throws JavetException;
+
+    /**
      * Sets the V8 context.
      *
      * @param v8Context the V8 context

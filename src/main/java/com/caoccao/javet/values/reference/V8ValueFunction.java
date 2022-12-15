@@ -190,6 +190,11 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
+    public boolean isWrapped() throws JavetException {
+        return checkV8Runtime().getV8Internal().functionIsWrapped(this);
+    }
+
+    @Override
     public boolean setContext(V8Context v8Context) throws JavetException {
         Objects.requireNonNull(v8Context, ERROR_V8_CONTEXT_CANNOT_BE_NULL);
         return checkV8Runtime().getV8Internal().functionSetContext(this, v8Context);

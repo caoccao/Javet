@@ -6,7 +6,8 @@ Release Notes 2.0.x
 --------------
 
 * Added ``compileV8ValueFunction`` to ``IV8Executor``
-* Added ``getCachedData`` to ``IV8Executor``, ``V8ValueFunction``, ``V8Module`` and ``V8Script``
+* Added ``getCachedData`` to ``IV8Executor``, ``V8Module`` and ``V8Script``
+* Added ``getCachedData``, ``isWrapped`` to ``IV8ValueFunction``
 * Added ``cachedData`` to ``V8StringExecutor`` so that function, module and script support cached data
 
 2.0.2 V8 v10.8

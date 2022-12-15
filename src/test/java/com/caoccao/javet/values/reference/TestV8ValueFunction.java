@@ -594,15 +594,18 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testCompileV8ValueFunction() throws JavetException {
-        IV8Executor iV8Executor = v8Runtime.getExecutor("return a + b").setResourceName("./test.js");
+        String codeString = "return a + b";
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
         try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(
                 new String[]{"a", "b"}, null)) {
             assertEquals(3, v8ValueFunction.callInteger(null, 1, 2));
+            assertEquals(codeString, v8ValueFunction.getSourceCode());
         }
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("let x = {a:1,b:2}; x;").execute()) {
             try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(
                     null, new V8ValueObject[]{v8ValueObject})) {
                 assertEquals(3, v8ValueFunction.callInteger(null));
+                assertEquals(codeString, v8ValueFunction.getSourceCode());
             }
         }
     }
@@ -1368,6 +1371,24 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         } finally {
             v8Runtime.lowMemoryNotification();
         }
+    }
+
+    @Test
+    public void testIsWrapped() throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor("return 1").compileV8ValueFunction()) {
+            assertTrue(v8ValueFunction.isWrapped());
+        }
+        Stream.of(
+                "JSON.stringify",
+                "() => 0").forEach(codeString -> {
+            try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor("JSON.stringify").execute()) {
+                assertFalse(
+                        v8ValueFunction.isWrapped(),
+                        MessageFormat.format("[{0}] should not be a wrapped function.", codeString));
+            } catch (JavetException e) {
+                fail(MessageFormat.format("[{0}] failed with error {1}", codeString, e.getMessage()));
+            }
+        });
     }
 
     @Test

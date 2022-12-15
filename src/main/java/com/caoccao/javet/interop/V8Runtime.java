@@ -1005,6 +1005,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Is the function wrapped.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return true : yes, false : no
+     * @since 2.0.3
+     */
+    boolean functionIsWrapped(IV8ValueFunction iV8ValueFunction) {
+        return v8Native.functionIsWrapped(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
      * Sets the V8 context.
      *
      * @param iV8ValueFunction the V8 value function

@@ -249,6 +249,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionIsCom
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionIsWrapped
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionIsWrapped
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionSetContext
  * Signature: (JJILjava/lang/Object;)Z
  */
