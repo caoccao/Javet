@@ -689,7 +689,7 @@ namespace Javet {
                 return ToV8Long(v8Context, longObject);
             }
             else if (IS_JAVA_ZONED_DATE_TIME(jniEnv, obj)) {
-                jlong longObject = (jlong)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueZonedDateTimeToPrimitive);
+                jlong longObject = (jlong)jniEnv->CallLongMethod(obj, jmethodIDV8ValueZonedDateTimeToPrimitive);
                 return ToV8Date(v8Context, longObject);
             }
             else if (IS_JAVA_BIG_INTEGER(jniEnv, obj)) {

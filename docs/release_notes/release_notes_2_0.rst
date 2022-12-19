@@ -9,6 +9,7 @@ Release Notes 2.0.x
 * Added ``getCachedData`` to ``IV8Executor``, ``V8Module`` and ``V8Script``
 * Added ``getCachedData``, ``isWrapped``, ``getArguments`` to ``IV8ValueFunction``
 * Added ``cachedData`` to ``V8StringExecutor`` so that function, module and script support cached data
+* Fixed a bug in ``ZonedDateTime`` conversion for Android
 
 2.0.2 V8 v10.8
 --------------
