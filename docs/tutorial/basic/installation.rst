@@ -91,17 +91,16 @@ Mac OS arm64                Temporary (:doc:`../../faq/environment/can_javet_sup
 Android
 -------
 
-=========================== =======================================================================================================================
-OS                          Compatible
-=========================== =======================================================================================================================
-Android arm                 Yes (ABI >= 23)
-Android arm64               Yes (ABI >= 23)
-Android x86                 Yes (ABI >= 23)
-Android x86_64              Yes (ABI >= 23)
-=========================== =======================================================================================================================
+Android arm, arm64, x86, x86_64 are supported.
+
+==== ================== ====================
+ABI  Javet Version      V8 Version
+==== ================== ====================
+21+  v1.0.3 - v1.0.7    v9.5 - v9.6
+23+  v1.1.0+            v9.7+
+==== ================== ====================
 
 .. caution::
 
     * Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.
     * If you need Node.js features on Android, please refer to project `Javenode <https://github.com/caoccao/Javenode>`_.
-    * If you need ABI version 21/22, please use Javet v1.0.x or contact the maintainer for details.

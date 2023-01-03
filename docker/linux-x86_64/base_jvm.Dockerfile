@@ -32,13 +32,13 @@ RUN apt-get update --yes \
 	&& apt-get clean --yes
 
 # Install CMake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4-linux-x86_64.sh \
-	&& chmod 755 cmake-3.21.4-linux-x86_64.sh \
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1-linux-x86_64.sh \
+	&& chmod 755 cmake-3.25.1-linux-x86_64.sh \
 	&& mkdir -p /usr/lib/cmake \
-	&& ./cmake-3.21.4-linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/lib/cmake \
+	&& ./cmake-3.25.1-linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/lib/cmake \
 	&& ln -sf /usr/lib/cmake/bin/cmake /usr/bin/cmake \
 	&& ln -sf /usr/lib/cmake/bin/cmake /bin/cmake \
-	&& rm cmake-3.21.4-linux-x86_64.sh
+	&& rm cmake-3.25.1-linux-x86_64.sh
 
 # Prepare Javet Build Environment
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
