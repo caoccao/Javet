@@ -68,7 +68,6 @@ set(importLibraries)
 set(JAVET_LIB_PREFIX)
 set(JAVET_LIB_TYPE)
 set(JAVET_LIB_SYSTEM)
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
 if(DEFINED ENABLE_LOGGING)
@@ -77,6 +76,7 @@ endif()
 
 # Preparation
 if(DEFINED V8_DIR)
+    set(CMAKE_CXX_STANDARD 20)
     if(CMAKE_SYSTEM_NAME STREQUAL "Android")
         if(CMAKE_ANDROID_ARCH STREQUAL "arm64")
             set(V8_RELEASE_DIR ${V8_DIR}/out.gn/arm64.release)
@@ -107,6 +107,7 @@ if(DEFINED V8_DIR)
     set(JAVET_LIB_TYPE "v8")
 endif()
 if(DEFINED NODE_DIR)
+    set(CMAKE_CXX_STANDARD 17)
     list(APPEND includeDirs
         ${NODE_DIR}/deps/uv/include
         ${NODE_DIR}/deps/v8

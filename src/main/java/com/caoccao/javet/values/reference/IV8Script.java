@@ -22,6 +22,8 @@ import com.caoccao.javet.interop.IV8Executable;
 import com.caoccao.javet.values.V8Value;
 
 public interface IV8Script extends IV8ValueReference, IV8Executable {
+    byte[] getCachedData() throws JavetException;
+
     String getResourceName();
 
     void setResourceName(String resourceName);

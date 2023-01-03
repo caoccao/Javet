@@ -110,6 +110,10 @@ public final class V8Internal {
         return v8Runtime.functionDiscardCompiled(iV8ValueFunction);
     }
 
+    public String[] functionGetArguments(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.functionGetArguments(iV8ValueFunction);
+    }
+
     @CheckReturnValue
     public V8Context functionGetContext(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.functionGetContext(iV8ValueFunction);
@@ -135,6 +139,10 @@ public final class V8Internal {
         return v8Runtime.functionIsCompiled(iV8ValueFunction);
     }
 
+    public boolean functionIsWrapped(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionIsWrapped(iV8ValueFunction);
+    }
+
     public boolean functionSetContext(
             IV8ValueFunction iV8ValueFunction, V8Context v8Context) throws JavetException {
         return v8Runtime.functionSetContext(iV8ValueFunction, v8Context);
@@ -155,6 +163,18 @@ public final class V8Internal {
     @CheckReturnValue
     public <T extends V8Value> T get(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return v8Runtime.get(iV8ValueObject, key);
+    }
+
+    public byte[] getCachedData(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.getCachedData(iV8ValueFunction);
+    }
+
+    public byte[] getCachedData(IV8Module iV8Module) throws JavetException {
+        return v8Runtime.getCachedData(iV8Module);
+    }
+
+    public byte[] getCachedData(IV8Script iV8Script) throws JavetException {
+        return v8Runtime.getCachedData(iV8Script);
     }
 
     public int getIdentityHash(IV8ValueReference iV8ValueReference) throws JavetException {

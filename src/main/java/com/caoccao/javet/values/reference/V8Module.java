@@ -31,6 +31,7 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public class V8Module extends V8ValueReference implements IV8Module {
+
     /**
      * The Resource name.
      *
@@ -55,6 +56,11 @@ public class V8Module extends V8ValueReference implements IV8Module {
     @CheckReturnValue
     public <T extends V8Value> T evaluate(boolean resultRequired) throws JavetException {
         return checkV8Runtime().getV8Internal().moduleEvaluate(this, resultRequired);
+    }
+
+    @Override
+    public byte[] getCachedData() throws JavetException {
+        return checkV8Runtime().getV8Internal().getCachedData(this);
     }
 
     @Override

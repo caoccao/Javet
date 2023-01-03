@@ -65,9 +65,16 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object compile(
-            long v8RuntimeHandle, String script, boolean returnResult,
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
+
+    @Override
+    public native Object compileFunction(
+            long v8RuntimeHandle, String script, byte[] cachedData,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean wasm,
+            String[] arguments, Object[] contextExtensions);
 
     @Override
     public native Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
@@ -101,7 +108,7 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object execute(
-            long v8RuntimeHandle, String script, boolean returnResult,
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
@@ -116,6 +123,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native String[] functionGetArguments(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -135,6 +145,9 @@ class V8Native implements IV8Native {
     public native boolean functionIsCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native boolean functionIsWrapped(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
 
     @Override
@@ -147,6 +160,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    @Override
+    public native byte[] getCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object getGlobalObject(long v8RuntimeHandle);

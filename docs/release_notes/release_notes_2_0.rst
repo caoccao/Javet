@@ -2,6 +2,17 @@
 Release Notes 2.0.x
 ===================
 
+2.0.3 V8 v10.9
+--------------
+
+* Upgraded V8 to ``v10.9.194.9`` `(2022-12-20) <https://v8.dev/blog/v8-release-109>`_
+* Upgraded to C++ 20 for V8
+* Added ``compileV8ValueFunction`` to ``IV8Executor``
+* Added ``getCachedData`` to ``IV8Executor``, ``V8Module`` and ``V8Script``
+* Added ``getCachedData``, ``isWrapped``, ``getArguments`` to ``IV8ValueFunction``
+* Added ``cachedData`` to ``V8StringExecutor`` so that function, module and script support cached data
+* Fixed a bug in ``ZonedDateTime`` conversion for Android
+
 2.0.2 V8 v10.8
 --------------
 

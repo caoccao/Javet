@@ -334,6 +334,24 @@ public interface IV8ValueFunction extends IV8ValueObject {
     boolean discardCompiled() throws JavetException;
 
     /**
+     * Gets arguments.
+     *
+     * @return the arguments
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    String[] getArguments() throws JavetException;
+
+    /**
+     * Gets cached data from a function.
+     *
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    byte[] getCachedData() throws JavetException;
+
+    /**
      * Gets the V8 context.
      *
      * @return the V8 context
@@ -445,6 +463,17 @@ public interface IV8ValueFunction extends IV8ValueObject {
     default boolean isGeneratorFunction() throws JavetException {
         return hasInternalType(V8ValueInternalType.GeneratorFunction);
     }
+
+    /**
+     * Is wrapped function.
+     * <p>
+     * Wrapped function means the source code is wrapped in the function.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    boolean isWrapped() throws JavetException;
 
     /**
      * Sets the V8 context.

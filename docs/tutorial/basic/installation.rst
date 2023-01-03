@@ -14,7 +14,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>2.0.2</version>
+        <version>2.0.3</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
@@ -29,18 +29,18 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:2.0.2") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet:2.0.3") // Linux and Windows (x86_64)
     implementation("com.caoccao.javet:javet-macos:2.0.2") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:2.0.2") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-android:2.0.3") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 -----------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:2.0.2' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet:2.0.3' // Linux and Windows (x86_64)
     implementation 'com.caoccao.javet:javet-macos:2.0.2' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:2.0.2' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-android:2.0.3' // Android (arm, arm64, x86 and x86_64)
 
 OS Compatibility
 ================
@@ -91,17 +91,16 @@ Mac OS arm64                Temporary (:doc:`../../faq/environment/can_javet_sup
 Android
 -------
 
-=========================== =======================================================================================================================
-OS                          Compatible
-=========================== =======================================================================================================================
-Android arm                 Yes (ABI >= 23)
-Android arm64               Yes (ABI >= 23)
-Android x86                 Yes (ABI >= 23)
-Android x86_64              Yes (ABI >= 23)
-=========================== =======================================================================================================================
+Android arm, arm64, x86, x86_64 are supported.
+
+==== ================== ====================
+ABI  Javet Version      V8 Version
+==== ================== ====================
+21+  v1.0.3 - v1.0.7    v9.5 - v9.6
+23+  v1.1.0+            v9.7+
+==== ================== ====================
 
 .. caution::
 
     * Only V8 mode is supported for Android. Supporting Node.js mode implies huge amount of work, but is not mission impossible. Please contact the maintainer for detail.
     * If you need Node.js features on Android, please refer to project `Javenode <https://github.com/caoccao/Javenode>`_.
-    * If you need ABI version 21/22, please use Javet v1.0.x or contact the maintainer for details.

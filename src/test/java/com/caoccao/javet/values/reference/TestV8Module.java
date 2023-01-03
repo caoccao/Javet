@@ -28,6 +28,43 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Module extends BaseTestJavetRuntime {
+
+    @Test
+    public void testCachedData() throws JavetException {
+        String codeString = "Object.a = 1";
+        byte[] cachedData;
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
+        try (V8Module v8Module = iV8Executor.compileV8Module()) {
+            byte[] uninitializedCachedData = v8Module.getCachedData();
+            assertTrue(uninitializedCachedData != null && uninitializedCachedData.length > 0);
+            try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                byte[] initializedCachedData = v8Module.getCachedData();
+                assertTrue(initializedCachedData != null && initializedCachedData.length > 0);
+                assertArrayEquals(initializedCachedData, uninitializedCachedData);
+            }
+            assertEquals(1, v8Runtime.getExecutor("Object.a").executeInteger());
+            cachedData = uninitializedCachedData;
+        }
+        v8Runtime.getExecutor("Object.a = undefined").executeVoid();
+        // Cached is only accepted if the source code matches.
+        iV8Executor = v8Runtime.getExecutor(codeString, cachedData).setResourceName("./test.js");
+        try (V8Module v8Module = iV8Executor.compileV8Module()) {
+            byte[] uninitializedCachedData = v8Module.getCachedData();
+            assertTrue(uninitializedCachedData != null && uninitializedCachedData.length > 0);
+            try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
+                assertTrue(v8ValuePromise.isFulfilled());
+                byte[] initializedCachedData = v8Module.getCachedData();
+                assertTrue(initializedCachedData != null && initializedCachedData.length > 0);
+                assertArrayEquals(initializedCachedData, uninitializedCachedData);
+            }
+            assertEquals(1, v8Runtime.getExecutor("Object.a").executeInteger());
+        }
+        v8Runtime.getExecutor("Object.a = undefined").executeVoid();
+        iV8Executor.executeVoid();
+        assertEquals(1, v8Runtime.getExecutor("Object.a").executeInteger());
+    }
+
     @Test
     public void testExecute() throws JavetException {
         IV8Executor iV8Executor = v8Runtime.getExecutor(

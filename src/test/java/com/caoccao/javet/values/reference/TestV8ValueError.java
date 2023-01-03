@@ -129,6 +129,34 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testThrowInCatch() {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void throwError() throws IOException {
+                throw new IOException("1");
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            try {
+                v8Runtime.getExecutor(
+                        "try { a.throwError(); } catch (e) { throw new Error('2'); }").executeVoid();
+                fail("Failed to catch the JS error.");
+            } catch (JavetException e) {
+                assertEquals("Error: 2", e.getMessage());
+            }
+            v8ValueObject.unbind(anonymous);
+            v8Runtime.getGlobalObject().delete("a");
+        } catch (JavetException e) {
+            e.printStackTrace();
+            fail("Failed to hide the error.");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
     public void testThrowWithoutCatch() {
         try {
             v8Runtime.getExecutor("throw new Error('test');").executeVoid();

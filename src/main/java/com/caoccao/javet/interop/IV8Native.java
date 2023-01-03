@@ -44,9 +44,15 @@ public interface IV8Native {
     void closeV8Runtime(long v8RuntimeHandle);
 
     Object compile(
-            long v8RuntimeHandle, String script, boolean returnResult,
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
+
+    Object compileFunction(
+            long v8RuntimeHandle, String script, byte[] cachedData,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean wasm,
+            String[] arguments, Object[] contextExtensions);
 
     Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
 
@@ -69,7 +75,7 @@ public interface IV8Native {
     boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     Object execute(
-            long v8RuntimeHandle, String script, boolean returnResult,
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
@@ -81,6 +87,8 @@ public interface IV8Native {
             long sourceV8ValueHandle, int sourceV8ValueType);
 
     boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String[] functionGetArguments(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -94,6 +102,8 @@ public interface IV8Native {
 
     boolean functionIsCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    boolean functionIsWrapped(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
 
     boolean functionSetScriptSource(
@@ -103,6 +113,8 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
     Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    byte[] getCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getGlobalObject(long v8RuntimeHandle);
 

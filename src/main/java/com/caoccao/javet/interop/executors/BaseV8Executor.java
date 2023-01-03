@@ -49,27 +49,12 @@ public abstract class BaseV8Executor implements IV8Executor {
      * Instantiates a new Base V8 executor.
      *
      * @param v8Runtime the V8 runtime
-     * @since  0.7.0
+     * @since 0.7.0
      */
     public BaseV8Executor(V8Runtime v8Runtime) {
         this.v8Runtime = Objects.requireNonNull(v8Runtime);
-        this.v8ScriptOrigin = new V8ScriptOrigin();
+        v8ScriptOrigin = new V8ScriptOrigin();
     }
-
-    @Override
-    @CheckReturnValue
-    public abstract V8Module compileV8Module(boolean resultRequired) throws JavetException;
-
-    @Override
-    @CheckReturnValue
-    public abstract V8Script compileV8Script(boolean resultRequired) throws JavetException;
-
-    @Override
-    @CheckReturnValue
-    public abstract <T extends V8Value> T execute(boolean resultRequired) throws JavetException;
-
-    @Override
-    public abstract String getScriptString() throws JavetException;
 
     @Override
     public V8Runtime getV8Runtime() {

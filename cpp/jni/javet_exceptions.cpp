@@ -204,7 +204,7 @@ namespace Javet {
             }
             V8LocalString v8ErrorMessage;
             if (externalErrorMessage == nullptr) {
-                v8ErrorMessage = v8::String::NewFromUtf8(v8Isolate, defaultMessage).ToLocalChecked();
+                v8ErrorMessage = Javet::Converter::ToV8String(v8Context, defaultMessage);
             }
             else {
                 v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, externalErrorMessage);

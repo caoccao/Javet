@@ -26,7 +26,7 @@ Linux Environment
 -----------------
 
 * Ubuntu 20.04
-* CMake 3.21+
+* CMake 3.25.1+
 * JDK 8
 * Gradle 7.2+
 
@@ -46,7 +46,7 @@ Windows Environment
 * Latest Windows 10
 * Visual Studio 2019 Community
 * Visual Studio 2022 Community
-* CMake 3.23+ (comes with Visual Studio 2022)
+* CMake 3.24+ (comes with Visual Studio 2022)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
 * Gradle 7.2+
@@ -59,7 +59,7 @@ Android Environment
 * JDK 8
 * Gradle 7.2+
 * Latest Android Studio (Optional)
-* Android NDK r21e
+* Android NDK r25b
 * Android SDK 30
 
 Environment Variables

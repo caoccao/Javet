@@ -208,6 +208,25 @@ namespace Javet {
             jmethodIDJavetScriptingErrorConstructor = jniEnv->GetMethodID(jclassJavetScriptingError, "<init>", "(Lcom/caoccao/javet/values/V8Value;Ljava/lang/String;Ljava/lang/String;IIIII)V");
         }
 
+        V8ScriptCompilerCachedData* ToCachedDataPointer(JNIEnv* jniEnv, jbyteArray mCachedArray) {
+            jsize length = jniEnv->GetArrayLength(mCachedArray);
+            uint8_t* bytes = new uint8_t[length];
+            jboolean isCopy;
+            jbyte* bytePointer = jniEnv->GetByteArrayElements(mCachedArray, &isCopy);
+            memcpy(bytes, bytePointer, length);
+            jniEnv->ReleaseByteArrayElements(mCachedArray, bytePointer, JNI_ABORT);
+            return new V8ScriptCompilerCachedData(bytes, length, V8ScriptCompilerCachedDataBufferPolicy::BufferOwned);
+        }
+
+        jbyteArray ToJavaByteArray(JNIEnv* jniEnv, V8ScriptCompilerCachedData* cachedDataPointer) {
+            jbyteArray byteArray = jniEnv->NewByteArray((jsize)cachedDataPointer->length);
+            jboolean isCopy;
+            jbyte* bytePointer = jniEnv->GetByteArrayElements(byteArray, &isCopy);
+            memcpy(bytePointer, cachedDataPointer->data, cachedDataPointer->length);
+            jniEnv->ReleaseByteArrayElements(byteArray, bytePointer, JNI_COMMIT);
+            return byteArray;
+        }
+
         jobject ToExternalV8ValueArray(
             JNIEnv* jniEnv, V8Runtime* v8Runtime,
             const V8LocalContext& v8Context, const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -670,7 +689,7 @@ namespace Javet {
                 return ToV8Long(v8Context, longObject);
             }
             else if (IS_JAVA_ZONED_DATE_TIME(jniEnv, obj)) {
-                jlong longObject = (jlong)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueZonedDateTimeToPrimitive);
+                jlong longObject = (jlong)jniEnv->CallLongMethod(obj, jmethodIDV8ValueZonedDateTimeToPrimitive);
                 return ToV8Date(v8Context, longObject);
             }
             else if (IS_JAVA_BIG_INTEGER(jniEnv, obj)) {
@@ -730,12 +749,40 @@ namespace Javet {
             return ToV8Undefined(v8Context);
         }
 
+        std::unique_ptr<V8LocalObject[]> ToV8Objects(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mObjects) {
+            std::unique_ptr<V8LocalObject[]> umObjectsPointer;
+            uint32_t count = mObjects == nullptr ? 0 : jniEnv->GetArrayLength(mObjects);
+            if (count > 0) {
+                umObjectsPointer.reset(new V8LocalObject[count]);
+                for (uint32_t i = 0; i < count; ++i) {
+                    jobject element = jniEnv->GetObjectArrayElement(mObjects, i);
+                    umObjectsPointer.get()[i] = ToV8Value(jniEnv, v8Context, element).As<v8::Object>();
+                    DELETE_LOCAL_REF(jniEnv, element);
+                }
+            }
+            return umObjectsPointer;
+        }
+
+        std::unique_ptr<V8LocalString[]> ToV8Strings(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mStrings) {
+            std::unique_ptr<V8LocalString[]> umStringsPointer;
+            uint32_t count = mStrings == nullptr ? 0 : jniEnv->GetArrayLength(mStrings);
+            if (count > 0) {
+                umStringsPointer.reset(new V8LocalString[count]);
+                for (uint32_t i = 0; i < count; ++i) {
+                    jstring element = (jstring) jniEnv->GetObjectArrayElement(mStrings, i);
+                    umStringsPointer.get()[i] = ToV8String(jniEnv, v8Context, element);
+                    DELETE_LOCAL_REF(jniEnv, element);
+                }
+            }
+            return umStringsPointer;
+        }
+
         std::unique_ptr<V8LocalValue[]> ToV8Values(JNIEnv* jniEnv, const V8LocalContext& v8Context, jobjectArray& mValues) {
             std::unique_ptr<V8LocalValue[]> umValuesPointer;
-            uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
-            if (valueCount > 0) {
-                umValuesPointer.reset(new V8LocalValue[valueCount]);
-                for (uint32_t i = 0; i < valueCount; ++i) {
+            uint32_t count = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
+            if (count > 0) {
+                umValuesPointer.reset(new V8LocalValue[count]);
+                for (uint32_t i = 0; i < count; ++i) {
                     jobject element = jniEnv->GetObjectArrayElement(mValues, i);
                     umValuesPointer.get()[i] = ToV8Value(jniEnv, v8Context, element);
                     DELETE_LOCAL_REF(jniEnv, element);

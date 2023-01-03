@@ -1,5 +1,5 @@
 '''
-  Copyright (c) 2021-2022 caoccao.com Sam Cao
+  Copyright (c) 2021-2023 caoccao.com Sam Cao
   All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 import argparse
 import importlib
 import logging
+import os
 import pathlib
 import platform
 import sys
@@ -46,32 +47,13 @@ class PatchV8Build(object):
       '-Werror',
     ]
     self._common_ninja_include_cflags = [
+      '-Wno-deprecated-copy-with-user-provided-copy',
+      '-Wno-deprecated-declarations',
       '-Wno-invalid-offsetof',
       '-Wno-range-loop-construct',
-      '-Wno-deprecated-copy-with-user-provided-copy',
     ]
-    self._common_ninja_files = [
-      'out.gn/arm.release/obj/v8_base_without_compiler.ninja',
-      'out.gn/arm.release/obj/v8_compiler.ninja',
-      'out.gn/arm.release/obj/v8_initializers.ninja',
-      'out.gn/arm.release/obj/v8_init.ninja',
-      'out.gn/arm.release/clang_x86_v8_arm/obj/v8_base_without_compiler.ninja',
-      'out.gn/arm64.release/obj/v8_base_without_compiler.ninja',
-      'out.gn/arm64.release/obj/v8_compiler.ninja',
-      'out.gn/arm64.release/obj/v8_initializers.ninja',
-      'out.gn/arm64.release/obj/v8_init.ninja',
-      'out.gn/arm64.release/clang_x64_v8_arm64/obj/v8_base_without_compiler.ninja',
-      'out.gn/ia32.release/obj/v8_base_without_compiler.ninja',
-      'out.gn/ia32.release/obj/v8_compiler.ninja',
-      'out.gn/ia32.release/obj/v8_initializers.ninja',
-      'out.gn/ia32.release/obj/v8_init.ninja',
-      'out.gn/ia32.release/clang_x86/obj/v8_base_without_compiler.ninja',
-      'out.gn/x64.release/obj/v8_base_without_compiler.ninja',
-      'out.gn/x64.release/obj/v8_compiler.ninja',
-      'out.gn/x64.release/obj/v8_initializers.ninja',
-      'out.gn/x64.release/obj/v8_init.ninja',
-      'out.gn/x64.release/clang_x64/obj/v8_base_without_compiler.ninja',
-    ]
+    self._common_ninja_file_root = 'out.gn'
+    self._common_ninja_file_extension = '.ninja'
 
     self._parse_args()
 
@@ -88,28 +70,31 @@ class PatchV8Build(object):
     self._v8_repo_path = pathlib.Path(args.path).resolve().absolute()
 
   def _patch_monolith(self):
-    for ninja in self._common_ninja_files:
-      file_path = self._v8_repo_path.joinpath(ninja).resolve().absolute()
-      if file_path.exists():
-        original_buffer = file_path.read_bytes()
-        lines = []
-        for line in original_buffer.decode('utf-8').split(self._line_separator):
-          if line.startswith(self._common_ninja_line_cflags):
-            flags = line.split(' ')
-            for include_flag in self._common_ninja_include_cflags:
-              if include_flag not in flags:
-                flags.append(include_flag)
-            for exclude_flag in self._common_ninja_exclude_cflags:
-              if exclude_flag in flags:
-                flags.remove(exclude_flag)
-            line = ' '.join(flags)
-          lines.append(line)
-        new_buffer = self._line_separator.join(lines).encode('utf-8')
-        if original_buffer == new_buffer:
-          logging.warning('Skipped %s.', str(file_path))
-        else:
-          file_path.write_bytes(new_buffer)
-          logging.info('Patched %s.', str(file_path))
+    out_gn_path = self._v8_repo_path.joinpath(self._common_ninja_file_root).resolve().absolute()
+    for root, dirs, file_names in os.walk(out_gn_path):
+      for file_name in file_names:
+        if file_name.endswith(self._common_ninja_file_extension):
+          file_path = pathlib.Path(root).joinpath(file_name).resolve().absolute()
+          if file_path.exists():
+            original_buffer = file_path.read_bytes()
+            lines = []
+            for line in original_buffer.decode('utf-8').split(self._line_separator):
+              if line.startswith(self._common_ninja_line_cflags):
+                flags = line.split(' ')
+                for include_flag in self._common_ninja_include_cflags:
+                  if include_flag not in flags:
+                    flags.append(include_flag)
+                for exclude_flag in self._common_ninja_exclude_cflags:
+                  if exclude_flag in flags:
+                    flags.remove(exclude_flag)
+                line = ' '.join(flags)
+              lines.append(line)
+            new_buffer = self._line_separator.join(lines).encode('utf-8')
+            if original_buffer == new_buffer:
+              logging.warning('Skipped %s.', str(file_path))
+            else:
+              file_path.write_bytes(new_buffer)
+              logging.info('Patched %s.', str(file_path))
 
   def patch(self):
     self._patch_monolith()

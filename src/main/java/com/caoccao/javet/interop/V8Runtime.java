@@ -496,6 +496,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Compile a V8 module and add that V8 module to the internal V8 module map.
      *
      * @param scriptString   the script string
+     * @param cachedData     the cached data
      * @param v8ScriptOrigin the V8 script origin
      * @param resultRequired the result required
      * @return the compiled V8 module or null
@@ -503,14 +504,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.0
      */
     @CheckReturnValue
-    public V8Module compileV8Module(String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
+    public V8Module compileV8Module(
+            String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(true);
         if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().length() == 0) {
             throw new JavetException(JavetError.ModuleNameEmpty);
         }
         Object result = v8Native.compile(
-                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
+                handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
         V8Module v8Module = null;
@@ -526,6 +528,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Compile a V8 script.
      *
      * @param scriptString   the script string
+     * @param cachedData     the cached data
      * @param v8ScriptOrigin the V8 script origin
      * @param resultRequired the result required
      * @return the V8 script
@@ -535,13 +538,38 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
     public V8Script compileV8Script(
-            String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
+            String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(false);
         return (V8Script) v8Native.compile(
-                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
+                handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
+    }
+
+    /**
+     * Compile V8 value function.
+     *
+     * @param scriptString      the script string
+     * @param cachedData        the cached data
+     * @param v8ScriptOrigin    the V8 script origin
+     * @param arguments         the arguments
+     * @param contextExtensions the context extensions
+     * @return the V8 value function
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @CheckReturnValue
+    @SuppressWarnings("RedundantThrows")
+    public V8ValueFunction compileV8ValueFunction(
+            String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin,
+            String[] arguments, V8ValueObject[] contextExtensions)
+            throws JavetException {
+        return (V8ValueFunction) v8Native.compileFunction(
+                handle, scriptString, cachedData, v8ScriptOrigin.getResourceName(),
+                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(),
+                arguments, contextExtensions);
     }
 
     /**
@@ -846,6 +874,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param <T>            the type parameter
      * @param scriptString   the script string
+     * @param cachedData     the cached data
      * @param v8ScriptOrigin the V8 script origin
      * @param resultRequired the result required
      * @return the result
@@ -854,9 +883,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @CheckReturnValue
     public <T extends V8Value> T execute(
-            String scriptString, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired) throws JavetException {
+            String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
+            throws JavetException {
         return (T) v8Native.execute(
-                handle, scriptString, resultRequired, v8ScriptOrigin.getResourceName(),
+                handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
     }
@@ -900,6 +930,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     boolean functionDiscardCompiled(IV8ValueFunction iV8ValueFunction) {
         return v8Native.functionDiscardCompiled(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
+     * Gets arguments from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the arguments
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    String[] functionGetArguments(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Native.functionGetArguments(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
     }
 
@@ -975,6 +1019,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Is the function wrapped.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return true : yes, false : no
+     * @since 2.0.3
+     */
+    boolean functionIsWrapped(IV8ValueFunction iV8ValueFunction) {
+        return v8Native.functionIsWrapped(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
      * Sets the V8 context.
      *
      * @param iV8ValueFunction the V8 value function
@@ -1045,6 +1101,48 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Get cached data from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    byte[] getCachedData(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Native.getCachedData(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId());
+    }
+
+    /**
+     * Get cached data from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    byte[] getCachedData(IV8Module iV8Module) throws JavetException {
+        return v8Native.getCachedData(
+                handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
+     * Get cached data from a script.
+     *
+     * @param iV8Script the V8 script
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.0.3
+     */
+    @SuppressWarnings("RedundantThrows")
+    byte[] getCachedData(IV8Script iV8Script) throws JavetException {
+        return v8Native.getCachedData(
+                handle, iV8Script.getHandle(), iV8Script.getType().getId());
+    }
+
+    /**
      * Gets a callback context by a handle.
      *
      * @param handle the handle
@@ -1110,6 +1208,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public IV8Executor getExecutor(String scriptString) {
         return new V8StringExecutor(this, scriptString);
+    }
+
+    /**
+     * Gets executor by a script string and cached data.
+     *
+     * @param scriptString the script string
+     * @param cachedData   the cached data
+     * @return the executor
+     * @since 2.0.3
+     */
+    public IV8Executor getExecutor(String scriptString, byte[] cachedData) {
+        return new V8StringExecutor(this, scriptString, cachedData);
     }
 
     /**

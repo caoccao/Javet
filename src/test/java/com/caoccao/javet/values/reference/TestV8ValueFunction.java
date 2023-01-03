@@ -236,6 +236,40 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testCachedData() throws JavetException {
+        String codeString = "return a + b";
+        String[] arguments = new String[]{"a", "b"};
+        byte[] cachedData;
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
+        try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(arguments)) {
+            assertNotNull(v8ValueFunction);
+            byte[] initializedCachedData = v8ValueFunction.getCachedData();
+            assertTrue(initializedCachedData != null && initializedCachedData.length > 0);
+            assertEquals(2, v8ValueFunction.callInteger(null, 1, 1));
+            cachedData = initializedCachedData;
+        }
+        // Cached is only accepted if the source code matches.
+        iV8Executor = v8Runtime.getExecutor(codeString, cachedData).setResourceName("./test.js");
+        try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(arguments)) {
+            assertNotNull(v8ValueFunction);
+            byte[] uninitializedCachedData = v8ValueFunction.getCachedData();
+            assertTrue(uninitializedCachedData != null && uninitializedCachedData.length > 0);
+            assertEquals(2, v8ValueFunction.callInteger(null, 1, 1));
+        }
+        Stream.of(
+                "JSON.stringify",
+                "() => 0").forEach(code -> {
+            try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(code).execute()) {
+                assertNull(
+                        v8ValueFunction.getCachedData(),
+                        MessageFormat.format("[{0}] should not have cached data.", code));
+            } catch (JavetException e) {
+                fail(MessageFormat.format("[{0}] failed with error {1}", code, e.getMessage()));
+            }
+        });
+    }
+
+    @Test
     public void testCallObject() throws JavetException {
         String prefixString = "const x = 1; ";
         String functionName = "function a";
@@ -567,6 +601,24 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
         assertTrue(mockCallbackReceiver.isCalled());
         v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testCompileV8ValueFunction() throws JavetException {
+        String codeString = "return a + b";
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
+        try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(
+                new String[]{"a", "b"}, null)) {
+            assertEquals(3, v8ValueFunction.callInteger(null, 1, 2));
+            assertEquals(codeString, v8ValueFunction.getSourceCode());
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("let x = {a:1,b:2}; x;").execute()) {
+            try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(
+                    null, new V8ValueObject[]{v8ValueObject})) {
+                assertEquals(3, v8ValueFunction.callInteger(null));
+                assertEquals(codeString, v8ValueFunction.getSourceCode());
+            }
+        }
     }
 
     @ParameterizedTest
@@ -1184,6 +1236,32 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGetArguments() throws JavetException {
+        String codeString = "return a + b";
+        String[] arguments = new String[]{"a", "b"};
+        IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
+        try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction(arguments)) {
+            assertNotNull(v8ValueFunction);
+            assertEquals(2, v8ValueFunction.callInteger(null, 1, 1));
+            assertArrayEquals(arguments, v8ValueFunction.getArguments());
+        }
+        try (V8ValueFunction v8ValueFunction = iV8Executor.compileV8ValueFunction()) {
+            assertNull(v8ValueFunction.getArguments());
+        }
+        Stream.of(
+                "JSON.stringify",
+                "(a) => a").forEach(code -> {
+            try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(code).execute()) {
+                assertNull(
+                        v8ValueFunction.getArguments(),
+                        MessageFormat.format("[{0}] should not have arguments.", code));
+            } catch (JavetException e) {
+                fail(MessageFormat.format("[{0}] failed with error {1}", code, e.getMessage()));
+            }
+        });
+    }
+
+    @Test
     public void testGetScopeInfosWith1Closure() throws JavetException {
         List<Boolean> options = Arrays.asList(true, false);
         Set<String> globalVariables = new HashSet<>(Arrays.asList((
@@ -1330,6 +1408,24 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         } finally {
             v8Runtime.lowMemoryNotification();
         }
+    }
+
+    @Test
+    public void testIsWrapped() throws JavetException {
+        try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor("return 1").compileV8ValueFunction()) {
+            assertTrue(v8ValueFunction.isWrapped());
+        }
+        Stream.of(
+                "JSON.stringify",
+                "() => 0").forEach(codeString -> {
+            try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
+                assertFalse(
+                        v8ValueFunction.isWrapped(),
+                        MessageFormat.format("[{0}] should not be a wrapped function.", codeString));
+            } catch (JavetException e) {
+                fail(MessageFormat.format("[{0}] failed with error {1}", codeString, e.getMessage()));
+            }
+        });
     }
 
     @Test

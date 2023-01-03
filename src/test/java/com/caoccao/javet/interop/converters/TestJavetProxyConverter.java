@@ -28,8 +28,10 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.proxy.JavetDynamicObjectFactory;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -99,6 +102,13 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertNotNull(value1);
                 assertEquals(1, value1);
                 assertEquals(1, value2);
+            }
+
+            public void expectZonedDateTime(ZonedDateTime value1, ZonedDateTime value2) {
+                assertNotNull(value1);
+                assertNotNull(value2);
+                assertEquals(253402300799L, value1.toInstant().getEpochSecond());
+                assertEquals(-2208988800L, value2.toInstant().getEpochSecond());
             }
         };
     }
@@ -634,6 +644,28 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getExecutor("a.callVarargsWithoutThis()").executeInteger());
         assertEquals(3, v8Runtime.getExecutor("a.callVarargsWithoutThis(1,2,3)").executeInteger());
         assertTrue(v8Runtime.getExecutor("a.callVarargsWithThis(1,2,3) === a").executeBoolean());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
+    public void testZonedDateTime() throws JavetException {
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        String codeString = "a.expectZonedDateTime(new Date(253402300799000), new Date(-2208988800000));";
+        v8Runtime.getExecutor(codeString).executeVoid();
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            public ZonedDateTime getZonedDateTime() {
+                return ZonedDateTime.of(
+                        9999, 12, 31, 23, 59, 59, 0,
+                        JavetDateTimeUtils.ZONE_ID_UTC);
+            }
+        };
+        v8Runtime.getGlobalObject().set("a", anonymous);
+        try (V8ValueZonedDateTime v8ValueZonedDateTime = v8Runtime.getExecutor("a.getZonedDateTime()").execute()) {
+            assertEquals(253402300799L, v8ValueZonedDateTime.getValue().toInstant().getEpochSecond());
+        }
+        assertEquals(
+                253402300799L,
+                v8Runtime.getExecutor("a.getZonedDateTime()").executeZonedDateTime().toInstant().getEpochSecond());
         v8Runtime.getGlobalObject().delete("a");
     }
 

@@ -52,6 +52,8 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
         return (T) getV8Runtime().createV8ValueUndefined();
     }
 
+    byte[] getCachedData() throws JavetException;
+
     @CheckReturnValue
     V8ValueError getException() throws JavetException;
 
