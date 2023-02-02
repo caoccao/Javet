@@ -5,6 +5,8 @@ Release Notes 2.0.x
 2.0.4 V8 v11.0
 --------------
 
+* Upgraded Node.js to ``v18.13.0`` `(2023-01-05) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.13.0>`_
+* Disabled Snapshot and VerifyNoStrongBaseObjects for Node.js.
 
 2.0.3 V8 v10.9
 --------------

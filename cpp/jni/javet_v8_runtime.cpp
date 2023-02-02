@@ -141,10 +141,7 @@ namespace Javet {
                     if (!hasMoreTasks && !nodeEnvironment->is_stopping()) {
                         // node::EmitProcessBeforeExit is thread-safe.
                         if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) { break; }
-                        {
-                            V8HandleScope innerHandleScope(v8Isolate);
-                            if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) { break; }
-                        }
+                        // Do not call { V8HandleScope innerHandleScope(v8Isolate); if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) { break; } }
                         hasMoreTasks = uv_loop_alive(&uvLoop);
                     }
                 } while (hasMoreTasks && !nodeEnvironment->is_stopping());
@@ -154,9 +151,9 @@ namespace Javet {
         int errorCode = 0;
         if (!nodeEnvironment->is_stopping()) {
             nodeEnvironment->set_trace_sync_io(false);
-            nodeEnvironment->set_snapshot_serialize_callback(V8LocalFunction());
-            nodeEnvironment->PrintInfoForSnapshotIfDebug();
-            nodeEnvironment->VerifyNoStrongBaseObjects();
+            // Do not call nodeEnvironment->set_snapshot_serialize_callback(V8LocalFunction());
+            // Do not call nodeEnvironment->PrintInfoForSnapshotIfDebug();
+            // Do not call nodeEnvironment->ForEachRealm([](node::Realm* realm) { realm->VerifyNoStrongBaseObjects(); });
             // node::EmitExit is thread-safe.
             errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(1);
         }
