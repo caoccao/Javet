@@ -28,6 +28,8 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockFS;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -255,6 +257,29 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().delete("fs");
         } finally {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, true})
+    public void testThen(boolean fulfilled) throws JavetException {
+        v8Runtime.getExecutor("const result = { fulfilled: false, rejected: false }").executeVoid();
+        try (V8ValueFunction functionFulfilled = v8Runtime.createV8ValueFunction("(r) => result.fulfilled = true");
+             V8ValueFunction functionRejected = v8Runtime.createV8ValueFunction("(r, e) => result.rejected = true");
+             V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
+             V8ValuePromise v8ValuePromise1 = v8ValuePromiseResolver.then(functionFulfilled, functionRejected);
+             V8ValuePromise v8ValuePromise2 = v8ValuePromiseResolver._catch("(e) => result.rejected = true");
+             V8ValuePromise v8ValuePromise3 = v8ValuePromiseResolver.getPromise()) {
+            v8Runtime.getGlobalObject().set("p", v8ValuePromiseResolver);
+            if (fulfilled) {
+                assertTrue(v8ValuePromise3.resolve(1));
+            } else {
+                assertTrue(v8ValuePromise3.reject(1));
+            }
+            v8Runtime.getExecutor("Promise.all([p,])").executeVoid();
+            v8Runtime.await();
+            assertEquals(fulfilled, v8Runtime.getExecutor("result.fulfilled").executeBoolean());
+            assertEquals(!fulfilled, v8Runtime.getExecutor("result.rejected").executeBoolean());
         }
     }
 }

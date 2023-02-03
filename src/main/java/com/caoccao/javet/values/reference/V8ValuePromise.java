@@ -41,8 +41,8 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
 
     @Override
     @CheckReturnValue
-    public V8ValuePromise _catch(V8ValueFunction function) throws JavetException {
-        return checkV8Runtime().getV8Internal().promiseCatch(this, function);
+    public V8ValuePromise _catch(IV8ValueFunction functionCatch) throws JavetException {
+        return checkV8Runtime().getV8Internal().promiseCatch(this, functionCatch);
     }
 
     @Override

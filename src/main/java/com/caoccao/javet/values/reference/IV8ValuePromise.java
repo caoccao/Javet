@@ -56,13 +56,13 @@ public interface IV8ValuePromise extends IV8ValueObject {
     /**
      * Catch.
      *
-     * @param function the function
+     * @param functionCatch the function catch
      * @return the V8 value promise
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
     @CheckReturnValue
-    V8ValuePromise _catch(V8ValueFunction function) throws JavetException;
+    V8ValuePromise _catch(IV8ValueFunction functionCatch) throws JavetException;
 
     /**
      * Catch.
