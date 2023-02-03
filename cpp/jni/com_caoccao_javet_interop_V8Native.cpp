@@ -142,14 +142,11 @@ namespace Javet {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
                 std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
-                std::unique_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
-                    args,
-                    { node::ProcessInitializationFlags::kNoInitializeV8, node::ProcessInitializationFlags::kNoInitializeNodeV8Platform });
-                for (const std::string& error : result->errors()) {
-                    LOG_ERROR(error);
-                }
-                if (result->early_return() != 0) {
-                    LOG_ERROR("Failed to call node::InitializeOncePerProcess().");
+                std::vector<std::string> execArgs;
+                std::vector<std::string> errors;
+                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
+                if (exitCode != 0) {
+                    LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
                 }
                 Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
 #else
