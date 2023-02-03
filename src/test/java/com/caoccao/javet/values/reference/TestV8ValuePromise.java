@@ -98,6 +98,98 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testCallback(boolean fulfilled)
+            throws JavetException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        IV8ValuePromise.ICallback callback = new IV8ValuePromise.ICallback() {
+            private boolean onCatchCalled = false;
+            private boolean onFulfilledCalled = false;
+            private boolean onRejectedCalled = false;
+
+            public boolean isOnCatchCalled() {
+                return onCatchCalled;
+            }
+
+            public boolean isOnFulfilledCalled() {
+                return onFulfilledCalled;
+            }
+
+            public boolean isOnRejectedCalled() {
+                return onRejectedCalled;
+            }
+
+            @Override
+            public void onCatch(V8Value v8Value) {
+                if (v8Value instanceof V8ValueError) {
+                    try {
+                        assertEquals("error", ((V8ValueError) v8Value).getMessage());
+                    } catch (JavetException e) {
+                        fail(e);
+                    }
+                    onCatchCalled = true;
+                } else if (v8Value instanceof V8ValueInteger) {
+                    assertEquals(2, ((V8ValueInteger) v8Value).getValue());
+                    onCatchCalled = true;
+                }
+            }
+
+            @Override
+            public void onFulfilled(V8Value v8Value) {
+                assertTrue(v8Value instanceof V8ValueInteger);
+                assertEquals(1, ((V8ValueInteger) v8Value).getValue());
+                onFulfilledCalled = true;
+            }
+
+            @Override
+            public void onRejected(V8Value v8Value) {
+                assertTrue(v8Value instanceof V8ValueInteger);
+                assertEquals(2, ((V8ValueInteger) v8Value).getValue());
+                onRejectedCalled = true;
+            }
+
+            public void reset() {
+                onCatchCalled = false;
+                onFulfilledCalled = false;
+                onRejectedCalled = false;
+            }
+        };
+        if (v8Runtime.getJSRuntimeType().isNode()) {
+            v8Runtime.getExecutor("const process = require('process'); process.on('unhandledRejection', () => {});").executeVoid();
+        } else {
+            v8Runtime.setPromiseRejectCallback((event, promise, value) -> {
+            });
+        }
+        try (V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
+             V8ValuePromise v8ValuePromise = v8ValuePromiseResolver.getPromise()) {
+            v8ValuePromise.register(callback);
+            if (fulfilled) {
+                assertTrue(v8ValuePromiseResolver.resolve(1));
+            } else {
+                assertTrue(v8ValuePromiseResolver.reject(2));
+            }
+            v8Runtime.await();
+            assertEquals(fulfilled ? 1 : 2, v8ValuePromiseResolver.getResultInteger());
+            assertEquals(fulfilled, callback.getClass().getMethod("isOnFulfilledCalled").invoke(callback));
+            assertEquals(!fulfilled, callback.getClass().getMethod("isOnRejectedCalled").invoke(callback));
+            assertEquals(!fulfilled, callback.getClass().getMethod("isOnCatchCalled").invoke(callback));
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+        callback.getClass().getMethod("reset").invoke(callback);
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "globalThis.a = new Promise((resolve, reject) => { throw new Error('error') }); globalThis.a;").execute()) {
+            v8ValuePromise.register(callback);
+            v8Runtime.await();
+            assertEquals(
+                    v8Runtime.getJSRuntimeType().isNode(),
+                    callback.getClass().getMethod("isOnCatchCalled").invoke(callback));
+            v8Runtime.getExecutor("globalThis.a = undefined;").executeVoid();
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
     @Test
     public void testFulfilled() throws JavetException {
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
@@ -265,79 +357,23 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void testThenInJS(boolean fulfilled) throws JavetException {
+    public void testThen(boolean fulfilled) throws JavetException {
+        if (v8Runtime.getJSRuntimeType().isNode()) {
+            v8Runtime.getExecutor("const process = require('process'); process.on('unhandledRejection', () => {});").executeVoid();
+        }
         v8Runtime.getExecutor("const result = { fulfilled: false, rejected: false }").executeVoid();
         try (V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
-             V8ValuePromise v8ValuePromise1 = v8ValuePromiseResolver.then(
-                     "(r) => result.fulfilled = true", "(e) => result.rejected = true");
-             V8ValuePromise v8ValuePromise2 = v8ValuePromiseResolver.getPromise()) {
-            v8Runtime.getGlobalObject().set("p", v8ValuePromiseResolver);
+             V8ValuePromise v8ValuePromise = v8ValuePromiseResolver.then(
+                     "(r) => result.fulfilled = true", "(e) => result.rejected = true")) {
             if (fulfilled) {
-                assertTrue(v8ValuePromise2.resolve(1));
+                assertTrue(v8ValuePromiseResolver.resolve(1));
             } else {
-                assertTrue(v8ValuePromise2.reject(2));
+                assertTrue(v8ValuePromiseResolver.reject(2));
             }
-            if (v8Runtime.getJSRuntimeType().isNode()) {
-                v8Runtime.getExecutor("const process = require('process'); process.on('unhandledRejection', () => {});").executeVoid();
-            }
-            v8Runtime.getExecutor("Promise.all([p,])").executeVoid();
             v8Runtime.await();
+            assertEquals(fulfilled ? 1 : 2, v8ValuePromiseResolver.getResultInteger());
             assertEquals(fulfilled, v8Runtime.getExecutor("result.fulfilled").executeBoolean());
             assertEquals(!fulfilled, v8Runtime.getExecutor("result.rejected").executeBoolean());
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    public void testThenInJVM(boolean fulfilled)
-            throws JavetException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        IJavetAnonymous anonymous = new IJavetAnonymous() {
-            private boolean onRejectCalled = false;
-            private boolean onResolveCalled = false;
-
-            public boolean isOnRejectCalled() {
-                return onRejectCalled;
-            }
-
-            public boolean isOnResolveCalled() {
-                return onResolveCalled;
-            }
-
-            public void onReject(V8Value v8Value) {
-                assertTrue(v8Value instanceof V8ValueInteger);
-                assertEquals(2, ((V8ValueInteger) v8Value).getValue());
-                onRejectCalled = true;
-            }
-
-            public void onResolve(V8Value v8Value) {
-                assertTrue(v8Value instanceof V8ValueInteger);
-                assertEquals(1, ((V8ValueInteger) v8Value).getValue());
-                onResolveCalled = true;
-            }
-        };
-        try (V8ValueFunction functionResolve = v8Runtime.createV8ValueFunction(
-                new JavetCallbackContext(anonymous, anonymous.getClass().getMethod("onResolve", V8Value.class)));
-             V8ValueFunction functionReject = v8Runtime.createV8ValueFunction(
-                     new JavetCallbackContext(anonymous, anonymous.getClass().getMethod("onReject", V8Value.class)));
-             V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
-             V8ValuePromise v8ValuePromise1 = v8ValuePromiseResolver.then(functionResolve, functionReject);
-             V8ValuePromise v8ValuePromise2 = v8ValuePromiseResolver.getPromise()) {
-            v8Runtime.getGlobalObject().set("p", v8ValuePromiseResolver);
-            if (fulfilled) {
-                assertTrue(v8ValuePromise2.resolve(1));
-            } else {
-                assertTrue(v8ValuePromise2.reject(2));
-            }
-            if (v8Runtime.getJSRuntimeType().isNode()) {
-                v8Runtime.getExecutor("const process = require('process'); process.on('unhandledRejection', () => {});").executeVoid();
-            }
-            v8Runtime.getExecutor("Promise.all([p,])").executeVoid();
-            v8Runtime.await();
-            assertEquals(fulfilled, anonymous.getClass().getMethod("isOnResolveCalled").invoke(anonymous));
-            assertEquals(!fulfilled, anonymous.getClass().getMethod("isOnRejectCalled").invoke(anonymous));
-            v8Runtime.getGlobalObject().delete("p");
-        } finally {
-            v8Runtime.lowMemoryNotification();
         }
     }
 }

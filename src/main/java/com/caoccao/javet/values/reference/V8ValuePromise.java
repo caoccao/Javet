@@ -20,6 +20,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 
 /**
@@ -74,6 +75,32 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
     @Override
     public void markAsHandled() throws JavetException {
         checkV8Runtime().getV8Internal().promiseMarkAsHandled(this);
+    }
+
+    @Override
+    public boolean register(ICallback iCallback) throws JavetException {
+        checkV8Runtime();
+        try {
+            JavetCallbackContext contextOnCatch = new JavetCallbackContext(
+                    iCallback, iCallback.getClass().getMethod(ICallback.ON_CATCH, V8Value.class));
+            JavetCallbackContext contextOnFulfilled = new JavetCallbackContext(
+                    iCallback, iCallback.getClass().getMethod(ICallback.ON_FULFILLED, V8Value.class));
+            JavetCallbackContext contextOnRejected = new JavetCallbackContext(
+                    iCallback, iCallback.getClass().getMethod(ICallback.ON_REJECTED, V8Value.class));
+            try (V8ValueFunction functionOnCatch = v8Runtime.createV8ValueFunction(contextOnCatch);
+                 V8ValueFunction functionOnFulfilled = v8Runtime.createV8ValueFunction(contextOnFulfilled);
+                 V8ValueFunction functionOnRejected = v8Runtime.createV8ValueFunction(contextOnRejected);
+                 V8ValuePromise v8ValuePromise = getPromise()) {
+                try (V8ValuePromise innerV8ValuePromise = v8ValuePromise.then(functionOnFulfilled, functionOnRejected)) {
+                }
+                try (V8ValuePromise innerV8ValuePromise = v8ValuePromise._catch(functionOnCatch)) {
+                }
+            }
+            return true;
+        } catch (Throwable t) {
+            v8Runtime.getLogger().error("Failed to register promise callback.", t);
+            return false;
+        }
     }
 
     @Override

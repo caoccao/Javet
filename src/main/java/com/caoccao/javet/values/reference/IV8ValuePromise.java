@@ -274,6 +274,8 @@ public interface IV8ValuePromise extends IV8ValueObject {
      */
     void markAsHandled() throws JavetException;
 
+    boolean register(ICallback iCallback) throws JavetException;
+
     /**
      * Reject.
      *
@@ -381,5 +383,17 @@ public interface IV8ValuePromise extends IV8ValueObject {
                 }
             }
         }
+    }
+
+    interface ICallback {
+        String ON_CATCH = "onCatch";
+        String ON_FULFILLED = "onFulfilled";
+        String ON_REJECTED = "onRejected";
+
+        void onCatch(V8Value v8Value);
+
+        void onFulfilled(V8Value v8Value);
+
+        void onRejected(V8Value v8Value);
     }
 }
