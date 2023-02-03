@@ -26,11 +26,14 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.callback.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockFS;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -261,25 +264,80 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = {true, true})
-    public void testThen(boolean fulfilled) throws JavetException {
+    @ValueSource(booleans = {true, false})
+    public void testThenInJS(boolean fulfilled) throws JavetException {
         v8Runtime.getExecutor("const result = { fulfilled: false, rejected: false }").executeVoid();
-        try (V8ValueFunction functionFulfilled = v8Runtime.createV8ValueFunction("(r) => result.fulfilled = true");
-             V8ValueFunction functionRejected = v8Runtime.createV8ValueFunction("(r, e) => result.rejected = true");
-             V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
-             V8ValuePromise v8ValuePromise1 = v8ValuePromiseResolver.then(functionFulfilled, functionRejected);
-             V8ValuePromise v8ValuePromise2 = v8ValuePromiseResolver._catch("(e) => result.rejected = true");
-             V8ValuePromise v8ValuePromise3 = v8ValuePromiseResolver.getPromise()) {
+        try (V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
+             V8ValuePromise v8ValuePromise1 = v8ValuePromiseResolver.then(
+                     "(r) => result.fulfilled = true", "(e) => result.rejected = true");
+             V8ValuePromise v8ValuePromise2 = v8ValuePromiseResolver.getPromise()) {
             v8Runtime.getGlobalObject().set("p", v8ValuePromiseResolver);
             if (fulfilled) {
-                assertTrue(v8ValuePromise3.resolve(1));
+                assertTrue(v8ValuePromise2.resolve(1));
             } else {
-                assertTrue(v8ValuePromise3.reject(1));
+                assertTrue(v8ValuePromise2.reject(2));
+            }
+            if (v8Runtime.getJSRuntimeType().isNode()) {
+                v8Runtime.getExecutor("const process = require('process'); process.on('unhandledRejection', () => {});").executeVoid();
             }
             v8Runtime.getExecutor("Promise.all([p,])").executeVoid();
             v8Runtime.await();
             assertEquals(fulfilled, v8Runtime.getExecutor("result.fulfilled").executeBoolean());
             assertEquals(!fulfilled, v8Runtime.getExecutor("result.rejected").executeBoolean());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testThenInJVM(boolean fulfilled)
+            throws JavetException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            private boolean onRejectCalled = false;
+            private boolean onResolveCalled = false;
+
+            public boolean isOnRejectCalled() {
+                return onRejectCalled;
+            }
+
+            public boolean isOnResolveCalled() {
+                return onResolveCalled;
+            }
+
+            public void onReject(V8Value v8Value) {
+                assertTrue(v8Value instanceof V8ValueInteger);
+                assertEquals(2, ((V8ValueInteger) v8Value).getValue());
+                onRejectCalled = true;
+            }
+
+            public void onResolve(V8Value v8Value) {
+                assertTrue(v8Value instanceof V8ValueInteger);
+                assertEquals(1, ((V8ValueInteger) v8Value).getValue());
+                onResolveCalled = true;
+            }
+        };
+        try (V8ValueFunction functionResolve = v8Runtime.createV8ValueFunction(
+                new JavetCallbackContext(anonymous, anonymous.getClass().getMethod("onResolve", V8Value.class)));
+             V8ValueFunction functionReject = v8Runtime.createV8ValueFunction(
+                     new JavetCallbackContext(anonymous, anonymous.getClass().getMethod("onReject", V8Value.class)));
+             V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
+             V8ValuePromise v8ValuePromise1 = v8ValuePromiseResolver.then(functionResolve, functionReject);
+             V8ValuePromise v8ValuePromise2 = v8ValuePromiseResolver.getPromise()) {
+            v8Runtime.getGlobalObject().set("p", v8ValuePromiseResolver);
+            if (fulfilled) {
+                assertTrue(v8ValuePromise2.resolve(1));
+            } else {
+                assertTrue(v8ValuePromise2.reject(2));
+            }
+            if (v8Runtime.getJSRuntimeType().isNode()) {
+                v8Runtime.getExecutor("const process = require('process'); process.on('unhandledRejection', () => {});").executeVoid();
+            }
+            v8Runtime.getExecutor("Promise.all([p,])").executeVoid();
+            v8Runtime.await();
+            assertEquals(fulfilled, anonymous.getClass().getMethod("isOnResolveCalled").invoke(anonymous));
+            assertEquals(!fulfilled, anonymous.getClass().getMethod("isOnRejectCalled").invoke(anonymous));
+            v8Runtime.getGlobalObject().delete("p");
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
     }
 }
