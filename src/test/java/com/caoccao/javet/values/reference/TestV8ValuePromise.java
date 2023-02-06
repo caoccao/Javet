@@ -102,7 +102,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
     @ValueSource(booleans = {true, false})
     public void testCallback(boolean fulfilled)
             throws JavetException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        IV8ValuePromise.ICallback callback = new IV8ValuePromise.ICallback() {
+        IV8ValuePromise.IListener callback = new IV8ValuePromise.IListener() {
             private boolean onCatchCalled = false;
             private boolean onFulfilledCalled = false;
             private boolean onRejectedCalled = false;

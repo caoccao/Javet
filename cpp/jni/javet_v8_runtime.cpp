@@ -79,9 +79,9 @@ namespace Javet {
         this->v8PlatformPointer = v8PlatformPointer;
     }
 
-    void V8Runtime::Await() {
+    bool V8Runtime::Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) {
+        bool hasMoreTasks = false;
 #ifdef ENABLE_NODE
-        bool hasMoreTasks;
         do {
             {
                 // Reduce the locking granularity so that Node.js can respond to requests from other threads.
@@ -109,11 +109,12 @@ namespace Javet {
                 node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
             }
-        } while (hasMoreTasks);
+        } while (awaitMode == Javet::Enums::V8AwaitMode::RunTillNoMoreTasks && hasMoreTasks);
 #else
         // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
         v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
 #endif
+        return hasMoreTasks;
     }
 
     void V8Runtime::CloseV8Context() {

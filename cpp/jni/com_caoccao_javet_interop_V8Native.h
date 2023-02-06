@@ -26,10 +26,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerati
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    await
- * Signature: (J)V
+ * Signature: (JI)Z
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_await
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_await
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

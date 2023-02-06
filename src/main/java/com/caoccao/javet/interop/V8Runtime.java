@@ -390,10 +390,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Await tells the V8 runtime to pump the message loop in a non-blocking manner.
      *
+     * @return true : there are more tasks, false : there are no more tasks
      * @since 0.8.0
      */
-    public void await() {
-        v8Native.await(handle);
+    public boolean await() {
+        return await(V8AwaitMode.RunTillNoMoreTasks);
+    }
+
+    /**
+     * Await tells the V8 runtime to pump the message loop in a non-blocking manner.
+     * <p>
+     * In the Node.js mode, the V8 await mode takes effect.
+     * In the V8 mode, the V8 await mode takes no effect and the return is always false.
+     *
+     * @param v8AwaitMode the V8 await mode
+     * @return true : there are more tasks, false : there are no more tasks
+     * @since 2.0.4
+     */
+    public boolean await(V8AwaitMode v8AwaitMode) {
+        return v8Native.await(handle, Objects.requireNonNull(v8AwaitMode).getId());
     }
 
     /**

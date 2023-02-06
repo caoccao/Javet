@@ -27,10 +27,11 @@
 #include "javet_v8.h"
 #include "javet_v8_runtime.h"
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_await
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_await
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mAwaitMode) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-    v8Runtime->Await();
+    auto umAwaitMode = static_cast<Javet::Enums::V8AwaitMode::V8AwaitMode>(mAwaitMode);
+    return (jboolean)v8Runtime->Await(umAwaitMode);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_isPurgeEventLoopBeforeClose

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <mutex>
+#include "javet_enums.h"
 #include "javet_logging.h"
 #include "javet_native.h"
 
@@ -58,7 +59,7 @@ namespace Javet {
         V8Runtime(V8Platform* v8PlatformPointer);
 #endif
 
-        void Await();
+        bool Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode);
 
         inline bool ClearExternalException(JNIEnv* jniEnv) {
             if (HasExternalException()) {

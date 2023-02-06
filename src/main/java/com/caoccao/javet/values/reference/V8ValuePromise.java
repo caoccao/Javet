@@ -78,15 +78,15 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
     }
 
     @Override
-    public boolean register(ICallback iCallback) throws JavetException {
+    public boolean register(IListener listener) throws JavetException {
         checkV8Runtime();
         try {
             JavetCallbackContext contextOnCatch = new JavetCallbackContext(
-                    iCallback, iCallback.getClass().getMethod(ICallback.ON_CATCH, V8Value.class));
+                    listener, listener.getClass().getMethod(IListener.ON_CATCH, V8Value.class));
             JavetCallbackContext contextOnFulfilled = new JavetCallbackContext(
-                    iCallback, iCallback.getClass().getMethod(ICallback.ON_FULFILLED, V8Value.class));
+                    listener, listener.getClass().getMethod(IListener.ON_FULFILLED, V8Value.class));
             JavetCallbackContext contextOnRejected = new JavetCallbackContext(
-                    iCallback, iCallback.getClass().getMethod(ICallback.ON_REJECTED, V8Value.class));
+                    listener, listener.getClass().getMethod(IListener.ON_REJECTED, V8Value.class));
             try (V8ValueFunction functionOnCatch = v8Runtime.createV8ValueFunction(contextOnCatch);
                  V8ValueFunction functionOnFulfilled = v8Runtime.createV8ValueFunction(contextOnFulfilled);
                  V8ValueFunction functionOnRejected = v8Runtime.createV8ValueFunction(contextOnRejected);
@@ -98,7 +98,7 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
             }
             return true;
         } catch (Throwable t) {
-            v8Runtime.getLogger().error("Failed to register promise callback.", t);
+            v8Runtime.getLogger().error("Failed to register a listener to a promise.", t);
             return false;
         }
     }

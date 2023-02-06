@@ -127,15 +127,17 @@ How can this work? The ``await()`` in the worker thread actually plays the follo
 .. code-block:: python
 
     # This is the pseudo logic.
-    def await():
+    def await(awaitMode):
         while True:
             drain_the_task_queue()
             pause_the_event_loop()
             if there_are_more_tasks_in_task_queue():
                 sleep_a_while() # This allows calls from other thread to take effect.
                 resume_the_event_loop()
+                if awaitMode is RunOnce:
+                    return there_are_more_tasks_in_task_queue()
             else:
-                break
+                return there_are_no_more_tasks
 
 What If Node.js Hangs during Close()?
 =====================================
