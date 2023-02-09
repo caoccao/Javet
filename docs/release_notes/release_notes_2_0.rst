@@ -5,7 +5,7 @@ Release Notes 2.0.x
 2.0.4 V8 v11.0
 --------------
 
-* Upgraded Node.js to ``v18.13.0`` `(2023-01-05) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.13.0>`_
+* Upgraded Node.js to ``v18.14.0`` `(2023-02-02) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.14.0>`_
 * Upgraded V8 to ``v11.0.226.13`` `(2023-01-30) <https://v8.dev/blog/v8-release-110>`_
 * Disabled Snapshot and VerifyNoStrongBaseObjects for Node.js.
 * Added ``IV8ValuePromise.IListener`` and ``IV8ValuePromise.register``
