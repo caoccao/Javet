@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Object Converter" href="object_converter.html" /><link rel="prev" title="Advanced" href="index.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Interact with Node.js - Javet 2.0.3 documentation</title>
+        <title>Interact with Node.js - Javet 2.0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 2.0.3 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 2.0.4 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.0.3 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.0.4 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -410,15 +410,17 @@ Call <span class="c1">#9</span>
 </div>
 <p>How can this work? The <code class="docutils literal notranslate"><span class="pre">await()</span></code> in the worker thread actually plays the following trick.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is the pseudo logic.</span>
-<span class="k">def</span> <span class="nf">await</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">await</span><span class="p">(</span><span class="n">awaitMode</span><span class="p">):</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">drain_the_task_queue</span><span class="p">()</span>
         <span class="n">pause_the_event_loop</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">there_are_more_tasks_in_task_queue</span><span class="p">():</span>
             <span class="n">sleep_a_while</span><span class="p">()</span> <span class="c1"># This allows calls from other thread to take effect.</span>
             <span class="n">resume_the_event_loop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">awaitMode</span> <span class="ow">is</span> <span class="n">RunOnce</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">there_are_more_tasks_in_task_queue</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">break</span>
+            <span class="k">return</span> <span class="n">there_are_no_more_tasks</span>
 </pre></div>
 </div>
 </div>
