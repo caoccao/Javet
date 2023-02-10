@@ -26,9 +26,14 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.callback.IJavetPromiseRejectCallback;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockFS;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -90,6 +95,98 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
             } finally {
                 v8Runtime.lowMemoryNotification();
             }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testCallback(boolean fulfilled)
+            throws JavetException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        IV8ValuePromise.IListener callback = new IV8ValuePromise.IListener() {
+            private boolean onCatchCalled = false;
+            private boolean onFulfilledCalled = false;
+            private boolean onRejectedCalled = false;
+
+            public boolean isOnCatchCalled() {
+                return onCatchCalled;
+            }
+
+            public boolean isOnFulfilledCalled() {
+                return onFulfilledCalled;
+            }
+
+            public boolean isOnRejectedCalled() {
+                return onRejectedCalled;
+            }
+
+            @Override
+            public void onCatch(V8Value v8Value) {
+                if (v8Value instanceof V8ValueError) {
+                    try {
+                        assertEquals("error", ((V8ValueError) v8Value).getMessage());
+                    } catch (JavetException e) {
+                        fail(e);
+                    }
+                    onCatchCalled = true;
+                } else if (v8Value instanceof V8ValueInteger) {
+                    assertEquals(2, ((V8ValueInteger) v8Value).getValue());
+                    onCatchCalled = true;
+                }
+            }
+
+            @Override
+            public void onFulfilled(V8Value v8Value) {
+                assertTrue(v8Value instanceof V8ValueInteger);
+                assertEquals(1, ((V8ValueInteger) v8Value).getValue());
+                onFulfilledCalled = true;
+            }
+
+            @Override
+            public void onRejected(V8Value v8Value) {
+                assertTrue(v8Value instanceof V8ValueInteger);
+                assertEquals(2, ((V8ValueInteger) v8Value).getValue());
+                onRejectedCalled = true;
+            }
+
+            public void reset() {
+                onCatchCalled = false;
+                onFulfilledCalled = false;
+                onRejectedCalled = false;
+            }
+        };
+        if (v8Runtime.getJSRuntimeType().isNode()) {
+            v8Runtime.getExecutor("const process = require('process'); process.on('unhandledRejection', () => {});").executeVoid();
+        } else {
+            v8Runtime.setPromiseRejectCallback((event, promise, value) -> {
+            });
+        }
+        try (V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
+             V8ValuePromise v8ValuePromise = v8ValuePromiseResolver.getPromise()) {
+            v8ValuePromise.register(callback);
+            if (fulfilled) {
+                assertTrue(v8ValuePromiseResolver.resolve(1));
+            } else {
+                assertTrue(v8ValuePromiseResolver.reject(2));
+            }
+            v8Runtime.await();
+            assertEquals(fulfilled ? 1 : 2, v8ValuePromiseResolver.getResultInteger());
+            assertEquals(fulfilled, callback.getClass().getMethod("isOnFulfilledCalled").invoke(callback));
+            assertEquals(!fulfilled, callback.getClass().getMethod("isOnRejectedCalled").invoke(callback));
+            assertEquals(!fulfilled, callback.getClass().getMethod("isOnCatchCalled").invoke(callback));
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+        callback.getClass().getMethod("reset").invoke(callback);
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                "globalThis.a = new Promise((resolve, reject) => { throw new Error('error') }); globalThis.a;").execute()) {
+            v8ValuePromise.register(callback);
+            v8Runtime.await();
+            assertEquals(
+                    v8Runtime.getJSRuntimeType().isNode(),
+                    callback.getClass().getMethod("isOnCatchCalled").invoke(callback));
+            v8Runtime.getExecutor("globalThis.a = undefined;").executeVoid();
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
     }
 
@@ -255,6 +352,28 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().delete("fs");
         } finally {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testThen(boolean fulfilled) throws JavetException {
+        if (v8Runtime.getJSRuntimeType().isNode()) {
+            v8Runtime.getExecutor("const process = require('process'); process.on('unhandledRejection', () => {});").executeVoid();
+        }
+        v8Runtime.getExecutor("const result = { fulfilled: false, rejected: false }").executeVoid();
+        try (V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
+             V8ValuePromise v8ValuePromise = v8ValuePromiseResolver.then(
+                     "(r) => result.fulfilled = true", "(e) => result.rejected = true")) {
+            if (fulfilled) {
+                assertTrue(v8ValuePromiseResolver.resolve(1));
+            } else {
+                assertTrue(v8ValuePromiseResolver.reject(2));
+            }
+            v8Runtime.await();
+            assertEquals(fulfilled ? 1 : 2, v8ValuePromiseResolver.getResultInteger());
+            assertEquals(fulfilled, v8Runtime.getExecutor("result.fulfilled").executeBoolean());
+            assertEquals(!fulfilled, v8Runtime.getExecutor("result.rejected").executeBoolean());
         }
     }
 }

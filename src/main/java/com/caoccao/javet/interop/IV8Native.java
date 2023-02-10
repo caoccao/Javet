@@ -27,7 +27,7 @@ public interface IV8Native {
 
     void allowCodeGenerationFromStrings(long v8RuntimeHandle, boolean allow);
 
-    void await(long v8RuntimeHandle);
+    boolean await(long v8RuntimeHandle, int v8AwaitMode);
 
     Object call(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,

@@ -20,6 +20,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 
 /**
@@ -41,8 +42,8 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
 
     @Override
     @CheckReturnValue
-    public V8ValuePromise _catch(V8ValueFunction function) throws JavetException {
-        return checkV8Runtime().getV8Internal().promiseCatch(this, function);
+    public V8ValuePromise _catch(IV8ValueFunction functionCatch) throws JavetException {
+        return checkV8Runtime().getV8Internal().promiseCatch(this, functionCatch);
     }
 
     @Override
@@ -74,6 +75,32 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
     @Override
     public void markAsHandled() throws JavetException {
         checkV8Runtime().getV8Internal().promiseMarkAsHandled(this);
+    }
+
+    @Override
+    public boolean register(IListener listener) throws JavetException {
+        checkV8Runtime();
+        try {
+            JavetCallbackContext contextOnCatch = new JavetCallbackContext(
+                    listener, listener.getClass().getMethod(IListener.ON_CATCH, V8Value.class));
+            JavetCallbackContext contextOnFulfilled = new JavetCallbackContext(
+                    listener, listener.getClass().getMethod(IListener.ON_FULFILLED, V8Value.class));
+            JavetCallbackContext contextOnRejected = new JavetCallbackContext(
+                    listener, listener.getClass().getMethod(IListener.ON_REJECTED, V8Value.class));
+            try (V8ValueFunction functionOnCatch = v8Runtime.createV8ValueFunction(contextOnCatch);
+                 V8ValueFunction functionOnFulfilled = v8Runtime.createV8ValueFunction(contextOnFulfilled);
+                 V8ValueFunction functionOnRejected = v8Runtime.createV8ValueFunction(contextOnRejected);
+                 V8ValuePromise v8ValuePromise = getPromise()) {
+                try (V8ValuePromise innerV8ValuePromise = v8ValuePromise.then(functionOnFulfilled, functionOnRejected)) {
+                }
+                try (V8ValuePromise innerV8ValuePromise = v8ValuePromise._catch(functionOnCatch)) {
+                }
+            }
+            return true;
+        } catch (Throwable t) {
+            v8Runtime.getLogger().error("Failed to register a listener to a promise.", t);
+            return false;
+        }
     }
 
     @Override

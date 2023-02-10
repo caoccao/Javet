@@ -79,9 +79,9 @@ namespace Javet {
         this->v8PlatformPointer = v8PlatformPointer;
     }
 
-    void V8Runtime::Await() {
+    bool V8Runtime::Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) {
+        bool hasMoreTasks = false;
 #ifdef ENABLE_NODE
-        bool hasMoreTasks;
         do {
             {
                 // Reduce the locking granularity so that Node.js can respond to requests from other threads.
@@ -109,11 +109,12 @@ namespace Javet {
                 node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
             }
-        } while (hasMoreTasks);
+        } while (awaitMode == Javet::Enums::V8AwaitMode::RunTillNoMoreTasks && hasMoreTasks);
 #else
         // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
         v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
 #endif
+        return hasMoreTasks;
     }
 
     void V8Runtime::CloseV8Context() {
@@ -141,10 +142,7 @@ namespace Javet {
                     if (!hasMoreTasks && !nodeEnvironment->is_stopping()) {
                         // node::EmitProcessBeforeExit is thread-safe.
                         if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) { break; }
-                        {
-                            V8HandleScope innerHandleScope(v8Isolate);
-                            if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) { break; }
-                        }
+                        // Do not call { V8HandleScope innerHandleScope(v8Isolate); if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) { break; } }
                         hasMoreTasks = uv_loop_alive(&uvLoop);
                     }
                 } while (hasMoreTasks && !nodeEnvironment->is_stopping());
@@ -154,9 +152,9 @@ namespace Javet {
         int errorCode = 0;
         if (!nodeEnvironment->is_stopping()) {
             nodeEnvironment->set_trace_sync_io(false);
-            nodeEnvironment->set_snapshot_serialize_callback(V8LocalFunction());
-            nodeEnvironment->PrintInfoForSnapshotIfDebug();
-            nodeEnvironment->VerifyNoStrongBaseObjects();
+            // Do not call nodeEnvironment->set_snapshot_serialize_callback(V8LocalFunction());
+            // Do not call nodeEnvironment->PrintInfoForSnapshotIfDebug();
+            // Do not call nodeEnvironment->ForEachRealm([](node::Realm* realm) { realm->VerifyNoStrongBaseObjects(); });
             // node::EmitExit is thread-safe.
             errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(1);
         }

@@ -28,6 +28,40 @@ The lifecycle is as the following chart shows.
 .. image:: ../../resources/images/v8_promise_lifecycle.png
     :alt: V8 Promise Lifecycle
 
+Register a Callback
+===================
+
+``V8ValuePromise`` accepts a ``IV8ValuePromise.ICallback`` to receive the callback from the V8 when the promise is resolved or rejected. The caller is supposed to call the ``register`` with a subclass of ``IV8ValuePromise.ICallback``.
+
+.. code-block:: java
+
+    IV8ValuePromise.ICallback callback = new IV8ValuePromise.ICallback() {
+        @Override
+        public void onCatch(V8Value v8Value) {
+            assertTrue(v8Value instanceof V8ValueError);
+            // Handle the error.
+        }
+
+        @Override
+        public void onFulfilled(V8Value v8Value) {
+            // Handle the fulfillment.
+        }
+
+        @Override
+        public void onRejected(V8Value v8Value) {
+            // Handle the rejection.
+        }
+    };
+
+    try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+            "new Promise((resolve, reject) => { /* Do whatever you want. */ })").execute()) {
+        v8ValuePromise.register(callback);
+        v8Runtime.await();
+        // The callback happens.
+    } finally {
+        v8Runtime.lowMemoryNotification();
+    }
+
 Example fs.readFileAsync()
 ==========================
 

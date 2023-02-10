@@ -178,10 +178,11 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerati
     v8Context->AllowCodeGenerationFromStrings(allow);
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_await
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_await
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mAwaitMode) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    v8Runtime->Await();
+    auto umAwaitMode = static_cast<Javet::Enums::V8AwaitMode::V8AwaitMode>(mAwaitMode);
+    return (jboolean)v8Runtime->Await(umAwaitMode);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call

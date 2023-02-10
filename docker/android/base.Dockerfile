@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-android:2.0.3 -f docker/android/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-android:2.0.4 -f docker/android/base.Dockerfile .
 
-ARG JAVET_V8_VERSION=10.9.194.9
+ARG JAVET_V8_VERSION=11.0.226.13
 
 FROM ubuntu:20.04
 WORKDIR /

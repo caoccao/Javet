@@ -56,13 +56,13 @@ public interface IV8ValuePromise extends IV8ValueObject {
     /**
      * Catch.
      *
-     * @param function the function
+     * @param functionCatch the function catch
      * @return the V8 value promise
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
     @CheckReturnValue
-    V8ValuePromise _catch(V8ValueFunction function) throws JavetException;
+    V8ValuePromise _catch(IV8ValueFunction functionCatch) throws JavetException;
 
     /**
      * Catch.
@@ -227,7 +227,7 @@ public interface IV8ValuePromise extends IV8ValueObject {
     /**
      * Has handler.
      *
-     * @return the boolean
+     * @return true : the handle exists, false : the handle doesn't exist
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
@@ -236,7 +236,7 @@ public interface IV8ValuePromise extends IV8ValueObject {
     /**
      * Is fulfilled.
      *
-     * @return the boolean
+     * @return true : fulfilled, false : not fulfilled
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
@@ -247,7 +247,7 @@ public interface IV8ValuePromise extends IV8ValueObject {
     /**
      * Is pending.
      *
-     * @return the boolean
+     * @return true : pending, false : not pending
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
@@ -275,10 +275,20 @@ public interface IV8ValuePromise extends IV8ValueObject {
     void markAsHandled() throws JavetException;
 
     /**
+     * Register a listener which receives the promise resolve, reject or catch event.
+     *
+     * @param listener the listener
+     * @return true : the event is fired, false : the event is not fired
+     * @throws JavetException the javet exception
+     * @since 2.0.4
+     */
+    boolean register(IListener listener) throws JavetException;
+
+    /**
      * Reject.
      *
      * @param v8Value the V8 value
-     * @return the boolean
+     * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 0.9.8
      */
@@ -288,7 +298,7 @@ public interface IV8ValuePromise extends IV8ValueObject {
      * Reject.
      *
      * @param object the object
-     * @return the boolean
+     * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 0.9.8
      */
@@ -302,7 +312,7 @@ public interface IV8ValuePromise extends IV8ValueObject {
      * Resolve.
      *
      * @param v8Value the V8 value
-     * @return the boolean
+     * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 0.9.8
      */
@@ -312,7 +322,7 @@ public interface IV8ValuePromise extends IV8ValueObject {
      * Resolve.
      *
      * @param object the object
-     * @return the boolean
+     * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 0.9.8
      */
@@ -381,5 +391,55 @@ public interface IV8ValuePromise extends IV8ValueObject {
                 }
             }
         }
+    }
+
+    /**
+     * The interface Listener is the one which receives the promise resolve, reject or catch event.
+     *
+     * @since 2.0.4
+     */
+    interface IListener {
+        /**
+         * The constant ON_CATCH.
+         *
+         * @since 2.0.4
+         */
+        String ON_CATCH = "onCatch";
+        /**
+         * The constant ON_FULFILLED.
+         *
+         * @since 2.0.4
+         */
+        String ON_FULFILLED = "onFulfilled";
+        /**
+         * The constant ON_REJECTED.
+         *
+         * @since 2.0.4
+         */
+        String ON_REJECTED = "onRejected";
+
+        /**
+         * On catch.
+         *
+         * @param v8Value the V8 value
+         * @since 2.0.4
+         */
+        void onCatch(V8Value v8Value);
+
+        /**
+         * On fulfilled.
+         *
+         * @param v8Value the V8 value
+         * @since 2.0.4
+         */
+        void onFulfilled(V8Value v8Value);
+
+        /**
+         * On rejected.
+         *
+         * @param v8Value the V8 value
+         * @since 2.0.4
+         */
+        void onRejected(V8Value v8Value);
     }
 }

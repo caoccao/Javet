@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Converters" href="../converters/index.html" /><link rel="prev" title="V8 Function" href="v8_function.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>V8 Promise - Javet 2.0.3 documentation</title>
+        <title>V8 Promise - Javet 2.0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 2.0.3 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 2.0.4 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.0.3 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.0.4 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -312,6 +312,38 @@
 </ol>
 <img alt="V8 Promise Lifecycle" src="../../_images/v8_promise_lifecycle.png"/>
 </div>
+<div class="section" id="register-a-callback">
+<h2>Register a Callback<a class="headerlink" href="#register-a-callback" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">V8ValuePromise</span></code> accepts a <code class="docutils literal notranslate"><span class="pre">IV8ValuePromise.ICallback</span></code> to receive the callback from the V8 when the promise is resolved or rejected. The caller is supposed to call the <code class="docutils literal notranslate"><span class="pre">register</span></code> with a subclass of <code class="docutils literal notranslate"><span class="pre">IV8ValuePromise.ICallback</span></code>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IV8ValuePromise</span><span class="p">.</span><span class="na">ICallback</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IV8ValuePromise</span><span class="p">.</span><span class="na">ICallback</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCatch</span><span class="p">(</span><span class="n">V8Value</span> <span class="n">v8Value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Value</span> <span class="k">instanceof</span> <span class="n">V8ValueError</span><span class="p">);</span>
+        <span class="c1">// Handle the error.</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onFulfilled</span><span class="p">(</span><span class="n">V8Value</span> <span class="n">v8Value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Handle the fulfillment.</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onRejected</span><span class="p">(</span><span class="n">V8Value</span> <span class="n">v8Value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Handle the rejection.</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">try</span> <span class="p">(</span><span class="n">V8ValuePromise</span> <span class="n">v8ValuePromise</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
+        <span class="s">"new Promise((resolve, reject) =&gt; { /* Do whatever you want. */ })"</span><span class="p">).</span><span class="na">execute</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">v8ValuePromise</span><span class="p">.</span><span class="na">register</span><span class="p">(</span><span class="n">callback</span><span class="p">);</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">await</span><span class="p">();</span>
+    <span class="c1">// The callback happens.</span>
+<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="example-fs-readfileasync">
 <h2>Example fs.readFileAsync()<a class="headerlink" href="#example-fs-readfileasync" title="Permalink to this headline">¶</a></h2>
 <p>Requirements: Create a JavaScript API <code class="docutils literal notranslate"><span class="pre">fs.readFileAsync()</span></code> for reading a file in async manner.</p>
@@ -420,6 +452,7 @@
 <li><a class="reference internal" href="#">V8 Promise</a><ul>
 <li><a class="reference internal" href="#promise-and-resolver">Promise and Resolver</a></li>
 <li><a class="reference internal" href="#lifecycle">Lifecycle</a></li>
+<li><a class="reference internal" href="#register-a-callback">Register a Callback</a></li>
 <li><a class="reference internal" href="#example-fs-readfileasync">Example fs.readFileAsync()</a></li>
 <li><a class="reference internal" href="#unhandled-rejection">Unhandled Rejection</a></li>
 </ul>

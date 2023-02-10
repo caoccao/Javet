@@ -41,6 +41,13 @@ namespace Javet {
             };
         };
 
+        namespace V8AwaitMode {
+            enum V8AwaitMode {
+                RunOnce = 0,
+                RunTillNoMoreTasks = 1,
+            };
+        };
+
         namespace V8ContextType {
             enum V8ContextType {
                 Await = 0,
