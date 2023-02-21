@@ -62,6 +62,12 @@ task<Exec>("buildJNIHeaders") {
     }
 }
 
+tasks.jar {
+    manifest {
+        attributes["Automatic-Module-Name"] = "com.caoccao.javet"
+    }
+}
+
 tasks.test {
     useJUnitPlatform {
         excludeTags("performance")
@@ -82,7 +88,7 @@ tasks.withType<Test> {
     systemProperty("file.encoding", "UTF-8")
 }
 
-tasks.withType<Javadoc>{
+tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
 
