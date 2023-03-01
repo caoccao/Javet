@@ -52,6 +52,7 @@ namespace Javet {
                 "(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;Lcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
 
             jclassV8Runtime = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Runtime"));
+            jmethodIDV8RuntimeGetCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "getCallbackContext", "(J)Lcom/caoccao/javet/interop/callback/JavetCallbackContext;");
             jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
             jmethodIDV8RuntimeReceiveGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
             jmethodIDV8RuntimeReceiveGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
@@ -232,10 +233,8 @@ namespace Javet {
         }
 
         JavetCallbackContextReference::JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext) {
-            this->callbackContext = jniEnv->NewGlobalRef(callbackContext);
-            INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+            jniEnv->CallVoidMethod(callbackContext, jmethodIDJavetCallbackContextSetHandle, TO_JAVA_LONG(this));
             v8PersistentCallbackContextHandlePointer = nullptr;
-            SetHandle();
         }
 
         void JavetCallbackContextReference::CallFunction(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -258,8 +257,9 @@ namespace Javet {
                 else {
                     jobject externalV8Runtime = v8Runtime->externalV8Runtime;
                     V8ContextScope v8ContextScope(v8Context);
-                    jboolean isReturnResult = IsReturnResult();
-                    jboolean isThisObjectRequired = IsThisObjectRequired();
+                    jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
+                    jboolean isReturnResult = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsReturnResult);
+                    jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
                     jobject externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, args);
                     jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.This()) : nullptr;
                     jobject mResult = jniEnv->CallStaticObjectMethod(
@@ -315,7 +315,8 @@ namespace Javet {
                 else {
                     jobject externalV8Runtime = v8Runtime->externalV8Runtime;
                     V8ContextScope v8ContextScope(v8Context);
-                    jboolean isThisObjectRequired = IsThisObjectRequired();
+                    jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
+                    jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
                     jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.This()) : nullptr;
                     jobject mResult = jniEnv->CallStaticObjectMethod(
                         jclassV8FunctionCallback,
@@ -369,13 +370,15 @@ namespace Javet {
                         Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
                     }
                     else {
-                        jboolean isThisObjectRequired = IsThisObjectRequired();
+                        jobject externalV8Runtime = v8Runtime->externalV8Runtime;
+                        jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
+                        jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
                         jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.This()) : nullptr;
                         jobject mArguments = Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8Array);
                         jobject mResult = jniEnv->CallStaticObjectMethod(
                             jclassV8FunctionCallback,
                             jmethodIDV8FunctionCallbackReceiveCallback,
-                            v8Runtime->externalV8Runtime,
+                            externalV8Runtime,
                             callbackContext,
                             thisObject,
                             mArguments);
@@ -396,26 +399,9 @@ namespace Javet {
             }
         }
 
-        jboolean JavetCallbackContextReference::IsReturnResult() {
-            FETCH_JNI_ENV(GlobalJavaVM);
-            return jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsReturnResult);
-        }
-
-        jboolean JavetCallbackContextReference::IsThisObjectRequired() {
-            FETCH_JNI_ENV(GlobalJavaVM);
-            return jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
-        }
-
-        void JavetCallbackContextReference::SetHandle() {
-            FETCH_JNI_ENV(GlobalJavaVM);
-            jniEnv->CallVoidMethod(callbackContext, jmethodIDJavetCallbackContextSetHandle, TO_JAVA_LONG(callbackContext));
-        }
-
         void JavetCallbackContextReference::RemoveCallbackContext(const jobject& externalV8Runtime) {
             FETCH_JNI_ENV(GlobalJavaVM);
-            jniEnv->CallVoidMethod(externalV8Runtime, jmethodIDV8RuntimeRemoveCallbackContext, TO_JAVA_LONG(callbackContext));
-            jniEnv->DeleteGlobalRef(callbackContext);
-            INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+            jniEnv->CallVoidMethod(externalV8Runtime, jmethodIDV8RuntimeRemoveCallbackContext, TO_JAVA_LONG(this));
         }
 
         JavetCallbackContextReference::~JavetCallbackContextReference() {

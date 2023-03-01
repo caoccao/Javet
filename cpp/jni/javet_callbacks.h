@@ -43,6 +43,7 @@ namespace Javet {
         static jmethodID jmethodIDV8FunctionCallbackReceiveCallback;
 
         static jclass jclassV8Runtime;
+        static jmethodID jmethodIDV8RuntimeGetCallbackContext;
         static jmethodID jmethodIDV8RuntimeGetV8Module;
         static jmethodID jmethodIDV8RuntimeReceiveGCEpilogueCallback;
         static jmethodID jmethodIDV8RuntimeReceiveGCPrologueCallback;
@@ -68,15 +69,11 @@ namespace Javet {
 
         class JavetCallbackContextReference {
         public:
-            jobject callbackContext;
             V8PersistentBigInt* v8PersistentCallbackContextHandlePointer;
             JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext);
             void CallFunction(const v8::FunctionCallbackInfo<v8::Value>& args);
             void CallPropertyGetter(V8LocalName propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
             void CallPropertySetter(V8LocalName propertyName, V8LocalValue propertyValue, const v8::PropertyCallbackInfo<void>& args);
-            jboolean IsReturnResult();
-            jboolean IsThisObjectRequired();
-            void SetHandle();
             void RemoveCallbackContext(const jobject& externalV8Runtime);
             virtual ~JavetCallbackContextReference();
         };
