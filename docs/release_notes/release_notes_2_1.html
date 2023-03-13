@@ -2,10 +2,10 @@
 <html class="no-js" lang="en, zh-CN">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ" href="../faq/index.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Release Notes 0.8.x - Javet 2.1.0 documentation</title>
+        <title>Release Notes 2.1.x - Javet 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -158,7 +158,7 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tutorial/basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/basic/installation.html">Installation</a></li>
@@ -220,8 +220,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/todo_list.html">TODO List</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="release_notes_2_1.html">Release Notes 2.1.x</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release Notes 2.1.x</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -290,107 +290,16 @@
           </label>
         </div>
         <article role="main">
-          <div class="section" id="release-notes-0-8-x">
-<h1>Release Notes 0.8.x<a class="headerlink" href="#release-notes-0-8-x" title="Permalink to this headline">¶</a></h1>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>v0.8.x are deprecated.</p>
-</div>
-<div class="section" id="index-in-foreach">
-<h2>0.8.10 Index in forEach<a class="headerlink" href="#index-in-foreach" title="Permalink to this headline">¶</a></h2>
+          <div class="section" id="release-notes-2-1-x">
+<h1>Release Notes 2.1.x<a class="headerlink" href="#release-notes-2-1-x" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v8-v11-1">
+<h2>2.1.0 V8 v11.1<a class="headerlink" href="#v8-v11-1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Renamed <code class="docutils literal notranslate"><span class="pre">IJavetConsumer</span></code> to <code class="docutils literal notranslate"><span class="pre">IJavetUniConsumer</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">IJavetUniIndexedConsumer</span></code> and <code class="docutils literal notranslate"><span class="pre">IJavetBiIndexedConsumer</span></code></p></li>
-<li><p>Fixed a bug in <code class="docutils literal notranslate"><span class="pre">V8FunctionCallback</span></code> on varargs</p></li>
-<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">bindFunctions()</span></code> and <code class="docutils literal notranslate"><span class="pre">bindProperties()</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">@CheckReturnValue</span></code> to warn ignored return value</p></li>
-</ul>
-</div>
-<div class="section" id="declarative-property-interception">
-<h2>0.8.9 Declarative Property Interception<a class="headerlink" href="#declarative-property-interception" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Renamed <code class="docutils literal notranslate"><span class="pre">setFunction()</span></code> to <code class="docutils literal notranslate"><span class="pre">bindFunction()</span></code> in <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
-<li><p>Renamed <code class="docutils literal notranslate"><span class="pre">setFunctions()</span></code> to <code class="docutils literal notranslate"><span class="pre">bindFunctions()</span></code> in <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">disableInDebugMode()</span></code> and <code class="docutils literal notranslate"><span class="pre">enableInDebugMode()</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetEngineGuard</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">bind()</span></code>, <code class="docutils literal notranslate"><span class="pre">bindProperty()</span></code> and <code class="docutils literal notranslate"><span class="pre">bindProperties()</span></code> in <code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> for <code class="docutils literal notranslate"><span class="pre">IV8ValueObject.bindProperties()</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="hotfix-the-source-code">
-<h2>0.8.8 Hotfix the Source Code<a class="headerlink" href="#hotfix-the-source-code" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Re-organized doc.</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">getJSFunctionType()</span></code>, <code class="docutils literal notranslate"><span class="pre">getSourceCode()</span></code> and <code class="docutils literal notranslate"><span class="pre">setSourceCode()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueFunction</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="native-modules-for-node-js">
-<h2>0.8.7 Native Modules for Node.js<a class="headerlink" href="#native-modules-for-node-js" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Supported native modules with rebuilt scripts</p></li>
-<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">NodeRuntime.await()</span></code> to emit tasks</p></li>
-</ul>
-</div>
-<div class="section" id="event-loop-for-node-js">
-<h2>0.8.6 Event Loop for Node.js<a class="headerlink" href="#event-loop-for-node-js" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Upgraded Linux build environment to Ubuntu 20.04 + GCC 9.3</p></li>
-<li><p>Enhanced <code class="docutils literal notranslate"><span class="pre">NodeRuntime.await()</span></code> to allow interaction from other threads</p></li>
-</ul>
-</div>
-<div class="section" id="error-codes">
-<h2>0.8.5 Error Codes<a class="headerlink" href="#error-codes" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Universal object conversion is turned on for all API</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">createV8ValueDouble()</span></code>, <code class="docutils literal notranslate"><span class="pre">createV8ValueString()</span></code> and <code class="docutils literal notranslate"><span class="pre">createV8ValueZonedDateTime()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">JavetError</span></code> with error codes</p></li>
-<li><p>Refactored <code class="docutils literal notranslate"><span class="pre">invoke()</span></code>, <code class="docutils literal notranslate"><span class="pre">call()</span></code>, <code class="docutils literal notranslate"><span class="pre">set()</span></code>, <code class="docutils literal notranslate"><span class="pre">has()</span></code> to take <code class="docutils literal notranslate"><span class="pre">Object</span></code> instead of <code class="docutils literal notranslate"><span class="pre">V8Value</span></code></p></li>
-<li><p>Removed a few exceptions</p></li>
-</ul>
-</div>
-<div class="section" id="v8-v9-0">
-<h2>0.8.4 V8 v9.0<a class="headerlink" href="#v8-v9-0" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">gcBeforeEngineClose</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetEngineConfig</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">JavetCallbackException</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">IV8Value#isNullOrUndefined</span></code></p></li>
-<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v14.16.1</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.16.1">(2021-04-06)</a></p></li>
-<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v9.0.257</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-90">(2021-02-24)</a></p></li>
-</ul>
-</div>
-<div class="section" id="gc">
-<h2>0.8.3 GC<a class="headerlink" href="#gc" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8Runtime.lowMemoryNotification()</span></code> and <code class="docutils literal notranslate"><span class="pre">V8Runtime.idleNotificationDeadline()</span></code></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8Host.setMemoryUsageThresholdRatio()</span></code>, <code class="docutils literal notranslate"><span class="pre">V8Host.enableGCNotification()</span></code>, and <code class="docutils literal notranslate"><span class="pre">V8Host.disableGCNotification()</span></code></p></li>
-<li><p>Updated JavetEnginePool to be lock free</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">autoSendGCNotification</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetEngineConfig</span></code></p></li>
-<li><p>Moved <code class="docutils literal notranslate"><span class="pre">JavetCallbackContext</span></code> management from <code class="docutils literal notranslate"><span class="pre">V8ValueFunction</span></code> to V8</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">JavetPromiseRejectCallback</span></code> for V8 mode</p></li>
-</ul>
-</div>
-<div class="section" id="conversion-for-primitive">
-<h2>0.8.2 Conversion for Primitive<a class="headerlink" href="#conversion-for-primitive" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Enabled auto type conversion in primitive types</p></li>
-<li><p>Fixed a memory leak issue during V8Runtime <code class="docutils literal notranslate"><span class="pre">resetContext()</span></code>, <code class="docutils literal notranslate"><span class="pre">resetIsolate()</span></code>, <code class="docutils literal notranslate"><span class="pre">close()</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="declarative-function-interception">
-<h2>0.8.1 Declarative Function Interception<a class="headerlink" href="#declarative-function-interception" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Enabled declarative function interception</p></li>
-<li><p>Enabled custom object converter in function callback</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">allowEval</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetEngineConfig</span></code></p></li>
-<li><p>Refactored built-in module API for Node.js mode</p></li>
-</ul>
-</div>
-<div class="section" id="first-time-with-node-js">
-<h2>0.8.0 First Time with Node.js<a class="headerlink" href="#first-time-with-node-js" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Supported Node.js <code class="docutils literal notranslate"><span class="pre">v14.16.0</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V14.md#14.16.0">(2021-02-23)</a></p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8Module</span></code> and <code class="docutils literal notranslate"><span class="pre">V8Script</span></code></p></li>
-<li><p>Enhanced <code class="docutils literal notranslate"><span class="pre">V8ValuePromise</span></code></p></li>
-<li><p>Added dynamic switch between Node.js and V8</p></li>
+<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v18.15.0</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.15.0">(2023-03-07)</a></p></li>
+<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v11.1.277.14</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-111">(2023-03-04)</a></p></li>
+<li><p>Built Node.js with Visual Studio 2022 instead of 2019.</p></li>
+<li><p>Added Automatic-Module-Name.</p></li>
+<li><p>Stopped storing callback contexts in the JNI global reference table for Android.</p></li>
 </ul>
 </div>
 </div>
@@ -400,8 +309,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="../faq/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">FAQ</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Release Notes</div>
+                
+              </div>
+            </a>
         </div>
 
         <div class="related-information">
@@ -422,18 +349,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Release Notes 0.8.x</a><ul>
-<li><a class="reference internal" href="#index-in-foreach">0.8.10 Index in forEach</a></li>
-<li><a class="reference internal" href="#declarative-property-interception">0.8.9 Declarative Property Interception</a></li>
-<li><a class="reference internal" href="#hotfix-the-source-code">0.8.8 Hotfix the Source Code</a></li>
-<li><a class="reference internal" href="#native-modules-for-node-js">0.8.7 Native Modules for Node.js</a></li>
-<li><a class="reference internal" href="#event-loop-for-node-js">0.8.6 Event Loop for Node.js</a></li>
-<li><a class="reference internal" href="#error-codes">0.8.5 Error Codes</a></li>
-<li><a class="reference internal" href="#v8-v9-0">0.8.4 V8 v9.0</a></li>
-<li><a class="reference internal" href="#gc">0.8.3 GC</a></li>
-<li><a class="reference internal" href="#conversion-for-primitive">0.8.2 Conversion for Primitive</a></li>
-<li><a class="reference internal" href="#declarative-function-interception">0.8.1 Declarative Function Interception</a></li>
-<li><a class="reference internal" href="#first-time-with-node-js">0.8.0 First Time with Node.js</a></li>
+<li><a class="reference internal" href="#">Release Notes 2.1.x</a><ul>
+<li><a class="reference internal" href="#v8-v11-1">2.1.0 V8 v11.1</a></li>
 </ul>
 </li>
 </ul>
