@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022. caoccao.com Sam Cao
+ * Copyright (c) 2021-2023. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class TestV8HeapStatistics extends BaseTestJavetRuntime {
         assertTrue(v8HeapStatistics.getTotalAvailableSize() > 0);
         assertTrue(v8HeapStatistics.getTotalGlobalHandlesSize() > 0);
         assertTrue(v8HeapStatistics.getTotalHeapSize() > 0);
-        assertTrue(v8HeapStatistics.getTotalHeapSizeExecutable() > 0);
+        assertTrue(v8HeapStatistics.getTotalHeapSizeExecutable() >= 0);
         assertTrue(v8HeapStatistics.getTotalPhysicalSize() > 0);
         assertTrue(v8HeapStatistics.getUsedGlobalHandlesSize() > 0);
         assertTrue(v8HeapStatistics.getUsedHeapSize() > 0);
