@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022. caoccao.com Sam Cao
+ * Copyright (c) 2021-2023. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ repositories {
 }
 
 group = "com.caoccao.javet"
-version = "2.0.4"
+version = "2.1.0"
 
 dependencies {
     testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.49.v20220914")

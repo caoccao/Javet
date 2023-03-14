@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022. caoccao.com Sam Cao
+ * Copyright (c) 2021-2023. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public enum JSRuntimeType {
      */
     Node(
             "node",
-            "10.2.154.23-node.22", // node -p process.versions.v8
+            "10.2.154.26-node.25", // node -p process.versions.v8
             NodeRuntimeOptions::new,
             o -> o instanceof NodeRuntimeOptions),
     /**
@@ -47,7 +47,7 @@ public enum JSRuntimeType {
      */
     V8(
             "v8",
-            "11.0.226.13",
+            "11.1.277.14",
             V8RuntimeOptions::new,
             o -> o instanceof V8RuntimeOptions);
 

@@ -1,5 +1,5 @@
 '''
-  Copyright (c) 2021-2022 caoccao.com Sam Cao
+  Copyright (c) 2021-2023 caoccao.com Sam Cao
   All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -156,7 +156,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('2.0.4')
+  change_javet_version = ChangeJavetVersion('2.1.0')
   change_javet_version.update()
   return 0
 
