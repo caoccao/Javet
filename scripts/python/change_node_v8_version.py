@@ -113,6 +113,13 @@ class ChangeV8Version(ChangeVersion):
       'docker/android/base.Dockerfile', '\n',
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
+      'docker/linux-arm64/base_all_in_one.Dockerfile', '\n',
+      re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
+    self._update(
+      'docker/linux-arm64/base_v8.Dockerfile', '\n',
+      re.compile(r'v8_(?P<version>\d+\.\d+\.\d+\.\d+)'),
+      re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)'))
+    self._update(
       'docker/linux-x86_64/base_all_in_one.Dockerfile', '\n',
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
