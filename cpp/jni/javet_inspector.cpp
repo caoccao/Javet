@@ -52,8 +52,8 @@ namespace Javet {
             return std::make_unique<std::string>(*v8Utf8Value);
         }
 
-        void Initialize(JNIEnv* jniEnv) {
-            jclassV8Inspector = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Inspector"));
+        void Initialize(JNIEnv* jniEnv) noexcept {
+            jclassV8Inspector = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Inspector");
             jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");
             jmethodIDV8InspectorGetName = jniEnv->GetMethodID(jclassV8Inspector, "getName", "()Ljava/lang/String;");
             jmethodIDV8InspectorReceiveNotification = jniEnv->GetMethodID(jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)V");
@@ -61,7 +61,7 @@ namespace Javet {
             jmethodIDV8InspectorRunIfWaitingForDebugger = jniEnv->GetMethodID(jclassV8Inspector, "runIfWaitingForDebugger", "(I)V");
         }
 
-        JavetInspector::JavetInspector(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector) {
+        JavetInspector::JavetInspector(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept {
             FETCH_JNI_ENV(GlobalJavaVM);
             this->mV8Inspector = jniEnv->NewGlobalRef(mV8Inspector);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
@@ -73,7 +73,7 @@ namespace Javet {
             jniEnv->ReleaseStringUTFChars(mName, umName);
         }
 
-        void JavetInspector::send(const std::string& message) {
+        void JavetInspector::send(const std::string& message) noexcept {
             LOG_DEBUG("Sending request: " << message);
             auto stringViewMessagePointer = ConvertFromStdStringToStringViewPointer(message);
             client->dispatchProtocolMessage(*stringViewMessagePointer.get());
@@ -88,7 +88,10 @@ namespace Javet {
             }
         }
 
-        JavetInspectorClient::JavetInspectorClient(Javet::V8Runtime* v8Runtime, const std::string& name, const jobject& mV8Inspector)
+        JavetInspectorClient::JavetInspectorClient(
+            V8Runtime* v8Runtime,
+            const std::string& name,
+            const jobject mV8Inspector) noexcept
             : javetInspectorChannel(nullptr), v8Inspector(nullptr), v8InspectorSession(nullptr) {
             activateMessageLoop = false;
             runningMessageLoop = false;
@@ -114,7 +117,7 @@ namespace Javet {
             v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
         }
 
-        void JavetInspectorClient::dispatchProtocolMessage(const v8_inspector::StringView& message) {
+        void JavetInspectorClient::dispatchProtocolMessage(const v8_inspector::StringView& message) noexcept {
             v8InspectorSession->dispatchProtocolMessage(message);
         }
 
@@ -147,7 +150,7 @@ namespace Javet {
         JavetInspectorClient::~JavetInspectorClient() {
         }
 
-        JavetInspectorChannel::JavetInspectorChannel(Javet::V8Runtime* v8Runtime, const jobject& mV8Inspector) {
+        JavetInspectorChannel::JavetInspectorChannel(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept {
             this->mV8Inspector = mV8Inspector;
             this->v8Runtime = v8Runtime;
         }

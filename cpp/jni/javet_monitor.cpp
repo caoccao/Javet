@@ -21,18 +21,21 @@
 
 namespace Javet {
     namespace Monitor {
-        void Initialize(JNIEnv* jniEnv) {
-            jclassV8HeapSpaceStatistics = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics"));
+        void Initialize(JNIEnv* jniEnv) noexcept {
+            jclassV8HeapSpaceStatistics = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics");
             jmethodIDV8HeapSpaceStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapSpaceStatistics, "<init>", "(Ljava/lang/String;JJJJ)V");
 
-            jclassV8HeapStatistics = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/monitoring/V8HeapStatistics"));
+            jclassV8HeapStatistics = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8HeapStatistics");
             jmethodIDV8HeapStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapStatistics, "<init>", "(JJJJJJJJJJJJJJ)V");
 
-            jclassV8SharedMemoryStatistics = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics"));
+            jclassV8SharedMemoryStatistics = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics");
             jmethodIDV8SharedMemoryStatisticsConstructor = jniEnv->GetMethodID(jclassV8SharedMemoryStatistics, "<init>", "(JJJ)V");
         }
 
-        jobject GetHeapSpaceStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jint allocationSpaceIndex) {
+        jobject GetHeapSpaceStatistics(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate,
+            const jint allocationSpaceIndex) noexcept {
             v8::HeapSpaceStatistics heapSpaceStatistics;
             v8Isolate->GetHeapSpaceStatistics(&heapSpaceStatistics, static_cast<size_t>(allocationSpaceIndex));
             return jniEnv->NewObject(jclassV8HeapSpaceStatistics, jmethodIDV8HeapSpaceStatisticsConstructor,
@@ -43,7 +46,9 @@ namespace Javet {
                 static_cast<jlong>(heapSpaceStatistics.space_used_size()));
         }
 
-        jobject GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate) {
+        jobject GetHeapStatistics(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate) noexcept {
             v8::HeapStatistics heapStatistics;
             v8Isolate->GetHeapStatistics(&heapStatistics);
             return jniEnv->NewObject(jclassV8HeapStatistics, jmethodIDV8HeapStatisticsConstructor,
@@ -63,7 +68,7 @@ namespace Javet {
                 static_cast<jlong>(heapStatistics.used_heap_size()));
         }
 
-        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) {
+        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) noexcept {
             v8::SharedMemoryStatistics sharedMemoryStatistics;
             v8::V8::GetSharedMemoryStatistics(&sharedMemoryStatistics);
             return jniEnv->NewObject(jclassV8SharedMemoryStatistics, jmethodIDV8SharedMemoryStatisticsConstructor,
@@ -73,11 +78,11 @@ namespace Javet {
         }
 
 #ifdef ENABLE_MONITOR
-        JavetNativeMonitor::JavetNativeMonitor() {
+        JavetNativeMonitor::JavetNativeMonitor() noexcept {
             Clear();
         }
 
-        jlongArray JavetNativeMonitor::GetCounters(JNIEnv* jniEnv) {
+        jlongArray JavetNativeMonitor::GetCounters(JNIEnv* jniEnv) noexcept {
             jlong buffer[CounterType::Max];
             for (int i = 0; i < CounterType::Max; ++i) {
                 buffer[i] = counters[i].load();

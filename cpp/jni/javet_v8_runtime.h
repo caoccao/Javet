@@ -30,14 +30,7 @@ namespace Javet {
         class JavetInspector;
     }
 
-    static jclass jclassRuntimeOptions;
-#ifdef ENABLE_NODE
-    static jmethodID jmethodNodeRuntimeOptionsGetConsoleArguments;
-#else
-    static jmethodID jmethodV8RuntimeOptionsGetGlobalName;
-#endif
-
-    void Initialize(JNIEnv* jniEnv);
+    void Initialize(JNIEnv* jniEnv) noexcept;
 
     class V8Runtime {
     public:
@@ -54,14 +47,16 @@ namespace Javet {
         std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
 #ifdef ENABLE_NODE
-        V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer, std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator);
+        V8Runtime(
+            node::MultiIsolatePlatform* v8PlatformPointer,
+            std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator) noexcept;
 #else
-        V8Runtime(V8Platform* v8PlatformPointer);
+        V8Runtime(V8Platform* v8PlatformPointer) noexcept;
 #endif
 
-        bool Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode);
+        bool Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept;
 
-        inline bool ClearExternalException(JNIEnv* jniEnv) {
+        inline bool ClearExternalException(JNIEnv* jniEnv) noexcept {
             if (HasExternalException()) {
                 jniEnv->DeleteGlobalRef(externalException);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
@@ -71,7 +66,7 @@ namespace Javet {
             return false;
         }
 
-        inline bool ClearExternalV8Runtime(JNIEnv* jniEnv) {
+        inline bool ClearExternalV8Runtime(JNIEnv* jniEnv) noexcept {
             if (HasExternalV8Runtime()) {
                 jniEnv->DeleteGlobalRef(externalV8Runtime);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
@@ -81,75 +76,87 @@ namespace Javet {
             return false;
         }
 
-        void CloseV8Context();
-        void CloseV8Isolate();
+        void CloseV8Context() noexcept;
+        void CloseV8Isolate() noexcept;
 
-        void CreateV8Context(JNIEnv* jniEnv, const jobject& mRuntimeOptions);
-        void CreateV8Isolate();
+        void CreateV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
+        void CreateV8Isolate() noexcept;
 
-        static inline V8Runtime* FromHandle(jlong handle) {
+        static inline V8Runtime* FromHandle(jlong handle) noexcept {
             return reinterpret_cast<V8Runtime*>(handle);
         }
 
-        static inline V8Runtime* FromV8Context(const V8LocalContext& v8Context) {
-            return reinterpret_cast<V8Runtime*>(v8Context->GetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME)->ToBigInt(v8Context).ToLocalChecked()->Int64Value());
+        static inline V8Runtime* FromV8Context(const V8LocalContext& v8Context) noexcept {
+            auto v8RuntimePointer = v8Context->GetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME)
+                ->ToBigInt(v8Context).ToLocalChecked()->Int64Value();
+            return reinterpret_cast<V8Runtime*>(v8RuntimePointer);
         }
 
         /*
-        * Shared V8 locker is for implicit mode.
-        * Javet manages the lock automatically.
-        */
-        inline auto GetSharedV8Locker() {
+         * Shared V8 locker is for implicit mode.
+         * Javet manages the lock automatically.
+         */
+        inline auto GetSharedV8Locker() const noexcept {
             return v8Locker ? v8Locker : std::make_shared<v8::Locker>(v8Isolate);
         }
 
         /*
-        * Unique V8 locker is for explicit mode.
-        * Application manages the lock.
-        */
-        inline auto GetUniqueV8Locker() {
+         * Unique V8 locker is for explicit mode.
+         * Application manages the lock.
+         */
+        inline auto GetUniqueV8Locker() const noexcept {
             return std::make_unique<v8::Locker>(v8Isolate);
         }
 
-        inline auto GetV8ContextScope(const V8LocalContext& v8LocalContext) {
+        inline auto GetV8ContextScope(const V8LocalContext& v8LocalContext) const noexcept {
             return std::make_unique<V8ContextScope>(v8LocalContext);
         }
 
-        inline V8LocalContext GetV8LocalContext() {
+        inline V8LocalContext GetV8LocalContext() const noexcept {
             return v8PersistentContext.Get(v8Isolate);
         }
 
-        inline auto GetV8IsolateScope() {
+        inline auto GetV8IsolateScope() const noexcept {
             return std::make_unique<V8IsolateScope>(v8Isolate);
         }
 
-        inline bool HasExternalException() {
+        inline bool HasExternalException() const noexcept {
             return externalException != nullptr;
         }
 
-        inline bool HasExternalV8Runtime() {
+        inline bool HasExternalV8Runtime() const noexcept {
             return externalV8Runtime != nullptr;
         }
 
-        inline bool IsLocked() {
+        inline bool IsLocked() const noexcept {
             return (bool)v8Locker;
         }
 
-        inline void Lock() {
+        inline void Lock() noexcept {
             v8Locker.reset(new v8::Locker(v8Isolate));
         }
 
-        void Register(const V8LocalContext& v8Context);
+        inline void Register(const V8LocalContext& v8Context) noexcept {
+            v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
+        }
 
-        jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8InternalObject& v8InternalObject);
+        jobject SafeToExternalV8Value(
+            JNIEnv* jniEnv,
+            const V8LocalContext& v8Context,
+            const V8InternalObject& v8InternalObject) noexcept;
 
-        jobject SafeToExternalV8Value(JNIEnv* jniEnv, const V8LocalContext& v8Context, const V8LocalValue& v8Value);
+        jobject SafeToExternalV8Value(
+            JNIEnv* jniEnv,
+            const V8LocalContext& v8Context,
+            const V8LocalValue& v8Value) noexcept;
 
-        inline void Unlock() {
+        inline void Unlock() noexcept {
             v8Locker.reset();
         }
 
-        void Unregister(const V8LocalContext& v8Context);
+        inline void Unregister(const V8LocalContext& v8Context) noexcept {
+            v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, 0));
+        }
 
         virtual ~V8Runtime();
 

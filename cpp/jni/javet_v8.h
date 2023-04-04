@@ -30,7 +30,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
-// Scope
+ // Scope
 
 using V8ContextScope = v8::Context::Scope;
 using V8HandleScope = v8::HandleScope;
@@ -106,28 +106,65 @@ using V8ScriptCompilerSource = v8::ScriptCompiler::Source;
 
 // To Java
 
-#define TO_JAVA_LONG(handle) reinterpret_cast<jlong>(handle)
-#define TO_JAVA_OBJECT(handle) reinterpret_cast<jobject>(handle)
+template<typename T>
+constexpr auto TO_JAVA_LONG(T handle) {
+    return reinterpret_cast<jlong>(handle);
+}
 
 // To Native
 
-#define TO_NATIVE_INT_64(handle) reinterpret_cast<int64_t>(handle)
+template<typename T>
+constexpr auto TO_NATIVE_INT_64(T handle) {
+    return reinterpret_cast<int64_t>(handle);
+}
+
+// To V8 Persistent Pointer
+
+template<typename T>
+constexpr auto TO_V8_PERSISTENT_CONTEXT_POINTER(T handle) {
+    return reinterpret_cast<V8PersistentContext*>(handle);
+}
+
+template<typename T>
+constexpr auto TO_V8_PERSISTENT_DATA_POINTER(T handle) {
+    return reinterpret_cast<V8PersistentData*>(handle);
+}
+
+template<typename T>
+constexpr auto TO_V8_PERSISTENT_FUNCTION_POINTER(T handle) {
+    return reinterpret_cast<V8PersistentFunction*>(handle);
+}
+
+template<typename T>
+constexpr auto TO_V8_PERSISTENT_MODULE_POINTER(T handle) {
+    return reinterpret_cast<V8PersistentModule*>(handle);
+}
+
+template<typename T>
+constexpr auto TO_V8_PERSISTENT_SCRIPT_POINTER(T handle) {
+    return reinterpret_cast<V8PersistentScript*>(handle);
+}
+
+template<typename T>
+constexpr auto TO_V8_PERSISTENT_VALUE_POINTER(T handle) {
+    return reinterpret_cast<V8PersistentValue*>(handle);
+}
 
 // To V8 Persistent
 
-#define TO_V8_PERSISTENT_ARRAY_POINTER(handle) *reinterpret_cast<V8PersistentArray*>(handle)
-#define TO_V8_PERSISTENT_CONTEXT_POINTER(handle) reinterpret_cast<V8PersistentContext*>(handle)
-#define TO_V8_PERSISTENT_DATA_POINTER(handle) reinterpret_cast<V8PersistentData*>(handle)
-#define TO_V8_PERSISTENT_FUNCTION_POINTER(handle) reinterpret_cast<V8PersistentFunction*>(handle)
-#define TO_V8_PERSISTENT_MAP_POINTER(handle) *reinterpret_cast<V8PersistentMap*>(handle)
-#define TO_V8_PERSISTENT_MODULE_POINTER(handle) reinterpret_cast<V8PersistentModule*>(handle)
-#define TO_V8_PERSISTENT_OBJECT_POINTER(handle) *reinterpret_cast<V8PersistentObject*>(handle)
-#define TO_V8_PERSISTENT_PROMISE_POINTER(handle) *reinterpret_cast<V8PersistentPromise*>(handle)
-#define TO_V8_PERSISTENT_PROXY_POINTER(handle) *reinterpret_cast<V8PersistentProxy*>(handle)
-#define TO_V8_PERSISTENT_REG_EXP_POINTER(handle) *reinterpret_cast<V8PersistentRegExp*>(handle)
-#define TO_V8_PERSISTENT_SCRIPT_POINTER(handle) reinterpret_cast<V8PersistentScript*>(handle)
-#define TO_V8_PERSISTENT_SET_POINTER(handle) *reinterpret_cast<V8PersistentSet*>(handle)
-#define TO_V8_PERSISTENT_SYMBOL_POINTER(handle) *reinterpret_cast<V8PersistentSymbol*>(handle)
-#define TO_V8_PERSISTENT_SYMBOL_OBJECT_POINTER(handle) *reinterpret_cast<V8PersistentSymbolObject*>(handle)
-#define TO_V8_PERSISTENT_VALUE_POINTER(handle) reinterpret_cast<V8PersistentValue*>(handle)
+#define TO_V8_PERSISTENT_ARRAY(handle) *reinterpret_cast<V8PersistentArray*>(handle)
+#define TO_V8_PERSISTENT_CONTEXT(handle) reinterpret_cast<V8PersistentContext*>(handle)
+#define TO_V8_PERSISTENT_DATA(handle) reinterpret_cast<V8PersistentData*>(handle)
+#define TO_V8_PERSISTENT_FUNCTION(handle) reinterpret_cast<V8PersistentFunction*>(handle)
+#define TO_V8_PERSISTENT_MAP(handle) *reinterpret_cast<V8PersistentMap*>(handle)
+#define TO_V8_PERSISTENT_MODULE(handle) reinterpret_cast<V8PersistentModule*>(handle)
+#define TO_V8_PERSISTENT_OBJECT(handle) *reinterpret_cast<V8PersistentObject*>(handle)
+#define TO_V8_PERSISTENT_PROMISE(handle) *reinterpret_cast<V8PersistentPromise*>(handle)
+#define TO_V8_PERSISTENT_PROXY(handle) *reinterpret_cast<V8PersistentProxy*>(handle)
+#define TO_V8_PERSISTENT_REG_EXP(handle) *reinterpret_cast<V8PersistentRegExp*>(handle)
+#define TO_V8_PERSISTENT_SCRIPT(handle) reinterpret_cast<V8PersistentScript*>(handle)
+#define TO_V8_PERSISTENT_SET(handle) *reinterpret_cast<V8PersistentSet*>(handle)
+#define TO_V8_PERSISTENT_SYMBOL(handle) *reinterpret_cast<V8PersistentSymbol*>(handle)
+#define TO_V8_PERSISTENT_SYMBOL_OBJECT(handle) *reinterpret_cast<V8PersistentSymbolObject*>(handle)
+#define TO_V8_PERSISTENT_VALUE(handle) reinterpret_cast<V8PersistentValue*>(handle)
 

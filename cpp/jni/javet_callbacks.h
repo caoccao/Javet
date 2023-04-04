@@ -50,31 +50,47 @@ namespace Javet {
         static jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
         static jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
 
-        void Initialize(JNIEnv* jniEnv);
+        void Initialize(JNIEnv* jniEnv) noexcept;
 
-        void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info);
-        void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info);
-        void JavetFunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& info);
-        void JavetGCEpilogueCallback(v8::Isolate* v8Isolate, v8::GCType v8GCType, v8::GCCallbackFlags v8GCCallbackFlags);
-        void JavetGCPrologueCallback(v8::Isolate* v8Isolate, v8::GCType v8GCType, v8::GCCallbackFlags v8GCCallbackFlags);
-        void JavetPropertyGetterCallback(V8LocalName propertyName, const v8::PropertyCallbackInfo<v8::Value>& info);
-        void JavetPropertySetterCallback(V8LocalName propertyName, V8LocalValue propertyValue, const v8::PropertyCallbackInfo<void>& info);
-        void JavetPromiseRejectCallback(v8::PromiseRejectMessage message);
+        void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info) noexcept;
+        void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info) noexcept;
+        void JavetFunctionCallback(const v8::FunctionCallbackInfo<v8::Value>& info) noexcept;
+        void JavetGCEpilogueCallback(
+            v8::Isolate* v8Isolate,
+            v8::GCType v8GCType,
+            v8::GCCallbackFlags v8GCCallbackFlags) noexcept;
+        void JavetGCPrologueCallback(
+            v8::Isolate* v8Isolate,
+            v8::GCType v8GCType,
+            v8::GCCallbackFlags v8GCCallbackFlags) noexcept;
+        void JavetPropertyGetterCallback(
+            V8LocalName propertyName,
+            const v8::PropertyCallbackInfo<v8::Value>& info) noexcept;
+        void JavetPropertySetterCallback(
+            V8LocalName propertyName,
+            V8LocalValue propertyValue,
+            const v8::PropertyCallbackInfo<void>& info) noexcept;
+        void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept;
 
         V8MaybeLocalModule JavetModuleResolveCallback(
             V8LocalContext v8Context,
             V8LocalString specifier,
             V8LocalFixedArray importAssertions,
-            V8LocalModule referrer);
+            V8LocalModule referrer) noexcept;
 
         class JavetCallbackContextReference {
         public:
             V8PersistentBigInt* v8PersistentCallbackContextHandlePointer;
-            JavetCallbackContextReference(JNIEnv* jniEnv, jobject callbackContext);
-            void CallFunction(const v8::FunctionCallbackInfo<v8::Value>& args);
-            void CallPropertyGetter(V8LocalName propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
-            void CallPropertySetter(V8LocalName propertyName, V8LocalValue propertyValue, const v8::PropertyCallbackInfo<void>& args);
-            void RemoveCallbackContext(const jobject& externalV8Runtime);
+            JavetCallbackContextReference(JNIEnv* jniEnv, const jobject callbackContext) noexcept;
+            void CallFunction(const v8::FunctionCallbackInfo<v8::Value>& args) noexcept;
+            void CallPropertyGetter(
+                const V8LocalName& propertyName,
+                const v8::PropertyCallbackInfo<v8::Value>& args) noexcept;
+            void CallPropertySetter(
+                const V8LocalName& propertyName,
+                const V8LocalValue& propertyValue,
+                const v8::PropertyCallbackInfo<void>& args) noexcept;
+            void RemoveCallbackContext(const jobject externalV8Runtime) noexcept;
             virtual ~JavetCallbackContextReference();
         };
 
@@ -82,9 +98,9 @@ namespace Javet {
         public:
             jobject objectReference;
             V8PersistentData* v8PersistentDataPointer;
-            V8ValueReference(JNIEnv* jniEnv, jobject objectReference);
-            void Clear();
-            void Close();
+            V8ValueReference(JNIEnv* jniEnv, const jobject objectReference) noexcept;
+            void Clear() noexcept;
+            void Close() noexcept;
         };
     }
 }

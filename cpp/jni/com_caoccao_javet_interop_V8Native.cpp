@@ -34,132 +34,6 @@
   * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
   */
 
-#define IS_JAVA_BYTE_BUFFER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassByteBuffer)
-#define IS_JAVA_INTEGER(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueInteger)
-#define IS_JAVA_STRING(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueString)
-#define IS_JAVA_SYMBOL(jniEnv, obj) jniEnv->IsInstanceOf(obj, Javet::V8Native::jclassV8ValueSymbol)
-#define TO_JAVA_INTEGER(jniEnv, obj) jniEnv->CallIntMethod(obj, Javet::V8Native::jmethodIDV8ValueIntegerToPrimitive)
-#define TO_JAVA_STRING(jniEnv, obj) (jstring)jniEnv->CallObjectMethod(obj, Javet::V8Native::jmethodIDV8ValueStringToPrimitive)
-
-namespace Javet {
-#ifdef ENABLE_NODE
-    namespace NodeNative {
-        static jclass jclassV8Host;
-        static jmethodID jmethodIDV8HostIsLibraryReloadable;
-
-        static std::shared_ptr<node::ArrayBufferAllocator> GlobalNodeArrayBufferAllocator;
-
-        void Dispose(JNIEnv* jniEnv) {
-            if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
-                GlobalNodeArrayBufferAllocator.reset();
-            }
-        }
-
-        void Initialize(JNIEnv* jniEnv) {
-            jclassV8Host = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Host"));
-            jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
-
-            if (!GlobalNodeArrayBufferAllocator) {
-                GlobalNodeArrayBufferAllocator = node::ArrayBufferAllocator::Create();
-            }
-        }
-    }
-#endif
-
-    namespace V8Native {
-#ifdef ENABLE_NODE
-        static std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
-#else
-        static std::unique_ptr<V8Platform> GlobalV8Platform;
-#endif
-
-        static jclass jclassByteBuffer;
-        static jclass jclassString;
-
-        static jclass jclassV8Host;
-        static jmethodID jmethodIDV8HostIsLibraryReloadable;
-
-        static jclass jclassV8ValueInteger;
-        static jmethodID jmethodIDV8ValueIntegerToPrimitive;
-
-        static jclass jclassV8ValueString;
-        static jmethodID jmethodIDV8ValueStringToPrimitive;
-
-        static jclass jclassV8ValueSymbol;
-
-        static jclass jclassIV8ValueFunctionScriptSource;
-        static jmethodID jmethodIDIV8ValueFunctionScriptSourceConstructor;
-        static jmethodID jmethodIDIV8ValueFunctionScriptGetCode;
-        static jmethodID jmethodIDIV8ValueFunctionScriptGetEndPosition;
-        static jmethodID jmethodIDIV8ValueFunctionScriptGetStartPosition;
-
-        void Dispose(JNIEnv* jniEnv) {
-            if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
-                v8::V8::Dispose();
-#ifdef ENABLE_NODE
-                v8::V8::ShutdownPlatform();
-#else
-                v8::V8::DisposePlatform();
-#endif
-                GlobalV8Platform.reset();
-            }
-        }
-
-        /*
-        These Java classes and methods need to be initialized within this file
-        because the memory address probed changes in another file,
-        or runtime memory corruption will take place.
-        */
-        void Initialize(JNIEnv* jniEnv) {
-            jclassByteBuffer = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/nio/ByteBuffer"));
-            jclassString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("java/lang/String"));
-
-            jclassV8Host = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/V8Host"));
-            jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
-
-            jclassV8ValueInteger = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueInteger"));
-            jmethodIDV8ValueIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueInteger, JAVA_METHOD_TO_PRIMITIVE, "()I");
-
-            jclassV8ValueString = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/primitive/V8ValueString"));
-            jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
-
-            jclassV8ValueSymbol = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/V8ValueSymbol"));
-
-            jclassIV8ValueFunctionScriptSource = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/values/reference/IV8ValueFunction$ScriptSource"));
-            jmethodIDIV8ValueFunctionScriptSourceConstructor = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "<init>", "(Ljava/lang/String;II)V");
-            jmethodIDIV8ValueFunctionScriptGetCode = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getCode", "()Ljava/lang/String;");
-            jmethodIDIV8ValueFunctionScriptGetEndPosition = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getEndPosition", "()I");
-            jmethodIDIV8ValueFunctionScriptGetStartPosition = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getStartPosition", "()I");
-
-            LOG_INFO("V8::Initialize() begins.");
-#ifdef ENABLE_I18N
-            v8::V8::InitializeICU();
-#endif
-            if (Javet::V8Native::GlobalV8Platform) {
-                LOG_INFO("V8::Initialize() is skipped.");
-            }
-            else {
-#ifdef ENABLE_NODE
-                uv_setup_args(0, nullptr);
-                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
-                std::vector<std::string> execArgs;
-                std::vector<std::string> errors;
-                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
-                if (exitCode != 0) {
-                    LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
-                }
-                Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
-#else
-                Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
-#endif
-                v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
-                v8::V8::Initialize();
-            }
-            LOG_INFO("V8::Initialize() ends.");
-        }
-    }
-}
-
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -497,10 +371,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
         v8LocalValueResult = v8::Array::New(v8Context->GetIsolate());
     }
     else if (IS_V8_ARRAY_BUFFER(v8ValueType)) {
-        if (IS_JAVA_INTEGER(jniEnv, mContext)) {
-            v8LocalValueResult = v8::ArrayBuffer::New(v8Context->GetIsolate(), TO_JAVA_INTEGER(jniEnv, mContext));
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, mContext)) {
+            v8LocalValueResult = v8::ArrayBuffer::New(v8Context->GetIsolate(), Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, mContext));
         }
-        else if (IS_JAVA_BYTE_BUFFER(jniEnv, mContext)) {
+        else if (Javet::Converter::IsJavaByteBuffer(jniEnv, mContext)) {
             std::unique_ptr<v8::BackingStore> v8BackingStorePointer = v8::ArrayBuffer::NewBackingStore(
                 jniEnv->GetDirectBufferAddress(mContext),
                 static_cast<size_t>(jniEnv->GetDirectBufferCapacity(mContext)),
@@ -576,8 +450,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_delete
     V8MaybeBool v8MaybeBool = v8::Just(false);
     auto v8ValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, key);
     if (IS_V8_ARRAY(v8ValueType)) {
-        if (IS_JAVA_INTEGER(jniEnv, key)) {
-            jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             v8MaybeBool = v8LocalValue.As<v8::Array>()->Delete(v8Context, integerKey);
         }
         else {
@@ -592,8 +466,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_delete
     }
     else if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
-        if (IS_JAVA_INTEGER(jniEnv, key)) {
-            jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             v8MaybeBool = v8LocalObject->Delete(v8Context, integerKey);
         }
         else {
@@ -780,7 +654,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionG
             auto wrappedArguments = v8InternalScript.wrapped_arguments();
             auto length = wrappedArguments.length();
             if (length > 0) {
-                jobjectArray arguments = jniEnv->NewObjectArray(length, Javet::V8Native::jclassString, nullptr);
+                jobjectArray arguments = jniEnv->NewObjectArray(length, Javet::Converter::jclassString, nullptr);
                 for (int i = 0; i < length; ++i) {
                     auto v8InternalObjectHandle = v8::internal::Handle(wrappedArguments.get(i), v8InternalIsolate);
                     auto v8LocalString = v8::Utils::ToLocal(v8InternalObjectHandle).As<v8::String>();
@@ -860,8 +734,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScr
                 V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                 0, sourceLength);
             return jniEnv->NewObject(
-                Javet::V8Native::jclassIV8ValueFunctionScriptSource,
-                Javet::V8Native::jmethodIDIV8ValueFunctionScriptSourceConstructor,
+                Javet::Converter::jclassIV8ValueFunctionScriptSource,
+                Javet::Converter::jmethodIDIV8ValueFunctionScriptSourceConstructor,
                 Javet::Converter::ToJavaString(jniEnv, sourceCode.get()),
                 startPosition,
                 endPosition);
@@ -943,10 +817,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
             auto v8InternalScopeInfo = v8InternalShared.scope_info();
             if (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
                 auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-                auto mSourceCode = (jstring)jniEnv->CallObjectMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetCode);
+                auto mSourceCode = (jstring)jniEnv->CallObjectMethod(mScriptSource, Javet::Converter::jmethodIDIV8ValueFunctionScriptGetCode);
                 auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
-                const int startPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetStartPosition);
-                const int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::V8Native::jmethodIDIV8ValueFunctionScriptGetEndPosition);
+                const int startPosition = jniEnv->CallIntMethod(mScriptSource, Javet::Converter::jmethodIDIV8ValueFunctionScriptGetStartPosition);
+                const int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::Converter::jmethodIDIV8ValueFunctionScriptGetEndPosition);
                 auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
                 auto v8InternalSource = v8::Utils::OpenHandle(*umSourceCode);
                 bool sourceCodeEquals = v8InternalScript.source().StrictEquals(*v8InternalSource);
@@ -1090,8 +964,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
     V8MaybeLocalValue v8MaybeLocalValueResult;
     V8TryCatch v8TryCatch(v8Context->GetIsolate());
     if (IS_V8_ARGUMENTS(v8ValueType) || IS_V8_ARRAY(v8ValueType) || v8LocalValue->IsTypedArray()) {
-        if (IS_JAVA_INTEGER(jniEnv, key)) {
-            jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             if (integerKey >= 0) {
                 v8MaybeLocalValueResult = v8LocalValue.As<v8::Array>()->Get(v8Context, integerKey);
             }
@@ -1127,8 +1001,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
         }
         else if (v8LocalValue->IsObject()) {
             auto v8LocalObject = v8LocalValue.As<v8::Object>();
-            if (IS_JAVA_INTEGER(jniEnv, key)) {
-                jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+            if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+                jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
                 v8MaybeLocalValueResult = v8LocalObject->Get(v8Context, integerKey);
             }
             else {
@@ -1383,8 +1257,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
         V8MaybeLocalValue v8MaybeLocalValueValue;
-        if (IS_JAVA_INTEGER(jniEnv, key)) {
-            jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             v8MaybeLocalValueValue = v8LocalObject->Get(v8Context, integerKey);
         }
         else {
@@ -1472,8 +1346,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_has
         }
         else if (v8LocalValue->IsObject()) {
             auto v8LocalObject = v8LocalValue.As<v8::Object>();
-            if (IS_JAVA_INTEGER(jniEnv, value)) {
-                jint integerKey = TO_JAVA_INTEGER(jniEnv, value);
+            if (Javet::Converter::IsV8ValueInteger(jniEnv, value)) {
+                jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, value);
                 v8MaybeBool = v8LocalObject->Has(v8Context, integerKey);
             }
             else {
@@ -1585,12 +1459,12 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnPropert
     if (v8LocalValue->IsObject()) {
         V8MaybeBool v8MaybeBool = v8::Just(false);
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
-        if (IS_JAVA_INTEGER(jniEnv, key)) {
-            jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             v8MaybeBool = v8LocalObject->HasOwnProperty(v8Context, integerKey);
         }
-        else if (IS_JAVA_STRING(jniEnv, key)) {
-            jstring stringKey = TO_JAVA_STRING(jniEnv, key);
+        else if (Javet::Converter::IsV8ValueString(jniEnv, key)) {
+            jstring stringKey = Javet::Converter::ToJavaStringFromV8ValueString(jniEnv, key);
             auto v8ValueKey = Javet::Converter::ToV8String(jniEnv, v8Context, stringKey);
             v8MaybeBool = v8LocalObject->HasOwnProperty(v8Context, v8ValueKey);
         }
@@ -2047,8 +1921,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_set
     auto v8ValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, key);
     auto v8ValueValue = Javet::Converter::ToV8Value(jniEnv, v8Context, value);
     if (IS_V8_ARRAY(v8ValueType)) {
-        if (IS_JAVA_INTEGER(jniEnv, key)) {
-            jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             v8MaybeBool = v8LocalValue.As<v8::Array>()->Set(v8Context, integerKey, v8ValueValue);
         }
         else if (!v8ValueKey.IsEmpty()) {
@@ -2066,8 +1940,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_set
         }
         else if (v8LocalValue->IsObject()) {
             auto v8LocalObject = v8LocalValue.As<v8::Object>();
-            if (IS_JAVA_INTEGER(jniEnv, key)) {
-                jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+            if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+                jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
                 v8MaybeBool = v8LocalObject->Set(v8Context, integerKey, v8ValueValue);
             }
             else {
@@ -2088,10 +1962,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
     if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
         V8LocalName v8LocalName;
-        if (IS_JAVA_STRING(jniEnv, mPropertyName)) {
+        if (Javet::Converter::IsV8ValueString(jniEnv, mPropertyName)) {
             v8LocalName = Javet::Converter::ToV8Value(jniEnv, v8Context, mPropertyName).As<v8::String>();
         }
-        else if (IS_JAVA_SYMBOL(jniEnv, mPropertyName)) {
+        else if (Javet::Converter::IsV8ValueSymbol(jniEnv, mPropertyName)) {
             v8LocalName = Javet::Converter::ToV8Value(jniEnv, v8Context, mPropertyName).As<v8::Symbol>();
         }
         else {
@@ -2157,8 +2031,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setProperty
         V8MaybeBool v8MaybeBool = v8::Just(false);
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
         auto v8ValueValue = Javet::Converter::ToV8Value(jniEnv, v8Context, value);
-        if (IS_JAVA_INTEGER(jniEnv, key)) {
-            jint integerKey = TO_JAVA_INTEGER(jniEnv, key);
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             v8MaybeBool = v8LocalObject->Set(v8Context, integerKey, v8ValueValue);
         }
         else {

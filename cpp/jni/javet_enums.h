@@ -17,21 +17,6 @@
 
 #pragma once
 
-#define IS_V8_ARRAY(type) (type == Javet::Enums::V8ValueReferenceType::Array)
-#define IS_V8_ARRAY_BUFFER(type) (type == Javet::Enums::V8ValueReferenceType::ArrayBuffer)
-#define IS_V8_ARGUMENTS(type) (type == Javet::Enums::V8ValueReferenceType::Arguments)
-#define IS_V8_CONTEXT(type) (type == Javet::Enums::V8ValueReferenceType::Context)
-#define IS_V8_FUNCTION(type) (type == Javet::Enums::V8ValueReferenceType::Function)
-#define IS_V8_MAP(type) (type == Javet::Enums::V8ValueReferenceType::Map)
-#define IS_V8_MODULE(type) (type == Javet::Enums::V8ValueReferenceType::Module)
-#define IS_V8_OBJECT(type) (type == Javet::Enums::V8ValueReferenceType::Object)
-#define IS_V8_PROMISE(type) (type == Javet::Enums::V8ValueReferenceType::Promise)
-#define IS_V8_PROXY(type) (type == Javet::Enums::V8ValueReferenceType::Proxy)
-#define IS_V8_SCRIPT(type) (type == Javet::Enums::V8ValueReferenceType::Script)
-#define IS_V8_SET(type) (type == Javet::Enums::V8ValueReferenceType::Set)
-#define IS_V8_SYMBOL(type) (type == Javet::Enums::V8ValueReferenceType::Symbol)
-#define IS_V8_SYMBOL_OBJECT(type) (type == Javet::Enums::V8ValueReferenceType::SymbolObject)
-
 namespace Javet {
     namespace Enums {
         namespace NodeScriptMode {
@@ -184,3 +169,18 @@ namespace Javet {
         };
     }
 }
+
+constexpr auto IS_V8_ARRAY(jint type) { return type == Javet::Enums::V8ValueReferenceType::Array; }
+constexpr auto IS_V8_ARRAY_BUFFER(jint type) { return type == Javet::Enums::V8ValueReferenceType::ArrayBuffer; }
+constexpr auto IS_V8_ARGUMENTS(jint type) { return type == Javet::Enums::V8ValueReferenceType::Arguments; }
+constexpr auto IS_V8_CONTEXT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Context; }
+constexpr auto IS_V8_FUNCTION(jint type) { return type == Javet::Enums::V8ValueReferenceType::Function; }
+constexpr auto IS_V8_MAP(jint type) { return type == Javet::Enums::V8ValueReferenceType::Map; }
+constexpr auto IS_V8_MODULE(jint type) { return type == Javet::Enums::V8ValueReferenceType::Module; }
+constexpr auto IS_V8_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Object; }
+constexpr auto IS_V8_PROMISE(jint type) { return type == Javet::Enums::V8ValueReferenceType::Promise; }
+constexpr auto IS_V8_PROXY(jint type) { return type == Javet::Enums::V8ValueReferenceType::Proxy; }
+constexpr auto IS_V8_SCRIPT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Script; }
+constexpr auto IS_V8_SET(jint type) { return type == Javet::Enums::V8ValueReferenceType::Set; }
+constexpr auto IS_V8_SYMBOL(jint type) { return type == Javet::Enums::V8ValueReferenceType::Symbol; }
+constexpr auto IS_V8_SYMBOL_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::SymbolObject; }
