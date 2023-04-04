@@ -25,31 +25,6 @@ namespace Javet {
         class JavetCallbackContextReference;
         class V8ValueReference;
 
-        static jclass jclassJavetCallbackContext;
-        static jmethodID jmethodIDJavetCallbackContextIsReturnResult;
-        static jmethodID jmethodIDJavetCallbackContextIsThisObjectRequired;
-        static jmethodID jmethodIDJavetCallbackContextSetHandle;
-
-        static jclass jclassIV8Module;
-        static jmethodID jmethodIDIV8ModuleGetHandle;
-
-        static jclass jclassIV8ValueReference;
-        static jmethodID jmethodIDIV8ValueReferenceClose;
-
-        static jclass jclassJavetResourceUtils;
-        static jmethodID jmethodIDJavetResourceUtilsSafeClose;
-
-        static jclass jclassV8FunctionCallback;
-        static jmethodID jmethodIDV8FunctionCallbackReceiveCallback;
-
-        static jclass jclassV8Runtime;
-        static jmethodID jmethodIDV8RuntimeGetCallbackContext;
-        static jmethodID jmethodIDV8RuntimeGetV8Module;
-        static jmethodID jmethodIDV8RuntimeReceiveGCEpilogueCallback;
-        static jmethodID jmethodIDV8RuntimeReceiveGCPrologueCallback;
-        static jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
-        static jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
-
         void Initialize(JNIEnv* jniEnv) noexcept;
 
         void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info) noexcept;

@@ -190,7 +190,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
         }
         else if (mResultRequired && !v8MaybeLocalCompiledModule.IsEmpty()) {
             return Javet::Converter::ToExternalV8Module(
-                jniEnv, v8Runtime->externalV8Runtime, v8Context, v8MaybeLocalCompiledModule.ToLocalChecked());
+                jniEnv, v8Runtime, v8Context, v8MaybeLocalCompiledModule.ToLocalChecked());
         }
     }
     else {
@@ -212,7 +212,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
         }
         else if (mResultRequired && !v8MaybeLocalScript.IsEmpty()) {
             return Javet::Converter::ToExternalV8Script(
-                jniEnv, v8Runtime->externalV8Runtime, v8Context, v8MaybeLocalScript.ToLocalChecked());
+                jniEnv, v8Runtime, v8Context, v8MaybeLocalScript.ToLocalChecked());
         }
     }
     return nullptr;
@@ -677,7 +677,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCon
         if (v8InternalFunction.has_context()) {
             auto v8InternalContextHandle = v8::internal::Handle(v8InternalFunction.context(), v8InternalIsolate);
             auto v8LocalContext = v8::Utils::ToLocal(v8InternalContextHandle);
-            return Javet::Converter::ToExternalV8Context(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8LocalContext);
+            return Javet::Converter::ToExternalV8Context(jniEnv, v8Runtime, v8Context, v8LocalContext);
         }
     }
     return nullptr;
@@ -1072,7 +1072,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_getCachedDa
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getGlobalObject
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    return Javet::Converter::ToExternalV8ValueGlobalObject(jniEnv, v8Runtime->externalV8Runtime, v8Runtime->v8GlobalObject);
+    return Javet::Converter::ToExternalV8ValueGlobalObject(jniEnv, v8Runtime);
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getIdentityHash

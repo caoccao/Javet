@@ -34,6 +34,7 @@ namespace Javet {
         jmethodID jmethodIDV8RuntimeCreateV8ValueDouble;
         jmethodID jmethodIDV8RuntimeCreateV8ValueInteger;
         jmethodID jmethodIDV8RuntimeCreateV8ValueLong;
+        jmethodID jmethodIDV8RuntimeCreateV8ValueNull;
         jmethodID jmethodIDV8RuntimeCreateV8ValueUndefined;
         jmethodID jmethodIDV8RuntimeCreateV8ValueZonedDateTime;
 
@@ -502,53 +503,45 @@ namespace Javet {
             return byteArray;
         }
 
-        jobject ToExternalV8ValueArray(
-            JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
-            const V8LocalContext& v8Context,
-            const v8::FunctionCallbackInfo<v8::Value>& args) noexcept {
-            int argLength = args.Length();
-            if (argLength > 0) {
-                auto v8Array = v8::Array::New(v8Context->GetIsolate(), argLength);
-                for (int i = 0; i < argLength; ++i) {
-                    auto v8MaybeBool = v8Array->Set(v8Context, i, args[i]);
-                    if (v8MaybeBool.IsNothing()) {
-                        Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
-                        return nullptr;
-                    }
-                }
-                return ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8Array);
-            }
-            return nullptr;
-        }
-
         jobject ToExternalV8Context(
             JNIEnv* jniEnv,
-            jobject externalV8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalContext& v8ContextValue) noexcept {
-            return jniEnv->NewObject(jclassV8Context, jmethodIDV8ContextConstructor, externalV8Runtime, ToV8PersistentDataReference(v8Context, v8ContextValue));
+            return jniEnv->NewObject(
+                jclassV8Context,
+                jmethodIDV8ContextConstructor,
+                v8Runtime->externalV8Runtime,
+                ToV8PersistentDataReference(v8Context, v8ContextValue));
         }
 
         jobject ToExternalV8Module(
             JNIEnv* jniEnv,
-            jobject externalV8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalModule& v8Module) noexcept {
-            return jniEnv->NewObject(jclassV8Module, jmethodIDV8ModuleConstructor, externalV8Runtime, ToV8PersistentDataReference(v8Context, v8Module));
+            return jniEnv->NewObject(
+                jclassV8Module,
+                jmethodIDV8ModuleConstructor,
+                v8Runtime->externalV8Runtime,
+                ToV8PersistentDataReference(v8Context, v8Module));
         }
 
         jobject ToExternalV8Script(
             JNIEnv* jniEnv,
-            jobject externalV8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalScript& v8Script) noexcept {
-            return jniEnv->NewObject(jclassV8Script, jmethodIDV8ScriptConstructor, externalV8Runtime, ToV8PersistentScriptReference(v8Context, v8Script));
+            return jniEnv->NewObject(
+                jclassV8Script,
+                jmethodIDV8ScriptConstructor,
+                v8Runtime->externalV8Runtime,
+                ToV8PersistentScriptReference(v8Context, v8Script));
         }
 
         jobject ToExternalV8Value(
             JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8InternalObject& v8InternalObject) noexcept {
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
@@ -560,11 +553,11 @@ namespace Javet {
             else if (v8InternalObject.IsContext()) {
                 auto v8InternalContext = V8InternalContext::cast(v8InternalObject);
                 auto v8LocalContext = v8::Utils::ToLocal(v8::internal::Handle(v8InternalContext, v8InternalIsolate));
-                return ToExternalV8Context(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8LocalContext);
+                return ToExternalV8Context(jniEnv, v8Runtime, v8Context, v8LocalContext);
             }
             else if (v8InternalObject.IsModule()) {
                 auto v8LocalModule = v8::Utils::ToLocal(v8::internal::Handle(V8InternalModule::cast(v8InternalObject), v8InternalIsolate));
-                return ToExternalV8Module(jniEnv, v8Runtime->externalV8Runtime, v8Context, v8LocalModule);
+                return ToExternalV8Module(jniEnv, v8Runtime, v8Context, v8LocalModule);
             }
             else if (v8InternalObject.IsScript()) {
                 LOG_DEBUG("Converter: Script is not supported.");
@@ -577,7 +570,7 @@ namespace Javet {
 
         jobject ToExternalV8Value(
             JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalValue& v8Value) noexcept {
             using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType::V8ValueReferenceType;
@@ -860,20 +853,47 @@ namespace Javet {
                 v8Value);
         }
 
+        jobject ToExternalV8ValueArray(
+            JNIEnv* jniEnv,
+            V8Runtime* v8Runtime,
+            const V8LocalContext& v8Context,
+            const v8::FunctionCallbackInfo<v8::Value>& args) noexcept {
+            int argLength = args.Length();
+            if (argLength > 0) {
+                auto v8Array = v8::Array::New(v8Context->GetIsolate(), argLength);
+                for (int i = 0; i < argLength; ++i) {
+                    auto v8MaybeBool = v8Array->Set(v8Context, i, args[i]);
+                    if (v8MaybeBool.IsNothing()) {
+                        Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
+                        return nullptr;
+                    }
+                }
+                return ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8Array);
+            }
+            return nullptr;
+        }
+
         jobject ToExternalV8ValueGlobalObject(
             JNIEnv* jniEnv,
-            jobject externalV8Runtime,
-            const V8PersistentObject& v8PersistentObject) noexcept {
+            const V8Runtime* v8Runtime) noexcept {
             return jniEnv->NewObject(
                 jclassV8ValueGlobalObject,
                 jmethodIDV8ValueGlobalObjectConstructor,
-                externalV8Runtime,
-                TO_JAVA_LONG(&v8PersistentObject));
+                v8Runtime->externalV8Runtime,
+                TO_JAVA_LONG(&(v8Runtime->v8GlobalObject)));
+        }
+
+        jobject ToExternalV8ValueNull(
+            JNIEnv* jniEnv,
+            const V8Runtime* v8Runtime) noexcept {
+            return jniEnv->CallObjectMethod(
+                v8Runtime->externalV8Runtime,
+                jmethodIDV8RuntimeCreateV8ValueNull);
         }
 
         jobject ToExternalV8ValueUndefined(
             JNIEnv* jniEnv,
-            V8Runtime* v8Runtime) noexcept {
+            const V8Runtime* v8Runtime) noexcept {
             return jniEnv->CallObjectMethod(
                 v8Runtime->externalV8Runtime,
                 jmethodIDV8RuntimeCreateV8ValueUndefined);
@@ -881,7 +901,7 @@ namespace Javet {
 
         jobject ToJavetScriptingError(
             JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8TryCatch& v8TryCatch) noexcept {
             jobject jObjectException = ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8TryCatch.Exception());

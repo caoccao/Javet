@@ -24,6 +24,31 @@
 
 namespace Javet {
     namespace Callback {
+        jclass jclassJavetCallbackContext;
+        jmethodID jmethodIDJavetCallbackContextIsReturnResult;
+        jmethodID jmethodIDJavetCallbackContextIsThisObjectRequired;
+        jmethodID jmethodIDJavetCallbackContextSetHandle;
+
+        jclass jclassIV8Module;
+        jmethodID jmethodIDIV8ModuleGetHandle;
+
+        jclass jclassIV8ValueReference;
+        jmethodID jmethodIDIV8ValueReferenceClose;
+
+        jclass jclassJavetResourceUtils;
+        jmethodID jmethodIDJavetResourceUtilsSafeClose;
+
+        jclass jclassV8FunctionCallback;
+        jmethodID jmethodIDV8FunctionCallbackReceiveCallback;
+
+        jclass jclassV8Runtime;
+        jmethodID jmethodIDV8RuntimeGetCallbackContext;
+        jmethodID jmethodIDV8RuntimeGetV8Module;
+        jmethodID jmethodIDV8RuntimeReceiveGCEpilogueCallback;
+        jmethodID jmethodIDV8RuntimeReceiveGCPrologueCallback;
+        jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
+        jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
+
         const std::string PROMISE_REJECT_EVENTS[] = {
             "PromiseRejectWithNoHandler",
             "PromiseHandlerAddedAfterReject",
@@ -32,7 +57,6 @@ namespace Javet {
         };
 
         void Initialize(JNIEnv* jniEnv) noexcept {
-
             jclassJavetCallbackContext = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/callback/JavetCallbackContext");
             jmethodIDJavetCallbackContextIsReturnResult = jniEnv->GetMethodID(jclassJavetCallbackContext, "isReturnResult", "()Z");
             jmethodIDJavetCallbackContextIsThisObjectRequired = jniEnv->GetMethodID(jclassJavetCallbackContext, "isThisObjectRequired", "()Z");
@@ -171,10 +195,12 @@ namespace Javet {
                 }
                 else {
                     FETCH_JNI_ENV(GlobalJavaVM);
-                    auto externalV8Runtime = v8Runtime->externalV8Runtime;
-                    jobject mReferrerV8Module = referrer.IsEmpty() ? nullptr : Javet::Converter::ToExternalV8Module(jniEnv, externalV8Runtime, v8Context, referrer);
+                    jobject mReferrerV8Module = referrer.IsEmpty() 
+                        ? nullptr 
+                        : Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime, v8Context, referrer);
                     jobject mIV8Module = jniEnv->CallObjectMethod(
-                        externalV8Runtime, jmethodIDV8RuntimeGetV8Module,
+                        v8Runtime->externalV8Runtime,
+                        jmethodIDV8RuntimeGetV8Module,
                         Javet::Converter::ToJavaString(jniEnv, v8Context, specifier),
                         mReferrerV8Module);
                     auto moduleNamePointer = Javet::Converter::ToStdString(v8Context, specifier);

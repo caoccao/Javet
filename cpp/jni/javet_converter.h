@@ -46,9 +46,6 @@ namespace Javet {
         extern jmethodID jmethodIDIV8ValueFunctionScriptGetEndPosition;
         extern jmethodID jmethodIDIV8ValueFunctionScriptGetStartPosition;
 
-        // internal
-        static jmethodID jmethodIDV8RuntimeCreateV8ValueNull;
-
         template<typename T1, typename T2>
         constexpr auto IsJavaByteBuffer(T1 jniEnv, T2 obj) {
             return jniEnv->IsInstanceOf(obj, jclassByteBuffer);
@@ -135,31 +132,31 @@ namespace Javet {
 
         jobject ToExternalV8Context(
             JNIEnv* jniEnv,
-            jobject externalV8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalContext& v8ContextValue) noexcept;
 
         jobject ToExternalV8Module(
             JNIEnv* jniEnv,
-            jobject externalV8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalModule& v8Module) noexcept;
 
         jobject ToExternalV8Script(
             JNIEnv* jniEnv,
-            jobject externalV8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalScript& v8Script) noexcept;
 
         jobject ToExternalV8Value(
             JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8InternalObject& v8InternalObject) noexcept;
 
         jobject ToExternalV8Value(
             JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalValue& v8Value) noexcept;
 
@@ -169,16 +166,13 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const v8::FunctionCallbackInfo<v8::Value>& args) noexcept;
 
-        static inline jobject ToExternalV8ValueNull(
-            JNIEnv* jniEnv,
-            V8Runtime* v8Runtime) noexcept {
-            return jniEnv->CallObjectMethod(v8Runtime->externalV8Runtime, jmethodIDV8RuntimeCreateV8ValueNull);
-        }
-
         jobject ToExternalV8ValueGlobalObject(
             JNIEnv* jniEnv,
-            const jobject externalV8Runtime,
-            const V8PersistentObject& v8PersistentObject) noexcept;
+            const V8Runtime* v8Runtime) noexcept;
+
+        jobject ToExternalV8ValueNull(
+            JNIEnv* jniEnv,
+            const V8Runtime* v8Runtime) noexcept;
 
         static inline jobject ToExternalV8ValuePrimitive(
             JNIEnv* jniEnv,
@@ -195,11 +189,11 @@ namespace Javet {
 
         jobject ToExternalV8ValueUndefined(
             JNIEnv* jniEnv,
-            V8Runtime* v8Runtime) noexcept;
+            const V8Runtime* v8Runtime) noexcept;
 
         jobject ToJavetScriptingError(
             JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8TryCatch& v8TryCatch) noexcept;
 

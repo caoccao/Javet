@@ -63,9 +63,13 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8TryCatch& v8TryCatch) noexcept;
 
-        jobject ThrowJavetConverterException(
+        static inline jobject ThrowJavetConverterException(
             JNIEnv* jniEnv,
-            const char* message) noexcept;
+            const char* message) noexcept {
+            LOG_ERROR(*message);
+            jniEnv->ThrowNew(jclassJavetConverterException, message);
+            return nullptr;
+        }
 
         jobject ThrowJavetExecutionException(
             JNIEnv* jniEnv,

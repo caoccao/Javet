@@ -124,14 +124,6 @@ namespace Javet {
             return nullptr;
         }
 
-        jobject ThrowJavetConverterException(
-            JNIEnv* jniEnv,
-            const char* message) noexcept {
-            LOG_ERROR(*message);
-            jniEnv->ThrowNew(jclassJavetConverterException, message);
-            return nullptr;
-        }
-
         jobject ThrowJavetExecutionException(
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
@@ -199,7 +191,7 @@ namespace Javet {
 
         jobject ThrowJavetTerminatedException(
             JNIEnv* jniEnv,
-            bool canContinue) noexcept {
+            const bool canContinue) noexcept {
             jthrowable javetTerminatedException = (jthrowable)jniEnv->NewObject(
                 jclassJavetTerminatedException,
                 jmethodIDJavetTerminatedExceptionConstructor,
