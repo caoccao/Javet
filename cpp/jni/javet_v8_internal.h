@@ -17,11 +17,11 @@
 
 #pragma once
 
-/*
- * This header is for developing V8 internal features only.
- * It shall only be included in .cpp files and only be the last header,
- * otherwise compilation errors will take place.
- */
+ /*
+  * This header is for developing V8 internal features only.
+  * It shall only be included in .cpp files and only be the last header,
+  * otherwise compilation errors will take place.
+  */
 
 #pragma warning(disable: 4146)
 #pragma warning(disable: 4244)
@@ -50,10 +50,6 @@
 #pragma warning(default: 4819)
 #pragma warning(default: 4996)
 
-#define CONVERT_OFFSET_FOR_SCOPE_INFO(offset) ((offset - V8InternalHeapObject::kHeaderSize) / v8::internal::kTaggedSize)
-#define IS_API_FUNCTION(v8InternalShared) (!v8InternalShared.native() && v8InternalShared.IsApiFunction())
-#define IS_USER_DEFINED_FUNCTION(v8InternalShared) (!v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript())
-
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
 using V8internalBlockingBehavior = v8::internal::BlockingBehavior;
 using V8InternalBuiltin = v8::internal::Builtin;
@@ -77,3 +73,18 @@ using V8InternalSharedFunctionInfo = v8::internal::SharedFunctionInfo;
 using V8InternalString = v8::internal::String;
 using V8InternalStringSet = v8::internal::StringSet;
 using V8InternalWriteBarrierMode = v8::internal::WriteBarrierMode;
+
+template<typename T>
+constexpr auto CONVERT_OFFSET_FOR_SCOPE_INFO(T offset) {
+    return (offset - V8InternalHeapObject::kHeaderSize) / v8::internal::kTaggedSize;
+}
+
+template<typename T>
+constexpr auto IS_API_FUNCTION(T v8InternalShared) {
+    return !v8InternalShared.native() && v8InternalShared.IsApiFunction();
+}
+
+template<typename T>
+constexpr auto IS_USER_DEFINED_FUNCTION(T v8InternalShared) {
+    return !v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript();
+}

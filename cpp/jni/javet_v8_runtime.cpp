@@ -25,18 +25,22 @@
 #include "javet_v8_runtime.h"
 
 namespace Javet {
+    jclass jclassRuntimeOptions;
 #ifdef ENABLE_NODE
-    static std::mutex mutexForNodeResetEnvrironment;
-    static auto oneMillisecond = std::chrono::milliseconds(1);
+    jmethodID jmethodNodeRuntimeOptionsGetConsoleArguments;
+    std::mutex mutexForNodeResetEnvrironment;
+    auto oneMillisecond = std::chrono::milliseconds(1);
+#else
+    jmethodID jmethodV8RuntimeOptionsGetGlobalName;
 #endif
 
-    void Initialize(JNIEnv* jniEnv) {
+    void Initialize(JNIEnv* jniEnv) noexcept {
 #ifdef ENABLE_NODE
-        jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions"));
+        jclassRuntimeOptions = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/options/NodeRuntimeOptions");
         jmethodNodeRuntimeOptionsGetConsoleArguments = jniEnv->GetMethodID(jclassRuntimeOptions, "getConsoleArguments", "()[Ljava/lang/String;");
         bool isFrozen = false;
 #else
-        jclassRuntimeOptions = (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions"));
+        jclassRuntimeOptions = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/options/V8RuntimeOptions");
         jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
         bool isFrozen = V8InternalFlagList::IsFrozen(); // Since V8 v10.5
 #endif
@@ -60,17 +64,19 @@ namespace Javet {
 
     void GlobalAccessorGetterCallback(
         V8LocalName propertyName,
-        const v8::PropertyCallbackInfo<v8::Value>& args) {
+        const v8::PropertyCallbackInfo<v8::Value>& args) noexcept {
         args.GetReturnValue().Set(args.GetIsolate()->GetCurrentContext()->Global());
     }
 
 #ifdef ENABLE_NODE
-    V8Runtime::V8Runtime(node::MultiIsolatePlatform* v8PlatformPointer, std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator)
+    V8Runtime::V8Runtime(
+        node::MultiIsolatePlatform* v8PlatformPointer,
+        std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator) noexcept
         : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), v8Locker(nullptr), uvLoop() {
         purgeEventLoopBeforeClose = false;
         this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
 #else
-    V8Runtime::V8Runtime(V8Platform * v8PlatformPointer)
+    V8Runtime::V8Runtime(V8Platform * v8PlatformPointer) noexcept
         : v8Locker(nullptr) {
 #endif
         externalV8Runtime = nullptr;
@@ -79,7 +85,7 @@ namespace Javet {
         this->v8PlatformPointer = v8PlatformPointer;
     }
 
-    bool V8Runtime::Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) {
+    bool V8Runtime::Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept {
         bool hasMoreTasks = false;
 #ifdef ENABLE_NODE
         do {
@@ -117,7 +123,7 @@ namespace Javet {
         return hasMoreTasks;
     }
 
-    void V8Runtime::CloseV8Context() {
+    void V8Runtime::CloseV8Context() noexcept {
         auto internalV8Locker = GetSharedV8Locker();
         auto v8IsolateScope = GetV8IsolateScope();
         V8HandleScope v8HandleScope(v8Isolate);
@@ -156,10 +162,10 @@ namespace Javet {
             // Do not call nodeEnvironment->PrintInfoForSnapshotIfDebug();
             // Do not call nodeEnvironment->ForEachRealm([](node::Realm* realm) { realm->VerifyNoStrongBaseObjects(); });
             // node::EmitExit is thread-safe.
-            errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(1);
+            errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(0);
         }
         if (errorCode != 0) {
-            LOG_ERROR("node::EmitExit() returns " << errorCode << ".");
+            LOG_ERROR("node::EmitProcessExit() returns " << errorCode << ".");
         }
         else {
             // node::Stop is thread-safe.
@@ -172,7 +178,7 @@ namespace Javet {
         v8PersistentContext.Reset();
     }
 
-    void V8Runtime::CloseV8Isolate() {
+    void V8Runtime::CloseV8Isolate() noexcept {
         if (v8Inspector) {
             auto internalV8Locker = GetSharedV8Locker();
             v8Inspector.reset();
@@ -217,7 +223,7 @@ namespace Javet {
         }
     }
 
-    void V8Runtime::CreateV8Context(JNIEnv * jniEnv, const jobject & mRuntimeOptions) {
+    void V8Runtime::CreateV8Context(JNIEnv * jniEnv, const jobject mRuntimeOptions) noexcept {
         auto internalV8Locker = GetSharedV8Locker();
         auto v8IsolateScope = GetV8IsolateScope();
         V8HandleScope v8HandleScope(v8Isolate);
@@ -273,7 +279,7 @@ namespace Javet {
             v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
     }
 
-    void V8Runtime::CreateV8Isolate() {
+    void V8Runtime::CreateV8Isolate() noexcept {
 #ifdef ENABLE_NODE
         int errorCode = uv_loop_init(&uvLoop);
         if (errorCode != 0) {
@@ -297,11 +303,10 @@ namespace Javet {
 #endif
     }
 
-    inline void V8Runtime::Register(const V8LocalContext & v8Context) {
-        v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
-    }
-
-    jobject V8Runtime::SafeToExternalV8Value(JNIEnv * jniEnv, const V8LocalContext & v8Context, const V8InternalObject & v8InternalObject) {
+    jobject V8Runtime::SafeToExternalV8Value(
+        JNIEnv * jniEnv,
+        const V8LocalContext & v8Context,
+        const V8InternalObject & v8InternalObject) noexcept {
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8InternalObject);
         if (v8TryCatch.HasCaught()) {
@@ -311,7 +316,10 @@ namespace Javet {
         return externalV8Value;
     }
 
-    jobject V8Runtime::SafeToExternalV8Value(JNIEnv * jniEnv, const V8LocalContext & v8Context, const V8LocalValue & v8Value) {
+    jobject V8Runtime::SafeToExternalV8Value(
+        JNIEnv * jniEnv,
+        const V8LocalContext & v8Context,
+        const V8LocalValue & v8Value) noexcept {
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8Value);
         if (v8TryCatch.HasCaught()) {
@@ -319,10 +327,6 @@ namespace Javet {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
         }
         return externalV8Value;
-    }
-
-    inline void V8Runtime::Unregister(const V8LocalContext & v8Context) {
-        v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, 0));
     }
 
     V8Runtime::~V8Runtime() {

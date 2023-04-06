@@ -53,6 +53,18 @@ class ChangeJavetVersion(object):
       'docker/android/build.Dockerfile', '\n',
       re.compile(r'javet-android:(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
+      'docker/linux-arm64/base_all_in_one.Dockerfile', '\n',
+      re.compile(r'javet-arm64:(?P<version>\d+\.\d+\.\d+) '))
+    self._update(
+      'docker/linux-arm64/build_all_in_one.Dockerfile', '\n',
+      re.compile(r'javet-arm64:(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      'docker/linux-arm64/build_artifact.Dockerfile', '\n',
+      re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)'))
+    self._update(
+      'docker/linux-arm64/base_gradle.Dockerfile', '\n',
+      re.compile(r'arm64-(?P<version>\d+\.\d+\.\d+) '))
+    self._update(
       'docker/linux-x86_64/base_all_in_one.Dockerfile', '\n',
       re.compile(r'javet:(?P<version>\d+\.\d+\.\d+) '))
     self._update(
@@ -156,7 +168,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('2.1.0')
+  change_javet_version = ChangeJavetVersion('2.1.1')
   change_javet_version.update()
   return 0
 

@@ -63,6 +63,6 @@
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
-#define DEFAULT_SCRIPT_NAME "javet.js"
+constexpr auto DEFAULT_SCRIPT_NAME = "javet.js";
 
 #endif

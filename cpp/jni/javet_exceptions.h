@@ -42,21 +42,53 @@ namespace Javet {
         static jclass jclassThrowable;
         static jmethodID jmethodIDThrowableGetMessage;
 
-        void Initialize(JNIEnv* jniEnv);
+        void Initialize(JNIEnv* jniEnv) noexcept;
 
-        static inline void ClearJNIException(JNIEnv* jniEnv) {
+        static inline void ClearJNIException(JNIEnv* jniEnv) noexcept {
             if (jniEnv->ExceptionCheck()) {
                 jniEnv->ExceptionClear();
                 LOG_DEBUG("Cleared JNI exception.");
             }
         }
 
-        bool HandlePendingException(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const char* message = nullptr);
-        jobject ThrowJavetCompilationException(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
-        jobject ThrowJavetConverterException(JNIEnv* jniEnv, const char* message);
-        jobject ThrowJavetExecutionException(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8TryCatch& v8TryCatch);
-        jobject ThrowJavetOutOfMemoryException(JNIEnv* jniEnv, v8::Isolate* v8Isolate, const char* message);
-        jobject ThrowJavetTerminatedException(JNIEnv* jniEnv, bool canContinue);
-        void ThrowV8Exception(JNIEnv* jniEnv, const V8LocalContext& v8Context, const char* defaultMessage);
+        bool HandlePendingException(
+            JNIEnv* jniEnv,
+            V8Runtime* v8Runtime,
+            const V8LocalContext& v8Context,
+            const char* message = nullptr) noexcept;
+
+        jobject ThrowJavetCompilationException(
+            JNIEnv* jniEnv,
+            V8Runtime* v8Runtime,
+            const V8LocalContext& v8Context,
+            const V8TryCatch& v8TryCatch) noexcept;
+
+        static inline jobject ThrowJavetConverterException(
+            JNIEnv* jniEnv,
+            const char* message) noexcept {
+            LOG_ERROR(*message);
+            jniEnv->ThrowNew(jclassJavetConverterException, message);
+            return nullptr;
+        }
+
+        jobject ThrowJavetExecutionException(
+            JNIEnv* jniEnv,
+            V8Runtime* v8Runtime,
+            const V8LocalContext& v8Context,
+            const V8TryCatch& v8TryCatch) noexcept;
+
+        jobject ThrowJavetOutOfMemoryException(
+            JNIEnv* jniEnv,
+            const V8LocalContext& v8Context,
+            const char* message) noexcept;
+
+        jobject ThrowJavetTerminatedException(
+            JNIEnv* jniEnv,
+            const bool canContinue) noexcept;
+
+        void ThrowV8Exception(
+            JNIEnv* jniEnv,
+            const V8LocalContext& v8Context,
+            const char* defaultMessage) noexcept;
     }
 }

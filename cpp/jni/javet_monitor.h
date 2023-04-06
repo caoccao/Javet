@@ -38,11 +38,18 @@ namespace Javet {
         static jclass jclassV8SharedMemoryStatistics;
         static jmethodID jmethodIDV8SharedMemoryStatisticsConstructor;
 
-        void Initialize(JNIEnv* jniEnv);
+        void Initialize(JNIEnv* jniEnv) noexcept;
 
-        jobject GetHeapSpaceStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate, jint allocationSpaceIndex);
-        jobject GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate);
-        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv);
+        jobject GetHeapSpaceStatistics(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate,
+            const jint allocationSpaceIndex) noexcept;
+
+        jobject GetHeapStatistics(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate) noexcept;
+
+        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) noexcept;
 
 #ifdef ENABLE_MONITOR
         namespace CounterType {
@@ -67,17 +74,17 @@ namespace Javet {
         class JavetNativeMonitor {
         public:
 
-            JavetNativeMonitor();
+            JavetNativeMonitor() noexcept;
 
-            inline void Clear() {
+            inline void Clear() noexcept {
                 for (int i = 0; i < CounterType::Max; ++i) {
                     counters[i].store(0);
                 }
             }
 
-            jlongArray GetCounters(JNIEnv* jniEnv);
+            jlongArray GetCounters(JNIEnv* jniEnv) noexcept;
 
-            inline void IncreaseCounter(int counterType) {
+            inline void IncreaseCounter(int counterType) noexcept {
                 counters[counterType]++;
             }
         private:

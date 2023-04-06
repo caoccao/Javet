@@ -110,13 +110,21 @@ namespace Javet {
 
 #ifdef ENABLE_NODE
     namespace NodeNative {
-        void Dispose(JNIEnv* jniEnv);
-        void Initialize(JNIEnv* jniEnv);
+        extern std::shared_ptr<node::ArrayBufferAllocator> GlobalNodeArrayBufferAllocator;
+
+        void Dispose(JNIEnv* jniEnv) noexcept;
+        void Initialize(JNIEnv* jniEnv) noexcept;
     }
 #endif
 
     namespace V8Native {
-        void Dispose(JNIEnv* jniEnv);
-        void Initialize(JNIEnv* jniEnv);
+#ifdef ENABLE_NODE
+        extern std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
+#else
+        extern std::unique_ptr<V8Platform> GlobalV8Platform;
+#endif
+
+        void Dispose(JNIEnv* jniEnv) noexcept;
+        void Initialize(JNIEnv* jniEnv) noexcept;
     }
 }

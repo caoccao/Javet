@@ -71,3 +71,88 @@ void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
     LOG_INFO("JNI_OnUnload() ends.");
 }
 
+namespace Javet {
+#ifdef ENABLE_NODE
+    namespace NodeNative {
+        jclass jclassV8Host;
+        jmethodID jmethodIDV8HostIsLibraryReloadable;
+
+        std::shared_ptr<node::ArrayBufferAllocator> GlobalNodeArrayBufferAllocator;
+
+        void Dispose(JNIEnv* jniEnv) noexcept {
+            if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
+                GlobalNodeArrayBufferAllocator.reset();
+            }
+        }
+
+        void Initialize(JNIEnv* jniEnv) noexcept {
+            jclassV8Host = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Host");
+            jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
+
+            if (!GlobalNodeArrayBufferAllocator) {
+                GlobalNodeArrayBufferAllocator = node::ArrayBufferAllocator::Create();
+            }
+        }
+    }
+#endif
+
+    namespace V8Native {
+#ifdef ENABLE_NODE
+        std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
+#else
+        std::unique_ptr<V8Platform> GlobalV8Platform;
+#endif
+
+        jclass jclassV8Host;
+        jmethodID jmethodIDV8HostIsLibraryReloadable;
+
+        void Dispose(JNIEnv* jniEnv) noexcept {
+            if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
+                v8::V8::Dispose();
+#ifdef ENABLE_NODE
+                v8::V8::ShutdownPlatform();
+#else
+                v8::V8::DisposePlatform();
+#endif
+                GlobalV8Platform.reset();
+            }
+        }
+
+        /*
+        These Java classes and methods need to be initialized within this file
+        because the memory address probed changes in another file,
+        or runtime memory corruption will take place.
+        */
+        void Initialize(JNIEnv* jniEnv) noexcept {
+            jclassV8Host = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Host");
+            jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
+
+            LOG_INFO("V8::Initialize() begins.");
+#ifdef ENABLE_I18N
+            v8::V8::InitializeICU();
+#endif
+            if (Javet::V8Native::GlobalV8Platform) {
+                LOG_INFO("V8::Initialize() is skipped.");
+            }
+            else {
+#ifdef ENABLE_NODE
+                uv_setup_args(0, nullptr);
+                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
+                std::vector<std::string> execArgs;
+                std::vector<std::string> errors;
+                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
+                if (exitCode != 0) {
+                    LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
+                }
+                Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
+#else
+                Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
+#endif
+                v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
+                v8::V8::Initialize();
+            }
+            LOG_INFO("V8::Initialize() ends.");
+        }
+    }
+}
+
