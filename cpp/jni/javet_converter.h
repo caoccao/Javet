@@ -178,11 +178,15 @@ namespace Javet {
             JNIEnv* jniEnv,
             const jclass jclassV8ValuePrimitive,
             const jmethodID jmethodIDV8ValuePrimitiveConstructor,
-            const jobject externalV8Runtime,
+            const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalValue& v8Value) noexcept {
             jstring mStringValue = ToJavaString(jniEnv, v8Context, v8Value->ToString(v8Context).ToLocalChecked());
-            jobject mV8ValuePrimitive = jniEnv->NewObject(jclassV8ValuePrimitive, jmethodIDV8ValuePrimitiveConstructor, externalV8Runtime, mStringValue);
+            jobject mV8ValuePrimitive = jniEnv->NewObject(
+                jclassV8ValuePrimitive,
+                jmethodIDV8ValuePrimitiveConstructor,
+                v8Runtime->externalV8Runtime,
+                mStringValue);
             jniEnv->DeleteLocalRef(mStringValue);
             return mV8ValuePrimitive;
         }
@@ -248,28 +252,13 @@ namespace Javet {
             return v8::Undefined(v8Context->GetIsolate());
         }
 
-        static inline jlong ToV8PersistentDataReference(
+        template<class T>
+        static inline jlong ToV8PersistentReference(
             const V8LocalContext& v8Context,
-            const V8LocalData& v8Data) noexcept {
-            V8PersistentData* v8PersistentDataPointer = new V8PersistentData(v8Context->GetIsolate(), v8Data);
+            const v8::Local<T>& v8Data) noexcept {
+            v8::Persistent<T>* v8PersistentDataPointer = new v8::Persistent<T>(v8Context->GetIsolate(), v8Data);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
             return TO_JAVA_LONG(v8PersistentDataPointer);
-        }
-
-        static inline jlong ToV8PersistentValueReference(
-            const V8LocalContext& v8Context,
-            const V8LocalValue& v8Value) noexcept {
-            V8PersistentValue* v8PersistentValuePointer = new V8PersistentValue(v8Context->GetIsolate(), v8Value);
-            INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
-            return TO_JAVA_LONG(v8PersistentValuePointer);
-        }
-
-        static inline jlong ToV8PersistentScriptReference(
-            const V8LocalContext& v8Context,
-            const V8LocalScript& v8Script) noexcept {
-            V8PersistentScript* v8PersistentScriptPointer = new V8PersistentScript(v8Context->GetIsolate(), v8Script);
-            INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
-            return TO_JAVA_LONG(v8PersistentScriptPointer);
         }
 
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(

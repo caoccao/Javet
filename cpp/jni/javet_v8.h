@@ -153,18 +153,12 @@ constexpr auto TO_V8_PERSISTENT_VALUE_POINTER(T handle) {
 // To V8 Persistent
 
 #define TO_V8_PERSISTENT_ARRAY(handle) *reinterpret_cast<V8PersistentArray*>(handle)
-#define TO_V8_PERSISTENT_CONTEXT(handle) reinterpret_cast<V8PersistentContext*>(handle)
-#define TO_V8_PERSISTENT_DATA(handle) reinterpret_cast<V8PersistentData*>(handle)
-#define TO_V8_PERSISTENT_FUNCTION(handle) reinterpret_cast<V8PersistentFunction*>(handle)
 #define TO_V8_PERSISTENT_MAP(handle) *reinterpret_cast<V8PersistentMap*>(handle)
-#define TO_V8_PERSISTENT_MODULE(handle) reinterpret_cast<V8PersistentModule*>(handle)
 #define TO_V8_PERSISTENT_OBJECT(handle) *reinterpret_cast<V8PersistentObject*>(handle)
 #define TO_V8_PERSISTENT_PROMISE(handle) *reinterpret_cast<V8PersistentPromise*>(handle)
 #define TO_V8_PERSISTENT_PROXY(handle) *reinterpret_cast<V8PersistentProxy*>(handle)
 #define TO_V8_PERSISTENT_REG_EXP(handle) *reinterpret_cast<V8PersistentRegExp*>(handle)
-#define TO_V8_PERSISTENT_SCRIPT(handle) reinterpret_cast<V8PersistentScript*>(handle)
 #define TO_V8_PERSISTENT_SET(handle) *reinterpret_cast<V8PersistentSet*>(handle)
 #define TO_V8_PERSISTENT_SYMBOL(handle) *reinterpret_cast<V8PersistentSymbol*>(handle)
 #define TO_V8_PERSISTENT_SYMBOL_OBJECT(handle) *reinterpret_cast<V8PersistentSymbolObject*>(handle)
-#define TO_V8_PERSISTENT_VALUE(handle) reinterpret_cast<V8PersistentValue*>(handle)
 
