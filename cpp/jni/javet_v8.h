@@ -17,7 +17,9 @@
 
 #pragma once
 
+#pragma warning(disable: 4244)
 #include <libplatform/libplatform.h>
+#pragma warning(default: 4244)
 #include <v8.h>
 #include <v8-inspector.h>
 

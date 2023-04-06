@@ -5,7 +5,7 @@ Release Notes 1.1.x
 1.1.7 V8 v10.5
 --------------
 
-* Upgraded V8 to ``v10.5.218.7`` `(2022-08-17) <https://v8.dev/blog/v8-release-105>`_
+* Upgraded V8 to ``v10.5.218.7`` (2022-08-17)
 * Fixed ``pom.xml`` for Android 
 * Added optional i18n support for V8 mode
 * Refactored V8 flags initialization
@@ -17,7 +17,7 @@ Release Notes 1.1.x
 --------------
 
 * Upgraded Node.js to ``v16.16.0`` `(2022-07-07) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.16.0>`_
-* Upgraded V8 to ``v10.4.132.20`` `(2022-07-14) <https://v8.dev/blog/v8-release-104>`_
+* Upgraded V8 to ``v10.4.132.20`` (2022-07-14)
 * Fixed improper error handling for custom error objects
 * Added ``waitForEngineMaxRetryCount`` to ``JavetEngineConfig``
 * Added ``EngineNotAvailable`` (901) to ``JavetError``
@@ -26,14 +26,14 @@ Release Notes 1.1.x
 --------------
 
 * Upgraded Node.js to ``v16.15.1`` `(2022-06-01) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.15.1>`_
-* Upgraded V8 to ``v10.3.174.14`` `(2022-06-14) <https://v8.dev/blog/v8-release-103>`_
+* Upgraded V8 to ``v10.3.174.14`` (2022-06-14)
 * Fixed JNI pending exception for Andoird by caching it in the runtime
 * Added ``V8ValueBigInteger`` to primitive types and ``JavetPrimitiveConverter``
 
 1.1.4 V8 v10.2
 --------------
 
-* Upgraded V8 to ``v10.2.154.4`` `(2022-05-06) <https://v8.dev/blog/v8-release-102>`_
+* Upgraded V8 to ``v10.2.154.4`` (2022-05-06)
 * Applied C++ 17 to V8
 * Added ``isPurgeEventLoopBeforeClose()`` and ``setPurgeEventLoopBeforeClose()`` to ``NodeRuntime``
 
@@ -41,14 +41,14 @@ Release Notes 1.1.x
 --------------
 
 * Upgraded Node.js to ``v16.15.0`` `(2022-04-26) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.15.0>`_
-* Upgraded V8 to ``v10.1.124.11`` `(2022-04-20) <https://v8.dev/blog/v8-release-101>`_
+* Upgraded V8 to ``v10.1.124.11`` (2022-04-20)
 * Removed internal symbols from public symbols for Linux
 
 1.1.2 V8 v10.0
 --------------
 
 * Upgraded Node.js to ``v16.14.2`` `(2022-03-17) <https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#16.14.2>`_
-* Upgraded V8 to ``v10.0.139.6`` `(2022-03-07) <https://v8.dev/blog/v8-release-100>`_
+* Upgraded V8 to ``v10.0.139.6`` (2022-03-07)
 * Fixed a bug in exception handling in JNI callback
 
 1.1.1 V8 v9.9
