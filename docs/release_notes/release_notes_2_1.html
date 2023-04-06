@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ" href="../faq/index.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Release Notes 2.1.x - Javet 2.1.0 documentation</title>
+        <title>Release Notes 2.1.x - Javet 2.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 2.1.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 2.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -292,14 +292,23 @@
         <article role="main">
           <div class="section" id="release-notes-2-1-x">
 <h1>Release Notes 2.1.x<a class="headerlink" href="#release-notes-2-1-x" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v8-v11-2">
+<h2>2.1.1 V8 v11.2<a class="headerlink" href="#v8-v11-2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v11.2.214.13</span></code> (2023-04-04)</p></li>
+<li><p>Added dockerfiles for building Linux arm64 binaries</p></li>
+<li><p>Upgraded C++ standard to 20</p></li>
+<li><p>Fixed a bug in closing Node.js runtime</p></li>
+</ul>
+</div>
 <div class="section" id="v8-v11-1">
 <h2>2.1.0 V8 v11.1<a class="headerlink" href="#v8-v11-1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v18.15.0</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.15.0">(2023-03-07)</a></p></li>
-<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v11.1.277.14</span></code> <a class="reference external" href="https://v8.dev/blog/v8-release-111">(2023-03-04)</a></p></li>
-<li><p>Built Node.js with Visual Studio 2022 instead of 2019.</p></li>
-<li><p>Added Automatic-Module-Name.</p></li>
-<li><p>Stopped storing callback contexts in the JNI global reference table for Android.</p></li>
+<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v11.1.277.14</span></code> (2023-03-04)</p></li>
+<li><p>Built Node.js with Visual Studio 2022 instead of 2019</p></li>
+<li><p>Added Automatic-Module-Name</p></li>
+<li><p>Stopped storing callback contexts in the JNI global reference table for Android</p></li>
 </ul>
 </div>
 </div>
@@ -350,6 +359,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Release Notes 2.1.x</a><ul>
+<li><a class="reference internal" href="#v8-v11-2">2.1.1 V8 v11.2</a></li>
 <li><a class="reference internal" href="#v8-v11-1">2.1.0 V8 v11.1</a></li>
 </ul>
 </li>
