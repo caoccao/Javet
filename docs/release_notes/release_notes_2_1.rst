@@ -2,6 +2,11 @@
 Release Notes 2.1.x
 ===================
 
+2.1.1 V8 v11.3
+--------------
+
+* Fixed a crash issue when closing the V8 runtime with dangling callback contexts on Android
+
 2.1.1 V8 v11.2
 --------------
 
