@@ -14,13 +14,13 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t sjtucaocao/javet:x86_64-base-node_18.15.0 \
+#  -t sjtucaocao/javet:x86_64-base-node_18.16.0 \
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
-#  --build-arg JAVET_NODE_VERSION=18.15.0 \
+#  --build-arg JAVET_NODE_VERSION=18.16.0 \
 #  -f docker/linux-x86_64/base_node.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
-ARG JAVET_NODE_VERSION=18.15.0
+ARG JAVET_NODE_VERSION=18.16.0
 
 FROM ${JAVET_REPO}:x86_64-base-jvm
 

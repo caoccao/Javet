@@ -135,9 +135,8 @@ namespace Javet {
         if (!purgeEventLoopBeforeClose) {
             auto v8ContextScope = GetV8ContextScope(v8LocalContext);
             if (!nodeEnvironment->is_stopping()) {
-                nodeEnvironment->set_trace_sync_io(nodeEnvironment->options()->trace_sync_io);
                 bool hasMoreTasks;
-                nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_START);
+                // nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_START);
                 do {
                     if (nodeEnvironment->is_stopping()) { break; }
                     uv_run(&uvLoop, UV_RUN_DEFAULT);
@@ -152,12 +151,11 @@ namespace Javet {
                         hasMoreTasks = uv_loop_alive(&uvLoop);
                     }
                 } while (hasMoreTasks && !nodeEnvironment->is_stopping());
-                nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_EXIT);
+                // nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_EXIT);
             }
         }
         int errorCode = 0;
         if (!nodeEnvironment->is_stopping()) {
-            nodeEnvironment->set_trace_sync_io(false);
             // Do not call nodeEnvironment->set_snapshot_serialize_callback(V8LocalFunction());
             // Do not call nodeEnvironment->PrintInfoForSnapshotIfDebug();
             // Do not call nodeEnvironment->ForEachRealm([](node::Realm* realm) { realm->VerifyNoStrongBaseObjects(); });
@@ -254,8 +252,14 @@ namespace Javet {
             }
             // node::CreateEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
-            nodeEnvironment.reset(node::CreateEnvironment(nodeIsolateData.get(), v8LocalContext, args, execArgs));
+            nodeEnvironment.reset(node::CreateEnvironment(
+                nodeIsolateData.get(),
+                v8LocalContext,
+                args,
+                execArgs,
+                node::EnvironmentFlags::kOwnsProcessState));
             // node::LoadEnvironment is thread-safe.
+            nodeEnvironment->set_trace_sync_io(false);
             auto v8MaybeLocalValue = node::LoadEnvironment(
                 nodeEnvironment.get(),
                 "const publicRequire = require('module').createRequire(process.cwd() + '/');"
