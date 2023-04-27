@@ -151,7 +151,7 @@ Build Node.js on Windows
 .. code-block:: shell
 
     cd %NODE_HOME%
-    vcbuild.bat static without-intl vs2019
+    vcbuild.bat static without-intl vs2022
 
 .. caution::
 

@@ -44,7 +44,6 @@ Windows Environment
 -------------------
 
 * Latest Windows 10
-* Visual Studio 2019 Community
 * Visual Studio 2022 Community
 * CMake 3.24+ (comes with Visual Studio 2022)
 * Latest Windows 10 SDK with WinDbg

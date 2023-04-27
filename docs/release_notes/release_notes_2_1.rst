@@ -5,6 +5,7 @@ Release Notes 2.1.x
 2.1.1 V8 v11.3
 --------------
 
+* Upgraded V8 to ``v11.3.244.8`` (2023-04-12)
 * Upgraded Node.js to ``v18.16.0`` `(2023-04-12) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.16.0>`_
 * Fixed a crash issue when closing the V8 runtime with dangling callback contexts on Android
 
