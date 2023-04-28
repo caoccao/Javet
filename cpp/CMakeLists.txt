@@ -52,8 +52,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     else()
         message(FATAL_ERROR "CMAKE_ANDROID_ARCH must be one of arm, arm64, x86, x86_64.")
     endif()
-    # The target ABI version is set to 23 because pre-23 is no longer supported by V8 v9.7+.
-    set(CMAKE_SYSTEM_VERSION 23)
+    # The target ABI version is set to 24 because pre-24 is no longer supported by V8 v11+.
+    # https://github.com/android/ndk/issues/1179
+    set(CMAKE_SYSTEM_VERSION 24)
     set(CMAKE_ANDROID_STL_TYPE c++_static)
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
@@ -113,7 +114,7 @@ if(DEFINED NODE_DIR)
         ${NODE_DIR}/deps/v8/include
         ${NODE_DIR}/src)
     list(APPEND importLibraries
-        base64 brotli cares histogram llhttp nghttp2 nghttp3 ngtcp2 openssl simdutf torque_base uvwasi
+        ada base64 brotli cares histogram llhttp nghttp2 nghttp3 ngtcp2 openssl simdutf torque_base uvwasi
         v8_base_without_compiler v8_compiler v8_init v8_initializers
         v8_libbase v8_libplatform v8_snapshot v8_zlib zlib zlib_adler32_simd zlib_inflate_chunk_simd)
     if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")

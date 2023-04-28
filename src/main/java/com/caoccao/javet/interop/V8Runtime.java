@@ -2219,12 +2219,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     void removeCallbackContexts() {
         synchronized (callbackContextLock) {
             if (!callbackContextMap.isEmpty()) {
-                final int callbackContextCount = callbackContextMap.size();
-                for (long handle : callbackContextMap.keySet()) {
-                    removeJNIGlobalRef(handle);
-                }
                 logger.logWarn("{0} V8 callback context object(s) not recycled.",
-                        Integer.toString(callbackContextCount));
+                        Integer.toString(callbackContextMap.size()));
                 callbackContextMap.clear();
             }
         }

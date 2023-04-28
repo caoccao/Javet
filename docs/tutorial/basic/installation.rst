@@ -14,7 +14,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>2.1.1</version>
+        <version>2.1.2</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
@@ -29,18 +29,18 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:2.1.1") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet:2.1.2") // Linux and Windows (x86_64)
     implementation("com.caoccao.javet:javet-macos:2.1.1") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:2.1.1") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-android:2.1.2") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 -----------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:2.1.1' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet:2.1.2' // Linux and Windows (x86_64)
     implementation 'com.caoccao.javet:javet-macos:2.1.1' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:2.1.1' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-android:2.1.2' // Android (arm, arm64, x86 and x86_64)
 
 OS Compatibility
 ================
@@ -97,7 +97,8 @@ Android arm, arm64, x86, x86_64 are supported.
 ABI  Javet Version      V8 Version
 ==== ================== ====================
 21+  v1.0.3 - v1.0.7    v9.5 - v9.6
-23+  v1.1.0+            v9.7+
+23+  v1.1.0 - v2.1.1    v9.7 - v11.2
+24+  v2.1.2+            v11.3+
 ==== ================== ====================
 
 .. caution::
