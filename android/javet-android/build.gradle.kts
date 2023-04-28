@@ -25,9 +25,10 @@ version = "2.1.2"
 
 android {
     compileSdk = 30
+    namespace = "com.caoccao.javet"
 
     defaultConfig {
-        minSdk = 23
+        minSdk = 24
         targetSdk = 30
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
