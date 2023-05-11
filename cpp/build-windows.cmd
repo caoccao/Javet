@@ -1,7 +1,7 @@
 @echo off
 REM Usage for V8: build -DV8_DIR=C:\v8 
 REM Usage for Node: build -DNODE_DIR=C:\node 
-SET JAVET_VERSION=2.1.2
+SET JAVET_VERSION=2.2.0
 rd /s/q build
 mkdir build
 cd build
