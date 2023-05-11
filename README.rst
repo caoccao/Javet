@@ -26,7 +26,7 @@ If you like my work, please **Star** this project. And, you may follow me `@sjtu
 
 💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because I'm no longer able to build new versions of V8 with my `MacBook Air mid-2012 <https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html>`_. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (x86_64) device. Or, if you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will also be great. Thank you for supporting Javet.
 
-💖 If you use Mac OS (arm64), please be aware that the Mac OS (x86_64) build will discontinue anytime because I'm no longer able to build new versions of V8 because I don't have any Mac OS (arm64) device to produce any new builds. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (arm64) device.
+💖 If you use Mac OS (arm64), I bought an M2 device and now am able to build it.
 
 Major Features
 ==============
