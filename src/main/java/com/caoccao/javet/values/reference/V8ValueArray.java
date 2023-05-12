@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.ArrayList;
@@ -42,12 +43,30 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     @Override
     public <Value extends V8Value, E extends Throwable> int forEach(
-            IJavetUniConsumer<Value, E> consumer) throws JavetException, E {
+            IJavetUniConsumer<Value, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    @Override
+    public <Value extends V8Value, E extends Throwable> int forEach(
+            IJavetUniConsumer<Value, E> consumer,
+            int batchSize)
+            throws JavetException, E {
         Objects.requireNonNull(consumer);
+        batchSize = Math.max(MIN_BATCH_SIZE, batchSize);
         final int length = getLength();
-        for (int i = 0; i < length; ++i) {
-            try (Value value = get(i)) {
-                consumer.accept(value);
+        final int loopCount = (length + batchSize - 1) / batchSize;
+        for (int i = 0; i < loopCount; i++) {
+            final int startIndex = i * batchSize;
+            final int endIndex = i == loopCount - 1 ? length : startIndex + batchSize;
+            Value[] v8Values = get(startIndex, endIndex);
+            try {
+                for (Value v8Value : v8Values) {
+                    consumer.accept(v8Value);
+                }
+            } finally {
+                JavetResourceUtils.safeClose((Object[]) v8Values);
             }
         }
         return length;
@@ -55,12 +74,30 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     @Override
     public <Value extends V8Value, E extends Throwable> int forEach(
-            IJavetUniIndexedConsumer<Value, E> consumer) throws JavetException, E {
+            IJavetUniIndexedConsumer<Value, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    @Override
+    public <Value extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Value, E> consumer,
+            int batchSize)
+            throws JavetException, E {
         Objects.requireNonNull(consumer);
+        batchSize = Math.max(MIN_BATCH_SIZE, batchSize);
         final int length = getLength();
-        for (int i = 0; i < length; ++i) {
-            try (Value value = get(i)) {
-                consumer.accept(i, value);
+        final int loopCount = (length + batchSize - 1) / batchSize;
+        for (int i = 0; i < loopCount; i++) {
+            final int startIndex = i * batchSize;
+            final int endIndex = i == loopCount - 1 ? length : startIndex + batchSize;
+            Value[] v8Values = get(startIndex, endIndex);
+            try {
+                for (int j = startIndex; j < endIndex; ++j) {
+                    consumer.accept(j, v8Values[j]);
+                }
+            } finally {
+                JavetResourceUtils.safeClose((Object[]) v8Values);
             }
         }
         return length;

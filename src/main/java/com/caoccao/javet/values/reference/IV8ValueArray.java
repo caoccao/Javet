@@ -18,6 +18,8 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetUniConsumer;
+import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
@@ -26,8 +28,59 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import java.math.BigInteger;
 import java.util.List;
 
+/**
+ * The interface V8 value array.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
 public interface IV8ValueArray extends IV8ValueObject {
+    /**
+     * The constant DEFAULT_BATCH_SIZE is the default batch size for get a chunk of items.
+     *
+     * @since 2.2.0
+     */
+    int DEFAULT_BATCH_SIZE = 100;
+    /**
+     * The constant MIN_BATCH_SIZE.
+     *
+     * @since 2.2.0
+     */
+    int MIN_BATCH_SIZE = 1;
+
+    /**
+     * For each of the item, call the consumer and return the item count.
+     *
+     * @param <Value>   the type parameter
+     * @param <E>       the type parameter
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the item count
+     * @throws JavetException the javet exception
+     * @throws E              the e
+     * @since 2.2.0
+     */
+    <Value extends V8Value, E extends Throwable> int forEach(
+            IJavetUniConsumer<Value, E> consumer,
+            int batchSize)
+            throws JavetException, E;
+
+    /**
+     * For each of the item, call the consumer and return the item count.
+     *
+     * @param <Value>   the type parameter
+     * @param <E>       the type parameter
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the item count
+     * @throws JavetException the javet exception
+     * @throws E              the e
+     */
+    <Value extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Value, E> consumer,
+            int batchSize)
+            throws JavetException, E;
+
     @CheckReturnValue
     <T extends V8Value> T get(int index) throws JavetException;
 

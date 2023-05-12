@@ -61,7 +61,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet_
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_ARRAY(v8ValueType)) {
         auto v8ValueArray = v8LocalValue.As<v8::Array>();
-        LOG_DIRECT("start " << startIndex << " end " << endIndex);
         return Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, v8ValueArray, startIndex, endIndex);
     }
     return nullptr;
