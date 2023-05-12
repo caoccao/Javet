@@ -27,7 +27,6 @@ import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.IV8Value;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.V8ValueArray;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -318,7 +317,7 @@ public final class V8FunctionCallback {
             V8Runtime v8Runtime,
             JavetCallbackContext javetCallbackContext,
             V8Value thisObject,
-            V8ValueArray args) throws Throwable {
+            V8Value[] args) throws Throwable {
         if (javetCallbackContext != null) {
             List<Object> values = new ArrayList<>();
             Object resultObject = null;
@@ -341,9 +340,9 @@ public final class V8FunctionCallback {
                     values.add(thisObject);
                 }
                 if (args != null) {
-                    final int length = args.getLength();
+                    final int length = args.length;
                     for (int i = 0; i < length; ++i) {
-                        values.add(args.get(i));
+                        values.add(args[i]);
                     }
                 }
                 if (values.isEmpty()) {
@@ -406,9 +405,6 @@ public final class V8FunctionCallback {
                     if (thisObject != resultObject) {
                         JavetResourceUtils.safeClose(thisObject);
                     }
-                }
-                if (args != resultObject) {
-                    JavetResourceUtils.safeClose(args);
                 }
                 for (Object value : values) {
                     if (value != resultObject) {

@@ -73,7 +73,7 @@ namespace Javet {
 
             jclassV8FunctionCallback = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/callback/V8FunctionCallback");
             jmethodIDV8FunctionCallbackReceiveCallback = jniEnv->GetStaticMethodID(jclassV8FunctionCallback, "receiveCallback",
-                "(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;Lcom/caoccao/javet/values/reference/V8ValueArray;)Lcom/caoccao/javet/values/V8Value;");
+                "(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;[Lcom/caoccao/javet/values/V8Value;)Lcom/caoccao/javet/values/V8Value;");
 
             jclassV8Runtime = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Runtime");
             jmethodIDV8RuntimeGetCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "getCallbackContext", "(J)Lcom/caoccao/javet/interop/callback/JavetCallbackContext;");
@@ -310,6 +310,7 @@ namespace Javet {
                         externalArgs);
                     DELETE_LOCAL_REF(jniEnv, thisObject);
                     DELETE_LOCAL_REF(jniEnv, externalArgs);
+                    DELETE_LOCAL_REF(jniEnv, callbackContext);
                     if (jniEnv->ExceptionCheck()) {
                         if (mResult != nullptr) {
                             jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
@@ -367,6 +368,7 @@ namespace Javet {
                         thisObject,
                         nullptr);
                     DELETE_LOCAL_REF(jniEnv, thisObject);
+                    DELETE_LOCAL_REF(jniEnv, callbackContext);
                     if (jniEnv->ExceptionCheck()) {
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property getter callback");
                     }
@@ -418,7 +420,7 @@ namespace Javet {
                         jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
                         jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
                         jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.This()) : nullptr;
-                        jobject mArguments = Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8Array);
+                        jobject mArguments = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, v8Array);
                         jobject mResult = jniEnv->CallStaticObjectMethod(
                             jclassV8FunctionCallback,
                             jmethodIDV8FunctionCallbackReceiveCallback,
@@ -428,6 +430,7 @@ namespace Javet {
                             mArguments);
                         DELETE_LOCAL_REF(jniEnv, thisObject);
                         DELETE_LOCAL_REF(jniEnv, mArguments);
+                        DELETE_LOCAL_REF(jniEnv, callbackContext);
                         if (jniEnv->ExceptionCheck()) {
                             Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property setter callback");
                         }

@@ -11,8 +11,9 @@ Release Notes
 .. toctree::
     :maxdepth: 1
 
-    release_notes_2_1
+    release_notes_2_2
 
+* :doc:`release_notes_2_1`
 * :doc:`release_notes_2_0`
 * :doc:`release_notes_1_1`
 * :doc:`release_notes_1_0`
