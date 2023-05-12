@@ -6,3 +6,4 @@ Release Notes 2.2.x
 --------------
 
 * Improved the performance of V8FunctionCallback.receiveCallback()
+* Added ``get()`` to ``IV8ValueArray``

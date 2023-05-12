@@ -42,6 +42,10 @@ public final class V8Internal {
         v8Runtime.addReference(iV8ValueReference);
     }
 
+    public <T extends V8Value> T[] arrayGet(IV8ValueArray iV8ValueArray) {
+        return v8Runtime.arrayGet(iV8ValueArray);
+    }
+
     @CheckReturnValue
     public <T extends V8Value> T call(
             IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)

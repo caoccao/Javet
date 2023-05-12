@@ -73,6 +73,11 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
+    public <T extends V8Value> T[] get() throws JavetException {
+        return checkV8Runtime().getV8Internal().arrayGet(this);
+    }
+
+    @Override
     public List<Integer> getKeys() throws JavetException {
         try (V8ValueObject iterator = invoke(FUNCTION_KEYS)) {
             List<Integer> keys = new ArrayList<>();

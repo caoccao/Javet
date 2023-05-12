@@ -46,6 +46,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
     }
 }
 
+JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_ARRAY(v8ValueType)) {
+        auto v8ValueArray = v8LocalValue.As<v8::Array>();
+        return Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, v8ValueArray);
+    }
+    return nullptr;
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerationFromStrings
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean allow) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);

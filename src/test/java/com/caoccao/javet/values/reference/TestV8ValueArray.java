@@ -18,6 +18,8 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -76,6 +78,13 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                         childV8ValueArray.getZonedDateTime(3).withZoneSameInstant(ZoneId.of("UTC")).toString());
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
+            assertEquals(1, v8Runtime.getReferenceCount());
+            V8Value[] v8Values = v8ValueArray.get();
+            assertEquals(1, ((V8ValueInteger) v8Values[0]).getValue());
+            assertEquals("2", ((V8ValueString) v8Values[1]).getValue());
+            assertEquals(3L, ((V8ValueLong) v8Values[2]).getValue());
+            assertEquals(2, v8Runtime.getReferenceCount());
+            JavetResourceUtils.safeClose((Object[]) v8Values);
             assertEquals(1, v8Runtime.getReferenceCount());
         }
     }

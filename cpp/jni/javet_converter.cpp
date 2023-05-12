@@ -857,7 +857,7 @@ namespace Javet {
                 v8Value);
         }
 
-        jobject ToExternalV8ValueArray(
+        jobjectArray ToExternalV8ValueArray(
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
@@ -873,7 +873,7 @@ namespace Javet {
             return v8ValueArray;
         }
 
-        jobject ToExternalV8ValueArray(
+        jobjectArray ToExternalV8ValueArray(
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,

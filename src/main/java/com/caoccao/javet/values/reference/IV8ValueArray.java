@@ -31,6 +31,17 @@ public interface IV8ValueArray extends IV8ValueObject {
     @CheckReturnValue
     <T extends V8Value> T get(int index) throws JavetException;
 
+    /**
+     * Get all the items from the array.
+     *
+     * @param <T> the type parameter
+     * @return the all the items
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @CheckReturnValue
+    <T extends V8Value> T[] get() throws JavetException;
+
     List<Integer> getKeys() throws JavetException;
 
     int getLength() throws JavetException;

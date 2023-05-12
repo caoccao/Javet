@@ -299,7 +299,7 @@ namespace Javet {
                     jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
                     jboolean isReturnResult = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsReturnResult);
                     jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
-                    jobject externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, args);
+                    jobjectArray externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, args);
                     jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.This()) : nullptr;
                     jobject mResult = jniEnv->CallStaticObjectMethod(
                         jclassV8FunctionCallback,
@@ -410,8 +410,8 @@ namespace Javet {
                 }
                 else {
                     V8ContextScope v8ContextScope(v8Context);
-                    auto v8Array = v8::Array::New(v8Context->GetIsolate(), 1);
-                    auto maybeResult = v8Array->Set(v8Context, 0, propertyValue);
+                    auto v8LocalArray = v8::Array::New(v8Context->GetIsolate(), 1);
+                    auto maybeResult = v8LocalArray->Set(v8Context, 0, propertyValue);
                     if (maybeResult.IsNothing()) {
                         Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
                     }
@@ -420,7 +420,7 @@ namespace Javet {
                         jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
                         jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
                         jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.This()) : nullptr;
-                        jobject mArguments = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, v8Array);
+                        jobjectArray mArguments = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, v8LocalArray);
                         jobject mResult = jniEnv->CallStaticObjectMethod(
                             jclassV8FunctionCallback,
                             jmethodIDV8FunctionCallbackReceiveCallback,

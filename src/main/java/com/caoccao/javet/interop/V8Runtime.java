@@ -388,6 +388,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Get all the items from an array.
+     *
+     * @param <T>           the type parameter
+     * @param iV8ValueArray the V8 value array
+     * @return the all the items
+     * @since 2.2.0
+     */
+    public <T extends V8Value> T[] arrayGet(IV8ValueArray iV8ValueArray) {
+        return (T[]) v8Native.arrayGet(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId());
+    }
+
+    /**
      * Await tells the V8 runtime to pump the message loop in a non-blocking manner.
      *
      * @return true : there are more tasks, false : there are no more tasks
