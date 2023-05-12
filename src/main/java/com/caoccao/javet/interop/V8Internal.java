@@ -46,6 +46,10 @@ public final class V8Internal {
         return v8Runtime.arrayGet(iV8ValueArray);
     }
 
+    public <T extends V8Value> T[] arrayGet(IV8ValueArray iV8ValueArray, int startIndex, int endIndex) {
+        return v8Runtime.arrayGet(iV8ValueArray, startIndex, endIndex);
+    }
+
     @CheckReturnValue
     public <T extends V8Value> T call(
             IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)

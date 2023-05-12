@@ -189,7 +189,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         String codeString = "() => '123測試'";
         try (V8Value v8Value = v8Runtime.getExecutor(codeString).execute()) {
             assertNotNull(v8Value);
-            assertTrue(v8Value instanceof V8ValueFunction);
+            assertInstanceOf(V8ValueFunction.class, v8Value);
             V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
             assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
             assertEquals(codeString, v8ValueFunction.toString());

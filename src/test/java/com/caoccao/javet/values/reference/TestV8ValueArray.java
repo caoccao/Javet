@@ -80,12 +80,22 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             }
             assertEquals(1, v8Runtime.getReferenceCount());
             V8Value[] v8Values = v8ValueArray.get();
+            assertEquals(6, v8Values.length);
             assertEquals(1, ((V8ValueInteger) v8Values[0]).getValue());
             assertEquals("2", ((V8ValueString) v8Values[1]).getValue());
             assertEquals(3L, ((V8ValueLong) v8Values[2]).getValue());
+            assertTrue(((V8ValueBoolean) v8Values[3]).getValue());
+            assertEquals(1.23, ((V8ValueDouble) v8Values[4]).getValue(), 0.001D);
+            assertInstanceOf(V8ValueArray.class, v8Values[5]);
             assertEquals(2, v8Runtime.getReferenceCount());
             JavetResourceUtils.safeClose((Object[]) v8Values);
             assertEquals(1, v8Runtime.getReferenceCount());
+            assertNull(v8ValueArray.get(2, 1), "The result should be null.");
+            v8Values = v8ValueArray.get(1, 3);
+            assertEquals(2, v8Values.length);
+            assertEquals("2", ((V8ValueString) v8Values[0]).getValue());
+            assertEquals(3L, ((V8ValueLong) v8Values[1]).getValue());
+            JavetResourceUtils.safeClose((Object[]) v8Values);
         }
     }
 

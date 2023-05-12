@@ -28,8 +28,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerati
  * Method:    arrayGet
  * Signature: (JJI)[Ljava/lang/Object;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet
+JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet__JJI
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    arrayGet
+ * Signature: (JJIII)[Ljava/lang/Object;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet__JJIII
+  (JNIEnv *, jobject, jlong, jlong, jint, jint, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

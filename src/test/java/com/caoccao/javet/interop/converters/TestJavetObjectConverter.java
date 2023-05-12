@@ -48,7 +48,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         JavetObjectConverter converter = new JavetObjectConverter();
         converter.getConfig().setSkipFunctionInObject(false).setExtractFunctionSourceCode(true);
         Object object = converter.toObject(v8Runtime.getExecutor(codeString).execute(), true);
-        assertTrue(object instanceof Map);
+        assertInstanceOf(Map.class, object);
         Map<String, Object> map = (Map<String, Object>) object;
         assertEquals(2, map.size());
         assertEquals(1, map.get("a"));
@@ -211,8 +211,8 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals("abc", v8ValueObject.getString("x"));
             v8ValueObject.setUndefined("y");
             v8ValueObject.setNull("z");
-            Map<String, Object> map = (Map<String, Object>) converter.toObject(v8ValueObject);
-            assertTrue(map instanceof HashMap);
+            Map<String, Object> map = converter.toObject(v8ValueObject);
+            assertInstanceOf(HashMap.class, map);
             assertEquals(2, map.size());
             assertEquals("abc", map.get("x"));
             assertNull(map.get("z"));

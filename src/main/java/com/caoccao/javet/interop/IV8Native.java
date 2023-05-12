@@ -29,6 +29,8 @@ public interface IV8Native {
 
     Object[] arrayGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    Object[] arrayGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int startIndex, int endIndex);
+
     boolean await(long v8RuntimeHandle, int v8AwaitMode);
 
     Object call(

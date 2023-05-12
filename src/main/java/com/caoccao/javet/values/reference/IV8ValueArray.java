@@ -42,6 +42,9 @@ public interface IV8ValueArray extends IV8ValueObject {
     @CheckReturnValue
     <T extends V8Value> T[] get() throws JavetException;
 
+    @CheckReturnValue
+    <T extends V8Value> T[] get(int startIndex, int endIndex) throws JavetException;
+
     List<Integer> getKeys() throws JavetException;
 
     int getLength() throws JavetException;

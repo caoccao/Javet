@@ -150,7 +150,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         assertEquals(0L, a.getHandle());
         try (V8ValueObject b = globalObject.get("a")) {
-            assertTrue(b instanceof V8ValueObject);
+            assertNotNull(b);
         }
     }
 
@@ -200,7 +200,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
                 "const b = {'2147483648': '2**31'}; b;").execute()) {
             assertEquals(1, v8ValueObject.forEach((V8Value key, V8Value value) -> {
-                assertTrue(key instanceof V8ValueDouble);
+                assertInstanceOf(V8ValueDouble.class, key);
                 assertEquals("2147483648", key.toString());
             }));
         }

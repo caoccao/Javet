@@ -170,7 +170,15 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
-            const V8LocalArray v8LocalArray) noexcept;
+            const V8LocalArray& v8LocalArray) noexcept;
+
+        jobjectArray ToExternalV8ValueArray(
+            JNIEnv* jniEnv,
+            V8Runtime* v8Runtime,
+            const V8LocalContext& v8Context,
+            const V8LocalArray& v8LocalArray,
+            const int startIndex,
+            const int endIndex) noexcept;
 
         jobject ToExternalV8ValueGlobalObject(
             JNIEnv* jniEnv,

@@ -275,7 +275,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                             "Column: 6, 7\n" +
                             "Position: 6, 7",
                     e.getScriptingError().toString());
-            assertTrue(e.getCause().getCause() instanceof ClassNotFoundException);
+            assertInstanceOf(ClassNotFoundException.class, e.getCause().getCause());
         }
         v8Runtime.getGlobalObject().delete("Class");
     }
@@ -399,8 +399,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "Error: Callback throwNullPointerException failed with error message abc",
                     e.getMessage());
-            assertTrue(e.getCause() instanceof JavetException);
-            assertTrue(e.getCause().getCause() instanceof NullPointerException);
+            assertInstanceOf(JavetException.class, e.getCause());
+            assertInstanceOf(NullPointerException.class, e.getCause().getCause());
             assertEquals("abc", e.getCause().getCause().getMessage());
         } finally {
             v8Runtime.getGlobalObject().delete("a");
@@ -576,7 +576,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     @Test
     public void testPattern() throws JavetException {
         v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
-        assertTrue(v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject() instanceof Pattern);
+        assertInstanceOf(Pattern.class, v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject());
         assertTrue(v8Runtime.getExecutor("p.matcher('123').matches();").executeBoolean());
         assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
         v8Runtime.getGlobalObject().delete("Pattern");

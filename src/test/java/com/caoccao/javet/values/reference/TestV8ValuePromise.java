@@ -28,6 +28,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockFS;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
+import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -136,14 +137,14 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
 
             @Override
             public void onFulfilled(V8Value v8Value) {
-                assertTrue(v8Value instanceof V8ValueInteger);
+                assertInstanceOf(V8ValueInteger.class, v8Value);
                 assertEquals(1, ((V8ValueInteger) v8Value).getValue());
                 onFulfilledCalled = true;
             }
 
             @Override
             public void onRejected(V8Value v8Value) {
-                assertTrue(v8Value instanceof V8ValueInteger);
+                assertInstanceOf(V8ValueInteger.class, v8Value);
                 assertEquals(2, ((V8ValueInteger) v8Value).getValue());
                 onRejectedCalled = true;
             }
