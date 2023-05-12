@@ -94,7 +94,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
             Value[] v8Values = get(startIndex, endIndex);
             try {
                 for (int j = startIndex; j < endIndex; ++j) {
-                    consumer.accept(j, v8Values[j]);
+                    consumer.accept(j, v8Values[j - startIndex]);
                 }
             } finally {
                 JavetResourceUtils.safeClose((Object[]) v8Values);
