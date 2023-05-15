@@ -42,12 +42,8 @@ public final class V8Internal {
         v8Runtime.addReference(iV8ValueReference);
     }
 
-    public <T extends V8Value> T[] arrayGet(IV8ValueArray iV8ValueArray) {
-        return v8Runtime.arrayGet(iV8ValueArray);
-    }
-
-    public <T extends V8Value> T[] arrayGet(IV8ValueArray iV8ValueArray, int startIndex, int endIndex) {
-        return v8Runtime.arrayGet(iV8ValueArray, startIndex, endIndex);
+    public int batchArrayGet(IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex) {
+        return v8Runtime.batchArrayGet(iV8ValueArray, v8Values, startIndex, endIndex);
     }
 
     @CheckReturnValue

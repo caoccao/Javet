@@ -865,6 +865,7 @@ namespace Javet {
             jobjectArray v8ValueArray = nullptr;
             int argLength = args.Length();
             if (argLength > 0) {
+                // TODO: Memory leak might take place.
                 v8ValueArray = jniEnv->NewObjectArray(argLength, jclassV8Value, nullptr);
                 for (int i = 0; i < argLength; ++i) {
                     jniEnv->SetObjectArrayElement(v8ValueArray, i, ToExternalV8Value(jniEnv, v8Runtime, v8Context, args[i]));
@@ -878,34 +879,49 @@ namespace Javet {
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalArray& v8LocalArray) noexcept {
-            return ToExternalV8ValueArray(
+            int length = v8LocalArray->Length();
+            // TODO: Memory leak might take place.
+            auto v8ValueArray = jniEnv->NewObjectArray(length, jclassV8Value, nullptr);
+            ToExternalV8ValueArray(
                 jniEnv,
                 v8Runtime,
                 v8Context,
                 v8LocalArray,
+                v8ValueArray,
                 0,
-                v8LocalArray->Length());
+                length);
+            return v8ValueArray;
         }
 
-        jobjectArray ToExternalV8ValueArray(
+        int ToExternalV8ValueArray(
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalArray& v8LocalArray,
+            jobjectArray v8Values,
             const int startIndex,
             const int endIndex) noexcept {
-            jobjectArray v8ValueArray = nullptr;
             int arrayLength = v8LocalArray->Length();
             int actualEndIndex = endIndex > arrayLength ? arrayLength : endIndex;
-            int length = actualEndIndex - startIndex;
-            if (startIndex >= 0 && length > 0) {
-                v8ValueArray = jniEnv->NewObjectArray(length, jclassV8Value, nullptr);
-                for (int i = 0; i < length; ++i) {
-                    auto v8LocalValue = v8LocalArray->Get(v8Context, i + startIndex);
-                    jniEnv->SetObjectArrayElement(v8ValueArray, i, ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalValue.ToLocalChecked()));
+            int actualLength = actualEndIndex - startIndex;
+            if (startIndex >= 0 && actualLength > 0) {
+                for (int i = 0; i < actualLength; ++i) {
+                    auto v8MaybeLocalValue = v8LocalArray->Get(v8Context, i + startIndex);
+                    V8LocalValue v8LocalValue;
+                    if (v8MaybeLocalValue.IsEmpty()) {
+                        if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
+                            return i;
+                        }
+                    }
+                    else {
+                        v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
+                    }
+                    jniEnv->SetObjectArrayElement(
+                        v8Values, i, ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalValue));
                 }
+                return actualLength;
             }
-            return v8ValueArray;
+            return 0;
         }
 
         jobject ToExternalV8ValueGlobalObject(

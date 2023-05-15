@@ -46,26 +46,6 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
     }
 }
 
-JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet__JJI
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
-    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (IS_V8_ARRAY(v8ValueType)) {
-        auto v8ValueArray = v8LocalValue.As<v8::Array>();
-        return Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, v8ValueArray);
-    }
-    return nullptr;
-}
-
-JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet__JJIII
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jint startIndex, jint endIndex) {
-    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (IS_V8_ARRAY(v8ValueType)) {
-        auto v8ValueArray = v8LocalValue.As<v8::Array>();
-        return Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, v8ValueArray, startIndex, endIndex);
-    }
-    return nullptr;
-}
-
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerationFromStrings
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean allow) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
@@ -983,7 +963,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
     auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, key);
     V8MaybeLocalValue v8MaybeLocalValueResult;
     V8TryCatch v8TryCatch(v8Context->GetIsolate());
-    if (IS_V8_ARGUMENTS(v8ValueType) || IS_V8_ARRAY(v8ValueType) || v8LocalValue->IsTypedArray()) {
+    if (IS_V8_ARRAY(v8ValueType) || IS_V8_ARGUMENTS(v8ValueType) || v8LocalValue->IsTypedArray()) {
         if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
             jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             if (integerKey >= 0) {

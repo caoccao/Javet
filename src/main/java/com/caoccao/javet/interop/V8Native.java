@@ -39,13 +39,12 @@ class V8Native implements IV8Native {
     public native void allowCodeGenerationFromStrings(long v8RuntimeHandle, boolean allow);
 
     @Override
-    public native Object[] arrayGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    @Override
-    public native Object[] arrayGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int startIndex, int endIndex);
-
-    @Override
     public native boolean await(long v8RuntimeHandle, int v8AwaitMode);
+
+    @Override
+    public native int batchArrayGet(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object[] v8Values, int startIndex, int endIndex);
 
     @Override
     public native Object call(

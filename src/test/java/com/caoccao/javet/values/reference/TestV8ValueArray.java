@@ -26,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -79,7 +80,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
             assertEquals(1, v8Runtime.getReferenceCount());
-            V8Value[] v8Values = v8ValueArray.get();
+            V8Value[] v8Values = v8ValueArray.batchGet();
             assertEquals(6, v8Values.length);
             assertEquals(1, ((V8ValueInteger) v8Values[0]).getValue());
             assertEquals("2", ((V8ValueString) v8Values[1]).getValue());
@@ -90,9 +91,9 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(2, v8Runtime.getReferenceCount());
             JavetResourceUtils.safeClose((Object[]) v8Values);
             assertEquals(1, v8Runtime.getReferenceCount());
-            assertNull(v8ValueArray.get(2, 1), "The result should be null.");
-            v8Values = v8ValueArray.get(1, 3);
-            assertEquals(2, v8Values.length);
+            Arrays.fill(v8Values, null);
+            assertEquals(0, v8ValueArray.batchGet(v8Values, 2, 1), "The actual length should be 0.");
+            assertEquals(2, v8ValueArray.batchGet(v8Values, 1, 3));
             assertEquals("2", ((V8ValueString) v8Values[0]).getValue());
             assertEquals(3L, ((V8ValueLong) v8Values[1]).getValue());
             JavetResourceUtils.safeClose((Object[]) v8Values);
