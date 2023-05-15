@@ -277,7 +277,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param consumer the consumer
      * @return the key count
      * @throws JavetException the javet exception
-     * @throws E              the exception
+     * @throws E              the custom exception
      * @since 0.8.10
      */
     default <Key extends V8Value, E extends Throwable> int forEach(
@@ -296,7 +296,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param consumer the consumer
      * @return the key count
      * @throws JavetException the javet exception
-     * @throws E              the exception
+     * @throws E              the custom exception
      * @since 0.8.10
      */
     default <Key extends V8Value, E extends Throwable> int forEach(
@@ -316,7 +316,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param consumer the consumer
      * @return the key count
      * @throws JavetException the javet exception
-     * @throws E              the exception
+     * @throws E              the custom exception
      * @since 0.8.9
      */
     default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
@@ -340,7 +340,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param consumer the consumer
      * @return the key count
      * @throws JavetException the javet exception
-     * @throws E              the exception
+     * @throws E              the custom exception
      * @since 0.8.10
      */
     default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(

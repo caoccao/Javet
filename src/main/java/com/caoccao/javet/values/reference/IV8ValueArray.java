@@ -94,7 +94,7 @@ public interface IV8ValueArray extends IV8ValueObject {
      * @param batchSize the batch size
      * @return the item count
      * @throws JavetException the javet exception
-     * @throws E              the e
+     * @throws E              the custom exception
      * @since 2.2.0
      */
     <Value extends V8Value, E extends Throwable> int forEach(
@@ -111,7 +111,7 @@ public interface IV8ValueArray extends IV8ValueObject {
      * @param batchSize the batch size
      * @return the item count
      * @throws JavetException the javet exception
-     * @throws E              the e
+     * @throws E              the custom exception
      */
     <Value extends V8Value, E extends Throwable> int forEach(
             IJavetUniIndexedConsumer<Value, E> consumer,

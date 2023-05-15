@@ -51,4 +51,3 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_setPurgeEventLo
     v8Runtime->purgeEventLoopBeforeClose = purgeEventLoopBeforeClose;
 #endif
 }
-
