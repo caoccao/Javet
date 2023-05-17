@@ -34,29 +34,37 @@ public final class V8Internal {
         this.v8Runtime = Objects.requireNonNull(v8Runtime);
     }
 
-    public void add(IV8ValueSet iV8ValueKeySet, V8Value value) throws JavetException {
-        v8Runtime.add(iV8ValueKeySet, value);
-    }
-
     public void addReference(IV8ValueReference iV8ValueReference) {
         v8Runtime.addReference(iV8ValueReference);
     }
 
-    public int batchArrayGet(IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex) {
+    public boolean arrayDelete(IV8ValueArray iV8ValueArray, V8Value key) throws JavetException {
+        return v8Runtime.arrayDelete(iV8ValueArray, key);
+    }
+
+    @CheckReturnValue
+    public <T extends V8Value> T arrayGet(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Runtime.arrayGet(iV8ValueObject, key);
+    }
+
+    public int arrayGetLength(IV8ValueArray iV8ValueArray) throws JavetException {
+        return v8Runtime.arrayGetLength(iV8ValueArray);
+    }
+
+    public int arrayGetLength(IV8ValueTypedArray iV8ValueTypedArray) throws JavetException {
+        return v8Runtime.arrayGetLength(iV8ValueTypedArray);
+    }
+
+    public int batchArrayGet(
+            IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex)
+            throws JavetException {
         return v8Runtime.batchArrayGet(iV8ValueArray, v8Values, startIndex, endIndex);
     }
 
-    @CheckReturnValue
-    public <T extends V8Value> T call(
-            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+    public int batchObjectGet(
+            IV8ValueObject iV8ValueObject, V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length)
             throws JavetException {
-        return v8Runtime.call(iV8ValueObject, receiver, returnResult, v8Values);
-    }
-
-    @CheckReturnValue
-    public <T extends V8Value> T callAsConstructor(
-            IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
-        return v8Runtime.callAsConstructor(iV8ValueObject, v8Values);
+        return v8Runtime.batchObjectGet(iV8ValueObject, v8ValueKeys, v8ValueValues, length);
     }
 
     public void clearWeak(IV8ValueReference iV8ValueReference) throws JavetException {
@@ -87,10 +95,6 @@ public final class V8Internal {
         return v8Runtime.contextSetLength(iV8Context, length);
     }
 
-    public boolean delete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return v8Runtime.delete(iV8ValueObject, key);
-    }
-
     public boolean deletePrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
         return v8Runtime.deletePrivateProperty(iV8ValueObject, propertyName);
     }
@@ -98,6 +102,19 @@ public final class V8Internal {
     public boolean equals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
             throws JavetException {
         return v8Runtime.equals(iV8ValueReference1, iV8ValueReference2);
+    }
+
+    @CheckReturnValue
+    public <T extends V8Value> T functionCall(
+            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+            throws JavetException {
+        return v8Runtime.functionCall(iV8ValueObject, receiver, returnResult, v8Values);
+    }
+
+    @CheckReturnValue
+    public <T extends V8Value> T functionCallAsConstructor(
+            IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
+        return v8Runtime.functionCallAsConstructor(iV8ValueObject, v8Values);
     }
 
     public boolean functionCanDiscardCompiled(IV8ValueFunction iV8ValueFunction) {
@@ -121,6 +138,14 @@ public final class V8Internal {
     @CheckReturnValue
     public V8Context functionGetContext(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.functionGetContext(iV8ValueFunction);
+    }
+
+    public JSFunctionType functionGetJSFunctionType(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionGetJSFunctionType(iV8ValueFunction);
+    }
+
+    public JSScopeType functionGetJSScopeType(IV8ValueFunction iV8ValueFunction) {
+        return v8Runtime.functionGetJSScopeType(iV8ValueFunction);
     }
 
     @CheckReturnValue
@@ -164,11 +189,6 @@ public final class V8Internal {
         return v8Runtime.functionSetSourceCode(iV8ValueFunction, sourceCode, cloneScript);
     }
 
-    @CheckReturnValue
-    public <T extends V8Value> T get(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return v8Runtime.get(iV8ValueObject, key);
-    }
-
     public byte[] getCachedData(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.getCachedData(iV8ValueFunction);
     }
@@ -190,51 +210,9 @@ public final class V8Internal {
         return v8Runtime.getInternalProperties(iV8ValueFunction);
     }
 
-    public JSFunctionType getJSFunctionType(IV8ValueFunction iV8ValueFunction) {
-        return v8Runtime.getJSFunctionType(iV8ValueFunction);
-    }
-
-    public JSScopeType getJSScopeType(IV8ValueFunction iV8ValueFunction) {
-        return v8Runtime.getJSScopeType(iV8ValueFunction);
-    }
-
-    public int getLength(IV8ValueArray iV8ValueArray) throws JavetException {
-        return v8Runtime.getLength(iV8ValueArray);
-    }
-
-    public int getLength(IV8ValueTypedArray iV8ValueTypedArray) throws JavetException {
-        return v8Runtime.getLength(iV8ValueTypedArray);
-    }
-
-    @CheckReturnValue
-    public IV8ValueArray getOwnPropertyNames(
-            IV8ValueObject iV8ValueObject) throws JavetException {
-        return v8Runtime.getOwnPropertyNames(iV8ValueObject);
-    }
-
-    @CheckReturnValue
-    public <T extends V8Value> T getPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName)
-            throws JavetException {
-        return v8Runtime.getPrivateProperty(iV8ValueObject, propertyName);
-    }
-
-    @CheckReturnValue
-    public <T extends V8Value> T getProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return v8Runtime.getProperty(iV8ValueObject, key);
-    }
-
-    @CheckReturnValue
-    public IV8ValueArray getPropertyNames(IV8ValueObject iV8ValueObject) throws JavetException {
-        return v8Runtime.getPropertyNames(iV8ValueObject);
-    }
-
     @CheckReturnValue
     public <T extends IV8ValueObject> T getPrototype(IV8ValueObject iV8ValueObject) throws JavetException {
         return v8Runtime.getPrototype(iV8ValueObject);
-    }
-
-    public int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
-        return v8Runtime.getSize(iV8ValueKeyContainer);
     }
 
     public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
@@ -243,14 +221,6 @@ public final class V8Internal {
 
     public boolean hasInternalType(IV8ValueObject iV8ValueObject, V8ValueInternalType internalType) {
         return v8Runtime.hasInternalType(iV8ValueObject, internalType);
-    }
-
-    public boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return v8Runtime.hasOwnProperty(iV8ValueObject, key);
-    }
-
-    public boolean hasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
-        return v8Runtime.hasPrivateProperty(iV8ValueObject, propertyName);
     }
 
     @CheckReturnValue
@@ -262,6 +232,19 @@ public final class V8Internal {
 
     public boolean isWeak(IV8ValueReference iV8ValueReference) {
         return v8Runtime.isWeak(iV8ValueReference);
+    }
+
+    public boolean mapDelete(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
+        return v8Runtime.mapDelete(iV8ValueMap, key);
+    }
+
+    @CheckReturnValue
+    public <T extends V8Value> T mapGet(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
+        return v8Runtime.mapGet(iV8ValueMap, key);
+    }
+
+    public int mapGetSize(IV8ValueMap iV8ValueMap) throws JavetException {
+        return v8Runtime.mapGetSize(iV8ValueMap);
     }
 
     @CheckReturnValue
@@ -290,6 +273,45 @@ public final class V8Internal {
 
     public boolean moduleInstantiate(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleInstantiate(iV8Module);
+    }
+
+    public boolean objectDelete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Runtime.objectDelete(iV8ValueObject, key);
+    }
+
+    @CheckReturnValue
+    public <T extends V8Value> T objectGet(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Runtime.objectGet(iV8ValueObject, key);
+    }
+
+    @CheckReturnValue
+    public IV8ValueArray objectGetOwnPropertyNames(
+            IV8ValueObject iV8ValueObject) throws JavetException {
+        return v8Runtime.objectGetOwnPropertyNames(iV8ValueObject);
+    }
+
+    @CheckReturnValue
+    public <T extends V8Value> T objectGetPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName)
+            throws JavetException {
+        return v8Runtime.objectGetPrivateProperty(iV8ValueObject, propertyName);
+    }
+
+    @CheckReturnValue
+    public <T extends V8Value> T objectGetProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Runtime.objectGetProperty(iV8ValueObject, key);
+    }
+
+    @CheckReturnValue
+    public IV8ValueArray objectGetPropertyNames(IV8ValueObject iV8ValueObject) throws JavetException {
+        return v8Runtime.objectGetPropertyNames(iV8ValueObject);
+    }
+
+    public boolean objectHasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Runtime.objectHasOwnProperty(iV8ValueObject, key);
+    }
+
+    public boolean objectHasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
+        return v8Runtime.objectHasPrivateProperty(iV8ValueObject, propertyName);
     }
 
     public <T extends V8ValuePromise> T promiseCatch(
@@ -374,6 +396,18 @@ public final class V8Internal {
             JavetCallbackContext javetCallbackContextSetter) throws JavetException {
         return v8Runtime.setAccessor(
                 iV8ValueObject, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
+    }
+
+    public void setAdd(IV8ValueSet iV8ValueKeySet, V8Value value) throws JavetException {
+        v8Runtime.setAdd(iV8ValueKeySet, value);
+    }
+
+    public boolean setDelete(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
+        return v8Runtime.setDelete(iV8ValueSet, key);
+    }
+
+    public int setGetSize(IV8ValueSet iV8ValueKeySet) throws JavetException {
+        return v8Runtime.setGetSize(iV8ValueKeySet);
     }
 
     public boolean setPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName, V8Value propertyValue)

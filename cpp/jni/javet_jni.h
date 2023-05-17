@@ -16,6 +16,7 @@
  */
 
 #include "com_caoccao_javet_interop_V8Native.h"
+#include "com_caoccao_javet_interop_NodeNative.h"
 #include "javet_callbacks.h"
 #include "javet_converter.h"
 #include "javet_enums.h"
@@ -27,20 +28,3 @@
 #include "javet_node.h"
 #include "javet_v8.h"
 #include "javet_v8_runtime.h"
-
-JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_batchArrayGet
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType,
-    jobjectArray v8Values, jint startIndex, jint endIndex) {
-    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (IS_V8_ARRAY(v8ValueType) || IS_V8_ARGUMENTS(v8ValueType)) {
-        return Javet::Converter::ToExternalV8ValueArray(
-            jniEnv,
-            v8Runtime,
-            v8Context,
-            v8LocalValue.As<v8::Array>(),
-            v8Values,
-            startIndex,
-            endIndex);
-    }
-    return 0;
-}

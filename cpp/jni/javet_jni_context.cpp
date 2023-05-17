@@ -15,18 +15,7 @@
  *   limitations under the License.
  */
 
-#include "com_caoccao_javet_interop_V8Native.h"
-#include "javet_callbacks.h"
-#include "javet_converter.h"
-#include "javet_enums.h"
-#include "javet_exceptions.h"
-#include "javet_inspector.h"
-#include "javet_monitor.h"
-#include "javet_logging.h"
-#include "javet_native.h"
-#include "javet_node.h"
-#include "javet_v8.h"
-#include "javet_v8_runtime.h"
+#include "javet_jni.h"
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_contextGet
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jint index) {

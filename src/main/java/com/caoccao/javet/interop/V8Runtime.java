@@ -309,19 +309,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Add a value to a set.
-     *
-     * @param iV8ValueSet the V8 value set
-     * @param value       the value
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    @SuppressWarnings("RedundantThrows")
-    void add(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
-        v8Native.add(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), value);
-    }
-
-    /**
      * Add GC epilogue callback.
      *
      * @param iJavetGCCallback the javet GC callback
@@ -388,6 +375,63 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Delete a key from an array.
+     *
+     * @param iV8ValueArray the V8 value array
+     * @param key           the key
+     * @return true : deleted, false : key is not found
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean arrayDelete(IV8ValueArray iV8ValueArray, V8Value key) throws JavetException {
+        return v8Native.arrayDelete(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId(), key);
+    }
+
+    /**
+     * Get a property from an array by a key.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param key            the property key
+     * @return the property value
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    <T extends V8Value> T arrayGet(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return (T) v8Native.arrayGet(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
+    }
+
+    /**
+     * Gets length from an array.
+     *
+     * @param iV8ValueArray the V8 value array
+     * @return the length
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    int arrayGetLength(IV8ValueArray iV8ValueArray) throws JavetException {
+        return v8Native.arrayGetLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId());
+    }
+
+    /**
+     * Gets length from a typed array.
+     *
+     * @param iV8ValueTypedArray the V8 value typed array
+     * @return the length
+     * @throws JavetException the javet exception
+     * @since 0.8.4
+     */
+    @SuppressWarnings("RedundantThrows")
+    int arrayGetLength(IV8ValueTypedArray iV8ValueTypedArray) throws JavetException {
+        return v8Native.arrayGetLength(handle, iV8ValueTypedArray.getHandle(), iV8ValueTypedArray.getType().getId());
+    }
+
+    /**
      * Await tells the V8 runtime to pump the message loop in a non-blocking manner.
      *
      * @return true : there are more tasks, false : there are no more tasks
@@ -421,53 +465,33 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return the actual item count
      * @since 2.2.0
      */
-    public int batchArrayGet(IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex) {
+    @SuppressWarnings("RedundantThrows")
+    public int batchArrayGet(
+            IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex)
+            throws JavetException {
         return v8Native.batchArrayGet(
                 handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId(),
                 v8Values, startIndex, endIndex);
     }
 
     /**
-     * Call a function.
-     * <p>
-     * It is similar to JavaScript built-in functions apply() or call().
+     * Batch get a range of values by keys.
      *
-     * @param <T>            the type parameter
      * @param iV8ValueObject the V8 value object
-     * @param receiver       the receiver
-     * @param returnResult   the return result
-     * @param v8Values       the V8 values
-     * @return the result
+     * @param v8ValueKeys    the V8 value keys
+     * @param v8ValueValues  the V8 value values
+     * @param length         the length
+     * @return the actual item count
      * @throws JavetException the javet exception
-     * @since 0.7.0
+     * @since 2.2.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
-    <T extends V8Value> T call(
-            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult,
-            V8Value... v8Values)
+    public int batchObjectGet(
+            IV8ValueObject iV8ValueObject, V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length)
             throws JavetException {
-        return (T) v8Native.call(
+        return v8Native.batchObjectGet(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
-                receiver, returnResult, v8Values);
-    }
-
-    /**
-     * Call a function as a constructor.
-     *
-     * @param <T>            the type parameter
-     * @param iV8ValueObject the V8 value object
-     * @param v8Values       the V8 values
-     * @return the result
-     * @throws JavetException the javet exception
-     * @since 0.7.2
-     */
-    @CheckReturnValue
-    @SuppressWarnings("RedundantThrows")
-    <T extends V8Value> T callAsConstructor(
-            IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
-        return (T) v8Native.callAsConstructor(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), v8Values);
+                v8ValueKeys, v8ValueValues, length);
     }
 
     /**
@@ -492,8 +516,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     <T extends V8Value> T cloneV8Value(
             IV8ValueReference iV8ValueReference,
             boolean referenceCopy)
@@ -542,7 +566,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().length() == 0) {
             throw new JavetException(JavetError.ModuleNameEmpty);
         }
-        Object result = v8Native.compile(
+        Object result = v8Native.moduleCompile(
                 handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
@@ -572,7 +596,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(false);
-        return (V8Script) v8Native.compile(
+        return (V8Script) v8Native.scriptCompile(
                 handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
@@ -672,27 +696,26 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     public V8ValueArray createV8ValueArray() throws JavetException {
-        return (V8ValueArray) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Array.getId(), null);
+        return (V8ValueArray) v8Native.arrayCreate(handle);
     }
 
     @Override
+    @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     public V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException {
-        return (V8ValueArrayBuffer) v8Native.createV8Value(
-                handle, V8ValueReferenceType.ArrayBuffer.getId(), createV8ValueInteger(length));
+        return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, length);
     }
 
     @Override
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     public V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException {
         Objects.requireNonNull(byteBuffer);
         assert byteBuffer.isDirect() : "Byte buffer must be direct.";
-        return (V8ValueArrayBuffer) v8Native.createV8Value(
-                handle, V8ValueReferenceType.ArrayBuffer.getId(), byteBuffer);
+        return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, byteBuffer);
     }
 
     @Override
@@ -734,8 +757,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
-        V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Function.getId(), Objects.requireNonNull(javetCallbackContext));
+        V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Native.functionCreate(
+                handle, Objects.requireNonNull(javetCallbackContext));
         synchronized (callbackContextLock) {
             callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
         }
@@ -769,8 +792,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
     public V8ValueMap createV8ValueMap() throws JavetException {
-        return (V8ValueMap) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Map.getId(), null);
+        return (V8ValueMap) v8Native.mapCreate(handle);
     }
 
     @Override
@@ -779,34 +801,31 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
+    @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     public V8ValueObject createV8ValueObject() throws JavetException {
-        return (V8ValueObject) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Object.getId(), null);
+        return (V8ValueObject) v8Native.objectCreate(handle);
     }
 
     @Override
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     public V8ValuePromise createV8ValuePromise() throws JavetException {
-        return (V8ValuePromise) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Promise.getId(), null);
+        return (V8ValuePromise) v8Native.promiseCreate(handle);
     }
 
     @Override
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     public V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException {
-        return (V8ValueProxy) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Proxy.getId(), v8ValueObject);
+        return (V8ValueProxy) v8Native.proxyCreate(handle, v8ValueObject);
     }
 
     @Override
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     public V8ValueSet createV8ValueSet() throws JavetException {
-        return (V8ValueSet) v8Native.createV8Value(
-                handle, V8ValueReferenceType.Set.getId(), null);
+        return (V8ValueSet) v8Native.setCreate(handle);
     }
 
     @Override
@@ -817,15 +836,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
-        Objects.requireNonNull(description);
-        assert description.length() > 0;
+        assert description != null && description.length() > 0 : "Symbol description cannot be empty.";
         if (global) {
             try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
                 return v8ValueBuiltInSymbol._for(description);
             }
         } else {
-            return (V8ValueSymbol) v8Native.createV8Value(
-                    handle, V8ValueReferenceType.Symbol.getId(), description);
+            return (V8ValueSymbol) v8Native.symbolCreate(handle, description);
         }
     }
 
@@ -854,20 +871,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     public V8ValueZonedDateTime createV8ValueZonedDateTime(ZonedDateTime zonedDateTime) throws JavetException {
         return new V8ValueZonedDateTime(this, zonedDateTime);
-    }
-
-    /**
-     * Delete a key from an object.
-     *
-     * @param iV8ValueObject the V8 value object
-     * @param key            the key
-     * @return true : deleted, false : key is not found
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    @SuppressWarnings("RedundantThrows")
-    boolean delete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return v8Native.delete(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
     /**
@@ -920,6 +923,49 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
                 v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
                 v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
+    }
+
+    /**
+     * Call a function.
+     * <p>
+     * It is similar to JavaScript built-in functions apply() or call().
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param receiver       the receiver
+     * @param returnResult   the return result
+     * @param v8Values       the V8 values
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    <T extends V8Value> T functionCall(
+            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult,
+            V8Value... v8Values)
+            throws JavetException {
+        return (T) v8Native.functionCall(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
+                receiver, returnResult, v8Values);
+    }
+
+    /**
+     * Call a function as a constructor.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param v8Values       the V8 values
+     * @return the result
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    <T extends V8Value> T functionCallAsConstructor(
+            IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
+        return (T) v8Native.functionCallAsConstructor(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), v8Values);
     }
 
     /**
@@ -994,6 +1040,30 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets the JS function type from a function.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the JS function type
+     * @since 0.8.8
+     */
+    JSFunctionType functionGetJSFunctionType(IV8ValueFunction iV8ValueFunction) {
+        return JSFunctionType.parse(v8Native.functionGetJSFunctionType(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
+    }
+
+    /**
+     * Gets js scope type.
+     *
+     * @param iV8ValueFunction the V8 value function
+     * @return the js scope type
+     * @since 0.8.8
+     */
+    JSScopeType functionGetJSScopeType(IV8ValueFunction iV8ValueFunction) {
+        return JSScopeType.parse(v8Native.functionGetJSScopeType(
+                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
+    }
+
+    /**
      * Gets scope infos from a V8 value function.
      *
      * @param iV8ValueFunction the V8 value function
@@ -1001,6 +1071,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return the V8 value array
      * @throws JavetException the javet exception
      */
+    @SuppressWarnings("RedundantThrows")
     IV8ValueArray functionGetScopeInfos(
             IV8ValueFunction iV8ValueFunction,
             IV8ValueFunction.GetScopeInfosOptions options)
@@ -1113,22 +1184,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             throws JavetException {
         return v8Native.functionSetSourceCode(
                 handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId(), sourceCode, cloneScript);
-    }
-
-    /**
-     * Get a property from an object by a property key.
-     *
-     * @param <T>            the type parameter
-     * @param iV8ValueObject the V8 value object
-     * @param key            the property key
-     * @return the property value
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    @CheckReturnValue
-    <T extends V8Value> T get(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return (T) v8Native.get(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
     /**
@@ -1305,18 +1360,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Gets the JS function type from a function.
-     *
-     * @param iV8ValueFunction the V8 value function
-     * @return the JS function type
-     * @since 0.8.8
-     */
-    JSFunctionType getJSFunctionType(IV8ValueFunction iV8ValueFunction) {
-        return JSFunctionType.parse(v8Native.getJSFunctionType(
-                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
-    }
-
-    /**
      * Gets the JS runtime type.
      *
      * @return the JS runtime type
@@ -1324,44 +1367,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public JSRuntimeType getJSRuntimeType() {
         return JSRuntimeType.V8;
-    }
-
-    /**
-     * Gets js scope type.
-     *
-     * @param iV8ValueFunction the V8 value function
-     * @return the js scope type
-     * @since 0.8.8
-     */
-    JSScopeType getJSScopeType(IV8ValueFunction iV8ValueFunction) {
-        return JSScopeType.parse(v8Native.getJSScopeType(
-                handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
-    }
-
-    /**
-     * Gets length from an array.
-     *
-     * @param iV8ValueArray the V8 value array
-     * @return the length
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    @SuppressWarnings("RedundantThrows")
-    int getLength(IV8ValueArray iV8ValueArray) throws JavetException {
-        return v8Native.getLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId());
-    }
-
-    /**
-     * Gets length from a typed array.
-     *
-     * @param iV8ValueTypedArray the V8 value typed array
-     * @return the length
-     * @throws JavetException the javet exception
-     * @since 0.8.4
-     */
-    @SuppressWarnings("RedundantThrows")
-    int getLength(IV8ValueTypedArray iV8ValueTypedArray) throws JavetException {
-        return v8Native.getLength(handle, iV8ValueTypedArray.getHandle(), iV8ValueTypedArray.getType().getId());
     }
 
     /**
@@ -1375,40 +1380,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Gets own property names from an object.
-     *
-     * @param iV8ValueObject the V8 value object
-     * @return the own property names
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    @CheckReturnValue
-    @SuppressWarnings("RedundantThrows")
-    IV8ValueArray getOwnPropertyNames(
-            IV8ValueObject iV8ValueObject) throws JavetException {
-        return (V8ValueArray) v8Native.getOwnPropertyNames(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
-    }
-
-    /**
-     * Gets a private property from an object by a property name.
-     *
-     * @param <T>            the type parameter
-     * @param iV8ValueObject the V8 value object
-     * @param propertyName   the property name
-     * @return the private property
-     * @throws JavetException the javet exception
-     * @since 0.9.12
-     */
-    @CheckReturnValue
-    @SuppressWarnings("RedundantThrows")
-    <T extends V8Value> T getPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName)
-            throws JavetException {
-        return (T) v8Native.getPrivateProperty(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
-    }
-
-    /**
      * Gets promise reject callback.
      *
      * @return the promise reject callback
@@ -1416,38 +1387,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public IJavetPromiseRejectCallback getPromiseRejectCallback() {
         return promiseRejectCallback;
-    }
-
-    /**
-     * Gets a property from an object by a property key.
-     *
-     * @param <T>            the type parameter
-     * @param iV8ValueObject the V8 value object
-     * @param key            the property key
-     * @return the property
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    @CheckReturnValue
-    @SuppressWarnings("RedundantThrows")
-    <T extends V8Value> T getProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return (T) v8Native.getProperty(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
-    }
-
-    /**
-     * Gets property names from an object.
-     *
-     * @param iV8ValueObject the V8 value object
-     * @return the property names
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    @CheckReturnValue
-    @SuppressWarnings("RedundantThrows")
-    IV8ValueArray getPropertyNames(IV8ValueObject iV8ValueObject) throws JavetException {
-        return (V8ValueArray) v8Native.getPropertyNames(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
     }
 
     /**
@@ -1484,19 +1423,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public RuntimeOptions<?> getRuntimeOptions() {
         return runtimeOptions;
-    }
-
-    /**
-     * Gets size from a key container.
-     *
-     * @param iV8ValueKeyContainer the V8 value key container
-     * @return the size
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    @SuppressWarnings("RedundantThrows")
-    int getSize(IV8ValueKeyContainer iV8ValueKeyContainer) throws JavetException {
-        return v8Native.getSize(handle, iV8ValueKeyContainer.getHandle(), iV8ValueKeyContainer.getType().getId());
     }
 
     /**
@@ -1676,20 +1602,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Has own property in an object by a property key.
-     *
-     * @param iV8ValueObject the V8 value object
-     * @param key            the property key
-     * @return true : yes, false : no
-     * @throws JavetException the javet exception
-     * @since 0.7.2
-     */
-    @SuppressWarnings("RedundantThrows")
-    boolean hasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return v8Native.hasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
-    }
-
-    /**
      * Has pending exception.
      *
      * @return true : yes, false : no
@@ -1711,21 +1623,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     public boolean hasPendingMessage() throws JavetException {
         return v8Native.hasPendingMessage(handle);
-    }
-
-    /**
-     * Has private property in an object by a property name.
-     *
-     * @param iV8ValueObject the V8 value object
-     * @param propertyName   the property name
-     * @return true : yes, false : no
-     * @throws JavetException the javet exception
-     * @since 0.9.12
-     */
-    @SuppressWarnings("RedundantThrows")
-    boolean hasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
-        return v8Native.hasPrivateProperty(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
     }
 
     /**
@@ -1791,8 +1688,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     <T extends V8Value> T invoke(
             IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values)
             throws JavetException {
@@ -1868,6 +1765,50 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Delete a key from a map.
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @return true : deleted, false : key is not found
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean mapDelete(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
+        return v8Native.mapDelete(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key);
+    }
+
+    /**
+     * Get a property from a map by a key.
+     *
+     * @param <T>         the type parameter
+     * @param iV8ValueMap the v 8 value map
+     * @param key         the property key
+     * @return the property value
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    <T extends V8Value> T mapGet(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
+        return (T) v8Native.mapGet(
+                handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key);
+    }
+
+    /**
+     * Gets size from a map.
+     *
+     * @param iV8ValueMap the V8 value map
+     * @return the size
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    int mapGetSize(IV8ValueMap iV8ValueMap) throws JavetException {
+        return v8Native.mapGetSize(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId());
+    }
+
+    /**
      * Evaluate a module.
      *
      * @param <T>            the type parameter
@@ -1877,8 +1818,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     <T extends V8Value> T moduleEvaluate(
             IV8Module iV8Module, boolean resultRequired) throws JavetException {
         return (T) v8Native.moduleEvaluate(
@@ -1893,8 +1834,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.9.12
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     V8ValueError moduleGetException(IV8Module iV8Module) throws JavetException {
         return (V8ValueError) v8Native.moduleGetException(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId());
@@ -1908,8 +1849,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     V8ValueObject moduleGetNamespace(IV8Module iV8Module) throws JavetException {
         return (V8ValueObject) v8Native.moduleGetNamespace(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId());
@@ -1957,6 +1898,132 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Delete a key from an object.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return true : deleted, false : key is not found
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectDelete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Native.objectDelete(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
+    }
+
+    /**
+     * Get a property from an object by a property key.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param key            the property key
+     * @return the property value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    <T extends V8Value> T objectGet(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return (T) v8Native.objectGet(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
+    }
+
+    /**
+     * Gets own property names from an object.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return the own property names
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    IV8ValueArray objectGetOwnPropertyNames(
+            IV8ValueObject iV8ValueObject) throws JavetException {
+        return (V8ValueArray) v8Native.objectGetOwnPropertyNames(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
+    }
+
+    /**
+     * Gets a private property from an object by a property name.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param propertyName   the property name
+     * @return the private property
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    <T extends V8Value> T objectGetPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName)
+            throws JavetException {
+        return (T) v8Native.objectGetPrivateProperty(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
+    }
+
+    /**
+     * Gets a property from an object by a property key.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject the V8 value object
+     * @param key            the property key
+     * @return the property
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    <T extends V8Value> T objectGetProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return (T) v8Native.objectGetProperty(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
+    }
+
+    /**
+     * Gets property names from an object.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return the property names
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    IV8ValueArray objectGetPropertyNames(IV8ValueObject iV8ValueObject) throws JavetException {
+        return (V8ValueArray) v8Native.objectGetPropertyNames(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
+    }
+
+    /**
+     * Has own property in an object by a property key.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the property key
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectHasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Native.objectHasOwnProperty(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
+    }
+
+    /**
+     * Has private property in an object by a property name.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param propertyName   the property name
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 0.9.12
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectHasPrivateProperty(IV8ValueObject iV8ValueObject, String propertyName) throws JavetException {
+        return v8Native.objectHasPrivateProperty(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), propertyName);
+    }
+
+    /**
      * Call Promise.catch().
      *
      * @param <T>             the type parameter
@@ -1966,8 +2033,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     <T extends V8ValuePromise> T promiseCatch(
             IV8ValuePromise iV8ValuePromise, IV8ValueFunction functionHandle) throws JavetException {
         return (T) v8Native.promiseCatch(
@@ -1982,8 +2049,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.9.8
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     V8ValuePromise promiseGetPromise(IV8ValuePromise iV8ValuePromise) throws JavetException {
         return (V8ValuePromise) v8Native.promiseGetPromise(
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId());
@@ -1998,8 +2065,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     <T extends V8Value> T promiseGetResult(IV8ValuePromise iV8ValuePromise) throws JavetException {
         return (T) v8Native.promiseGetResult(
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId());
@@ -2074,8 +2141,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     <T extends V8ValuePromise> T promiseThen(
             IV8ValuePromise iV8ValuePromise, IV8ValueFunction functionFulfilledHandle,
             IV8ValueFunction functionRejectedHandle) throws JavetException {
@@ -2105,8 +2172,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.9.6
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     V8ValueObject proxyGetHandler(IV8ValueProxy iV8ValueProxy) throws JavetException {
         return (V8ValueObject) v8Native.proxyGetHandler(
                 handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId());
@@ -2120,8 +2187,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.9.6
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     V8ValueObject proxyGetTarget(IV8ValueProxy iV8ValueProxy) throws JavetException {
         return (V8ValueObject) v8Native.proxyGetTarget(
                 handle, iV8ValueProxy.getHandle(), iV8ValueProxy.getType().getId());
@@ -2503,8 +2570,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
     <T extends V8Value> T scriptRun(
             IV8Script iV8Script, boolean resultRequired) throws JavetException {
         return (T) v8Native.scriptRun(
@@ -2558,6 +2625,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Add a value to a set.
+     *
+     * @param iV8ValueSet the V8 value set
+     * @param value       the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    void setAdd(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
+        v8Native.setAdd(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), value);
+    }
+
+    /**
      * Sets converter.
      *
      * @param converter the converter
@@ -2569,6 +2649,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Delete a key from a set.
+     *
+     * @param iV8ValueSet the v 8 value set
+     * @param key         the key
+     * @return true : deleted, false : key is not found
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    boolean setDelete(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
+        return v8Native.setDelete(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), key);
+    }
+
+    /**
      * Sets GC scheduled.
      *
      * @param gcScheduled the GC scheduled
@@ -2576,6 +2669,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public void setGCScheduled(boolean gcScheduled) {
         this.gcScheduled = gcScheduled;
+    }
+
+    /**
+     * Gets size from a set.
+     *
+     * @param iV8ValueSet the V8 value set
+     * @return the size
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    int setGetSize(IV8ValueSet iV8ValueSet) throws JavetException {
+        return v8Native.setGetSize(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId());
     }
 
     /**

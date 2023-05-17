@@ -44,7 +44,7 @@ public class V8ValueWeakMap extends V8ValueObject {
 
     @CheckReturnValue
     public <T extends V8Value> T get(String key) throws JavetException {
-        return checkV8Runtime().getV8Internal().get(this, v8Runtime.createV8ValueString(key));
+        return checkV8Runtime().getV8Internal().objectGet(this, v8Runtime.createV8ValueString(key));
     }
 
     @Override

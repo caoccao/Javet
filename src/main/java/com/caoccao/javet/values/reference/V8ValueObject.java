@@ -21,10 +21,13 @@ import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetBiConsumer;
+import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.BindingContext;
 import com.caoccao.javet.interop.binding.MethodDescriptor;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.values.V8Value;
@@ -81,6 +84,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
      */
     public static ThreadSafeMap<Class<?>, BindingContext> getBindingContextMap() {
         return bindingContextMap;
+    }
+
+    @Override
+    public int batchGet(V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length) throws JavetException {
+        return checkV8Runtime().getV8Internal().batchObjectGet(this, v8ValueKeys, v8ValueValues, length);
     }
 
     @Override
@@ -253,7 +261,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public boolean delete(Object key) throws JavetException {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
-            return v8Runtime.getV8Internal().delete(this, virtualKey.get());
+            return v8Runtime.getV8Internal().objectDelete(this, virtualKey.get());
         }
     }
 
@@ -264,11 +272,81 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiConsumer<Key, Value, E> consumer,
+            int batchSize)
+            throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            batchSize = Math.max(MIN_BATCH_SIZE, batchSize);
+            final int length = iV8ValueArray.getLength();
+            if (length > 0) {
+                V8Value[] v8ValueKeys = new V8Value[batchSize];
+                V8Value[] v8ValueValues = new V8Value[batchSize];
+                final int loopCount = (length + batchSize - 1) / batchSize;
+                for (int i = 0; i < loopCount; i++) {
+                    final int startIndex = i * batchSize;
+                    final int endIndex = i == loopCount - 1 ? length : startIndex + batchSize;
+                    try {
+                        int actualLength = iV8ValueArray.batchGet(v8ValueKeys, startIndex, endIndex);
+                        if (actualLength > 0) {
+                            batchGet(v8ValueKeys, v8ValueValues, actualLength);
+                            for (int j = 0; j < actualLength; j++) {
+                                consumer.accept((Key) v8ValueKeys[j], (Value) v8ValueValues[j]);
+                            }
+                        }
+                    } finally {
+                        JavetResourceUtils.safeClose((Object[]) v8ValueKeys);
+                        JavetResourceUtils.safeClose((Object[]) v8ValueValues);
+                        Arrays.fill(v8ValueKeys, null);
+                        Arrays.fill(v8ValueValues, null);
+                    }
+                }
+            }
+            return length;
+        }
+    }
+
+    @Override
+    public <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiIndexedConsumer<Key, Value, E> consumer,
+            int batchSize)
+            throws JavetException, E {
+        Objects.requireNonNull(consumer);
+        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
+            batchSize = Math.max(MIN_BATCH_SIZE, batchSize);
+            final int length = iV8ValueArray.getLength();
+            if (length > 0) {
+                V8Value[] v8ValueKeys = new V8Value[batchSize];
+                V8Value[] v8ValueValues = new V8Value[batchSize];
+                final int loopCount = (length + batchSize - 1) / batchSize;
+                for (int i = 0; i < loopCount; i++) {
+                    final int startIndex = i * batchSize;
+                    final int endIndex = i == loopCount - 1 ? length : startIndex + batchSize;
+                    try {
+                        int actualLength = iV8ValueArray.batchGet(v8ValueKeys, startIndex, endIndex);
+                        batchGet(v8ValueKeys, v8ValueValues, actualLength);
+                        for (int j = 0; j < actualLength; j++) {
+                            consumer.accept(startIndex + j, (Key) v8ValueKeys[j], (Value) v8ValueValues[j]);
+                        }
+                    } finally {
+                        JavetResourceUtils.safeClose((Object[]) v8ValueKeys);
+                        JavetResourceUtils.safeClose((Object[]) v8ValueValues);
+                        Arrays.fill(v8ValueKeys, null);
+                        Arrays.fill(v8ValueValues, null);
+                    }
+                }
+            }
+            return length;
+        }
+    }
+
+    @Override
     @CheckReturnValue
     public <T extends V8Value> T get(Object key) throws JavetException {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
-            return v8Runtime.getV8Internal().get(this, virtualKey.get());
+            return v8Runtime.getV8Internal().objectGet(this, virtualKey.get());
         }
     }
 
@@ -391,12 +469,12 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     @Override
     @CheckReturnValue
     public IV8ValueArray getOwnPropertyNames() throws JavetException {
-        return checkV8Runtime().getV8Internal().getOwnPropertyNames(this);
+        return checkV8Runtime().getV8Internal().objectGetOwnPropertyNames(this);
     }
 
     @Override
     public <T extends V8Value> T getPrivateProperty(String propertyName) throws JavetException {
-        return checkV8Runtime().getV8Internal().getPrivateProperty(
+        return checkV8Runtime().getV8Internal().objectGetPrivateProperty(
                 this, Objects.requireNonNull(propertyName));
     }
 
@@ -405,14 +483,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public <T extends V8Value> T getProperty(Object key) throws JavetException {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
-            return v8Runtime.getV8Internal().getProperty(this, virtualKey.get());
+            return v8Runtime.getV8Internal().objectGetProperty(this, virtualKey.get());
         }
     }
 
     @Override
     @CheckReturnValue
     public IV8ValueArray getPropertyNames() throws JavetException {
-        return checkV8Runtime().getV8Internal().getPropertyNames(this);
+        return checkV8Runtime().getV8Internal().objectGetPropertyNames(this);
     }
 
     @Override
@@ -442,13 +520,13 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public boolean hasOwnProperty(Object key) throws JavetException {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
-            return v8Runtime.getV8Internal().hasOwnProperty(this, virtualKey.get());
+            return v8Runtime.getV8Internal().objectHasOwnProperty(this, virtualKey.get());
         }
     }
 
     @Override
     public boolean hasPrivateProperty(String propertyName) throws JavetException {
-        return checkV8Runtime().getV8Internal().hasPrivateProperty(
+        return checkV8Runtime().getV8Internal().objectHasPrivateProperty(
                 this, Objects.requireNonNull(propertyName));
     }
 

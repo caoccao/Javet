@@ -24,6 +24,7 @@ import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.virtual.V8VirtualValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +59,22 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
             IJavetUniConsumer<Value, E> consumer)
             throws JavetException, E {
         return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    @Override
+    public <T extends V8Value> T get(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().arrayGet(this, virtualKey.get());
+        }
+    }
+
+    @Override
+    public boolean delete(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().arrayDelete(this, virtualKey.get());
+        }
     }
 
     @Override
@@ -112,7 +129,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
                 try {
                     int actualLength = batchGet(v8Values, startIndex, endIndex);
                     for (int j = 0; j < actualLength; j++) {
-                        consumer.accept(j, (Value) v8Values[j]);
+                        consumer.accept(startIndex + j, (Value) v8Values[j]);
                     }
                 } finally {
                     JavetResourceUtils.safeClose((Object[]) v8Values);
@@ -126,7 +143,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     @CheckReturnValue
     public <T extends V8Value> T get(int index) throws JavetException {
-        return checkV8Runtime().getV8Internal().get(this, v8Runtime.createV8ValueInteger(index));
+        return checkV8Runtime().getV8Internal().objectGet(this, v8Runtime.createV8ValueInteger(index));
     }
 
     @Override
@@ -147,7 +164,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
 
     @Override
     public int getLength() throws JavetException {
-        return checkV8Runtime().getV8Internal().getLength(this);
+        return checkV8Runtime().getV8Internal().arrayGetLength(this);
     }
 
     @Override

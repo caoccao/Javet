@@ -79,14 +79,14 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException {
         try (V8VirtualValueList virtualValueList = new V8VirtualValueList(checkV8Runtime(), null, objects)) {
-            return v8Runtime.getV8Internal().callAsConstructor(this, virtualValueList.get());
+            return v8Runtime.getV8Internal().functionCallAsConstructor(this, virtualValueList.get());
         }
     }
 
     @Override
     @CheckReturnValue
     public <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException {
-        return checkV8Runtime().getV8Internal().callAsConstructor(this, v8Values);
+        return checkV8Runtime().getV8Internal().functionCallAsConstructor(this, v8Values);
     }
 
     @Override
@@ -94,14 +94,14 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, Object... objects)
             throws JavetException {
         try (V8VirtualValueList virtualValueList = new V8VirtualValueList(checkV8Runtime(), null, objects)) {
-            return v8Runtime.getV8Internal().call(this, receiver, returnResult, virtualValueList.get());
+            return v8Runtime.getV8Internal().functionCall(this, receiver, returnResult, virtualValueList.get());
         }
     }
 
     @Override
     @CheckReturnValue
     public <T extends V8Value> T callExtended(IV8ValueObject receiver, boolean returnResult, V8Value... v8Values) throws JavetException {
-        return checkV8Runtime().getV8Internal().call(this, receiver, returnResult, v8Values);
+        return checkV8Runtime().getV8Internal().functionCall(this, receiver, returnResult, v8Values);
     }
 
     @Override
@@ -148,14 +148,14 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public JSFunctionType getJSFunctionType() throws JavetException {
         if (jsFunctionType == null) {
-            jsFunctionType = checkV8Runtime().getV8Internal().getJSFunctionType(this);
+            jsFunctionType = checkV8Runtime().getV8Internal().functionGetJSFunctionType(this);
         }
         return jsFunctionType;
     }
 
     @Override
     public JSScopeType getJSScopeType() throws JavetException {
-        return checkV8Runtime().getV8Internal().getJSScopeType(this);
+        return checkV8Runtime().getV8Internal().functionGetJSScopeType(this);
     }
 
     @CheckReturnValue

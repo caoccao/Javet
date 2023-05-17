@@ -25,6 +25,7 @@ import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.virtual.V8VirtualValue;
 
 import java.util.Objects;
 
@@ -36,6 +37,14 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
 
     V8ValueMap(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
+    }
+
+    @Override
+    public boolean delete(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapDelete(this, virtualKey.get());
+        }
     }
 
     @Override
@@ -119,6 +128,14 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
+    public <T extends V8Value> T get(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapGet(this, virtualKey.get());
+        }
+    }
+
+    @Override
     @CheckReturnValue
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
         return invoke(FUNCTION_ENTRIES);
@@ -132,7 +149,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
 
     @Override
     public int getSize() throws JavetException {
-        return checkV8Runtime().getV8Internal().getSize(this);
+        return checkV8Runtime().getV8Internal().mapGetSize(this);
     }
 
     @Override

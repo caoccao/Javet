@@ -15,18 +15,29 @@
  *   limitations under the License.
  */
 
-#include "com_caoccao_javet_interop_V8Native.h"
-#include "javet_callbacks.h"
-#include "javet_converter.h"
-#include "javet_enums.h"
-#include "javet_exceptions.h"
-#include "javet_inspector.h"
-#include "javet_monitor.h"
-#include "javet_logging.h"
-#include "javet_native.h"
-#include "javet_node.h"
-#include "javet_v8.h"
-#include "javet_v8_runtime.h"
+#include "javet_jni.h"
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyCreate
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mTarget) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    V8LocalObject v8LocalObjectTaget = mTarget == nullptr
+        ? v8::Object::New(v8Context->GetIsolate())
+        : Javet::Converter::ToV8Value(jniEnv, v8Context, mTarget).As<v8::Object>();
+    auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
+    auto v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectTaget, v8LocalObjectHandler);
+    if (v8MaybeLocalProxy.IsEmpty()) {
+        if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context, "Proxy allocation failed")) {
+            return nullptr;
+        }
+    }
+    else {
+        auto v8LocalProxy = v8MaybeLocalProxy.ToLocalChecked();
+        if (!v8LocalProxy.IsEmpty()) {
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalProxy);
+        }
+    }
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+}
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyGetHandler
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {

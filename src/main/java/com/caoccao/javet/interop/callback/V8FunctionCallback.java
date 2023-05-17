@@ -303,7 +303,7 @@ public final class V8FunctionCallback {
     }
 
     /**
-     * Receive callback V8 value.
+     * Receive callback and return the V8 value.
      *
      * @param v8Runtime            the V8 runtime
      * @param javetCallbackContext the javet callback context

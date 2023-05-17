@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("unchecked")
 public class TestV8ValueMap extends BaseTestJavetRuntime {
     @Test
     public void testForEach() throws JavetException {

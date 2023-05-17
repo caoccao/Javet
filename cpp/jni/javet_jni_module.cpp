@@ -15,18 +15,42 @@
  *   limitations under the License.
  */
 
-#include "com_caoccao_javet_interop_V8Native.h"
-#include "javet_callbacks.h"
-#include "javet_converter.h"
-#include "javet_enums.h"
-#include "javet_exceptions.h"
-#include "javet_inspector.h"
-#include "javet_monitor.h"
-#include "javet_logging.h"
-#include "javet_native.h"
-#include "javet_node.h"
-#include "javet_v8.h"
-#include "javet_v8_runtime.h"
+#include "javet_jni.h"
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCompile
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mScript, jbyteArray mCachedData, jboolean mResultRequired,
+    jstring mResourceName, jint mResourceLineOffset, jint mResourceColumnOffset, jint mScriptId, jboolean mIsWASM, jboolean mIsModule) {
+    if (mIsModule) {
+        RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        auto umScript = Javet::Converter::ToV8String(jniEnv, v8Context, mScript);
+        auto scriptOriginPointer = Javet::Converter::ToV8ScriptOringinPointer(
+            jniEnv, v8Context, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, mIsModule);
+        v8::MaybeLocal<v8::Module> v8MaybeLocalCompiledModule;
+        if (mCachedData) {
+            V8ScriptCompilerSource scriptSource(
+                umScript,
+                *scriptOriginPointer.get(),
+                Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData));
+            v8MaybeLocalCompiledModule = v8::ScriptCompiler::CompileModule(
+                v8Context->GetIsolate(),
+                &scriptSource,
+                v8::ScriptCompiler::kConsumeCodeCache);
+            LOG_DEBUG("Module cache is " << (scriptSource.GetCachedData()->rejected ? "rejected" : "accepted") << ".");
+        }
+        else {
+            V8ScriptCompilerSource scriptSource(umScript, *scriptOriginPointer.get());
+            v8MaybeLocalCompiledModule = v8::ScriptCompiler::CompileModule(v8Context->GetIsolate(), &scriptSource);
+        }
+        if (v8TryCatch.HasCaught()) {
+            return Javet::Exceptions::ThrowJavetCompilationException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+        }
+        else if (mResultRequired && !v8MaybeLocalCompiledModule.IsEmpty()) {
+            return Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime, v8Context, v8MaybeLocalCompiledModule.ToLocalChecked());
+        }
+    }
+    return nullptr;
+}
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleEvaluate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jboolean mResultRequired) {

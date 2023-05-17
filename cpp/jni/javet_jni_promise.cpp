@@ -15,18 +15,25 @@
  *   limitations under the License.
  */
 
-#include "com_caoccao_javet_interop_V8Native.h"
-#include "javet_callbacks.h"
-#include "javet_converter.h"
-#include "javet_enums.h"
-#include "javet_exceptions.h"
-#include "javet_inspector.h"
-#include "javet_monitor.h"
-#include "javet_logging.h"
-#include "javet_native.h"
-#include "javet_node.h"
-#include "javet_v8.h"
-#include "javet_v8_runtime.h"
+#include "javet_jni.h"
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseCreate
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    auto v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
+    if (v8MaybeLocalPromiseResolver.IsEmpty()) {
+        if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context, "Promise resolver allocation failed")) {
+            return nullptr;
+        }
+    }
+    else {
+        auto v8LocalPromiseResolver = v8MaybeLocalPromiseResolver.ToLocalChecked();
+        if (!v8LocalPromiseResolver.IsEmpty()) {
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalPromiseResolver);
+        }
+    }
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+}
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_promiseGetState
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
@@ -156,4 +163,4 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseResolv
         return v8MaybeBool.FromMaybe(false);
     }
     return false;
-} 
+}

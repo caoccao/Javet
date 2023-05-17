@@ -9,19 +9,59 @@ extern "C" {
 #endif
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    add
- * Signature: (JJILjava/lang/Object;)V
- */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_add
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    allowCodeGenerationFromStrings
  * Signature: (JZ)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerationFromStrings
   (JNIEnv *, jobject, jlong, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    arrayBufferCreate
+ * Signature: (JI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayBufferCreate__JI
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    arrayBufferCreate
+ * Signature: (JLjava/nio/ByteBuffer;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayBufferCreate__JLjava_nio_ByteBuffer_2
+  (JNIEnv *, jobject, jlong, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    arrayCreate
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayCreate
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    arrayDelete
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_arrayDelete
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    arrayGet
+ * Signature: (JJILjava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    arrayGetLength
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGetLength
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -41,19 +81,11 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_batchArrayGet
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    call
- * Signature: (JJILjava/lang/Object;Z[Ljava/lang/Object;)Ljava/lang/Object;
+ * Method:    batchObjectGet
+ * Signature: (JJI[Ljava/lang/Object;[Ljava/lang/Object;I)I
  */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_call
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jboolean, jobjectArray);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    callAsConstructor
- * Signature: (JJI[Ljava/lang/Object;)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_callAsConstructor
-  (JNIEnv *, jobject, jlong, jlong, jint, jobjectArray);
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_batchObjectGet
+  (JNIEnv *, jobject, jlong, jlong, jint, jobjectArray, jobjectArray, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -86,14 +118,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
   (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    compile
- * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZZ)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_compile
-  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -153,22 +177,6 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    createV8Value
- * Signature: (JILjava/lang/Object;)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Value
-  (JNIEnv *, jobject, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    delete
- * Signature: (JJILjava/lang/Object;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_delete
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    deletePrivateProperty
  * Signature: (JJILjava/lang/String;)Z
  */
@@ -193,6 +201,22 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionCall
+ * Signature: (JJILjava/lang/Object;Z[Ljava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCall
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jboolean, jobjectArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionCallAsConstructor
+ * Signature: (JJI[Ljava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCallAsConstructor
+  (JNIEnv *, jobject, jlong, jlong, jint, jobjectArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionCanDiscardCompiled
  * Signature: (JJI)Z
  */
@@ -206,6 +230,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCanDi
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScopeInfoFrom
   (JNIEnv *, jobject, jlong, jlong, jint, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionCreate
+ * Signature: (JLjava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCreate
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -229,6 +261,22 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionG
  * Signature: (JJI)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetContext
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionGetJSFunctionType
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetJSFunctionType
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionGetJSScopeType
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetJSScopeType
   (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
@@ -297,14 +345,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    get
- * Signature: (JJILjava/lang/Object;)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_get
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getCachedData
  * Signature: (JJI)[B
  */
@@ -345,74 +385,10 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getJSFunctionType
- * Signature: (JJI)I
- */
-JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSFunctionType
-  (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getJSScopeType
- * Signature: (JJI)I
- */
-JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getJSScopeType
-  (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getLength
- * Signature: (JJI)I
- */
-JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getLength
-  (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getOwnPropertyNames
- * Signature: (JJI)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getOwnPropertyNames
-  (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getPrivateProperty
- * Signature: (JJILjava/lang/String;)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPrivateProperty
-  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getProperty
- * Signature: (JJILjava/lang/Object;)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getProperty
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getPropertyNames
- * Signature: (JJI)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPropertyNames
-  (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getPrototype
  * Signature: (JJI)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getPrototype
-  (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getSize
- * Signature: (JJI)I
- */
-JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getSize
   (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
@@ -465,14 +441,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalTy
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    hasOwnProperty
- * Signature: (JJILjava/lang/Object;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasOwnProperty
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    hasPendingException
  * Signature: (J)Z
  */
@@ -486,14 +454,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingExc
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMessage
   (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    hasPrivateProperty
- * Signature: (JJILjava/lang/String;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPrivateProperty
-  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -561,6 +521,46 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotifica
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapCreate
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_mapCreate
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapDelete
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapDelete
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapGet
+ * Signature: (JJILjava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_mapGet
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapGetSize
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetSize
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleCompile
+ * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZZ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCompile
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    moduleEvaluate
  * Signature: (JJIZ)Ljava/lang/Object;
  */
@@ -609,11 +609,91 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectCreate
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectCreate
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectDelete
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectDelete
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGet
+ * Signature: (JJILjava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGet
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetOwnPropertyNames
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetOwnPropertyNames
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetPrivateProperty
+ * Signature: (JJILjava/lang/String;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetPrivateProperty
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetProperty
+ * Signature: (JJILjava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetProperty
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetPropertyNames
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetPropertyNames
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectHasOwnProperty
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectHasOwnProperty
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectHasPrivateProperty
+ * Signature: (JJILjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectHasPrivateProperty
+  (JNIEnv *, jobject, jlong, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    promiseCatch
  * Signature: (JJIJ)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseCatch
   (JNIEnv *, jobject, jlong, jlong, jint, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    promiseCreate
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseCreate
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -686,6 +766,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseThen
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promoteScheduledException
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    proxyCreate
+ * Signature: (JLjava/lang/Object;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyCreate
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -801,6 +889,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    scriptCompile
+ * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZZ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptCompile
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    scriptRun
  * Signature: (JJIZ)Ljava/lang/Object;
  */
@@ -822,6 +918,38 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_set
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setAccessor
   (JNIEnv *, jobject, jlong, jlong, jint, jobject, jobject, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setAdd
+ * Signature: (JJILjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setAdd
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setCreate
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_setCreate
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setDelete
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setDelete
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setGetSize
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_setGetSize
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -862,6 +990,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals
   (JNIEnv *, jobject, jlong, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    symbolCreate
+ * Signature: (JLjava/lang/String;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_symbolCreate
+  (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

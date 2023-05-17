@@ -20,6 +20,8 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.virtual.V8VirtualValue;
 
 import java.util.Objects;
 
@@ -112,7 +114,6 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @since 0.7.2
      */
     public static final int ZERO_BYTE_PER_VALUE = 0;
-
     /**
      * The Size in bytes.
      *
@@ -125,7 +126,6 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @since 0.8.4
      */
     protected V8ValueReferenceType type;
-
     /**
      * Instantiates a new V8 value typed array.
      *
@@ -254,6 +254,14 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     }
 
     @Override
+    public <T extends V8Value> T get(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().arrayGet(this, virtualKey.get());
+        }
+    }
+
+    @Override
     @CheckReturnValue
     public V8ValueArrayBuffer getBuffer() throws JavetException {
         return get(PROPERTY_BUFFER);
@@ -271,7 +279,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
 
     @Override
     public int getLength() throws JavetException {
-        return checkV8Runtime().getV8Internal().getLength(this);
+        return checkV8Runtime().getV8Internal().arrayGetLength(this);
     }
 
     @Override

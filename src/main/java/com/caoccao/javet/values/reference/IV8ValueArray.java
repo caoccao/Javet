@@ -38,19 +38,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public interface IV8ValueArray extends IV8ValueObject {
     /**
-     * The constant DEFAULT_BATCH_SIZE is the default batch size for get a chunk of items.
-     *
-     * @since 2.2.0
-     */
-    int DEFAULT_BATCH_SIZE = 100;
-    /**
-     * The constant MIN_BATCH_SIZE.
-     *
-     * @since 2.2.0
-     */
-    int MIN_BATCH_SIZE = 1;
-
-    /**
      * Batch get the given range of items from the array.
      *
      * @param v8Values   the V8 values

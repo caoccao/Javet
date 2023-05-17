@@ -43,6 +43,29 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    /**
+     * The constant DEFAULT_BATCH_SIZE is the default batch size for get a chunk of items.
+     *
+     * @since 2.2.0
+     */
+    int DEFAULT_BATCH_SIZE = 100;
+    /**
+     * The constant MIN_BATCH_SIZE.
+     *
+     * @since 2.2.0
+     */
+    int MIN_BATCH_SIZE = 1;
+
+    /**
+     * Batch get a range of values by keys.
+     *
+     * @param v8ValueKeys   the V8 value keys
+     * @param v8ValueValues the V8 value values
+     * @param length        the length
+     * @return the actual item count
+     * @throws JavetException the javet exception
+     */
+    int batchGet(V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length) throws JavetException;
 
     /**
      * Bind both functions via @V8Function and properties via @V8Property.
@@ -281,10 +304,30 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.10
      */
     default <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetUniConsumer<Key, E> consumer) throws JavetException, E {
+            IJavetUniConsumer<Key, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    /**
+     * Invoke the uni-consumer for each of the keys.
+     *
+     * @param <Key>     the type of key
+     * @param <E>       the type of exception
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the key count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniConsumer<Key, E> consumer,
+            int batchSize)
+            throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
-            return iV8ValueArray.forEach(consumer);
+            return iV8ValueArray.forEach(consumer, batchSize);
         }
     }
 
@@ -300,10 +343,30 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.10
      */
     default <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E {
+            IJavetUniIndexedConsumer<Key, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    /**
+     * Invoke the uni-indexed-consumer for each of the keys.
+     *
+     * @param <Key>     the type of key
+     * @param <E>       the type of exception
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the key count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Key, E> consumer,
+            int batchSize)
+            throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
-            return iV8ValueArray.forEach(consumer);
+            return iV8ValueArray.forEach(consumer, batchSize);
         }
     }
 
@@ -320,14 +383,35 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.9
      */
     default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
-            IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E {
+            IJavetBiConsumer<Key, Value, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    /**
+     * Invoke the bi-consumer for each of the keys.
+     *
+     * @param <Key>     the type of key
+     * @param <Value>   the type of value
+     * @param <E>       the type of exception
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the key count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiConsumer<Key, Value, E> consumer,
+            int batchSize)
+            throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
             return iV8ValueArray.forEach((Key key) -> {
                 try (Value value = get(key)) {
                     consumer.accept(key, value);
                 }
-            });
+            }, batchSize);
         }
     }
 
@@ -344,14 +428,35 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.10
      */
     default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
-            IJavetBiIndexedConsumer<Key, Value, E> consumer) throws JavetException, E {
+            IJavetBiIndexedConsumer<Key, Value, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    /**
+     * Invoke the bi-indexed-consumer for each of the keys.
+     *
+     * @param <Key>     the type of key
+     * @param <Value>   the type of value
+     * @param <E>       the type of exception
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the key count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 0.8.10
+     */
+    default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiIndexedConsumer<Key, Value, E> consumer,
+            int batchSize)
+            throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
             return iV8ValueArray.forEach((int index, Key key) -> {
                 try (Value value = get(key)) {
                     consumer.accept(index, key, value);
                 }
-            });
+            }, batchSize);
         }
     }
 
