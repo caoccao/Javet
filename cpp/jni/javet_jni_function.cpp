@@ -79,6 +79,59 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCanDi
     return false;
 }
 
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCompile
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mScript, jbyteArray mCachedData,
+    jstring mResourceName, jint mResourceLineOffset, jint mResourceColumnOffset, jint mScriptId, jboolean mIsWASM,
+    jobjectArray mArguments, jobjectArray mContextExtensions) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    V8TryCatch v8TryCatch(v8Context->GetIsolate());
+    auto umScript = Javet::Converter::ToV8String(jniEnv, v8Context, mScript);
+    jboolean isModule = false;
+    auto scriptOriginPointer = Javet::Converter::ToV8ScriptOringinPointer(
+        jniEnv, v8Context, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, isModule);
+    size_t argumentCount = 0;
+    size_t contextExtensionCount = 0;
+    std::unique_ptr<V8LocalString[]> argumentsPointer;
+    std::unique_ptr<V8LocalObject[]> contextExtensionsPointer;
+    if (mArguments != nullptr) {
+        argumentCount = jniEnv->GetArrayLength(mArguments);
+        if (argumentCount > 0) {
+            argumentsPointer = Javet::Converter::ToV8Strings(jniEnv, v8Context, mArguments);
+        }
+    }
+    if (mContextExtensions != nullptr) {
+        contextExtensionCount = jniEnv->GetArrayLength(mContextExtensions);
+        if (contextExtensionCount > 0) {
+            contextExtensionsPointer = Javet::Converter::ToV8Objects(jniEnv, v8Context, mContextExtensions);
+        }
+    }
+    v8::MaybeLocal<v8::Function> v8MaybeLocalFunction;
+    if (mCachedData) {
+        V8ScriptCompilerSource scriptSource(
+            umScript, *scriptOriginPointer.get(), Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData));
+        v8MaybeLocalFunction = v8::ScriptCompiler::CompileFunction(
+            v8Context, &scriptSource,
+            argumentCount, argumentsPointer.get(),
+            contextExtensionCount, contextExtensionsPointer.get(),
+            v8::ScriptCompiler::kConsumeCodeCache);
+        LOG_DEBUG("Function cache is " << (scriptSource.GetCachedData()->rejected ? "rejected" : "accepted") << ".");
+    }
+    else {
+        V8ScriptCompilerSource scriptSource(umScript, *scriptOriginPointer.get());
+        v8MaybeLocalFunction = v8::ScriptCompiler::CompileFunction(
+            v8Context, &scriptSource,
+            argumentCount, argumentsPointer.get(),
+            contextExtensionCount, contextExtensionsPointer.get());
+    }
+    if (v8TryCatch.HasCaught()) {
+        return Javet::Exceptions::ThrowJavetCompilationException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+    }
+    else if (!v8MaybeLocalFunction.IsEmpty()) {
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalFunction.ToLocalChecked());
+    }
+    return nullptr;
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyScopeInfoFrom
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle,
     jlong targetV8ValueHandle, jint targetV8ValueType,
@@ -198,6 +251,27 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCon
         }
     }
     return nullptr;
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetInternalProperties
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_FUNCTION(v8ValueType)) {
+        // This feature is not enabled yet.
+        v8_inspector::V8InspectorClient v8InspectorClient;
+        v8_inspector::V8InspectorImpl v8InspectorImpl(v8Context->GetIsolate(), &v8InspectorClient);
+        v8_inspector::V8Debugger v8Debugger(v8Context->GetIsolate(), &v8InspectorImpl);
+        auto v8MaybeLocalArray = v8Debugger.internalProperties(v8Context, v8LocalValue.As<v8::Function>());
+        if (v8MaybeLocalArray.IsEmpty()) {
+            if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
+                return nullptr;
+            }
+        }
+        else {
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalArray.ToLocalChecked());
+        }
+    }
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetJSFunctionType

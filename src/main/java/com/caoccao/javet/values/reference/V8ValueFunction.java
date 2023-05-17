@@ -142,7 +142,7 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     @CheckReturnValue
     public IV8ValueArray getInternalProperties() throws JavetException {
-        return checkV8Runtime().getV8Internal().getInternalProperties(this);
+        return checkV8Runtime().getV8Internal().functionGetInternalProperties(this);
     }
 
     @Override

@@ -101,6 +101,44 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGetLength
     return 0;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_arraySet
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key, jobject value) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_ARRAY(v8ValueType)) {
+        V8MaybeBool v8MaybeBool = v8::Just(false);
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        auto v8ValueValue = Javet::Converter::ToV8Value(jniEnv, v8Context, value);
+        if (v8TryCatch.HasCaught()) {
+            Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+            return false;
+        }
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
+            v8MaybeBool = v8LocalValue.As<v8::Array>()->Set(v8Context, integerKey, v8ValueValue);
+        }
+        else {
+            auto v8ValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, key);
+            if (v8TryCatch.HasCaught()) {
+                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+                return false;
+            }
+            if (!v8ValueKey.IsEmpty()) {
+                v8MaybeBool = v8LocalValue.As<v8::Array>()->Set(v8Context, v8ValueKey, v8ValueValue);
+            }
+        }
+        if (v8TryCatch.HasCaught()) {
+            Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+            return false;
+        }
+        if (v8MaybeBool.IsNothing()) {
+            Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
+            return false;
+        }
+        return v8MaybeBool.FromMaybe(false);
+    }
+    return false;
+}
+
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_batchArrayGet
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType,
     jobjectArray v8Values, jint startIndex, jint endIndex) {
