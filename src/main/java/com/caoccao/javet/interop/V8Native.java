@@ -106,12 +106,6 @@ class V8Native implements IV8Native {
     public native boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     @Override
-    public native Object execute(
-            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
-            String resourceName, int resourceLineOffset, int resourceColumnOffset,
-            int scriptId, boolean isWASM, boolean isModule);
-
-    @Override
     public native Object functionCall(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);
@@ -144,6 +138,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native String[] functionGetArguments(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native byte[] functionGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -186,9 +183,6 @@ class V8Native implements IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
     @Override
-    public native byte[] getCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    @Override
     public native Object getGlobalObject(long v8RuntimeHandle);
 
     @Override
@@ -205,9 +199,6 @@ class V8Native implements IV8Native {
 
     @Override
     public native String getVersion();
-
-    @Override
-    public native boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     @Override
     public native boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
@@ -252,6 +243,9 @@ class V8Native implements IV8Native {
     public native int mapGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    @Override
     public native boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     @Override
@@ -262,6 +256,15 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object moduleEvaluate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
+
+    @Override
+    public native Object moduleExecute(
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM);
+
+    @Override
+    public native byte[] moduleGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object moduleGetException(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -308,6 +311,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native Object objectGetPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean objectHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     @Override
     public native boolean objectHasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
@@ -432,6 +438,15 @@ class V8Native implements IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     @Override
+    public native Object scriptExecute(
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM);
+
+    @Override
+    public native byte[] scriptGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     @Override
@@ -445,6 +460,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native int setGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     @Override
     public native void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);

@@ -111,4 +111,12 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
         return V8ValueReferenceType.Set;
     }
 
+    @Override
+    public boolean has(Object value) throws JavetException {
+        try (V8VirtualValue virtualValue = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(value))) {
+            return v8Runtime.getV8Internal().setHas(this, virtualValue.get());
+        }
+    }
+
 }

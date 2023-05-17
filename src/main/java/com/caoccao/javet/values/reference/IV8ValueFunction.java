@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * @since 0.7.0
  */
 @SuppressWarnings("unchecked")
-public interface IV8ValueFunction extends IV8ValueObject {
+public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
 
     /**
      * Call a function by objects and return V8 value.
@@ -341,15 +341,6 @@ public interface IV8ValueFunction extends IV8ValueObject {
      * @since 2.0.3
      */
     String[] getArguments() throws JavetException;
-
-    /**
-     * Gets cached data from a function.
-     *
-     * @return the cached data
-     * @throws JavetException the javet exception
-     * @since 2.0.3
-     */
-    byte[] getCachedData() throws JavetException;
 
     /**
      * Gets the V8 context.

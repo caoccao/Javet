@@ -73,11 +73,6 @@ public interface IV8Native {
 
     boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
-    Object execute(
-            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
-            String resourceName, int resourceLineOffset, int resourceColumnOffset,
-            int scriptId, boolean isWASM, boolean isModule);
-
     Object functionCall(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);
@@ -102,6 +97,8 @@ public interface IV8Native {
     boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     String[] functionGetArguments(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    byte[] functionGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -131,8 +128,6 @@ public interface IV8Native {
     boolean functionSetSourceCode(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
-    byte[] getCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
     Object getGlobalObject(long v8RuntimeHandle);
 
     long[] getInternalStatistic();
@@ -144,8 +139,6 @@ public interface IV8Native {
     Object getV8SharedMemoryStatistics();
 
     String getVersion();
-
-    boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
 
@@ -175,6 +168,8 @@ public interface IV8Native {
 
     int mapGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
     boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     Object moduleCompile(
@@ -183,6 +178,13 @@ public interface IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     Object moduleEvaluate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
+
+    Object moduleExecute(
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM);
+
+    byte[] moduleGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object moduleGetException(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -213,6 +215,8 @@ public interface IV8Native {
     Object objectGetPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object objectGetPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean objectHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     boolean objectHasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
@@ -295,6 +299,13 @@ public interface IV8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    Object scriptExecute(
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM);
+
+    byte[] scriptGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
@@ -304,6 +315,8 @@ public interface IV8Native {
     boolean setDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     int setGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 

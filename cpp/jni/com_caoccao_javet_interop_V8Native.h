@@ -185,14 +185,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    execute
- * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZZ)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_execute
-  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jboolean, jstring, jint, jint, jint, jboolean, jboolean);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionCall
  * Signature: (JJILjava/lang/Object;Z[Ljava/lang/Object;)Ljava/lang/Object;
  */
@@ -253,6 +245,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionDisca
  * Signature: (JJI)[Ljava/lang/String;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetArguments
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    functionGetCachedData
+ * Signature: (JJI)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCachedData
   (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
@@ -353,14 +353,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    getCachedData
- * Signature: (JJI)[B
- */
-JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_getCachedData
-  (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getGlobalObject
  * Signature: (J)Ljava/lang/Object;
  */
@@ -406,14 +398,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8SharedMem
  */
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
   (JNIEnv *, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    has
- * Signature: (JJILjava/lang/Object;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_has
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -529,6 +513,14 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetSize
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapHas
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapHas
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    mapSet
  * Signature: (JJILjava/lang/Object;Ljava/lang/Object;)Z
  */
@@ -550,6 +542,22 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCompile
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleEvaluate
   (JNIEnv *, jobject, jlong, jlong, jint, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleExecute
+ * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleExecute
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jboolean, jstring, jint, jint, jint, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleGetCachedData
+ * Signature: (JJI)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetCachedData
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -670,6 +678,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetPrope
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetPrototype
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectHas
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectHas
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -961,6 +977,22 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptCompile
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    scriptExecute
+ * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptExecute
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray, jboolean, jstring, jint, jint, jint, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    scriptGetCachedData
+ * Signature: (JJI)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_scriptGetCachedData
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    scriptRun
  * Signature: (JJIZ)Ljava/lang/Object;
  */
@@ -998,6 +1030,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setDelete
  */
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_setGetSize
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setHas
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setHas
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

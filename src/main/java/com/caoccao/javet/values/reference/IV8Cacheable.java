@@ -16,24 +16,20 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.IV8Executable;
-import com.caoccao.javet.values.V8Value;
 
-public interface IV8Script extends IV8Cacheable, IV8ValueReference, IV8Executable {
-    String getResourceName();
-
-    void setResourceName(String resourceName);
-
-    @Override
-    default <T, V extends V8Value> T toObject(V v8Value) throws JavetException {
-        return getV8Runtime().toObject(v8Value);
-    }
-
-    @Override
-    @CheckReturnValue
-    default <T, V extends V8Value> V toV8Value(T object) throws JavetException {
-        return getV8Runtime().toV8Value(object);
-    }
+/**
+ * The interface V8 cacheable.
+ *
+ * @since 2.2.0
+ */
+public interface IV8Cacheable extends IV8ValueReference {
+    /**
+     * Gets cached data.
+     *
+     * @return the cached data
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    byte[] getCachedData() throws JavetException;
 }

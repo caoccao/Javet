@@ -238,6 +238,31 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionG
     return nullptr;
 }
 
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCachedData
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    if (IS_V8_FUNCTION(v8ValueType)) {
+        RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+        auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
+        auto v8InternalShared = v8InternalFunction.shared();
+        if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
+            auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
+            if (v8InternalScript.is_wrapped()) {
+                V8TryCatch v8TryCatch(v8Context->GetIsolate());
+                std::unique_ptr<V8ScriptCompilerCachedData> cachedDataPointer;
+                cachedDataPointer.reset(v8::ScriptCompiler::CreateCodeCacheForFunction(v8LocalValue.As<v8::Function>()));
+                if (v8TryCatch.HasCaught()) {
+                    Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+                    return nullptr;
+                }
+                if (cachedDataPointer) {
+                    return Javet::Converter::ToJavaByteArray(jniEnv, cachedDataPointer.get());
+                }
+            }
+        }
+    }
+    return nullptr;
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetContext
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

@@ -136,6 +136,14 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
+    public boolean has(Object value) throws JavetException {
+        try (V8VirtualValue virtualValue = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(value))) {
+            return v8Runtime.getV8Internal().mapHas(this, virtualValue.get());
+        }
+    }
+
+    @Override
     public boolean set(Object key, Object value) throws JavetException {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key));

@@ -507,7 +507,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public boolean has(Object value) throws JavetException {
         try (V8VirtualValue virtualValue = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(value))) {
-            return v8Runtime.getV8Internal().has(this, virtualValue.get());
+            return v8Runtime.getV8Internal().objectHas(this, virtualValue.get());
         }
     }
 

@@ -70,6 +70,68 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleEvaluate
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleExecute
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mScript, jbyteArray mCachedData, jboolean mResultRequired,
+    jstring mResourceName, jint mResourceLineOffset, jint mResourceColumnOffset, jint mScriptId, jboolean mIsWASM) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    V8TryCatch v8TryCatch(v8Context->GetIsolate());
+    auto umScript = Javet::Converter::ToV8String(jniEnv, v8Context, mScript);
+    auto scriptOriginPointer = Javet::Converter::ToV8ScriptOringinPointer(
+        jniEnv, v8Context, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, true);
+    v8::MaybeLocal<v8::Module> v8MaybeLocalCompiledModule;
+    if (mCachedData) {
+        V8ScriptCompilerSource scriptSource(
+            umScript, *scriptOriginPointer.get(), Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData));
+        v8MaybeLocalCompiledModule = v8::ScriptCompiler::CompileModule(
+            v8Context->GetIsolate(), &scriptSource, v8::ScriptCompiler::kConsumeCodeCache);
+        LOG_DEBUG("Module cache is " << (scriptSource.GetCachedData()->rejected ? "rejected" : "accepted") << ".");
+    }
+    else {
+        V8ScriptCompilerSource scriptSource(umScript, *scriptOriginPointer.get());
+        v8MaybeLocalCompiledModule = v8::ScriptCompiler::CompileModule(v8Context->GetIsolate(), &scriptSource);
+    }
+    if (v8TryCatch.HasCaught()) {
+        return Javet::Exceptions::ThrowJavetCompilationException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+    }
+    else if (!v8MaybeLocalCompiledModule.IsEmpty()) {
+        auto compliedModule = v8MaybeLocalCompiledModule.ToLocalChecked();
+        auto v8MaybeBool = compliedModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
+        if (v8TryCatch.HasCaught()) {
+            return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+        }
+        else if (v8MaybeBool.FromMaybe(false)) {
+            auto v8MaybeLocalValueResult = compliedModule->Evaluate(v8Context);
+            if (v8TryCatch.HasCaught()) {
+                return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+            }
+            if (mResultRequired && !v8MaybeLocalValueResult.IsEmpty()) {
+                Javet::Exceptions::ClearJNIException(jniEnv);
+                return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalValueResult.ToLocalChecked());
+            }
+        }
+    }
+    Javet::Exceptions::ClearJNIException(jniEnv);
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetCachedData
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    if (IS_V8_MODULE(v8ValueType)) {
+        RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        std::unique_ptr<V8ScriptCompilerCachedData> cachedDataPointer;
+        cachedDataPointer.reset(v8::ScriptCompiler::CreateCodeCache(v8LocalModule->GetUnboundModuleScript()));
+        if (v8TryCatch.HasCaught()) {
+            Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+            return nullptr;
+        }
+        if (cachedDataPointer) {
+            return Javet::Converter::ToJavaByteArray(jniEnv, cachedDataPointer.get());
+        }
+    }
+    return nullptr;
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetException
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

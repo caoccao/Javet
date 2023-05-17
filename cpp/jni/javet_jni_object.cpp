@@ -312,6 +312,40 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetProto
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectHas
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (v8LocalValue->IsObject()) {
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        V8MaybeBool v8MaybeBool = v8::Just(false);
+        auto v8LocalObject = v8LocalValue.As<v8::Object>();
+        if (Javet::Converter::IsV8ValueInteger(jniEnv, value)) {
+            jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, value);
+            v8MaybeBool = v8LocalObject->Has(v8Context, integerKey);
+        }
+        else {
+            auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, value);
+            if (v8TryCatch.HasCaught()) {
+                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+                return false;
+            }
+            if (!v8LocalValueKey.IsEmpty()) {
+                v8MaybeBool = v8LocalObject->Has(v8Context, v8LocalValueKey);
+            }
+        }
+        if (v8TryCatch.HasCaught()) {
+            Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+            return false;
+        }
+        if (v8MaybeBool.IsNothing()) {
+            Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
+            return false;
+        }
+        return v8MaybeBool.FromMaybe(false);
+    }
+    return false;
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectHasOwnProperty
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

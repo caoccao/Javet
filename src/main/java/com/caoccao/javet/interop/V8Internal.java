@@ -135,6 +135,10 @@ public final class V8Internal {
         return v8Runtime.functionGetArguments(iV8ValueFunction);
     }
 
+    public byte[] functionGetCachedData(IV8ValueFunction iV8ValueFunction) throws JavetException {
+        return v8Runtime.functionGetCachedData(iV8ValueFunction);
+    }
+
     @CheckReturnValue
     public V8Context functionGetContext(IV8ValueFunction iV8ValueFunction) throws JavetException {
         return v8Runtime.functionGetContext(iV8ValueFunction);
@@ -194,22 +198,6 @@ public final class V8Internal {
         return v8Runtime.functionSetSourceCode(iV8ValueFunction, sourceCode, cloneScript);
     }
 
-    public byte[] getCachedData(IV8ValueFunction iV8ValueFunction) throws JavetException {
-        return v8Runtime.getCachedData(iV8ValueFunction);
-    }
-
-    public byte[] getCachedData(IV8Module iV8Module) throws JavetException {
-        return v8Runtime.getCachedData(iV8Module);
-    }
-
-    public byte[] getCachedData(IV8Script iV8Script) throws JavetException {
-        return v8Runtime.getCachedData(iV8Script);
-    }
-
-    public boolean has(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
-        return v8Runtime.has(iV8ValueObject, value);
-    }
-
     public boolean hasInternalType(IV8ValueObject iV8ValueObject, V8ValueInternalType internalType) {
         return v8Runtime.hasInternalType(iV8ValueObject, internalType);
     }
@@ -231,6 +219,10 @@ public final class V8Internal {
         return v8Runtime.mapGetSize(iV8ValueMap);
     }
 
+    public boolean mapHas(IV8ValueMap iV8ValueMap, V8Value value) throws JavetException {
+        return v8Runtime.mapHas(iV8ValueMap, value);
+    }
+
     public boolean mapSet(IV8ValueMap iV8ValueMap, V8Value key, V8Value value) throws JavetException {
         return v8Runtime.mapSet(iV8ValueMap, key, value);
     }
@@ -239,6 +231,10 @@ public final class V8Internal {
     public <T extends V8Value> T moduleEvaluate(
             IV8Module iV8Module, boolean resultRequired) throws JavetException {
         return v8Runtime.moduleEvaluate(iV8Module, resultRequired);
+    }
+
+    public byte[] moduleGetCachedData(IV8Module iV8Module) throws JavetException {
+        return v8Runtime.moduleGetCachedData(iV8Module);
     }
 
     @CheckReturnValue
@@ -305,6 +301,10 @@ public final class V8Internal {
     @CheckReturnValue
     public <T extends IV8ValueObject> T objectGetPrototype(IV8ValueObject iV8ValueObject) throws JavetException {
         return v8Runtime.objectGetPrototype(iV8ValueObject);
+    }
+
+    public boolean objectHas(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {
+        return v8Runtime.objectHas(iV8ValueObject, value);
     }
 
     public boolean objectHasOwnProperty(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
@@ -423,6 +423,10 @@ public final class V8Internal {
         return v8Runtime.sameValue(iV8ValueObject1, iV8ValueObject2);
     }
 
+    public byte[] scriptGetCachedData(IV8Script iV8Script) throws JavetException {
+        return v8Runtime.scriptGetCachedData(iV8Script);
+    }
+
     public <T extends V8Value> T scriptRun(
             IV8Script iV8Script, boolean resultRequired) throws JavetException {
         return v8Runtime.scriptRun(iV8Script, resultRequired);
@@ -438,6 +442,10 @@ public final class V8Internal {
 
     public int setGetSize(IV8ValueSet iV8ValueKeySet) throws JavetException {
         return v8Runtime.setGetSize(iV8ValueKeySet);
+    }
+
+    public boolean setHas(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
+        return v8Runtime.setHas(iV8ValueSet, value);
     }
 
     public void setWeak(IV8ValueReference iV8ValueReference) {
