@@ -375,37 +375,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Delete a key from an array.
-     *
-     * @param iV8ValueArray the V8 value array
-     * @param key           the key
-     * @return true : deleted, false : key is not found
-     * @throws JavetException the javet exception
-     * @since 2.2.0
-     */
-    @SuppressWarnings("RedundantThrows")
-    boolean arrayDelete(IV8ValueArray iV8ValueArray, V8Value key) throws JavetException {
-        return v8Native.arrayDelete(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId(), key);
-    }
-
-    /**
-     * Get a property from an array by a key.
-     *
-     * @param <T>            the type parameter
-     * @param iV8ValueObject the V8 value object
-     * @param key            the property key
-     * @return the property value
-     * @throws JavetException the javet exception
-     * @since 2.2.0
-     */
-    @SuppressWarnings("RedundantThrows")
-    @CheckReturnValue
-    <T extends V8Value> T arrayGet(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return (T) v8Native.arrayGet(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
-    }
-
-    /**
      * Gets length from an array.
      *
      * @param iV8ValueArray the V8 value array
@@ -429,21 +398,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     int arrayGetLength(IV8ValueTypedArray iV8ValueTypedArray) throws JavetException {
         return v8Native.arrayGetLength(handle, iV8ValueTypedArray.getHandle(), iV8ValueTypedArray.getType().getId());
-    }
-
-    /**
-     * Sets a property of an array by a key
-     *
-     * @param iV8ValueArray the V8 value array
-     * @param key           the key
-     * @param value         the value
-     * @return true : success, false : failure
-     * @throws JavetException the javet exception
-     * @since 2.2.0
-     */
-    @SuppressWarnings("RedundantThrows")
-    boolean arraySet(IV8ValueArray iV8ValueArray, V8Value key, V8Value value) throws JavetException {
-        return v8Native.arraySet(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId(), key, value);
     }
 
     /**

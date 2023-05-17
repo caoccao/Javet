@@ -33,13 +33,7 @@ public interface IV8Native {
 
     Object arrayCreate(long v8RuntimeHandle);
 
-    boolean arrayDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
-
-    Object arrayGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
-
     int arrayGetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    boolean arraySet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     boolean await(long v8RuntimeHandle, int v8AwaitMode);
 

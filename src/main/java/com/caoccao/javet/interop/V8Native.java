@@ -47,16 +47,7 @@ class V8Native implements IV8Native {
     public native Object arrayCreate(long v8RuntimeHandle);
 
     @Override
-    public native boolean arrayDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
-
-    @Override
-    public native Object arrayGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
-
-    @Override
     public native int arrayGetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    @Override
-    public native boolean arraySet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     @Override
     public native boolean await(long v8RuntimeHandle, int v8AwaitMode);

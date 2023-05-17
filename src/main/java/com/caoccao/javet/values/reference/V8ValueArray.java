@@ -55,14 +55,6 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public boolean delete(Object key) throws JavetException {
-        try (V8VirtualValue virtualKey = new V8VirtualValue(
-                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
-            return v8Runtime.getV8Internal().arrayDelete(this, virtualKey.get());
-        }
-    }
-
-    @Override
     public <Value extends V8Value, E extends Throwable> int forEach(
             IJavetUniConsumer<Value, E> consumer)
             throws JavetException, E {
@@ -133,14 +125,6 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public <T extends V8Value> T get(Object key) throws JavetException {
-        try (V8VirtualValue virtualKey = new V8VirtualValue(
-                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
-            return v8Runtime.getV8Internal().arrayGet(this, virtualKey.get());
-        }
-    }
-
-    @Override
     @CheckReturnValue
     public <T extends V8Value> T get(int index) throws JavetException {
         return checkV8Runtime().getV8Internal().objectGet(this, v8Runtime.createV8ValueInteger(index));
@@ -181,14 +165,5 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     public int push(Object value) throws JavetException {
         return invokeInteger(FUNCTION_PUSH, value);
-    }
-
-    @Override
-    public boolean set(Object key, Object value) throws JavetException {
-        try (V8VirtualValue virtualKey = new V8VirtualValue(
-                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key));
-             V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, null, value)) {
-            return v8Runtime.getV8Internal().arraySet(this, virtualKey.get(), virtualValue.get());
-        }
     }
 }

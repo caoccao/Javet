@@ -41,35 +41,11 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayCreate
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    arrayDelete
- * Signature: (JJILjava/lang/Object;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_arrayDelete
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    arrayGet
- * Signature: (JJILjava/lang/Object;)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGet
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    arrayGetLength
  * Signature: (JJI)I
  */
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_arrayGetLength
   (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    arraySet
- * Signature: (JJILjava/lang/Object;Ljava/lang/Object;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_arraySet
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

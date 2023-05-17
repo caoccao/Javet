@@ -38,25 +38,12 @@ public final class V8Internal {
         v8Runtime.addReference(iV8ValueReference);
     }
 
-    public boolean arrayDelete(IV8ValueArray iV8ValueArray, V8Value key) throws JavetException {
-        return v8Runtime.arrayDelete(iV8ValueArray, key);
-    }
-
-    @CheckReturnValue
-    public <T extends V8Value> T arrayGet(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
-        return v8Runtime.arrayGet(iV8ValueObject, key);
-    }
-
     public int arrayGetLength(IV8ValueArray iV8ValueArray) throws JavetException {
         return v8Runtime.arrayGetLength(iV8ValueArray);
     }
 
     public int arrayGetLength(IV8ValueTypedArray iV8ValueTypedArray) throws JavetException {
         return v8Runtime.arrayGetLength(iV8ValueTypedArray);
-    }
-
-    public boolean arraySet(IV8ValueArray iV8ValueArray, V8Value key, V8Value value) throws JavetException {
-        return v8Runtime.arraySet(iV8ValueArray, key, value);
     }
 
     public int batchArrayGet(
