@@ -143,10 +143,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[]").execute()) {
             assertEquals(0, v8ValueArray.getLength());
             assertEquals(1, v8ValueArray.push(true));
-            assertEquals(2, v8ValueArray.push(1.23));
-            assertEquals(3, v8ValueArray.push(4));
-            assertEquals(4, v8ValueArray.push(5L));
-            assertEquals(5, v8ValueArray.push("x"));
+            assertEquals(5, v8ValueArray.push(1.23, 4, 5L, "x"));
             assertEquals(6, v8ValueArray.pushNull());
             assertEquals(7, v8ValueArray.pushUndefined());
             assertEquals(7, v8ValueArray.getLength());

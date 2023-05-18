@@ -167,7 +167,7 @@ public interface IV8ValueArray extends IV8ValueObject {
         return pop();
     }
 
-    int push(Object value) throws JavetException;
+    int push(Object... objects) throws JavetException;
 
     default int pushNull() throws JavetException {
         return push(getV8Runtime().createV8ValueNull());

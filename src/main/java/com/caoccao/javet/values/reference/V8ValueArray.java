@@ -163,7 +163,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
-    public int push(Object value) throws JavetException {
-        return invokeInteger(FUNCTION_PUSH, value);
+    public int push(Object... objects) throws JavetException {
+        return invokeInteger(FUNCTION_PUSH, objects);
     }
 }
