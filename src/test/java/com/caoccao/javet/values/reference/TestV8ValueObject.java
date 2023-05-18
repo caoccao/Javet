@@ -336,6 +336,44 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertTrue(v8ValueObject.delete("b"));
             V8Value v8Value = v8ValueObject.getUndefined("b");
             assertNotNull(v8Value);
+            v8ValueObject.setString("d", "1");
+            assertEquals("1", v8ValueObject.getString("d"));
+            assertTrue(v8ValueObject.has("d"));
+            v8ValueObject.setString("d", null);
+            assertNull(v8ValueObject.getString("d"));
+            assertTrue(v8ValueObject.has("d"));
+        }
+        String key = "a";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            for (Boolean value : new Boolean[]{true, false, null}) {
+                assertTrue(v8ValueObject.setBoolean(key, value));
+                assertTrue(v8ValueObject.has(key));
+                assertEquals(value, v8ValueObject.getBoolean(key));
+            }
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            for (Double value : new Double[]{0.1D, 1.234D, -1.234D, Double.MIN_VALUE, Double.MAX_VALUE}) {
+                assertTrue(v8ValueObject.setDouble(key, value));
+                assertTrue(v8ValueObject.has(key));
+                assertEquals(value, v8ValueObject.getDouble(key), 0.001D);
+            }
+            assertTrue(v8ValueObject.setDouble(key, null));
+            assertTrue(v8ValueObject.has(key));
+            assertNull(v8ValueObject.getDouble(key));
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            for (Integer value : new Integer[]{0, 1, -1, Integer.MIN_VALUE, Integer.MAX_VALUE, null}) {
+                assertTrue(v8ValueObject.setInteger(key, value));
+                assertTrue(v8ValueObject.has(key));
+                assertEquals(value, v8ValueObject.getInteger(key));
+            }
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            for (Long value : new Long[]{0L, 1L, -1L, Long.MIN_VALUE, Long.MAX_VALUE, null}) {
+                assertTrue(v8ValueObject.setLong(key, value));
+                assertTrue(v8ValueObject.has(key));
+                assertEquals(value, v8ValueObject.getLong(key));
+            }
         }
         v8Runtime.getExecutor("var test = { get a(){return b;}};").executeVoid();
         try {

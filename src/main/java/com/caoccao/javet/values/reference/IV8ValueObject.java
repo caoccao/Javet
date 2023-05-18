@@ -65,6 +65,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @return the actual item count
      * @throws JavetException the javet exception
      */
+    @SuppressWarnings("UnusedReturnValue")
     int batchGet(V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length) throws JavetException;
 
     /**
@@ -102,6 +103,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 1.0.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean bindFunction(V8ValueSymbol functionName, JavetCallbackContext javetCallbackContext) throws JavetException;
 
     /**
@@ -1304,6 +1306,54 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean set(Object key, Object value) throws JavetException;
 
     /**
+     * Set property by key object and value boolean.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setBoolean(Object key, Boolean value) throws JavetException;
+
+    /**
+     * Set property by key object and value double.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setDouble(Object key, Double value) throws JavetException;
+
+    /**
+     * Set property by key object and value integer.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setInteger(Object key, Integer value) throws JavetException;
+
+    /**
+     * Set property by key object and value long.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setLong(Object key, Long value) throws JavetException;
+
+    /**
      * Set property to null by key object.
      *
      * @param key the key
@@ -1312,9 +1362,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     @SuppressWarnings("UnusedReturnValue")
-    default boolean setNull(Object key) throws JavetException {
-        return set(key, getV8Runtime().createV8ValueNull());
-    }
+    boolean setNull(Object key) throws JavetException;
 
     /**
      * Set private property by name string and value object.
@@ -1398,6 +1446,18 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean setPrototype(IV8ValueObject v8ValueObject) throws JavetException;
 
     /**
+     * Set property by key object and value string.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setString(Object key, String value) throws JavetException;
+
+    /**
      * Set property to undefined by key object.
      *
      * @param key the key
@@ -1406,9 +1466,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     @SuppressWarnings("UnusedReturnValue")
-    default boolean setUndefined(Object key) throws JavetException {
-        return set(key, getV8Runtime().createV8ValueUndefined());
-    }
+    boolean setUndefined(Object key) throws JavetException;
 
     /**
      * To json string.
@@ -1473,6 +1531,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 1.0.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     default boolean unbindFunction(V8ValueSymbol functionName) throws JavetException {
         return delete(functionName);
     }

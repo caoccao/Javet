@@ -166,6 +166,20 @@ public interface IV8Native {
 
     boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
+    boolean mapSetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+
+    boolean mapSetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+
+    boolean mapSetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+
+    boolean mapSetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+
+    boolean mapSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    boolean mapSetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+
+    boolean mapSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
     Object moduleCompile(
             long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
@@ -226,11 +240,25 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object propertyName, Object getter, Object setter);
 
+    boolean objectSetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+
+    boolean objectSetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+
+    boolean objectSetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+
+    boolean objectSetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+
+    boolean objectSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
     boolean objectSetPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);
 
     boolean objectSetProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     boolean objectSetPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
+
+    boolean objectSetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+
+    boolean objectSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     String objectToProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

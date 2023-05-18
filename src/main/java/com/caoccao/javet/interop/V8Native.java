@@ -240,6 +240,32 @@ class V8Native implements IV8Native {
     public native boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     @Override
+    public native boolean mapSetBoolean(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+
+    @Override
+    public native boolean mapSetDouble(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+
+    @Override
+    public native boolean mapSetInteger(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+
+    @Override
+    public native boolean mapSetLong(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+
+    @Override
+    public native boolean mapSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    @Override
+    public native boolean mapSetString(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+
+    @Override
+    public native boolean mapSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    @Override
     public native Object moduleCompile(
             long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
@@ -319,12 +345,32 @@ class V8Native implements IV8Native {
             String functionName, boolean returnResult, Object[] values);
 
     @Override
-    public native boolean objectSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+    public native boolean objectSet(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
 
     @Override
     public native boolean objectSetAccessor(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object propertyName, Object getter, Object setter);
+
+    @Override
+    public native boolean objectSetBoolean(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+
+    @Override
+    public native boolean objectSetDouble(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+
+    @Override
+    public native boolean objectSetInteger(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+
+    @Override
+    public native boolean objectSetLong(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+
+    @Override
+    public native boolean objectSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     @Override
     public native boolean objectSetPrivateProperty(
@@ -337,6 +383,13 @@ class V8Native implements IV8Native {
     @Override
     public native boolean objectSetPrototype(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
+
+    @Override
+    public native boolean objectSetString(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+
+    @Override
+    public native boolean objectSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     @Override
     public native String objectToProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

@@ -1707,6 +1707,119 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Sets a property of a map to a boolean value by a key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @param value       the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean mapSetBoolean(
+            IV8ValueMap iV8ValueMap, V8Value key, boolean value)
+            throws JavetException {
+        return v8Native.mapSetBoolean(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of a map to a double value by a key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @param value       the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean mapSetDouble(
+            IV8ValueMap iV8ValueMap, V8Value key, double value)
+            throws JavetException {
+        return v8Native.mapSetDouble(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of a map to an int value by a key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @param value       the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean mapSetInteger(
+            IV8ValueMap iV8ValueMap, V8Value key, int value)
+            throws JavetException {
+        return v8Native.mapSetInteger(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of a map to a long value by a key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @param value       the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean mapSetLong(
+            IV8ValueMap iV8ValueMap, V8Value key, long value)
+            throws JavetException {
+        return v8Native.mapSetLong(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of a map to null by a key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean mapSetNull(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
+        return v8Native.mapSetNull(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key);
+    }
+
+    /**
+     * Sets a property of a map to a string value by a key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @param value       the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean mapSetString(
+            IV8ValueMap iV8ValueMap, V8Value key, String value)
+            throws JavetException {
+        return v8Native.mapSetString(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of a map to undefined by a key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean mapSetUndefined(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
+        return v8Native.mapSetUndefined(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key);
+    }
+
+    /**
      * Evaluate a module.
      *
      * @param <T>            the type parameter
@@ -2067,6 +2180,92 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Sets a property of an object to a boolean value by a key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @param value          the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectSetBoolean(
+            IV8ValueObject iV8ValueObject, V8Value key, boolean value)
+            throws JavetException {
+        return v8Native.objectSetBoolean(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of an object to a double value by a key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @param value          the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectSetDouble(
+            IV8ValueObject iV8ValueObject, V8Value key, double value)
+            throws JavetException {
+        return v8Native.objectSetDouble(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of an object to an int value by a key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @param value          the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectSetInteger(
+            IV8ValueObject iV8ValueObject, V8Value key, int value)
+            throws JavetException {
+        return v8Native.objectSetInteger(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of an object to a long value by a key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @param value          the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectSetLong(
+            IV8ValueObject iV8ValueObject, V8Value key, long value)
+            throws JavetException {
+        return v8Native.objectSetLong(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of an object to null by a key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectSetNull(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Native.objectSetNull(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
+    }
+
+    /**
      * Sets a private property.
      *
      * @param iV8ValueObject the V8 value object
@@ -2116,6 +2315,38 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.objectSetPrototype(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(),
                 iV8ValueObjectPrototype.getHandle());
+    }
+
+    /**
+     * Sets a property of an object to a string value by a key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @param value          the value
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectSetString(
+            IV8ValueObject iV8ValueObject, V8Value key, String value)
+            throws JavetException {
+        return v8Native.objectSetString(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    }
+
+    /**
+     * Sets a property of an object to undefined by a key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return true : success, false : failure
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    boolean objectSetUndefined(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Native.objectSetUndefined(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
     /**
@@ -2732,6 +2963,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @throws JavetException the javet exception
      * @since 2.2.0
      */
+    @SuppressWarnings("RedundantThrows")
     boolean setDelete(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
         return v8Native.setDelete(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), key);
     }

@@ -505,6 +505,62 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSet
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapSetBoolean
+ * Signature: (JJILjava/lang/Object;Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetBoolean
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapSetDouble
+ * Signature: (JJILjava/lang/Object;D)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetDouble
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jdouble);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapSetInteger
+ * Signature: (JJILjava/lang/Object;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetInteger
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapSetLong
+ * Signature: (JJILjava/lang/Object;J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetLong
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapSetNull
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetNull
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapSetString
+ * Signature: (JJILjava/lang/Object;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetString
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapSetUndefined
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetUndefined
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    moduleCompile
  * Signature: (JLjava/lang/String;[BZLjava/lang/String;IIIZZ)Ljava/lang/Object;
  */
@@ -705,6 +761,46 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetAcce
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectSetBoolean
+ * Signature: (JJILjava/lang/Object;Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetBoolean
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectSetDouble
+ * Signature: (JJILjava/lang/Object;D)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetDouble
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jdouble);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectSetInteger
+ * Signature: (JJILjava/lang/Object;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetInteger
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectSetLong
+ * Signature: (JJILjava/lang/Object;J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetLong
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectSetNull
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetNull
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    objectSetPrivateProperty
  * Signature: (JJILjava/lang/String;Ljava/lang/Object;)Z
  */
@@ -726,6 +822,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetProp
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetPrototype
   (JNIEnv *, jobject, jlong, jlong, jint, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectSetString
+ * Signature: (JJILjava/lang/Object;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetString
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectSetUndefined
+ * Signature: (JJILjava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetUndefined
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

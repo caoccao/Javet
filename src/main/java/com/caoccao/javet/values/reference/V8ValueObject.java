@@ -574,6 +574,58 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public boolean setBoolean(Object key, Boolean value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            if (value == null) {
+                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+            }
+            return v8Runtime.getV8Internal().objectSetBoolean(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setDouble(Object key, Double value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            if (value == null) {
+                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+            }
+            return v8Runtime.getV8Internal().objectSetDouble(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setInteger(Object key, Integer value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            if (value == null) {
+                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+            }
+            return v8Runtime.getV8Internal().objectSetInteger(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setLong(Object key, Long value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            if (value == null) {
+                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+            }
+            return v8Runtime.getV8Internal().objectSetLong(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setNull(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+        }
+    }
+
+    @Override
     public boolean setPrivateProperty(String propertyName, Object propertyValue) throws JavetException {
         Objects.requireNonNull(propertyName);
         try (V8VirtualValue virtualValue = new V8VirtualValue(checkV8Runtime(), null, propertyValue)) {
@@ -593,6 +645,22 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     @Override
     public boolean setPrototype(IV8ValueObject v8ValueObject) throws JavetException {
         return set(PROPERTY_PROTOTYPE, Objects.requireNonNull(v8ValueObject));
+    }
+
+    @Override
+    public boolean setString(Object key, String value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().objectSetString(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setUndefined(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().objectSetUndefined(this, virtualKey.get());
+        }
     }
 
     @Override

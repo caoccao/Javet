@@ -129,6 +129,12 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
             assertTrue(v8ValueMap.delete("a"));
             assertTrue(v8ValueMap.delete("b"));
             assertEquals(0, v8ValueMap.getSize());
+            v8ValueMap.setString("d", "1");
+            assertEquals("1", v8ValueMap.getString("d"));
+            assertTrue(v8ValueMap.has("d"));
+            v8ValueMap.setString("d", null);
+            assertNull(v8ValueMap.getString("d"));
+            assertTrue(v8ValueMap.has("d"));
         }
     }
 

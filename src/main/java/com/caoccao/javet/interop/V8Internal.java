@@ -214,6 +214,44 @@ public final class V8Internal {
         return v8Runtime.mapSet(iV8ValueMap, key, value);
     }
 
+    public boolean mapSetBoolean(
+            IV8ValueMap iV8ValueMap, V8Value key, boolean value)
+            throws JavetException {
+        return v8Runtime.mapSetBoolean(iV8ValueMap, key, value);
+    }
+
+    public boolean mapSetDouble(
+            IV8ValueMap iV8ValueMap, V8Value key, double value)
+            throws JavetException {
+        return v8Runtime.mapSetDouble(iV8ValueMap, key, value);
+    }
+
+    public boolean mapSetInteger(
+            IV8ValueMap iV8ValueMap, V8Value key, int value)
+            throws JavetException {
+        return v8Runtime.mapSetInteger(iV8ValueMap, key, value);
+    }
+
+    public boolean mapSetLong(
+            IV8ValueMap iV8ValueMap, V8Value key, long value)
+            throws JavetException {
+        return v8Runtime.mapSetLong(iV8ValueMap, key, value);
+    }
+
+    public boolean mapSetNull(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
+        return v8Runtime.mapSetNull(iV8ValueMap, key);
+    }
+
+    public boolean mapSetString(
+            IV8ValueMap iV8ValueMap, V8Value key, String value)
+            throws JavetException {
+        return v8Runtime.mapSetString(iV8ValueMap, key, value);
+    }
+
+    public boolean mapSetUndefined(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
+        return v8Runtime.mapSetUndefined(iV8ValueMap, key);
+    }
+
     @CheckReturnValue
     public <T extends V8Value> T moduleEvaluate(
             IV8Module iV8Module, boolean resultRequired) throws JavetException {
@@ -322,6 +360,34 @@ public final class V8Internal {
                 iV8ValueObject, propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
     }
 
+    public boolean objectSetBoolean(
+            IV8ValueObject iV8ValueObject, V8Value key, boolean value)
+            throws JavetException {
+        return v8Runtime.objectSetBoolean(iV8ValueObject, key, value);
+    }
+
+    public boolean objectSetDouble(
+            IV8ValueObject iV8ValueObject, V8Value key, double value)
+            throws JavetException {
+        return v8Runtime.objectSetDouble(iV8ValueObject, key, value);
+    }
+
+    public boolean objectSetInteger(
+            IV8ValueObject iV8ValueObject, V8Value key, int value)
+            throws JavetException {
+        return v8Runtime.objectSetInteger(iV8ValueObject, key, value);
+    }
+
+    public boolean objectSetLong(
+            IV8ValueObject iV8ValueObject, V8Value key, long value)
+            throws JavetException {
+        return v8Runtime.objectSetLong(iV8ValueObject, key, value);
+    }
+
+    public boolean objectSetNull(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Runtime.objectSetNull(iV8ValueObject, key);
+    }
+
     public boolean objectSetPrivateProperty(
             IV8ValueObject iV8ValueObject, String propertyName, V8Value propertyValue)
             throws JavetException {
@@ -338,6 +404,16 @@ public final class V8Internal {
             IV8ValueObject iV8ValueObject, IV8ValueObject iV8ValueObjectPrototype)
             throws JavetException {
         return v8Runtime.objectSetPrototype(iV8ValueObject, iV8ValueObjectPrototype);
+    }
+
+    public boolean objectSetString(
+            IV8ValueObject iV8ValueObject, V8Value key, String value)
+            throws JavetException {
+        return v8Runtime.objectSetString(iV8ValueObject, key, value);
+    }
+
+    public boolean objectSetUndefined(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
+        return v8Runtime.objectSetUndefined(iV8ValueObject, key);
     }
 
     public String objectToProtoString(IV8ValueReference iV8ValueReference) throws JavetException {

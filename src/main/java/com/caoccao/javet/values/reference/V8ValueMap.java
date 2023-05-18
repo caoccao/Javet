@@ -136,23 +136,6 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
-    public boolean has(Object value) throws JavetException {
-        try (V8VirtualValue virtualValue = new V8VirtualValue(
-                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(value))) {
-            return v8Runtime.getV8Internal().mapHas(this, virtualValue.get());
-        }
-    }
-
-    @Override
-    public boolean set(Object key, Object value) throws JavetException {
-        try (V8VirtualValue virtualKey = new V8VirtualValue(
-                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key));
-             V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, null, value)) {
-            return v8Runtime.getV8Internal().mapSet(this, virtualKey.get(), virtualValue.get());
-        }
-    }
-
-    @Override
     @CheckReturnValue
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
         return invoke(FUNCTION_ENTRIES);
@@ -178,5 +161,90 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     @CheckReturnValue
     public IV8ValueIterator<? extends V8Value> getValues() throws JavetException {
         return invoke(FUNCTION_VALUES);
+    }
+
+    @Override
+    public boolean has(Object value) throws JavetException {
+        try (V8VirtualValue virtualValue = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(value))) {
+            return v8Runtime.getV8Internal().mapHas(this, virtualValue.get());
+        }
+    }
+
+    @Override
+    public boolean set(Object key, Object value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key));
+             V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, null, value)) {
+            return v8Runtime.getV8Internal().mapSet(this, virtualKey.get(), virtualValue.get());
+        }
+    }
+
+    @Override
+    public boolean setBoolean(Object key, Boolean value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            if (value == null) {
+                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+            }
+            return v8Runtime.getV8Internal().mapSetBoolean(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setDouble(Object key, Double value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            if (value == null) {
+                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+            }
+            return v8Runtime.getV8Internal().mapSetDouble(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setInteger(Object key, Integer value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            if (value == null) {
+                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+            }
+            return v8Runtime.getV8Internal().mapSetInteger(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setLong(Object key, Long value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            if (value == null) {
+                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+            }
+            return v8Runtime.getV8Internal().mapSetLong(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setNull(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapSetNull(this, virtualKey.get());
+        }
+    }
+
+    @Override
+    public boolean setString(Object key, String value) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapSetString(this, virtualKey.get(), value);
+        }
+    }
+
+    @Override
+    public boolean setUndefined(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapSetUndefined(this, virtualKey.get());
+        }
     }
 }
