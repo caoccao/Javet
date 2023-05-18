@@ -462,8 +462,40 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public Boolean getBoolean(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().objectGetBoolean(this, virtualKey.get());
+        }
+    }
+
+    @Override
+    public Double getDouble(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().objectGetDouble(this, virtualKey.get());
+        }
+    }
+
+    @Override
     public int getIdentityHash() throws JavetException {
         return checkV8Runtime().getV8Internal().objectGetIdentityHash(this);
+    }
+
+    @Override
+    public Integer getInteger(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().objectGetInteger(this, virtualKey.get());
+        }
+    }
+
+    @Override
+    public Long getLong(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().objectGetLong(this, virtualKey.get());
+        }
     }
 
     @Override
@@ -496,6 +528,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     @Override
     public <T extends IV8ValueObject> T getPrototype() throws JavetException {
         return (T) get(PROPERTY_PROTOTYPE);
+    }
+
+    @Override
+    public String getString(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().objectGetString(this, virtualKey.get());
+        }
     }
 
     @Override

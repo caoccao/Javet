@@ -496,9 +496,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Boolean getBoolean(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    Boolean getBoolean(Object key) throws JavetException;
 
     /**
      * Gets property value as double by key object.
@@ -508,9 +506,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Double getDouble(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    Double getDouble(Object key) throws JavetException;
 
     /**
      * Gets property value as float by key object.
@@ -546,9 +542,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Integer getInteger(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    Integer getInteger(Object key) throws JavetException;
 
     /**
      * Gets property value as long by key object.
@@ -558,9 +552,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Long getLong(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    Long getLong(Object key) throws JavetException;
 
     /**
      * Gets property value as null by key object.
@@ -976,9 +968,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default String getString(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    String getString(Object key) throws JavetException;
 
     /**
      * Gets undefined by key object.

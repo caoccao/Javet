@@ -136,9 +136,33 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
+    public Boolean getBoolean(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapGetBoolean(this, virtualKey.get());
+        }
+    }
+
+    @Override
+    public Double getDouble(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapGetDouble(this, virtualKey.get());
+        }
+    }
+
+    @Override
     @CheckReturnValue
     public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
         return invoke(FUNCTION_ENTRIES);
+    }
+
+    @Override
+    public Integer getInteger(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapGetInteger(this, virtualKey.get());
+        }
     }
 
     @Override
@@ -148,8 +172,24 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
+    public Long getLong(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapGetLong(this, virtualKey.get());
+        }
+    }
+
+    @Override
     public int getSize() throws JavetException {
         return checkV8Runtime().getV8Internal().mapGetSize(this);
+    }
+
+    @Override
+    public String getString(Object key) throws JavetException {
+        try (V8VirtualValue virtualKey = new V8VirtualValue(
+                checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
+            return v8Runtime.getV8Internal().mapGetString(this, virtualKey.get());
+        }
     }
 
     @Override

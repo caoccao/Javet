@@ -202,8 +202,38 @@ public final class V8Internal {
         return v8Runtime.mapGet(iV8ValueMap, key);
     }
 
+    public Boolean mapGetBoolean(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        return v8Runtime.mapGetBoolean(iV8ValueMap, key);
+    }
+
+    public Double mapGetDouble(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        return v8Runtime.mapGetDouble(iV8ValueMap, key);
+    }
+
+    public Integer mapGetInteger(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        return v8Runtime.mapGetInteger(iV8ValueMap, key);
+    }
+
+    public Long mapGetLong(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        return v8Runtime.mapGetLong(iV8ValueMap, key);
+    }
+
     public int mapGetSize(IV8ValueMap iV8ValueMap) throws JavetException {
         return v8Runtime.mapGetSize(iV8ValueMap);
+    }
+
+    public String mapGetString(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        return v8Runtime.mapGetString(iV8ValueMap, key);
     }
 
     public boolean mapHas(IV8ValueMap iV8ValueMap, V8Value value) throws JavetException {
@@ -297,8 +327,32 @@ public final class V8Internal {
         return v8Runtime.objectGet(iV8ValueObject, key);
     }
 
+    public Boolean objectGetBoolean(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        return v8Runtime.objectGetBoolean(iV8ValueObject, key);
+    }
+
+    public Double objectGetDouble(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        return v8Runtime.objectGetDouble(iV8ValueObject, key);
+    }
+
     public int objectGetIdentityHash(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Runtime.objectGetIdentityHash(iV8ValueReference);
+    }
+
+    public Integer objectGetInteger(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        return v8Runtime.objectGetInteger(iV8ValueObject, key);
+    }
+
+    public Long objectGetLong(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        return v8Runtime.objectGetLong(iV8ValueObject, key);
     }
 
     @CheckReturnValue
@@ -326,6 +380,12 @@ public final class V8Internal {
     @CheckReturnValue
     public <T extends IV8ValueObject> T objectGetPrototype(IV8ValueObject iV8ValueObject) throws JavetException {
         return v8Runtime.objectGetPrototype(iV8ValueObject);
+    }
+
+    public String objectGetString(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        return v8Runtime.objectGetString(iV8ValueObject, key);
     }
 
     public boolean objectHas(IV8ValueObject iV8ValueObject, V8Value value) throws JavetException {

@@ -147,6 +147,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     final List<IJavetGCCallback> gcPrologueCallbacks;
     /**
+     * The Primitive flags is for passing the calling succession in JNI calls.
+     * It's length is 1. True: success. False: failure.
+     *
+     * @since 2.2.0
+     */
+    final boolean[] primitiveFlags;
+    /**
      * The Reference lock.
      *
      * @since 0.9.12
@@ -295,6 +302,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         this.handle = handle;
         logger = new JavetDefaultLogger(getClass().getName());
         this.pooled = pooled;
+        primitiveFlags = new boolean[1];
         promiseRejectCallback = new JavetPromiseRejectCallback(logger);
         referenceLock = new Object();
         referenceMap = new HashMap<>();
@@ -1665,6 +1673,82 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Get Boolean from a map by key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    Boolean mapGetBoolean(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        primitiveFlags[0] = true;
+        boolean value = v8Native.mapGetBoolean(
+                handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, primitiveFlags);
+        return primitiveFlags[0] ? value : null;
+    }
+
+    /**
+     * Get Double from a map by key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @return the double
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    Double mapGetDouble(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        primitiveFlags[0] = true;
+        double value = v8Native.mapGetDouble(
+                handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, primitiveFlags);
+        return primitiveFlags[0] ? value : null;
+    }
+
+    /**
+     * Get Integer from a map by key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @return the int
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    Integer mapGetInteger(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        primitiveFlags[0] = true;
+        int value = v8Native.mapGetInteger(
+                handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, primitiveFlags);
+        return primitiveFlags[0] ? value : null;
+    }
+
+    /**
+     * Get Long from a map by key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @return the long
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    Long mapGetLong(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        primitiveFlags[0] = true;
+        long value = v8Native.mapGetLong(
+                handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, primitiveFlags);
+        return primitiveFlags[0] ? value : null;
+    }
+
+    /**
      * Gets size from a map.
      *
      * @param iV8ValueMap the V8 value map
@@ -1675,6 +1759,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     int mapGetSize(IV8ValueMap iV8ValueMap) throws JavetException {
         return v8Native.mapGetSize(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId());
+    }
+
+    /**
+     * Get String from a map by key
+     *
+     * @param iV8ValueMap the V8 value map
+     * @param key         the key
+     * @return the String
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    String mapGetString(
+            IV8ValueMap iV8ValueMap, V8Value key)
+            throws JavetException {
+        return v8Native.mapGetString(
+                handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key);
     }
 
     /**
@@ -1969,6 +2070,44 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Get Boolean from an object by key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return the boolean
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    Boolean objectGetBoolean(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        primitiveFlags[0] = true;
+        boolean value = v8Native.objectGetBoolean(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, primitiveFlags);
+        return primitiveFlags[0] ? value : null;
+    }
+
+    /**
+     * Get Double from an object by key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return the double
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    Double objectGetDouble(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        primitiveFlags[0] = true;
+        double value = v8Native.objectGetDouble(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, primitiveFlags);
+        return primitiveFlags[0] ? value : null;
+    }
+
+    /**
      * Gets the internal identity hash by a reference object.
      *
      * @param iV8ValueReference the V8 value reference
@@ -1980,6 +2119,44 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     int objectGetIdentityHash(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Native.objectGetIdentityHash(
                 handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
+    }
+
+    /**
+     * Get Integer from an object by key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return the int
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    Integer objectGetInteger(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        primitiveFlags[0] = true;
+        int value = v8Native.objectGetInteger(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, primitiveFlags);
+        return primitiveFlags[0] ? value : null;
+    }
+
+    /**
+     * Get Long from an object by key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return the long
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    Long objectGetLong(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        primitiveFlags[0] = true;
+        long value = v8Native.objectGetLong(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, primitiveFlags);
+        return primitiveFlags[0] ? value : null;
     }
 
     /**
@@ -2062,6 +2239,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     <T extends IV8ValueObject> T objectGetPrototype(IV8ValueObject iV8ValueObject) throws JavetException {
         return (T) v8Native.objectGetPrototype(
                 handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
+    }
+
+    /**
+     * Get String from an object by key
+     *
+     * @param iV8ValueObject the V8 value object
+     * @param key            the key
+     * @return the String
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    String objectGetString(
+            IV8ValueObject iV8ValueObject, V8Value key)
+            throws JavetException {
+        return v8Native.objectGetString(
+                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key);
     }
 
     /**

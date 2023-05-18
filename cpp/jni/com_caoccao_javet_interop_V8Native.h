@@ -481,11 +481,51 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_mapGet
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapGetBoolean
+ * Signature: (JJILjava/lang/Object;[Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetBoolean
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jbooleanArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapGetDouble
+ * Signature: (JJILjava/lang/Object;[Z)D
+ */
+JNIEXPORT jdouble JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetDouble
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jbooleanArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapGetInteger
+ * Signature: (JJILjava/lang/Object;[Z)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetInteger
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jbooleanArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapGetLong
+ * Signature: (JJILjava/lang/Object;[Z)J
+ */
+JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetLong
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jbooleanArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    mapGetSize
  * Signature: (JJI)I
  */
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetSize
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapGetString
+ * Signature: (JJILjava/lang/Object;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetString
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -665,11 +705,43 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGet
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetBoolean
+ * Signature: (JJILjava/lang/Object;[Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetBoolean
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jbooleanArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetDouble
+ * Signature: (JJILjava/lang/Object;[Z)D
+ */
+JNIEXPORT jdouble JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetDouble
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jbooleanArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    objectGetIdentityHash
  * Signature: (JJI)I
  */
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetIdentityHash
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetInteger
+ * Signature: (JJILjava/lang/Object;[Z)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetInteger
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jbooleanArray);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetLong
+ * Signature: (JJILjava/lang/Object;[Z)J
+ */
+JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetLong
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jbooleanArray);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -710,6 +782,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetPrope
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetPrototype
   (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectGetString
+ * Signature: (JJILjava/lang/Object;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetString
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

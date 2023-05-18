@@ -160,7 +160,17 @@ public interface IV8Native {
 
     Object mapGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
+    boolean mapGetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    double mapGetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    int mapGetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    long mapGetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
     int mapGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String mapGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
@@ -212,7 +222,15 @@ public interface IV8Native {
 
     Object objectGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
+    boolean objectGetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    double objectGetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
     int objectGetIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    int objectGetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    long objectGetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
 
     Object objectGetOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -223,6 +241,8 @@ public interface IV8Native {
     Object objectGetPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object objectGetPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String objectGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
     boolean objectHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
