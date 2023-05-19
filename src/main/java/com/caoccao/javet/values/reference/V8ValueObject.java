@@ -149,27 +149,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                 setterMethodDescriptor.getMethod(), setterMethodDescriptor.isThisObjectRequired());
                         javetCallbackContexts.add(javetCallbackContextSetter);
                     }
-                    switch (getterMethodDescriptor.getSymbolType()) {
-                        case BuiltIn:
-                            try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
-                                 V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(propertyName)) {
-                                if (v8ValueSymbol == null) {
-                                    throw new JavetException(
-                                            JavetError.ConverterSymbolNotBuiltIn,
-                                            SimpleMap.of(JavetError.PARAMETER_SYMBOL, propertyName));
-                                }
-                                bindProperty(v8ValueSymbol, javetCallbackContextGetter, javetCallbackContextSetter);
-                            }
-                            break;
-                        case Custom:
-                            try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(propertyName, true)) {
-                                bindProperty(v8ValueSymbol, javetCallbackContextGetter, javetCallbackContextSetter);
-                            }
-                            break;
-                        default:
-                            bindProperty(propertyName, javetCallbackContextGetter, javetCallbackContextSetter);
-                            break;
-                    }
+                    bindProperty(javetCallbackContextGetter, javetCallbackContextSetter);
                 } catch (Exception e) {
                     throw new JavetException(
                             JavetError.CallbackRegistrationFailure,
@@ -213,8 +193,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean bindFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
-        String functionName = javetCallbackContext.getName();
-        switch (Objects.requireNonNull(javetCallbackContext).getSymbolType()) {
+        String functionName = Objects.requireNonNull(javetCallbackContext).getName();
+        switch (javetCallbackContext.getSymbolType()) {
             case BuiltIn:
                 try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
                      V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(functionName)) {
@@ -242,22 +222,33 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean bindProperty(
-            V8ValueString propertyName,
             JavetCallbackContext javetCallbackContextGetter,
-            JavetCallbackContext javetCallbackContextSetter) throws JavetException {
-        return checkV8Runtime().getV8Internal().objectSetAccessor(
-                this, Objects.requireNonNull(propertyName),
-                Objects.requireNonNull(javetCallbackContextGetter), javetCallbackContextSetter);
-    }
-
-    @Override
-    public boolean bindProperty(
-            V8ValueSymbol propertyName,
-            JavetCallbackContext javetCallbackContextGetter,
-            JavetCallbackContext javetCallbackContextSetter) throws JavetException {
-        return checkV8Runtime().getV8Internal().objectSetAccessor(
-                this, Objects.requireNonNull(propertyName),
-                Objects.requireNonNull(javetCallbackContextGetter), javetCallbackContextSetter);
+            JavetCallbackContext javetCallbackContextSetter)
+            throws JavetException {
+        String propertyName = Objects.requireNonNull(javetCallbackContextGetter).getName();
+        switch (javetCallbackContextGetter.getSymbolType()) {
+            case BuiltIn:
+                try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
+                     V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(propertyName)) {
+                    if (v8ValueSymbol == null) {
+                        throw new JavetException(
+                                JavetError.ConverterSymbolNotBuiltIn,
+                                SimpleMap.of(JavetError.PARAMETER_SYMBOL, propertyName));
+                    }
+                    return checkV8Runtime().getV8Internal().objectSetAccessor(
+                            this, v8ValueSymbol, javetCallbackContextGetter, javetCallbackContextSetter);
+                }
+            case Custom:
+                try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(propertyName, true)) {
+                    return checkV8Runtime().getV8Internal().objectSetAccessor(
+                            this, v8ValueSymbol, javetCallbackContextGetter, javetCallbackContextSetter);
+                }
+            default:
+                try (V8ValueString v8ValueString = v8Runtime.createV8ValueString(propertyName)) {
+                    return checkV8Runtime().getV8Internal().objectSetAccessor(
+                            this, v8ValueString, javetCallbackContextGetter, javetCallbackContextSetter);
+                }
+        }
     }
 
     @Override

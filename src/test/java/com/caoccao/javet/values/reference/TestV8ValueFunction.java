@@ -1592,7 +1592,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
-                "getValue",
+                "test",
                 V8ValueSymbolType.None,
                 mockCallbackReceiver,
                 mockCallbackReceiver.getMethod("getValue"));
@@ -1600,7 +1600,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             globalObject.set("a", v8ValueObject);
             mockCallbackReceiver.setValue("abc");
-            assertTrue(v8ValueObject.bindProperty("test", javetCallbackContextGetter));
+            assertTrue(v8ValueObject.bindProperty(javetCallbackContextGetter));
             assertEquals(1, v8Runtime.getReferenceCount());
             assertEquals(1, v8Runtime.getCallbackContextCount());
             mockCallbackReceiver.setCalled(false);
@@ -1623,7 +1623,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
-                "getValue",
+                "test",
                 V8ValueSymbolType.None,
                 mockCallbackReceiver,
                 mockCallbackReceiver.getMethod("getValue"));
@@ -1636,7 +1636,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             globalObject.set("a", v8ValueObject);
             assertNull(mockCallbackReceiver.getValue());
-            assertTrue(v8ValueObject.bindProperty("test", javetCallbackContextGetter, javetCallbackContextSetter));
+            assertTrue(v8ValueObject.bindProperty(javetCallbackContextGetter, javetCallbackContextSetter));
             assertEquals(1, v8Runtime.getReferenceCount());
             assertEquals(2, v8Runtime.getCallbackContextCount());
             mockCallbackReceiver.setCalled(false);

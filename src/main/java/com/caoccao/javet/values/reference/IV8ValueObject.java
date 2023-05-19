@@ -144,73 +144,18 @@ public interface IV8ValueObject extends IV8ValueReference {
     /**
      * Bind property by name string and getter.
      *
-     * @param propertyName               the property name
      * @param javetCallbackContextGetter the javet callback context getter
      * @return true : the property is bind, false : the property is not bind
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    default boolean bindProperty(
-            String propertyName,
-            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
-        return bindProperty(propertyName, javetCallbackContextGetter, null);
+    default boolean bindProperty(JavetCallbackContext javetCallbackContextGetter) throws JavetException {
+        return bindProperty(javetCallbackContextGetter, null);
     }
 
     /**
-     * Bind property by name string, getter and setter.
+     * Bind property by getter and setter.
      *
-     * @param propertyName               the property name
-     * @param javetCallbackContextGetter the javet callback context getter
-     * @param javetCallbackContextSetter the javet callback context setter
-     * @return true : the property is bind, false : the property is not bind
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    default boolean bindProperty(
-            String propertyName,
-            JavetCallbackContext javetCallbackContextGetter,
-            JavetCallbackContext javetCallbackContextSetter) throws JavetException {
-        Objects.requireNonNull(propertyName);
-        return bindProperty(
-                getV8Runtime().createV8ValueString(propertyName),
-                javetCallbackContextGetter,
-                javetCallbackContextSetter);
-    }
-
-    /**
-     * Bind property by name string and getter.
-     *
-     * @param propertyName               the property name
-     * @param javetCallbackContextGetter the javet callback context getter
-     * @return true : the property is bind, false : the property is not bind
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    default boolean bindProperty(
-            V8ValueString propertyName,
-            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
-        return bindProperty(propertyName, javetCallbackContextGetter, null);
-    }
-
-    /**
-     * Bind property by name symbol and getter.
-     *
-     * @param propertyName               the property name
-     * @param javetCallbackContextGetter the javet callback context getter
-     * @return true : the property is bind, false : the property is not bind
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    default boolean bindProperty(
-            V8ValueSymbol propertyName,
-            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
-        return bindProperty(propertyName, javetCallbackContextGetter, null);
-    }
-
-    /**
-     * Bind property by name string, getter and setter.
-     *
-     * @param propertyName               the property name
      * @param javetCallbackContextGetter the javet callback context getter
      * @param javetCallbackContextSetter the javet callback context setter
      * @return true : the property is bind, false : the property is not bind
@@ -218,24 +163,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.9
      */
     boolean bindProperty(
-            V8ValueString propertyName,
             JavetCallbackContext javetCallbackContextGetter,
-            JavetCallbackContext javetCallbackContextSetter) throws JavetException;
-
-    /**
-     * Bind property by name symbol, getter and setter.
-     *
-     * @param propertyName               the property name
-     * @param javetCallbackContextGetter the javet callback context getter
-     * @param javetCallbackContextSetter the javet callback context setter
-     * @return true : the property is bind, false : the property is not bind
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    boolean bindProperty(
-            V8ValueSymbol propertyName,
-            JavetCallbackContext javetCallbackContextGetter,
-            JavetCallbackContext javetCallbackContextSetter) throws JavetException;
+            JavetCallbackContext javetCallbackContextSetter)
+            throws JavetException;
 
     /**
      * Delete property by key object.

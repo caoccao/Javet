@@ -394,7 +394,7 @@ public final class V8FunctionCallback {
                                 throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                         SimpleMap.of(
                                                 JavetError.PARAMETER_METHOD_NAME,
-                                                JavetReflectionUtils.getMethodNameFromLambda(directCallGetterAndNoThis),
+                                                javetCallbackContext.getName(),
                                                 JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
                                                 JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
                             }
@@ -407,7 +407,7 @@ public final class V8FunctionCallback {
                                 throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                         SimpleMap.of(
                                                 JavetError.PARAMETER_METHOD_NAME,
-                                                JavetReflectionUtils.getMethodNameFromLambda(directCallGetterAndThis),
+                                                javetCallbackContext.getName(),
                                                 JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
                                                 JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
                             }
@@ -420,7 +420,7 @@ public final class V8FunctionCallback {
                                 throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                         SimpleMap.of(
                                                 JavetError.PARAMETER_METHOD_NAME,
-                                                JavetReflectionUtils.getMethodNameFromLambda(directCallSetterAndNoThis),
+                                                javetCallbackContext.getName(),
                                                 JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 2,
                                                 JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
                             }
@@ -433,7 +433,7 @@ public final class V8FunctionCallback {
                                 throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                         SimpleMap.of(
                                                 JavetError.PARAMETER_METHOD_NAME,
-                                                JavetReflectionUtils.getMethodNameFromLambda(directCallSetterAndThis),
+                                                javetCallbackContext.getName(),
                                                 JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 2,
                                                 JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
                             }
@@ -460,8 +460,10 @@ public final class V8FunctionCallback {
                             resultObject = directCallNoThisAndResult.call(args);
                             break;
                         default:
-                            throw new JavetException(JavetError.CallbackUnknownFailure,
-                                    SimpleMap.of(JavetError.PARAMETER_MESSAGE, javetCallbackContext.getCallbackType().name()));
+                            throw new JavetException(JavetError.CallbackMethodFailure,
+                                    SimpleMap.of(
+                                            JavetError.PARAMETER_METHOD_NAME, javetCallbackContext.getName(),
+                                            JavetError.PARAMETER_MESSAGE, javetCallbackContext.getCallbackType().name()));
                     }
                 }
                 if (javetCallbackContext.isReturnResult()) {
