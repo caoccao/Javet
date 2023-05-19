@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -135,6 +136,41 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                 assertEquals(4, outerArray.push(innerArray));
             }
             assertEquals("[1,2,3,[\"a\"]]", outerArray.toJsonString());
+        }
+    }
+
+    @Test
+    @Tag("performance")
+    public void testPerformancePush() throws JavetException {
+        final int itemCount = 1000;
+        final int iterations = 1000;
+        // Test push one by one.
+        {
+            final long startTime = System.currentTimeMillis();
+            for (int i = 0; i < iterations; i++) {
+                try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+                    for (int j = 0; j < itemCount; j++) {
+                        v8ValueArray.push(1);
+                    }
+                }
+            }
+            final long stopTime = System.currentTimeMillis();
+            final long tps = itemCount * iterations * 1000 / (stopTime - startTime);
+            logger.logInfo("Array push one by one: {0} tps.", tps);
+        }
+        // Test push by batch.
+        {
+            final long startTime = System.currentTimeMillis();
+            Object[] items = new Object[itemCount];
+            Arrays.fill(items, 1);
+            for (int i = 0; i < iterations; i++) {
+                try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+                    v8ValueArray.push(items);
+                }
+            }
+            final long stopTime = System.currentTimeMillis();
+            final long tps = itemCount * iterations * 1000 / (stopTime - startTime);
+            logger.logInfo("Array push by batch: {0} tps.", tps);
         }
     }
 

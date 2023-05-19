@@ -29,6 +29,7 @@ import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
 import com.caoccao.javet.interop.proxy.JavetDynamicProxyObjectHandler;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
@@ -397,26 +398,46 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             }
         } else if (object instanceof Collection) {
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                for (Object item : (Collection<?>) object) {
-                    try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                        v8ValueArray.push(childV8Value);
+                Collection<?> list = (Collection<?>) object;
+                V8Value[] childV8Values = null;
+                try {
+                    if (!list.isEmpty()) {
+                        childV8Values = new V8Value[list.size()];
+                        int i = 0;
+                        for (Object item : list) {
+                            childV8Values[i] = toV8Value(v8Runtime, item, depth + 1);
+                            ++i;
+                        }
+                    }
+                    V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                    if (childV8Values != null) {
+                        v8ValueArray.push((Object[]) childV8Values);
+                    }
+                    v8Value = v8ValueArray;
+                    v8Scope.setEscapable();
+                } finally {
+                    if (childV8Values != null) {
+                        JavetResourceUtils.safeClose((Object[]) childV8Values);
                     }
                 }
-                v8Value = v8ValueArray;
-                v8Scope.setEscapable();
             }
         } else if (object instanceof BaseStream) {
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
                 final Iterator<?> iterator = ((BaseStream<?, ?>) object).iterator();
-                while (iterator.hasNext()) {
-                    try (V8Value childV8Value = toV8Value(v8Runtime, iterator.next(), depth + 1)) {
-                        v8ValueArray.push(childV8Value);
+                List<V8Value> childV8Values = new ArrayList<>();
+                try {
+                    while (iterator.hasNext()) {
+                        childV8Values.add(toV8Value(v8Runtime, iterator.next(), depth + 1));
                     }
+                    V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                    if (!childV8Values.isEmpty()) {
+                        v8ValueArray.push(childV8Values.toArray());
+                    }
+                    v8Value = v8ValueArray;
+                    v8Scope.setEscapable();
+                } finally {
+                    JavetResourceUtils.safeClose(childV8Values);
                 }
-                v8Value = v8ValueArray;
-                v8Scope.setEscapable();
             }
         } else if (object instanceof IJavetEntityFunction) {
             final IJavetEntityFunction javetEntityFunction = (IJavetEntityFunction) object;
@@ -433,11 +454,25 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (object.getClass().isArray()) {
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                 if (object instanceof boolean[]) {
-                    V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                    for (boolean item : (boolean[]) object) {
-                        v8ValueArray.push(v8Runtime.createV8ValueBoolean(item));
+                    boolean[] booleans = (boolean[]) object;
+                    V8Value[] childV8Values = null;
+                    try {
+                        if (booleans.length > 0) {
+                            childV8Values = new V8Value[booleans.length];
+                            for (int i = 0; i < booleans.length; i++) {
+                                childV8Values[i] = v8Runtime.createV8ValueBoolean(booleans[i]);
+                            }
+                        }
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (childV8Values != null) {
+                            v8ValueArray.push((Object[]) childV8Values);
+                        }
+                        v8Value = v8ValueArray;
+                    } finally {
+                        if (childV8Values != null) {
+                            JavetResourceUtils.safeClose((Object[]) childV8Values);
+                        }
                     }
-                    v8Value = v8ValueArray;
                 } else if (object instanceof byte[]) {
                     byte[] bytes = (byte[]) object;
                     V8ValueTypedArray v8ValueTypedArray = v8Scope.createV8ValueTypedArray(
@@ -445,11 +480,25 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     v8ValueTypedArray.fromBytes(bytes);
                     v8Value = v8ValueTypedArray;
                 } else if (object instanceof char[]) {
-                    V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                    for (char c : (char[]) object) {
-                        v8ValueArray.push(Character.toString(c));
+                    char[] chars = (char[]) object;
+                    V8Value[] childV8Values = null;
+                    try {
+                        if (chars.length > 0) {
+                            childV8Values = new V8Value[chars.length];
+                            for (int i = 0; i < chars.length; i++) {
+                                childV8Values[i] = v8Runtime.createV8ValueString(Character.toString(chars[i]));
+                            }
+                        }
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (childV8Values != null) {
+                            v8ValueArray.push((Object[]) childV8Values);
+                        }
+                        v8Value = v8ValueArray;
+                    } finally {
+                        if (childV8Values != null) {
+                            JavetResourceUtils.safeClose((Object[]) childV8Values);
+                        }
                     }
-                    v8Value = v8ValueArray;
                 } else if (object instanceof double[]) {
                     double[] doubles = (double[]) object;
                     V8ValueTypedArray v8ValueTypedArray = v8Scope.createV8ValueTypedArray(
@@ -481,19 +530,45 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     v8ValueTypedArray.fromShorts(shorts);
                     v8Value = v8ValueTypedArray;
                 } else if (object instanceof String[]) {
-                    V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                    for (String item : (String[]) object) {
-                        v8ValueArray.push(v8Runtime.createV8ValueString(item));
-                    }
-                    v8Value = v8ValueArray;
-                } else {
-                    V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                    for (Object item : (Object[]) object) {
-                        try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueArray.push(childV8Value);
+                    String[] strings = (String[]) object;
+                    V8Value[] childV8Values = null;
+                    try {
+                        if (strings.length > 0) {
+                            childV8Values = new V8Value[strings.length];
+                            for (int i = 0; i < strings.length; i++) {
+                                childV8Values[i] = v8Runtime.createV8ValueString(strings[i]);
+                            }
+                        }
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (childV8Values != null) {
+                            v8ValueArray.push((Object[]) childV8Values);
+                        }
+                        v8Value = v8ValueArray;
+                    } finally {
+                        if (childV8Values != null) {
+                            JavetResourceUtils.safeClose((Object[]) childV8Values);
                         }
                     }
-                    v8Value = v8ValueArray;
+                } else {
+                    Object[] objects = (Object[]) object;
+                    V8Value[] childV8Values = null;
+                    try {
+                        if (objects.length > 0) {
+                            childV8Values = new V8Value[objects.length];
+                            for (int i = 0; i < objects.length; i++) {
+                                childV8Values[i] = toV8Value(v8Runtime, objects[i], depth + 1);
+                            }
+                        }
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (childV8Values != null) {
+                            v8ValueArray.push((Object[]) childV8Values);
+                        }
+                        v8Value = v8ValueArray;
+                    } finally {
+                        if (childV8Values != null) {
+                            JavetResourceUtils.safeClose((Object[]) childV8Values);
+                        }
+                    }
                 }
                 v8Scope.setEscapable();
             }

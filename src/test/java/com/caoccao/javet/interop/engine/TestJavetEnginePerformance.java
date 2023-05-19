@@ -37,7 +37,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestPerformance extends BaseTestJavetPool {
+public class TestJavetEnginePerformance extends BaseTestJavetPool {
     public static final String PREFIX_NODE = "Node     ";
     public static final String PREFIX_V8 = "V8       ";
 
