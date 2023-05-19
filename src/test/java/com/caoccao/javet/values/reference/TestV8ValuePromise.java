@@ -28,7 +28,6 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockFS;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -78,7 +77,10 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
                             }
                         };
                         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                                anonymous, anonymous.getClass().getMethod("get"));
+                                "get",
+                                V8ValueSymbolType.None,
+                                anonymous,
+                                anonymous.getClass().getMethod("get"));
                         return v8Runtime.createV8ValueFunction(javetCallbackContext);
                     }
                 });
@@ -210,7 +212,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testNoHandler() throws JavetException, NoSuchMethodException {
+    public void testNoHandler() throws JavetException {
         List<JavetPromiseRejectEvent> events = new ArrayList<>();
         IJavetPromiseRejectCallback callback = (event, promise, value) -> events.add(event);
         if (v8Host.getJSRuntimeType().isNode()) {

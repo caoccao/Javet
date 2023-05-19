@@ -19,6 +19,8 @@ package com.caoccao.javet.interop.callback;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
+import java.io.Serializable;
+
 /**
  * The interface Javet direct callable is for converting the calls
  * from reflection calls to direct calls.
@@ -26,18 +28,6 @@ import com.caoccao.javet.values.V8Value;
  * @since 2.2.0
  */
 public interface IJavetDirectCallable {
-    /**
-     * Call.
-     *
-     * @param name       the name
-     * @param thisObject the this object
-     * @param v8Values   the V8 values
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 2.2.0
-     */
-    V8Value call(String name, V8Value thisObject, V8Value... v8Values) throws JavetException;
-
     /**
      * Get supported callback contexts.
      *
@@ -47,11 +37,54 @@ public interface IJavetDirectCallable {
     JavetCallbackContext[] getCallbackContexts();
 
     /**
+     * The interface Direct call.
+     *
+     * @since 2.2.0
+     */
+    interface DirectCall extends Serializable {
+    }
+
+    /**
+     * The interface GetterAndNoThis gets the property value by a property key without this object passed in.
+     *
+     * @since 2.2.0
+     */
+    interface GetterAndNoThis extends DirectCall {
+        /**
+         * Get the property value by a property key without this object passed in.
+         *
+         * @param v8ValueKey the V8 value key
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @since 2.2.0
+         */
+        V8Value get(V8Value v8ValueKey) throws JavetException;
+    }
+
+    /**
+     * The interface GetterAndThis gets the property value by a property key with this object passed in.
+     *
+     * @since 2.2.0
+     */
+    interface GetterAndThis extends DirectCall {
+        /**
+         * Get the property value by a property key with this object passed in.
+         *
+         * @param thisObject the this object
+         * @param v8ValueKey the V8 value key
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @since 2.2.0
+         */
+        V8Value get(V8Value thisObject, V8Value v8ValueKey) throws JavetException;
+    }
+
+    /**
      * The interface NoThisAndNoResult does not accept this object and return the result.
      *
      * @since 2.2.0
      */
-    interface NoThisAndNoResult {
+    interface NoThisAndNoResult extends DirectCall {
         /**
          * Call.
          *
@@ -67,7 +100,7 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface NoThisAndResult {
+    interface NoThisAndResult extends DirectCall {
         /**
          * Call and return the result.
          *
@@ -80,11 +113,48 @@ public interface IJavetDirectCallable {
     }
 
     /**
+     * The interface SetterAndNoThis gets the property value by a property key without this object passed in.
+     *
+     * @since 2.2.0
+     */
+    interface SetterAndNoThis extends DirectCall {
+        /**
+         * Set the property value by a property key without this object passed in.
+         *
+         * @param v8ValueKey   the V8 value key
+         * @param v8ValueValue the V8 value value
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @since 2.2.0
+         */
+        V8Value set(V8Value v8ValueKey, V8Value v8ValueValue) throws JavetException;
+    }
+
+    /**
+     * The interface SetterAndThis gets the property value by a property key with this object passed in.
+     *
+     * @since 2.2.0
+     */
+    interface SetterAndThis extends DirectCall {
+        /**
+         * Set the property value by a property key with this object passed in.
+         *
+         * @param thisObject   the this object
+         * @param v8ValueKey   the V8 value key
+         * @param v8ValueValue the V8 value value
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @since 2.2.0
+         */
+        V8Value set(V8Value thisObject, V8Value v8ValueKey, V8Value v8ValueValue) throws JavetException;
+    }
+
+    /**
      * The interface ThisAndNoResult accepts this object.
      *
      * @since 2.2.0
      */
-    interface ThisAndNoResult {
+    interface ThisAndNoResult extends DirectCall {
         /**
          * Call by this object.
          *
@@ -101,7 +171,7 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface ThisAndResult {
+    interface ThisAndResult extends DirectCall {
         /**
          * Call by this object and return the result.
          *

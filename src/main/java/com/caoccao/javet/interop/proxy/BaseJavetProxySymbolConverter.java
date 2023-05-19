@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -81,7 +82,10 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
     public V8ValueFunction getV8ValueFunction() throws JavetException {
         try {
             JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                    this, getClass().getMethod(METHOD_NAME_TO_V8_VALUE, V8Value[].class));
+                    METHOD_NAME_TO_V8_VALUE,
+                    V8ValueSymbolType.None,
+                    this,
+                    getClass().getMethod(METHOD_NAME_TO_V8_VALUE, V8Value[].class));
             return v8Runtime.createV8ValueFunction(javetCallbackContext);
         } catch (NoSuchMethodException e) {
             throw new JavetException(JavetError.CallbackMethodFailure,

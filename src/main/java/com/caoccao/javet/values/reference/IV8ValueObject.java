@@ -79,32 +79,17 @@ public interface IV8ValueObject extends IV8ValueReference {
     List<JavetCallbackContext> bind(Object callbackReceiver) throws JavetException;
 
     /**
-     * Binds function by name string and callback context.
-     * <p>
-     * It is for creating a Java code based function in V8.
-     *
-     * @param functionName         the function name
-     * @param javetCallbackContext the javet callback context
-     * @return true : the function is bind, false: the function is not bind
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException;
-
-    /**
      * Binds function by name symbol and callback context.
      * <p>
      * It is for creating a Java code based function in V8.
      *
-     * @param functionName         the function name
      * @param javetCallbackContext the javet callback context
      * @return true : the function is bind, false: the function is not bind
      * @throws JavetException the javet exception
-     * @since 1.0.0
+     * @since 2.2.0
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean bindFunction(V8ValueSymbol functionName, JavetCallbackContext javetCallbackContext) throws JavetException;
+    boolean bindFunction(JavetCallbackContext javetCallbackContext) throws JavetException;
 
     /**
      * Binds function by name string and code string.

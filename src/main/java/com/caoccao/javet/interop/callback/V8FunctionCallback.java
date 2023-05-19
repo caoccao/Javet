@@ -329,63 +329,140 @@ public final class V8FunctionCallback {
                  * to the receiver so that the receiver can create reference V8Value.
                  */
                 IJavetConverter converter = v8Runtime.getConverter();
-                /*
-                 * Javet doesn't check whether callback method is static or not.
-                 * If the callback receiver is null, that's a static method.
-                 */
-                Method method = javetCallbackContext.getCallbackMethod();
-                JavetReflectionUtils.safeSetAccessible(method);
-                Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
-                if (javetCallbackContext.isThisObjectRequired()) {
-                    values.add(thisObject);
-                }
-                if (args != null) {
-                    final int length = args.length;
-                    for (int i = 0; i < length; ++i) {
-                        values.add(args[i]);
+                if (javetCallbackContext.getCallbackType() == JavetCallbackType.Reflection) {
+                    /*
+                     * Javet doesn't check whether callback method is static or not.
+                     * If the callback receiver is null, that's a static method.
+                     */
+                    Method method = javetCallbackContext.getCallbackMethod();
+                    JavetReflectionUtils.safeSetAccessible(method);
+                    Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
+                    if (javetCallbackContext.isThisObjectRequired()) {
+                        values.add(thisObject);
                     }
-                }
-                if (values.isEmpty()) {
-                    if (method.isVarArgs()) {
-                        Class<?>[] parameterTypes = method.getParameterTypes();
-                        Class<?> parameterClass = parameterTypes[parameterTypes.length - 1];
-                        Object varObject = Array.newInstance(parameterClass.getComponentType(), 0);
-                        resultObject = method.invoke(callbackReceiver, varObject);
+                    if (args != null) {
+                        Collections.addAll(values, args);
+                    }
+                    if (values.isEmpty()) {
+                        if (method.isVarArgs()) {
+                            Class<?>[] parameterTypes = method.getParameterTypes();
+                            Class<?> parameterClass = parameterTypes[parameterTypes.length - 1];
+                            Object varObject = Array.newInstance(parameterClass.getComponentType(), 0);
+                            resultObject = method.invoke(callbackReceiver, varObject);
+                        } else {
+                            resultObject = method.invoke(callbackReceiver);
+                        }
                     } else {
-                        resultObject = method.invoke(callbackReceiver);
-                    }
-                } else {
-                    final int length = values.size();
-                    List<Object> objectValues = new ArrayList<>();
-                    Class<?>[] parameterTypes = method.getParameterTypes();
-                    if (method.isVarArgs()) {
-                        for (int i = 0; i < parameterTypes.length; ++i) {
-                            Class<?> parameterClass = parameterTypes[i];
-                            if (parameterClass.isArray() && i == parameterTypes.length - 1) {
-                                // VarArgs is special. It requires special API to manipulate the array.
-                                Class<?> componentType = parameterClass.getComponentType();
-                                Object varObject = Array.newInstance(componentType, length - i);
-                                for (int j = i; j < length; ++j) {
-                                    Array.set(varObject, j - i,
-                                            convert(converter, componentType, (V8Value) values.get(j)));
+                        final int length = values.size();
+                        List<Object> objectValues = new ArrayList<>();
+                        Class<?>[] parameterTypes = method.getParameterTypes();
+                        if (method.isVarArgs()) {
+                            for (int i = 0; i < parameterTypes.length; ++i) {
+                                Class<?> parameterClass = parameterTypes[i];
+                                if (parameterClass.isArray() && i == parameterTypes.length - 1) {
+                                    // VarArgs is special. It requires special API to manipulate the array.
+                                    Class<?> componentType = parameterClass.getComponentType();
+                                    Object varObject = Array.newInstance(componentType, length - i);
+                                    for (int j = i; j < length; ++j) {
+                                        Array.set(varObject, j - i,
+                                                convert(converter, componentType, (V8Value) values.get(j)));
+                                    }
+                                    objectValues.add(varObject);
+                                } else {
+                                    objectValues.add(convert(converter, parameterClass, (V8Value) values.get(i)));
                                 }
-                                objectValues.add(varObject);
-                            } else {
-                                objectValues.add(convert(converter, parameterClass, (V8Value) values.get(i)));
+                            }
+                        } else {
+                            for (int i = 0; i < parameterTypes.length; ++i) {
+                                /*
+                                 * Virtual varargs support.
+                                 * Redundant parameters will be dropped.
+                                 * Absent parameters will be filled by the default values.
+                                 */
+                                V8Value v8Value = i < length ? (V8Value) values.get(i) : null;
+                                objectValues.add(convert(converter, parameterTypes[i], v8Value));
                             }
                         }
-                    } else {
-                        for (int i = 0; i < parameterTypes.length; ++i) {
-                            /*
-                             * Virtual varargs support.
-                             * Redundant parameters will be dropped.
-                             * Absent parameters will be filled by the default values.
-                             */
-                            V8Value v8Value = i < length ? (V8Value) values.get(i) : null;
-                            objectValues.add(convert(converter, parameterTypes[i], v8Value));
-                        }
+                        resultObject = method.invoke(callbackReceiver, objectValues.toArray());
                     }
-                    resultObject = method.invoke(callbackReceiver, objectValues.toArray());
+                } else {
+                    switch (javetCallbackContext.getCallbackType()) {
+                        case DirectCallGetterAndNoThis:
+                            IJavetDirectCallable.GetterAndNoThis directCallGetterAndNoThis =
+                                    javetCallbackContext.getCallbackMethod();
+                            if (args.length != 1) {
+                                throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                        SimpleMap.of(
+                                                JavetError.PARAMETER_METHOD_NAME,
+                                                JavetReflectionUtils.getMethodNameFromLambda(directCallGetterAndNoThis),
+                                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
+                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
+                            }
+                            directCallGetterAndNoThis.get(args[0]);
+                            break;
+                        case DirectCallGetterAndThis:
+                            IJavetDirectCallable.GetterAndThis directCallGetterAndThis =
+                                    javetCallbackContext.getCallbackMethod();
+                            if (args.length != 1) {
+                                throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                        SimpleMap.of(
+                                                JavetError.PARAMETER_METHOD_NAME,
+                                                JavetReflectionUtils.getMethodNameFromLambda(directCallGetterAndThis),
+                                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
+                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
+                            }
+                            directCallGetterAndThis.get(thisObject, args[0]);
+                            break;
+                        case DirectCallSetterAndNoThis:
+                            IJavetDirectCallable.SetterAndNoThis directCallSetterAndNoThis =
+                                    javetCallbackContext.getCallbackMethod();
+                            if (args.length != 1) {
+                                throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                        SimpleMap.of(
+                                                JavetError.PARAMETER_METHOD_NAME,
+                                                JavetReflectionUtils.getMethodNameFromLambda(directCallSetterAndNoThis),
+                                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 2,
+                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
+                            }
+                            directCallSetterAndNoThis.set(args[0], args[1]);
+                            break;
+                        case DirectCallSetterAndThis:
+                            IJavetDirectCallable.SetterAndThis directCallSetterAndThis =
+                                    javetCallbackContext.getCallbackMethod();
+                            if (args.length != 1) {
+                                throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
+                                        SimpleMap.of(
+                                                JavetError.PARAMETER_METHOD_NAME,
+                                                JavetReflectionUtils.getMethodNameFromLambda(directCallSetterAndThis),
+                                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 2,
+                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
+                            }
+                            directCallSetterAndThis.set(thisObject, args[0], args[1]);
+                            break;
+                        case DirectCallThisAndNoResult:
+                            IJavetDirectCallable.ThisAndNoResult directCallThisAndNoResult =
+                                    javetCallbackContext.getCallbackMethod();
+                            directCallThisAndNoResult.call(thisObject, args);
+                            break;
+                        case DirectCallThisAndResult:
+                            IJavetDirectCallable.ThisAndResult directCallThisAndResult =
+                                    javetCallbackContext.getCallbackMethod();
+                            resultObject = directCallThisAndResult.call(thisObject, args);
+                            break;
+                        case DirectCallNoThisAndNoResult:
+                            IJavetDirectCallable.NoThisAndNoResult directCallNoThisAndNoResult =
+                                    javetCallbackContext.getCallbackMethod();
+                            directCallNoThisAndNoResult.call(args);
+                            break;
+                        case DirectCallNoThisAndResult:
+                            IJavetDirectCallable.NoThisAndResult directCallNoThisAndResult =
+                                    javetCallbackContext.getCallbackMethod();
+                            resultObject = directCallNoThisAndResult.call(args);
+                            break;
+                        default:
+                            throw new JavetException(JavetError.CallbackUnknownFailure,
+                                    SimpleMap.of(JavetError.PARAMETER_MESSAGE, javetCallbackContext.getCallbackType().name()));
+                    }
                 }
                 if (javetCallbackContext.isReturnResult()) {
                     if (!(resultObject instanceof IV8Value)) {

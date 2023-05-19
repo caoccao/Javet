@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interop.callback;
 
+import com.caoccao.javet.enums.V8ValueSymbolType;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
@@ -25,6 +27,7 @@ import java.util.Objects;
  *
  * @since 0.7.1
  */
+@SuppressWarnings("unchecked")
 public final class JavetCallbackContext {
     /**
      * The constant INVALID_HANDLE.
@@ -36,41 +39,200 @@ public final class JavetCallbackContext {
             "Callback receiver or callback method is invalid";
     private static final String ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID =
             "Javet callback context handle is invalid";
-    private final Method callbackMethod;
+    private final Object callbackMethod;
     private final Object callbackReceiver;
-    private final boolean returnResult;
+    private final JavetCallbackType callbackType;
+    private final String name;
+    private final V8ValueSymbolType symbolType;
     private final boolean thisObjectRequired;
     private long handle;
+    private boolean returnResult;
 
     /**
-     * Instantiates a new Javet callback context.
+     * Instantiates a new Javet callback context that takes a direct call as the getter.
      *
+     * @param name       the name
+     * @param symbolType the symbol type
+     * @param directCall the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.GetterAndNoThis directCall) {
+        this(name, symbolType, directCall, JavetCallbackType.DirectCallGetterAndNoThis, false, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the getter.
+     *
+     * @param name       the name
+     * @param symbolType the symbol type
+     * @param directCall the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.GetterAndThis directCall) {
+        this(name, symbolType, directCall, JavetCallbackType.DirectCallGetterAndThis, true, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the setter.
+     *
+     * @param name       the name
+     * @param symbolType the symbol type
+     * @param directCall the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.SetterAndNoThis directCall) {
+        this(name, symbolType, directCall, JavetCallbackType.DirectCallSetterAndNoThis, false, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the setter.
+     *
+     * @param name       the name
+     * @param symbolType the symbol type
+     * @param directCall the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.SetterAndThis directCall) {
+        this(name, symbolType, directCall, JavetCallbackType.DirectCallSetterAndThis, true, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call.
+     *
+     * @param name       the name
+     * @param symbolType the symbol type
+     * @param directCall the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.NoThisAndNoResult directCall) {
+        this(name, symbolType, directCall, JavetCallbackType.DirectCallNoThisAndNoResult, false, false);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call.
+     *
+     * @param name       the name
+     * @param symbolType the symbol type
+     * @param directCall the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.NoThisAndResult directCall) {
+        this(name, symbolType, directCall, JavetCallbackType.DirectCallNoThisAndResult, false, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call.
+     *
+     * @param name       the name
+     * @param symbolType the symbol type
+     * @param directCall the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.ThisAndNoResult directCall) {
+        this(name, symbolType, directCall, JavetCallbackType.DirectCallThisAndNoResult, true, false);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call.
+     *
+     * @param name       the name
+     * @param symbolType the symbol type
+     * @param directCall the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.ThisAndResult directCall) {
+        this(name, symbolType, directCall, JavetCallbackType.DirectCallThisAndResult, true, true);
+    }
+
+    private JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            IJavetDirectCallable.DirectCall directCall,
+            JavetCallbackType callbackType,
+            boolean thisObjectRequired,
+            boolean returnResult) {
+        this(name, symbolType, null, callbackType, directCall, thisObjectRequired);
+        this.returnResult = returnResult;
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a Java method for making further reflection calls.
+     *
+     * @param name             the name
+     * @param symbolType       the symbol type
      * @param callbackReceiver the callback receiver
      * @param callbackMethod   the callback method
      * @since 0.7.1
      */
-    public JavetCallbackContext(Object callbackReceiver, Method callbackMethod) {
-        this(callbackReceiver, callbackMethod, false);
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            Object callbackReceiver,
+            Method callbackMethod) {
+        this(name, symbolType, callbackReceiver, callbackMethod, false);
     }
 
     /**
-     * Instantiates a new Javet callback context.
+     * Instantiates a new Javet callback context that takes a Java method for making further reflection calls.
      *
+     * @param name               the name
+     * @param symbolType         the symbol type
      * @param callbackReceiver   the callback receiver
      * @param callbackMethod     the callback method
      * @param thisObjectRequired the this object required
      * @since 0.7.1
      */
-    public JavetCallbackContext(Object callbackReceiver, Method callbackMethod, boolean thisObjectRequired) {
-        Objects.requireNonNull(callbackMethod);
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            Object callbackReceiver,
+            Method callbackMethod,
+            boolean thisObjectRequired) {
+        this(name, symbolType, callbackReceiver, JavetCallbackType.Reflection, callbackMethod, thisObjectRequired);
         assert (callbackReceiver != null && !Modifier.isStatic(callbackMethod.getModifiers()))
                 || (callbackReceiver == null && Modifier.isStatic(callbackMethod.getModifiers()))
                 : ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID;
-        this.callbackMethod = callbackMethod;
-        this.callbackReceiver = callbackReceiver;
-        handle = INVALID_HANDLE;
         this.returnResult = !callbackMethod.getReturnType().equals(Void.TYPE);
+    }
+
+    private JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            Object callbackReceiver,
+            JavetCallbackType callbackType,
+            Object callbackMethod,
+            boolean thisObjectRequired) {
+        this.callbackMethod = Objects.requireNonNull(callbackMethod);
+        this.callbackReceiver = callbackReceiver;
+        this.callbackType = Objects.requireNonNull(callbackType);
+        handle = INVALID_HANDLE;
+        this.name = Objects.requireNonNull(name);
         this.thisObjectRequired = thisObjectRequired;
+        this.symbolType = Objects.requireNonNull(symbolType);
     }
 
     /**
@@ -79,8 +241,8 @@ public final class JavetCallbackContext {
      * @return the callback method
      * @since 0.9.1
      */
-    public Method getCallbackMethod() {
-        return callbackMethod;
+    public <T> T getCallbackMethod() {
+        return (T) callbackMethod;
     }
 
     /**
@@ -94,6 +256,16 @@ public final class JavetCallbackContext {
     }
 
     /**
+     * Gets callback type.
+     *
+     * @return the callback type
+     * @since 2.2.0
+     */
+    public JavetCallbackType getCallbackType() {
+        return callbackType;
+    }
+
+    /**
      * Gets handle.
      *
      * @return the handle
@@ -104,9 +276,23 @@ public final class JavetCallbackContext {
     }
 
     /**
+     * Gets name.
+     *
+     * @return the name
+     * @since 2.2.0
+     */
+    public String getName() {
+        return name;
+    }
+
+    public V8ValueSymbolType getSymbolType() {
+        return symbolType;
+    }
+
+    /**
      * Is return result.
      *
-     * @return the boolean
+     * @return true : yes, false : no
      * @since 0.9.1
      */
     public boolean isReturnResult() {
@@ -116,7 +302,7 @@ public final class JavetCallbackContext {
     /**
      * Is this object required.
      *
-     * @return the boolean
+     * @return true : yes, false : no
      * @since 0.9.1
      */
     public boolean isThisObjectRequired() {
@@ -126,7 +312,7 @@ public final class JavetCallbackContext {
     /**
      * Is valid.
      *
-     * @return the boolean
+     * @return true : yes, false : no
      * @since 0.9.11
      */
     public boolean isValid() {
@@ -139,7 +325,7 @@ public final class JavetCallbackContext {
      * @param handle the handle
      * @since 0.7.1
      */
-    public void setHandle(long handle) {
+    void setHandle(long handle) {
         assert !isValid() : ERROR_JAVET_CALLBACK_CONTEXT_HANDLE_IS_INVALID;
         this.handle = handle;
     }

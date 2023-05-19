@@ -129,6 +129,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
+                            propertyName,
+                            getterMethodDescriptor.getSymbolType(),
                             Modifier.isStatic(getterMethodDescriptor.getMethod().getModifiers()) ? null : callbackReceiver,
                             getterMethodDescriptor.getMethod(), getterMethodDescriptor.isThisObjectRequired());
                     javetCallbackContexts.add(javetCallbackContextGetter);
@@ -141,6 +143,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         }
                         // Static method needs to be identified.
                         javetCallbackContextSetter = new JavetCallbackContext(
+                                propertyName,
+                                setterMethodDescriptor.getSymbolType(),
                                 Modifier.isStatic(setterMethodDescriptor.getMethod().getModifiers()) ? null : callbackReceiver,
                                 setterMethodDescriptor.getMethod(), setterMethodDescriptor.isThisObjectRequired());
                         javetCallbackContexts.add(javetCallbackContextSetter);
@@ -187,30 +191,12 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                     // Static method needs to be identified.
                     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                            functionName,
+                            functionMethodDescriptor.getSymbolType(),
                             Modifier.isStatic(functionMethodDescriptor.getMethod().getModifiers()) ?
                                     null : callbackReceiver,
                             functionMethodDescriptor.getMethod(), functionMethodDescriptor.isThisObjectRequired());
-                    switch (functionMethodDescriptor.getSymbolType()) {
-                        case BuiltIn:
-                            try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
-                                 V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(functionName)) {
-                                if (v8ValueSymbol == null) {
-                                    throw new JavetException(
-                                            JavetError.ConverterSymbolNotBuiltIn,
-                                            SimpleMap.of(JavetError.PARAMETER_SYMBOL, functionName));
-                                }
-                                bindFunction(v8ValueSymbol, javetCallbackContext);
-                            }
-                            break;
-                        case Custom:
-                            try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(functionName, true)) {
-                                bindFunction(v8ValueSymbol, javetCallbackContext);
-                            }
-                            break;
-                        default:
-                            bindFunction(functionName, javetCallbackContext);
-                            break;
-                    }
+                    bindFunction(javetCallbackContext);
                     javetCallbackContexts.add(javetCallbackContext);
                 } catch (Exception e) {
                     throw new JavetException(
@@ -226,20 +212,31 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
-        Objects.requireNonNull(functionName);
-        try (V8ValueFunction v8ValueFunction =
-                     checkV8Runtime().createV8ValueFunction(Objects.requireNonNull(javetCallbackContext))) {
-            return set(functionName, v8ValueFunction);
-        }
-    }
-
-    @Override
-    public boolean bindFunction(V8ValueSymbol functionName, JavetCallbackContext javetCallbackContext) throws JavetException {
-        Objects.requireNonNull(functionName);
-        try (V8ValueFunction v8ValueFunction =
-                     checkV8Runtime().createV8ValueFunction(Objects.requireNonNull(javetCallbackContext))) {
-            return set(functionName, v8ValueFunction);
+    public boolean bindFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
+        String functionName = javetCallbackContext.getName();
+        switch (Objects.requireNonNull(javetCallbackContext).getSymbolType()) {
+            case BuiltIn:
+                try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
+                     V8ValueSymbol v8ValueSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(functionName)) {
+                    if (v8ValueSymbol == null) {
+                        throw new JavetException(
+                                JavetError.ConverterSymbolNotBuiltIn,
+                                SimpleMap.of(JavetError.PARAMETER_SYMBOL, functionName));
+                    }
+                    try (V8ValueFunction v8ValueFunction =
+                                 checkV8Runtime().createV8ValueFunction(javetCallbackContext)) {
+                        return set(v8ValueSymbol, v8ValueFunction);
+                    }
+                }
+            case Custom:
+                try (V8ValueSymbol v8ValueSymbol = v8Runtime.createV8ValueSymbol(functionName, true);
+                     V8ValueFunction v8ValueFunction = checkV8Runtime().createV8ValueFunction(javetCallbackContext)) {
+                    return set(v8ValueSymbol, v8ValueFunction);
+                }
+            default:
+                try (V8ValueFunction v8ValueFunction = checkV8Runtime().createV8ValueFunction(javetCallbackContext)) {
+                    return set(functionName, v8ValueFunction);
+                }
         }
     }
 
