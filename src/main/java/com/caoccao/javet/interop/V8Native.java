@@ -256,7 +256,7 @@ class V8Native implements IV8Native {
     public native boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     @Override
-    public native boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+    public native boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
 
     @Override
     public native boolean mapSetBoolean(
@@ -384,7 +384,7 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean objectSet(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
 
     @Override
     public native boolean objectSetAccessor(

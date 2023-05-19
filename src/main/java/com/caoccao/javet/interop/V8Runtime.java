@@ -71,6 +71,37 @@ import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
 @SuppressWarnings("unchecked")
 public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
+     * The constant ERROR_BYTE_BUFFER_MUST_BE_DIRECT.
+     *
+     * @since 2.2.0
+     */
+    protected static final String ERROR_BYTE_BUFFER_MUST_BE_DIRECT = "Byte buffer must be direct.";
+    /**
+     * The constant ERROR_HANDLE_MUST_BE_VALID.
+     *
+     * @since 2.2.0
+     */
+    protected static final String ERROR_HANDLE_MUST_BE_VALID = "Handle must be valid.";
+    /**
+     * The constant ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY.
+     *
+     * @since 2.2.0
+     */
+    protected static final String ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY = "Symbol description cannot be empty.";
+    /**
+     * The constant ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH.
+     *
+     * @since 2.2.0
+     */
+    protected static final String ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH = "The key value pair must match.";
+    /**
+     * The constant ERROR_THE_PROPERTY_NAME_MUST_BE_EITHER_STRING_OR_SYMBOL.
+     *
+     * @since 2.2.0
+     */
+    protected static final String ERROR_THE_PROPERTY_NAME_MUST_BE_EITHER_STRING_OR_SYMBOL =
+            "The property name must be either string or symbol.";
+    /**
      * The Default converter.
      *
      * @since 0.8.5
@@ -291,7 +322,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
-        assert handle != 0;
+        assert handle != INVALID_HANDLE : ERROR_HANDLE_MUST_BE_VALID;
         callbackContextLock = new Object();
         callbackContextMap = new HashMap<>();
         converter = DEFAULT_CONVERTER;
@@ -691,7 +722,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     public V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException {
         Objects.requireNonNull(byteBuffer);
-        assert byteBuffer.isDirect() : "Byte buffer must be direct.";
+        assert byteBuffer.isDirect() : ERROR_BYTE_BUFFER_MUST_BE_DIRECT;
         return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, byteBuffer);
     }
 
@@ -813,7 +844,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
-        assert description != null && description.length() > 0 : "Symbol description cannot be empty.";
+        assert description != null && description.length() > 0 : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
         if (global) {
             try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
                 return v8ValueBuiltInSymbol._for(description);
@@ -1796,15 +1827,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Sets a property of a map by a key
      *
      * @param iV8ValueMap the V8 value map
-     * @param key         the key
-     * @param value       the value
+     * @param v8Values    the V8 values
      * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
-    boolean mapSet(IV8ValueMap iV8ValueMap, V8Value key, V8Value value) throws JavetException {
-        return v8Native.mapSet(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), key, value);
+    boolean mapSet(IV8ValueMap iV8ValueMap, V8Value... v8Values) throws JavetException {
+        assert v8Values.length > 0 && v8Values.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
+        return v8Native.mapSet(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId(), v8Values);
     }
 
     /**
@@ -2326,15 +2357,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Sets a property of an object by a key
      *
      * @param iV8ValueObject the V8 value object
-     * @param key            the key
-     * @param value          the value
+     * @param v8Values       the V8 values
      * @return true : success, false : failure
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     @SuppressWarnings("RedundantThrows")
-    boolean objectSet(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
-        return v8Native.objectSet(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), key, value);
+    boolean objectSet(IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
+        assert v8Values.length > 0 && v8Values.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
+        return v8Native.objectSet(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), v8Values);
     }
 
     /**
@@ -2354,7 +2385,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             V8Value propertyName,
             JavetCallbackContext javetCallbackContextGetter,
             JavetCallbackContext javetCallbackContextSetter) throws JavetException {
-        assert (propertyName instanceof V8ValueString || propertyName instanceof V8ValueSymbol);
+        assert (propertyName instanceof V8ValueString || propertyName instanceof V8ValueSymbol)
+                : ERROR_THE_PROPERTY_NAME_MUST_BE_EITHER_STRING_OR_SYMBOL;
         boolean isAccessorSet = v8Native.objectSetAccessor(
                 handle,
                 iV8ValueObject.getHandle(),

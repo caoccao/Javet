@@ -26,6 +26,7 @@ import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValue;
+import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
 import java.util.Objects;
 
@@ -221,11 +222,35 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
+    public boolean set(Object... keysAndValues) throws JavetException {
+        assert keysAndValues.length > 0 && keysAndValues.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
+        final int length = keysAndValues.length;
+        final int pairLength = keysAndValues.length >> 1;
+        Object[] keys = new Object[pairLength];
+        Object[] values = new Object[pairLength];
+        for (int i = 0; i < pairLength; i++) {
+            keys[i] = keysAndValues[i * 2];
+            values[i] = keysAndValues[i * 2 + 1];
+        }
+        try (V8VirtualValueList v8VirtualValueKeys = new V8VirtualValueList(checkV8Runtime(), OBJECT_CONVERTER, keys);
+             V8VirtualValueList v8VirtualValueValues = new V8VirtualValueList(v8Runtime, null, values)) {
+            V8Value[] v8ValueKeys = v8VirtualValueKeys.get();
+            V8Value[] v8ValueValues = v8VirtualValueValues.get();
+            V8Value[] v8Values = new V8Value[length];
+            for (int i = 0; i < pairLength; i++) {
+                v8Values[i * 2] = v8ValueKeys[i];
+                v8Values[i * 2 + 1] = v8ValueValues[i];
+            }
+            return v8Runtime.getV8Internal().mapSet(this, v8Values);
+        }
+    }
+
+    @Override
     public boolean setBoolean(Object key, Boolean value) throws JavetException {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
             if (value == null) {
-                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+                return v8Runtime.getV8Internal().mapSetNull(this, virtualKey.get());
             }
             return v8Runtime.getV8Internal().mapSetBoolean(this, virtualKey.get(), value);
         }
@@ -236,7 +261,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
             if (value == null) {
-                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+                return v8Runtime.getV8Internal().mapSetNull(this, virtualKey.get());
             }
             return v8Runtime.getV8Internal().mapSetDouble(this, virtualKey.get(), value);
         }
@@ -247,7 +272,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
             if (value == null) {
-                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+                return v8Runtime.getV8Internal().mapSetNull(this, virtualKey.get());
             }
             return v8Runtime.getV8Internal().mapSetInteger(this, virtualKey.get(), value);
         }
@@ -258,7 +283,7 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
             if (value == null) {
-                return v8Runtime.getV8Internal().objectSetNull(this, virtualKey.get());
+                return v8Runtime.getV8Internal().mapSetNull(this, virtualKey.get());
             }
             return v8Runtime.getV8Internal().mapSetLong(this, virtualKey.get(), value);
         }

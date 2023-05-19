@@ -240,8 +240,8 @@ public final class V8Internal {
         return v8Runtime.mapHas(iV8ValueMap, value);
     }
 
-    public boolean mapSet(IV8ValueMap iV8ValueMap, V8Value key, V8Value value) throws JavetException {
-        return v8Runtime.mapSet(iV8ValueMap, key, value);
+    public boolean mapSet(IV8ValueMap iV8ValueMap, V8Value... v8Values) throws JavetException {
+        return v8Runtime.mapSet(iV8ValueMap, v8Values);
     }
 
     public boolean mapSetBoolean(
@@ -407,8 +407,8 @@ public final class V8Internal {
         return v8Runtime.objectInvoke(iV8ValueObject, functionName, returnResult, v8Values);
     }
 
-    public boolean objectSet(IV8ValueObject iV8ValueObject, V8Value key, V8Value value) throws JavetException {
-        return v8Runtime.objectSet(iV8ValueObject, key, value);
+    public boolean objectSet(IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
+        return v8Runtime.objectSet(iV8ValueObject, v8Values);
     }
 
     public boolean objectSetAccessor(

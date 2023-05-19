@@ -51,6 +51,12 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     public static final String METHOD_PREFIX_GET = "get";
     public static final String METHOD_PREFIX_IS = "is";
     public static final String METHOD_PREFIX_SET = "set";
+    /**
+     * The constant ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH.
+     *
+     * @since 2.2.0
+     */
+    protected static final String ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH = "The key value pair must match.";
     protected static final String FUNCTION_ADD = "add";
     protected static final String FUNCTION_DELETE = "delete";
     protected static final String FUNCTION_GET = "get";
@@ -610,6 +616,30 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key));
              V8VirtualValue virtualValue = new V8VirtualValue(v8Runtime, null, value)) {
             return v8Runtime.getV8Internal().objectSet(this, virtualKey.get(), virtualValue.get());
+        }
+    }
+
+    @Override
+    public boolean set(Object... keysAndValues) throws JavetException {
+        assert keysAndValues.length > 0 && keysAndValues.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
+        final int length = keysAndValues.length;
+        final int pairLength = keysAndValues.length >> 1;
+        Object[] keys = new Object[pairLength];
+        Object[] values = new Object[pairLength];
+        for (int i = 0; i < pairLength; i++) {
+            keys[i] = keysAndValues[i * 2];
+            values[i] = keysAndValues[i * 2 + 1];
+        }
+        try (V8VirtualValueList v8VirtualValueKeys = new V8VirtualValueList(checkV8Runtime(), OBJECT_CONVERTER, keys);
+             V8VirtualValueList v8VirtualValueValues = new V8VirtualValueList(v8Runtime, null, values)) {
+            V8Value[] v8ValueKeys = v8VirtualValueKeys.get();
+            V8Value[] v8ValueValues = v8VirtualValueValues.get();
+            V8Value[] v8Values = new V8Value[length];
+            for (int i = 0; i < pairLength; i++) {
+                v8Values[i * 2] = v8ValueKeys[i];
+                v8Values[i * 2 + 1] = v8ValueValues[i];
+            }
+            return v8Runtime.getV8Internal().objectSet(this, v8Values);
         }
     }
 

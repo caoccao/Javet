@@ -635,23 +635,34 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectInvoke
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSet
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key, jobject value) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobjectArray keysAndValues) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalValue->IsObject()) {
-        V8TryCatch v8TryCatch(v8Context->GetIsolate());
-        auto v8LocalObject = v8LocalValue.As<v8::Object>();
-        auto v8LocalValueValue = Javet::Converter::ToV8Value(jniEnv, v8Context, value);
-        if (v8TryCatch.HasCaught()) {
-            Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+        auto length = jniEnv->GetArrayLength(keysAndValues);
+        if (length == 0 || length % 2 != 0) {
             return false;
         }
-        return Javet::V8ValueObject::objectSet(
-            jniEnv,
-            v8Runtime,
-            v8Context,
-            v8LocalObject,
-            key,
-            v8LocalValueValue);
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        auto v8LocalObject = v8LocalValue.As<v8::Object>();
+        for (int i = 0; i < length; i += 2) {
+            auto jobjectValue = jniEnv->GetObjectArrayElement(keysAndValues, i + 1);
+            auto v8LocalValueValue = Javet::Converter::ToV8Value(jniEnv, v8Context, jobjectValue);
+            if (v8TryCatch.HasCaught()) {
+                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+                return false;
+            }
+            auto jobjectKey = jniEnv->GetObjectArrayElement(keysAndValues, i);
+            if (!Javet::V8ValueObject::objectSet(
+                jniEnv,
+                v8Runtime,
+                v8Context,
+                v8LocalObject,
+                jobjectKey,
+                v8LocalValueValue)) {
+                return false;
+            }
+        }
+        return true;
     }
     return false;
 }

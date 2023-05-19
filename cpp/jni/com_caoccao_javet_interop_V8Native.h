@@ -538,10 +538,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapHas
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    mapSet
- * Signature: (JJILjava/lang/Object;Ljava/lang/Object;)Z
+ * Signature: (JJI[Ljava/lang/Object;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSet
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jobject);
+  (JNIEnv *, jobject, jlong, jlong, jint, jobjectArray);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -826,10 +826,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectInvoke
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    objectSet
- * Signature: (JJILjava/lang/Object;Ljava/lang/Object;)Z
+ * Signature: (JJI[Ljava/lang/Object;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSet
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject, jobject);
+  (JNIEnv *, jobject, jlong, jlong, jint, jobjectArray);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

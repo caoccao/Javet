@@ -174,7 +174,7 @@ public interface IV8Native {
 
     boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
-    boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+    boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
 
     boolean mapSetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
 
@@ -254,7 +254,7 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             String functionName, boolean returnResult, Object[] values);
 
-    boolean objectSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+    boolean objectSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
 
     boolean objectSetAccessor(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,

@@ -170,7 +170,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             }
             final long stopTime = System.currentTimeMillis();
             final long tps = itemCount * iterations * 1000 / (stopTime - startTime);
-            logger.logInfo("Array push by batch: {0} tps.", tps);
+            logger.logInfo("Array push in a batch: {0} tps.", tps);
         }
     }
 

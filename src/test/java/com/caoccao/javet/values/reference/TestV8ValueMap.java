@@ -135,6 +135,44 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
             v8ValueMap.setString("d", null);
             assertNull(v8ValueMap.getString("d"));
             assertTrue(v8ValueMap.has("d"));
+            Object[] keysAndValues = new Object[]{"x", 1, "y", 2, "z", 3};
+            assertTrue(v8ValueMap.set(keysAndValues));
+            for (int i = 0; i < keysAndValues.length / 2; i += 2) {
+                assertTrue(v8ValueMap.has(keysAndValues[i * 2]));
+                assertEquals(keysAndValues[i * 2 + 1], v8ValueMap.getInteger(keysAndValues[i * 2]));
+            }
+        }
+        String key = "a";
+        try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
+            for (Boolean value : new Boolean[]{true, false, null}) {
+                assertTrue(v8ValueMap.setBoolean(key, value));
+                assertTrue(v8ValueMap.has(key));
+                assertEquals(value, v8ValueMap.getBoolean(key));
+            }
+        }
+        try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
+            for (Double value : new Double[]{0.1D, 1.234D, -1.234D, Double.MIN_VALUE, Double.MAX_VALUE}) {
+                assertTrue(v8ValueMap.setDouble(key, value));
+                assertTrue(v8ValueMap.has(key));
+                assertEquals(value, v8ValueMap.getDouble(key), 0.001D);
+            }
+            assertTrue(v8ValueMap.setDouble(key, null));
+            assertTrue(v8ValueMap.has(key));
+            assertNull(v8ValueMap.getDouble(key));
+        }
+        try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
+            for (Integer value : new Integer[]{0, 1, -1, Integer.MIN_VALUE, Integer.MAX_VALUE, null}) {
+                assertTrue(v8ValueMap.setInteger(key, value));
+                assertTrue(v8ValueMap.has(key));
+                assertEquals(value, v8ValueMap.getInteger(key));
+            }
+        }
+        try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
+            for (Long value : new Long[]{0L, 1L, -1L, Long.MIN_VALUE, Long.MAX_VALUE, null}) {
+                assertTrue(v8ValueMap.setLong(key, value));
+                assertTrue(v8ValueMap.has(key));
+                assertEquals(value, v8ValueMap.getLong(key));
+            }
         }
     }
 

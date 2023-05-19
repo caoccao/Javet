@@ -31,12 +31,14 @@ import com.caoccao.javet.values.primitive.V8ValueDouble;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -342,6 +344,12 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.setString("d", null);
             assertNull(v8ValueObject.getString("d"));
             assertTrue(v8ValueObject.has("d"));
+            Object[] keysAndValues = new Object[]{"x", 1, "y", 2, "z", 3};
+            assertTrue(v8ValueObject.set(keysAndValues));
+            for (int i = 0; i < keysAndValues.length / 2; i += 2) {
+                assertTrue(v8ValueObject.has(keysAndValues[i * 2]));
+                assertEquals(keysAndValues[i * 2 + 1], v8ValueObject.getInteger(keysAndValues[i * 2]));
+            }
         }
         String key = "a";
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
@@ -437,6 +445,49 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 outerObject.set("x", innerObject);
             }
             assertEquals("{\"x\":{\"a\":\"1\"}}", outerObject.toJsonString());
+        }
+    }
+
+    @Test
+    @Tag("performance")
+    public void testPerformanceSet() throws JavetException {
+        final int pairCount = 1000;
+        final int iterations = 1000;
+        // Test set one by one.
+        {
+            final long startTime = System.currentTimeMillis();
+            int successCount = 0;
+            for (int i = 0; i < iterations; i++) {
+                try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                    for (int j = 0; j < pairCount; j++) {
+                        if (v8ValueObject.set("a", "a")) {
+                            successCount++;
+                        }
+                    }
+                }
+            }
+            final long stopTime = System.currentTimeMillis();
+            final long tps = pairCount * iterations * 1000 / (stopTime - startTime);
+            logger.logInfo("Object set one by one: {0} tps.", tps);
+            assertEquals(pairCount * iterations, successCount);
+        }
+        // Test set by batch.
+        {
+            final long startTime = System.currentTimeMillis();
+            int successCount = 0;
+            Object[] items = new Object[pairCount * 2];
+            Arrays.fill(items, "a");
+            for (int i = 0; i < iterations; i++) {
+                try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                    if (v8ValueObject.set(items)) {
+                        successCount++;
+                    }
+                }
+            }
+            final long stopTime = System.currentTimeMillis();
+            final long tps = pairCount * iterations * 1000 / (stopTime - startTime);
+            logger.logInfo("Object set in a batch: {0} tps.", tps);
+            assertEquals(iterations, successCount);
         }
     }
 

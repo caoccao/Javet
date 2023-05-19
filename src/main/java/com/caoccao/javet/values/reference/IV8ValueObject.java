@@ -1278,6 +1278,15 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean set(Object key, Object value) throws JavetException;
 
     /**
+     * Set property by pairs of key object and value object.
+     *
+     * @param keysAndValues the keys and values
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     */
+    boolean set(Object... keysAndValues) throws JavetException;
+
+    /**
      * Set property by key object and value boolean.
      *
      * @param key   the key
