@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interception.logging;
 
-import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interception.BaseJavetInterceptor;
@@ -218,7 +217,6 @@ public abstract class BaseJavetConsoleInterceptor extends BaseJavetInterceptor {
         try {
             iV8ValueObject.bindFunction(new JavetCallbackContext(
                     jsFunctionName,
-                    V8ValueSymbolType.None,
                     this,
                     getClass().getMethod(javaFunctionName, V8Value[].class)));
         } catch (NoSuchMethodException e) {

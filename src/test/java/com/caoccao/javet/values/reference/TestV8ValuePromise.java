@@ -78,7 +78,6 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
                         };
                         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
                                 "get",
-                                V8ValueSymbolType.None,
                                 anonymous,
                                 anonymous.getClass().getMethod("get"));
                         return v8Runtime.createV8ValueFunction(javetCallbackContext);

@@ -83,7 +83,6 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
         try {
             JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
                     METHOD_NAME_TO_V8_VALUE,
-                    V8ValueSymbolType.None,
                     this,
                     getClass().getMethod(METHOD_NAME_TO_V8_VALUE, V8Value[].class));
             return v8Runtime.createV8ValueFunction(javetCallbackContext);

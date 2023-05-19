@@ -18,7 +18,6 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
-import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -84,17 +83,14 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
         try {
             JavetCallbackContext contextOnCatch = new JavetCallbackContext(
                     IListener.ON_CATCH,
-                    V8ValueSymbolType.None,
                     listener,
                     listener.getClass().getMethod(IListener.ON_CATCH, V8Value.class));
             JavetCallbackContext contextOnFulfilled = new JavetCallbackContext(
                     IListener.ON_FULFILLED,
-                    V8ValueSymbolType.None,
                     listener,
                     listener.getClass().getMethod(IListener.ON_FULFILLED, V8Value.class));
             JavetCallbackContext contextOnRejected = new JavetCallbackContext(
                     IListener.ON_REJECTED,
-                    V8ValueSymbolType.None,
                     listener,
                     listener.getClass().getMethod(IListener.ON_REJECTED, V8Value.class));
             try (V8ValueFunction functionOnCatch = v8Runtime.createV8ValueFunction(contextOnCatch);

@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.callback;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 import java.io.Serializable;
@@ -37,6 +38,16 @@ public interface IJavetDirectCallable {
     JavetCallbackContext[] getCallbackContexts();
 
     /**
+     * Sets V8 runtime.
+     *
+     * @param v8Runtime the V8 runtime
+     * @since 2.2.0
+     */
+    default void setV8Runtime(V8Runtime v8Runtime) {
+        // Pass.
+    }
+
+    /**
      * The interface Direct call.
      *
      * @since 2.2.0
@@ -49,16 +60,16 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface GetterAndNoThis extends DirectCall {
+    interface GetterAndNoThis<E extends Exception> extends DirectCall {
         /**
          * Get the property value by a property key without this object passed in.
          *
-         * @param v8ValueKey the V8 value key
          * @return the V8 value
          * @throws JavetException the javet exception
+         * @throws E              the custom exception
          * @since 2.2.0
          */
-        V8Value get(V8Value v8ValueKey) throws JavetException;
+        V8Value get() throws JavetException, E;
     }
 
     /**
@@ -66,17 +77,17 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface GetterAndThis extends DirectCall {
+    interface GetterAndThis<E extends Exception> extends DirectCall {
         /**
          * Get the property value by a property key with this object passed in.
          *
          * @param thisObject the this object
-         * @param v8ValueKey the V8 value key
          * @return the V8 value
          * @throws JavetException the javet exception
+         * @throws E              the custom exception
          * @since 2.2.0
          */
-        V8Value get(V8Value thisObject, V8Value v8ValueKey) throws JavetException;
+        V8Value get(V8Value thisObject) throws JavetException, E;
     }
 
     /**
@@ -84,15 +95,16 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface NoThisAndNoResult extends DirectCall {
+    interface NoThisAndNoResult<E extends Exception> extends DirectCall {
         /**
          * Call.
          *
          * @param v8Values the V8 values
          * @throws JavetException the javet exception
+         * @throws E              the custom exception
          * @since 2.2.0
          */
-        void call(V8Value... v8Values) throws JavetException;
+        void call(V8Value... v8Values) throws JavetException, E;
     }
 
     /**
@@ -100,16 +112,17 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface NoThisAndResult extends DirectCall {
+    interface NoThisAndResult<E extends Exception> extends DirectCall {
         /**
          * Call and return the result.
          *
          * @param v8Values the V8 values
          * @return the V8 value
          * @throws JavetException the javet exception
+         * @throws E              the custom exception
          * @since 2.2.0
          */
-        V8Value call(V8Value... v8Values) throws JavetException;
+        V8Value call(V8Value... v8Values) throws JavetException, E;
     }
 
     /**
@@ -117,17 +130,17 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface SetterAndNoThis extends DirectCall {
+    interface SetterAndNoThis<E extends Exception> extends DirectCall {
         /**
          * Set the property value by a property key without this object passed in.
          *
-         * @param v8ValueKey   the V8 value key
          * @param v8ValueValue the V8 value value
          * @return the V8 value
          * @throws JavetException the javet exception
+         * @throws E              the custom exception
          * @since 2.2.0
          */
-        V8Value set(V8Value v8ValueKey, V8Value v8ValueValue) throws JavetException;
+        void set(V8Value v8ValueValue) throws JavetException, E;
     }
 
     /**
@@ -135,18 +148,18 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface SetterAndThis extends DirectCall {
+    interface SetterAndThis<E extends Exception> extends DirectCall {
         /**
          * Set the property value by a property key with this object passed in.
          *
          * @param thisObject   the this object
-         * @param v8ValueKey   the V8 value key
          * @param v8ValueValue the V8 value value
          * @return the V8 value
          * @throws JavetException the javet exception
+         * @throws E              the custom exception
          * @since 2.2.0
          */
-        V8Value set(V8Value thisObject, V8Value v8ValueKey, V8Value v8ValueValue) throws JavetException;
+        void set(V8Value thisObject, V8Value v8ValueValue) throws JavetException, E;
     }
 
     /**
@@ -154,24 +167,26 @@ public interface IJavetDirectCallable {
      *
      * @since 2.2.0
      */
-    interface ThisAndNoResult extends DirectCall {
+    interface ThisAndNoResult<E extends Exception> extends DirectCall {
         /**
          * Call by this object.
          *
          * @param thisObject the this object
          * @param v8Values   the V8 values
          * @throws JavetException the javet exception
+         * @throws E              the custom exception
          * @since 2.2.0
          */
-        void call(V8Value thisObject, V8Value... v8Values) throws JavetException;
+        void call(V8Value thisObject, V8Value... v8Values) throws JavetException, E;
     }
 
     /**
      * The interface ThisAndResult accepts this object and returns the result.
      *
+     * @param <E> the custom exception
      * @since 2.2.0
      */
-    interface ThisAndResult extends DirectCall {
+    interface ThisAndResult<E extends Exception> extends DirectCall {
         /**
          * Call by this object and return the result.
          *
@@ -179,8 +194,9 @@ public interface IJavetDirectCallable {
          * @param v8Values   the V8 values
          * @return the V8 value
          * @throws JavetException the javet exception
+         * @throws E              the custom exception
          * @since 2.2.0
          */
-        V8Value call(V8Value thisObject, V8Value... v8Values) throws JavetException;
+        V8Value call(V8Value thisObject, V8Value... v8Values) throws JavetException, E;
     }
 }

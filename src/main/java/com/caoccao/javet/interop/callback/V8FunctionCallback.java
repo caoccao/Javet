@@ -388,74 +388,58 @@ public final class V8FunctionCallback {
                 } else {
                     switch (javetCallbackContext.getCallbackType()) {
                         case DirectCallGetterAndNoThis:
-                            IJavetDirectCallable.GetterAndNoThis directCallGetterAndNoThis =
+                            IJavetDirectCallable.GetterAndNoThis<?> directCallGetterAndNoThis =
                                     javetCallbackContext.getCallbackMethod();
-                            if (args.length != 1) {
-                                throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
-                                        SimpleMap.of(
-                                                JavetError.PARAMETER_METHOD_NAME,
-                                                javetCallbackContext.getName(),
-                                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
-                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
-                            }
-                            directCallGetterAndNoThis.get(args[0]);
+                            resultObject = directCallGetterAndNoThis.get();
                             break;
                         case DirectCallGetterAndThis:
-                            IJavetDirectCallable.GetterAndThis directCallGetterAndThis =
+                            IJavetDirectCallable.GetterAndThis<?> directCallGetterAndThis =
                                     javetCallbackContext.getCallbackMethod();
-                            if (args.length != 1) {
+                            resultObject = directCallGetterAndThis.get(thisObject);
+                            break;
+                        case DirectCallSetterAndNoThis:
+                            IJavetDirectCallable.SetterAndNoThis<?> directCallSetterAndNoThis =
+                                    javetCallbackContext.getCallbackMethod();
+                            if (args == null || args.length < 1) {
                                 throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                         SimpleMap.of(
                                                 JavetError.PARAMETER_METHOD_NAME,
                                                 javetCallbackContext.getName(),
                                                 JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
-                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
+                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args == null ? 0 : args.length));
                             }
-                            directCallGetterAndThis.get(thisObject, args[0]);
-                            break;
-                        case DirectCallSetterAndNoThis:
-                            IJavetDirectCallable.SetterAndNoThis directCallSetterAndNoThis =
-                                    javetCallbackContext.getCallbackMethod();
-                            if (args.length != 1) {
-                                throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
-                                        SimpleMap.of(
-                                                JavetError.PARAMETER_METHOD_NAME,
-                                                javetCallbackContext.getName(),
-                                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 2,
-                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
-                            }
-                            directCallSetterAndNoThis.set(args[0], args[1]);
+                            directCallSetterAndNoThis.set(args[0]);
                             break;
                         case DirectCallSetterAndThis:
-                            IJavetDirectCallable.SetterAndThis directCallSetterAndThis =
+                            IJavetDirectCallable.SetterAndThis<?> directCallSetterAndThis =
                                     javetCallbackContext.getCallbackMethod();
-                            if (args.length != 1) {
+                            if (args == null || args.length != 1) {
                                 throw new JavetException(JavetError.CallbackSignatureParameterSizeMismatch,
                                         SimpleMap.of(
                                                 JavetError.PARAMETER_METHOD_NAME,
                                                 javetCallbackContext.getName(),
-                                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 2,
-                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args.length));
+                                                JavetError.PARAMETER_EXPECTED_PARAMETER_SIZE, 1,
+                                                JavetError.PARAMETER_ACTUAL_PARAMETER_SIZE, args == null ? 0 : args.length));
                             }
-                            directCallSetterAndThis.set(thisObject, args[0], args[1]);
+                            directCallSetterAndThis.set(thisObject, args[0]);
                             break;
                         case DirectCallThisAndNoResult:
-                            IJavetDirectCallable.ThisAndNoResult directCallThisAndNoResult =
+                            IJavetDirectCallable.ThisAndNoResult<?> directCallThisAndNoResult =
                                     javetCallbackContext.getCallbackMethod();
                             directCallThisAndNoResult.call(thisObject, args);
                             break;
                         case DirectCallThisAndResult:
-                            IJavetDirectCallable.ThisAndResult directCallThisAndResult =
+                            IJavetDirectCallable.ThisAndResult<?> directCallThisAndResult =
                                     javetCallbackContext.getCallbackMethod();
                             resultObject = directCallThisAndResult.call(thisObject, args);
                             break;
                         case DirectCallNoThisAndNoResult:
-                            IJavetDirectCallable.NoThisAndNoResult directCallNoThisAndNoResult =
+                            IJavetDirectCallable.NoThisAndNoResult<?> directCallNoThisAndNoResult =
                                     javetCallbackContext.getCallbackMethod();
                             directCallNoThisAndNoResult.call(args);
                             break;
                         case DirectCallNoThisAndResult:
-                            IJavetDirectCallable.NoThisAndResult directCallNoThisAndResult =
+                            IJavetDirectCallable.NoThisAndResult<?> directCallNoThisAndResult =
                                     javetCallbackContext.getCallbackMethod();
                             resultObject = directCallNoThisAndResult.call(args);
                             break;
@@ -480,7 +464,7 @@ public final class V8FunctionCallback {
                 throw e.getTargetException();
             } finally {
                 // Result object must be excluded because it will be closed in JNI.
-                if (!javetCallbackContext.isThisObjectRequired()) {
+                if (javetCallbackContext.isThisObjectRequired()) {
                     if (thisObject != resultObject) {
                         JavetResourceUtils.safeClose(thisObject);
                     }

@@ -72,7 +72,6 @@ final class JavetDynamicProxyInterceptor {
         try {
             return new JavetCallbackContext(
                     METHOD_NAME_INVOKE,
-                    V8ValueSymbolType.None,
                     this,
                     getClass().getMethod(METHOD_NAME_INVOKE, V8ValueObject.class, V8Value[].class),
                     true);

@@ -1433,6 +1433,16 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
+     * Unbind property by callback context.
+     *
+     * @param javetCallbackContext the javet callback context
+     * @return true : the property is unbind, false: the property is not unbind
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    boolean unbindProperty(JavetCallbackContext javetCallbackContext) throws JavetException;
+
+    /**
      * Unbind property by property name string.
      *
      * @param propertyName the property name
@@ -1441,8 +1451,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.9.11
      */
     default boolean unbindProperty(String propertyName) throws JavetException {
-        Objects.requireNonNull(propertyName);
-        return unbindProperty(getV8Runtime().createV8ValueString(propertyName));
+        return unbindProperty(getV8Runtime().createV8ValueString(Objects.requireNonNull(propertyName)));
     }
 
     /**
