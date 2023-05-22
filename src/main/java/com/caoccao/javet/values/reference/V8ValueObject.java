@@ -122,20 +122,18 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         setterMap.put(javetCallbackContext.getName(), javetCallbackContext);
                         break;
                     default:
-                        if (bindFunction(javetCallbackContext)) {
-                            javetCallbackContexts.add(javetCallbackContext);
-                        }
+                        javetCallbackContexts.add(javetCallbackContext);
+                        bindFunction(javetCallbackContext);
                         break;
                 }
             }
             for (JavetCallbackContext javetCallbackContextGetter : getterMap.values()) {
                 JavetCallbackContext javetCallbackContextSetter = setterMap.get(javetCallbackContextGetter.getName());
-                if (bindProperty(javetCallbackContextGetter, javetCallbackContextSetter)) {
-                    javetCallbackContexts.add(javetCallbackContextGetter);
-                    if (javetCallbackContextSetter != null) {
-                        javetCallbackContexts.add(javetCallbackContextSetter);
-                    }
+                javetCallbackContexts.add(javetCallbackContextGetter);
+                if (javetCallbackContextSetter != null) {
+                    javetCallbackContexts.add(javetCallbackContextSetter);
                 }
+                bindProperty(javetCallbackContextGetter, javetCallbackContextSetter);
             }
         } else {
             BindingContext bindingContext = getBindingContext(callbackReceiver.getClass());
@@ -212,8 +210,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                                 Modifier.isStatic(functionMethodDescriptor.getMethod().getModifiers()) ?
                                         null : callbackReceiver,
                                 functionMethodDescriptor.getMethod(), functionMethodDescriptor.isThisObjectRequired());
-                        bindFunction(javetCallbackContext);
                         javetCallbackContexts.add(javetCallbackContext);
+                        bindFunction(javetCallbackContext);
                     } catch (Exception e) {
                         throw new JavetException(
                                 JavetError.CallbackRegistrationFailure,
