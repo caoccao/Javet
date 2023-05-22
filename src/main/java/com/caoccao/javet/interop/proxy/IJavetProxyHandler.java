@@ -24,7 +24,8 @@ import com.caoccao.javet.values.reference.V8ValueArray;
 /**
  * The interface Javet proxy handler.
  * <p>
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+ * Please refer to this <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy">doc</a>
+ * for more details.
  *
  * @param <T> the type parameter
  * @since 0.9.6
