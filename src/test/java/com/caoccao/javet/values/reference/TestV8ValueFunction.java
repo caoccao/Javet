@@ -1847,6 +1847,64 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    @Tag("performance")
+    public void testPerformanceBetweenReflectionAndDirectCalls() throws Exception {
+        final int v8Iterations = 2_000_000;
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            IJavetAnonymous anonymous = new IJavetAnonymous() {
+                @V8Function
+                public int test(int i) {
+                    return i;
+                }
+            };
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            final long startTime = System.currentTimeMillis();
+            assertEquals(v8Iterations, v8Runtime.getExecutor("let x = 0;\n" +
+                    "for (let i = 0; i < " + v8Iterations + "; ++i)\n" +
+                    "  x += a.test(1);\n" +
+                    "x;").executeInteger());
+            final long stopTime = System.currentTimeMillis();
+            final long tps = v8Iterations * 1000L / (stopTime - startTime);
+            logger.logInfo(
+                    "{0} reflection calls via V8 completed in {1}ms with TPS {2}.",
+                    v8Iterations, stopTime - startTime, tps);
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            IJavetDirectCallable directCallable = new IJavetDirectCallable() {
+                @Override
+                public JavetCallbackContext[] getCallbackContexts() {
+                    return new JavetCallbackContext[]{
+                            new JavetCallbackContext("test", (IJavetDirectCallable.NoThisAndResult<?>) this::test),
+                    };
+                }
+
+                public V8Value test(V8Value... v8Values) {
+                    return v8Values[0];
+                }
+            };
+            v8ValueObject.bind(directCallable);
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            final long startTime = System.currentTimeMillis();
+            assertEquals(v8Iterations, v8Runtime.getExecutor("let y = 0;\n" +
+                    "for (let i = 0; i < " + v8Iterations + "; ++i)\n" +
+                    "  y += a.test(1);\n" +
+                    "y;").executeInteger());
+            final long stopTime = System.currentTimeMillis();
+            final long tps = v8Iterations * 1000L / (stopTime - startTime);
+            logger.logInfo(
+                    "{0} direct calls via V8 completed in {1}ms with TPS {2}.",
+                    v8Iterations, stopTime - startTime, tps);
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
     public void testPropertyGetter() throws NoSuchMethodException, JavetException {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
