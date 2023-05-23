@@ -444,10 +444,10 @@ public final class V8FunctionCallback {
                             resultObject = directCallNoThisAndResult.call(args);
                             break;
                         default:
-                            throw new JavetException(JavetError.CallbackMethodFailure,
+                            throw new JavetException(JavetError.CallbackTypeNotSupported,
                                     SimpleMap.of(
-                                            JavetError.PARAMETER_METHOD_NAME, javetCallbackContext.getName(),
-                                            JavetError.PARAMETER_MESSAGE, javetCallbackContext.getCallbackType().name()));
+                                            JavetError.PARAMETER_CALLBACK_TYPE,
+                                            javetCallbackContext.getCallbackType().name()));
                     }
                 }
                 if (javetCallbackContext.isReturnResult()) {

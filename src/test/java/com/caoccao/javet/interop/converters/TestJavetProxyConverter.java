@@ -28,9 +28,11 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.proxy.JavetDynamicObjectFactory;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
@@ -289,6 +291,47 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                         "}\n" +
                         "main();").executeString());
         v8Runtime.getGlobalObject().delete("StringBuilder");
+    }
+
+    @Test
+    public void testDirectProxyObjectHandler() throws JavetException {
+        int expectedCallCount = 0;
+        MockDirectProxyObjectHandler handler = new MockDirectProxyObjectHandler();
+        v8Runtime.getGlobalObject().set("a", handler);
+        // Test get() and set().
+        try (V8Value v8Value = v8Runtime.getExecutor("a.z;").execute()) {
+            assertInstanceOf(V8ValueUndefined.class, v8Value);
+            assertEquals(++expectedCallCount, handler.getCallCount());
+        }
+        assertEquals(0, v8Runtime.getExecutor("a.x;").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals(0, v8Runtime.getExecutor("a.y;").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals(3, v8Runtime.getExecutor("a.x = 3; a.x;").executeInteger());
+        assertEquals(3, handler.getX());
+        ++expectedCallCount;
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals(5, v8Runtime.getExecutor("a.y = 5; a.y;").executeInteger());
+        assertEquals(5, handler.getY());
+        ++expectedCallCount;
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        // Test function get().
+        assertTrue(v8Runtime.getExecutor("a.increaseX();").executeBoolean());
+        assertEquals(4, handler.getX());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        // Test ownKeys().
+        assertEquals(
+                "[\"x\",\"y\"]",
+                v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(a));").executeString());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        // Test has().
+        assertFalse(v8Runtime.getExecutor("'z' in a;").executeBoolean());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertTrue(v8Runtime.getExecutor("'x' in a;").executeBoolean());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertTrue(v8Runtime.getExecutor("'y' in a;").executeBoolean());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test

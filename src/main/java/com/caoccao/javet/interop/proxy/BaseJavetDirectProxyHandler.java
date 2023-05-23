@@ -36,5 +36,6 @@ public abstract class BaseJavetDirectProxyHandler<T extends IJavetDirectProxyHan
      */
     public BaseJavetDirectProxyHandler(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, targetObject);
+        targetObject.setV8Runtime(v8Runtime);
     }
 }

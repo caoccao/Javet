@@ -35,30 +35,6 @@ public enum JavetCallbackType {
      */
     DirectCallGetterAndThis,
     /**
-     * The callback is via Java direct generic getter without this object.
-     *
-     * @since 2.2.0
-     */
-    DirectCallGenericGetterAndNoThis,
-    /**
-     * The callback is via Java direct generic getter with this object.
-     *
-     * @since 2.2.0
-     */
-    DirectCallGenericGetterAndThis,
-    /**
-     * The callback is via Java direct generic setter without this object.
-     *
-     * @since 2.2.0
-     */
-    DirectCallGenericSetterAndNoThis,
-    /**
-     * The callback is via Java direct generic setter with this object.
-     *
-     * @since 2.2.0
-     */
-    DirectCallGenericSetterAndThis,
-    /**
      * The callback is via Java direct setter without this object.
      *
      * @since 2.2.0

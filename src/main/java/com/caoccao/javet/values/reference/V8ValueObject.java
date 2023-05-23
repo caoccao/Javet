@@ -112,12 +112,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
             for (JavetCallbackContext javetCallbackContext :
                     Objects.requireNonNull(javetDirectCallable.getCallbackContexts())) {
                 switch (javetCallbackContext.getCallbackType()) {
-                    case DirectCallGenericGetterAndNoThis:
-                    case DirectCallGenericGetterAndThis:
-                    case DirectCallGenericSetterAndNoThis:
-                    case DirectCallGenericSetterAndThis:
-                        // Generic getter or setter is ignored.
-                        break;
                     case DirectCallGetterAndNoThis:
                     case DirectCallGetterAndThis:
                         getterMap.put(javetCallbackContext.getName(), javetCallbackContext);
@@ -808,10 +802,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     Objects.requireNonNull(javetDirectCallable.getCallbackContexts())) {
                 boolean success;
                 switch (javetCallbackContext.getCallbackType()) {
-                    case DirectCallGenericGetterAndNoThis:
-                    case DirectCallGenericGetterAndThis:
-                    case DirectCallGenericSetterAndNoThis:
-                    case DirectCallGenericSetterAndThis:
                     case DirectCallSetterAndNoThis:
                     case DirectCallSetterAndThis:
                         // Generic getter or setter is ignored and there's no need to unbind setter.

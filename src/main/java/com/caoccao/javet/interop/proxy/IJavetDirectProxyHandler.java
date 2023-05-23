@@ -111,4 +111,12 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
             throws JavetException, E {
         return getV8Runtime().createV8ValueBoolean(false);
     }
+
+    /**
+     * Sets V8 runtime.
+     *
+     * @param v8Runtime the V8 runtime
+     * @since 2.2.0
+     */
+    void setV8Runtime(V8Runtime v8Runtime);
 }
