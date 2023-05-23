@@ -49,7 +49,8 @@ public final class JavetCallbackContext {
     private boolean returnResult;
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call as the getter.
+     * Instantiates a new Javet callback context that takes a direct call as the getter
+     * without this object passed in.
      *
      * @param name       the name
      * @param directCall the direct call
@@ -62,7 +63,8 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call as the getter.
+     * Instantiates a new Javet callback context that takes a direct call as the getter
+     * without this object passed in.
      *
      * @param name             the name
      * @param callbackReceiver the callback receiver
@@ -73,13 +75,14 @@ public final class JavetCallbackContext {
             String name,
             Object callbackReceiver,
             IJavetDirectCallable.GetterAndNoThis<?> directCall) {
-        this(name, V8ValueSymbolType.None, callbackReceiver,
+        this(Objects.requireNonNull(name), V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallGetterAndNoThis, directCall,
                 false, true);
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call as the getter.
+     * Instantiates a new Javet callback context that takes a direct call as the getter
+     * with this object passed in.
      *
      * @param name       the name
      * @param directCall the direct call
@@ -92,7 +95,8 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call as the getter.
+     * Instantiates a new Javet callback context that takes a direct call as the getter
+     * with this object passed in.
      *
      * @param name             the name
      * @param callbackReceiver the callback receiver
@@ -103,13 +107,78 @@ public final class JavetCallbackContext {
             String name,
             Object callbackReceiver,
             IJavetDirectCallable.GetterAndThis<?> directCall) {
-        this(name, V8ValueSymbolType.None, callbackReceiver,
+        this(Objects.requireNonNull(name), V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallGetterAndThis, directCall,
                 true, true);
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call as the setter.
+     * Instantiates a new Javet callback context that takes a direct call as the generic getter
+     * without this object passed in.
+     *
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            Object callbackReceiver,
+            IJavetDirectCallable.GenericGetterAndNoThis<?> directCall) {
+        this(null, V8ValueSymbolType.None, callbackReceiver,
+                JavetCallbackType.DirectCallGenericGetterAndNoThis, directCall,
+                false, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the generic getter
+     * with this object passed in.
+     *
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            Object callbackReceiver,
+            IJavetDirectCallable.GenericGetterAndThis<?> directCall) {
+        this(null, V8ValueSymbolType.None, callbackReceiver,
+                JavetCallbackType.DirectCallGenericGetterAndThis, directCall,
+                false, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the generic setter
+     * without this object passed in.
+     *
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            Object callbackReceiver,
+            IJavetDirectCallable.GenericSetterAndNoThis<?> directCall) {
+        this(null, V8ValueSymbolType.None, callbackReceiver,
+                JavetCallbackType.DirectCallGenericSetterAndNoThis, directCall,
+                false, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the generic setter
+     * with this object passed in.
+     *
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            Object callbackReceiver,
+            IJavetDirectCallable.GenericSetterAndThis<?> directCall) {
+        this(null, V8ValueSymbolType.None, callbackReceiver,
+                JavetCallbackType.DirectCallGenericSetterAndThis, directCall,
+                false, true);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the setter
+     * without this object passed in.
      *
      * @param name       the name
      * @param directCall the direct call
@@ -122,7 +191,8 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call as the setter.
+     * Instantiates a new Javet callback context that takes a direct call as the setter
+     * without this object passed in.
      *
      * @param name             the name
      * @param callbackReceiver the callback receiver
@@ -133,13 +203,14 @@ public final class JavetCallbackContext {
             String name,
             Object callbackReceiver,
             IJavetDirectCallable.SetterAndNoThis<?> directCall) {
-        this(name, V8ValueSymbolType.None, callbackReceiver,
+        this(Objects.requireNonNull(name), V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallSetterAndNoThis, directCall,
                 false, false);
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call as the setter.
+     * Instantiates a new Javet callback context that takes a direct call as the setter
+     * with this object passed in.
      *
      * @param name       the name
      * @param directCall the direct call
@@ -152,7 +223,8 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call as the setter.
+     * Instantiates a new Javet callback context that takes a direct call as the setter
+     * with this object passed in.
      *
      * @param name             the name
      * @param callbackReceiver the callback receiver
@@ -163,13 +235,14 @@ public final class JavetCallbackContext {
             String name,
             Object callbackReceiver,
             IJavetDirectCallable.SetterAndThis<?> directCall) {
-        this(name, V8ValueSymbolType.None, callbackReceiver,
+        this(Objects.requireNonNull(name), V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallSetterAndThis, directCall,
                 true, false);
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call.
+     * Instantiates a new Javet callback context that takes a direct call
+     * without result and without this object passed in.
      *
      * @param name       the name
      * @param directCall the direct call
@@ -182,7 +255,8 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call.
+     * Instantiates a new Javet callback context that takes a direct call
+     * without result and without this object passed in.
      *
      * @param name             the name
      * @param callbackReceiver the callback receiver
@@ -193,13 +267,14 @@ public final class JavetCallbackContext {
             String name,
             Object callbackReceiver,
             IJavetDirectCallable.NoThisAndNoResult<?> directCall) {
-        this(name, V8ValueSymbolType.None, callbackReceiver,
+        this(Objects.requireNonNull(name), V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallNoThisAndNoResult, directCall,
                 false, false);
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call.
+     * Instantiates a new Javet callback context that takes a direct call
+     * with result and without this object passed in.
      *
      * @param name       the name
      * @param directCall the direct call
@@ -212,7 +287,8 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call.
+     * Instantiates a new Javet callback context that takes a direct call
+     * with result and without this object passed in.
      *
      * @param name             the name
      * @param callbackReceiver the callback receiver
@@ -223,13 +299,14 @@ public final class JavetCallbackContext {
             String name,
             Object callbackReceiver,
             IJavetDirectCallable.NoThisAndResult<?> directCall) {
-        this(name, V8ValueSymbolType.None, callbackReceiver,
+        this(Objects.requireNonNull(name), V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallNoThisAndResult, directCall,
                 false, true);
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call.
+     * Instantiates a new Javet callback context that takes a direct call
+     * without result and with this object passed in.
      *
      * @param name       the name
      * @param directCall the direct call
@@ -242,7 +319,8 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call.
+     * Instantiates a new Javet callback context that takes a direct call
+     * without result and with this object passed in.
      *
      * @param name             the name
      * @param callbackReceiver the callback receiver
@@ -253,13 +331,14 @@ public final class JavetCallbackContext {
             String name,
             Object callbackReceiver,
             IJavetDirectCallable.ThisAndNoResult<?> directCall) {
-        this(name, V8ValueSymbolType.None, callbackReceiver,
+        this(Objects.requireNonNull(name), V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallThisAndNoResult, directCall,
                 true, false);
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call.
+     * Instantiates a new Javet callback context that takes a direct call
+     * with result and with this object passed in.
      *
      * @param name       the name
      * @param directCall the direct call
@@ -272,7 +351,8 @@ public final class JavetCallbackContext {
     }
 
     /**
-     * Instantiates a new Javet callback context that takes a direct call.
+     * Instantiates a new Javet callback context that takes a direct call
+     * with result and with this object passed in.
      *
      * @param name             the name
      * @param callbackReceiver the callback receiver
@@ -283,7 +363,7 @@ public final class JavetCallbackContext {
             String name,
             Object callbackReceiver,
             IJavetDirectCallable.ThisAndResult<?> directCall) {
-        this(name, V8ValueSymbolType.None, callbackReceiver,
+        this(Objects.requireNonNull(name), V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallThisAndResult, directCall,
                 true, true);
     }
@@ -353,7 +433,12 @@ public final class JavetCallbackContext {
             Object callbackReceiver,
             Method callbackMethod,
             boolean thisObjectRequired) {
-        this(name, symbolType, callbackReceiver, JavetCallbackType.Reflection, callbackMethod, thisObjectRequired);
+        this(Objects.requireNonNull(name),
+                symbolType,
+                callbackReceiver,
+                JavetCallbackType.Reflection,
+                callbackMethod,
+                thisObjectRequired);
         assert (callbackReceiver != null && !Modifier.isStatic(callbackMethod.getModifiers()))
                 || (callbackReceiver == null && Modifier.isStatic(callbackMethod.getModifiers()))
                 : ERROR_CALLBACK_RECEIVER_OR_CALLBACK_METHOD_IS_INVALID;
@@ -371,7 +456,7 @@ public final class JavetCallbackContext {
         this.callbackReceiver = callbackReceiver;
         this.callbackType = Objects.requireNonNull(callbackType);
         handle = INVALID_HANDLE;
-        this.name = Objects.requireNonNull(name);
+        this.name = name;
         this.thisObjectRequired = thisObjectRequired;
         this.symbolType = Objects.requireNonNull(symbolType);
     }

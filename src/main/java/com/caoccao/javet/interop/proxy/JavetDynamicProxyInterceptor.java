@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -121,7 +120,7 @@ final class JavetDynamicProxyInterceptor {
      */
     public Object invoke(V8ValueObject thisObject, V8Value... v8Values) throws JavetException {
         try {
-            return BaseJavetProxyHandler.execute(
+            return BaseJavetDynamicProxyHandler.execute(
                     dynamicObjectFactory,
                     targetObject,
                     thisObject,

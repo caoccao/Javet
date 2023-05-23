@@ -56,13 +56,99 @@ public interface IJavetDirectCallable {
     }
 
     /**
-     * The interface GetterAndNoThis gets the property value by a property key without this object passed in.
+     * The interface GenericGetterAndNoThis gets the generic property value by a property key
+     * without this object passed in.
+     *
+     * @since 2.2.0
+     */
+    interface GenericGetterAndNoThis<E extends Exception> extends DirectCall {
+        /**
+         * Get the generic property value by a property key
+         * without this object passed in.
+         *
+         * @param v8ValueKey the V8 value key
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @throws E              the custom exception
+         * @since 2.2.0
+         */
+        V8Value get(V8Value v8ValueKey) throws JavetException, E;
+    }
+
+    /**
+     * The interface GenericGetterAndThis gets the generic property value by a property key
+     * with this object passed in.
+     *
+     * @since 2.2.0
+     */
+    interface GenericGetterAndThis<E extends Exception> extends DirectCall {
+        /**
+         * Get the generic property value by a property key
+         * with this object passed in.
+         *
+         * @param thisObject the this object
+         * @param v8ValueKey the V8 value key
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @throws E              the custom exception
+         * @since 2.2.0
+         */
+        V8Value get(V8Value thisObject, V8Value v8ValueKey) throws JavetException, E;
+    }
+
+    /**
+     * The interface GenericSetterAndNoThis sets the generic property value by a property key
+     * without this object passed in.
+     *
+     * @since 2.2.0
+     */
+    interface GenericSetterAndNoThis<E extends Exception> extends DirectCall {
+        /**
+         * Set the generic property value by a property key
+         * without this object passed in.
+         *
+         * @param v8ValueKey   the V8 value key
+         * @param v8ValueValue the V8 value value
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @throws E              the custom exception
+         * @since 2.2.0
+         */
+        V8Value set(V8Value v8ValueKey, V8Value v8ValueValue) throws JavetException, E;
+    }
+
+    /**
+     * The interface GenericSetterAndThis sets the generic property value by a property key
+     * with this object passed in.
+     *
+     * @since 2.2.0
+     */
+    interface GenericSetterAndThis<E extends Exception> extends DirectCall {
+        /**
+         * Set the generic property value by a property key
+         * with this object passed in.
+         *
+         * @param thisObject   the this object
+         * @param v8ValueKey   the V8 value key
+         * @param v8ValueValue the V8 value value
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @throws E              the custom exception
+         * @since 2.2.0
+         */
+        V8Value set(V8Value thisObject, V8Value v8ValueKey, V8Value v8ValueValue) throws JavetException, E;
+    }
+
+    /**
+     * The interface GetterAndNoThis gets the property value by a property key
+     * without this object passed in.
      *
      * @since 2.2.0
      */
     interface GetterAndNoThis<E extends Exception> extends DirectCall {
         /**
-         * Get the property value by a property key without this object passed in.
+         * Get the property value by a property key
+         * without this object passed in.
          *
          * @return the V8 value
          * @throws JavetException the javet exception
@@ -73,13 +159,15 @@ public interface IJavetDirectCallable {
     }
 
     /**
-     * The interface GetterAndThis gets the property value by a property key with this object passed in.
+     * The interface GetterAndThis gets the property value by a property key
+     * with this object passed in.
      *
      * @since 2.2.0
      */
     interface GetterAndThis<E extends Exception> extends DirectCall {
         /**
-         * Get the property value by a property key with this object passed in.
+         * Get the property value by a property key
+         * with this object passed in.
          *
          * @param thisObject the this object
          * @return the V8 value
@@ -91,7 +179,7 @@ public interface IJavetDirectCallable {
     }
 
     /**
-     * The interface NoThisAndNoResult does not accept this object and return the result.
+     * The interface NoThisAndResult does not return the result and accept this object passed in.
      *
      * @since 2.2.0
      */
@@ -108,7 +196,8 @@ public interface IJavetDirectCallable {
     }
 
     /**
-     * The interface NoThisAndResult returns the result.
+     * The interface NoThisAndResult returns the result
+     * without this object passed in.
      *
      * @since 2.2.0
      */
@@ -126,13 +215,15 @@ public interface IJavetDirectCallable {
     }
 
     /**
-     * The interface SetterAndNoThis gets the property value by a property key without this object passed in.
+     * The interface SetterAndNoThis gets the property value by a property key
+     * without this object passed in.
      *
      * @since 2.2.0
      */
     interface SetterAndNoThis<E extends Exception> extends DirectCall {
         /**
-         * Set the property value by a property key without this object passed in.
+         * Set the property value by a property key
+         * without this object passed in.
          *
          * @param v8ValueValue the V8 value value
          * @return the V8 value
@@ -140,17 +231,19 @@ public interface IJavetDirectCallable {
          * @throws E              the custom exception
          * @since 2.2.0
          */
-        void set(V8Value v8ValueValue) throws JavetException, E;
+        V8Value set(V8Value v8ValueValue) throws JavetException, E;
     }
 
     /**
-     * The interface SetterAndThis gets the property value by a property key with this object passed in.
+     * The interface SetterAndThis gets the property value by a property key
+     * with this object passed in.
      *
      * @since 2.2.0
      */
     interface SetterAndThis<E extends Exception> extends DirectCall {
         /**
-         * Set the property value by a property key with this object passed in.
+         * Set the property value by a property key
+         * with this object passed in.
          *
          * @param thisObject   the this object
          * @param v8ValueValue the V8 value value
@@ -159,11 +252,11 @@ public interface IJavetDirectCallable {
          * @throws E              the custom exception
          * @since 2.2.0
          */
-        void set(V8Value thisObject, V8Value v8ValueValue) throws JavetException, E;
+        V8Value set(V8Value thisObject, V8Value v8ValueValue) throws JavetException, E;
     }
 
     /**
-     * The interface ThisAndNoResult accepts this object.
+     * The interface ThisAndNoResult does not return the result, but accepts this object.
      *
      * @since 2.2.0
      */

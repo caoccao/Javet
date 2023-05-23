@@ -343,8 +343,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     V8ValueProxy v8ValueProxy = v8Scope.createV8ValueProxy();
                     try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
                         JavetDynamicProxyObjectHandler<Map<?, ?>> javetProxyHandler =
-                                new JavetDynamicProxyObjectHandler<>(
-                                        v8Runtime, null, (Map<?, ?>) object);
+                                new JavetDynamicProxyObjectHandler<>(null, (Map<?, ?>) object);
                         List<JavetCallbackContext> javetCallbackContexts =
                                 iV8ValueObjectHandler.bind(javetProxyHandler);
                         iV8ValueObjectHandler.setPrivateProperty(
@@ -373,8 +372,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     V8ValueProxy v8ValueProxy = v8Scope.createV8ValueProxy();
                     try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
                         JavetDynamicProxyObjectHandler<Set<?>> javetProxyHandler =
-                                new JavetDynamicProxyObjectHandler<>(
-                                        v8Runtime, null, (Set<?>) object);
+                                new JavetDynamicProxyObjectHandler<>(null, (Set<?>) object);
                         List<JavetCallbackContext> javetCallbackContexts =
                                 iV8ValueObjectHandler.bind(javetProxyHandler);
                         iV8ValueObjectHandler.setPrivateProperty(

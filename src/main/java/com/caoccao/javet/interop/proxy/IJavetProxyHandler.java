@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -31,6 +32,43 @@ import com.caoccao.javet.values.reference.V8ValueArray;
  * @since 0.9.6
  */
 public interface IJavetProxyHandler<T> {
+    /**
+     * The constant PROXY_FUNCTION_NAME_APPLY.
+     *
+     * @since 2.2.0
+     */
+    String PROXY_FUNCTION_NAME_APPLY = "apply";
+    /**
+     * The constant PROXY_FUNCTION_NAME_CONSTRUCT.
+     *
+     * @since 2.2.0
+     */
+    String PROXY_FUNCTION_NAME_CONSTRUCT = "construct";
+    /**
+     * The constant PROXY_FUNCTION_NAME_GET.
+     *
+     * @since 2.2.0
+     */
+    String PROXY_FUNCTION_NAME_GET = "get";
+    /**
+     * The constant PROXY_FUNCTION_NAME_HAS.
+     *
+     * @since 2.2.0
+     */
+    String PROXY_FUNCTION_NAME_HAS = "has";
+    /**
+     * The constant PROXY_FUNCTION_NAME_OWN_KEYS.
+     *
+     * @since 2.2.0
+     */
+    String PROXY_FUNCTION_NAME_OWN_KEYS = "ownKeys";
+    /**
+     * The constant PROXY_FUNCTION_NAME_SET.
+     *
+     * @since 2.2.0
+     */
+    String PROXY_FUNCTION_NAME_SET = "set";
+
     /**
      * Apply to object
      *
@@ -107,6 +145,14 @@ public interface IJavetProxyHandler<T> {
      * @since 0.9.6
      */
     T getTargetObject();
+
+    /**
+     * Gets V8 runtime.
+     *
+     * @return the V8 runtime
+     * @since 2.2.0
+     */
+    V8Runtime getV8Runtime();
 
     /**
      * Has property

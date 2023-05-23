@@ -708,7 +708,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             int[] storage = new int[1];
             IJavetDirectCallable.GetterAndNoThis<?> callbackGetter = () -> v8Runtime.createV8ValueInteger(storage[0]);
             JavetCallbackContext callbackContextGetter = new JavetCallbackContext(functionName, callbackGetter);
-            IJavetDirectCallable.SetterAndNoThis<?> callbackSetter = (value) -> storage[0] = ((V8ValueInteger) value).getValue();
+            IJavetDirectCallable.SetterAndNoThis<?> callbackSetter = (value) -> {
+                storage[0] = ((V8ValueInteger) value).getValue();
+                return v8Runtime.createV8ValueBoolean(true);
+            };
             JavetCallbackContext callbackContextSetter = new JavetCallbackContext(functionName, callbackSetter);
             v8ValueObject.bindProperty(callbackContextGetter, callbackContextSetter);
             assertTrue(v8ValueObject.setInteger(functionName, 2));
@@ -733,6 +736,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             IJavetDirectCallable.SetterAndThis<?> callbackSetter = (thisObject, value) -> {
                 assertInstanceOf(V8ValueObject.class, thisObject);
                 storage[0] = ((V8ValueInteger) value).getValue();
+                return v8Runtime.createV8ValueBoolean(true);
             };
             JavetCallbackContext callbackContextSetter = new JavetCallbackContext(functionName, callbackSetter);
             v8ValueObject.bindProperty(callbackContextGetter, callbackContextSetter);
@@ -955,8 +959,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 return v8Runtime.createV8ValueInteger(x);
             }
 
-            public void xSet(V8Value v8Value) {
+            public V8Value xSet(V8Value v8Value) throws JavetException {
                 x = ((V8ValueInteger) v8Value).getValue();
+                return v8Runtime.createV8ValueBoolean(true);
             }
 
             public V8Value yGet(V8Value thisObject) throws JavetException {
@@ -964,9 +969,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 return v8Runtime.createV8ValueInteger(y);
             }
 
-            public void ySet(V8Value thisObject, V8Value v8Value) {
+            public V8Value ySet(V8Value thisObject, V8Value v8Value) throws JavetException {
                 assertInstanceOf(V8ValueObject.class, thisObject);
                 y = ((V8ValueInteger) v8Value).getValue();
+                return v8Runtime.createV8ValueBoolean(true);
             }
         };
         final int expectedCallbackContextSize = 8;

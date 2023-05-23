@@ -28,11 +28,11 @@ import java.util.Map;
  */
 public class JavetError {
     /**
-     * The constant PARAMETER_EXPECTED_PARAMETER_TYPE.
+     * The constant PARAMETER_ACTUAL_PARAMETER_SIZE.
      *
      * @since 0.8.5
      */
-    public static final String PARAMETER_EXPECTED_PARAMETER_TYPE = "expectedParameterType";
+    public static final String PARAMETER_ACTUAL_PARAMETER_SIZE = "actualParameterSize";
     /**
      * The constant PARAMETER_ACTUAL_PARAMETER_TYPE.
      *
@@ -40,101 +40,17 @@ public class JavetError {
      */
     public static final String PARAMETER_ACTUAL_PARAMETER_TYPE = "actualParameterType";
     /**
-     * The constant PARAMETER_METHOD_NAME.
+     * The constant PARAMETER_CALLBACK_TYPE.
      *
-     * @since 0.8.5
+     * @since 2.2.0
      */
-    public static final String PARAMETER_METHOD_NAME = "methodName";
+    public static final String PARAMETER_CALLBACK_TYPE = "callbackType";
     /**
-     * The constant PARAMETER_EXPECTED_PARAMETER_SIZE.
+     * The constant PARAMETER_CONTINUABLE.
      *
      * @since 0.8.5
      */
-    public static final String PARAMETER_EXPECTED_PARAMETER_SIZE = "expectedParameterSize";
-    /**
-     * The constant PARAMETER_ACTUAL_PARAMETER_SIZE.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_ACTUAL_PARAMETER_SIZE = "actualParameterSize";
-    /**
-     * The constant PARAMETER_RESOURCE_NAME.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_RESOURCE_NAME = "resourceName";
-    /**
-     * The constant PARAMETER_SOURCE_LINE.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_SOURCE_LINE = "sourceLine";
-    /**
-     * The constant PARAMETER_LINE_NUMBER.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_LINE_NUMBER = "lineNumber";
-    /**
-     * The constant PARAMETER_START_COLUMN.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_START_COLUMN = "startColumn";
-    /**
-     * The constant PARAMETER_END_COLUMN.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_END_COLUMN = "endColumn";
-    /**
-     * The constant PARAMETER_START_POSITION.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_START_POSITION = "startPosition";
-    /**
-     * The constant PARAMETER_END_POSITION.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_END_POSITION = "endPosition";
-    /**
-     * The constant PARAMETER_MESSAGE.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_MESSAGE = "message";
-    /**
-     * The constant PARAMETER_CURRENT_THREAD_ID.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_CURRENT_THREAD_ID = "currentThreadId";
-    /**
-     * The constant PARAMETER_LOCKED_THREAD_ID.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_LOCKED_THREAD_ID = "lockedThreadId";
-    /**
-     * The constant PARAMETER_OS.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_OS = "OS";
-    /**
-     * The constant PARAMETER_FEATURE.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_FEATURE = "feature";
-    /**
-     * The constant PARAMETER_SYMBOL.
-     *
-     * @since 0.8.5
-     */
-    public static final String PARAMETER_SYMBOL = "symbol";
+    public static final String PARAMETER_CONTINUABLE = "continuable";
     /**
      * The constant PARAMETER_COUNT.
      *
@@ -142,11 +58,83 @@ public class JavetError {
      */
     public static final String PARAMETER_COUNT = "count";
     /**
-     * The constant PARAMETER_CONTINUABLE.
+     * The constant PARAMETER_CURRENT_THREAD_ID.
      *
      * @since 0.8.5
      */
-    public static final String PARAMETER_CONTINUABLE = "continuable";
+    public static final String PARAMETER_CURRENT_THREAD_ID = "currentThreadId";
+    /**
+     * The constant PARAMETER_END_COLUMN.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_END_COLUMN = "endColumn";
+    /**
+     * The constant PARAMETER_END_POSITION.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_END_POSITION = "endPosition";
+    /**
+     * The constant PARAMETER_EXPECTED_PARAMETER_SIZE.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_EXPECTED_PARAMETER_SIZE = "expectedParameterSize";
+    /**
+     * The constant PARAMETER_EXPECTED_PARAMETER_TYPE.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_EXPECTED_PARAMETER_TYPE = "expectedParameterType";
+    /**
+     * The constant PARAMETER_FEATURE.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_FEATURE = "feature";
+    /**
+     * The constant PARAMETER_HEAP_STATISTICS.
+     *
+     * @since 1.0.4
+     */
+    public static final String PARAMETER_HEAP_STATISTICS = "heapStatistics";
+    /**
+     * The constant PARAMETER_LINE_NUMBER.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_LINE_NUMBER = "lineNumber";
+    /**
+     * The constant PARAMETER_LOCKED_THREAD_ID.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_LOCKED_THREAD_ID = "lockedThreadId";
+    /**
+     * The constant PARAMETER_MAX_DEPTH.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_MAX_DEPTH = "maxDepth";
+    /**
+     * The constant PARAMETER_MESSAGE.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_MESSAGE = "message";
+    /**
+     * The constant PARAMETER_METHOD_NAME.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_METHOD_NAME = "methodName";
+    /**
+     * The constant PARAMETER_OS.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_OS = "OS";
     /**
      * The constant PARAMETER_PATH.
      *
@@ -160,18 +148,35 @@ public class JavetError {
      */
     public static final String PARAMETER_REASON = "reason";
     /**
-     * The constant PARAMETER_MAX_DEPTH.
+     * The constant PARAMETER_RESOURCE_NAME.
      *
      * @since 0.8.5
      */
-    public static final String PARAMETER_MAX_DEPTH = "maxDepth";
+    public static final String PARAMETER_RESOURCE_NAME = "resourceName";
     /**
-     * The constant PARAMETER_HEAP_STATISTICS.
+     * The constant PARAMETER_SOURCE_LINE.
      *
-     * @since 1.0.4
+     * @since 0.8.5
      */
-    public static final String PARAMETER_HEAP_STATISTICS = "heapStatistics";
-
+    public static final String PARAMETER_SOURCE_LINE = "sourceLine";
+    /**
+     * The constant PARAMETER_START_COLUMN.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_START_COLUMN = "startColumn";
+    /**
+     * The constant PARAMETER_START_POSITION.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_START_POSITION = "startPosition";
+    /**
+     * The constant PARAMETER_SYMBOL.
+     *
+     * @since 0.8.5
+     */
+    public static final String PARAMETER_SYMBOL = "symbol";
     /**
      * The constant OSNotSupported.
      *
@@ -207,7 +212,6 @@ public class JavetError {
      */
     public static final JavetError FailedToReadPath = new JavetError(
             105, JavetErrorType.System, "Failed to read ${path}");
-
     /**
      * The constant CompilationFailure.
      *
@@ -215,7 +219,6 @@ public class JavetError {
      */
     public static final JavetError CompilationFailure = new JavetError(
             201, JavetErrorType.Compilation, "${message}");
-
     /**
      * The constant ExecutionFailure.
      *
@@ -230,7 +233,6 @@ public class JavetError {
      */
     public static final JavetError ExecutionTerminated = new JavetError(
             302, JavetErrorType.Execution, "Execution is terminated and continuable is ${continuable}");
-
     /**
      * The constant CallbackSignatureParameterSizeMismatch.
      *
@@ -280,7 +282,13 @@ public class JavetError {
      */
     public static final JavetError CallbackUnregistrationFailure = new JavetError(
             407, JavetErrorType.Callback, "Callback ${methodName} unregistration failed with error message ${message}");
-
+    /**
+     * The constant CallbackTypeNotSupported.
+     *
+     * @since 2.2.0
+     */
+    public static final JavetError CallbackTypeNotSupported = new JavetError(
+            408, JavetErrorType.Callback, "Callback type ${callbackType} is not supported");
     /**
      * The constant ConverterFailure.
      *
@@ -302,7 +310,6 @@ public class JavetError {
      */
     public static final JavetError ConverterSymbolNotBuiltIn = new JavetError(
             503, JavetErrorType.Converter, "${symbol} is not a built-in symbol");
-
     /**
      * The constant ModuleNameEmpty.
      *
@@ -324,7 +331,6 @@ public class JavetError {
      */
     public static final JavetError ModulePermissionDenied = new JavetError(
             603, JavetErrorType.Module, "Denied access to module ${moduleName}");
-
     /**
      * The constant LockAcquisitionFailure.
      *
@@ -346,7 +352,6 @@ public class JavetError {
      */
     public static final JavetError LockConflictThreadIdMismatch = new JavetError(
             703, JavetErrorType.Lock, "Runtime lock conflict is detected with locked thread ID ${lockedThreadID} and current thread ID ${currentThreadID}");
-
     /**
      * The constant RuntimeAlreadyClosed.
      *
@@ -389,7 +394,6 @@ public class JavetError {
      */
     public static final JavetError RuntimeOutOfMemory = new JavetError(
             806, JavetErrorType.Runtime, "Runtime is out of memory because ${message} with ${heapStatistics}");
-
     /**
      * The constant EngineNotAvailable.
      *
@@ -397,7 +401,6 @@ public class JavetError {
      */
     public static final JavetError EngineNotAvailable = new JavetError(
             901, JavetErrorType.Engine, "Engine is not available.");
-
     /**
      * The Code.
      *

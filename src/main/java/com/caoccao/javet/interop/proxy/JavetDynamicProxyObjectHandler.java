@@ -43,9 +43,7 @@ import java.util.*;
  * @since 0.9.6
  */
 @SuppressWarnings("unchecked")
-public class JavetDynamicProxyObjectHandler<T>
-        extends BaseJavetProxyHandler<T>
-        implements IJavetDirectCallable {
+public class JavetDynamicProxyObjectHandler<T> extends BaseJavetDynamicProxyHandler<T> {
 
     /**
      * The constant FUNCTION_NAME_LENGTH.
@@ -63,16 +61,14 @@ public class JavetDynamicProxyObjectHandler<T>
     /**
      * Instantiates a new Javet dynamic proxy object handler.
      *
-     * @param v8Runtime            the V8 runtime
      * @param dynamicObjectFactory the dynamic object factory
      * @param targetObject         the target object
      * @since 0.9.6
      */
     public JavetDynamicProxyObjectHandler(
-            V8Runtime v8Runtime,
             IJavetDynamicObjectFactory dynamicObjectFactory,
             T targetObject) {
-        super(v8Runtime, dynamicObjectFactory, Objects.requireNonNull(targetObject));
+        super(dynamicObjectFactory, Objects.requireNonNull(targetObject));
     }
 
     @Override
