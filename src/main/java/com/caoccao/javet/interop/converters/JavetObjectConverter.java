@@ -417,7 +417,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     v8Scope.setEscapable();
                 } finally {
                     if (childV8Values != null) {
-                        JavetResourceUtils.safeClose((Object[]) childV8Values);
+                        JavetResourceUtils.safeClose(childV8Values);
                     }
                 }
             }
@@ -470,7 +470,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         v8Value = v8ValueArray;
                     } finally {
                         if (childV8Values != null) {
-                            JavetResourceUtils.safeClose((Object[]) childV8Values);
+                            JavetResourceUtils.safeClose(childV8Values);
                         }
                     }
                 } else if (object instanceof byte[]) {
@@ -496,7 +496,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         v8Value = v8ValueArray;
                     } finally {
                         if (childV8Values != null) {
-                            JavetResourceUtils.safeClose((Object[]) childV8Values);
+                            JavetResourceUtils.safeClose(childV8Values);
                         }
                     }
                 } else if (object instanceof double[]) {
@@ -546,7 +546,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         v8Value = v8ValueArray;
                     } finally {
                         if (childV8Values != null) {
-                            JavetResourceUtils.safeClose((Object[]) childV8Values);
+                            JavetResourceUtils.safeClose(childV8Values);
                         }
                     }
                 } else {
@@ -566,7 +566,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         v8Value = v8ValueArray;
                     } finally {
                         if (childV8Values != null) {
-                            JavetResourceUtils.safeClose((Object[]) childV8Values);
+                            JavetResourceUtils.safeClose(childV8Values);
                         }
                     }
                 }

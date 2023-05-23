@@ -90,14 +90,14 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(1.23, ((V8ValueDouble) v8Values[4]).getValue(), 0.001D);
             assertInstanceOf(V8ValueArray.class, v8Values[5]);
             assertEquals(2, v8Runtime.getReferenceCount());
-            JavetResourceUtils.safeClose((Object[]) v8Values);
+            JavetResourceUtils.safeClose(v8Values);
             assertEquals(1, v8Runtime.getReferenceCount());
             Arrays.fill(v8Values, null);
             assertEquals(0, v8ValueArray.batchGet(v8Values, 2, 1), "The actual length should be 0.");
             assertEquals(2, v8ValueArray.batchGet(v8Values, 1, 3));
             assertEquals("2", ((V8ValueString) v8Values[0]).getValue());
             assertEquals(3L, ((V8ValueLong) v8Values[1]).getValue());
-            JavetResourceUtils.safeClose((Object[]) v8Values);
+            JavetResourceUtils.safeClose( v8Values);
         }
     }
 

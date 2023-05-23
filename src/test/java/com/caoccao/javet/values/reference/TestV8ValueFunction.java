@@ -643,7 +643,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
             v8ValueObject.bindProperty(callbackContext);
             assertEquals(1, v8ValueObject.getInteger(functionName));
-            v8ValueObject.unbindProperty(callbackContext);
         } finally {
             v8Runtime.lowMemoryNotification();
         }
@@ -662,7 +661,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
             v8ValueObject.bindProperty(callbackContext);
             assertEquals(1, v8ValueObject.getInteger(functionName));
-            v8ValueObject.unbindProperty(callbackContext);
         } finally {
             v8Runtime.lowMemoryNotification();
         }
@@ -681,7 +679,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8ValueObject.bindFunction(callbackContext);
             v8ValueObject.invokeVoid(functionName, 1, 2);
             assertEquals(3, storage[0]);
-            v8ValueObject.unbindProperty(callbackContext);
         } finally {
             v8Runtime.lowMemoryNotification();
         }
@@ -699,7 +696,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
             v8ValueObject.bindFunction(callbackContext);
             assertEquals(3, v8ValueObject.invokeInteger(functionName, 1, 2));
-            v8ValueObject.unbindProperty(callbackContext);
         } finally {
             v8Runtime.lowMemoryNotification();
         }
@@ -717,7 +713,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8ValueObject.bindProperty(callbackContextGetter, callbackContextSetter);
             assertTrue(v8ValueObject.setInteger(functionName, 2));
             assertEquals(2, v8ValueObject.getInteger(functionName));
-            v8ValueObject.unbindProperty(callbackContextGetter);
         } finally {
             v8Runtime.lowMemoryNotification();
         }
@@ -743,7 +738,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8ValueObject.bindProperty(callbackContextGetter, callbackContextSetter);
             assertTrue(v8ValueObject.setInteger(functionName, 2));
             assertEquals(2, v8ValueObject.getInteger(functionName));
-            v8ValueObject.unbindProperty(callbackContextGetter);
         } finally {
             v8Runtime.lowMemoryNotification();
         }
@@ -765,7 +759,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             v8ValueObject.bindFunction(callbackContext);
             assertInstanceOf(V8ValueUndefined.class, v8ValueObject.invoke(functionName, 1, 2));
             assertEquals(3, storage[0]);
-            v8ValueObject.unbindProperty(callbackContext);
         } finally {
             v8Runtime.lowMemoryNotification();
         }
@@ -786,7 +779,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
             v8ValueObject.bindFunction(callbackContext);
             assertEquals(3, v8ValueObject.invokeInteger(functionName, 1, 2));
-            v8ValueObject.unbindProperty(callbackContext);
         } finally {
             v8Runtime.lowMemoryNotification();
         }

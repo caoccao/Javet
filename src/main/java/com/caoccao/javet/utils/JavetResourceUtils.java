@@ -61,6 +61,18 @@ public final class JavetResourceUtils {
     /**
      * Safe close.
      *
+     * @param v8Values the V8 values
+     * @since 2.2.0
+     */
+    public static void safeClose(V8Value... v8Values) {
+        for (V8Value v8Value : v8Values) {
+            safeClose(v8Value);
+        }
+    }
+
+    /**
+     * Safe close.
+     *
      * @param object the object
      * @since 0.7.1
      */

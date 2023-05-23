@@ -24,7 +24,6 @@ import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.virtual.V8VirtualValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,7 +80,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
                         consumer.accept((Value) v8Values[j]);
                     }
                 } finally {
-                    JavetResourceUtils.safeClose((Object[]) v8Values);
+                    JavetResourceUtils.safeClose(v8Values);
                     Arrays.fill(v8Values, null);
                 }
             }
@@ -116,7 +115,7 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
                         consumer.accept(startIndex + j, (Value) v8Values[j]);
                     }
                 } finally {
-                    JavetResourceUtils.safeClose((Object[]) v8Values);
+                    JavetResourceUtils.safeClose(v8Values);
                     Arrays.fill(v8Values, null);
                 }
             }

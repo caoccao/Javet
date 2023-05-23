@@ -64,7 +64,7 @@ public interface IV8ValueArray extends IV8ValueObject {
             try {
                 batchGet(v8Values, 0, length);
             } catch (Throwable t) {
-                JavetResourceUtils.safeClose((Object[]) v8Values);
+                JavetResourceUtils.safeClose(v8Values);
                 Arrays.fill(v8Values, null);
                 throw t;
             }

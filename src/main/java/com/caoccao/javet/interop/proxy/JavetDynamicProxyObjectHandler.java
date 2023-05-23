@@ -16,13 +16,14 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetStringUtils;
 import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.values.V8Value;
@@ -42,7 +43,9 @@ import java.util.*;
  * @since 0.9.6
  */
 @SuppressWarnings("unchecked")
-public class JavetDynamicProxyObjectHandler<T> extends BaseJavetProxyHandler<T> {
+public class JavetDynamicProxyObjectHandler<T>
+        extends BaseJavetProxyHandler<T>
+        implements IJavetDirectCallable {
 
     /**
      * The constant FUNCTION_NAME_LENGTH.
@@ -72,7 +75,6 @@ public class JavetDynamicProxyObjectHandler<T> extends BaseJavetProxyHandler<T> 
         super(v8Runtime, dynamicObjectFactory, Objects.requireNonNull(targetObject));
     }
 
-    @V8Function
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
         V8Value result = getFromCollection(property);
@@ -81,6 +83,31 @@ public class JavetDynamicProxyObjectHandler<T> extends BaseJavetProxyHandler<T> 
         result = result == null ? getFromSymbol(property) : result;
         result = result == null ? getFromGetter(property) : result;
         return result == null ? v8Runtime.createV8ValueUndefined() : result;
+    }
+
+    @Override
+    public JavetCallbackContext[] getCallbackContexts() {
+        if (callbackContexts == null) {
+            callbackContexts = new JavetCallbackContext[]{
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_GET, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    get(v8Values[0], v8Values[1], v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_HAS, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    has(v8Values[0], v8Values[1])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_OWN_KEYS, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    ownKeys(v8Values[0])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_SET, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    set(v8Values[0], v8Values[1], v8Values[2], v8Values[3])),
+            };
+        }
+        return callbackContexts;
     }
 
     @Override
@@ -142,7 +169,6 @@ public class JavetDynamicProxyObjectHandler<T> extends BaseJavetProxyHandler<T> 
         return null;
     }
 
-    @V8Function
     @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = hasFromCollection(property);
@@ -232,7 +258,6 @@ public class JavetDynamicProxyObjectHandler<T> extends BaseJavetProxyHandler<T> 
         } while (currentClass != null);
     }
 
-    @V8Function
     @Override
     public V8Value ownKeys(V8Value target) throws JavetException {
         Object[] keys = null;
@@ -269,7 +294,6 @@ public class JavetDynamicProxyObjectHandler<T> extends BaseJavetProxyHandler<T> 
         return v8Runtime.toV8Value(classDescriptor.getUniqueKeySet().toArray());
     }
 
-    @V8Function
     @Override
     public V8ValueBoolean set(
             V8Value target,

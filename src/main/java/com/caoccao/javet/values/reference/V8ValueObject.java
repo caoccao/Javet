@@ -325,8 +325,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                             }
                         }
                     } finally {
-                        JavetResourceUtils.safeClose((Object[]) v8ValueKeys);
-                        JavetResourceUtils.safeClose((Object[]) v8ValueValues);
+                        JavetResourceUtils.safeClose(v8ValueKeys);
+                        JavetResourceUtils.safeClose(v8ValueValues);
                         Arrays.fill(v8ValueKeys, null);
                         Arrays.fill(v8ValueValues, null);
                     }
@@ -359,8 +359,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                             consumer.accept(startIndex + j, (Key) v8ValueKeys[j], (Value) v8ValueValues[j]);
                         }
                     } finally {
-                        JavetResourceUtils.safeClose((Object[]) v8ValueKeys);
-                        JavetResourceUtils.safeClose((Object[]) v8ValueValues);
+                        JavetResourceUtils.safeClose(v8ValueKeys);
+                        JavetResourceUtils.safeClose(v8ValueValues);
                         Arrays.fill(v8ValueKeys, null);
                         Arrays.fill(v8ValueValues, null);
                     }

@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -39,7 +40,6 @@ import java.util.regex.Pattern;
  * @since 0.9.6
  */
 public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> {
-
     /**
      * The constant FUNCTION_NAME_TO_V8_VALUE.
      *
@@ -58,12 +58,24 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
      * @since 0.9.7
      */
     protected static final Pattern PATTERN_CAPITALIZED_PREFIX = Pattern.compile("^[A-Z]+");
+    protected static final String PROXY_FUNCTION_NAME_APPLY = "apply";
+    protected static final String PROXY_FUNCTION_NAME_CONSTRUCT = "construct";
+    protected static final String PROXY_FUNCTION_NAME_GET = "get";
+    protected static final String PROXY_FUNCTION_NAME_HAS = "has";
+    protected static final String PROXY_FUNCTION_NAME_OWN_KEYS = "ownKeys";
+    protected static final String PROXY_FUNCTION_NAME_SET = "set";
     /**
      * The constant SETTER_PREFIX_ARRAY.
      *
      * @since 0.9.6
      */
     protected static final String[] SETTER_PREFIX_ARRAY = new String[]{"set", "put"};
+    /**
+     * The Callback contexts.
+     *
+     * @since 2.2.0
+     */
+    protected JavetCallbackContext[] callbackContexts;
     /**
      * The Class descriptor.
      *
@@ -101,6 +113,7 @@ public abstract class BaseJavetProxyHandler<T> implements IJavetProxyHandler<T> 
             V8Runtime v8Runtime,
             IJavetDynamicObjectFactory dynamicObjectFactory,
             T targetObject) {
+        callbackContexts = null;
         this.dynamicObjectFactory = dynamicObjectFactory;
         this.targetObject = targetObject;
         this.v8Runtime = Objects.requireNonNull(v8Runtime);

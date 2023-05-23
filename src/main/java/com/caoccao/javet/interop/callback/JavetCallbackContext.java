@@ -58,7 +58,22 @@ public final class JavetCallbackContext {
     public JavetCallbackContext(
             String name,
             IJavetDirectCallable.GetterAndNoThis<?> directCall) {
-        this(name, V8ValueSymbolType.None, null,
+        this(name, null, directCall);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the getter.
+     *
+     * @param name             the name
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            Object callbackReceiver,
+            IJavetDirectCallable.GetterAndNoThis<?> directCall) {
+        this(name, V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallGetterAndNoThis, directCall,
                 false, true);
     }
@@ -73,7 +88,22 @@ public final class JavetCallbackContext {
     public JavetCallbackContext(
             String name,
             IJavetDirectCallable.GetterAndThis<?> directCall) {
-        this(name, V8ValueSymbolType.None, null,
+        this(name, null, directCall);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the getter.
+     *
+     * @param name             the name
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            Object callbackReceiver,
+            IJavetDirectCallable.GetterAndThis<?> directCall) {
+        this(name, V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallGetterAndThis, directCall,
                 true, true);
     }
@@ -88,7 +118,22 @@ public final class JavetCallbackContext {
     public JavetCallbackContext(
             String name,
             IJavetDirectCallable.SetterAndNoThis<?> directCall) {
-        this(name, V8ValueSymbolType.None, null,
+        this(name, null, directCall);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the setter.
+     *
+     * @param name             the name
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            Object callbackReceiver,
+            IJavetDirectCallable.SetterAndNoThis<?> directCall) {
+        this(name, V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallSetterAndNoThis, directCall,
                 false, false);
     }
@@ -103,7 +148,22 @@ public final class JavetCallbackContext {
     public JavetCallbackContext(
             String name,
             IJavetDirectCallable.SetterAndThis<?> directCall) {
-        this(name, V8ValueSymbolType.None, null,
+        this(name, null, directCall);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call as the setter.
+     *
+     * @param name             the name
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            Object callbackReceiver,
+            IJavetDirectCallable.SetterAndThis<?> directCall) {
+        this(name, V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallSetterAndThis, directCall,
                 true, false);
     }
@@ -118,7 +178,22 @@ public final class JavetCallbackContext {
     public JavetCallbackContext(
             String name,
             IJavetDirectCallable.NoThisAndNoResult<?> directCall) {
-        this(name, V8ValueSymbolType.None, null,
+        this(name, null, directCall);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call.
+     *
+     * @param name             the name
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            Object callbackReceiver,
+            IJavetDirectCallable.NoThisAndNoResult<?> directCall) {
+        this(name, V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallNoThisAndNoResult, directCall,
                 false, false);
     }
@@ -133,7 +208,22 @@ public final class JavetCallbackContext {
     public JavetCallbackContext(
             String name,
             IJavetDirectCallable.NoThisAndResult<?> directCall) {
-        this(name, V8ValueSymbolType.None, null,
+        this(name, null, directCall);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call.
+     *
+     * @param name             the name
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            Object callbackReceiver,
+            IJavetDirectCallable.NoThisAndResult<?> directCall) {
+        this(name, V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallNoThisAndResult, directCall,
                 false, true);
     }
@@ -148,7 +238,22 @@ public final class JavetCallbackContext {
     public JavetCallbackContext(
             String name,
             IJavetDirectCallable.ThisAndNoResult<?> directCall) {
-        this(name, V8ValueSymbolType.None, null,
+        this(name, null, directCall);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call.
+     *
+     * @param name             the name
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            Object callbackReceiver,
+            IJavetDirectCallable.ThisAndNoResult<?> directCall) {
+        this(name, V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallThisAndNoResult, directCall,
                 true, false);
     }
@@ -163,7 +268,22 @@ public final class JavetCallbackContext {
     public JavetCallbackContext(
             String name,
             IJavetDirectCallable.ThisAndResult<?> directCall) {
-        this(name, V8ValueSymbolType.None, null,
+        this(name, null, directCall);
+    }
+
+    /**
+     * Instantiates a new Javet callback context that takes a direct call.
+     *
+     * @param name             the name
+     * @param callbackReceiver the callback receiver
+     * @param directCall       the direct call
+     * @since 2.2.0
+     */
+    public JavetCallbackContext(
+            String name,
+            Object callbackReceiver,
+            IJavetDirectCallable.ThisAndResult<?> directCall) {
+        this(name, V8ValueSymbolType.None, callbackReceiver,
                 JavetCallbackType.DirectCallThisAndResult, directCall,
                 true, true);
     }

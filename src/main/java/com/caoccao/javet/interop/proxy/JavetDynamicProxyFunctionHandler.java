@@ -16,10 +16,11 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.V8ValueUtils;
@@ -32,7 +33,8 @@ import com.caoccao.javet.values.reference.V8ValueArray;
  * @param <T> the type parameter
  * @since 1.1.7
  */
-public class JavetDynamicProxyFunctionHandler<T> extends JavetDynamicProxyObjectHandler<T> {
+public class JavetDynamicProxyFunctionHandler<T>
+        extends JavetDynamicProxyObjectHandler<T> {
 
     /**
      * The constant METHOD_NAME_APPLY.
@@ -56,7 +58,6 @@ public class JavetDynamicProxyFunctionHandler<T> extends JavetDynamicProxyObject
         super(v8Runtime, dynamicObjectFactory, targetObject);
     }
 
-    @V8Function
     @Override
     public V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException {
         if (!classDescriptor.getApplyFunctions().isEmpty()) {
@@ -78,10 +79,39 @@ public class JavetDynamicProxyFunctionHandler<T> extends JavetDynamicProxyObject
                                 JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
             } finally {
                 if (v8Values != null) {
-                    JavetResourceUtils.safeClose((Object[]) v8Values);
+                    JavetResourceUtils.safeClose(v8Values);
                 }
             }
         }
         return v8Runtime.createV8ValueUndefined();
+    }
+
+    @Override
+    public JavetCallbackContext[] getCallbackContexts() {
+        if (callbackContexts == null) {
+            callbackContexts = new JavetCallbackContext[]{
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_APPLY, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    apply(v8Values[0], v8Values[1], (V8ValueArray) v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_GET, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    get(v8Values[0], v8Values[1], v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_HAS, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    has(v8Values[0], v8Values[1])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_OWN_KEYS, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    ownKeys(v8Values[0])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_SET, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    set(v8Values[0], v8Values[1], v8Values[2], v8Values[3])),
+            };
+        }
+        return callbackContexts;
     }
 }

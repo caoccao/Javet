@@ -16,13 +16,14 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.ThreadSafeMap;
@@ -38,7 +39,9 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  * @param <T> the type parameter
  * @since 1.1.7
  */
-public class JavetDynamicProxyClassHandler<T extends Class<?>> extends BaseJavetProxyHandler<T> {
+public class JavetDynamicProxyClassHandler<T extends Class<?>>
+        extends BaseJavetProxyHandler<T>
+        implements IJavetDirectCallable {
     /**
      * The constant METHOD_NAME_CONSTRUCTOR.
      *
@@ -67,7 +70,6 @@ public class JavetDynamicProxyClassHandler<T extends Class<?>> extends BaseJavet
         super(v8Runtime, dynamicObjectFactory, targetObject);
     }
 
-    @V8Function
     @Override
     public V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException {
         if (!classDescriptor.getConstructors().isEmpty()) {
@@ -89,14 +91,13 @@ public class JavetDynamicProxyClassHandler<T extends Class<?>> extends BaseJavet
                                 JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
             } finally {
                 if (v8Values != null) {
-                    JavetResourceUtils.safeClose((Object[]) v8Values);
+                    JavetResourceUtils.safeClose(v8Values);
                 }
             }
         }
         return v8Runtime.createV8ValueUndefined();
     }
 
-    @V8Function
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
         V8Value result = getFromField(property);
@@ -106,11 +107,39 @@ public class JavetDynamicProxyClassHandler<T extends Class<?>> extends BaseJavet
     }
 
     @Override
+    public JavetCallbackContext[] getCallbackContexts() {
+        if (callbackContexts == null) {
+            callbackContexts = new JavetCallbackContext[]{
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_CONSTRUCT, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    construct(v8Values[0], (V8ValueArray) v8Values[1], v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_GET, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    get(v8Values[0], v8Values[1], v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_HAS, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    has(v8Values[0], v8Values[1])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_OWN_KEYS, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    ownKeys(v8Values[0])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_SET, this,
+                            (IJavetDirectCallable.NoThisAndResult<?>) (v8Values) ->
+                                    set(v8Values[0], v8Values[1], v8Values[2], v8Values[3])),
+            };
+        }
+        return callbackContexts;
+    }
+
+    @Override
     public ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorCache() {
         return classDescriptorMap;
     }
 
-    @V8Function
     @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = hasFromRegular(property);
@@ -152,13 +181,11 @@ public class JavetDynamicProxyClassHandler<T extends Class<?>> extends BaseJavet
         } while (currentClass != null);
     }
 
-    @V8Function
     @Override
     public V8Value ownKeys(V8Value target) throws JavetException {
         return v8Runtime.toV8Value(classDescriptor.getUniqueKeySet().toArray());
     }
 
-    @V8Function
     @Override
     public V8ValueBoolean set(
             V8Value target,

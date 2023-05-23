@@ -319,7 +319,6 @@ public final class V8FunctionCallback {
             V8Value thisObject,
             V8Value[] args) throws Throwable {
         if (javetCallbackContext != null) {
-            List<Object> values = new ArrayList<>();
             Object resultObject = null;
             try {
                 /*
@@ -337,10 +336,11 @@ public final class V8FunctionCallback {
                     Method method = javetCallbackContext.getCallbackMethod();
                     JavetReflectionUtils.safeSetAccessible(method);
                     Object callbackReceiver = javetCallbackContext.getCallbackReceiver();
+                    List<Object> values = new ArrayList<>();
                     if (javetCallbackContext.isThisObjectRequired()) {
                         values.add(thisObject);
                     }
-                    if (args != null) {
+                    if (args != null && args.length > 0) {
                         Collections.addAll(values, args);
                     }
                     if (values.isEmpty()) {
@@ -469,9 +469,11 @@ public final class V8FunctionCallback {
                         JavetResourceUtils.safeClose(thisObject);
                     }
                 }
-                for (Object value : values) {
-                    if (value != resultObject) {
-                        JavetResourceUtils.safeClose(value);
+                if (args != null) {
+                    for (V8Value value : args) {
+                        if (value != resultObject) {
+                            JavetResourceUtils.safeClose(value);
+                        }
                     }
                 }
             }
