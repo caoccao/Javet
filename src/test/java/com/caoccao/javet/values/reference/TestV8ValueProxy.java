@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueProxy extends BaseTestJavetRuntime {
     @Test
     public void testDynamicProxyHandlerInInstanceMode() throws JavetException {
-        JavetDynamicProxyObjectHandler<MockPojo> handler =
-                new JavetDynamicProxyObjectHandler<>(null, new MockPojo());
+        JavetDynamicProxyObjectHandler<MockPojo, ?> handler =
+                new JavetDynamicProxyObjectHandler<>(v8Runtime, null, new MockPojo());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
                 assertNotNull(v8ValueProxy);
@@ -110,8 +110,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
 
     @Test
     public void testDynamicProxyHandlerInStaticMode() throws JavetException {
-        JavetDynamicProxyClassHandler<Class<?>> handler =
-                new JavetDynamicProxyClassHandler<>(null, MockPojo.class);
+        JavetDynamicProxyClassHandler<Class<?>, ?> handler =
+                new JavetDynamicProxyClassHandler<>(v8Runtime, null, MockPojo.class);
         assertEquals(MockPojo.class, handler.getTargetObject());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
@@ -154,8 +154,8 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
 
     @Test
     public void testDynamicProxyHandlerWithGenericGetterAndSetter() throws JavetException {
-        JavetDynamicProxyObjectHandler<MockPojoWithGenericGetterAndSetter> handler =
-                new JavetDynamicProxyObjectHandler<>(null, new MockPojoWithGenericGetterAndSetter());
+        JavetDynamicProxyObjectHandler<MockPojoWithGenericGetterAndSetter, ?> handler =
+                new JavetDynamicProxyObjectHandler<>(v8Runtime, null, new MockPojoWithGenericGetterAndSetter());
         handler.getTargetObject().set("c", "3");
         handler.getTargetObject().set("d", "4");
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {

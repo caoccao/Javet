@@ -21,6 +21,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 /**
  * The interface Javet proxy handler.
@@ -29,9 +30,10 @@ import com.caoccao.javet.values.reference.V8ValueArray;
  * for more details.
  *
  * @param <T> the type parameter
+ * @param <E> the type parameter
  * @since 0.9.6
  */
-public interface IJavetProxyHandler<T> {
+public interface IJavetProxyHandler<T, E extends Exception> {
     /**
      * The constant PROXY_FUNCTION_NAME_APPLY.
      *
@@ -70,17 +72,18 @@ public interface IJavetProxyHandler<T> {
     String PROXY_FUNCTION_NAME_SET = "set";
 
     /**
-     * Apply to object
+     * Apply to object.
      *
      * @param target     the target
      * @param thisObject this object
      * @param arguments  the arguments
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException, E {
+        return getV8Runtime().createV8ValueUndefined();
     }
 
     /**
@@ -91,21 +94,46 @@ public interface IJavetProxyHandler<T> {
      * @param newTarget the new target
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException, E {
+        return getV8Runtime().createV8ValueUndefined();
     }
 
-//    TODO:
-//    default V8ValueBoolean defineProperty(V8Value target, V8Value property, V8PropertyDescriptor descriptor) throws JavetException {
-//        throw new RuntimeException("Not implemented");
-//    }
+    /**
+     * Define property.
+     *
+     * @param target     the target
+     * @param property   the property
+     * @param descriptor the descriptor
+     * @return the V8 value boolean
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default V8ValueBoolean defineProperty(
+            V8Value target, V8Value property, V8ValueObject descriptor)
+            throws JavetException, E {
+        return getV8Runtime().createV8ValueBoolean(false);
+    }
 
-//    TODO:
-//    default V8ValueBoolean deleteProperty(V8Value target, V8Value property, V8PropertyDescriptor descriptor) throws JavetException {
-//        throw new RuntimeException("Not implemented");
-//    }
+    /**
+     * Delete property.
+     *
+     * @param target     the target
+     * @param property   the property
+     * @param descriptor the descriptor
+     * @return the V8 value boolean
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default V8ValueBoolean deleteProperty(
+            V8Value target, V8Value property, V8ValueObject descriptor)
+            throws JavetException, E {
+        return getV8Runtime().createV8ValueBoolean(false);
+    }
 
     /**
      * Get by property.
@@ -115,16 +143,26 @@ public interface IJavetProxyHandler<T> {
      * @param receiver the receiver
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
+        return getV8Runtime().createV8ValueUndefined();
     }
 
-//    TODO:
-//    default V8PropertyDescriptor getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException {
-//        throw new RuntimeException("Not implemented");
-//    }
+    /**
+     * Gets own property descriptor.
+     *
+     * @param target   the target
+     * @param property the property
+     * @return the own property descriptor
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default V8ValueObject getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
+        return getV8Runtime().createV8ValueObject();
+    }
 
     /**
      * Gets prototype of.
@@ -132,10 +170,11 @@ public interface IJavetProxyHandler<T> {
      * @param target the target
      * @return the prototype of
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8Value getPrototypeOf(V8Value target) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8Value getPrototypeOf(V8Value target) throws JavetException, E {
+        return getV8Runtime().createV8ValueUndefined();
     }
 
     /**
@@ -161,10 +200,11 @@ public interface IJavetProxyHandler<T> {
      * @param property the property
      * @return the V8 value boolean
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8ValueBoolean has(V8Value target, V8Value property) throws JavetException, E {
+        return getV8Runtime().createV8ValueBoolean(false);
     }
 
     /**
@@ -173,22 +213,24 @@ public interface IJavetProxyHandler<T> {
      * @param target the target
      * @return the V8 value boolean
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8ValueBoolean isExtensible(V8Value target) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8ValueBoolean isExtensible(V8Value target) throws JavetException, E {
+        return getV8Runtime().createV8ValueBoolean(false);
     }
 
     /**
-     * Own keys V8 value.
+     * Own keys.
      *
      * @param target the target
-     * @return the V8 value
+     * @return the V8 value array
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8Value ownKeys(V8Value target) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8ValueArray ownKeys(V8Value target) throws JavetException, E {
+        return getV8Runtime().createV8ValueArray();
     }
 
     /**
@@ -197,10 +239,11 @@ public interface IJavetProxyHandler<T> {
      * @param target the target
      * @return the V8 value boolean
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8ValueBoolean preventExtensions(V8Value target) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8ValueBoolean preventExtensions(V8Value target) throws JavetException, E {
+        return getV8Runtime().createV8ValueBoolean(false);
     }
 
     /**
@@ -212,11 +255,13 @@ public interface IJavetProxyHandler<T> {
      * @param receiver      the receiver
      * @return the V8 value boolean
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8ValueBoolean set(V8Value target, V8Value propertyKey, V8Value propertyValue, V8Value receiver)
-            throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8ValueBoolean set(
+            V8Value target, V8Value propertyKey, V8Value propertyValue, V8Value receiver)
+            throws JavetException, E {
+        return getV8Runtime().createV8ValueBoolean(false);
     }
 
     /**
@@ -226,9 +271,10 @@ public interface IJavetProxyHandler<T> {
      * @param prototype the prototype
      * @return the V8 value boolean
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 0.9.6
      */
-    default V8ValueBoolean setPrototypeOf(V8Value target, V8Value prototype) throws JavetException {
-        throw new RuntimeException("Not implemented");
+    default V8ValueBoolean setPrototypeOf(V8Value target, V8Value prototype) throws JavetException, E {
+        return getV8Runtime().createV8ValueBoolean(false);
     }
 }

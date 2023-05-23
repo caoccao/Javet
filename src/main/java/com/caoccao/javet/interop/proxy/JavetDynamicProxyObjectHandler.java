@@ -40,10 +40,12 @@ import java.util.*;
  * The type Javet dynamic proxy object handler.
  *
  * @param <T> the type parameter
+ * @param <E> the type parameter
  * @since 0.9.6
  */
 @SuppressWarnings("unchecked")
-public class JavetDynamicProxyObjectHandler<T> extends BaseJavetDynamicProxyHandler<T> {
+public class JavetDynamicProxyObjectHandler<T, E extends Exception>
+        extends BaseJavetDynamicProxyHandler<T, E> {
 
     /**
      * The constant FUNCTION_NAME_LENGTH.
@@ -61,14 +63,16 @@ public class JavetDynamicProxyObjectHandler<T> extends BaseJavetDynamicProxyHand
     /**
      * Instantiates a new Javet dynamic proxy object handler.
      *
+     * @param v8Runtime            the V8 runtime
      * @param dynamicObjectFactory the dynamic object factory
      * @param targetObject         the target object
      * @since 0.9.6
      */
     public JavetDynamicProxyObjectHandler(
+            V8Runtime v8Runtime,
             IJavetDynamicObjectFactory dynamicObjectFactory,
             T targetObject) {
-        super(dynamicObjectFactory, Objects.requireNonNull(targetObject));
+        super(v8Runtime, dynamicObjectFactory, Objects.requireNonNull(targetObject));
     }
 
     @Override
@@ -255,7 +259,7 @@ public class JavetDynamicProxyObjectHandler<T> extends BaseJavetDynamicProxyHand
     }
 
     @Override
-    public V8Value ownKeys(V8Value target) throws JavetException {
+    public V8ValueArray ownKeys(V8Value target) throws JavetException {
         Object[] keys = null;
         if (classDescriptor.isTargetTypeMap()) {
             keys = ((Map<?, ?>) targetObject).keySet().toArray();

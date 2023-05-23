@@ -31,9 +31,11 @@ import com.caoccao.javet.values.reference.V8ValueArray;
  * The type Javet dynamic proxy function handler.
  *
  * @param <T> the type parameter
+ * @param <E> the type parameter
  * @since 1.1.7
  */
-public class JavetDynamicProxyFunctionHandler<T> extends JavetDynamicProxyObjectHandler<T> {
+public class JavetDynamicProxyFunctionHandler<T, E extends Exception>
+        extends JavetDynamicProxyObjectHandler<T, E> {
 
     /**
      * The constant METHOD_NAME_APPLY.
@@ -45,14 +47,16 @@ public class JavetDynamicProxyFunctionHandler<T> extends JavetDynamicProxyObject
     /**
      * Instantiates a new Javet dynamic proxy function handler.
      *
+     * @param v8Runtime            the V8 runtime
      * @param dynamicObjectFactory the dynamic object factory
      * @param targetObject         the target object
      * @since 1.1.7
      */
     public JavetDynamicProxyFunctionHandler(
+            V8Runtime v8Runtime,
             IJavetDynamicObjectFactory dynamicObjectFactory,
             T targetObject) {
-        super(dynamicObjectFactory, targetObject);
+        super(v8Runtime, dynamicObjectFactory, targetObject);
     }
 
     @Override

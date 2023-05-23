@@ -66,7 +66,7 @@ public class JavetProxySymbolToPrimitiveConverter<T> extends BaseJavetProxySymbo
 
     @Override
     public V8Value toV8Value(V8Value... v8Values) throws JavetException {
-        if (targetObject != null && v8Values.length > 0) {
+        if (targetObject != null && v8Values != null && v8Values.length > 0) {
             if (v8Values[0] instanceof V8ValueString) {
                 String hintString = ((V8ValueString) v8Values[0]).getValue();
                 if (HINT_NUMBER.equals(hintString)) {

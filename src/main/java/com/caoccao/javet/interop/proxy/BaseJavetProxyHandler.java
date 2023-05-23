@@ -20,14 +20,17 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 
+import java.util.Objects;
+
 /**
  * The type Base javet proxy handler.
  *
  * @param <T> the type parameter
+ * @param <E> the type parameter
  * @since 2.2.0
  */
-public abstract class BaseJavetProxyHandler<T>
-        implements IJavetProxyHandler<T>, IJavetDirectCallable {
+public abstract class BaseJavetProxyHandler<T, E extends Exception>
+        implements IJavetProxyHandler<T, E>, IJavetDirectCallable {
     /**
      * The constant FUNCTION_NAME_TO_V8_VALUE.
      *
@@ -41,24 +44,38 @@ public abstract class BaseJavetProxyHandler<T>
      */
     protected JavetCallbackContext[] callbackContexts;
     /**
+     * The Target object.
+     *
+     * @since 0.9.6
+     */
+    protected T targetObject;
+    /**
      * The V8 runtime.
      *
      * @since 0.9.6
      */
     protected V8Runtime v8Runtime;
 
-    public BaseJavetProxyHandler() {
+    /**
+     * Instantiates a new Base javet proxy handler.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @since 2.2.0
+     */
+    public BaseJavetProxyHandler(V8Runtime v8Runtime, T targetObject) {
         callbackContexts = null;
-        v8Runtime = null;
+        this.targetObject = Objects.requireNonNull(targetObject);
+        this.v8Runtime = Objects.requireNonNull(v8Runtime);
+    }
+
+    @Override
+    public T getTargetObject() {
+        return targetObject;
     }
 
     @Override
     public V8Runtime getV8Runtime() {
         return v8Runtime;
-    }
-
-    @Override
-    public void setV8Runtime(V8Runtime v8Runtime) {
-        this.v8Runtime = v8Runtime;
     }
 }

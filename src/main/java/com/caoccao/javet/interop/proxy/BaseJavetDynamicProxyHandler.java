@@ -20,6 +20,7 @@ import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
@@ -38,9 +39,11 @@ import java.util.regex.Pattern;
  * The type Base javet dynamic proxy handler.
  *
  * @param <T> the type parameter
+ * @param <E> the type parameter
  * @since 0.9.6
  */
-public abstract class BaseJavetDynamicProxyHandler<T> extends BaseJavetProxyHandler<T> {
+public abstract class BaseJavetDynamicProxyHandler<T, E extends Exception>
+        extends BaseJavetProxyHandler<T, E> {
     /**
      * The constant GETTER_PREFIX_ARRAY.
      *
@@ -71,26 +74,21 @@ public abstract class BaseJavetDynamicProxyHandler<T> extends BaseJavetProxyHand
      * @since 2.0.1
      */
     protected IJavetDynamicObjectFactory dynamicObjectFactory;
-    /**
-     * The Target object.
-     *
-     * @since 0.9.6
-     */
-    protected T targetObject;
 
     /**
      * Instantiates a new Base javet dynamic proxy handler.
      *
+     * @param v8Runtime            the V8 runtime
      * @param dynamicObjectFactory the javet dynamic object factory
      * @param targetObject         the target object
      * @since 0.9.6
      */
     public BaseJavetDynamicProxyHandler(
+            V8Runtime v8Runtime,
             IJavetDynamicObjectFactory dynamicObjectFactory,
             T targetObject) {
-        super();
+        super(v8Runtime, targetObject);
         this.dynamicObjectFactory = dynamicObjectFactory;
-        this.targetObject = targetObject;
         initialize();
     }
 
@@ -336,11 +334,6 @@ public abstract class BaseJavetDynamicProxyHandler<T> extends BaseJavetProxyHand
             }
         }
         return 0;
-    }
-
-    @Override
-    public T getTargetObject() {
-        return targetObject;
     }
 
     /**

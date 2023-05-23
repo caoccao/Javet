@@ -20,6 +20,7 @@ import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -38,7 +39,8 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  * @param <T> the type parameter
  * @since 1.1.7
  */
-public class JavetDynamicProxyClassHandler<T extends Class<?>> extends BaseJavetDynamicProxyHandler<T> {
+public class JavetDynamicProxyClassHandler<T extends Class<?>, E extends Exception>
+        extends BaseJavetDynamicProxyHandler<T, E> {
     /**
      * The constant METHOD_NAME_CONSTRUCTOR.
      *
@@ -55,14 +57,16 @@ public class JavetDynamicProxyClassHandler<T extends Class<?>> extends BaseJavet
     /**
      * Instantiates a new Javet dynamic proxy handler.
      *
+     * @param v8Runtime            the V8 runtime
      * @param dynamicObjectFactory the dynamic object factory
      * @param targetObject         the target object
      * @since 0.9.6
      */
     public JavetDynamicProxyClassHandler(
+            V8Runtime v8Runtime,
             IJavetDynamicObjectFactory dynamicObjectFactory,
             T targetObject) {
-        super(dynamicObjectFactory, targetObject);
+        super(v8Runtime, dynamicObjectFactory, targetObject);
     }
 
     @Override
@@ -177,7 +181,7 @@ public class JavetDynamicProxyClassHandler<T extends Class<?>> extends BaseJavet
     }
 
     @Override
-    public V8Value ownKeys(V8Value target) throws JavetException {
+    public V8ValueArray ownKeys(V8Value target) throws JavetException {
         return v8Runtime.toV8Value(classDescriptor.getUniqueKeySet().toArray());
     }
 
