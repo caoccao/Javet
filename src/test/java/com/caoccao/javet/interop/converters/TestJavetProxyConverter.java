@@ -28,6 +28,7 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.values.V8Value;
@@ -292,6 +293,17 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                         "}\n" +
                         "main();").executeString());
         v8Runtime.getGlobalObject().delete("StringBuilder");
+    }
+
+    @Test
+    public void testDirectProxyFunctionHandler() throws JavetException {
+        int expectedCallCount = 0;
+        MockDirectProxyFunctionHandler handler = new MockDirectProxyFunctionHandler();
+        v8Runtime.getGlobalObject().set("a", handler);
+        // Test apply().
+        assertEquals(6, v8Runtime.getExecutor("a(1,2,3);").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test
