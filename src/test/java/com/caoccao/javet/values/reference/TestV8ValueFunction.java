@@ -27,6 +27,7 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
@@ -640,7 +641,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         String functionName = "test";
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             IJavetDirectCallable.GetterAndNoThis<?> callback = () -> v8Runtime.createV8ValueInteger(1);
-            JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallGetterAndNoThis, callback);
             v8ValueObject.bindProperty(callbackContext);
             assertEquals(1, v8ValueObject.getInteger(functionName));
         } finally {
@@ -658,7 +660,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertEquals("a", ((V8ValueObject) thisObject).getString("a"));
                 return v8Runtime.createV8ValueInteger(1);
             };
-            JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallGetterAndThis, callback);
             v8ValueObject.bindProperty(callbackContext);
             assertEquals(1, v8ValueObject.getInteger(functionName));
         } finally {
@@ -675,7 +678,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertEquals(2, v8Values.length);
                 storage[0] = ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue();
             };
-            JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallNoThisAndNoResult, callback);
             v8ValueObject.bindFunction(callbackContext);
             v8ValueObject.invokeVoid(functionName, 1, 2);
             assertEquals(3, storage[0]);
@@ -693,7 +697,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 return v8Runtime.createV8ValueInteger(
                         ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue());
             };
-            JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallNoThisAndResult, callback);
             v8ValueObject.bindFunction(callbackContext);
             assertEquals(3, v8ValueObject.invokeInteger(functionName, 1, 2));
         } finally {
@@ -707,12 +712,14 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             int[] storage = new int[1];
             IJavetDirectCallable.GetterAndNoThis<?> callbackGetter = () -> v8Runtime.createV8ValueInteger(storage[0]);
-            JavetCallbackContext callbackContextGetter = new JavetCallbackContext(functionName, callbackGetter);
+            JavetCallbackContext callbackContextGetter = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallGetterAndNoThis, callbackGetter);
             IJavetDirectCallable.SetterAndNoThis<?> callbackSetter = (value) -> {
                 storage[0] = ((V8ValueInteger) value).getValue();
                 return v8Runtime.createV8ValueBoolean(true);
             };
-            JavetCallbackContext callbackContextSetter = new JavetCallbackContext(functionName, callbackSetter);
+            JavetCallbackContext callbackContextSetter = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallSetterAndNoThis, callbackSetter);
             v8ValueObject.bindProperty(callbackContextGetter, callbackContextSetter);
             assertTrue(v8ValueObject.setInteger(functionName, 2));
             assertEquals(2, v8ValueObject.getInteger(functionName));
@@ -732,13 +739,15 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertEquals("a", ((V8ValueObject) thisObject).getString("a"));
                 return v8Runtime.createV8ValueInteger(storage[0]);
             };
-            JavetCallbackContext callbackContextGetter = new JavetCallbackContext(functionName, callbackGetter);
+            JavetCallbackContext callbackContextGetter = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallGetterAndThis, callbackGetter);
             IJavetDirectCallable.SetterAndThis<?> callbackSetter = (thisObject, value) -> {
                 assertInstanceOf(V8ValueObject.class, thisObject);
                 storage[0] = ((V8ValueInteger) value).getValue();
                 return v8Runtime.createV8ValueBoolean(true);
             };
-            JavetCallbackContext callbackContextSetter = new JavetCallbackContext(functionName, callbackSetter);
+            JavetCallbackContext callbackContextSetter = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallSetterAndThis, callbackSetter);
             v8ValueObject.bindProperty(callbackContextGetter, callbackContextSetter);
             assertTrue(v8ValueObject.setInteger(functionName, 2));
             assertEquals(2, v8ValueObject.getInteger(functionName));
@@ -759,7 +768,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertEquals(2, v8Values.length);
                 storage[0] = ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue();
             };
-            JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallThisAndNoResult, callback);
             v8ValueObject.bindFunction(callbackContext);
             assertInstanceOf(V8ValueUndefined.class, v8ValueObject.invoke(functionName, 1, 2));
             assertEquals(3, storage[0]);
@@ -780,7 +790,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 return v8Runtime.createV8ValueInteger(
                         ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue());
             };
-            JavetCallbackContext callbackContext = new JavetCallbackContext(functionName, callback);
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallThisAndResult, callback);
             v8ValueObject.bindFunction(callbackContext);
             assertEquals(3, v8ValueObject.invokeInteger(functionName, 1, 2));
         } finally {
@@ -930,14 +941,30 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             public JavetCallbackContext[] getCallbackContexts() {
                 if (javetCallbackContexts == null) {
                     javetCallbackContexts = new JavetCallbackContext[]{
-                            new JavetCallbackContext("add", (IJavetDirectCallable.NoThisAndResult<?>) this::add),
-                            new JavetCallbackContext("assertAdd", (IJavetDirectCallable.NoThisAndNoResult<?>) this::assertAdd),
-                            new JavetCallbackContext("subtract", (IJavetDirectCallable.ThisAndResult<?>) this::subtract),
-                            new JavetCallbackContext("assertSubtract", (IJavetDirectCallable.ThisAndNoResult<?>) this::assertSubtract),
-                            new JavetCallbackContext("x", (IJavetDirectCallable.GetterAndNoThis<?>) this::xGet),
-                            new JavetCallbackContext("x", (IJavetDirectCallable.SetterAndNoThis<?>) this::xSet),
-                            new JavetCallbackContext("y", (IJavetDirectCallable.GetterAndThis<?>) this::yGet),
-                            new JavetCallbackContext("y", (IJavetDirectCallable.SetterAndThis<?>) this::ySet),
+                            new JavetCallbackContext(
+                                    "add", JavetCallbackType.DirectCallNoThisAndResult,
+                                    (IJavetDirectCallable.NoThisAndResult<?>) this::add),
+                            new JavetCallbackContext(
+                                    "assertAdd", JavetCallbackType.DirectCallNoThisAndNoResult,
+                                    (IJavetDirectCallable.NoThisAndNoResult<?>) this::assertAdd),
+                            new JavetCallbackContext(
+                                    "subtract", JavetCallbackType.DirectCallThisAndResult,
+                                    (IJavetDirectCallable.ThisAndResult<?>) this::subtract),
+                            new JavetCallbackContext(
+                                    "assertSubtract", JavetCallbackType.DirectCallThisAndNoResult,
+                                    (IJavetDirectCallable.ThisAndNoResult<?>) this::assertSubtract),
+                            new JavetCallbackContext(
+                                    "x", JavetCallbackType.DirectCallGetterAndNoThis,
+                                    (IJavetDirectCallable.GetterAndNoThis<?>) this::xGet),
+                            new JavetCallbackContext(
+                                    "x", JavetCallbackType.DirectCallSetterAndNoThis,
+                                    (IJavetDirectCallable.SetterAndNoThis<?>) this::xSet),
+                            new JavetCallbackContext(
+                                    "y", JavetCallbackType.DirectCallGetterAndThis,
+                                    (IJavetDirectCallable.GetterAndThis<?>) this::yGet),
+                            new JavetCallbackContext(
+                                    "y", JavetCallbackType.DirectCallSetterAndThis,
+                                    (IJavetDirectCallable.SetterAndThis<?>) this::ySet),
                     };
                 }
                 return javetCallbackContexts;
@@ -1876,7 +1903,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 @Override
                 public JavetCallbackContext[] getCallbackContexts() {
                     return new JavetCallbackContext[]{
-                            new JavetCallbackContext("test", (IJavetDirectCallable.NoThisAndResult<?>) this::test),
+                            new JavetCallbackContext(
+                                    "test", JavetCallbackType.DirectCallNoThisAndResult,
+                                    (IJavetDirectCallable.NoThisAndResult<?>) this::test),
                     };
                 }
 

@@ -32,12 +32,6 @@ import java.util.Objects;
 public abstract class BaseJavetProxyHandler<T, E extends Exception>
         implements IJavetProxyHandler<T, E>, IJavetDirectCallable {
     /**
-     * The constant FUNCTION_NAME_TO_V8_VALUE.
-     *
-     * @since 1.0.4
-     */
-    protected static final String FUNCTION_NAME_TO_V8_VALUE = "toV8Value";
-    /**
      * The Callback contexts.
      *
      * @since 2.2.0

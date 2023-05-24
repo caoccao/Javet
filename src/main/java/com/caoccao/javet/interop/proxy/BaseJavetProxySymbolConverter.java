@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
@@ -81,6 +82,7 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
                 METHOD_NAME_TO_V8_VALUE,
                 this,
+                JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<?>) this::toV8Value);
         return v8Runtime.createV8ValueFunction(javetCallbackContext);
     }

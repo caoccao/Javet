@@ -27,49 +27,49 @@ public enum JavetCallbackType {
      *
      * @since 2.2.0
      */
-    DirectCallGetterAndNoThis,
+    DirectCallGetterAndNoThis(IJavetDirectCallable.GetterAndNoThis.class, false, true),
     /**
      * The callback is via Java direct getter with this object.
      *
      * @since 2.2.0
      */
-    DirectCallGetterAndThis,
+    DirectCallGetterAndThis(IJavetDirectCallable.GetterAndThis.class, true, true),
     /**
      * The callback is via Java direct setter without this object.
      *
      * @since 2.2.0
      */
-    DirectCallSetterAndNoThis,
+    DirectCallSetterAndNoThis(IJavetDirectCallable.SetterAndNoThis.class, false, true),
     /**
      * The callback is via Java direct setter with this object.
      *
      * @since 2.2.0
      */
-    DirectCallSetterAndThis,
+    DirectCallSetterAndThis(IJavetDirectCallable.SetterAndThis.class, true, true),
     /**
      * The callback is via Java direct call without this object and without result.
      *
      * @since 2.2.0
      */
-    DirectCallNoThisAndNoResult,
+    DirectCallNoThisAndNoResult(IJavetDirectCallable.NoThisAndNoResult.class, false, false),
     /**
      * The callback is via Java direct call without this object and with result.
      *
      * @since 2.2.0
      */
-    DirectCallNoThisAndResult,
+    DirectCallNoThisAndResult(IJavetDirectCallable.NoThisAndResult.class, false, true),
     /**
      * The callback is via Java direct call with this object and without result.
      *
      * @since 2.2.0
      */
-    DirectCallThisAndNoResult,
+    DirectCallThisAndNoResult(IJavetDirectCallable.ThisAndNoResult.class, true, false),
     /**
      * The callback is via Java direct call with this object and with result.
      *
      * @since 2.2.0
      */
-    DirectCallThisAndResult,
+    DirectCallThisAndResult(IJavetDirectCallable.ThisAndResult.class, true, true),
     /**
      * The callback is via Java reflection.
      * <p>
@@ -78,5 +78,47 @@ public enum JavetCallbackType {
      *
      * @since 2.2.0
      */
-    Reflection,
+    Reflection(null, null, null);
+    private final Class<? extends IJavetDirectCallable.DirectCall> directCallClass;
+    private final Boolean returnResult;
+    private final Boolean thisObjectRequired;
+
+    JavetCallbackType(
+            Class<? extends IJavetDirectCallable.DirectCall> directCallClass,
+            Boolean thisObjectRequired,
+            Boolean returnResult) {
+        this.directCallClass = directCallClass;
+        this.returnResult = returnResult;
+        this.thisObjectRequired = thisObjectRequired;
+    }
+
+    /**
+     * Gets direct call class.
+     *
+     * @return the direct call class
+     * @since 2.2.0
+     */
+    public Class<? extends IJavetDirectCallable.DirectCall> getDirectCallClass() {
+        return directCallClass;
+    }
+
+    /**
+     * Gets return result.
+     *
+     * @return the return result
+     * @since 2.2.0
+     */
+    public Boolean getReturnResult() {
+        return returnResult;
+    }
+
+    /**
+     * Gets this object required.
+     *
+     * @return the this object required
+     * @since 2.2.0
+     */
+    public Boolean getThisObjectRequired() {
+        return thisObjectRequired;
+    }
 }

@@ -35,6 +35,12 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  */
 public interface IJavetProxyHandler<T, E extends Exception> {
     /**
+     * The constant FUNCTION_NAME_TO_V8_VALUE.
+     *
+     * @since 1.0.4
+     */
+    String FUNCTION_NAME_TO_V8_VALUE = "toV8Value";
+    /**
      * The constant PROXY_FUNCTION_NAME_APPLY.
      *
      * @since 2.2.0

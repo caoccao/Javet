@@ -20,6 +20,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
@@ -69,15 +70,16 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
         if (property instanceof V8ValueString) {
             String propertyString = ((V8ValueString) property).toPrimitive();
             if ("x".equals(propertyString)) {
-                return v8Runtime.createV8ValueInteger(x);
+                return v8Runtime.createV8ValueInteger(getX());
             }
             if ("y".equals(propertyString)) {
-                return v8Runtime.createV8ValueInteger(y);
+                return v8Runtime.createV8ValueInteger(getY());
             }
             if ("increaseX".equals(propertyString)) {
                 return v8Runtime.createV8ValueFunction(
                         new JavetCallbackContext(
                                 "increaseX",
+                                JavetCallbackType.DirectCallNoThisAndResult,
                                 (IJavetDirectCallable.NoThisAndResult<?>) this::increaseX));
             }
         }
@@ -126,5 +128,15 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
     @Override
     public void setV8Runtime(V8Runtime v8Runtime) {
         this.v8Runtime = v8Runtime;
+    }
+
+    @Override
+    public V8Value symbolToPrimitive(V8Value... v8Values) throws JavetException, IOException {
+        return v8Runtime.createV8ValueString(toString());
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
 }

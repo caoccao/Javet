@@ -34,6 +34,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -318,6 +319,14 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         // Test function get().
         assertTrue(v8Runtime.getExecutor("a.increaseX();").executeBoolean());
         assertEquals(4, handler.getX());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        try (V8Value v8Value = v8Runtime.getExecutor("a.increaseX;").execute()) {
+            assertInstanceOf(V8ValueFunction.class, v8Value);
+            assertEquals(++expectedCallCount, handler.getCallCount());
+        }
+        assertEquals(
+                MockDirectProxyObjectHandler.class.getSimpleName(),
+                v8Runtime.getExecutor("'' + a;").executeString());
         assertEquals(++expectedCallCount, handler.getCallCount());
         // Test ownKeys().
         assertEquals(

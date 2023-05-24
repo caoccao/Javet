@@ -18,8 +18,8 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -53,17 +53,17 @@ public class JavetDirectProxyObjectHandler<T extends IJavetDirectProxyHandler<E>
     public JavetCallbackContext[] getCallbackContexts() {
         return new JavetCallbackContext[]{
                 new JavetCallbackContext(
-                        PROXY_FUNCTION_NAME_GET, this,
-                        (IJavetDirectCallable.NoThisAndResult<E>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
+                        PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
+                        (NoThisAndResult<E>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
                 new JavetCallbackContext(
-                        PROXY_FUNCTION_NAME_HAS, this,
-                        (IJavetDirectCallable.NoThisAndResult<E>) (v8Values) -> has(v8Values[0], v8Values[1])),
+                        PROXY_FUNCTION_NAME_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
+                        (NoThisAndResult<E>) (v8Values) -> has(v8Values[0], v8Values[1])),
                 new JavetCallbackContext(
-                        PROXY_FUNCTION_NAME_OWN_KEYS, this,
-                        (IJavetDirectCallable.NoThisAndResult<E>) (v8Values) -> ownKeys(v8Values[0])),
+                        PROXY_FUNCTION_NAME_OWN_KEYS, this, JavetCallbackType.DirectCallNoThisAndResult,
+                        (NoThisAndResult<E>) (v8Values) -> ownKeys(v8Values[0])),
                 new JavetCallbackContext(
-                        PROXY_FUNCTION_NAME_SET, this,
-                        (IJavetDirectCallable.NoThisAndResult<E>) (v8Values) -> set(v8Values[0], v8Values[1], v8Values[2], v8Values[3])),
+                        PROXY_FUNCTION_NAME_SET, this, JavetCallbackType.DirectCallNoThisAndResult,
+                        (NoThisAndResult<E>) (v8Values) -> set(v8Values[0], v8Values[1], v8Values[2], v8Values[3])),
         };
     }
 

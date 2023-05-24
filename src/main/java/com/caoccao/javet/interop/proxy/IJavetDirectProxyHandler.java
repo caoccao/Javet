@@ -16,11 +16,18 @@
 
 package com.caoccao.javet.interop.proxy;
 
+import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueSymbol;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 /**
  * The interface Javet direct proxy handler.
@@ -64,6 +71,36 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      * @since 2.2.0
      */
     default V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).toPrimitive();
+            if (IJavetProxyHandler.FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
+                return getV8Runtime().createV8ValueFunction(
+                        new JavetCallbackContext(
+                                V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE,
+                                V8ValueSymbolType.BuiltIn,
+                                JavetCallbackType.DirectCallNoThisAndResult,
+                                (IJavetDirectCallable.NoThisAndResult<?>) this::symbolToPrimitive));
+            }
+        } else if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
+                return getV8Runtime().createV8ValueFunction(
+                        new JavetCallbackContext(
+                                V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE,
+                                V8ValueSymbolType.BuiltIn,
+                                JavetCallbackType.DirectCallNoThisAndResult,
+                                (IJavetDirectCallable.NoThisAndResult<?>) this::symbolToPrimitive));
+            } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)) {
+                return getV8Runtime().createV8ValueFunction(
+                        new JavetCallbackContext(
+                                V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR,
+                                V8ValueSymbolType.BuiltIn,
+                                JavetCallbackType.DirectCallNoThisAndResult,
+                                (IJavetDirectCallable.NoThisAndResult<?>) this::symbolToIterator));
+            }
+
+        }
         return getV8Runtime().createV8ValueUndefined();
     }
 
@@ -119,4 +156,30 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      * @since 2.2.0
      */
     void setV8Runtime(V8Runtime v8Runtime);
+
+    /**
+     * Symbol toIterator.
+     *
+     * @param v8Values the V8 values
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default V8Value symbolToIterator(V8Value... v8Values) throws JavetException, E {
+        return getV8Runtime().createV8ValueUndefined();
+    }
+
+    /**
+     * Symbol toPrimitive.
+     *
+     * @param v8Values the V8 values
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default V8Value symbolToPrimitive(V8Value... v8Values) throws JavetException, E {
+        return getV8Runtime().createV8ValueNull();
+    }
 }

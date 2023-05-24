@@ -22,6 +22,7 @@ import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 /**
@@ -82,16 +83,13 @@ public final class JavetDynamicProxyFactory {
      */
     public Object toObject(Class<?> type, V8Value v8Value) throws JavetException {
         if (type.isInterface()) {
+            InvocationHandler invocationHandler = null;
             if (v8Value instanceof V8ValueFunction) {
-                JavetDynamicProxyV8ValueFunctionInvocationHandler invocationHandler =
-                        new JavetDynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
-                return Proxy.newProxyInstance(
-                        getClass().getClassLoader(),
-                        new Class[]{type, AutoCloseable.class},
-                        invocationHandler);
+                invocationHandler = new JavetDynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
             } else if (v8Value instanceof V8ValueObject && !(v8Value instanceof V8ValueProxy)) {
-                JavetDynamicProxyV8ValueObjectInvocationHandler invocationHandler =
-                        new JavetDynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
+                invocationHandler = new JavetDynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
+            }
+            if (invocationHandler != null) {
                 return Proxy.newProxyInstance(
                         getClass().getClassLoader(),
                         new Class[]{type, AutoCloseable.class},
