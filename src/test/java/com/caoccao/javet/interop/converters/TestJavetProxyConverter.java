@@ -26,7 +26,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
-import com.caoccao.javet.interop.proxy.JavetDynamicObjectFactory;
+import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
@@ -366,7 +366,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             }
         };
         try {
-            javetProxyConverter.getConfig().setDynamicObjectFactory(JavetDynamicObjectFactory.getInstance());
+            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
             v8Runtime.getGlobalObject().set("a", anonymous);
             String codeString = "a.test({\n" +
                     "  add: (a, b) => a + b,\n" +
@@ -374,7 +374,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             v8Runtime.getExecutor(codeString).executeVoid();
             v8Runtime.getGlobalObject().delete("a");
         } finally {
-            javetProxyConverter.getConfig().setDynamicObjectFactory(null);
+            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
         }
     }
 
@@ -404,7 +404,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             }
         };
         try {
-            javetProxyConverter.getConfig().setDynamicObjectFactory(JavetDynamicObjectFactory.getInstance());
+            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
             v8Runtime.getGlobalObject().set("a", anonymous);
             String codeString = "a.test({\n" +
                     "  add: (a, b) => a + b,\n" +
@@ -418,7 +418,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             v8Runtime.getExecutor(codeString).executeVoid();
             v8Runtime.getGlobalObject().delete("a");
         } finally {
-            javetProxyConverter.getConfig().setDynamicObjectFactory(null);
+            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
         }
     }
 

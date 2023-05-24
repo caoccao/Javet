@@ -60,8 +60,8 @@ final class ScoredExecutable<E extends AccessibleObject> {
      * @since 0.9.10
      */
     private static final Class<?> V8_VALUE_PROXY_CLASS = V8ValueProxy.class;
-    private final IJavetDynamicObjectFactory dynamicObjectFactory;
     private final E executable;
+    private final IJavetReflectionObjectFactory reflectionObjectFactory;
     private final Object targetObject;
     private final V8ValueObject thisObject;
     private JavetVirtualObject[] javetVirtualObjects;
@@ -70,21 +70,21 @@ final class ScoredExecutable<E extends AccessibleObject> {
     /**
      * Instantiates a new Scored executable.
      *
-     * @param dynamicObjectFactory the dynamic object factory
-     * @param targetObject         the target object
-     * @param thisObject           this object
-     * @param executable           the executable
-     * @param javetVirtualObjects  the javet virtual objects
+     * @param reflectionObjectFactory the reflection object factory
+     * @param targetObject            the target object
+     * @param thisObject              this object
+     * @param executable              the executable
+     * @param javetVirtualObjects     the javet virtual objects
      * @since 0.9.10
      */
     public ScoredExecutable(
-            IJavetDynamicObjectFactory dynamicObjectFactory,
+            IJavetReflectionObjectFactory reflectionObjectFactory,
             Object targetObject,
             V8ValueObject thisObject,
             E executable,
             JavetVirtualObject[] javetVirtualObjects) {
         this.executable = executable;
-        this.dynamicObjectFactory = dynamicObjectFactory;
+        this.reflectionObjectFactory = reflectionObjectFactory;
         this.javetVirtualObjects = javetVirtualObjects;
         this.score = 0;
         this.targetObject = targetObject;
@@ -139,7 +139,7 @@ final class ScoredExecutable<E extends AccessibleObject> {
             if (isVarArgs || isFixedArgs) {
                 double totalScore = 0;
                 final int fixedParameterCount = isExecutableVarArgs ? parameterCount - 1 : parameterCount;
-                final JavetDynamicProxyFactory dynamicProxyFactory = JavetDynamicProxyFactory.getInstance();
+                final JavetReflectionProxyFactory reflectionProxyFactory = JavetReflectionProxyFactory.getInstance();
                 for (int i = 0; i < fixedParameterCount; i++) {
                     Class<?> parameterType = parameterTypes[i];
                     final V8Value v8Value = javetVirtualObjects[i].getV8Value();
@@ -152,13 +152,13 @@ final class ScoredExecutable<E extends AccessibleObject> {
                         } else if (object != null && parameterType.isAssignableFrom(object.getClass())) {
                             totalScore += 0.9;
                             continue;
-                        } else if (dynamicProxyFactory.isSupportedFunction(parameterType, v8Value)) {
+                        } else if (reflectionProxyFactory.isSupportedFunction(parameterType, v8Value)) {
                             totalScore += 0.95;
                             continue;
-                        } else if (dynamicProxyFactory.isSupportedObject(parameterType, v8Value)) {
+                        } else if (reflectionProxyFactory.isSupportedObject(parameterType, v8Value)) {
                             totalScore += 0.85;
                             continue;
-                        } else if (dynamicObjectFactory != null && dynamicObjectFactory.isSupported(parameterType, v8Value)) {
+                        } else if (reflectionObjectFactory != null && reflectionObjectFactory.isSupported(parameterType, v8Value)) {
                             totalScore += 0.5;
                             continue;
                         }
@@ -194,13 +194,13 @@ final class ScoredExecutable<E extends AccessibleObject> {
                             } else if (object != null && componentType.isAssignableFrom(object.getClass())) {
                                 totalScore += 0.85;
                                 continue;
-                            } else if (dynamicProxyFactory.isSupportedFunction(componentType, v8Value)) {
+                            } else if (reflectionProxyFactory.isSupportedFunction(componentType, v8Value)) {
                                 totalScore += 0.95;
                                 continue;
-                            } else if (dynamicProxyFactory.isSupportedObject(componentType, v8Value)) {
+                            } else if (reflectionProxyFactory.isSupportedObject(componentType, v8Value)) {
                                 totalScore += 0.85;
                                 continue;
-                            } else if (dynamicObjectFactory != null && dynamicObjectFactory.isSupported(componentType, v8Value)) {
+                            } else if (reflectionObjectFactory != null && reflectionObjectFactory.isSupported(componentType, v8Value)) {
                                 totalScore += 0.5;
                                 continue;
                             }
@@ -277,7 +277,7 @@ final class ScoredExecutable<E extends AccessibleObject> {
         } else {
             List<Object> parameters = new ArrayList<>();
             final int fixedParameterCount = isExecutableVarArgs ? parameterCount - 1 : parameterCount;
-            final JavetDynamicProxyFactory dynamicProxyFactory = JavetDynamicProxyFactory.getInstance();
+            final JavetReflectionProxyFactory reflectionProxyFactory = JavetReflectionProxyFactory.getInstance();
             for (int i = 0; i < fixedParameterCount; i++) {
                 Class<?> parameterType = parameterTypes[i];
                 final V8Value v8Value = javetVirtualObjects[i].getV8Value();
@@ -291,12 +291,12 @@ final class ScoredExecutable<E extends AccessibleObject> {
                         conversionRequired = false;
                     } else if (object != null && parameterType.isAssignableFrom(object.getClass())) {
                         conversionRequired = false;
-                    } else if (dynamicProxyFactory.isSupportedFunction(parameterType, v8Value)
-                            || dynamicProxyFactory.isSupportedObject(parameterType, v8Value)) {
-                        parameter = dynamicProxyFactory.toObject(parameterType, v8Value);
+                    } else if (reflectionProxyFactory.isSupportedFunction(parameterType, v8Value)
+                            || reflectionProxyFactory.isSupportedObject(parameterType, v8Value)) {
+                        parameter = reflectionProxyFactory.toObject(parameterType, v8Value);
                         conversionRequired = false;
-                    } else if (dynamicObjectFactory != null && dynamicObjectFactory.isSupported(parameterType, v8Value)) {
-                        parameter = dynamicObjectFactory.toObject(parameterType, v8Value);
+                    } else if (reflectionObjectFactory != null && reflectionObjectFactory.isSupported(parameterType, v8Value)) {
+                        parameter = reflectionObjectFactory.toObject(parameterType, v8Value);
                         conversionRequired = false;
                     }
                 }
@@ -333,12 +333,12 @@ final class ScoredExecutable<E extends AccessibleObject> {
                             conversionRequired = false;
                         } else if (object != null && componentType.isAssignableFrom(object.getClass())) {
                             conversionRequired = false;
-                        } else if (dynamicProxyFactory.isSupportedFunction(componentType, v8Value)
-                                || dynamicProxyFactory.isSupportedObject(componentType, v8Value)) {
-                            parameter = dynamicProxyFactory.toObject(componentType, v8Value);
+                        } else if (reflectionProxyFactory.isSupportedFunction(componentType, v8Value)
+                                || reflectionProxyFactory.isSupportedObject(componentType, v8Value)) {
+                            parameter = reflectionProxyFactory.toObject(componentType, v8Value);
                             conversionRequired = false;
-                        } else if (dynamicObjectFactory != null && dynamicObjectFactory.isSupported(componentType, v8Value)) {
-                            parameter = dynamicObjectFactory.toObject(componentType, v8Value);
+                        } else if (reflectionObjectFactory != null && reflectionObjectFactory.isSupported(componentType, v8Value)) {
+                            parameter = reflectionObjectFactory.toObject(componentType, v8Value);
                             conversionRequired = false;
                         }
                     }

@@ -29,32 +29,32 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * The type Javet dynamic proxy interceptor.
+ * The type Javet reflection proxy interceptor.
  *
  * @since 0.9.6
  */
-final class JavetDynamicProxyInterceptor {
+final class JavetReflectionProxyInterceptor {
     private static final String METHOD_NAME_INVOKE = "invoke";
-    private final IJavetDynamicObjectFactory dynamicObjectFactory;
     private final String jsMethodName;
     private final List<Method> methods;
+    private final IJavetReflectionObjectFactory reflectionObjectFactory;
     private final Object targetObject;
 
     /**
-     * Instantiates a new Javet dynamic proxy interceptor.
+     * Instantiates a new Javet reflection proxy interceptor.
      *
-     * @param dynamicObjectFactory the dynamic object factory
-     * @param targetObject         the target object
-     * @param jsMethodName         the JS method name
-     * @param methods              the methods
+     * @param reflectionObjectFactory the reflection object factory
+     * @param targetObject            the target object
+     * @param jsMethodName            the JS method name
+     * @param methods                 the methods
      * @since 0.9.6
      */
-    public JavetDynamicProxyInterceptor(
-            IJavetDynamicObjectFactory dynamicObjectFactory,
+    public JavetReflectionProxyInterceptor(
+            IJavetReflectionObjectFactory reflectionObjectFactory,
             Object targetObject,
             String jsMethodName,
             List<Method> methods) {
-        this.dynamicObjectFactory = dynamicObjectFactory;
+        this.reflectionObjectFactory = reflectionObjectFactory;
         this.jsMethodName = jsMethodName;
         this.methods = methods;
         this.targetObject = targetObject;
@@ -120,8 +120,8 @@ final class JavetDynamicProxyInterceptor {
      */
     public Object invoke(V8ValueObject thisObject, V8Value... v8Values) throws JavetException {
         try {
-            return BaseJavetDynamicProxyHandler.execute(
-                    dynamicObjectFactory,
+            return BaseJavetReflectionProxyHandler.execute(
+                    reflectionObjectFactory,
                     targetObject,
                     thisObject,
                     methods,

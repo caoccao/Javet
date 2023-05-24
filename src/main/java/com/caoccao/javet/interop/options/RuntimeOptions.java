@@ -16,7 +16,7 @@
 
 package com.caoccao.javet.interop.options;
 
-import com.caoccao.javet.interop.proxy.IJavetDynamicObjectFactory;
+import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
 
 /**
  * The type Runtime options.
@@ -26,11 +26,11 @@ import com.caoccao.javet.interop.proxy.IJavetDynamicObjectFactory;
  */
 public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
     /**
-     * The dynamic object factory.
+     * The reflection object factory.
      *
      * @since 2.0.1
      */
-    protected IJavetDynamicObjectFactory dynamicObjectFactory;
+    protected IJavetReflectionObjectFactory reflectionObjectFactory;
 
     /**
      * Instantiates a new Runtime options.
@@ -38,28 +38,28 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      * @since 1.0.0
      */
     public RuntimeOptions() {
-        dynamicObjectFactory = null;
+        reflectionObjectFactory = null;
     }
 
     /**
-     * Gets dynamic object factory.
+     * Gets reflection object factory.
      *
-     * @return the dynamic object factory
+     * @return the reflection object factory
      * @since 2.0.1
      */
-    public IJavetDynamicObjectFactory getDynamicObjectFactory() {
-        return dynamicObjectFactory;
+    public IJavetReflectionObjectFactory getReflectionObjectFactory() {
+        return reflectionObjectFactory;
     }
 
     /**
-     * Sets dynamic object factory.
+     * Sets reflection object factory.
      *
-     * @param dynamicObjectFactory the dynamic object factory
+     * @param reflectionObjectFactory the reflection object factory
      * @return the self
      * @since 2.0.1
      */
-    public RuntimeOptions<Options> setDynamicObjectFactory(IJavetDynamicObjectFactory dynamicObjectFactory) {
-        this.dynamicObjectFactory = dynamicObjectFactory;
+    public RuntimeOptions<Options> setReflectionObjectFactory(IJavetReflectionObjectFactory reflectionObjectFactory) {
+        this.reflectionObjectFactory = reflectionObjectFactory;
         return this;
     }
 }

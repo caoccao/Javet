@@ -34,13 +34,13 @@ import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 /**
- * The type Javet dynamic proxy class handler.
+ * The type Javet reflection proxy class handler.
  *
  * @param <T> the type parameter
  * @since 1.1.7
  */
-public class JavetDynamicProxyClassHandler<T extends Class<?>, E extends Exception>
-        extends BaseJavetDynamicProxyHandler<T, E> {
+public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exception>
+        extends BaseJavetReflectionProxyHandler<T, E> {
     /**
      * The constant METHOD_NAME_CONSTRUCTOR.
      *
@@ -55,18 +55,18 @@ public class JavetDynamicProxyClassHandler<T extends Class<?>, E extends Excepti
     protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
-     * Instantiates a new Javet dynamic proxy handler.
+     * Instantiates a new Javet reflection proxy handler.
      *
-     * @param v8Runtime            the V8 runtime
-     * @param dynamicObjectFactory the dynamic object factory
-     * @param targetObject         the target object
+     * @param v8Runtime               the V8 runtime
+     * @param reflectionObjectFactory the reflection object factory
+     * @param targetObject            the target object
      * @since 0.9.6
      */
-    public JavetDynamicProxyClassHandler(
+    public JavetReflectionProxyClassHandler(
             V8Runtime v8Runtime,
-            IJavetDynamicObjectFactory dynamicObjectFactory,
+            IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
-        super(v8Runtime, dynamicObjectFactory, targetObject);
+        super(v8Runtime, reflectionObjectFactory, targetObject);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class JavetDynamicProxyClassHandler<T extends Class<?>, E extends Excepti
             try {
                 v8Values = arguments.toArray();
                 return v8Runtime.toV8Value(execute(
-                        dynamicObjectFactory,
+                        reflectionObjectFactory,
                         null,
                         (V8ValueObject) target,
                         classDescriptor.getConstructors(),

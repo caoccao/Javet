@@ -36,13 +36,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The type Base javet dynamic proxy handler.
+ * The type Base javet reflection proxy handler.
  *
  * @param <T> the type parameter
  * @param <E> the type parameter
  * @since 0.9.6
  */
-public abstract class BaseJavetDynamicProxyHandler<T, E extends Exception>
+public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         extends BaseJavetProxyHandler<T, E> {
     /**
      * The constant GETTER_PREFIX_ARRAY.
@@ -69,44 +69,44 @@ public abstract class BaseJavetDynamicProxyHandler<T, E extends Exception>
      */
     protected ClassDescriptor classDescriptor;
     /**
-     * The dynamic object factory.
+     * The Reflection object factory.
      *
      * @since 2.0.1
      */
-    protected IJavetDynamicObjectFactory dynamicObjectFactory;
+    protected IJavetReflectionObjectFactory reflectionObjectFactory;
 
     /**
-     * Instantiates a new Base javet dynamic proxy handler.
+     * Instantiates a new Base javet reflection proxy handler.
      *
-     * @param v8Runtime            the V8 runtime
-     * @param dynamicObjectFactory the javet dynamic object factory
-     * @param targetObject         the target object
+     * @param v8Runtime               the V8 runtime
+     * @param reflectionObjectFactory the reflection object factory
+     * @param targetObject            the target object
      * @since 0.9.6
      */
-    public BaseJavetDynamicProxyHandler(
+    public BaseJavetReflectionProxyHandler(
             V8Runtime v8Runtime,
-            IJavetDynamicObjectFactory dynamicObjectFactory,
+            IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
         super(v8Runtime, targetObject);
-        this.dynamicObjectFactory = dynamicObjectFactory;
+        this.reflectionObjectFactory = reflectionObjectFactory;
         initialize();
     }
 
     /**
      * Execute.
      *
-     * @param <E>                  the type parameter
-     * @param dynamicObjectFactory the dynamic object factory
-     * @param targetObject         the target object
-     * @param thisObject           this object
-     * @param executables          the executables
-     * @param javetVirtualObjects  the javet virtual objects
+     * @param <E>                     the type parameter
+     * @param reflectionObjectFactory the reflection object factory
+     * @param targetObject            the target object
+     * @param thisObject              this object
+     * @param executables             the executables
+     * @param javetVirtualObjects     the javet virtual objects
      * @return the object
      * @throws Throwable the throwable
      * @since 0.9.10
      */
     protected static <E extends AccessibleObject> Object execute(
-            IJavetDynamicObjectFactory dynamicObjectFactory,
+            IJavetReflectionObjectFactory reflectionObjectFactory,
             Object targetObject,
             V8ValueObject thisObject,
             List<E> executables,
@@ -114,7 +114,7 @@ public abstract class BaseJavetDynamicProxyHandler<T, E extends Exception>
         List<ScoredExecutable<E>> scoredExecutables = new ArrayList<>();
         for (E executable : executables) {
             ScoredExecutable<E> scoredExecutable = new ScoredExecutable<>(
-                    dynamicObjectFactory, targetObject, thisObject, executable, javetVirtualObjects);
+                    reflectionObjectFactory, targetObject, thisObject, executable, javetVirtualObjects);
             scoredExecutable.calculateScore();
             double score = scoredExecutable.getScore();
             if (score > 0) {
@@ -283,15 +283,15 @@ public abstract class BaseJavetDynamicProxyHandler<T, E extends Exception>
             String propertyName = ((V8ValueString) property).toPrimitive();
             List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
             if (methods != null && !methods.isEmpty()) {
-                JavetDynamicProxyInterceptor dynamicProxyInterceptor = new JavetDynamicProxyInterceptor(
-                        dynamicObjectFactory, targetObject, propertyName, methods);
-                return v8Runtime.createV8ValueFunction(dynamicProxyInterceptor.getCallbackContext());
+                JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
+                        reflectionObjectFactory, targetObject, propertyName, methods);
+                return v8Runtime.createV8ValueFunction(reflectionProxyInterceptor.getCallbackContext());
             }
             methods = classDescriptor.getGettersMap().get(propertyName);
             if (methods != null && !methods.isEmpty()) {
-                JavetDynamicProxyInterceptor dynamicProxyInterceptor = new JavetDynamicProxyInterceptor(
-                        dynamicObjectFactory, targetObject, propertyName, methods);
-                return v8Runtime.toV8Value(dynamicProxyInterceptor.invoke((V8ValueObject) target));
+                JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
+                        reflectionObjectFactory, targetObject, propertyName, methods);
+                return v8Runtime.toV8Value(reflectionProxyInterceptor.invoke((V8ValueObject) target));
             }
             if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
@@ -694,9 +694,9 @@ public abstract class BaseJavetDynamicProxyHandler<T, E extends Exception>
                 String propertyName = (String) keyObject;
                 List<Method> methods = classDescriptor.getSettersMap().get(propertyName);
                 if (methods != null) {
-                    JavetDynamicProxyInterceptor dynamicProxyInterceptor = new JavetDynamicProxyInterceptor(
-                            dynamicObjectFactory, targetObject, propertyName, methods);
-                    dynamicProxyInterceptor.invoke((V8ValueObject) target, propertyValue);
+                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
+                            reflectionObjectFactory, targetObject, propertyName, methods);
+                    reflectionProxyInterceptor.invoke((V8ValueObject) target, propertyValue);
                     return true;
                 }
             }

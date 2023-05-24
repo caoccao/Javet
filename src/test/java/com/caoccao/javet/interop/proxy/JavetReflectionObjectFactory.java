@@ -43,11 +43,11 @@ import java.util.concurrent.Callable;
  *
  * @since 2.0.1
  */
-public final class JavetDynamicObjectFactory implements IJavetDynamicObjectFactory {
-    private static final JavetDynamicObjectFactory instance = new JavetDynamicObjectFactory();
+public final class JavetReflectionObjectFactory implements IJavetReflectionObjectFactory {
+    private static final JavetReflectionObjectFactory instance = new JavetReflectionObjectFactory();
     private final IJavetLogger logger;
 
-    private JavetDynamicObjectFactory() {
+    private JavetReflectionObjectFactory() {
         logger = new JavetDefaultLogger(getClass().getName());
     }
 
@@ -57,7 +57,7 @@ public final class JavetDynamicObjectFactory implements IJavetDynamicObjectFacto
      * @return the instance
      * @since 2.0.1
      */
-    public static JavetDynamicObjectFactory getInstance() {
+    public static JavetReflectionObjectFactory getInstance() {
         return instance;
     }
 

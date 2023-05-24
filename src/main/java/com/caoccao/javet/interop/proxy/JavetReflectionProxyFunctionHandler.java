@@ -28,14 +28,14 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
 /**
- * The type Javet dynamic proxy function handler.
+ * The type Javet reflection proxy function handler.
  *
  * @param <T> the type parameter
  * @param <E> the type parameter
  * @since 1.1.7
  */
-public class JavetDynamicProxyFunctionHandler<T, E extends Exception>
-        extends JavetDynamicProxyObjectHandler<T, E> {
+public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
+        extends JavetReflectionProxyObjectHandler<T, E> {
 
     /**
      * The constant METHOD_NAME_APPLY.
@@ -45,18 +45,18 @@ public class JavetDynamicProxyFunctionHandler<T, E extends Exception>
     protected static final String METHOD_NAME_APPLY = "apply";
 
     /**
-     * Instantiates a new Javet dynamic proxy function handler.
+     * Instantiates a new Javet reflection proxy function handler.
      *
-     * @param v8Runtime            the V8 runtime
-     * @param dynamicObjectFactory the dynamic object factory
-     * @param targetObject         the target object
+     * @param v8Runtime               the V8 runtime
+     * @param reflectionObjectFactory the reflection object factory
+     * @param targetObject            the target object
      * @since 1.1.7
      */
-    public JavetDynamicProxyFunctionHandler(
+    public JavetReflectionProxyFunctionHandler(
             V8Runtime v8Runtime,
-            IJavetDynamicObjectFactory dynamicObjectFactory,
+            IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
-        super(v8Runtime, dynamicObjectFactory, targetObject);
+        super(v8Runtime, reflectionObjectFactory, targetObject);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class JavetDynamicProxyFunctionHandler<T, E extends Exception>
             try {
                 v8Values = arguments.toArray();
                 return v8Runtime.toV8Value(execute(
-                        dynamicObjectFactory,
+                        reflectionObjectFactory,
                         targetObject,
                         null,
                         classDescriptor.getApplyFunctions(),

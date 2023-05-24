@@ -37,15 +37,15 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 /**
- * The type Javet dynamic proxy object handler.
+ * The type Javet reflection proxy object handler.
  *
  * @param <T> the type parameter
  * @param <E> the type parameter
  * @since 0.9.6
  */
 @SuppressWarnings("unchecked")
-public class JavetDynamicProxyObjectHandler<T, E extends Exception>
-        extends BaseJavetDynamicProxyHandler<T, E> {
+public class JavetReflectionProxyObjectHandler<T, E extends Exception>
+        extends BaseJavetReflectionProxyHandler<T, E> {
 
     /**
      * The constant FUNCTION_NAME_LENGTH.
@@ -61,18 +61,18 @@ public class JavetDynamicProxyObjectHandler<T, E extends Exception>
     protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
-     * Instantiates a new Javet dynamic proxy object handler.
+     * Instantiates a new Javet reflection proxy object handler.
      *
-     * @param v8Runtime            the V8 runtime
-     * @param dynamicObjectFactory the dynamic object factory
-     * @param targetObject         the target object
+     * @param v8Runtime               the V8 runtime
+     * @param reflectionObjectFactory the reflection object factory
+     * @param targetObject            the target object
      * @since 0.9.6
      */
-    public JavetDynamicProxyObjectHandler(
+    public JavetReflectionProxyObjectHandler(
             V8Runtime v8Runtime,
-            IJavetDynamicObjectFactory dynamicObjectFactory,
+            IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
-        super(v8Runtime, dynamicObjectFactory, Objects.requireNonNull(targetObject));
+        super(v8Runtime, reflectionObjectFactory, Objects.requireNonNull(targetObject));
     }
 
     @Override

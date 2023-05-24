@@ -26,14 +26,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 /**
- * The type Javet dynamic proxy factory.
+ * The type Javet reflection proxy factory.
  *
  * @since 2.0.1
  */
-public final class JavetDynamicProxyFactory {
-    private static final JavetDynamicProxyFactory instance = new JavetDynamicProxyFactory();
+public final class JavetReflectionProxyFactory {
+    private static final JavetReflectionProxyFactory instance = new JavetReflectionProxyFactory();
 
-    private JavetDynamicProxyFactory() {
+    private JavetReflectionProxyFactory() {
     }
 
     /**
@@ -41,12 +41,12 @@ public final class JavetDynamicProxyFactory {
      *
      * @return the instance
      */
-    public static JavetDynamicProxyFactory getInstance() {
+    public static JavetReflectionProxyFactory getInstance() {
         return instance;
     }
 
     /**
-     * Is dynamic proxied function conversion supported.
+     * Is reflection proxied function conversion supported.
      *
      * @param type    the type to be converted
      * @param v8Value the V8 value
@@ -58,7 +58,7 @@ public final class JavetDynamicProxyFactory {
     }
 
     /**
-     * Is dynamic proxied object conversion supported.
+     * Is reflection proxied object conversion supported.
      *
      * @param type    the type to be converted
      * @param v8Value the V8 value
@@ -73,7 +73,7 @@ public final class JavetDynamicProxyFactory {
     }
 
     /**
-     * Convert from V8 value to a dynamic proxied object.
+     * Convert from V8 value to a reflection proxied object.
      *
      * @param type    the type to be converted
      * @param v8Value the V8 value
@@ -85,9 +85,9 @@ public final class JavetDynamicProxyFactory {
         if (type.isInterface()) {
             InvocationHandler invocationHandler = null;
             if (v8Value instanceof V8ValueFunction) {
-                invocationHandler = new JavetDynamicProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
+                invocationHandler = new JavetReflectionProxyV8ValueFunctionInvocationHandler(v8Value.toClone());
             } else if (v8Value instanceof V8ValueObject && !(v8Value instanceof V8ValueProxy)) {
-                invocationHandler = new JavetDynamicProxyV8ValueObjectInvocationHandler(v8Value.toClone());
+                invocationHandler = new JavetReflectionProxyV8ValueObjectInvocationHandler(v8Value.toClone());
             }
             if (invocationHandler != null) {
                 return Proxy.newProxyInstance(

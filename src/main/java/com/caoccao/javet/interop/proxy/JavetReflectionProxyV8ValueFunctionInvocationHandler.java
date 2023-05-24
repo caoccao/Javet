@@ -25,21 +25,21 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * The type Javet dynamic proxy V8 value function invocation handler.
+ * The type Javet reflection proxy V8 value function invocation handler.
  *
  * @since 0.9.10
  */
-public final class JavetDynamicProxyV8ValueFunctionInvocationHandler implements InvocationHandler, IJavetClosable {
+public final class JavetReflectionProxyV8ValueFunctionInvocationHandler implements InvocationHandler, IJavetClosable {
     private static final String METHOD_NAME_CLOSE = "close";
     private V8ValueFunction v8ValueFunction;
 
     /**
-     * Instantiates a new Javet dynamic proxy V8 value function invocation handler.
+     * Instantiates a new Javet reflection proxy V8 value function invocation handler.
      *
      * @param v8ValueFunction the V8 value function
      * @since 0.9.10
      */
-    public JavetDynamicProxyV8ValueFunctionInvocationHandler(V8ValueFunction v8ValueFunction) {
+    public JavetReflectionProxyV8ValueFunctionInvocationHandler(V8ValueFunction v8ValueFunction) {
         this.v8ValueFunction = v8ValueFunction;
     }
 

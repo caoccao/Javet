@@ -108,16 +108,16 @@ public class JavetProxyConverter extends JavetObjectConverter {
                 IJavetProxyHandler<?, ?> javetProxyHandler;
                 switch (proxyMode) {
                     case Class:
-                        javetProxyHandler = new JavetDynamicProxyClassHandler<>(
-                                v8Runtime, config.getDynamicObjectFactory(), (Class<?>) object);
+                        javetProxyHandler = new JavetReflectionProxyClassHandler<>(
+                                v8Runtime, config.getReflectionObjectFactory(), (Class<?>) object);
                         break;
                     case Function:
                         if (object instanceof IJavetDirectProxyHandler<?>) {
                             javetProxyHandler = new JavetDirectProxyFunctionHandler<>(
                                     v8Runtime, (IJavetDirectProxyHandler<?>) object);
                         } else {
-                            javetProxyHandler = new JavetDynamicProxyFunctionHandler<>(
-                                    v8Runtime, config.getDynamicObjectFactory(), object);
+                            javetProxyHandler = new JavetReflectionProxyFunctionHandler<>(
+                                    v8Runtime, config.getReflectionObjectFactory(), object);
                         }
                         break;
                     default:
@@ -125,8 +125,8 @@ public class JavetProxyConverter extends JavetObjectConverter {
                             javetProxyHandler = new JavetDirectProxyObjectHandler<>(
                                     v8Runtime, (IJavetDirectProxyHandler<?>) object);
                         } else {
-                            javetProxyHandler = new JavetDynamicProxyObjectHandler<>(
-                                    v8Runtime, config.getDynamicObjectFactory(), object);
+                            javetProxyHandler = new JavetReflectionProxyObjectHandler<>(
+                                    v8Runtime, config.getReflectionObjectFactory(), object);
                         }
                         break;
                 }

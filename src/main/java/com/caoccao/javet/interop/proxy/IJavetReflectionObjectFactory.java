@@ -21,13 +21,13 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 /**
- * The interface Javet dynamic object factory.
+ * The interface Javet reflection object factory.
  *
  * @since 2.0.1
  */
-public interface IJavetDynamicObjectFactory {
+public interface IJavetReflectionObjectFactory {
     /**
-     * Is dynamic object conversion supported.
+     * Is reflection object conversion supported.
      *
      * @param type    the type to be converted
      * @param v8Value the V8 value
@@ -43,7 +43,7 @@ public interface IJavetDynamicObjectFactory {
     }
 
     /**
-     * Convert from V8 value to a dynamic object.
+     * Convert from V8 value to a reflection object.
      *
      * @param type    the type to be converted
      * @param v8Value the V8 value
