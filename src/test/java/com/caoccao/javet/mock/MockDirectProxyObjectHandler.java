@@ -17,6 +17,8 @@
 package com.caoccao.javet.mock;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetBiFunction;
+import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -25,19 +27,24 @@ import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IOException> {
     protected int callCount;
+    protected Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> stringGetterMap;
+    protected Map<String, IJavetBiFunction<String, V8Value, Boolean, IOException>> stringSetterMap;
     protected V8Runtime v8Runtime;
     protected int x;
     protected int y;
 
     public MockDirectProxyObjectHandler() {
         callCount = 0;
+        stringGetterMap = null;
+        stringSetterMap = null;
         x = 0;
         y = 0;
     }
@@ -67,61 +74,62 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
     @Override
     public V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, IOException {
         ++callCount;
-        if (property instanceof V8ValueString) {
-            String propertyString = ((V8ValueString) property).toPrimitive();
-            if ("x".equals(propertyString)) {
-                return v8Runtime.createV8ValueInteger(getX());
-            }
-            if ("y".equals(propertyString)) {
-                return v8Runtime.createV8ValueInteger(getY());
-            }
-            if ("increaseX".equals(propertyString)) {
-                return v8Runtime.createV8ValueFunction(
-                        new JavetCallbackContext(
-                                "increaseX",
-                                JavetCallbackType.DirectCallNoThisAndResult,
-                                (IJavetDirectCallable.NoThisAndResult<?>) this::increaseX));
-            }
-        }
         return IJavetDirectProxyHandler.super.proxyGet(target, property, receiver);
+    }
+
+    @Override
+    public Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> proxyGetStringGetterMap() {
+        if (stringGetterMap == null) {
+            stringGetterMap = new HashMap<>();
+            stringGetterMap.put("x", (propertyName) -> v8Runtime.createV8ValueInteger(getX()));
+            stringGetterMap.put("y", (propertyName) -> v8Runtime.createV8ValueInteger(getY()));
+            stringGetterMap.put("increaseX", (propertyName) -> v8Runtime.createV8ValueFunction(
+                    new JavetCallbackContext(
+                            propertyName,
+                            JavetCallbackType.DirectCallNoThisAndResult,
+                            (IJavetDirectCallable.NoThisAndResult<?>) this::increaseX)));
+        }
+        return stringGetterMap;
+    }
+
+    @Override
+    public Map<String, IJavetBiFunction<String, V8Value, Boolean, IOException>> proxyGetStringSetterMap() {
+        if (stringSetterMap == null) {
+            stringSetterMap = new HashMap<>();
+            stringSetterMap.put("x", (propertyName, propertyValue) -> {
+                if (propertyValue instanceof V8ValueInteger) {
+                    x = ((V8ValueInteger) propertyValue).toPrimitive();
+                    return true;
+                }
+                return false;
+            });
+            stringSetterMap.put("y", (propertyName, propertyValue) -> {
+                if (propertyValue instanceof V8ValueInteger) {
+                    y = ((V8ValueInteger) propertyValue).toPrimitive();
+                    return true;
+                }
+                return false;
+            });
+        }
+        return stringSetterMap;
     }
 
     @Override
     public V8ValueBoolean proxyHas(V8Value target, V8Value property) throws JavetException, IOException {
         ++callCount;
-        if (property instanceof V8ValueString) {
-            String propertyString = ((V8ValueString) property).toPrimitive();
-            if ("x".equals(propertyString) || "y".equals(propertyString)) {
-                return v8Runtime.createV8ValueBoolean(true);
-            }
-        }
         return IJavetDirectProxyHandler.super.proxyHas(target, property);
     }
 
     @Override
     public V8ValueArray proxyOwnKeys(V8Value target) throws JavetException, IOException {
         ++callCount;
-        V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-        v8ValueArray.push(v8Runtime.createV8ValueString("x"), v8Runtime.createV8ValueString("y"));
-        return v8ValueArray;
+        return IJavetDirectProxyHandler.super.proxyOwnKeys(target);
     }
 
     @Override
     public V8ValueBoolean proxySet(V8Value target, V8Value propertyKey, V8Value propertyValue, V8Value receiver)
             throws JavetException, IOException {
         ++callCount;
-        if (propertyKey instanceof V8ValueString && propertyValue instanceof V8ValueInteger) {
-            String propertyString = ((V8ValueString) propertyKey).toPrimitive();
-            int propertyInteger = ((V8ValueInteger) propertyValue).toPrimitive();
-            if ("x".equals(propertyString)) {
-                x = propertyInteger;
-                return v8Runtime.createV8ValueBoolean(true);
-            }
-            if ("y".equals(propertyString)) {
-                y = propertyInteger;
-                return v8Runtime.createV8ValueBoolean(true);
-            }
-        }
         return IJavetDirectProxyHandler.super.proxySet(target, propertyKey, propertyValue, receiver);
     }
 

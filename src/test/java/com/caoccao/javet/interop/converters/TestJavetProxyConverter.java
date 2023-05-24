@@ -330,7 +330,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(++expectedCallCount, handler.getCallCount());
         // Test ownKeys().
         assertEquals(
-                "[\"x\",\"y\"]",
+                "[\"increaseX\",\"x\",\"y\"]",
                 v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(a));").executeString());
         assertEquals(++expectedCallCount, handler.getCallCount());
         // Test has().

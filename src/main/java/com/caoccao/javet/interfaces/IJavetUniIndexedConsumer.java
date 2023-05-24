@@ -26,6 +26,7 @@ import com.caoccao.javet.values.V8Value;
  * @param <E> the type parameter for custom exception
  * @since 0.8.10
  */
+@FunctionalInterface
 public interface IJavetUniIndexedConsumer<T extends V8Value, E extends Throwable> {
     /**
      * Accept.
