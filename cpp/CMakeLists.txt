@@ -185,6 +185,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     add_library(Javet SHARED ${sourceFiles})
     add_library(JavetStatic STATIC ${sourceFiles})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-offsetof ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof ")
     if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|x86_64|aarch64)")
         set(JAVET_LIB_SYSTEM "linux")
         if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
@@ -275,7 +277,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         # https://caoccao.blogspot.com/2021/08/jni-symbol-conflicts-in-mac-os.html
         target_link_libraries(Javet PUBLIC -exported_symbols_list ${CMAKE_SOURCE_DIR}/jni/exported_symbols_list.txt)
     else()
-        message(FATAL_ERROR "Linux or Windows (arm64) have not been supported yet.")
+        message(FATAL_ERROR "Windows (arm64) is not supported.")
     endif()
     if(DEFINED JAVET_LIB_ARCH)
         set_target_properties(JavetStatic PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}-${JAVET_LIB_ARCH}.v.${JAVET_VERSION}")
@@ -283,7 +285,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         set_target_properties(JavetStatic PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}.v.${JAVET_VERSION}")
     endif()
 else()
-    message(FATAL_ERROR "Linux (x86-64), Mac OS (x86-64, arm64), Windows (x86-64) and Android are the only supported Operating Systems.")
+    message(FATAL_ERROR "Linux (x86-64, arm64), Mac OS (x86-64, arm64), Windows (x86-64) and Android are the only supported Operating Systems.")
 endif()
 
 if(DEFINED JAVET_LIB_ARCH)
