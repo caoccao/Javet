@@ -16,7 +16,7 @@
 # Usage: docker build -t sjtucaocao/javet-arm64:2.2.0 -f docker/linux-arm64/base_all_in_one.Dockerfile .
 
 ARG JAVET_NODE_VERSION=18.15.0
-ARG JAVET_V8_VERSION=11.3.244.8
+ARG JAVET_V8_VERSION=11.4.183.14
 
 FROM ubuntu:20.04
 WORKDIR /

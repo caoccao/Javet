@@ -479,13 +479,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
                         v8InternalShared.set_allows_lazy_compilation(true);
                     }
                     if (!sourceCodeEquals) {
+                        auto v8InternalScriptHandle = v8::internal::Handle(v8InternalScript, v8InternalIsolate);
                         if (mCloneScript) {
-                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8::internal::Handle(v8InternalScript, v8InternalIsolate));
+#ifdef ENABLE_NODE
+                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle);
                             clonedV8InternalScript->set_source(*v8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+#else
+                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle, v8InternalSource);
+#endif
                             v8InternalShared.set_script(*clonedV8InternalScript);
                         }
                         else {
+#ifdef ENABLE_NODE
                             v8InternalScript.set_source(*v8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+#else
+                            V8InternalScript::SetSource(v8InternalIsolate, v8InternalScriptHandle, v8InternalSource);
+#endif
                         }
                     }
                     if (!positionEquals) {
@@ -584,13 +593,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                         v8InternalShared.set_allows_lazy_compilation(true);
                     }
                     if (!sourceCodeEquals) {
+                        auto v8InternalScriptHandle = v8::internal::Handle(v8InternalScript, v8InternalIsolate);
                         if (mCloneScript) {
-                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8::internal::Handle(v8InternalScript, v8InternalIsolate));
+#ifdef ENABLE_NODE
+                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle);
                             clonedV8InternalScript->set_source(*newV8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+#else
+                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle, newV8InternalSource);
+#endif
                             v8InternalShared.set_script(*clonedV8InternalScript);
                         }
                         else {
+#ifdef ENABLE_NODE
                             v8InternalScript.set_source(*newV8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+#else
+                            V8InternalScript::SetSource(v8InternalIsolate, v8InternalScriptHandle, newV8InternalSource);
+#endif
                         }
                     }
                     if (!positionEquals) {
