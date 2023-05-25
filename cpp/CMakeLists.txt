@@ -242,6 +242,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         endif()
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|x86_64)")
         set(JAVET_LIB_SYSTEM "macos")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-ambiguous-reversed-operator ")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ambiguous-reversed-operator ")
         if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
             set(JAVET_LIB_ARCH arm64)
             add_definitions(-D__arm64__)
