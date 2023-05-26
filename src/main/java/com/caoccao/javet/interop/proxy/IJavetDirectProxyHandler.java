@@ -264,7 +264,8 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      * @param v8Runtime the V8 runtime
      * @since 2.2.0
      */
-    void setV8Runtime(V8Runtime v8Runtime);
+    default void setV8Runtime(V8Runtime v8Runtime) {
+    }
 
     /**
      * Symbol iterator.
