@@ -107,32 +107,34 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         if (callbackReceiver instanceof IJavetDirectCallable) {
             IJavetDirectCallable javetDirectCallable = (IJavetDirectCallable) callbackReceiver;
             javetDirectCallable.setV8Runtime(v8Runtime);
-            Map<String, JavetCallbackContext> getterMap = new HashMap<>();
-            Map<String, JavetCallbackContext> setterMap = new HashMap<>();
-            for (JavetCallbackContext javetCallbackContext :
-                    Objects.requireNonNull(javetDirectCallable.getCallbackContexts())) {
-                switch (javetCallbackContext.getCallbackType()) {
-                    case DirectCallGetterAndNoThis:
-                    case DirectCallGetterAndThis:
-                        getterMap.put(javetCallbackContext.getName(), javetCallbackContext);
-                        break;
-                    case DirectCallSetterAndNoThis:
-                    case DirectCallSetterAndThis:
-                        setterMap.put(javetCallbackContext.getName(), javetCallbackContext);
-                        break;
-                    default:
-                        javetCallbackContexts.add(javetCallbackContext);
-                        bindFunction(javetCallbackContext);
-                        break;
+            JavetCallbackContext[] contexts = javetDirectCallable.getCallbackContexts();
+            if (contexts != null && contexts.length > 0) {
+                Map<String, JavetCallbackContext> getterMap = new HashMap<>();
+                Map<String, JavetCallbackContext> setterMap = new HashMap<>();
+                for (JavetCallbackContext javetCallbackContext : contexts) {
+                    switch (javetCallbackContext.getCallbackType()) {
+                        case DirectCallGetterAndNoThis:
+                        case DirectCallGetterAndThis:
+                            getterMap.put(javetCallbackContext.getName(), javetCallbackContext);
+                            break;
+                        case DirectCallSetterAndNoThis:
+                        case DirectCallSetterAndThis:
+                            setterMap.put(javetCallbackContext.getName(), javetCallbackContext);
+                            break;
+                        default:
+                            javetCallbackContexts.add(javetCallbackContext);
+                            bindFunction(javetCallbackContext);
+                            break;
+                    }
                 }
-            }
-            for (JavetCallbackContext javetCallbackContextGetter : getterMap.values()) {
-                JavetCallbackContext javetCallbackContextSetter = setterMap.get(javetCallbackContextGetter.getName());
-                javetCallbackContexts.add(javetCallbackContextGetter);
-                if (javetCallbackContextSetter != null) {
-                    javetCallbackContexts.add(javetCallbackContextSetter);
+                for (JavetCallbackContext javetCallbackContextGetter : getterMap.values()) {
+                    JavetCallbackContext javetCallbackContextSetter = setterMap.get(javetCallbackContextGetter.getName());
+                    javetCallbackContexts.add(javetCallbackContextGetter);
+                    if (javetCallbackContextSetter != null) {
+                        javetCallbackContexts.add(javetCallbackContextSetter);
+                    }
+                    bindProperty(javetCallbackContextGetter, javetCallbackContextSetter);
                 }
-                bindProperty(javetCallbackContextGetter, javetCallbackContextSetter);
             }
         } else {
             BindingContext bindingContext = getBindingContext(callbackReceiver.getClass());
