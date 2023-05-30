@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Logging" href="logging.html" /><link rel="prev" title="Troubleshooting" href="index.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Error Codes - Javet 2.1.2 documentation</title>
+        <title>Error Codes - Javet 2.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 2.1.2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 2.2.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -150,7 +150,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.1.2 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.2.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -221,7 +221,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_2_1.html">Release Notes 2.1.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_2_2.html">Release Notes 2.2.x</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -261,6 +261,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../development/test.html">Test Javet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../development/design.html">Javet Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development/performance.html">Javet Performance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../development/debug_with_chrome_developer_tools.html">Debug with Chrome Developer Tools</a></li>
 </ul>
 </li>
@@ -394,82 +395,87 @@
 <td><p>CallbackUnregistrationFailure</p></td>
 <td><p>Callback ${methodName} unregistration failed with error message ${message}</p></td>
 </tr>
-<tr class="row-odd"><td><p>501</p></td>
+<tr class="row-odd"><td><p>408</p></td>
+<td><p>Callback</p></td>
+<td><p>CallbackTypeNotSupported</p></td>
+<td><p>Callback type ${callbackType} is not supported</p></td>
+</tr>
+<tr class="row-even"><td><p>501</p></td>
 <td><p>Converter</p></td>
 <td><p>ConverterFailure</p></td>
 <td><p>Failed to convert values with error message ${message}</p></td>
 </tr>
-<tr class="row-even"><td><p>502</p></td>
+<tr class="row-odd"><td><p>502</p></td>
 <td><p>Converter</p></td>
 <td><p>ConverterCircularStructure</p></td>
 <td><p>Circular structure is detected with max depth ${maxDepth} reached</p></td>
 </tr>
-<tr class="row-odd"><td><p>503</p></td>
+<tr class="row-even"><td><p>503</p></td>
 <td><p>Converter</p></td>
 <td><p>ConverterSymbolNotBuiltIn</p></td>
 <td><p>${symbol} is not a built-in symbol</p></td>
 </tr>
-<tr class="row-even"><td><p>601</p></td>
+<tr class="row-odd"><td><p>601</p></td>
 <td><p>Module</p></td>
 <td><p>ModuleNameEmpty</p></td>
 <td><p>Module name is empty</p></td>
 </tr>
-<tr class="row-odd"><td><p>602</p></td>
+<tr class="row-even"><td><p>602</p></td>
 <td><p>Module</p></td>
 <td><p>ModuleNotFound</p></td>
 <td><p>Module ${moduleName} is not found</p></td>
 </tr>
-<tr class="row-even"><td><p>603</p></td>
+<tr class="row-odd"><td><p>603</p></td>
 <td><p>Module</p></td>
 <td><p>ModulePermissionDenied</p></td>
 <td><p>Denied access to module ${moduleName}</p></td>
 </tr>
-<tr class="row-odd"><td><p>701</p></td>
+<tr class="row-even"><td><p>701</p></td>
 <td><p>Lock</p></td>
 <td><p>LockAcquisitionFailure</p></td>
 <td><p>Failed to acquire the lock</p></td>
 </tr>
-<tr class="row-even"><td><p>702</p></td>
+<tr class="row-odd"><td><p>702</p></td>
 <td><p>Lock</p></td>
 <td><p>LockReleaseFailure</p></td>
 <td><p>Failed to release the lock</p></td>
 </tr>
-<tr class="row-odd"><td><p>703</p></td>
+<tr class="row-even"><td><p>703</p></td>
 <td><p>Lock</p></td>
 <td><p>LockConflictThreadIdMismatch</p></td>
 <td><p>Runtime lock conflict is detected with locked thread ID ${lockedThreadID} and current thread ID ${currentThreadID}</p></td>
 </tr>
-<tr class="row-even"><td><p>801</p></td>
+<tr class="row-odd"><td><p>801</p></td>
 <td><p>Runtime</p></td>
 <td><p>RuntimeAlreadyClosed</p></td>
 <td><p>Runtime is already closed</p></td>
 </tr>
-<tr class="row-odd"><td><p>802</p></td>
+<tr class="row-even"><td><p>802</p></td>
 <td><p>Runtime</p></td>
 <td><p>RuntimeAlreadyRegistered</p></td>
 <td><p>Runtime is already registered</p></td>
 </tr>
-<tr class="row-even"><td><p>803</p></td>
+<tr class="row-odd"><td><p>803</p></td>
 <td><p>Runtime</p></td>
 <td><p>RuntimeNotRegistered</p></td>
 <td><p>Runtime is not registered</p></td>
 </tr>
-<tr class="row-odd"><td><p>804</p></td>
+<tr class="row-even"><td><p>804</p></td>
 <td><p>Runtime</p></td>
 <td><p>RuntimeLeakageDetected</p></td>
 <td><p>${count} runtime(s) leakage is detected</p></td>
 </tr>
-<tr class="row-even"><td><p>805</p></td>
+<tr class="row-odd"><td><p>805</p></td>
 <td><p>Runtime</p></td>
 <td><p>RuntimeCloseFailure</p></td>
 <td><p>Failed to close the runtime with error message ${message}</p></td>
 </tr>
-<tr class="row-odd"><td><p>806</p></td>
+<tr class="row-even"><td><p>806</p></td>
 <td><p>Runtime</p></td>
 <td><p>RuntimeOutOfMemory</p></td>
 <td><p>Runtime is out of memory because ${message} with ${heapStatistics}</p></td>
 </tr>
-<tr class="row-even"><td><p>901</p></td>
+<tr class="row-odd"><td><p>901</p></td>
 <td><p>Engine</p></td>
 <td><p>EngineNotAvailable</p></td>
 <td><p>Engine is not available.</p></td>
