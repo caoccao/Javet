@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interop;
 
+import java.nio.ByteBuffer;
+
 /**
  * The interface V8 native.
  *
@@ -23,17 +25,25 @@ package com.caoccao.javet.interop;
  */
 public interface IV8Native {
 
-    void add(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
-
     void allowCodeGenerationFromStrings(long v8RuntimeHandle, boolean allow);
+
+    Object arrayBufferCreate(long v8RuntimeHandle, int length);
+
+    Object arrayBufferCreate(long v8RuntimeHandle, ByteBuffer byteBuffer);
+
+    Object arrayCreate(long v8RuntimeHandle);
+
+    int arrayGetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean await(long v8RuntimeHandle, int v8AwaitMode);
 
-    Object call(
+    int batchArrayGet(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object receiver, boolean returnResult, Object[] values);
+            Object[] v8Values, int startIndex, int endIndex);
 
-    Object callAsConstructor(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
+    int batchObjectGet(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object[] v8ValueKeys, Object[] v8ValueValues, int length);
 
     void clearInternalStatistic();
 
@@ -42,17 +52,6 @@ public interface IV8Native {
     Object cloneV8Value(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean referenceCopy);
 
     void closeV8Runtime(long v8RuntimeHandle);
-
-    Object compile(
-            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
-            String resourceName, int resourceLineOffset, int resourceColumnOffset,
-            int scriptId, boolean isWASM, boolean isModule);
-
-    Object compileFunction(
-            long v8RuntimeHandle, String script, byte[] cachedData,
-            String resourceName, int resourceLineOffset, int resourceColumnOffset,
-            int scriptId, boolean wasm,
-            String[] arguments, Object[] contextExtensions);
 
     Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
 
@@ -66,31 +65,42 @@ public interface IV8Native {
 
     long createV8Runtime(Object runtimeOptions);
 
-    Object createV8Value(long v8RuntimeHandle, int v8ValueType, Object context);
-
-    boolean delete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
-
-    boolean deletePrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key);
-
     boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
-    Object execute(
-            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
-            String resourceName, int resourceLineOffset, int resourceColumnOffset,
-            int scriptId, boolean isWASM, boolean isModule);
+    Object functionCall(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object receiver, boolean returnResult, Object[] values);
+
+    Object functionCallAsConstructor(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
 
     boolean functionCanDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object functionCompile(
+            long v8RuntimeHandle, String script, byte[] cachedData,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean wasm,
+            String[] arguments, Object[] contextExtensions);
 
     boolean functionCopyScopeInfoFrom(
             long v8RuntimeHandle,
             long targetV8ValueHandle, int targetV8ValueType,
             long sourceV8ValueHandle, int sourceV8ValueType);
 
+    Object functionCreate(long v8RuntimeHandle, Object callbackContext);
+
     boolean functionDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     String[] functionGetArguments(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    byte[] functionGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object functionGetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object functionGetInternalProperties(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    int functionGetJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    int functionGetJSScopeType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object functionGetScopeInfos(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
@@ -112,35 +122,9 @@ public interface IV8Native {
     boolean functionSetSourceCode(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String sourceCode, boolean cloneScript);
 
-    Object get(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
-
-    byte[] getCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
     Object getGlobalObject(long v8RuntimeHandle);
 
-    int getIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    Object getInternalProperties(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
     long[] getInternalStatistic();
-
-    int getJSFunctionType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    int getJSScopeType(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    int getLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    Object getOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    Object getPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String propertyName);
-
-    Object getProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
-
-    Object getPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    Object getPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
-
-    int getSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
 
@@ -150,25 +134,15 @@ public interface IV8Native {
 
     String getVersion();
 
-    boolean has(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
-
     boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
-
-    boolean hasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
 
     boolean hasPendingException(long v8RuntimeHandle);
 
     boolean hasPendingMessage(long v8RuntimeHandle);
 
-    boolean hasPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int type, String propertyName);
-
     boolean hasScheduledException(long v8RuntimeHandle);
 
     void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
-
-    Object invoke(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            String functionName, boolean returnResult, Object[] values);
 
     boolean isDead(long v8RuntimeHandle);
 
@@ -180,7 +154,55 @@ public interface IV8Native {
 
     void lowMemoryNotification(long v8RuntimeHandle);
 
+    Object mapCreate(long v8RuntimeHandle);
+
+    boolean mapDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    Object mapGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    boolean mapGetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    double mapGetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    int mapGetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    long mapGetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    int mapGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String mapGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
+
+    boolean mapSetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+
+    boolean mapSetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+
+    boolean mapSetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+
+    boolean mapSetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+
+    boolean mapSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    boolean mapSetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+
+    boolean mapSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    Object moduleCompile(
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM, boolean isModule);
+
     Object moduleEvaluate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
+
+    Object moduleExecute(
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM);
+
+    byte[] moduleGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object moduleGetException(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -192,7 +214,77 @@ public interface IV8Native {
 
     boolean moduleInstantiate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    Object objectCreate(long v8RuntimeHandle);
+
+    boolean objectDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    boolean objectDeletePrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key);
+
+    Object objectGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    boolean objectGetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    double objectGetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    int objectGetIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    int objectGetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    long objectGetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+
+    Object objectGetOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object objectGetPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String propertyName);
+
+    Object objectGetProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    Object objectGetPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object objectGetPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String objectGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    boolean objectHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    boolean objectHasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
+
+    boolean objectHasPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int type, String propertyName);
+
+    Object objectInvoke(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            String functionName, boolean returnResult, Object[] values);
+
+    boolean objectSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
+
+    boolean objectSetAccessor(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object propertyName, Object getter, Object setter);
+
+    boolean objectSetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+
+    boolean objectSetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+
+    boolean objectSetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+
+    boolean objectSetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+
+    boolean objectSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    boolean objectSetPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);
+
+    boolean objectSetProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+
+    boolean objectSetPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
+
+    boolean objectSetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+
+    boolean objectSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+
+    String objectToProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object promiseCatch(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueFunctionHandle);
+
+    Object promiseCreate(long v8RuntimeHandle);
 
     Object promiseGetPromise(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -213,6 +305,8 @@ public interface IV8Native {
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
 
     boolean promoteScheduledException(long v8RuntimeHandle);
+
+    Object proxyCreate(long v8RuntimeHandle, Object target);
 
     Object proxyGetHandler(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -242,27 +336,37 @@ public interface IV8Native {
 
     boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
+    Object scriptCompile(
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM, boolean isModule);
+
+    Object scriptExecute(
+            long v8RuntimeHandle, String script, byte[] cachedData, boolean returnResult,
+            String resourceName, int resourceLineOffset, int resourceColumnOffset,
+            int scriptId, boolean isWASM);
+
+    byte[] scriptGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
-    boolean set(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+    void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
-    boolean setAccessor(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object propertyName, Object getter, Object setter);
+    Object setCreate(long v8RuntimeHandle);
 
-    boolean setPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);
+    boolean setDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
 
-    boolean setProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+    int setGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
-    boolean setPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, long v8ValueHandlePrototype);
+    boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
     boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
-    void terminateExecution(long v8RuntimeHandle);
+    Object symbolCreate(long v8RuntimeHandle, String description);
 
-    String toProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+    void terminateExecution(long v8RuntimeHandle);
 
     String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

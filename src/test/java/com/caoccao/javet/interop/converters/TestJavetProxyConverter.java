@@ -26,18 +26,31 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
-import com.caoccao.javet.interop.proxy.JavetDynamicObjectFactory;
+import com.caoccao.javet.interfaces.IJavetUniFunction;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
+import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
+import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
@@ -275,7 +288,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                             "Column: 6, 7\n" +
                             "Position: 6, 7",
                     e.getScriptingError().toString());
-            assertTrue(e.getCause().getCause() instanceof ClassNotFoundException);
+            assertInstanceOf(ClassNotFoundException.class, e.getCause().getCause());
         }
         v8Runtime.getGlobalObject().delete("Class");
     }
@@ -289,6 +302,66 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                         "}\n" +
                         "main();").executeString());
         v8Runtime.getGlobalObject().delete("StringBuilder");
+    }
+
+    @Test
+    public void testDirectProxyFunctionHandler() throws JavetException {
+        int expectedCallCount = 0;
+        MockDirectProxyFunctionHandler handler = new MockDirectProxyFunctionHandler();
+        v8Runtime.getGlobalObject().set("a", handler);
+        // Test apply().
+        assertEquals(6, v8Runtime.getExecutor("a(1,2,3);").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
+    public void testDirectProxyObjectHandler() throws JavetException {
+        int expectedCallCount = 0;
+        MockDirectProxyObjectHandler handler = new MockDirectProxyObjectHandler();
+        v8Runtime.getGlobalObject().set("a", handler);
+        // Test get() and set().
+        try (V8Value v8Value = v8Runtime.getExecutor("a.z;").execute()) {
+            assertInstanceOf(V8ValueUndefined.class, v8Value);
+            assertEquals(++expectedCallCount, handler.getCallCount());
+        }
+        assertEquals(0, v8Runtime.getExecutor("a.x;").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals(0, v8Runtime.getExecutor("a.y;").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals(3, v8Runtime.getExecutor("a.x = 3; a.x;").executeInteger());
+        assertEquals(3, handler.getX());
+        ++expectedCallCount;
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals(5, v8Runtime.getExecutor("a.y = 5; a.y;").executeInteger());
+        assertEquals(5, handler.getY());
+        ++expectedCallCount;
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        // Test function get().
+        assertTrue(v8Runtime.getExecutor("a.increaseX();").executeBoolean());
+        assertEquals(4, handler.getX());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        try (V8Value v8Value = v8Runtime.getExecutor("a.increaseX;").execute()) {
+            assertInstanceOf(V8ValueFunction.class, v8Value);
+            assertEquals(++expectedCallCount, handler.getCallCount());
+        }
+        assertEquals(
+                MockDirectProxyObjectHandler.class.getSimpleName(),
+                v8Runtime.getExecutor("'' + a;").executeString());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        // Test ownKeys().
+        assertEquals(
+                "[\"increaseX\",\"x\",\"y\"]",
+                v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(a));").executeString());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        // Test has().
+        assertFalse(v8Runtime.getExecutor("'z' in a;").executeBoolean());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertTrue(v8Runtime.getExecutor("'x' in a;").executeBoolean());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertTrue(v8Runtime.getExecutor("'y' in a;").executeBoolean());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        v8Runtime.getGlobalObject().delete("a");
     }
 
     @Test
@@ -314,7 +387,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             }
         };
         try {
-            javetProxyConverter.getConfig().setDynamicObjectFactory(JavetDynamicObjectFactory.getInstance());
+            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
             v8Runtime.getGlobalObject().set("a", anonymous);
             String codeString = "a.test({\n" +
                     "  add: (a, b) => a + b,\n" +
@@ -322,7 +395,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             v8Runtime.getExecutor(codeString).executeVoid();
             v8Runtime.getGlobalObject().delete("a");
         } finally {
-            javetProxyConverter.getConfig().setDynamicObjectFactory(null);
+            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
         }
     }
 
@@ -352,7 +425,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             }
         };
         try {
-            javetProxyConverter.getConfig().setDynamicObjectFactory(JavetDynamicObjectFactory.getInstance());
+            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
             v8Runtime.getGlobalObject().set("a", anonymous);
             String codeString = "a.test({\n" +
                     "  add: (a, b) => a + b,\n" +
@@ -366,7 +439,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             v8Runtime.getExecutor(codeString).executeVoid();
             v8Runtime.getGlobalObject().delete("a");
         } finally {
-            javetProxyConverter.getConfig().setDynamicObjectFactory(null);
+            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
         }
     }
 
@@ -399,8 +472,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "Error: Callback throwNullPointerException failed with error message abc",
                     e.getMessage());
-            assertTrue(e.getCause() instanceof JavetException);
-            assertTrue(e.getCause().getCause() instanceof NullPointerException);
+            assertInstanceOf(JavetException.class, e.getCause());
+            assertInstanceOf(NullPointerException.class, e.getCause().getCause());
             assertEquals("abc", e.getCause().getCause().getMessage());
         } finally {
             v8Runtime.getGlobalObject().delete("a");
@@ -576,11 +649,85 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     @Test
     public void testPattern() throws JavetException {
         v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
-        assertTrue(v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject() instanceof Pattern);
+        assertInstanceOf(Pattern.class, v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject());
         assertTrue(v8Runtime.getExecutor("p.matcher('123').matches();").executeBoolean());
         assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
         v8Runtime.getGlobalObject().delete("Pattern");
         v8Runtime.getExecutor("p = undefined;").executeVoid();
+    }
+
+    @Test
+    @Tag("performance")
+    public void testPerformanceBetweenReflectionAndDirectProxies() throws Exception {
+        final int v8Iterations = 100_000;
+        IJavetAnonymous reflectionObject = new IJavetAnonymous() {
+            public int add(int a, int b) {
+                return a + b;
+            }
+        };
+        IJavetDirectProxyHandler<IOException> directObject = new IJavetDirectProxyHandler<IOException>() {
+            private Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> stringGetterMap;
+            private V8Runtime v8Runtime;
+
+            public V8Value add(V8Value... v8Values) throws JavetException {
+                int a = ((V8ValueInteger) v8Values[0]).toPrimitive();
+                int b = ((V8ValueInteger) v8Values[1]).toPrimitive();
+                return v8Runtime.createV8ValueInteger(a + b);
+            }
+
+            @Override
+            public V8Runtime getV8Runtime() {
+                return v8Runtime;
+            }
+
+            @Override
+            public Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> proxyGetStringGetterMap() {
+                if (stringGetterMap == null) {
+                    stringGetterMap = new HashMap<>();
+                    stringGetterMap.put("add", (propertyName) -> v8Runtime.createV8ValueFunction(
+                            new JavetCallbackContext(
+                                    propertyName,
+                                    JavetCallbackType.DirectCallNoThisAndResult,
+                                    (IJavetDirectCallable.NoThisAndResult<?>) this::add)));
+                }
+                return stringGetterMap;
+            }
+
+            @Override
+            public void setV8Runtime(V8Runtime v8Runtime) {
+                this.v8Runtime = v8Runtime;
+            }
+        };
+        System.gc();
+        try {
+            v8Runtime.getGlobalObject().set("a", reflectionObject);
+            assertEquals(3, v8Runtime.getExecutor("a.add(1, 2);").executeInteger());
+            final long startTime = System.currentTimeMillis();
+            v8Runtime.getExecutor("for (let i = 0; i < " + v8Iterations + "; ++i) a.add(1, 2);").executeVoid();
+            final long stopTime = System.currentTimeMillis();
+            final long tps = v8Iterations * 1000L / (stopTime - startTime);
+            logger.logInfo(
+                    "{0} reflection proxy calls via V8 completed in {1}ms with TPS {2}.",
+                    v8Iterations, stopTime - startTime, tps);
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+        System.gc();
+        try {
+            v8Runtime.getGlobalObject().set("a", directObject);
+            assertEquals(3, v8Runtime.getExecutor("a.add(1, 2);").executeInteger());
+            final long startTime = System.currentTimeMillis();
+            v8Runtime.getExecutor("for (let i = 0; i < " + v8Iterations + "; ++i) a.add(1, 2);").executeVoid();
+            final long stopTime = System.currentTimeMillis();
+            final long tps = v8Iterations * 1000L / (stopTime - startTime);
+            logger.logInfo(
+                    "{0} direct proxy calls via V8 completed in {1}ms with TPS {2}.",
+                    v8Iterations, stopTime - startTime, tps);
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
     }
 
     @Test

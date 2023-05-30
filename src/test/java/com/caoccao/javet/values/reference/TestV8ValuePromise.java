@@ -77,7 +77,9 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
                             }
                         };
                         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                                anonymous, anonymous.getClass().getMethod("get"));
+                                "get",
+                                anonymous,
+                                anonymous.getClass().getMethod("get"));
                         return v8Runtime.createV8ValueFunction(javetCallbackContext);
                     }
                 });
@@ -136,14 +138,14 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
 
             @Override
             public void onFulfilled(V8Value v8Value) {
-                assertTrue(v8Value instanceof V8ValueInteger);
+                assertInstanceOf(V8ValueInteger.class, v8Value);
                 assertEquals(1, ((V8ValueInteger) v8Value).getValue());
                 onFulfilledCalled = true;
             }
 
             @Override
             public void onRejected(V8Value v8Value) {
-                assertTrue(v8Value instanceof V8ValueInteger);
+                assertInstanceOf(V8ValueInteger.class, v8Value);
                 assertEquals(2, ((V8ValueInteger) v8Value).getValue());
                 onRejectedCalled = true;
             }
@@ -209,7 +211,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testNoHandler() throws JavetException, NoSuchMethodException {
+    public void testNoHandler() throws JavetException {
         List<JavetPromiseRejectEvent> events = new ArrayList<>();
         IJavetPromiseRejectCallback callback = (event, promise, value) -> events.add(event);
         if (v8Host.getJSRuntimeType().isNode()) {

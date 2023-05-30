@@ -2,7 +2,7 @@
 
 # Usage for V8: sh build-android.sh -DV8_DIR=${HOME}/v8 -DCMAKE_ANDROID_NDK=${HOME}/android -DCMAKE_ANDROID_ARCH=arm64
 # Usage for Node: sh build-android.sh -DNODE_DIR=${HOME}/node -DCMAKE_ANDROID_NDK=${HOME}/android -DCMAKE_ANDROID_ARCH=arm64
-JAVET_VERSION=2.1.2
+JAVET_VERSION=2.2.0
 rm -rf build
 mkdir build
 cd build

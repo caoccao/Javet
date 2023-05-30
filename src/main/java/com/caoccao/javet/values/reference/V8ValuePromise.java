@@ -82,11 +82,17 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
         checkV8Runtime();
         try {
             JavetCallbackContext contextOnCatch = new JavetCallbackContext(
-                    listener, listener.getClass().getMethod(IListener.ON_CATCH, V8Value.class));
+                    IListener.ON_CATCH,
+                    listener,
+                    listener.getClass().getMethod(IListener.ON_CATCH, V8Value.class));
             JavetCallbackContext contextOnFulfilled = new JavetCallbackContext(
-                    listener, listener.getClass().getMethod(IListener.ON_FULFILLED, V8Value.class));
+                    IListener.ON_FULFILLED,
+                    listener,
+                    listener.getClass().getMethod(IListener.ON_FULFILLED, V8Value.class));
             JavetCallbackContext contextOnRejected = new JavetCallbackContext(
-                    listener, listener.getClass().getMethod(IListener.ON_REJECTED, V8Value.class));
+                    IListener.ON_REJECTED,
+                    listener,
+                    listener.getClass().getMethod(IListener.ON_REJECTED, V8Value.class));
             try (V8ValueFunction functionOnCatch = v8Runtime.createV8ValueFunction(contextOnCatch);
                  V8ValueFunction functionOnFulfilled = v8Runtime.createV8ValueFunction(contextOnFulfilled);
                  V8ValueFunction functionOnRejected = v8Runtime.createV8ValueFunction(contextOnRejected);

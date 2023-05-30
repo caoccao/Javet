@@ -43,6 +43,30 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public interface IV8ValueObject extends IV8ValueReference {
+    /**
+     * The constant DEFAULT_BATCH_SIZE is the default batch size for get a chunk of items.
+     *
+     * @since 2.2.0
+     */
+    int DEFAULT_BATCH_SIZE = 100;
+    /**
+     * The constant MIN_BATCH_SIZE.
+     *
+     * @since 2.2.0
+     */
+    int MIN_BATCH_SIZE = 1;
+
+    /**
+     * Batch get a range of values by keys.
+     *
+     * @param v8ValueKeys   the V8 value keys
+     * @param v8ValueValues the V8 value values
+     * @param length        the length
+     * @return the actual item count
+     * @throws JavetException the javet exception
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    int batchGet(V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length) throws JavetException;
 
     /**
      * Bind both functions via @V8Function and properties via @V8Property.
@@ -55,31 +79,17 @@ public interface IV8ValueObject extends IV8ValueReference {
     List<JavetCallbackContext> bind(Object callbackReceiver) throws JavetException;
 
     /**
-     * Binds function by name string and callback context.
-     * <p>
-     * It is for creating a Java code based function in V8.
-     *
-     * @param functionName         the function name
-     * @param javetCallbackContext the javet callback context
-     * @return true : the function is bind, false: the function is not bind
-     * @throws JavetException the javet exception
-     * @since 0.8.9
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext) throws JavetException;
-
-    /**
      * Binds function by name symbol and callback context.
      * <p>
      * It is for creating a Java code based function in V8.
      *
-     * @param functionName         the function name
      * @param javetCallbackContext the javet callback context
      * @return true : the function is bind, false: the function is not bind
      * @throws JavetException the javet exception
-     * @since 1.0.0
+     * @since 2.2.0
      */
-    boolean bindFunction(V8ValueSymbol functionName, JavetCallbackContext javetCallbackContext) throws JavetException;
+    @SuppressWarnings("UnusedReturnValue")
+    boolean bindFunction(JavetCallbackContext javetCallbackContext) throws JavetException;
 
     /**
      * Binds function by name string and code string.
@@ -134,73 +144,18 @@ public interface IV8ValueObject extends IV8ValueReference {
     /**
      * Bind property by name string and getter.
      *
-     * @param propertyName               the property name
      * @param javetCallbackContextGetter the javet callback context getter
      * @return true : the property is bind, false : the property is not bind
      * @throws JavetException the javet exception
      * @since 0.8.9
      */
-    default boolean bindProperty(
-            String propertyName,
-            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
-        return bindProperty(propertyName, javetCallbackContextGetter, null);
+    default boolean bindProperty(JavetCallbackContext javetCallbackContextGetter) throws JavetException {
+        return bindProperty(javetCallbackContextGetter, null);
     }
 
     /**
-     * Bind property by name string, getter and setter.
+     * Bind property by getter and setter.
      *
-     * @param propertyName               the property name
-     * @param javetCallbackContextGetter the javet callback context getter
-     * @param javetCallbackContextSetter the javet callback context setter
-     * @return true : the property is bind, false : the property is not bind
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    default boolean bindProperty(
-            String propertyName,
-            JavetCallbackContext javetCallbackContextGetter,
-            JavetCallbackContext javetCallbackContextSetter) throws JavetException {
-        Objects.requireNonNull(propertyName);
-        return bindProperty(
-                getV8Runtime().createV8ValueString(propertyName),
-                javetCallbackContextGetter,
-                javetCallbackContextSetter);
-    }
-
-    /**
-     * Bind property by name string and getter.
-     *
-     * @param propertyName               the property name
-     * @param javetCallbackContextGetter the javet callback context getter
-     * @return true : the property is bind, false : the property is not bind
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    default boolean bindProperty(
-            V8ValueString propertyName,
-            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
-        return bindProperty(propertyName, javetCallbackContextGetter, null);
-    }
-
-    /**
-     * Bind property by name symbol and getter.
-     *
-     * @param propertyName               the property name
-     * @param javetCallbackContextGetter the javet callback context getter
-     * @return true : the property is bind, false : the property is not bind
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    default boolean bindProperty(
-            V8ValueSymbol propertyName,
-            JavetCallbackContext javetCallbackContextGetter) throws JavetException {
-        return bindProperty(propertyName, javetCallbackContextGetter, null);
-    }
-
-    /**
-     * Bind property by name string, getter and setter.
-     *
-     * @param propertyName               the property name
      * @param javetCallbackContextGetter the javet callback context getter
      * @param javetCallbackContextSetter the javet callback context setter
      * @return true : the property is bind, false : the property is not bind
@@ -208,24 +163,9 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.8.9
      */
     boolean bindProperty(
-            V8ValueString propertyName,
             JavetCallbackContext javetCallbackContextGetter,
-            JavetCallbackContext javetCallbackContextSetter) throws JavetException;
-
-    /**
-     * Bind property by name symbol, getter and setter.
-     *
-     * @param propertyName               the property name
-     * @param javetCallbackContextGetter the javet callback context getter
-     * @param javetCallbackContextSetter the javet callback context setter
-     * @return true : the property is bind, false : the property is not bind
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
-    boolean bindProperty(
-            V8ValueSymbol propertyName,
-            JavetCallbackContext javetCallbackContextGetter,
-            JavetCallbackContext javetCallbackContextSetter) throws JavetException;
+            JavetCallbackContext javetCallbackContextSetter)
+            throws JavetException;
 
     /**
      * Delete property by key object.
@@ -277,14 +217,34 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param consumer the consumer
      * @return the key count
      * @throws JavetException the javet exception
-     * @throws E              the exception
+     * @throws E              the custom exception
      * @since 0.8.10
      */
     default <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetUniConsumer<Key, E> consumer) throws JavetException, E {
+            IJavetUniConsumer<Key, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    /**
+     * Invoke the uni-consumer for each of the keys.
+     *
+     * @param <Key>     the type of key
+     * @param <E>       the type of exception
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the key count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniConsumer<Key, E> consumer,
+            int batchSize)
+            throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
-            return iV8ValueArray.forEach(consumer);
+            return iV8ValueArray.forEach(consumer, batchSize);
         }
     }
 
@@ -296,14 +256,34 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param consumer the consumer
      * @return the key count
      * @throws JavetException the javet exception
-     * @throws E              the exception
+     * @throws E              the custom exception
      * @since 0.8.10
      */
     default <Key extends V8Value, E extends Throwable> int forEach(
-            IJavetUniIndexedConsumer<Key, E> consumer) throws JavetException, E {
+            IJavetUniIndexedConsumer<Key, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
+    }
+
+    /**
+     * Invoke the uni-indexed-consumer for each of the keys.
+     *
+     * @param <Key>     the type of key
+     * @param <E>       the type of exception
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the key count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    default <Key extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Key, E> consumer,
+            int batchSize)
+            throws JavetException, E {
         Objects.requireNonNull(consumer);
         try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
-            return iV8ValueArray.forEach(consumer);
+            return iV8ValueArray.forEach(consumer, batchSize);
         }
     }
 
@@ -316,20 +296,32 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param consumer the consumer
      * @return the key count
      * @throws JavetException the javet exception
-     * @throws E              the exception
+     * @throws E              the custom exception
      * @since 0.8.9
      */
     default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
-            IJavetBiConsumer<Key, Value, E> consumer) throws JavetException, E {
-        Objects.requireNonNull(consumer);
-        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
-            return iV8ValueArray.forEach((Key key) -> {
-                try (Value value = get(key)) {
-                    consumer.accept(key, value);
-                }
-            });
-        }
+            IJavetBiConsumer<Key, Value, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
     }
+
+    /**
+     * Invoke the bi-consumer for each of the keys.
+     *
+     * @param <Key>     the type of key
+     * @param <Value>   the type of value
+     * @param <E>       the type of exception
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the key count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiConsumer<Key, Value, E> consumer,
+            int batchSize)
+            throws JavetException, E;
 
     /**
      * Invoke the bi-indexed-consumer for each of the keys.
@@ -340,20 +332,32 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @param consumer the consumer
      * @return the key count
      * @throws JavetException the javet exception
-     * @throws E              the exception
+     * @throws E              the custom exception
      * @since 0.8.10
      */
     default <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
-            IJavetBiIndexedConsumer<Key, Value, E> consumer) throws JavetException, E {
-        Objects.requireNonNull(consumer);
-        try (IV8ValueArray iV8ValueArray = getOwnPropertyNames()) {
-            return iV8ValueArray.forEach((int index, Key key) -> {
-                try (Value value = get(key)) {
-                    consumer.accept(index, key, value);
-                }
-            });
-        }
+            IJavetBiIndexedConsumer<Key, Value, E> consumer)
+            throws JavetException, E {
+        return forEach(consumer, DEFAULT_BATCH_SIZE);
     }
+
+    /**
+     * Invoke the bi-indexed-consumer for each of the keys.
+     *
+     * @param <Key>     the type of key
+     * @param <Value>   the type of value
+     * @param <E>       the type of exception
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the key count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 0.8.10
+     */
+    <Key extends V8Value, Value extends V8Value, E extends Throwable> int forEach(
+            IJavetBiIndexedConsumer<Key, Value, E> consumer,
+            int batchSize)
+            throws JavetException, E;
 
     /**
      * Get property value by key object.
@@ -389,9 +393,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Boolean getBoolean(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    Boolean getBoolean(Object key) throws JavetException;
 
     /**
      * Gets property value as double by key object.
@@ -401,9 +403,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Double getDouble(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    Double getDouble(Object key) throws JavetException;
 
     /**
      * Gets property value as float by key object.
@@ -439,9 +439,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Integer getInteger(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    Integer getInteger(Object key) throws JavetException;
 
     /**
      * Gets property value as long by key object.
@@ -451,9 +449,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default Long getLong(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    Long getLong(Object key) throws JavetException;
 
     /**
      * Gets property value as null by key object.
@@ -869,9 +865,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
-    default String getString(Object key) throws JavetException {
-        return getPrimitive(key);
-    }
+    String getString(Object key) throws JavetException;
 
     /**
      * Gets undefined by key object.
@@ -1199,6 +1193,63 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean set(Object key, Object value) throws JavetException;
 
     /**
+     * Set property by pairs of key object and value object.
+     *
+     * @param keysAndValues the keys and values
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     */
+    boolean set(Object... keysAndValues) throws JavetException;
+
+    /**
+     * Set property by key object and value boolean.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setBoolean(Object key, Boolean value) throws JavetException;
+
+    /**
+     * Set property by key object and value double.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setDouble(Object key, Double value) throws JavetException;
+
+    /**
+     * Set property by key object and value integer.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setInteger(Object key, Integer value) throws JavetException;
+
+    /**
+     * Set property by key object and value long.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setLong(Object key, Long value) throws JavetException;
+
+    /**
      * Set property to null by key object.
      *
      * @param key the key
@@ -1207,9 +1258,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     @SuppressWarnings("UnusedReturnValue")
-    default boolean setNull(Object key) throws JavetException {
-        return set(key, getV8Runtime().createV8ValueNull());
-    }
+    boolean setNull(Object key) throws JavetException;
 
     /**
      * Set private property by name string and value object.
@@ -1293,6 +1342,18 @@ public interface IV8ValueObject extends IV8ValueReference {
     boolean setPrototype(IV8ValueObject v8ValueObject) throws JavetException;
 
     /**
+     * Set property by key object and value string.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean setString(Object key, String value) throws JavetException;
+
+    /**
      * Set property to undefined by key object.
      *
      * @param key the key
@@ -1301,9 +1362,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     @SuppressWarnings("UnusedReturnValue")
-    default boolean setUndefined(Object key) throws JavetException {
-        return set(key, getV8Runtime().createV8ValueUndefined());
-    }
+    boolean setUndefined(Object key) throws JavetException;
 
     /**
      * To json string.
@@ -1368,9 +1427,20 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @throws JavetException the javet exception
      * @since 1.0.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     default boolean unbindFunction(V8ValueSymbol functionName) throws JavetException {
         return delete(functionName);
     }
+
+    /**
+     * Unbind property by callback context.
+     *
+     * @param javetCallbackContext the javet callback context
+     * @return true : the property is unbind, false: the property is not unbind
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    boolean unbindProperty(JavetCallbackContext javetCallbackContext) throws JavetException;
 
     /**
      * Unbind property by property name string.
@@ -1381,8 +1451,7 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.9.11
      */
     default boolean unbindProperty(String propertyName) throws JavetException {
-        Objects.requireNonNull(propertyName);
-        return unbindProperty(getV8Runtime().createV8ValueString(propertyName));
+        return unbindProperty(getV8Runtime().createV8ValueString(Objects.requireNonNull(propertyName)));
     }
 
     /**

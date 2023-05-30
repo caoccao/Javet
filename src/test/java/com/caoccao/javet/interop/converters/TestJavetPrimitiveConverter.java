@@ -194,42 +194,42 @@ public class TestJavetPrimitiveConverter extends BaseTestJavetRuntime {
         V8Value v8Value;
         // Boolean
         v8Value = converter.toV8Value(v8Runtime, Optional.of(true));
-        assertTrue(v8Value instanceof V8ValueBoolean);
+        assertInstanceOf(V8ValueBoolean.class, v8Value);
         assertTrue(((V8ValueBoolean) v8Value).getValue());
         // Double
         v8Value = converter.toV8Value(v8Runtime, Optional.of(1.23D));
-        assertTrue(v8Value instanceof V8ValueDouble);
+        assertInstanceOf(V8ValueDouble.class, v8Value);
         assertEquals(1.23D, ((V8ValueDouble) v8Value).getValue(), 0.0001D);
         // Integer
         v8Value = converter.toV8Value(v8Runtime, Optional.of(1));
-        assertTrue(v8Value instanceof V8ValueInteger);
+        assertInstanceOf(V8ValueInteger.class, v8Value);
         assertEquals(1, ((V8ValueInteger) v8Value).getValue());
         // Long
         v8Value = converter.toV8Value(v8Runtime, Optional.of(Long.MAX_VALUE));
-        assertTrue(v8Value instanceof V8ValueLong);
+        assertInstanceOf(V8ValueLong.class, v8Value);
         assertEquals(Long.MAX_VALUE, ((V8ValueLong) v8Value).getValue());
         // String
         v8Value = converter.toV8Value(v8Runtime, Optional.of("a"));
-        assertTrue(v8Value instanceof V8ValueString);
+        assertInstanceOf(V8ValueString.class, v8Value);
         assertEquals("a", ((V8ValueString) v8Value).getValue());
         // ZonedDateTime
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         v8Value = converter.toV8Value(v8Runtime, Optional.of(zonedDateTime));
-        assertTrue(v8Value instanceof V8ValueZonedDateTime);
+        assertInstanceOf(V8ValueZonedDateTime.class, v8Value);
         assertEquals(
                 zonedDateTime.toInstant().toEpochMilli(),
                 ((V8ValueZonedDateTime) v8Value).getValue().toInstant().toEpochMilli());
         // int
         v8Value = converter.toV8Value(v8Runtime, OptionalInt.of(1));
-        assertTrue(v8Value instanceof V8ValueInteger);
+        assertInstanceOf(V8ValueInteger.class, v8Value);
         assertEquals(1, ((V8ValueInteger) v8Value).getValue());
         // double
         v8Value = converter.toV8Value(v8Runtime, OptionalDouble.of(1.23D));
-        assertTrue(v8Value instanceof V8ValueDouble);
+        assertInstanceOf(V8ValueDouble.class, v8Value);
         assertEquals(1.23D, ((V8ValueDouble) v8Value).getValue(), 0.0001D);
         // long
         v8Value = converter.toV8Value(v8Runtime, OptionalLong.of(1L));
-        assertTrue(v8Value instanceof V8ValueLong);
+        assertInstanceOf(V8ValueLong.class, v8Value);
         assertEquals(1L, ((V8ValueLong) v8Value).getValue());
     }
 

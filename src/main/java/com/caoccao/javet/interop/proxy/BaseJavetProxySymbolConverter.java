@@ -17,12 +17,12 @@
 package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
-import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 
@@ -79,16 +79,12 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
     @CheckReturnValue
     @Override
     public V8ValueFunction getV8ValueFunction() throws JavetException {
-        try {
-            JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                    this, getClass().getMethod(METHOD_NAME_TO_V8_VALUE, V8Value[].class));
-            return v8Runtime.createV8ValueFunction(javetCallbackContext);
-        } catch (NoSuchMethodException e) {
-            throw new JavetException(JavetError.CallbackMethodFailure,
-                    SimpleMap.of(
-                            JavetError.PARAMETER_METHOD_NAME, METHOD_NAME_TO_V8_VALUE,
-                            JavetError.PARAMETER_MESSAGE, e.getMessage()), e);
-        }
+        JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                METHOD_NAME_TO_V8_VALUE,
+                this,
+                JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<?>) this::toV8Value);
+        return v8Runtime.createV8ValueFunction(javetCallbackContext);
     }
 
     /**
@@ -100,6 +96,7 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
      * @since 1.0.4
      */
     @CheckReturnValue
+    @Override
     public V8Value toV8Value(V8Value... v8Values) throws JavetException {
         return OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject);
     }

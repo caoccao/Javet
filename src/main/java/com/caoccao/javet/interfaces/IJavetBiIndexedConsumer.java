@@ -22,12 +22,13 @@ import com.caoccao.javet.values.V8Value;
 /**
  * The interface Javet bi-indexed consumer.
  *
- * @param <T1> the type parameter for key
- * @param <T2> the type parameter for value
- * @param <E>  the type parameter for custom exception
+ * @param <Key>   the type parameter for key
+ * @param <Value> the type parameter for value
+ * @param <E>     the type parameter for custom exception
  * @since 0.8.10
  */
-public interface IJavetBiIndexedConsumer<T1 extends V8Value, T2 extends V8Value, E extends Throwable> {
+@FunctionalInterface
+public interface IJavetBiIndexedConsumer<Key extends V8Value, Value extends V8Value, E extends Throwable> {
     /**
      * Accept.
      *
@@ -38,5 +39,5 @@ public interface IJavetBiIndexedConsumer<T1 extends V8Value, T2 extends V8Value,
      * @throws E              the custom exception
      * @since 0.8.10
      */
-    void accept(int index, T1 key, T2 value) throws JavetException, E;
+    void accept(int index, Key key, Value value) throws JavetException, E;
 }

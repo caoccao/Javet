@@ -38,5 +38,11 @@ public @interface V8Convert {
      */
     V8ConversionMode mode() default V8ConversionMode.Transparent;
 
+    /**
+     * Proxy mode.
+     *
+     * @return the proxy mode
+     * @since 1.1.7
+     */
     V8ProxyMode proxyMode() default V8ProxyMode.Object;
 }

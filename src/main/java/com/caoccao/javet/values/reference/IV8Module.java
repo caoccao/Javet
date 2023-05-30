@@ -22,7 +22,7 @@ import com.caoccao.javet.interop.IV8Executable;
 import com.caoccao.javet.values.V8Value;
 
 @SuppressWarnings("unchecked")
-public interface IV8Module extends IV8ValueReference, IV8Executable {
+public interface IV8Module extends IV8Cacheable, IV8ValueReference, IV8Executable {
     int Uninstantiated = 0;
     int Instantiating = 1;
     int Instantiated = 2;
@@ -51,8 +51,6 @@ public interface IV8Module extends IV8ValueReference, IV8Executable {
         }
         return (T) getV8Runtime().createV8ValueUndefined();
     }
-
-    byte[] getCachedData() throws JavetException;
 
     @CheckReturnValue
     V8ValueError getException() throws JavetException;

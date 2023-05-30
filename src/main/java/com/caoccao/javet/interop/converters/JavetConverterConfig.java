@@ -16,7 +16,7 @@
 
 package com.caoccao.javet.interop.converters;
 
-import com.caoccao.javet.interop.proxy.IJavetDynamicObjectFactory;
+import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
 
 /**
  * The type Javet converter config.
@@ -80,12 +80,6 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     protected short defaultShort;
     /**
-     * The Dynamic object factory.
-     *
-     * @since 2.0.1
-     */
-    protected IJavetDynamicObjectFactory dynamicObjectFactory;
-    /**
      * The Extract function source code.
      *
      * @since 0.9.4
@@ -110,6 +104,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     protected boolean proxySetEnabled;
     /**
+     * The Reflection object factory.
+     *
+     * @since 2.0.1
+     */
+    protected IJavetReflectionObjectFactory reflectionObjectFactory;
+    /**
      * This flag determines whether function should be skipped in object or not.
      *
      * @since 0.9.4
@@ -130,7 +130,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         defaultInt = 0;
         defaultLong = 0L;
         defaultShort = 0;
-        dynamicObjectFactory = null;
+        reflectionObjectFactory = null;
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
         proxyMapEnabled = false;
@@ -217,10 +217,6 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         return defaultShort;
     }
 
-    public IJavetDynamicObjectFactory getDynamicObjectFactory() {
-        return dynamicObjectFactory;
-    }
-
     /**
      * Gets max depth.
      *
@@ -229,6 +225,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public int getMaxDepth() {
         return maxDepth;
+    }
+
+    /**
+     * Gets reflection object factory.
+     *
+     * @return the reflection object factory
+     * @since 2.0.1
+     */
+    public IJavetReflectionObjectFactory getReflectionObjectFactory() {
+        return reflectionObjectFactory;
     }
 
     /**
@@ -375,10 +381,6 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         return this;
     }
 
-    public void setDynamicObjectFactory(IJavetDynamicObjectFactory dynamicObjectFactory) {
-        this.dynamicObjectFactory = dynamicObjectFactory;
-    }
-
     /**
      * Sets extract function source code.
      *
@@ -428,6 +430,19 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     @SuppressWarnings("UnusedReturnValue")
     public JavetConverterConfig<T> setProxySetEnabled(boolean proxySetEnabled) {
         this.proxySetEnabled = proxySetEnabled;
+        return this;
+    }
+
+    /**
+     * Sets reflection object factory.
+     *
+     * @param reflectionObjectFactory the reflection object factory
+     * @return the self
+     * @since 2.0.1
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setReflectionObjectFactory(IJavetReflectionObjectFactory reflectionObjectFactory) {
+        this.reflectionObjectFactory = reflectionObjectFactory;
         return this;
     }
 

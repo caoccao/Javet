@@ -31,12 +31,14 @@ import com.caoccao.javet.values.primitive.V8ValueDouble;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -150,7 +152,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         assertEquals(0L, a.getHandle());
         try (V8ValueObject b = globalObject.get("a")) {
-            assertTrue(b instanceof V8ValueObject);
+            assertNotNull(b);
         }
     }
 
@@ -182,25 +184,25 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 "const a = {'A0': 0, 'A1': 1, 'A2': 2}; a;").execute()) {
             AtomicInteger count = new AtomicInteger(0);
             assertEquals(3, v8ValueObject.forEach((V8ValueString key) -> {
-                assertEquals("A" + Integer.toString(count.getAndIncrement()), key.getValue());
+                assertEquals("A" + count.getAndIncrement(), key.getValue());
             }));
             count.set(0);
             assertEquals(3, v8ValueObject.forEach((V8ValueString key, V8ValueInteger value) -> {
-                assertEquals("A" + Integer.toString(count.get()), key.getValue());
+                assertEquals("A" + count.get(), key.getValue());
                 assertEquals(count.getAndIncrement(), value.getValue());
             }));
             assertEquals(3, v8ValueObject.forEach((int index, V8ValueString key) -> {
-                assertEquals("A" + Integer.toString(index), key.getValue());
+                assertEquals("A" + index, key.getValue());
             }));
             assertEquals(3, v8ValueObject.forEach((int index, V8ValueString key, V8ValueInteger value) -> {
-                assertEquals("A" + Integer.toString(index), key.getValue());
+                assertEquals("A" + index, key.getValue());
                 assertEquals(index, value.getValue());
             }));
         }
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
                 "const b = {'2147483648': '2**31'}; b;").execute()) {
             assertEquals(1, v8ValueObject.forEach((V8Value key, V8Value value) -> {
-                assertTrue(key instanceof V8ValueDouble);
+                assertInstanceOf(V8ValueDouble.class, key);
                 assertEquals("2147483648", key.toString());
             }));
         }
@@ -336,6 +338,50 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertTrue(v8ValueObject.delete("b"));
             V8Value v8Value = v8ValueObject.getUndefined("b");
             assertNotNull(v8Value);
+            v8ValueObject.setString("d", "1");
+            assertEquals("1", v8ValueObject.getString("d"));
+            assertTrue(v8ValueObject.has("d"));
+            v8ValueObject.setString("d", null);
+            assertNull(v8ValueObject.getString("d"));
+            assertTrue(v8ValueObject.has("d"));
+            Object[] keysAndValues = new Object[]{"x", 1, "y", 2, "z", 3};
+            assertTrue(v8ValueObject.set(keysAndValues));
+            for (int i = 0; i < keysAndValues.length / 2; i += 2) {
+                assertTrue(v8ValueObject.has(keysAndValues[i * 2]));
+                assertEquals(keysAndValues[i * 2 + 1], v8ValueObject.getInteger(keysAndValues[i * 2]));
+            }
+        }
+        String key = "a";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            for (Boolean value : new Boolean[]{true, false, null}) {
+                assertTrue(v8ValueObject.setBoolean(key, value));
+                assertTrue(v8ValueObject.has(key));
+                assertEquals(value, v8ValueObject.getBoolean(key));
+            }
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            for (Double value : new Double[]{0.1D, 1.234D, -1.234D, Double.MIN_VALUE, Double.MAX_VALUE}) {
+                assertTrue(v8ValueObject.setDouble(key, value));
+                assertTrue(v8ValueObject.has(key));
+                assertEquals(value, v8ValueObject.getDouble(key), 0.001D);
+            }
+            assertTrue(v8ValueObject.setDouble(key, null));
+            assertTrue(v8ValueObject.has(key));
+            assertNull(v8ValueObject.getDouble(key));
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            for (Integer value : new Integer[]{0, 1, -1, Integer.MIN_VALUE, Integer.MAX_VALUE, null}) {
+                assertTrue(v8ValueObject.setInteger(key, value));
+                assertTrue(v8ValueObject.has(key));
+                assertEquals(value, v8ValueObject.getInteger(key));
+            }
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            for (Long value : new Long[]{0L, 1L, -1L, Long.MIN_VALUE, Long.MAX_VALUE, null}) {
+                assertTrue(v8ValueObject.setLong(key, value));
+                assertTrue(v8ValueObject.has(key));
+                assertEquals(value, v8ValueObject.getLong(key));
+            }
         }
         v8Runtime.getExecutor("var test = { get a(){return b;}};").executeVoid();
         try {
@@ -399,6 +445,49 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 outerObject.set("x", innerObject);
             }
             assertEquals("{\"x\":{\"a\":\"1\"}}", outerObject.toJsonString());
+        }
+    }
+
+    @Test
+    @Tag("performance")
+    public void testPerformanceSet() throws JavetException {
+        final int pairCount = 1000;
+        final int iterations = 1000;
+        // Test set one by one.
+        {
+            final long startTime = System.currentTimeMillis();
+            int successCount = 0;
+            for (int i = 0; i < iterations; i++) {
+                try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                    for (int j = 0; j < pairCount; j++) {
+                        if (v8ValueObject.set("a", "a")) {
+                            successCount++;
+                        }
+                    }
+                }
+            }
+            final long stopTime = System.currentTimeMillis();
+            final long tps = pairCount * iterations * 1000 / (stopTime - startTime);
+            logger.logInfo("Object set one by one: {0} tps.", tps);
+            assertEquals(pairCount * iterations, successCount);
+        }
+        // Test set by batch.
+        {
+            final long startTime = System.currentTimeMillis();
+            int successCount = 0;
+            Object[] items = new Object[pairCount * 2];
+            Arrays.fill(items, "a");
+            for (int i = 0; i < iterations; i++) {
+                try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                    if (v8ValueObject.set(items)) {
+                        successCount++;
+                    }
+                }
+            }
+            final long stopTime = System.currentTimeMillis();
+            final long tps = pairCount * iterations * 1000 / (stopTime - startTime);
+            logger.logInfo("Object set in a batch: {0} tps.", tps);
+            assertEquals(iterations, successCount);
         }
     }
 

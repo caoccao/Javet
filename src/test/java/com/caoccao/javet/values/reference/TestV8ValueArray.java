@@ -18,12 +18,16 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -77,6 +81,23 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                 assertEquals(2, v8Runtime.getReferenceCount());
             }
             assertEquals(1, v8Runtime.getReferenceCount());
+            V8Value[] v8Values = v8ValueArray.batchGet();
+            assertEquals(6, v8Values.length);
+            assertEquals(1, ((V8ValueInteger) v8Values[0]).getValue());
+            assertEquals("2", ((V8ValueString) v8Values[1]).getValue());
+            assertEquals(3L, ((V8ValueLong) v8Values[2]).getValue());
+            assertTrue(((V8ValueBoolean) v8Values[3]).getValue());
+            assertEquals(1.23, ((V8ValueDouble) v8Values[4]).getValue(), 0.001D);
+            assertInstanceOf(V8ValueArray.class, v8Values[5]);
+            assertEquals(2, v8Runtime.getReferenceCount());
+            JavetResourceUtils.safeClose(v8Values);
+            assertEquals(1, v8Runtime.getReferenceCount());
+            Arrays.fill(v8Values, null);
+            assertEquals(0, v8ValueArray.batchGet(v8Values, 2, 1), "The actual length should be 0.");
+            assertEquals(2, v8ValueArray.batchGet(v8Values, 1, 3));
+            assertEquals("2", ((V8ValueString) v8Values[0]).getValue());
+            assertEquals(3L, ((V8ValueLong) v8Values[1]).getValue());
+            JavetResourceUtils.safeClose( v8Values);
         }
     }
 
@@ -119,14 +140,46 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
     }
 
     @Test
+    @Tag("performance")
+    public void testPerformancePush() throws JavetException {
+        final int itemCount = 1000;
+        final int iterations = 1000;
+        // Test push one by one.
+        {
+            final long startTime = System.currentTimeMillis();
+            for (int i = 0; i < iterations; i++) {
+                try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+                    for (int j = 0; j < itemCount; j++) {
+                        v8ValueArray.push(1);
+                    }
+                }
+            }
+            final long stopTime = System.currentTimeMillis();
+            final long tps = itemCount * iterations * 1000 / (stopTime - startTime);
+            logger.logInfo("Array push one by one: {0} tps.", tps);
+        }
+        // Test push by batch.
+        {
+            final long startTime = System.currentTimeMillis();
+            Object[] items = new Object[itemCount];
+            Arrays.fill(items, 1);
+            for (int i = 0; i < iterations; i++) {
+                try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+                    v8ValueArray.push(items);
+                }
+            }
+            final long stopTime = System.currentTimeMillis();
+            final long tps = itemCount * iterations * 1000 / (stopTime - startTime);
+            logger.logInfo("Array push in a batch: {0} tps.", tps);
+        }
+    }
+
+    @Test
     public void testPushPop() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[]").execute()) {
             assertEquals(0, v8ValueArray.getLength());
             assertEquals(1, v8ValueArray.push(true));
-            assertEquals(2, v8ValueArray.push(1.23));
-            assertEquals(3, v8ValueArray.push(4));
-            assertEquals(4, v8ValueArray.push(5L));
-            assertEquals(5, v8ValueArray.push("x"));
+            assertEquals(5, v8ValueArray.push(1.23, 4, 5L, "x"));
             assertEquals(6, v8ValueArray.pushNull());
             assertEquals(7, v8ValueArray.pushUndefined());
             assertEquals(7, v8ValueArray.getLength());

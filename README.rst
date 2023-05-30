@@ -33,7 +33,7 @@ Major Features
 
 * Linux (x86_64) + Mac OS (x86_64, arm64) + ️Windows (x86_64)
 * Android (arm, arm64, x86 and x86_64)
-* Node.js ``v18.16.0`` + V8 ``v11.3.244.8``
+* Node.js ``v18.16.0`` + V8 ``v11.4.183.14``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
@@ -58,14 +58,14 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>2.1.2</version>
+        <version>2.2.0</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>2.1.2</version>
+        <version>2.2.0</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -73,18 +73,18 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:2.1.2") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-macos:2.1.2") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:2.1.2") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:2.2.0") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-macos:2.2.0") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android:2.2.0") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:2.1.2' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-macos:2.1.2' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:2.1.2' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:2.2.0' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-macos:2.2.0' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:2.2.0' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------

@@ -19,12 +19,15 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8ScopeType;
+import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
@@ -34,10 +37,12 @@ import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.opentest4j.AssertionFailedError;
 
 import java.text.MessageFormat;
 import java.time.ZoneId;
@@ -189,7 +194,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         String codeString = "() => '123測試'";
         try (V8Value v8Value = v8Runtime.getExecutor(codeString).execute()) {
             assertNotNull(v8Value);
-            assertTrue(v8Value instanceof V8ValueFunction);
+            assertInstanceOf(V8ValueFunction.class, v8Value);
             V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
             assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
             assertEquals(codeString, v8ValueFunction.toString());
@@ -292,7 +297,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testCallbackBlankWithThis() throws JavetException, NoSuchMethodException {
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoThis", true), true);
+                "echoThis",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("echoThis", true),
+                true);
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
         try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
@@ -320,7 +328,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testCallbackBlankWithoutThis() throws JavetException, NoSuchMethodException {
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
+                "blank",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("blank"));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
         try (V8ValueObject a = v8Runtime.createV8ValueObject()) {
@@ -348,7 +358,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethodVarargs("echoThis", true), true);
+                "echoThis",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethodVarargs("echoThis", true),
+                true);
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
@@ -378,7 +391,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethodVarargs("echo"));
+                "echo",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethodVarargs("echo"));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
@@ -403,7 +418,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoThisString", V8Value.class, String.class), true);
+                "echoThisString",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("echoThisString", V8Value.class, String.class),
+                true);
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
@@ -428,7 +446,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoString", String.class));
+                "echoString",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("echoString", String.class));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
@@ -439,8 +459,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertTrue(mockCallbackReceiver.isCalled());
         globalObject.delete("echoString");
         javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoString", V8Value[].class));
-        globalObject.bindFunction("echoString", javetCallbackContext);
+                "echoString",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("echoString", V8Value[].class));
+        globalObject.bindFunction(javetCallbackContext);
         assertEquals("abc", v8Runtime.getExecutor("echoString('abc')").executeString());
         assertEquals("abc,def", v8Runtime.getExecutor("echoString('abc', 'def')").executeString());
         assertEquals("", v8Runtime.getExecutor("echoString()").executeString());
@@ -453,7 +475,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("echoThis", V8Value.class, V8Value.class), true);
+                "echoThis",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("echoThis", V8Value.class, V8Value.class),
+                true);
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
@@ -477,7 +502,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("echo", V8Value.class));
+                "echo",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("echo", V8Value.class));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertEquals(1, v8Runtime.getReferenceCount());
@@ -497,9 +524,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     public void testCallbackError() throws JavetException, NoSuchMethodException {
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("error"));
+                "testError",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("error"));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
-        globalObject.bindFunction("testError", javetCallbackContext);
+        globalObject.bindFunction(javetCallbackContext);
         assertEquals(0, v8Runtime.getReferenceCount());
         assertFalse(mockCallbackReceiver.isCalled());
         try {
@@ -524,6 +553,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                "joinIntegerArrayWithThis",
                 mockCallbackReceiver,
                 mockCallbackReceiver.getMethod(
                         "joinIntegerArrayWithThis", V8ValueObject.class, String.class, Integer[].class),
@@ -551,6 +581,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
+                "joinWithThis",
                 mockCallbackReceiver,
                 mockCallbackReceiver.getMethod("joinWithThis",
                         V8ValueObject.class, Boolean.class, Double.class, Integer.class, Long.class,
@@ -579,9 +610,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("joinWithoutThis",
-                Boolean.class, Double.class, Integer.class, Long.class, String.class, ZonedDateTime.class,
-                V8ValueString.class));
+                "joinWithoutThis",
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod(
+                        "joinWithoutThis", Boolean.class, Double.class, Integer.class,
+                        Long.class, String.class, ZonedDateTime.class, V8ValueString.class));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext)) {
             assertTrue(v8ValueFunction.getJSFunctionType().isAPI());
@@ -601,6 +634,169 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
         assertTrue(mockCallbackReceiver.isCalled());
         v8Runtime.lowMemoryNotification();
+    }
+
+    @Test
+    public void testCallbackTypeGetterAndNoThis() throws JavetException {
+        String functionName = "test";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            IJavetDirectCallable.GetterAndNoThis<?> callback = () -> v8Runtime.createV8ValueInteger(1);
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallGetterAndNoThis, callback);
+            v8ValueObject.bindProperty(callbackContext);
+            assertEquals(1, v8ValueObject.getInteger(functionName));
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testCallbackTypeGetterAndThis() throws JavetException {
+        String functionName = "test";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.set("a", "a");
+            IJavetDirectCallable.GetterAndThis<?> callback = (thisObject) -> {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                assertEquals("a", ((V8ValueObject) thisObject).getString("a"));
+                return v8Runtime.createV8ValueInteger(1);
+            };
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallGetterAndThis, callback);
+            v8ValueObject.bindProperty(callbackContext);
+            assertEquals(1, v8ValueObject.getInteger(functionName));
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testCallbackTypeNoThisAndNoResult() throws JavetException {
+        String functionName = "test";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            int[] storage = new int[1];
+            IJavetDirectCallable.NoThisAndNoResult<?> callback = (v8Values) -> {
+                assertEquals(2, v8Values.length);
+                storage[0] = ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue();
+            };
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallNoThisAndNoResult, callback);
+            v8ValueObject.bindFunction(callbackContext);
+            v8ValueObject.invokeVoid(functionName, 1, 2);
+            assertEquals(3, storage[0]);
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testCallbackTypeNoThisAndResult() throws JavetException {
+        String functionName = "test";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            IJavetDirectCallable.NoThisAndResult<?> callback = (v8Values) -> {
+                assertEquals(2, v8Values.length);
+                return v8Runtime.createV8ValueInteger(
+                        ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue());
+            };
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallNoThisAndResult, callback);
+            v8ValueObject.bindFunction(callbackContext);
+            assertEquals(3, v8ValueObject.invokeInteger(functionName, 1, 2));
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testCallbackTypeSetterAndNoThis() throws JavetException {
+        String functionName = "test";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            int[] storage = new int[1];
+            IJavetDirectCallable.GetterAndNoThis<?> callbackGetter = () -> v8Runtime.createV8ValueInteger(storage[0]);
+            JavetCallbackContext callbackContextGetter = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallGetterAndNoThis, callbackGetter);
+            IJavetDirectCallable.SetterAndNoThis<?> callbackSetter = (value) -> {
+                storage[0] = ((V8ValueInteger) value).getValue();
+                return v8Runtime.createV8ValueBoolean(true);
+            };
+            JavetCallbackContext callbackContextSetter = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallSetterAndNoThis, callbackSetter);
+            v8ValueObject.bindProperty(callbackContextGetter, callbackContextSetter);
+            assertTrue(v8ValueObject.setInteger(functionName, 2));
+            assertEquals(2, v8ValueObject.getInteger(functionName));
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testCallbackTypeSetterAndThis() throws JavetException {
+        String functionName = "test";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.set("a", "a");
+            int[] storage = new int[1];
+            IJavetDirectCallable.GetterAndThis<?> callbackGetter = (thisObject) -> {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                assertEquals("a", ((V8ValueObject) thisObject).getString("a"));
+                return v8Runtime.createV8ValueInteger(storage[0]);
+            };
+            JavetCallbackContext callbackContextGetter = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallGetterAndThis, callbackGetter);
+            IJavetDirectCallable.SetterAndThis<?> callbackSetter = (thisObject, value) -> {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                storage[0] = ((V8ValueInteger) value).getValue();
+                return v8Runtime.createV8ValueBoolean(true);
+            };
+            JavetCallbackContext callbackContextSetter = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallSetterAndThis, callbackSetter);
+            v8ValueObject.bindProperty(callbackContextGetter, callbackContextSetter);
+            assertTrue(v8ValueObject.setInteger(functionName, 2));
+            assertEquals(2, v8ValueObject.getInteger(functionName));
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testCallbackTypeThisAndNoResult() throws JavetException {
+        String functionName = "test";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.set("a", "a");
+            int[] storage = new int[1];
+            IJavetDirectCallable.ThisAndNoResult<?> callback = (thisObject, v8Values) -> {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                assertEquals("a", ((V8ValueObject) thisObject).getString("a"));
+                assertEquals(2, v8Values.length);
+                storage[0] = ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue();
+            };
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallThisAndNoResult, callback);
+            v8ValueObject.bindFunction(callbackContext);
+            assertInstanceOf(V8ValueUndefined.class, v8ValueObject.invoke(functionName, 1, 2));
+            assertEquals(3, storage[0]);
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testCallbackTypeThisAndResult() throws JavetException {
+        String functionName = "test";
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.set("a", "a");
+            IJavetDirectCallable.ThisAndResult<?> callback = (thisObject, v8Values) -> {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                assertEquals("a", ((V8ValueObject) thisObject).getString("a"));
+                assertEquals(2, v8Values.length);
+                return v8Runtime.createV8ValueInteger(
+                        ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue());
+            };
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    functionName, JavetCallbackType.DirectCallThisAndResult, callback);
+            v8ValueObject.bindFunction(callbackContext);
+            assertEquals(3, v8ValueObject.invokeInteger(functionName, 1, 2));
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
     }
 
     @Test
@@ -709,6 +905,136 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(33, originalScriptSource.getStartPosition());
             assertEquals(44, originalScriptSource.getEndPosition());
             assertEquals(2, originalV8ValueFunction.callInteger(null));
+        }
+    }
+
+    @Test
+    public void testDirectCallable() throws JavetException {
+        IJavetDirectCallable directCallable = new IJavetDirectCallable() {
+            private JavetCallbackContext[] javetCallbackContexts;
+            private V8Runtime v8Runtime;
+            private int x;
+            private int y;
+
+            public V8Value add(V8Value... v8Values) throws JavetException {
+                ++x;
+                return v8Runtime.createV8ValueInteger(
+                        ((V8ValueInteger) v8Values[0]).getValue() + ((V8ValueInteger) v8Values[1]).getValue());
+            }
+
+            public void assertAdd(V8Value... v8Values) {
+                ++x;
+                assertEquals(
+                        ((V8ValueInteger) v8Values[0]).getValue(),
+                        ((V8ValueInteger) v8Values[1]).getValue() + ((V8ValueInteger) v8Values[2]).getValue());
+            }
+
+            public void assertSubtract(V8Value thisObject, V8Value... v8Values) {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                ++x;
+                assertEquals(
+                        ((V8ValueInteger) v8Values[0]).getValue(),
+                        ((V8ValueInteger) v8Values[1]).getValue() - ((V8ValueInteger) v8Values[2]).getValue());
+            }
+
+            @Override
+            public JavetCallbackContext[] getCallbackContexts() {
+                if (javetCallbackContexts == null) {
+                    javetCallbackContexts = new JavetCallbackContext[]{
+                            new JavetCallbackContext(
+                                    "add", JavetCallbackType.DirectCallNoThisAndResult,
+                                    (IJavetDirectCallable.NoThisAndResult<?>) this::add),
+                            new JavetCallbackContext(
+                                    "assertAdd", JavetCallbackType.DirectCallNoThisAndNoResult,
+                                    (IJavetDirectCallable.NoThisAndNoResult<?>) this::assertAdd),
+                            new JavetCallbackContext(
+                                    "subtract", JavetCallbackType.DirectCallThisAndResult,
+                                    (IJavetDirectCallable.ThisAndResult<?>) this::subtract),
+                            new JavetCallbackContext(
+                                    "assertSubtract", JavetCallbackType.DirectCallThisAndNoResult,
+                                    (IJavetDirectCallable.ThisAndNoResult<?>) this::assertSubtract),
+                            new JavetCallbackContext(
+                                    "x", JavetCallbackType.DirectCallGetterAndNoThis,
+                                    (IJavetDirectCallable.GetterAndNoThis<?>) this::xGet),
+                            new JavetCallbackContext(
+                                    "x", JavetCallbackType.DirectCallSetterAndNoThis,
+                                    (IJavetDirectCallable.SetterAndNoThis<?>) this::xSet),
+                            new JavetCallbackContext(
+                                    "y", JavetCallbackType.DirectCallGetterAndThis,
+                                    (IJavetDirectCallable.GetterAndThis<?>) this::yGet),
+                            new JavetCallbackContext(
+                                    "y", JavetCallbackType.DirectCallSetterAndThis,
+                                    (IJavetDirectCallable.SetterAndThis<?>) this::ySet),
+                    };
+                }
+                return javetCallbackContexts;
+            }
+
+            @Override
+            public void setV8Runtime(V8Runtime v8Runtime) {
+                this.v8Runtime = v8Runtime;
+            }
+
+            public V8Value subtract(V8Value thisObject, V8Value... v8Values) throws JavetException {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                ++x;
+                return v8Runtime.createV8ValueInteger(
+                        ((V8ValueInteger) v8Values[0]).getValue() - ((V8ValueInteger) v8Values[1]).getValue());
+            }
+
+            public V8Value xGet() throws JavetException {
+                return v8Runtime.createV8ValueInteger(x);
+            }
+
+            public V8Value xSet(V8Value v8Value) throws JavetException {
+                x = ((V8ValueInteger) v8Value).getValue();
+                return v8Runtime.createV8ValueBoolean(true);
+            }
+
+            public V8Value yGet(V8Value thisObject) throws JavetException {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                return v8Runtime.createV8ValueInteger(y);
+            }
+
+            public V8Value ySet(V8Value thisObject, V8Value v8Value) throws JavetException {
+                assertInstanceOf(V8ValueObject.class, thisObject);
+                y = ((V8ValueInteger) v8Value).getValue();
+                return v8Runtime.createV8ValueBoolean(true);
+            }
+        };
+        final int expectedCallbackContextSize = 8;
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            assertEquals(expectedCallbackContextSize, v8ValueObject.bind(directCallable).size());
+            assertEquals(expectedCallbackContextSize, directCallable.getCallbackContexts().length);
+            assertTrue(v8ValueObject.setInteger("x", 3));
+            assertEquals(3, v8ValueObject.getInteger("x"));
+            assertTrue(v8ValueObject.setInteger("y", 5));
+            assertEquals(5, v8ValueObject.getInteger("y"));
+            assertEquals(3, v8ValueObject.invokeInteger("add", 1, 2));
+            assertEquals(4, v8ValueObject.getInteger("x"));
+            assertEquals(1, v8ValueObject.invokeInteger("subtract", 2, 1));
+            assertEquals(5, v8ValueObject.getInteger("x"));
+            v8ValueObject.invokeVoid("assertAdd", 3, 1, 2);
+            assertEquals(6, v8ValueObject.getInteger("x"));
+            try {
+                v8ValueObject.invokeVoid("assertAdd", 3, 1, 3);
+                fail("Failed to throw an exception.");
+            } catch (JavetExecutionException e) {
+                assertInstanceOf(AssertionFailedError.class, e.getCause());
+            }
+            assertEquals(7, v8ValueObject.getInteger("x"));
+            v8ValueObject.invokeVoid("assertSubtract", 1, 2, 1);
+            assertEquals(8, v8ValueObject.getInteger("x"));
+            try {
+                v8ValueObject.invokeVoid("assertSubtract", 0, 2, 1);
+                fail("Failed to throw an exception.");
+            } catch (JavetExecutionException e) {
+                assertInstanceOf(AssertionFailedError.class, e.getCause());
+            }
+            assertEquals(9, v8ValueObject.getInteger("x"));
+            assertEquals(expectedCallbackContextSize - 2, v8ValueObject.unbind(directCallable));
+        } finally {
+            v8Runtime.lowMemoryNotification();
         }
     }
 
@@ -1546,16 +1872,79 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    @Tag("performance")
+    public void testPerformanceBetweenReflectionAndDirectCalls() throws Exception {
+        final int v8Iterations = 2_000_000;
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            IJavetAnonymous anonymous = new IJavetAnonymous() {
+                @V8Function
+                public int test(int i) {
+                    return i;
+                }
+            };
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            final long startTime = System.currentTimeMillis();
+            assertEquals(v8Iterations, v8Runtime.getExecutor("let x = 0;\n" +
+                    "for (let i = 0; i < " + v8Iterations + "; ++i)\n" +
+                    "  x += a.test(1);\n" +
+                    "x;").executeInteger());
+            final long stopTime = System.currentTimeMillis();
+            final long tps = v8Iterations * 1000L / (stopTime - startTime);
+            logger.logInfo(
+                    "{0} reflection calls via V8 completed in {1}ms with TPS {2}.",
+                    v8Iterations, stopTime - startTime, tps);
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            IJavetDirectCallable directCallable = new IJavetDirectCallable() {
+                @Override
+                public JavetCallbackContext[] getCallbackContexts() {
+                    return new JavetCallbackContext[]{
+                            new JavetCallbackContext(
+                                    "test", JavetCallbackType.DirectCallNoThisAndResult,
+                                    (IJavetDirectCallable.NoThisAndResult<?>) this::test),
+                    };
+                }
+
+                public V8Value test(V8Value... v8Values) {
+                    return v8Values[0];
+                }
+            };
+            v8ValueObject.bind(directCallable);
+            v8Runtime.getGlobalObject().set("a", v8ValueObject);
+            final long startTime = System.currentTimeMillis();
+            assertEquals(v8Iterations, v8Runtime.getExecutor("let y = 0;\n" +
+                    "for (let i = 0; i < " + v8Iterations + "; ++i)\n" +
+                    "  y += a.test(1);\n" +
+                    "y;").executeInteger());
+            final long stopTime = System.currentTimeMillis();
+            final long tps = v8Iterations * 1000L / (stopTime - startTime);
+            logger.logInfo(
+                    "{0} direct calls via V8 completed in {1}ms with TPS {2}.",
+                    v8Iterations, stopTime - startTime, tps);
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
     public void testPropertyGetter() throws NoSuchMethodException, JavetException {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("getValue"));
+                "test",
+                V8ValueSymbolType.None,
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("getValue"));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             globalObject.set("a", v8ValueObject);
             mockCallbackReceiver.setValue("abc");
-            assertTrue(v8ValueObject.bindProperty("test", javetCallbackContextGetter));
+            assertTrue(v8ValueObject.bindProperty(javetCallbackContextGetter));
             assertEquals(1, v8Runtime.getReferenceCount());
             assertEquals(1, v8Runtime.getCallbackContextCount());
             mockCallbackReceiver.setCalled(false);
@@ -1578,14 +1967,20 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         assertEquals(0, v8Runtime.getReferenceCount());
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         JavetCallbackContext javetCallbackContextGetter = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("getValue"));
+                "test",
+                V8ValueSymbolType.None,
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("getValue"));
         JavetCallbackContext javetCallbackContextSetter = new JavetCallbackContext(
-                mockCallbackReceiver, mockCallbackReceiver.getMethod("setValue", String.class));
+                "setValue",
+                V8ValueSymbolType.None,
+                mockCallbackReceiver,
+                mockCallbackReceiver.getMethod("setValue", String.class));
         V8ValueObject globalObject = v8Runtime.getGlobalObject();
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             globalObject.set("a", v8ValueObject);
             assertNull(mockCallbackReceiver.getValue());
-            assertTrue(v8ValueObject.bindProperty("test", javetCallbackContextGetter, javetCallbackContextSetter));
+            assertTrue(v8ValueObject.bindProperty(javetCallbackContextGetter, javetCallbackContextSetter));
             assertEquals(1, v8Runtime.getReferenceCount());
             assertEquals(2, v8Runtime.getCallbackContextCount());
             mockCallbackReceiver.setCalled(false);

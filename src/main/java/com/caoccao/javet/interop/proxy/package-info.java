@@ -15,7 +15,7 @@
  */
 
 /**
- * Dynamic proxy handlers for polyfilling Java interfaces with JS functions or objects.
+ * Reflection and direct proxy handlers for polyfilling Java interfaces with JS functions or objects.
  *
  * @since 0.7.0
  * @author Sam Cao

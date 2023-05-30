@@ -23,10 +23,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
-import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
-import com.caoccao.javet.interop.proxy.JavetDynamicProxyClassHandler;
-import com.caoccao.javet.interop.proxy.JavetDynamicProxyFunctionHandler;
-import com.caoccao.javet.interop.proxy.JavetDynamicProxyObjectHandler;
+import com.caoccao.javet.interop.proxy.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.reference.IV8ValueObject;
@@ -108,19 +105,29 @@ public class JavetProxyConverter extends JavetObjectConverter {
                     break;
             }
             try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                IJavetProxyHandler<?> javetProxyHandler;
+                IJavetProxyHandler<?, ?> javetProxyHandler;
                 switch (proxyMode) {
                     case Class:
-                        javetProxyHandler = new JavetDynamicProxyClassHandler<>(
-                                v8Runtime, config.getDynamicObjectFactory(), (Class<?>) object);
+                        javetProxyHandler = new JavetReflectionProxyClassHandler<>(
+                                v8Runtime, config.getReflectionObjectFactory(), (Class<?>) object);
                         break;
                     case Function:
-                        javetProxyHandler = new JavetDynamicProxyFunctionHandler<>(
-                                v8Runtime, config.getDynamicObjectFactory(), object);
+                        if (object instanceof IJavetDirectProxyHandler<?>) {
+                            javetProxyHandler = new JavetDirectProxyFunctionHandler<>(
+                                    v8Runtime, (IJavetDirectProxyHandler<?>) object);
+                        } else {
+                            javetProxyHandler = new JavetReflectionProxyFunctionHandler<>(
+                                    v8Runtime, config.getReflectionObjectFactory(), object);
+                        }
                         break;
                     default:
-                        javetProxyHandler = new JavetDynamicProxyObjectHandler<>(
-                                v8Runtime, config.getDynamicObjectFactory(), object);
+                        if (object instanceof IJavetDirectProxyHandler<?>) {
+                            javetProxyHandler = new JavetDirectProxyObjectHandler<>(
+                                    v8Runtime, (IJavetDirectProxyHandler<?>) object);
+                        } else {
+                            javetProxyHandler = new JavetReflectionProxyObjectHandler<>(
+                                    v8Runtime, config.getReflectionObjectFactory(), object);
+                        }
                         break;
                 }
                 List<JavetCallbackContext> javetCallbackContexts = iV8ValueObjectHandler.bind(javetProxyHandler);

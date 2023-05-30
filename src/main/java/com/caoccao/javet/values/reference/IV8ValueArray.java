@@ -18,16 +18,93 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetUniConsumer;
+import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
 import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The interface V8 value array.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
 public interface IV8ValueArray extends IV8ValueObject {
+    /**
+     * Batch get the given range of items from the array.
+     *
+     * @param v8Values   the V8 values
+     * @param startIndex the start index
+     * @param endIndex   the end index
+     * @return the actual item count
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    int batchGet(V8Value[] v8Values, int startIndex, int endIndex) throws JavetException;
+
+    /**
+     * Batch get all the items from the array.
+     *
+     * @param <T> the type parameter
+     * @return the V8 values
+     * @throws JavetException the javet exception
+     * @since 2.2.0
+     */
+    default <T extends V8Value> T[] batchGet() throws JavetException {
+        final int length = getLength();
+        V8Value[] v8Values = new V8Value[length];
+        if (length > 0) {
+            try {
+                batchGet(v8Values, 0, length);
+            } catch (Throwable t) {
+                JavetResourceUtils.safeClose(v8Values);
+                Arrays.fill(v8Values, null);
+                throw t;
+            }
+        }
+        return (T[]) v8Values;
+    }
+
+    /**
+     * For each of the item, call the consumer and return the item count.
+     *
+     * @param <Value>   the type parameter
+     * @param <E>       the type parameter
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the item count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 2.2.0
+     */
+    <Value extends V8Value, E extends Throwable> int forEach(
+            IJavetUniConsumer<Value, E> consumer,
+            int batchSize)
+            throws JavetException, E;
+
+    /**
+     * For each of the item, call the consumer and return the item count.
+     *
+     * @param <Value>   the type parameter
+     * @param <E>       the type parameter
+     * @param consumer  the consumer
+     * @param batchSize the batch size
+     * @return the item count
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     */
+    <Value extends V8Value, E extends Throwable> int forEach(
+            IJavetUniIndexedConsumer<Value, E> consumer,
+            int batchSize)
+            throws JavetException, E;
+
     @CheckReturnValue
     <T extends V8Value> T get(int index) throws JavetException;
 
@@ -90,7 +167,7 @@ public interface IV8ValueArray extends IV8ValueObject {
         return pop();
     }
 
-    int push(Object value) throws JavetException;
+    int push(Object... objects) throws JavetException;
 
     default int pushNull() throws JavetException {
         return push(getV8Runtime().createV8ValueNull());
@@ -102,11 +179,6 @@ public interface IV8ValueArray extends IV8ValueObject {
 
     @CheckReturnValue
     default V8Value[] toArray() throws JavetException {
-        final int length = getLength();
-        V8Value[] v8Values = new V8Value[length];
-        for (int i = 0; i < length; ++i) {
-            v8Values[i] = get(i);
-        }
-        return v8Values;
+        return batchGet();
     }
 }
