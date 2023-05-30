@@ -437,8 +437,10 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * Sets reflection object factory.
      *
      * @param reflectionObjectFactory the reflection object factory
+     * @return the self
      * @since 2.0.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetConverterConfig<T> setReflectionObjectFactory(IJavetReflectionObjectFactory reflectionObjectFactory) {
         this.reflectionObjectFactory = reflectionObjectFactory;
         return this;

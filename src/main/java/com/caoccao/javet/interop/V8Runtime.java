@@ -471,6 +471,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @param startIndex    the start index
      * @param endIndex      the end index
      * @return the actual item count
+     * @throws JavetException the javet exception
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
