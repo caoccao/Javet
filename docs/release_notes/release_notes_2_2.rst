@@ -5,7 +5,9 @@ Release Notes 2.2.x
 2.2.1 V8 v11.5
 --------------
 
-* Add ``register***()`` to ``IJavetDirectProxyHandler``
+* Added ``register***()`` to ``IJavetDirectProxyHandler``
+* Added ``V8VirtualIterator``
+* Enhanced ``JavetProxySymbolIterableConverter`` to support ``Symbol.iterator``
 
 2.2.0 V8 v11.4
 --------------

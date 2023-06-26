@@ -158,7 +158,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
-                    && (targetObject instanceof Iterable || classDescriptor.getTargetClass().isArray())) {
+                    && (targetObject instanceof Iterable<?>
+                    || targetObject instanceof Map<?, ?>
+                    || classDescriptor.getTargetClass().isArray())) {
                 return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             }
         }

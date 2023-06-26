@@ -77,7 +77,7 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      */
     default V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
         if (property instanceof V8ValueString) {
-            String propertyString = ((V8ValueString) property).toPrimitive();
+            String propertyString = ((V8ValueString) property).getValue();
             Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
             if (stringGetterMap != null && !stringGetterMap.isEmpty()) {
                 IJavetUniFunction<String, ? extends V8Value, E> getter = stringGetterMap.get(propertyString);

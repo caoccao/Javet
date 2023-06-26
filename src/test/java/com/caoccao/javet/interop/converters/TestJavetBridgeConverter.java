@@ -18,6 +18,7 @@ package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.virtual.V8VirtualIterator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,6 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("bFalse");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testIntArray() throws JavetException {
         int[] intArray = new int[]{1, 2};
@@ -74,7 +74,13 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
         assertArrayEquals(intArray, v8Runtime.getExecutor("a[Symbol.toPrimitive]()").executeObject());
-        assertArrayEquals(intArray, v8Runtime.getExecutor("a[Symbol.iterator]()").executeObject());
+        assertInstanceOf(V8VirtualIterator.class, v8Runtime.getExecutor("a[Symbol.iterator]()").executeObject());
+        assertEquals(Integer.valueOf(1), v8Runtime.getExecutor("a[Symbol.iterator]().next().value").executeObject());
+        assertFalse(v8Runtime.getExecutor("a[Symbol.iterator]().next().done").executeBoolean());
+        assertEquals(Integer.valueOf(2), v8Runtime.getExecutor("a[Symbol.iterator]().next().next().value").executeObject());
+        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().done").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().value").execute().isUndefined());
+        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().done").executeBoolean());
         assertArrayEquals(intArray, v8Runtime.getExecutor("a.toV8Value()").executeObject());
         v8Runtime.getGlobalObject().delete("a");
     }
@@ -97,7 +103,14 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
         assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(a[Symbol.toPrimitive]())").executeString());
-        assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(a[Symbol.iterator]())").executeString());
+        assertEquals("{}", v8Runtime.getExecutor("JSON.stringify(a[Symbol.iterator]())").executeString());
+        assertInstanceOf(V8VirtualIterator.class, v8Runtime.getExecutor("a[Symbol.iterator]()").executeObject());
+        assertEquals(Integer.valueOf(1), v8Runtime.getExecutor("a[Symbol.iterator]().next().value").executeObject());
+        assertFalse(v8Runtime.getExecutor("a[Symbol.iterator]().next().done").executeBoolean());
+        assertEquals(Integer.valueOf(2), v8Runtime.getExecutor("a[Symbol.iterator]().next().next().value").executeObject());
+        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().done").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().value").execute().isUndefined());
+        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().done").executeBoolean());
         assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(a.toV8Value())").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
@@ -204,7 +217,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
                 "[\"x\",\"y\"]",
                 v8Runtime.getExecutor("JSON.stringify(a[Symbol.toPrimitive]())").executeString());
         assertEquals(
-                "[\"x\",\"y\"]",
+                "{}",
                 v8Runtime.getExecutor("JSON.stringify(a[Symbol.iterator]())").executeString());
         assertEquals(
                 "[\"x\",\"y\"]",
@@ -222,7 +235,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
                 "[\"x\",\"y\"]",
                 v8Runtime.getExecutor("JSON.stringify(l.toV8Value())").executeString());
         assertEquals(
-                "[\"x\",\"y\"]",
+                "{}",
                 v8Runtime.getExecutor("JSON.stringify(l[Symbol.iterator]())").executeString());
         v8Runtime.getGlobalObject().delete("l");
     }
