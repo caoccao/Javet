@@ -20,9 +20,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiFunction;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.callback.IJavetDirectCallable;
-import com.caoccao.javet.interop.callback.JavetCallbackContext;
-import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
@@ -81,13 +78,9 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
     public Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> proxyGetStringGetterMap() {
         if (stringGetterMap == null) {
             stringGetterMap = new HashMap<>();
-            stringGetterMap.put("x", (propertyName) -> v8Runtime.createV8ValueInteger(getX()));
-            stringGetterMap.put("y", (propertyName) -> v8Runtime.createV8ValueInteger(getY()));
-            stringGetterMap.put("increaseX", (propertyName) -> v8Runtime.createV8ValueFunction(
-                    new JavetCallbackContext(
-                            propertyName,
-                            JavetCallbackType.DirectCallNoThisAndResult,
-                            (IJavetDirectCallable.NoThisAndResult<?>) this::increaseX)));
+            registerStringGetterFunction("increaseX", this::increaseX);
+            registerStringGetter("x", (propertyName) -> v8Runtime.createV8ValueInteger(getX()));
+            registerStringGetter("y", (propertyName) -> v8Runtime.createV8ValueInteger(getY()));
         }
         return stringGetterMap;
     }
@@ -96,14 +89,14 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
     public Map<String, IJavetBiFunction<String, V8Value, Boolean, IOException>> proxyGetStringSetterMap() {
         if (stringSetterMap == null) {
             stringSetterMap = new HashMap<>();
-            stringSetterMap.put("x", (propertyName, propertyValue) -> {
+            registerStringSetter("x", (propertyName, propertyValue) -> {
                 if (propertyValue instanceof V8ValueInteger) {
                     x = ((V8ValueInteger) propertyValue).toPrimitive();
                     return true;
                 }
                 return false;
             });
-            stringSetterMap.put("y", (propertyName, propertyValue) -> {
+            registerStringSetter("y", (propertyName, propertyValue) -> {
                 if (propertyValue instanceof V8ValueInteger) {
                     y = ((V8ValueInteger) propertyValue).toPrimitive();
                     return true;

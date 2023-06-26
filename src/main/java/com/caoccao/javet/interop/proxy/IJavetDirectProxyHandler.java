@@ -259,6 +259,70 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
     }
 
     /**
+     * Register string getter.
+     *
+     * @param propertyName the property name
+     * @param getter       the getter
+     * @since 2.2.1
+     */
+    default void registerStringGetter(
+            String propertyName,
+            IJavetUniFunction<String, ? extends V8Value, E> getter) {
+        proxyGetStringGetterMap().put(propertyName, getter);
+    }
+
+    /**
+     * Register string getter function.
+     *
+     * @param propertyName the property name
+     * @param getter       the getter
+     * @since 2.2.1
+     */
+    default void registerStringGetterFunction(
+            String propertyName,
+            IJavetDirectCallable.NoThisAndResult<?> getter) {
+        proxyGetStringGetterMap().put(
+                propertyName,
+                innerPropertyName -> getV8Runtime().createV8ValueFunction(
+                        new JavetCallbackContext(
+                                innerPropertyName,
+                                JavetCallbackType.DirectCallNoThisAndResult,
+                                getter)));
+    }
+
+    /**
+     * Register string setter.
+     *
+     * @param propertyName the property name
+     * @param setter       the setter
+     * @since 2.2.1
+     */
+    default void registerStringSetter(
+            String propertyName,
+            IJavetBiFunction<String, V8Value, Boolean, E> setter) {
+        proxyGetStringSetterMap().put(propertyName, setter);
+    }
+
+    /**
+     * Register symbol getter function.
+     *
+     * @param propertyName the property name
+     * @param getter       the getter
+     * @since 2.2.1
+     */
+    default void registerSymbolGetterFunction(
+            String propertyName,
+            IJavetDirectCallable.NoThisAndResult<?> getter) {
+        proxyGetSymbolGetterMap().put(
+                propertyName,
+                propertySymbol -> getV8Runtime().createV8ValueFunction(
+                        new JavetCallbackContext(
+                                propertySymbol.getDescription(),
+                                JavetCallbackType.DirectCallNoThisAndResult,
+                                getter)));
+    }
+
+    /**
      * Sets V8 runtime.
      *
      * @param v8Runtime the V8 runtime

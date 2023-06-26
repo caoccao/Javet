@@ -28,9 +28,6 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.callback.IJavetDirectCallable;
-import com.caoccao.javet.interop.callback.JavetCallbackContext;
-import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.mock.MockCallbackReceiver;
@@ -684,11 +681,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             public Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> proxyGetStringGetterMap() {
                 if (stringGetterMap == null) {
                     stringGetterMap = new HashMap<>();
-                    stringGetterMap.put("add", (propertyName) -> v8Runtime.createV8ValueFunction(
-                            new JavetCallbackContext(
-                                    propertyName,
-                                    JavetCallbackType.DirectCallNoThisAndResult,
-                                    (IJavetDirectCallable.NoThisAndResult<?>) this::add)));
+                    registerStringGetterFunction("add", this::add);
                 }
                 return stringGetterMap;
             }
