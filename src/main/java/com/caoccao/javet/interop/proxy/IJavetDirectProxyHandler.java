@@ -77,7 +77,7 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      */
     default V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
         if (property instanceof V8ValueString) {
-            String propertyString = ((V8ValueString) property).toPrimitive();
+            String propertyString = ((V8ValueString) property).getValue();
             Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
             if (stringGetterMap != null && !stringGetterMap.isEmpty()) {
                 IJavetUniFunction<String, ? extends V8Value, E> getter = stringGetterMap.get(propertyString);
@@ -256,6 +256,70 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
             }
         }
         return getV8Runtime().createV8ValueBoolean(isSet);
+    }
+
+    /**
+     * Register string getter.
+     *
+     * @param propertyName the property name
+     * @param getter       the getter
+     * @since 2.2.1
+     */
+    default void registerStringGetter(
+            String propertyName,
+            IJavetUniFunction<String, ? extends V8Value, E> getter) {
+        proxyGetStringGetterMap().put(propertyName, getter);
+    }
+
+    /**
+     * Register string getter function.
+     *
+     * @param propertyName the property name
+     * @param getter       the getter
+     * @since 2.2.1
+     */
+    default void registerStringGetterFunction(
+            String propertyName,
+            IJavetDirectCallable.NoThisAndResult<?> getter) {
+        proxyGetStringGetterMap().put(
+                propertyName,
+                innerPropertyName -> getV8Runtime().createV8ValueFunction(
+                        new JavetCallbackContext(
+                                innerPropertyName,
+                                JavetCallbackType.DirectCallNoThisAndResult,
+                                getter)));
+    }
+
+    /**
+     * Register string setter.
+     *
+     * @param propertyName the property name
+     * @param setter       the setter
+     * @since 2.2.1
+     */
+    default void registerStringSetter(
+            String propertyName,
+            IJavetBiFunction<String, V8Value, Boolean, E> setter) {
+        proxyGetStringSetterMap().put(propertyName, setter);
+    }
+
+    /**
+     * Register symbol getter function.
+     *
+     * @param propertyName the property name
+     * @param getter       the getter
+     * @since 2.2.1
+     */
+    default void registerSymbolGetterFunction(
+            String propertyName,
+            IJavetDirectCallable.NoThisAndResult<?> getter) {
+        proxyGetSymbolGetterMap().put(
+                propertyName,
+                propertySymbol -> getV8Runtime().createV8ValueFunction(
+                        new JavetCallbackContext(
+                                propertySymbol.getDescription(),
+                                JavetCallbackType.DirectCallNoThisAndResult,
+                                getter)));
     }
 
     /**

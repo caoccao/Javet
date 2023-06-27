@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.interop.proxy;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
@@ -64,6 +65,7 @@ public class JavetProxySymbolToPrimitiveConverter<T> extends BaseJavetProxySymbo
         super(v8Runtime, targetObject);
     }
 
+    @CheckReturnValue
     @Override
     public V8Value toV8Value(V8Value... v8Values) throws JavetException {
         if (targetObject != null && v8Values != null && v8Values.length > 0) {

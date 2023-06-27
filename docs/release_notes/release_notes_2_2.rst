@@ -2,6 +2,15 @@
 Release Notes 2.2.x
 ===================
 
+2.2.1 V8 v11.5
+--------------
+
+* Upgraded V8 to ``v11.5.150.12`` (2023-06-23)
+* Upgraded Node.js to ``v18.16.1`` `(2023-06-20) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.16.1>`_
+* Added ``register***()`` to ``IJavetDirectProxyHandler``
+* Added ``V8VirtualIterator``
+* Enhanced ``JavetProxySymbolIterableConverter`` to support ``Symbol.iterator``
+
 2.2.0 V8 v11.4
 --------------
 
