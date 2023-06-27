@@ -97,6 +97,9 @@ public class V8VirtualIterator<T, E extends Exception>
     /**
      * Next.
      *
+     * @param thisObject the this object
+     * @param v8Values   the V8 values
+     * @return the V8 value
      * @since 2.2.1
      */
     protected V8Value next(V8Value thisObject, V8Value... v8Values) {
