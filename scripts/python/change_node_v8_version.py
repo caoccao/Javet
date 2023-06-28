@@ -81,6 +81,9 @@ class ChangeNodeVersion(ChangeVersion):
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
+      '.github/workflows/macos_build.yml', '\n',
+      re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
       'docker/linux-x86_64/base_all_in_one.Dockerfile', '\n',
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
@@ -108,6 +111,9 @@ class ChangeV8Version(ChangeVersion):
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
+      re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
+    self._update(
+      '.github/workflows/macos_build.yml', '\n',
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       'docker/android/base.Dockerfile', '\n',
