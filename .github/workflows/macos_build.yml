@@ -46,7 +46,9 @@ jobs:
         mkdir google
         cd google
         git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        cd depot_tools
         git checkout remotes/origin/main
+        cd ..
         export PATH=/google/depot_tools:$PATH
         fetch v8
         cd v8
