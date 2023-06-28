@@ -41,20 +41,21 @@ jobs:
       with:
         xcode-version: latest-stable
 
+    - name: Prepare Path
+      run: |
+        echo "/Users/runner/work/Javet/google/depot_tools" >> $GITHUB_PATH
+        echo Home is ${HOME}
+        echo Path is ${PATH}
+
     - name: Build V8
       run: |
         cd ..
-        pwd
         mkdir google
         cd google
         git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
         cd depot_tools
         git checkout remotes/origin/main
         cd ..
-        echo "/Users/runner/work/Javet/google/depot_tools" >> $GITHUB_PATH
-        pwd
-        echo ${HOME}
-        echo ${PATH}
         fetch v8
         cd v8
         git checkout ${{ env.JAVET_V8_VERSION }}
