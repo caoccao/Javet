@@ -41,9 +41,12 @@ jobs:
       with:
         xcode-version: latest-stable
 
-    - name: Prepare Path
+    - name: Setup Path
       run: |
         echo "/Users/runner/work/Javet/google/depot_tools" >> $GITHUB_PATH
+
+    - name: Print Env
+      run: |
         echo Home is ${HOME}
         echo Path is ${PATH}
 
@@ -63,8 +66,8 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        gn gen out.gn/arm64.release
-        ninja -C out.gn/arm64.release v8_monolith
+        gn gen out.gn/x64.release
+        ninja -C out.gn/x64.release v8_monolith
 
     - name: Setup JDK 8
       uses: actions/setup-java@v3
