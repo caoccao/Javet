@@ -43,6 +43,7 @@ jobs:
 
     - name: Build V8
       run: |
+        pwd
         mkdir google
         cd google
         git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
