@@ -50,7 +50,7 @@ jobs:
         export PATH=/google/depot_tools:$PATH
         fetch v8
         cd v8
-        git checkout ${{ JAVET_V8_VERSION }}
+        git checkout ${{ env.JAVET_V8_VERSION }}
         cd ..
         gclient sync -D
         cd v8
