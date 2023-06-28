@@ -49,7 +49,7 @@ jobs:
         cd depot_tools
         git checkout remotes/origin/main
         cd ..
-        export PATH=${HOME}/google/depot_tools:$PATH
+        echo "${HOME}/google/depot_tools" >> $GITHUB_PATH
         fetch v8
         cd v8
         git checkout ${{ env.JAVET_V8_VERSION }}
