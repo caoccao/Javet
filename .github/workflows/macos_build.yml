@@ -49,7 +49,7 @@ jobs:
         cd depot_tools
         git checkout remotes/origin/main
         cd ..
-        export PATH=/google/depot_tools:$PATH
+        export PATH=${HOME}/google/depot_tools:$PATH
         fetch v8
         cd v8
         git checkout ${{ env.JAVET_V8_VERSION }}
@@ -74,7 +74,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd /cpp
-        sh ./build-macos.sh -DV8_DIR=/google/v8
+        sh ./build-macos.sh -DV8_DIR=${HOME}/google/v8
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
