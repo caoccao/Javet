@@ -43,13 +43,18 @@ jobs:
 
     - name: Build V8
       run: |
+        cd ..
+        pwd
         mkdir google
         cd google
         git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
         cd depot_tools
         git checkout remotes/origin/main
         cd ..
-        echo "/Users/runner/work/Javet/Javet/google/depot_tools" >> $GITHUB_PATH
+        echo "/Users/runner/work/Javet/google/depot_tools" >> $GITHUB_PATH
+        pwd
+        echo ${HOME}
+        echo ${PATH}
         fetch v8
         cd v8
         git checkout ${{ env.JAVET_V8_VERSION }}
@@ -74,7 +79,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd /Users/runner/work/Javet/Javet/cpp
-        sh ./build-macos.sh -DV8_DIR=/Users/runner/work/Javet/Javet/google/v8
+        sh ./build-macos.sh -DV8_DIR=/Users/runner/work/Javet/google/v8
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
