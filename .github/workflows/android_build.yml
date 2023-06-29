@@ -21,7 +21,7 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Build docker image
       run: docker build -t javet-android:local -f docker/android/build.Dockerfile .
