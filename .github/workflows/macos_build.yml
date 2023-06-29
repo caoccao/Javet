@@ -22,10 +22,8 @@ env:
   ROOT: /Users/runner/work/Javet
 
 jobs:
-
-  javet_macos:
-
-    name: Javet MacOS
+  build_javet_v8:
+    name: Build Javet V8
     runs-on: macos-latest
 
     steps:
@@ -46,20 +44,6 @@ jobs:
     - name: Setup Path
       run: |
         echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
-
-    - name: Print Env
-      run: |
-        echo Home is ${HOME}
-        echo Path is ${PATH}
-
-    - name: Build Node.js
-      run: |
-        cd ${{ env.ROOT }}
-        git clone https://github.com/nodejs/node.git
-        cd node
-        git checkout v${{ env.JAVET_NODE_VERSION }}
-        ./configure --enable-static --without-intl
-        make -j4
 
     - name: Build V8
       run: |
@@ -95,12 +79,90 @@ jobs:
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
         sh ./build-macos.sh -DV8_DIR=${{ env.ROOT }}/google/v8
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}
+        path: src/main/resources/*.dylib
+
+  build_javet_node:
+    name: Build Javet Node
+    runs-on: macos-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v3
+
+    - name: Setup XCode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Build Node.js
+      run: |
+        cd ${{ env.ROOT }}
+        git clone https://github.com/nodejs/node.git
+        cd node
+        git checkout v${{ env.JAVET_NODE_VERSION }}
+        ./configure --enable-static --without-intl
+        make -j4
+
+    - name: Setup JDK 8
+      uses: actions/setup-java@v3
+      with:
+        distribution: corretto
+        java-version: 8
+
+    - name: Setup Cmake
+      uses: jwlawson/actions-setup-cmake@v1.13
+      with:
+        cmake-version: '3.23.x'
+
+    - name: Build Javet JNI
+      run: |
+        cd ${{ env.ROOT }}/Javet/cpp
         sh ./build-macos.sh -DNODE_DIR=${{ env.ROOT }}/node
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}
+        path: src/main/resources/*.dylib
+
+  build_javet_jar:
+    needs: [build_javet_v8, build_javet_node]
+    name: Build Javet Jar
+    runs-on: macos-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v3
+
+    - name: Setup JDK 8
+      uses: actions/setup-java@v3
+      with:
+        distribution: corretto
+        java-version: 8
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
         gradle-version: 8.1
+
+    - name: Download Javet V8
+      uses: actions/download-artifact@v3
+      with:
+        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}
+        path: src/main/resources/
+
+    - name: Download Javet Node
+      uses: actions/download-artifact@v3
+      with:
+        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}
+        path: src/main/resources/
 
     - name: Build the Artifact
       run: |
