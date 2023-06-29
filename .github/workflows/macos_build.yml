@@ -4,6 +4,7 @@ concurrency:
   group: build_javet_${{ github.ref }}
   cancel-in-progress: true
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
@@ -18,6 +19,7 @@ env:
   JAVET_NODE_VERSION: 18.16.1
   JAVET_V8_VERSION: 11.5.150.12
   JAVET_VERSION: 2.2.1
+  ROOT: /Users/runner/work/Javet
 
 jobs:
 
@@ -43,16 +45,25 @@ jobs:
 
     - name: Setup Path
       run: |
-        echo "/Users/runner/work/Javet/google/depot_tools" >> $GITHUB_PATH
+        echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
 
     - name: Print Env
       run: |
         echo Home is ${HOME}
         echo Path is ${PATH}
 
+    - name: Build Node.js
+      run: |
+        cd ${{ env.ROOT }}
+        git clone https://github.com/nodejs/node.git
+        cd node
+        git checkout v${{ env.JAVET_NODE_VERSION }}
+        ./configure --enable-static --without-intl
+        make -j4
+
     - name: Build V8
       run: |
-        cd ..
+        cd ${{ env.ROOT }}
         mkdir google
         cd google
         git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
@@ -82,10 +93,25 @@ jobs:
 
     - name: Build Javet JNI
       run: |
-        cd /Users/runner/work/Javet/Javet/cpp
-        sh ./build-macos.sh -DV8_DIR=/Users/runner/work/Javet/google/v8
+        cd ${{ env.ROOT }}/Javet/cpp
+        sh ./build-macos.sh -DV8_DIR=${{ env.ROOT }}/google/v8
+        sh ./build-macos.sh -DNODE_DIR=${{ env.ROOT }}/node
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
         gradle-version: 8.1
+
+    - name: Build the Artifact
+      run: |
+        cd ${{ env.ROOT }}/Javet
+        touch src/main/resources/libjavet-v8*
+        gradle build test --rerun-tasks --debug
+        touch src/main/resources/libjavet-node*
+        gradle test --rerun-tasks --debug
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: javet-macos-x86_64-${{ env.JAVET_VERSION }}
+        path: build/libs/*.jar
