@@ -1,19 +1,10 @@
-name: MacOS Build
+name: MacOS x86_64 Build
 
 concurrency:
-  group: build_javet_${{ github.ref }}
+  group: macos_x86_64_build_${{ github.ref }}
   cancel-in-progress: true
 on:
   workflow_dispatch:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    paths-ignore:
-      - '**.rst'
-      - 'docs/**'
-  push:
-    paths-ignore:
-      - '**.rst'
-      - 'docs/**'
 
 env:
   JAVET_NODE_VERSION: 18.16.1
@@ -177,3 +168,13 @@ jobs:
       with:
         name: javet-macos-x86_64-${{ env.JAVET_VERSION }}
         path: build/libs/*.jar
+
+    - name: Delete Javet V8
+      uses: geekyeggo/delete-artifact@v2
+      with:
+        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}
+
+    - name: Delete Javet Node
+      uses: geekyeggo/delete-artifact@v2
+      with:
+        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}
