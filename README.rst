@@ -3,7 +3,7 @@ Javet
 
 |Maven Central| |Discord| |Donate|
 
-|Linux Build| |Android Build|
+|Linux Build| |MacOS Build| |Android Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
@@ -17,6 +17,9 @@ Javet
 .. |Linux Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build_artifact.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/linux_build_artifact.yml
 
+.. |MacOS Build| image:: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml
+
 .. |Android Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/android_build.yml
 
@@ -24,9 +27,7 @@ Javet
 
 If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
-💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because I'm no longer able to build new versions of V8 with my `MacBook Air mid-2012 <https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html>`_. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (x86_64) device. Or, if you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will also be great. Thank you for supporting Javet.
-
-💖 If you use Mac OS (arm64), I bought an M2 device and now am able to build it.
+💖 If you like my work, please `donate <https://opencollective.com/javet>`_ to support me. If you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will be great because I don't have such device to support the community. Thank you for supporting Javet.
 
 Major Features
 ==============
