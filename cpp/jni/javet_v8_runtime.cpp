@@ -302,6 +302,7 @@ namespace Javet {
 #else
         v8::Isolate::CreateParams createParams;
         createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+        createParams.oom_error_callback = Javet::Callback::OOMErrorCallback;
         v8Isolate = v8::Isolate::New(createParams);
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
