@@ -140,7 +140,7 @@ class ChangeV8Version(ChangeVersion):
       re.compile(r'"(?P<version>\d+\.\d+\.\d+\.\d+)",'))
 
 def main():
-  change_node_version = ChangeNodeVersion('18.16.1')
+  change_node_version = ChangeNodeVersion('18.17.1')
   change_node_version.update()
   change_v8_version = ChangeV8Version('11.5.150.12')
   change_v8_version.update()
