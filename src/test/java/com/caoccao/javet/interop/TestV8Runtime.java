@@ -161,6 +161,14 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
+    public void testOutOfMemoryException() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            // The following line triggers the OOM which will let JVM to core dump.
+            // v8Runtime.getExecutor("let a = [... new Array (1000000000). keys()];").executeVoid();
+        }
+    }
+
+    @Test
     public void testPending() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertFalse(v8Runtime.hasPendingException());

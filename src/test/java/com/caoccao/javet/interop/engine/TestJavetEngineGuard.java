@@ -44,7 +44,7 @@ public class TestJavetEngineGuard extends BaseTestJavetPool {
                 assertFalse(e.isContinuable());
             }
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
-                    "The V8 runtime is not dead and still be able to execute code afterwards.");
+                    "The V8 runtime is not dead and is still able to execute code afterwards.");
         }
     }
 

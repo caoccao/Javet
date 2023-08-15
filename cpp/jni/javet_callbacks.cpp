@@ -195,8 +195,8 @@ namespace Javet {
                 }
                 else {
                     FETCH_JNI_ENV(GlobalJavaVM);
-                    jobject mReferrerV8Module = referrer.IsEmpty() 
-                        ? nullptr 
+                    jobject mReferrerV8Module = referrer.IsEmpty()
+                        ? nullptr
                         : Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime, v8Context, referrer);
                     jobject mIV8Module = jniEnv->CallObjectMethod(
                         v8Runtime->externalV8Runtime,
@@ -232,6 +232,21 @@ namespace Javet {
             }
             return resolvedV8MaybeLocalModule;
         }
+
+#ifndef ENABLE_NODE
+        void OOMErrorCallback(const char* location, const v8::OOMDetails& oomDetails) noexcept {
+            LOG_DEBUG("OOM " << location << ", " << oomDetails.is_heap_oom);
+            if (oomDetails.is_heap_oom) {
+                auto v8Isolate = v8::Isolate::TryGetCurrent();
+                if (v8Isolate == nullptr) {
+                    LOG_ERROR("OOMErrorCallback: V8 isolate is not found.");
+                }
+                else {
+                    LOG_ERROR("OOMErrorCallback: V8 isolate is found.");
+                }
+            }
+        }
+#endif
 
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept {
             auto promiseRejectEvent = message.GetEvent();

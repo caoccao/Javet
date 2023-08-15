@@ -2,6 +2,14 @@
 Release Notes 2.2.x
 ===================
 
+2.2.2 V8 v11.6
+--------------
+
+* Upgraded V8 to ``v11.6.189.18`` (2023-08-08)
+* Upgraded Node.js to ``v18.17.1`` `(2023-08-09) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V18.md#18.17.1>`_
+* Fixed a path resolution bug in the executor for Node.js mode
+* Fixed ``v8::internal::NativeContext`` for V8 mode
+
 2.2.1 V8 v11.5
 --------------
 

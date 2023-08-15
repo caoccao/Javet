@@ -3,7 +3,7 @@ Javet
 
 |Maven Central| |Discord| |Donate|
 
-|Linux Build| |Android Build|
+|Linux Build| |MacOS Build| |Android Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
@@ -17,6 +17,9 @@ Javet
 .. |Linux Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build_artifact.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/linux_build_artifact.yml
 
+.. |MacOS Build| image:: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml
+
 .. |Android Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/android_build.yml
 
@@ -24,16 +27,14 @@ Javet
 
 If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
-💖 If you use Mac OS (x86_64), please be aware that the Mac OS (x86_64) build will discontinue anytime because I'm no longer able to build new versions of V8 with my `MacBook Air mid-2012 <https://caoccao.blogspot.com/2021/09/macbook-air-mid-2012-from-lion-to-mojave.html>`_. Please `donate <https://opencollective.com/javet>`_ to support me purchasing a new Mac OS (x86_64) device. Or, if you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will also be great. Thank you for supporting Javet.
-
-💖 If you use Mac OS (arm64), I bought an M2 device and now am able to build it.
+💖 If you like my work, please `donate <https://opencollective.com/javet>`_ to support me. If you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will be great because I don't have such device to support the community. Thank you for supporting Javet.
 
 Major Features
 ==============
 
 * Linux (x86_64) + Mac OS (x86_64, arm64) + ️Windows (x86_64)
 * Android (arm, arm64, x86 and x86_64)
-* Node.js ``v18.16.1`` + V8 ``v11.5.150.12``
+* Node.js ``v18.17.1`` + V8 ``v11.6.189.18``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
@@ -58,14 +59,14 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>2.2.1</version>
+        <version>2.2.2</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>2.2.1</version>
+        <version>2.2.2</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -73,18 +74,18 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:2.2.1") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-macos:2.2.1") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:2.2.1") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:2.2.2") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-macos:2.2.2") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android:2.2.2") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:2.2.1' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-macos:2.2.1' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:2.2.1' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:2.2.2' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-macos:2.2.2' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:2.2.2' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------

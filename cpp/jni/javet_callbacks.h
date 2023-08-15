@@ -45,6 +45,9 @@ namespace Javet {
             V8LocalName propertyName,
             V8LocalValue propertyValue,
             const v8::PropertyCallbackInfo<void>& info) noexcept;
+#ifndef ENABLE_NODE
+        void OOMErrorCallback(const char* location, const v8::OOMDetails& oomDetails) noexcept;
+#endif
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept;
 
         V8MaybeLocalModule JavetModuleResolveCallback(
