@@ -101,9 +101,9 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        python3 ~/coding/public/Javet/scripts/python/patch_node_build.py -p ./
+        python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
         ./configure --enable-static --without-intl
-        python3 ~/coding/public/Javet/scripts/python/patch_node_build.py -p ./
+        python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
         make -j4
 
     - name: Setup JDK 8
