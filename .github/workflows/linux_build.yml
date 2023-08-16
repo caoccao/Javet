@@ -90,13 +90,20 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v3
 
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11' 
+
     - name: Build Node.js
       run: |
         cd ${{ env.ROOT }}
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
+        python3 ~/coding/public/Javet/scripts/python/patch_node_build.py -p ./
         ./configure --enable-static --without-intl
+        python3 ~/coding/public/Javet/scripts/python/patch_node_build.py -p ./
         make -j4
 
     - name: Setup JDK 8
