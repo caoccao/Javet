@@ -86,13 +86,13 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm
+        sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
         name: javet-linux-v8-arm-${{ env.JAVET_VERSION }}
-        path: javet-android/src/main/jniLibs/armeabi-v7a
+        path: javet-android/src/main/jniLibs/armeabi-v7a/*.so
 
   build_javet_arm64:
     name: Build Javet arm64
@@ -157,13 +157,13 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm64
+        sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm64
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
         name: javet-linux-v8-arm64-${{ env.JAVET_VERSION }}
-        path: javet-android/src/main/jniLibs/arm64-v8a
+        path: javet-android/src/main/jniLibs/arm64-v8a/*.so
 
   build_javet_aar:
     needs: [build_javet_arm, build_javet_arm64]
@@ -195,13 +195,13 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: javet-linux-v8-arm-${{ env.JAVET_VERSION }}
-        path: javet-android/src/main/jniLibs/
+        path: javet-android/src/main/jniLibs/armeabi-v7a
 
     - name: Download Javet arm64
       uses: actions/download-artifact@v3
       with:
         name: javet-linux-v8-arm64-${{ env.JAVET_VERSION }}
-        path: javet-android/src/main/jniLibs/
+        path: javet-android/src/main/jniLibs/arm64-v8a
 
     - name: Build the Artifact
       run: |
