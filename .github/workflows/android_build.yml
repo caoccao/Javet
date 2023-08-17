@@ -82,7 +82,7 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: javet-linux-v8-arm-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-arm-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/armeabi-v7a/*.so
 
   build_javet_arm64:
@@ -153,7 +153,7 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: javet-linux-v8-arm64-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/arm64-v8a/*.so
 
   build_javet_x86:
@@ -224,7 +224,7 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: javet-linux-v8-x86-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-x86-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86/*.so
 
   build_javet_x86_64:
@@ -295,7 +295,7 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: javet-linux-v8-x86_64-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86_64/*.so
 
   build_javet_aar:
@@ -334,25 +334,25 @@ jobs:
     - name: Download Javet arm
       uses: actions/download-artifact@v3
       with:
-        name: javet-linux-v8-arm-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-arm-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/armeabi-v7a
 
     - name: Download Javet arm64
       uses: actions/download-artifact@v3
       with:
-        name: javet-linux-v8-arm64-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/arm64-v8a
 
     - name: Download Javet x86
       uses: actions/download-artifact@v3
       with:
-        name: javet-linux-v8-x86-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-x86-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86
 
     - name: Download Javet x86_64
       uses: actions/download-artifact@v3
       with:
-        name: javet-linux-v8-x86_64-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86_64
 
     - name: Build the Artifact
