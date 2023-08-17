@@ -1,21 +1,30 @@
 name: Android Build
 
+concurrency:
+  group: android_build_${{ github.ref }}
+  cancel-in-progress: true
+
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
-      - '**.rst'
-      - 'docs/**'
+      - "**.rst"
+      - "docs/**"
   push:
     paths-ignore:
-      - '**.rst'
-      - 'docs/**'
+      - "**.rst"
+      - "docs/**"
+
+env:
+  JAVET_NODE_VERSION: 18.17.1
+  JAVET_V8_VERSION: 11.6.189.18
+  JAVET_VERSION: 2.2.2
+  ROOT: /home/runner/work/Javet
 
 jobs:
-
-  javet_android:
-
-    name: Javet Android
+  build_javet_arm:
+    name: Build Javet arm
     runs-on: ubuntu-latest
 
     steps:
@@ -23,14 +32,114 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v3
 
-    - name: Build docker image
-      run: docker build -t javet-android:local -f docker/android/build.Dockerfile .
+    - name: Setup Ubuntu
+      run: |
+        sudo apt-get install -y execstack
 
-    - name: Copy the artifact
-      run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet-android:local cp -rf /Javet/android/javet-android/build/outputs /output
-
-    - name: Upload the artifact
-      uses: actions/upload-artifact@v2
+    - name: Setup Python
+      uses: actions/setup-python@v4
       with:
-        name: javet-android
-        path: build/outputs/aar/javet*release.aar
+        python-version: '3.11' 
+
+    - name: Setup Android NDK
+      id: setup-ndk
+      uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r25b
+        local-cache: true
+
+    - name: Setup Path
+      run: |
+        echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
+
+    - name: Build V8
+      run: |
+        cd ${{ env.ROOT }}
+        mkdir google
+        cd google
+        git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        cd depot_tools
+        git checkout remotes/origin/main
+        cd ..
+        fetch v8
+        cd v8
+        git checkout ${{ env.JAVET_V8_VERSION }}
+        ./build/install-build-deps.sh
+        cd ..
+        echo 'target_os = ["android"]' >> .gclient
+        gclient sync -D
+        cd v8
+        python3 tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        ninja -C out.gn/arm.release v8_monolith
+
+    - name: Setup JDK 11
+      uses: actions/setup-java@v3
+      with:
+        distribution: corretto
+        java-version: 11
+
+    - name: Setup Cmake
+      uses: jwlawson/actions-setup-cmake@v1.13
+      with:
+        cmake-version: '3.23.x'
+
+    - name: Build Javet JNI
+      run: |
+        cd ${{ env.ROOT }}/Javet/cpp
+        sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: javet-linux-v8-arm-${{ env.JAVET_VERSION }}
+        path: javet-android/src/main/jniLibs/armeabi-v7a
+
+  build_javet_aar:
+    needs: [build_javet_arm]
+    name: Build Javet Jar
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v3
+
+    - name: Setup JDK 11
+      uses: actions/setup-java@v3
+      with:
+        distribution: corretto
+        java-version: 11
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11' 
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 8.1
+
+    - name: Download Javet arm
+      uses: actions/download-artifact@v3
+      with:
+        name: javet-linux-v8-arm-${{ env.JAVET_VERSION }}
+        path: javet-android/src/main/jniLibs/
+
+    - name: Build the Artifact
+      run: |
+        cd ${{ env.ROOT }}/Javet/scripts/python
+        python3 patch_android_build.py
+        cd ${{ env.ROOT }}/Javet/android
+        gradle build --debug
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: javet-android-${{ env.JAVET_VERSION }}
+        path: android/javet-android/build/outputs/aar/javet*release.aar
+
+    - name: Delete Javet Anroid
+      uses: geekyeggo/delete-artifact@v2
+      with:
+        name: javet-android-arm-${{ env.JAVET_VERSION }}
