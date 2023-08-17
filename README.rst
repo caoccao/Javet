@@ -14,8 +14,8 @@ Javet
 .. |Donate| image:: https://img.shields.io/badge/Donate-green?style=for-the-badge
     :target: https://opencollective.com/javet
 
-.. |Linux Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build_artifact.yml/badge.svg
-    :target: https://github.com/caoccao/Javet/actions/workflows/linux_build_artifact.yml
+.. |Linux Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml
 
 .. |MacOS Build| image:: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml
