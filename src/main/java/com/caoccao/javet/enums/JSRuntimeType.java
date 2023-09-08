@@ -47,7 +47,7 @@ public enum JSRuntimeType {
      */
     V8(
             "v8",
-            "11.6.189.18",
+            "11.7.439.16",
             V8RuntimeOptions::new,
             o -> o instanceof V8RuntimeOptions);
 

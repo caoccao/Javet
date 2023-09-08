@@ -5,6 +5,8 @@ Release Notes 2.2.x
 2.2.3 V8 v11.7
 --------------
 
+* Upgraded V8 to ``v11.7.439.16`` (2023-09-07)
+* Fixed some API changes in V8 v11.7
 
 2.2.2 V8 v11.6
 --------------
