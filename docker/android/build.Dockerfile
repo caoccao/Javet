@@ -15,7 +15,7 @@
 
 # Usage: docker build -t javet-android:local -f docker/android/build.Dockerfile .
 
-FROM sjtucaocao/javet-android:2.2.2
+FROM sjtucaocao/javet-android:2.2.3
 WORKDIR /
 
 # Copy Javet

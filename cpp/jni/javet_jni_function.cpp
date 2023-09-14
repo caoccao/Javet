@@ -469,7 +469,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
                 const int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::Converter::jmethodIDIV8ValueFunctionScriptGetEndPosition);
                 auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
                 auto v8InternalSource = v8::Utils::OpenHandle(*umSourceCode);
+#ifdef ENABLE_NODE
                 bool sourceCodeEquals = v8InternalScript.source().StrictEquals(*v8InternalSource);
+#else
+                bool sourceCodeEquals = V8InternalObject::StrictEquals(v8InternalScript.source(), *v8InternalSource);
+#endif
                 bool positionEquals = startPosition == v8InternalShared.StartPosition() && endPosition == v8InternalShared.EndPosition();
                 if (!sourceCodeEquals || !positionEquals) {
                     if (v8InternalShared.CanDiscardCompiled()) {
@@ -482,10 +486,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
 #ifdef ENABLE_NODE
                             auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle);
                             clonedV8InternalScript->set_source(*v8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                            v8InternalShared.set_script(*clonedV8InternalScript);
 #else
                             auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle, v8InternalSource);
+                            v8InternalShared.set_script(*clonedV8InternalScript, v8::kReleaseStore);
 #endif
-                            v8InternalShared.set_script(*clonedV8InternalScript);
                         }
                         else {
 #ifdef ENABLE_NODE
@@ -581,7 +586,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                 const int newEndPosition = startPosition + newSourceLength;
 
                 auto newV8InternalSource = v8::Utils::OpenHandle(*newSourceCode);
+#ifdef ENABLE_NODE
                 bool sourceCodeEquals = v8InternalSource.StrictEquals(*newV8InternalSource);
+#else
+                bool sourceCodeEquals = V8InternalObject::StrictEquals(v8InternalSource, *newV8InternalSource);
+#endif
                 bool positionEquals = newEndPosition == v8InternalShared.EndPosition();
 
                 if (!sourceCodeEquals || !positionEquals) {
@@ -596,10 +605,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
 #ifdef ENABLE_NODE
                             auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle);
                             clonedV8InternalScript->set_source(*newV8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
+                            v8InternalShared.set_script(*clonedV8InternalScript);
 #else
                             auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle, newV8InternalSource);
+                            v8InternalShared.set_script(*clonedV8InternalScript, v8::kReleaseStore);
 #endif
-                            v8InternalShared.set_script(*clonedV8InternalScript);
                         }
                         else {
 #ifdef ENABLE_NODE

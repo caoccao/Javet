@@ -25,7 +25,7 @@ Javet
 
 `Javet <https://github.com/caoccao/Javet/>`_ is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
-If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit http://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
+If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit https://sjtucaocao.medium.com/ or https://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
 💖 If you like my work, please `donate <https://opencollective.com/javet>`_ to support me. If you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will be great because I don't have such device to support the community. Thank you for supporting Javet.
 
@@ -34,7 +34,7 @@ Major Features
 
 * Linux (x86_64) + Mac OS (x86_64, arm64) + ️Windows (x86_64)
 * Android (arm, arm64, x86 and x86_64)
-* Node.js ``v18.17.1`` + V8 ``v11.6.189.18``
+* Node.js ``v18.17.1`` + V8 ``v11.7.439.16``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
@@ -59,14 +59,14 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -74,18 +74,18 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:2.2.2") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-macos:2.2.2") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:2.2.2") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:2.2.3") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-macos:2.2.3") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android:2.2.3") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:2.2.2' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-macos:2.2.2' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:2.2.2' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:2.2.3' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-macos:2.2.3' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:2.2.3' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------
