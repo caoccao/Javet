@@ -1,16 +1,17 @@
 <!doctype html>
-<html class="no-js" lang="en, zh-CN">
+<html class="no-js" lang="en, zh-CN" data-content_root="../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Reference" href="../../reference/index.html" /><link rel="prev" title="Migration Guides" href="index.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Reference" href="../../reference/index.html" /><link rel="prev" title="Migration Guides" href="index.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Migrate from J2V8 - Javet 2.2.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
-    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>Migrate from J2V8 - Javet 2.2.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=c2631171" />
     
     
 
@@ -21,38 +22,38 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -61,14 +62,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -83,7 +84,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -91,7 +92,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -124,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 2.2.2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 2.2.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -144,23 +145,23 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../index.html">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.2.2 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.2.3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Tutorial</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 has-children"><a class="reference internal" href="../basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Tutorial</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Basic</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../basic/installation.html">Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../basic/hello_javet.html">Hello Javet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../basic/javet_shell.html">Javet Shell</a></li>
@@ -171,27 +172,27 @@
 <li class="toctree-l3"><a class="reference internal" href="../basic/polyfill.html">Polyfill</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Advanced</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../advanced/interact_with_node_js.html">Interact with Node.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../advanced/object_converter.html">Object Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Migration Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Migration Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Migration Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Migrate from J2V8</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/javadoc/index.html">API Reference</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/v8_values/index.html">V8 Values</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/v8_values/index.html">V8 Values</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of V8 Values</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/v8_values/v8_collection.html">V8 Collection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/v8_values/v8_function.html">V8 Function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/v8_values/v8_promise.html">V8 Promise</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/converters/index.html">Converters</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/converters/index.html">Converters</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Converters</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/converters/primitive_converter.html">Primitive Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/converters/object_converter.html">Object Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/converters/proxy_converter.html">Proxy Converter</a></li>
@@ -199,7 +200,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/converters/custom_converter.html">Custom Converter</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/resource_management/index.html">Resource Management</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/resource_management/index.html">Resource Management</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Resource Management</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/resource_management/load_and_unload.html">Load and Unload</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/resource_management/lock.html">Know the Lock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/resource_management/memory_management.html">Memory Management</a></li>
@@ -207,42 +208,42 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/resource_management/performance.html">Javet Performance</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/troubleshooting/error_codes.html">Error Codes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/troubleshooting/logging.html">Logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/troubleshooting/termination.html">Termination</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/tips/index.html">Tips</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/tips/index.html">Tips</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Tips</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/tips/best_practices.html">Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/todo_list.html">TODO List</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_2_2.html">Release Notes 2.2.x</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of FAQ</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Background</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/background/history_with_j2v8.html">History with J2V8</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/background/what_is_the_motivation.html">What is the Motivation?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Development</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_the_examples.html">Where are the Examples?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/why_is_the_inspector_disabled_in_node_js_mode.html">Why is the Inspector Disabled in Node.js Mode?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Environment</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i18n_be_supported.html">Can i18n be Supported?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
@@ -251,9 +252,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Development</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../development/tools.html">Development Tools</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Build Javet</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_with_docker.html">Build Javet with Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
@@ -269,6 +270,7 @@
 
 </div>
 </div>
+
       </div>
       
     </div>
@@ -276,8 +278,15 @@
   <div class="main">
     <div class="content">
       <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -291,11 +300,11 @@
           </label>
         </div>
         <article role="main">
-          <div class="section" id="migrate-from-j2v8">
-<h1>Migrate from J2V8<a class="headerlink" href="#migrate-from-j2v8" title="Permalink to this headline">¶</a></h1>
+          <section id="migrate-from-j2v8">
+<h1>Migrate from J2V8<a class="headerlink" href="#migrate-from-j2v8" title="Link to this heading">#</a></h1>
 <p>How to migrate from J2V8 to Javet is a frequently asked question, especially when people are evaluating Javet. I created Javet in Jan, 2021 for various reasons (<a class="reference internal" href="../../faq/background/what_is_the_motivation.html"><span class="doc">What is the Motivation?</span></a>, <a class="reference internal" href="../../faq/background/history_with_j2v8.html"><span class="doc">History with J2V8</span></a>). After the first release v0.7.0 was published, I started migrating from J2V8 to Javet. It was quite smooth, though it took a week.</p>
-<div class="section" id="why-migrate-from-j2v8-to-javet">
-<h2>Why Migrate from J2V8 to Javet?<a class="headerlink" href="#why-migrate-from-j2v8-to-javet" title="Permalink to this headline">¶</a></h2>
+<section id="why-migrate-from-j2v8-to-javet">
+<h2>Why Migrate from J2V8 to Javet?<a class="headerlink" href="#why-migrate-from-j2v8-to-javet" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Its Linux, Mac OS and Windows releases have been abandoned for years.</p></li>
 <li><p>Its type hierarchy is inconsistent because primitive types are out of the hierarchy so that tedious <code class="docutils literal notranslate"><span class="pre">if-else</span></code> sentences have to be repeated all over the code base.</p></li>
@@ -304,71 +313,71 @@
 <li><p>Its locking mechanism heavily increases mental pressure in the code base.</p></li>
 <li><p>Its V8 runtime is not multi-threaded friendly unless application adds a synchronous layer on top of it.</p></li>
 </ul>
-</div>
-<div class="section" id="migration-guides">
-<h2>Migration Guides<a class="headerlink" href="#migration-guides" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="v8-v8runtime">
-<h3>V8 ⟶ V8Runtime<a class="headerlink" href="#v8-v8runtime" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="migration-guides">
+<h2>Migration Guides<a class="headerlink" href="#migration-guides" title="Link to this heading">#</a></h2>
+<section id="v8-v8runtime">
+<h3>V8 ⟶ V8Runtime<a class="headerlink" href="#v8-v8runtime" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">V8</span></code> in J2V8 is <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> in Javet.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">V8</span></code> in J2V8 carries 2 roles: 1 as the V8 runtime and 1 as the global object (<code class="docutils literal notranslate"><span class="pre">globalThis</span></code> or <code class="docutils literal notranslate"><span class="pre">global</span></code>). In Javet,  <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> no longer inherits from <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> so that it literally represents the V8 runtime. <code class="docutils literal notranslate"><span class="pre">V8Runtime.getGlobalObject()</span></code> is dedicated to the global object.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> has much richer API than <code class="docutils literal notranslate"><span class="pre">V8</span></code> has. E.g. <code class="docutils literal notranslate"><span class="pre">compileV8Module()</span></code>, <code class="docutils literal notranslate"><span class="pre">lowMemoryNotification()</span></code>, <code class="docutils literal notranslate"><span class="pre">terminateExecution()</span></code>.</p></li>
 </ul>
-</div>
-<div class="section" id="primitive-types">
-<h3>Primitive Types<a class="headerlink" href="#primitive-types" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="primitive-types">
+<h3>Primitive Types<a class="headerlink" href="#primitive-types" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Primitive types in Javet inherit from <code class="docutils literal notranslate"><span class="pre">V8ValuePrimitive</span></code> ⟶ <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> ⟶ <code class="docutils literal notranslate"><span class="pre">V8Data</span></code>.</p></li>
 <li><p>The Javet type hierarchy is consistent so that <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> in all supported API can represent all V8 types. This is hard in J2V8 because <code class="docutils literal notranslate"><span class="pre">Object</span></code> has to be used to represent all types, however, by using <code class="docutils literal notranslate"><span class="pre">Object</span></code> the type check during compilation doesn't work at all and that is a rich source of runtime bugs or even segfaults.</p></li>
 </ul>
-</div>
-<div class="section" id="registerjavamethod-v8function">
-<h3>registerJavaMethod() ⟶ @V8Function<a class="headerlink" href="#registerjavamethod-v8function" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="registerjavamethod-v8function">
+<h3>registerJavaMethod() ⟶ &#64;V8Function<a class="headerlink" href="#registerjavamethod-v8function" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>It is quite painful to register many functions in J2V8. Javet makes that a declarative one instead of the imperative one. Just decorate the target function with <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code>, then call <code class="docutils literal notranslate"><span class="pre">V8ValueObject.bind(javaObject)</span></code> to bind that Java object, it's done.</p></li>
-<li><p>In addition, Javet provides <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> which allows registering getters and setters in the same manner. That feature has never been delivered by J2V8.</p></li>
+<li><p>It is quite painful to register many functions in J2V8. Javet makes that a declarative one instead of the imperative one. Just decorate the target function with <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code>, then call <code class="docutils literal notranslate"><span class="pre">V8ValueObject.bind(javaObject)</span></code> to bind that Java object, it's done.</p></li>
+<li><p>In addition, Javet provides <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code> which allows registering getters and setters in the same manner. That feature has never been delivered by J2V8.</p></li>
 <li><p>Javet also allows unbinding the registration. Just call <code class="docutils literal notranslate"><span class="pre">V8ValueObject.unbind(javaObject)</span></code>.</p></li>
 </ul>
 <p>Please refer to <a class="reference internal" href="../../reference/v8_values/v8_function.html"><span class="doc">V8 Function</span></a> for more details.</p>
-</div>
-<div class="section" id="v8locker">
-<h3>V8Locker<a class="headerlink" href="#v8locker" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="v8locker">
+<h3>V8Locker<a class="headerlink" href="#v8locker" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Javet introduced <strong>Implicit Mode</strong> which allows applications to eliminate <code class="docutils literal notranslate"><span class="pre">V8Locker</span></code> from the code base and still be able to share the same <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> among multiple threads, because Javet does the synchronization automatically. That frees application developers from the tedious <code class="docutils literal notranslate"><span class="pre">acquire()</span></code> and <code class="docutils literal notranslate"><span class="pre">release()</span></code> calls, and gets the rid of the runtime exceptions caused by multiple threads.</p></li>
 <li><p>Javet also has <strong>Explicit Mode</strong> for performance sensitive scenarios.</p></li>
 </ul>
 <p>Please refer to <a class="reference internal" href="../../reference/resource_management/lock.html"><span class="doc">Know the Lock</span></a> for more details.</p>
-</div>
-<div class="section" id="type-conversion">
-<h3>Type Conversion<a class="headerlink" href="#type-conversion" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="type-conversion">
+<h3>Type Conversion<a class="headerlink" href="#type-conversion" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Javet has built-in <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> which covers the majority cases on type conversion so that the arguments of Javet API can be of any type and the converter just does the conversion transparently. That frees application developers from writing tedious type conversion code everywhere.</p></li>
 <li><p>Javet also provides <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> which allows injecting arbitrary Java objects in V8 and polyfilling Java interfaces with JavaScript functions or objects. Especially the polyfilling feature implies hotfixing business logic without restarting the JVM.</p></li>
 </ul>
 <p>Please refer to <a class="reference internal" href="../advanced/object_converter.html"><span class="doc">Object Converter</span></a> for more details.</p>
-</div>
-<div class="section" id="node-js-and-v8">
-<h3>Node.js and V8<a class="headerlink" href="#node-js-and-v8" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="node-js-and-v8">
+<h3>Node.js and V8<a class="headerlink" href="#node-js-and-v8" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Javet provides both Node.js mode and V8 mode for various usages. Each mode stays at a dedicated classloader so that both modes don't cross each other, and are completely isolated. If the application only uses one mode, it doesn't need to pay extra amount of memory for the other mode because the other mode is not loaded at all. Of course, both modes can be unloaded as well without shutting down the JVM.</p></li>
 <li><p>In Node.js mode, all node modules can be directly used including the native modules. Please refer to <a class="reference internal" href="../../reference/resource_management/modularization.html"><span class="doc">Modularization</span></a> for more detail.</p></li>
 <li><p>In V8 mode, it is much more secure than the Node.js mode is, but lacks of some basic ES API, e.g. <code class="docutils literal notranslate"><span class="pre">setTimeout()</span></code>. Project <a class="reference external" href="https://github.com/caoccao/Javenode">Javenode</a> is the one that aims at simulating Node.js with Java in Javet V8 mode.</p></li>
 </ul>
 <p>Please refer to <a class="reference internal" href="../../development/design.html"><span class="doc">Javet Design</span></a> for more details.</p>
-</div>
-<div class="section" id="es6-module">
-<h3>ES6 Module<a class="headerlink" href="#es6-module" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="es6-module">
+<h3>ES6 Module<a class="headerlink" href="#es6-module" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Javet supports <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">{</span> <span class="pre">***</span> <span class="pre">}</span> <span class="pre">from</span> <span class="pre">'***.js'</span></code> and exposes module resolve event for applications to specify where to locate the modules.</p></li>
 </ul>
 <p>Please refer to <a class="reference internal" href="../../reference/resource_management/modularization.html"><span class="doc">Modularization</span></a> for more detail.</p>
-</div>
-</div>
-<div class="section" id="blessing">
-<h2>Blessing<a class="headerlink" href="#blessing" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="blessing">
+<h2>Blessing<a class="headerlink" href="#blessing" title="Link to this heading">#</a></h2>
 <p>In case this migration guide couldn't cover all your use cases, please contact the maintainer at <a class="reference external" href="https://discord.gg/R4vvKU96gw">discord</a>. Wish you a successful migration!</p>
-</div>
-</div>
+</section>
+</section>
 
         </article>
       </div>
@@ -382,10 +391,10 @@
                 </div>
                 <div class="title">Reference</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="index.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -396,9 +405,18 @@
               </div>
             </a>
         </div>
-
-        <div class="related-information">
-              Copyright &#169; 2021-2022. caoccao.com Sam Cao
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021-2022. caoccao.com Sam Cao
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
         </div>
         
       </footer>
@@ -409,7 +427,7 @@
       <div class="toc-sticky toc-scroll">
         <div class="toc-title-container">
           <span class="toc-title">
-            Contents
+            On this page
           </span>
         </div>
         <div class="toc-tree-container">
@@ -439,11 +457,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
-    <script src="../../_static/tabs.js"></script>
+</div><script src="../../_static/documentation_options.js?v=8b78a895"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
     </body>
 </html>

@@ -1,16 +1,17 @@
 <!doctype html>
-<html class="no-js" lang="en, zh-CN">
+<html class="no-js" lang="en, zh-CN" data-content_root="../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="V8 Promise" href="v8_promise.html" /><link rel="prev" title="V8 Collection" href="v8_collection.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="V8 Promise" href="v8_promise.html" /><link rel="prev" title="V8 Collection" href="v8_collection.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>V8 Function - Javet 2.2.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
-    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>V8 Function - Javet 2.2.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=c2631171" />
     
     
 
@@ -21,38 +22,38 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -61,14 +62,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -83,7 +84,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -91,7 +92,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -124,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 2.2.2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 2.2.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -144,23 +145,23 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../index.html">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.2.2 documentation</span>
+  <span class="sidebar-brand-text">Javet 2.2.3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/basic/index.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Basic</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/installation.html">Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/hello_javet.html">Hello Javet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/javet_shell.html">Javet Shell</a></li>
@@ -171,27 +172,27 @@
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/basic/polyfill.html">Polyfill</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/advanced/index.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Advanced</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/interact_with_node_js.html">Interact with Node.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/object_converter.html">Object Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/migration_guides/index.html">Migration Guides</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorial/migration_guides/index.html">Migration Guides</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Migration Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/migration_guides/migrate_from_j2v8.html">Migrate from J2V8</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../javadoc/index.html">API Reference</a></li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">V8 Values</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">V8 Values</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of V8 Values</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="v8_collection.html">V8 Collection</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">V8 Function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v8_promise.html">V8 Promise</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../converters/index.html">Converters</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../converters/index.html">Converters</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Converters</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../converters/primitive_converter.html">Primitive Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../converters/object_converter.html">Object Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../converters/proxy_converter.html">Proxy Converter</a></li>
@@ -199,7 +200,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../converters/custom_converter.html">Custom Converter</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../resource_management/index.html">Resource Management</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resource_management/index.html">Resource Management</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Resource Management</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../resource_management/load_and_unload.html">Load and Unload</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../resource_management/lock.html">Know the Lock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../resource_management/memory_management.html">Memory Management</a></li>
@@ -207,42 +208,42 @@
 <li class="toctree-l3"><a class="reference internal" href="../resource_management/performance.html">Javet Performance</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/error_codes.html">Error Codes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/logging.html">Logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/termination.html">Termination</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tips/index.html">Tips</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tips/index.html">Tips</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Tips</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tips/best_practices.html">Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../todo_list.html">TODO List</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_2_2.html">Release Notes 2.2.x</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of FAQ</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of Background</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/background/history_with_j2v8.html">History with J2V8</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/background/what_is_the_motivation.html">What is the Motivation?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Development</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/how_to_think_in_javet.html">How to Think in Javet?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_es6_api_in_v8_mode.html">Where are ES6 API in V8 Mode?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/where_are_the_examples.html">Where are the Examples?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/development/why_is_the_inspector_disabled_in_node_js_mode.html">Why is the Inspector Disabled in Node.js Mode?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Environment</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/environment/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i18n_be_supported.html">Can i18n be Supported?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
@@ -251,9 +252,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../development/index.html">Development</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Development</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../development/tools.html">Development Tools</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../development/build.html">Build Javet</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Build Javet</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_with_docker.html">Build Javet with Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../development/build_javet_from_scratch.html">Build Javet from Scratch</a></li>
@@ -269,6 +270,7 @@
 
 </div>
 </div>
+
       </div>
       
     </div>
@@ -276,8 +278,15 @@
   <div class="main">
     <div class="content">
       <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -291,27 +300,20 @@
           </label>
         </div>
         <article role="main">
-          <div class="section" id="v8-function">
-<h1>V8 Function<a class="headerlink" href="#v8-function" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="function-types">
-<h2>Function Types<a class="headerlink" href="#function-types" title="Permalink to this headline">¶</a></h2>
+          <section id="v8-function">
+<h1>V8 Function<a class="headerlink" href="#v8-function" title="Link to this heading">#</a></h1>
+<section id="function-types">
+<h2>Function Types<a class="headerlink" href="#function-types" title="Link to this heading">#</a></h2>
 <p>In general, there are 3 types of function exposed by Javet.</p>
 <ul class="simple">
 <li><p><strong>Native</strong> functions are V8 built-in functions.</p></li>
 <li><p><strong>API</strong> functions are C++ backed functions. Node.js defined C++ functions and Javet defined Java functions are all API functions.</p></li>
 <li><p><strong>User Defined</strong> functions are JavaScript backed functions. Basically, any function generated via JavaScript code execution is user defined function.</p></li>
 </ul>
-<div class="section" id="comparisons">
-<h3>Comparisons<a class="headerlink" href="#comparisons" title="Permalink to this headline">¶</a></h3>
-<div class="table-wrapper"><table class="docutils align-default">
-<colgroup>
-<col style="width: 19%"/>
-<col style="width: 14%"/>
-<col style="width: 14%"/>
-<col style="width: 14%"/>
-<col style="width: 19%"/>
-<col style="width: 22%"/>
-</colgroup>
+<section id="comparisons">
+<h3>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Type</p></th>
 <th class="head"><p>V8 Built-in</p></th>
@@ -344,162 +346,163 @@
 <td><p>Yes</p></td>
 </tr>
 </tbody>
-</table></div>
+</table>
+</div>
 <p>Call <code class="docutils literal notranslate"><span class="pre">getJSFunctionType()</span></code> to determine which function type it is.</p>
-</div>
-</div>
-<div class="section" id="function-interception">
-<h2>Function Interception<a class="headerlink" href="#function-interception" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="function-interception">
+<h2>Function Interception<a class="headerlink" href="#function-interception" title="Link to this heading">#</a></h2>
 <p>Functions can be intercepted via Javet API. This is equivalent to the capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interceptor. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.</p>
 <p><code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code> exposes a set of <code class="docutils literal notranslate"><span class="pre">bindFunction()</span></code> that allow caller to register function interceptors in automatic or manual ways.</p>
-<div class="section" id="automatic-registration">
-<h3>Automatic Registration<a class="headerlink" href="#automatic-registration" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="bind">
-<h4>bind()<a class="headerlink" href="#bind" title="Permalink to this headline">¶</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">bind()</span></code> scans the input callback receiver for functions decorated by <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code>. It allows registering many getters / setters and functions in one call.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">JavetCallbackContext</span><span class="o">&gt;</span> <span class="nf">bind</span><span class="p">(</span><span class="n">Object</span> <span class="n">functionCallbackReceiver</span><span class="p">);</span>
+<section id="automatic-registration">
+<h3>Automatic Registration<a class="headerlink" href="#automatic-registration" title="Link to this heading">#</a></h3>
+<section id="bind">
+<h4>bind()<a class="headerlink" href="#bind" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">bind()</span></code> scans the input callback receiver for functions decorated by <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code>. It allows registering many getters / setters and functions in one call.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">JavetCallbackContext</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">functionCallbackReceiver</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="how-about-object-type-conversion">
-<h4>How about Object Type Conversion?<a class="headerlink" href="#how-about-object-type-conversion" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="how-about-object-type-conversion">
+<h4>How about Object Type Conversion?<a class="headerlink" href="#how-about-object-type-conversion" title="Link to this heading">#</a></h4>
 <p>As V8 only accepts data represented by its own format, Java objects need to be converted to native <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> objects. Creating native <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> objects is tricky in the callback receiver. There are typically 2 options.</p>
 <ol class="arabic simple">
 <li><p><strong>Use Object Converter</strong> - Enhance the <a class="reference internal" href="../../tutorial/advanced/object_converter.html"><span class="doc">Object Converter</span></a> and it just works as a charm. This is the recommended option. Please refer to <code class="docutils literal notranslate"><span class="pre">generateArrayWithConverter()</span></code>.</p></li>
 </ol>
 <p>The beauty of the object converter is Javet doesn't intrude into the receiver at all so that application may pass any objects that are untouchable in the application code, e.g. a native object from a 3rd party library. Of course, in that situation, application may ignore the annotation and register the methods directly in the manual registration which is documented in the next section.</p>
 <ol class="arabic simple" start="2">
-<li><p><strong>Convert via V8Runtime</strong> - V8Runtime can be directly used to perform the type conversion. V8Runtime can be manually set by application, or borrowed from the input arguments. Sometimes the callback receiver is not able to borrow <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> from input arguments, it may decorate a setter with <code class="docutils literal notranslate"><span class="pre">@V8RuntimeSetter</span></code> so that Javet will inject the current <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code>. Please refer to <code class="docutils literal notranslate"><span class="pre">generateArrayWithoutConverter()</span></code>.</p></li>
+<li><p><strong>Convert via V8Runtime</strong> - V8Runtime can be directly used to perform the type conversion. V8Runtime can be manually set by application, or borrowed from the input arguments. Sometimes the callback receiver is not able to borrow <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> from input arguments, it may decorate a setter with <code class="docutils literal notranslate"><span class="pre">&#64;V8RuntimeSetter</span></code> so that Javet will inject the current <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code>. Please refer to <code class="docutils literal notranslate"><span class="pre">generateArrayWithoutConverter()</span></code>.</p></li>
 </ol>
 <p>Here is a sample. The first step is to declare callback receiver and callback functions. That is quite easy as the sample code shows.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AnnotationBasedCallbackReceiver</span> <span class="p">{</span>
-    <span class="kd">private</span> <span class="n">V8Runtime</span> <span class="n">v8Runtime</span><span class="p">;</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">stringValue</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AnnotationBasedCallbackReceiver</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">V8Runtime</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">stringValue</span><span class="p">;</span>
 
-    <span class="kd">public</span> <span class="nf">AnnotationBasedCallbackReceiver</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">stringValue</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-        <span class="n">v8Runtime</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">AnnotationBasedCallbackReceiver</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">stringValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="n">v8Runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Javet detects the getter automatically.</span>
-    <span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"stringValue"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getStringValue</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">stringValue</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Javet detects the getter automatically.</span>
+<span class="w">    </span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;stringValue&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getStringValue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">stringValue</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Javet detects the setter and property name automatically.</span>
-    <span class="nd">@V8Property</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStringValue</span><span class="p">(</span><span class="n">String</span> <span class="n">stringValue</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">this</span><span class="p">.</span><span class="na">stringValue</span> <span class="o">=</span> <span class="n">stringValue</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Javet detects the setter and property name automatically.</span>
+<span class="w">    </span><span class="nd">@V8Property</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setStringValue</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">stringValue</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">stringValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stringValue</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Instance method with same name and same signature.</span>
-    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"echo"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">echo</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">str</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Instance method with same name and same signature.</span>
+<span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;echo&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">str</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Instance method with different name and same signature.</span>
-    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"add"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">mathAdd</span><span class="p">(</span><span class="n">Integer</span> <span class="n">a</span><span class="p">,</span> <span class="n">Integer</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Instance method with different name and same signature.</span>
+<span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;add&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="nf">mathAdd</span><span class="p">(</span><span class="n">Integer</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Instance method with converter for non-primitive objects.</span>
-    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"generateArrayWithConverter"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="n">Object</span><span class="o">[]</span> <span class="nf">generateArrayWithConverter</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
-        <span class="c1">// Converter is able to recognize non-primitive types.</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="s">"a"</span><span class="p">,</span> <span class="mi">1</span><span class="p">};</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Instance method with converter for non-primitive objects.</span>
+<span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;generateArrayWithConverter&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="nf">generateArrayWithConverter</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">JavetException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Converter is able to recognize non-primitive types.</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">};</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Instance method requiring V8Runtime without converter.</span>
-    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"generateArrayWithoutConverter"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="n">V8ValueArray</span> <span class="nf">generateArrayWithoutConverter</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
-        <span class="n">V8ValueArray</span> <span class="n">v8ValueArray</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueArray</span><span class="p">();</span>
-        <span class="n">v8ValueArray</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
-        <span class="n">v8ValueArray</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-        <span class="k">return</span> <span class="n">v8ValueArray</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Instance method requiring V8Runtime without converter.</span>
+<span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;generateArrayWithoutConverter&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">V8ValueArray</span><span class="w"> </span><span class="nf">generateArrayWithoutConverter</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">JavetException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">V8ValueArray</span><span class="w"> </span><span class="n">v8ValueArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueArray</span><span class="p">();</span>
+<span class="w">        </span><span class="n">v8ValueArray</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">v8ValueArray</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">v8ValueArray</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Static method.</span>
-    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"staticEcho"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">staticEcho</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">str</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Static method.</span>
+<span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;staticEcho&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">staticEcho</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">str</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Declare the V8RuntimeSetter for dependency injection.</span>
-    <span class="nd">@V8RuntimeSetter</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setV8Runtime</span><span class="p">(</span><span class="n">V8Runtime</span> <span class="n">v8Runtime</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">this</span><span class="p">.</span><span class="na">v8Runtime</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Declare the V8RuntimeSetter for dependency injection.</span>
+<span class="w">    </span><span class="nd">@V8RuntimeSetter</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setV8Runtime</span><span class="p">(</span><span class="n">V8Runtime</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">v8Runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>The second step is to call the functions or properties.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span> <span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
-    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">v8ValueObject</span><span class="p">);</span>
-    <span class="n">AnnotationBasedCallbackReceiver</span> <span class="n">annotationBasedCallbackReceiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AnnotationBasedCallbackReceiver</span><span class="p">();</span>
-    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">annotationBasedCallbackReceiver</span><span class="p">);</span>
-    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"test"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.echo('test')"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
-    <span class="n">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.add(1, 2)"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
-    <span class="k">try</span> <span class="p">(</span><span class="n">V8ValueArray</span> <span class="n">v8ValueArray</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
-            <span class="s">"a.generateArrayWithConverter()"</span><span class="p">).</span><span class="na">execute</span><span class="p">())</span> <span class="p">{</span>
-        <span class="n">assertEquals</span><span class="p">(</span><span class="s">"[\"a\",1]"</span><span class="p">,</span> <span class="n">v8ValueArray</span><span class="p">.</span><span class="na">toJsonString</span><span class="p">());</span>
-    <span class="p">}</span>
-    <span class="k">try</span> <span class="p">(</span><span class="n">V8ValueArray</span> <span class="n">v8ValueArray</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
-            <span class="s">"a.generateArrayWithoutConverter()"</span><span class="p">).</span><span class="na">execute</span><span class="p">())</span> <span class="p">{</span>
-        <span class="n">assertEquals</span><span class="p">(</span><span class="s">"[\"a\",1]"</span><span class="p">,</span> <span class="n">v8ValueArray</span><span class="p">.</span><span class="na">toJsonString</span><span class="p">());</span>
-    <span class="p">}</span>
-    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"static"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.staticEcho('static')"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
-    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.stringValue = 'abc';"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
-    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.stringValue"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
-    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="p">);</span>
+<span class="w">    </span><span class="n">AnnotationBasedCallbackReceiver</span><span class="w"> </span><span class="n">annotationBasedCallbackReceiver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AnnotationBasedCallbackReceiver</span><span class="p">();</span>
+<span class="w">    </span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">annotationBasedCallbackReceiver</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a.echo(&#39;test&#39;)&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a.add(1, 2)&quot;</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueArray</span><span class="w"> </span><span class="n">v8ValueArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;a.generateArrayWithConverter()&quot;</span><span class="p">).</span><span class="na">execute</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;[\&quot;a\&quot;,1]&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8ValueArray</span><span class="p">.</span><span class="na">toJsonString</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueArray</span><span class="w"> </span><span class="n">v8ValueArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;a.generateArrayWithoutConverter()&quot;</span><span class="p">).</span><span class="na">execute</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;[\&quot;a\&quot;,1]&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8ValueArray</span><span class="p">.</span><span class="na">toJsonString</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;static&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a.staticEcho(&#39;static&#39;)&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="w">    </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a.stringValue = &#39;abc&#39;;&quot;</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a.stringValue&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="w">    </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>How about <code class="docutils literal notranslate"><span class="pre">Optional</span></code> and <code class="docutils literal notranslate"><span class="pre">Stream</span></code>? The built-in converter knows these 2 special types and handles the conversion transparently.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nd">@V8Function</span>
-    <span class="kd">public</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">testOptional</span><span class="p">(</span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">optionalString</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Do whatever you want to do.</span>
-        <span class="k">return</span> <span class="n">Optional</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"abc"</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="nd">@V8Function</span>
-    <span class="kd">public</span> <span class="n">Stream</span> <span class="nf">testStream</span><span class="p">(</span><span class="n">Stream</span> <span class="n">stream</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Do whatever you want to do.</span>
-        <span class="k">return</span> <span class="n">stream</span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">String</span><span class="p">);</span>
-    <span class="p">}</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">IJavetAnonymous</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@V8Function</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">testOptional</span><span class="p">(</span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">optionalString</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Do whatever you want to do.</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Optional</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nd">@V8Function</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Stream</span><span class="w"> </span><span class="nf">testStream</span><span class="p">(</span><span class="n">Stream</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Do whatever you want to do.</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">stream</span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">String</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="can-this-be-passed-in">
-<h4>Can <strong>this</strong> be Passed in?<a class="headerlink" href="#can-this-be-passed-in" title="Permalink to this headline">¶</a></h4>
-<p>Yes, both <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> support <code class="docutils literal notranslate"><span class="pre">thisObjectRequired</span></code>. Just set it to <code class="docutils literal notranslate"><span class="pre">true</span></code> and specify the first argument as <code class="docutils literal notranslate"><span class="pre">this</span></code>.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">thisObjectRequired</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
-<span class="kd">public</span> <span class="p">...</span> <span class="n">functionName</span><span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">thisObject</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
-    <span class="c1">// function body</span>
+</section>
+<section id="can-this-be-passed-in">
+<h4>Can <strong>this</strong> be Passed in?<a class="headerlink" href="#can-this-be-passed-in" title="Link to this heading">#</a></h4>
+<p>Yes, both <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code> support <code class="docutils literal notranslate"><span class="pre">thisObjectRequired</span></code>. Just set it to <code class="docutils literal notranslate"><span class="pre">true</span></code> and specify the first argument as <code class="docutils literal notranslate"><span class="pre">this</span></code>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">thisObjectRequired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="n">functionName</span><span class="p">(</span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">thisObject</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// function body</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>This feature is especially useful when <code class="docutils literal notranslate"><span class="pre">this</span></code> needs to be returned. Just simply return the input <code class="docutils literal notranslate"><span class="pre">this</span></code> object and there is no need to create a new V8 object.</p>
-</div>
-<div class="section" id="can-symbol-properties-be-intercepted">
-<h4>Can Symbol Properties be Intercepted?<a class="headerlink" href="#can-symbol-properties-be-intercepted" title="Permalink to this headline">¶</a></h4>
-<p>Yes, <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> supports <code class="docutils literal notranslate"><span class="pre">symbolType</span></code>.</p>
+</section>
+<section id="can-symbol-properties-be-intercepted">
+<h4>Can Symbol Properties be Intercepted?<a class="headerlink" href="#can-symbol-properties-be-intercepted" title="Link to this heading">#</a></h4>
+<p>Yes, <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code> supports <code class="docutils literal notranslate"><span class="pre">symbolType</span></code>.</p>
 <ul class="simple">
 <li><p>None: Not a symbol. (default)</p></li>
 <li><p>Built-in: ES built-in symbol type.</p></li>
 <li><p>Custom: User defined symbol type.</p></li>
 </ul>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbolType</span> <span class="o">=</span> <span class="n">V8ValueSymbolType</span><span class="p">.</span><span class="na">Custom</span><span class="p">)</span>
-<span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbolType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">V8ValueSymbolType</span><span class="p">.</span><span class="na">Custom</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getValue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbolType</span> <span class="o">=</span> <span class="n">V8ValueSymbolType</span><span class="p">.</span><span class="na">Custom</span><span class="p">)</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="p">(</span><span class="n">String</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+<span class="nd">@V8Property</span><span class="p">(</span><span class="n">symbolType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">V8ValueSymbolType</span><span class="p">.</span><span class="na">Custom</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setValue</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -507,115 +510,115 @@
 <p class="admonition-title">Note</p>
 <p>Javet only supports symbols that are registered as global symbols in property interception.</p>
 </div>
-</div>
-<div class="section" id="how-to-disable-properties-or-functions">
-<h4>How to Disable Properties or Functions?<a class="headerlink" href="#how-to-disable-properties-or-functions" title="Permalink to this headline">¶</a></h4>
-<p>As <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code> are statically declared, there is no way of selectively disabling them. <code class="docutils literal notranslate"><span class="pre">@V8BindingEnabler</span></code> is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.</p>
+</section>
+<section id="how-to-disable-properties-or-functions">
+<h4>How to Disable Properties or Functions?<a class="headerlink" href="#how-to-disable-properties-or-functions" title="Link to this heading">#</a></h4>
+<p>As <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code> are statically declared, there is no way of selectively disabling them. <code class="docutils literal notranslate"><span class="pre">&#64;V8BindingEnabler</span></code> is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Function</span>
-<span class="kd">public</span> <span class="n">String</span> <span class="nf">disabledFunction</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="s">"I am a disabled function."</span><span class="p">;</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">disabledFunction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;I am a disabled function.&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nd">@V8Property</span>
-<span class="kd">public</span> <span class="n">String</span> <span class="nf">disabledProperty</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="s">"I am a disabled property."</span><span class="p">;</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">disabledProperty</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;I am a disabled property.&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nd">@V8BindingEnabler</span>
-<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isV8BindingEnabled</span><span class="p">(</span><span class="n">String</span> <span class="n">methodName</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="s">"disabledFunction"</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">methodName</span><span class="p">)</span> <span class="o">||</span> <span class="s">"disabledProperty"</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">methodName</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isV8BindingEnabled</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">methodName</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;disabledFunction&quot;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">methodName</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s">&quot;disabledProperty&quot;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">methodName</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">@V8BindingEnabler</span></code> can be used to decorate a method with signature <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">arbitraryMethod(String</span> <span class="pre">methodName)</span></code>. Javet calls that method by each method name for whether each method is enabled or not.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;V8BindingEnabler</span></code> can be used to decorate a method with signature <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">arbitraryMethod(String</span> <span class="pre">methodName)</span></code>. Javet calls that method by each method name for whether each method is enabled or not.</p>
 <p>The problem is if the function names are refactored to some other names, this string based solution will be broken. So, is there an IDE refactor friendly solution? Yes, <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameFromLambda()</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetReflectionUtils.getMethodNameSetFromLambdas()</span></code> are able to convert lambda functions to string and string set.</p>
 <ul class="simple">
 <li><p>Firstly, prepare a set of to be disabled function names.</p></li>
 </ul>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Option 1 with JavetReflectionUtils.getMethodNameFromLambda()</span>
-<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">disabledFunctionSet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span>
-        <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameFromLambda</span><span class="p">((</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledFunction</span><span class="p">),</span>
-        <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameFromLambda</span><span class="p">((</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledProperty</span><span class="p">)));</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">disabledFunctionSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashSet</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span>
+<span class="w">        </span><span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameFromLambda</span><span class="p">((</span><span class="n">Supplier</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">Serializable</span><span class="p">)</span><span class="w"> </span><span class="k">this</span><span class="p">::</span><span class="n">disabledFunction</span><span class="p">),</span>
+<span class="w">        </span><span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameFromLambda</span><span class="p">((</span><span class="n">Supplier</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">Serializable</span><span class="p">)</span><span class="w"> </span><span class="k">this</span><span class="p">::</span><span class="n">disabledProperty</span><span class="p">)));</span>
 
 <span class="c1">// Option 2 with JavetReflectionUtils.getMethodNameSetFromLambdas()</span>
-<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">disabledFunctionSet</span> <span class="o">=</span> <span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameSetFromLambdas</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledFunction</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">Supplier</span> <span class="o">&amp;</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">this</span><span class="p">::</span><span class="n">disabledProperty</span><span class="p">);</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">disabledFunctionSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JavetReflectionUtils</span><span class="p">.</span><span class="na">getMethodNameSetFromLambdas</span><span class="p">(</span>
+<span class="w">        </span><span class="p">(</span><span class="n">Supplier</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">Serializable</span><span class="p">)</span><span class="w"> </span><span class="k">this</span><span class="p">::</span><span class="n">disabledFunction</span><span class="p">,</span>
+<span class="w">        </span><span class="p">(</span><span class="n">Supplier</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">Serializable</span><span class="p">)</span><span class="w"> </span><span class="k">this</span><span class="p">::</span><span class="n">disabledProperty</span><span class="p">);</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p>Secondly, just test whether the method name is in the set or not.</p></li>
 </ul>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8BindingEnabler</span>
-<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isV8BindingEnabled</span><span class="p">(</span><span class="n">String</span> <span class="n">methodName</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="o">!</span><span class="n">disabledFunctionSet</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">methodName</span><span class="p">);</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isV8BindingEnabled</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">methodName</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">!</span><span class="n">disabledFunctionSet</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">methodName</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>C'est très bien. Now, the set of to be disabled function names can be updated automatically by the IDE refactor.</p>
-</div>
-<div class="section" id="how-to-unregister-properties-or-functions">
-<h4>How to Unregister Properties or Functions?<a class="headerlink" href="#how-to-unregister-properties-or-functions" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="how-to-unregister-properties-or-functions">
+<h4>How to Unregister Properties or Functions?<a class="headerlink" href="#how-to-unregister-properties-or-functions" title="Link to this heading">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">unbind()</span></code> follows the same way that <code class="docutils literal notranslate"><span class="pre">bind()</span></code> goes to unregister both properties and functions.</p>
 <p><code class="docutils literal notranslate"><span class="pre">unbindProperty()</span></code> and <code class="docutils literal notranslate"><span class="pre">unbindFunction()</span></code> provide precise way of unregistering single property or function.</p>
-</div>
-<div class="section" id="can-both-javascript-function-and-property-map-to-one-java-function">
-<h4>Can Both JavaScript Function and Property Map to One Java Function?<a class="headerlink" href="#can-both-javascript-function-and-property-map-to-one-java-function" title="Permalink to this headline">¶</a></h4>
-<p>Yes, just simply decorate the Java function with both <code class="docutils literal notranslate"><span class="pre">@V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">@V8Property</span></code>.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span> <span class="n">iJavetAnonymous1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"testFunction"</span><span class="p">)</span>
-    <span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"testProperty"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="s">"abc"</span><span class="p">;</span>
-    <span class="p">}</span>
+</section>
+<section id="can-both-javascript-function-and-property-map-to-one-java-function">
+<h4>Can Both JavaScript Function and Property Map to One Java Function?<a class="headerlink" href="#can-both-javascript-function-and-property-map-to-one-java-function" title="Link to this heading">#</a></h4>
+<p>Yes, just simply decorate the Java function with both <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span><span class="w"> </span><span class="n">iJavetAnonymous1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IJavetAnonymous</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;testFunction&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;testProperty&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">test</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;abc&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">};</span>
-<span class="k">try</span> <span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
-    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">v8ValueObject</span><span class="p">);</span>
-    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">iJavetAnonymous1</span><span class="p">);</span>
-    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a['testProperty']"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
-    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.testFunction()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
-    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">unbind</span><span class="p">(</span><span class="n">iJavetAnonymous1</span><span class="p">);</span>
-<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
-    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="p">);</span>
+<span class="w">    </span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">iJavetAnonymous1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a[&#39;testProperty&#39;]&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a.testFunction()&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="w">    </span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">unbind</span><span class="p">(</span><span class="n">iJavetAnonymous1</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="can-2-java-functions-map-to-one-javascript-function-and-property">
-<h4>Can 2 Java Functions Map to One JavaScript Function and Property?<a class="headerlink" href="#can-2-java-functions-map-to-one-javascript-function-and-property" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="can-2-java-functions-map-to-one-javascript-function-and-property">
+<h4>Can 2 Java Functions Map to One JavaScript Function and Property?<a class="headerlink" href="#can-2-java-functions-map-to-one-javascript-function-and-property" title="Link to this heading">#</a></h4>
 <p>Yes, just simply give 2 Java functions the same name.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span> <span class="n">iJavetAnonymous2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IJavetAnonymous</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"test"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">testFunction</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="s">"abc"</span><span class="p">;</span>
-    <span class="p">}</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span><span class="w"> </span><span class="n">iJavetAnonymous2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IJavetAnonymous</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">testFunction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;abc&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"test"</span><span class="p">)</span>
-    <span class="kd">public</span> <span class="n">JavetEntityFunction</span> <span class="nf">testProperty</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">JavetEntityFunction</span><span class="p">(</span><span class="s">"() =&gt; 'abc'"</span><span class="p">,</span> <span class="n">JSFunctionType</span><span class="p">.</span><span class="na">UserDefined</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">JavetEntityFunction</span><span class="w"> </span><span class="nf">testProperty</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavetEntityFunction</span><span class="p">(</span><span class="s">&quot;() =&gt; &#39;abc&#39;&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">JSFunctionType</span><span class="p">.</span><span class="na">UserDefined</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">};</span>
-<span class="k">try</span> <span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">v8ValueObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
-    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">v8ValueObject</span><span class="p">);</span>
-    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">iJavetAnonymous2</span><span class="p">);</span>
-    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a['test']()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
-    <span class="n">assertEquals</span><span class="p">(</span><span class="s">"abc"</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.test()"</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
-    <span class="n">v8ValueObject</span><span class="p">.</span><span class="na">unbind</span><span class="p">(</span><span class="n">iJavetAnonymous2</span><span class="p">);</span>
-<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
-    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="p">);</span>
+<span class="w">    </span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">iJavetAnonymous2</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a[&#39;test&#39;]()&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a.test()&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="w">    </span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">unbind</span><span class="p">(</span><span class="n">iJavetAnonymous2</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="manual-registration">
-<h3>Manual Registration<a class="headerlink" href="#manual-registration" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="manual-registration">
+<h3>Manual Registration<a class="headerlink" href="#manual-registration" title="Link to this heading">#</a></h3>
 <p>Manual registration allows the applications to have full control over every step of the function interception.</p>
-<div class="section" id="boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext">
-<h4>boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)<a class="headerlink" href="#boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext" title="Permalink to this headline">¶</a></h4>
+<section id="boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext">
+<h4>boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)<a class="headerlink" href="#boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext" title="Link to this heading">#</a></h4>
 <p>This method is for binding a Java code based function in semi-manual way. The caller is expected to do the following steps.</p>
 <ul class="simple">
 <li><p>Create a callback receiver.</p></li>
@@ -624,18 +627,18 @@
 <li><p>Bind the callback context to a V8 object via <code class="docutils literal notranslate"><span class="pre">bindFunction</span></code>.</p></li>
 <li><p>Call the function to trigger the callback.</p></li>
 </ul>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">MockCallbackReceiver</span> <span class="n">mockCallbackReceiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MockCallbackReceiver</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">);</span>
-<span class="n">JavetCallbackContext</span> <span class="n">javetCallbackContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JavetCallbackContext</span><span class="p">(</span>
-        <span class="n">mockCallbackReceiver</span><span class="p">,</span> <span class="n">mockCallbackReceiver</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">"blank"</span><span class="p">));</span>
-<span class="n">V8ValueObject</span> <span class="n">globalObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">();</span>
-<span class="n">globalObject</span><span class="p">.</span><span class="na">bindFunction</span><span class="p">(</span><span class="s">"blank"</span><span class="p">,</span> <span class="n">javetCallbackContext</span><span class="p">);</span>
-<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"blank();"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
-<span class="n">globalObject</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="s">"blank"</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">MockCallbackReceiver</span><span class="w"> </span><span class="n">mockCallbackReceiver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MockCallbackReceiver</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">);</span>
+<span class="n">JavetCallbackContext</span><span class="w"> </span><span class="n">javetCallbackContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavetCallbackContext</span><span class="p">(</span>
+<span class="w">        </span><span class="n">mockCallbackReceiver</span><span class="p">,</span><span class="w"> </span><span class="n">mockCallbackReceiver</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&quot;blank&quot;</span><span class="p">));</span>
+<span class="n">V8ValueObject</span><span class="w"> </span><span class="n">globalObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">();</span>
+<span class="n">globalObject</span><span class="p">.</span><span class="na">bindFunction</span><span class="p">(</span><span class="s">&quot;blank&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">javetCallbackContext</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;blank();&quot;</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+<span class="n">globalObject</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;blank&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="boolean-set-string-key-v8value-value">
-<h4>boolean set(String key, V8Value value)<a class="headerlink" href="#boolean-set-string-key-v8value-value" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="boolean-set-string-key-v8value-value">
+<h4>boolean set(String key, V8Value value)<a class="headerlink" href="#boolean-set-string-key-v8value-value" title="Link to this heading">#</a></h4>
 <p>This method is for binding a Java code based function in complete manual way. The caller is expected to do the following steps.</p>
 <ul class="simple">
 <li><p>Create a callback receiver.</p></li>
@@ -645,35 +648,35 @@
 <li><p>Bind the function to a V8 object via <code class="docutils literal notranslate"><span class="pre">set</span></code>.</p></li>
 <li><p>Call the function to trigger the callback.</p></li>
 </ul>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">MockCallbackReceiver</span> <span class="n">mockCallbackReceiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MockCallbackReceiver</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">);</span>
-<span class="n">JavetCallbackContext</span> <span class="n">javetCallbackContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JavetCallbackContext</span><span class="p">(</span>
-        <span class="n">mockCallbackReceiver</span><span class="p">,</span> <span class="n">mockCallbackReceiver</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">"blank"</span><span class="p">));</span>
-<span class="n">V8ValueObject</span> <span class="n">globalObject</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">(</span><span class="n">V8ValueFunction</span> <span class="n">v8ValueFunction</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueFunction</span><span class="p">(</span><span class="n">javetCallbackContext</span><span class="p">);</span>
-        <span class="n">V8ValueObject</span> <span class="n">a</span> <span class="o">=</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span> <span class="p">{</span>
-    <span class="n">globalObject</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">"a"</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
-    <span class="n">a</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">"blank"</span><span class="p">,</span> <span class="n">v8ValueFunction</span><span class="p">);</span>
-    <span class="n">assertFalse</span><span class="p">(</span><span class="n">mockCallbackReceiver</span><span class="p">.</span><span class="na">isCalled</span><span class="p">());</span>
-    <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"a.blank();"</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
-    <span class="n">assertTrue</span><span class="p">(</span><span class="n">mockCallbackReceiver</span><span class="p">.</span><span class="na">isCalled</span><span class="p">());</span>
-    <span class="n">a</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="s">"blank"</span><span class="p">);</span>
-    <span class="n">globalObject</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="s">"a"</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">MockCallbackReceiver</span><span class="w"> </span><span class="n">mockCallbackReceiver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MockCallbackReceiver</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">);</span>
+<span class="n">JavetCallbackContext</span><span class="w"> </span><span class="n">javetCallbackContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavetCallbackContext</span><span class="p">(</span>
+<span class="w">        </span><span class="n">mockCallbackReceiver</span><span class="p">,</span><span class="w"> </span><span class="n">mockCallbackReceiver</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&quot;blank&quot;</span><span class="p">));</span>
+<span class="n">V8ValueObject</span><span class="w"> </span><span class="n">globalObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">();</span>
+<span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueFunction</span><span class="w"> </span><span class="n">v8ValueFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueFunction</span><span class="p">(</span><span class="n">javetCallbackContext</span><span class="p">);</span>
+<span class="w">        </span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">globalObject</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">);</span>
+<span class="w">    </span><span class="n">a</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;blank&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8ValueFunction</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assertFalse</span><span class="p">(</span><span class="n">mockCallbackReceiver</span><span class="p">.</span><span class="na">isCalled</span><span class="p">());</span>
+<span class="w">    </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;a.blank();&quot;</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">mockCallbackReceiver</span><span class="p">.</span><span class="na">isCalled</span><span class="p">());</span>
+<span class="w">    </span><span class="n">a</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;blank&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">globalObject</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="boolean-bindfunction-string-functionname-string-codestring">
-<h4>boolean bindFunction(String functionName, String codeString)<a class="headerlink" href="#boolean-bindfunction-string-functionname-string-codestring" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="boolean-bindfunction-string-functionname-string-codestring">
+<h4>boolean bindFunction(String functionName, String codeString)<a class="headerlink" href="#boolean-bindfunction-string-functionname-string-codestring" title="Link to this heading">#</a></h4>
 <p>This method is for binding a JavaScript code based function.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">bindFunction</span><span class="p">(</span><span class="s">"b"</span><span class="p">,</span> <span class="s">"(x) =&gt; x + 1;"</span><span class="p">);</span>
-<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">"b(1);"</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
-<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">"b"</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">bindFunction</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;(x) =&gt; x + 1;&quot;</span><span class="p">);</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;b(1);&quot;</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="type-mismatch">
-<h3>Type Mismatch<a class="headerlink" href="#type-mismatch" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="type-mismatch">
+<h3>Type Mismatch<a class="headerlink" href="#type-mismatch" title="Link to this heading">#</a></h3>
 <p>It is very easy to cause type mismatches in JavaScript. The Javet exception is so generic that applications may not be happy with it. So, how to customize the type mismatch exception? The recommended way is to declare the function signature to <code class="docutils literal notranslate"><span class="pre">(V8Value...</span> <span class="pre">v8Values)</span></code> or <code class="docutils literal notranslate"><span class="pre">(Object...</span> <span class="pre">objects)</span></code>.</p>
 <ul class="simple">
 <li><p>Javet doesn't throw exceptions under this signature in all cases.</p></li>
@@ -681,34 +684,34 @@
 <li><p>When dealing with <code class="docutils literal notranslate"><span class="pre">V8Value...</span></code>, application is responsible for the type conversion.</p></li>
 <li><p>Variable arguments can be achieved under this signature so that a JavaScript function can be completely mirrored in Java.</p></li>
 </ul>
-</div>
-<div class="section" id="resource-management">
-<h3>Resource Management<a class="headerlink" href="#resource-management" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="resource-management">
+<h3>Resource Management<a class="headerlink" href="#resource-management" title="Link to this heading">#</a></h3>
 <p>In the function callback, Javet manages the lifecycle of the input arguments and the return value. So, <strong>DO NOT</strong> close the input arguments, and <strong>DO NOT</strong> apply <code class="docutils literal notranslate"><span class="pre">try-with-resource</span></code> to the return value.</p>
-</div>
-<div class="section" id="summary">
-<h3>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="summary">
+<h3>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h3>
 <p>Obviously, the automatic registration is much better than the manual registration. Please use them wisely.</p>
-</div>
-</div>
-<div class="section" id="change-a-user-defined-javascript-function-on-the-fly">
-<h2>Change a User Defined JavaScript Function on the Fly<a class="headerlink" href="#change-a-user-defined-javascript-function-on-the-fly" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="why-is-changing-a-user-defined-javascript-function-important">
-<h3>Why is Changing a User Defined JavaScript Function Important?<a class="headerlink" href="#why-is-changing-a-user-defined-javascript-function-important" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="change-a-user-defined-javascript-function-on-the-fly">
+<h2>Change a User Defined JavaScript Function on the Fly<a class="headerlink" href="#change-a-user-defined-javascript-function-on-the-fly" title="Link to this heading">#</a></h2>
+<section id="why-is-changing-a-user-defined-javascript-function-important">
+<h3>Why is Changing a User Defined JavaScript Function Important?<a class="headerlink" href="#why-is-changing-a-user-defined-javascript-function-important" title="Link to this heading">#</a></h3>
 <p>Functions can be changed on the fly at JavaScript code level via Javet API. Why to choose this approach? Because sometimes local scoped context is required which is usually called closure. E.g:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">b</span> <span class="o">=</span> <span class="mf">1</span><span class="p">;</span>
-    <span class="k">return</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">b</span><span class="p">;</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="kd">const</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">a</span><span class="p">();</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">a</span><span class="p">();</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">());</span>
 <span class="c1">// Output is: 1</span>
 </pre></div>
 </div>
 <p>Local const b is visible to the anonymous function at line 3, but invisible to the function interceptor. Javet provides a way of changing the function at JavaScript source code level so that local scoped context is still visible.</p>
-</div>
-<div class="section" id="how-to-change-a-user-defined-javascript-function-on-the-fly">
-<h3>How to Change a User Defined JavaScript Function on the Fly?<a class="headerlink" href="#how-to-change-a-user-defined-javascript-function-on-the-fly" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="how-to-change-a-user-defined-javascript-function-on-the-fly">
+<h3>How to Change a User Defined JavaScript Function on the Fly?<a class="headerlink" href="#how-to-change-a-user-defined-javascript-function-on-the-fly" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">getSourceCode()</span></code> and <code class="docutils literal notranslate"><span class="pre">setSourceCode(String</span> <span class="pre">sourceCode)</span></code> are designed for getting and setting the source code. <code class="docutils literal notranslate"><span class="pre">setSourceCode(String</span> <span class="pre">sourceCode)</span></code> actually performs the follow steps.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setSourceCode</span><span class="p">(</span><span class="n">sourceCode</span><span class="p">):</span>
     <span class="n">existingSourceCode</span> <span class="o">=</span> <span class="n">v8Function</span><span class="o">.</span><span class="n">getSourceCode</span><span class="p">()</span>
@@ -722,24 +725,24 @@
 <p class="admonition-title">Caution</p>
 <p><code class="docutils literal notranslate"><span class="pre">setSourceCode(String</span> <span class="pre">sourceCode)</span></code> has radical impacts that may break the execution because all functions during one execution share the same source code but have their own positions. The following diagram shows the rough memory layout. Assuming function (4) has been changed to something else with position changed, function (1) and (2) will not be impacted because their positions remain the same, but function (3) will be broken because its end position is not changed to the end position of function (4) accordingly.</p>
 </div>
-<img alt="Memory Layout of V8 Function" src="../../_images/memory_layout_of_v8_function.png"/>
+<img alt="Memory Layout of V8 Function" src="../../_images/memory_layout_of_v8_function.png" />
 <p>Javet does not scan memory for all impacted function. So, it is caller's responsibility for restoring the original source code after invocation. The pseudo logic is as following.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">originalSourceCode</span> <span class="o">=</span> <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">getSourceCode</span><span class="p">()</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">originalSourceCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">getSourceCode</span><span class="p">()</span>
 <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">setSourceCode</span><span class="p">(</span><span class="n">sourceCode</span><span class="p">)</span>
 <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">call</span><span class="p">(...)</span>
 <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">setSourceCode</span><span class="p">(</span><span class="n">originalSourceCode</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Why does <code class="docutils literal notranslate"><span class="pre">setSourceCode()</span></code> sometimes return <code class="docutils literal notranslate"><span class="pre">false</span></code>? Usually, that means the local scoped context hasn't been generated by V8. <code class="docutils literal notranslate"><span class="pre">getJSScopeType().isClass()</span> <span class="pre">==</span> <span class="pre">true</span></code> indicates that state. After <code class="docutils literal notranslate"><span class="pre">callVoid(null)</span></code>, the local scoped context will be created with <code class="docutils literal notranslate"><span class="pre">getJSScopeType().isFunction()</span> <span class="pre">==</span> <span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">setSourceCode()</span></code> will work. The pseudo logic is as following.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">originalSourceCode</span> <span class="o">=</span> <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">getSourceCode</span><span class="p">()</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">getJSScopeType</span><span class="p">().</span><span class="na">isClass</span><span class="p">())</span> <span class="p">{</span>
-    <span class="k">try</span> <span class="p">{</span>
-        <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">callVoid</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
-        <span class="c1">// Now v8ValueFunction.getJSScopeType().isFunction() is true</span>
-    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">JavetException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
-    <span class="p">}</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">originalSourceCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">getSourceCode</span><span class="p">()</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">getJSScopeType</span><span class="p">().</span><span class="na">isClass</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">callVoid</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// Now v8ValueFunction.getJSScopeType().isFunction() is true</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">JavetException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
-<span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">setSourceCode</span><span class="p">(</span><span class="n">sourceCode</span><span class="p">)</span> <span class="c1">// true</span>
+<span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">setSourceCode</span><span class="p">(</span><span class="n">sourceCode</span><span class="p">)</span><span class="w"> </span><span class="c1">// true</span>
 <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">call</span><span class="p">(...)</span>
 <span class="n">v8ValueFunction</span><span class="p">.</span><span class="na">setSourceCode</span><span class="p">(</span><span class="n">originalSourceCode</span><span class="p">)</span>
 </pre></div>
@@ -753,44 +756,44 @@
 </ul>
 </div>
 <p>The rough lifecycle of a V8 function is as following.</p>
-<img alt="Lifecycle of V8 Function" src="../../_images/lifecycle_of_v8_function.png"/>
-</div>
-<div class="section" id="what-is-the-source-code-of-a-function-in-v8">
-<h3>What is the Source Code of a Function in V8?<a class="headerlink" href="#what-is-the-source-code-of-a-function-in-v8" title="Permalink to this headline">¶</a></h3>
+<img alt="Lifecycle of V8 Function" src="../../_images/lifecycle_of_v8_function.png" />
+</section>
+<section id="what-is-the-source-code-of-a-function-in-v8">
+<h3>What is the Source Code of a Function in V8?<a class="headerlink" href="#what-is-the-source-code-of-a-function-in-v8" title="Link to this heading">#</a></h3>
 <p>When V8 calculates start position of a function, it does not include the keyword <code class="docutils literal notranslate"><span class="pre">function</span></code> and function name. E.g.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">abc</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span> <span class="c1">// Source code is (a, b, c) { ... }</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">abc</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">,</span><span class="w"> </span><span class="nx">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Source code is (a, b, c) { ... }</span>
 
-<span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>          <span class="c1">// Source code is (a, b, c) =&gt; { ... }</span>
+<span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">,</span><span class="w"> </span><span class="nx">c</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w">          </span><span class="c1">// Source code is (a, b, c) =&gt; { ... }</span>
 </pre></div>
 </div>
 <p>So, please always discard the keyword <code class="docutils literal notranslate"><span class="pre">function</span></code> and function name when calling <code class="docutils literal notranslate"><span class="pre">setSourceCode()</span></code>.</p>
-</div>
-</div>
-<div class="section" id="automatic-type-conversion">
-<h2>Automatic Type Conversion<a class="headerlink" href="#automatic-type-conversion" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="automatic-type-conversion">
+<h2>Automatic Type Conversion<a class="headerlink" href="#automatic-type-conversion" title="Link to this heading">#</a></h2>
 <p>Javet is capable of automatically converting its internal <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> to primitive types by inspecting the function signature. So, the following 4 functions are all the same and valid.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Option 1</span>
-<span class="kd">public</span> <span class="n">String</span> <span class="nf">echo</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">str</span><span class="p">;</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">str</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="c1">// Option 2</span>
-<span class="kd">public</span> <span class="n">String</span> <span class="nf">echo</span><span class="p">(</span><span class="n">V8Value</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">arg</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="kc">null</span> <span class="p">:</span> <span class="n">arg</span><span class="p">.</span><span class="na">toString</span><span class="p">();</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">V8Value</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">arg</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">arg</span><span class="p">.</span><span class="na">toString</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="c1">// Option 3</span>
-<span class="kd">public</span> <span class="n">V8Value</span> <span class="nf">echo</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueString</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">V8Value</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueString</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="c1">// Option 4</span>
-<span class="kd">public</span> <span class="n">V8Value</span> <span class="nf">echo</span><span class="p">(</span><span class="n">V8Value</span> <span class="n">arg</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">arg</span><span class="p">.</span><span class="na">toClone</span><span class="p">();</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">V8Value</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">V8Value</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">JavetException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">arg</span><span class="p">.</span><span class="na">toClone</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="c1">// All 4 functions above can be handled in Javet as the following function</span>
-<span class="n">echo</span><span class="p">(</span><span class="s">"123"</span><span class="p">);</span>
+<span class="n">echo</span><span class="p">(</span><span class="s">&quot;123&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Primitive types can be in either primitive or object form in the method signature. Javet just automatically handles the type conversion and it is null safe.</p>
@@ -805,67 +808,67 @@
 </div>
 <p>For instance: The following 4 functions are all the same and valid.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Option 1</span>
-<span class="kd">public</span> <span class="kt">int</span> <span class="nf">echo</span><span class="p">(</span><span class="n">Integer</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">i</span> <span class="o">==</span> <span class="kc">null</span><span class="o">?</span> <span class="mi">0</span><span class="p">:</span> <span class="n">i</span><span class="p">.</span><span class="na">intValue</span><span class="p">();</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">Integer</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="o">?</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="na">intValue</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="c1">// Option 2</span>
-<span class="kd">public</span> <span class="n">Integer</span> <span class="nf">echo</span><span class="p">(</span><span class="kt">int</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">Integer</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="c1">// Option 3</span>
-<span class="kd">public</span> <span class="n">V8ValueInteger</span> <span class="nf">echo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueInteger</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">V8ValueInteger</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueInteger</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="c1">// Option 4</span>
-<span class="kd">public</span> <span class="n">Integer</span> <span class="nf">echo</span><span class="p">(</span><span class="n">V8ValueInteger</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">i</span> <span class="o">==</span> <span class="kc">null</span><span class="o">?</span> <span class="mi">0</span><span class="p">:</span> <span class="n">i</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">V8ValueInteger</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="o">?</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Can the default values be changed in terms of null safety? Yes, <a class="reference internal" href="../../tutorial/advanced/object_converter.html"><span class="doc">Object Converter</span></a> allows overriding the default values.</p>
-</div>
-<div class="section" id="call-vs-invoke">
-<h2>Call vs. Invoke<a class="headerlink" href="#call-vs-invoke" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="call-vs-invoke">
+<h2>Call vs. Invoke<a class="headerlink" href="#call-vs-invoke" title="Link to this heading">#</a></h2>
 <p>In one sentence, <code class="docutils literal notranslate"><span class="pre">call()</span></code> belongs to function and <code class="docutils literal notranslate"><span class="pre">invoke()</span></code> belongs to object.</p>
-<div class="section" id="call">
-<h3>Call<a class="headerlink" href="#call" title="Permalink to this headline">¶</a></h3>
+<section id="call">
+<h3>Call<a class="headerlink" href="#call" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">call()</span></code> is almost equivalent to <code class="docutils literal notranslate"><span class="pre">Function.prototype.call()</span></code>. It allows the caller to specify receiver. Besides, Javet combines <code class="docutils literal notranslate"><span class="pre">Function.prototype.call()</span></code> and <code class="docutils literal notranslate"><span class="pre">Function.prototype.apply()</span></code> because Java is friendly to varargs.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="p">.</span><span class="na">call</span><span class="p">(</span><span class="n">object</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// func.call(object, a, b, c); with V8 object returned</span>
-<span class="n">func</span><span class="p">.</span><span class="na">callVoid</span><span class="p">(</span><span class="n">object</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// func.call(object, a, b, c); without return</span>
-<span class="n">func</span><span class="p">.</span><span class="na">callObject</span><span class="p">(</span><span class="n">object</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// func.call(object, a, b, c); with Java object returned</span>
-<span class="n">func</span><span class="p">.</span><span class="na">callPrimitive</span><span class="p">(</span><span class="n">object</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// func.call(object, a, b, c); with Java primitive returned</span>
-<span class="n">func</span><span class="p">.</span><span class="na">callAsConstructor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// new func(a, b, c);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="p">.</span><span class="na">call</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// func.call(object, a, b, c); with V8 object returned</span>
+<span class="n">func</span><span class="p">.</span><span class="na">callVoid</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// func.call(object, a, b, c); without return</span>
+<span class="n">func</span><span class="p">.</span><span class="na">callObject</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// func.call(object, a, b, c); with Java object returned</span>
+<span class="n">func</span><span class="p">.</span><span class="na">callPrimitive</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// func.call(object, a, b, c); with Java primitive returned</span>
+<span class="n">func</span><span class="p">.</span><span class="na">callAsConstructor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// new func(a, b, c);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="invoke">
-<h3>Invoke<a class="headerlink" href="#invoke" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="invoke">
+<h3>Invoke<a class="headerlink" href="#invoke" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">invoke()</span></code> takes function name and arguments, but not receiver because the object itself is the receiver. So the API is almost identical to <code class="docutils literal notranslate"><span class="pre">call()</span></code> except for the first argument.</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">object</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// object.func(a, b, c); with V8 object returned</span>
-<span class="n">object</span><span class="p">.</span><span class="na">invokeVoid</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// object.func(a, b, c); without return</span>
-<span class="n">object</span><span class="p">.</span><span class="na">invokeObject</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// object.func(a, b, c); with Java object returned</span>
-<span class="n">object</span><span class="p">.</span><span class="na">invokePrimitive</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// object.func(a, b, c); with Java primitive returned</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">object</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// object.func(a, b, c); with V8 object returned</span>
+<span class="n">object</span><span class="p">.</span><span class="na">invokeVoid</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// object.func(a, b, c); without return</span>
+<span class="n">object</span><span class="p">.</span><span class="na">invokeObject</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// object.func(a, b, c); with Java object returned</span>
+<span class="n">object</span><span class="p">.</span><span class="na">invokePrimitive</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// object.func(a, b, c); with Java primitive returned</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">invoke()</span></code> is heavily used in Javet so that the JNI implementation can be dramatically simplified. In few extreme cases, V8 doesn't expose its C++ API and <code class="docutils literal notranslate"><span class="pre">invoke()</span></code> appears to be the only way. So, feel free to invoke all kinds of JS API despite of the deficit of Javet built-in API.</p>
-</div>
-<div class="section" id="how-about-bind">
-<h3>How about Bind?<a class="headerlink" href="#how-about-bind" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="how-about-bind">
+<h3>How about Bind?<a class="headerlink" href="#how-about-bind" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Function.prototype.bind()</span></code> is simply a <code class="docutils literal notranslate"><span class="pre">set()</span></code> in Javet.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// func.bind(object); func(a, b, c); with return</span>
-<span class="n">object</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">func</span><span class="p">);</span> <span class="n">object</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+<span class="n">object</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">func</span><span class="p">);</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
 
 <span class="c1">// func.bind(object); func(a, b, c); without return</span>
-<span class="n">object</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">func</span><span class="p">);</span> <span class="n">object</span><span class="p">.</span><span class="na">invokeVoid</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+<span class="n">object</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">func</span><span class="p">);</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="na">invokeVoid</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="context-and-scope-info">
-<h2>Context and Scope Info<a class="headerlink" href="#context-and-scope-info" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="context-and-scope-info">
+<h2>Context and Scope Info<a class="headerlink" href="#context-and-scope-info" title="Link to this heading">#</a></h2>
 <p>Below is the quote from the V8 source code for the context and scope info. Javet allows <code class="docutils literal notranslate"><span class="pre">getContext()</span></code>, <code class="docutils literal notranslate"><span class="pre">setContext()</span></code> and <code class="docutils literal notranslate"><span class="pre">copyScopeInfoFrom()</span></code> to borrow the context and scope info from another function. This simulates the live editing in the debug mode. Please note that <code class="docutils literal notranslate"><span class="pre">setScriptSource()</span></code> is required if the lexical context is different, otherwise a compilation error will be thrown.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -888,10 +891,10 @@ for the debugger.</p>
 <p>For native contexts, it contains the global object.
 For module contexts, it contains the module object.
 For await contexts, it contains the generator object.
-For var block contexts, it may contain an "extension
-object".
-For with contexts, it contains an "extension object".</p>
-<p>An "extension object" is used to dynamically extend a
+For var block contexts, it may contain an &quot;extension
+object&quot;.
+For with contexts, it contains an &quot;extension object&quot;.</p>
+<p>An &quot;extension object&quot; is used to dynamically extend a
 context with additional variables, namely in the
 implementation of the 'with' construct and the 'eval'
 construct.  For instance, Context::Lookup also searches
@@ -911,21 +914,21 @@ script will have the ScriptContext rather than a FunctionContext.
 Script contexts from all top-level scripts are gathered in
 ScriptContextTable.</p>
 </div>
-</div>
-<div class="section" id="tips">
-<h2>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="how-to-avoid-argument-type-mismatches">
-<h3>How to Avoid Argument Type Mismatches?<a class="headerlink" href="#how-to-avoid-argument-type-mismatches" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="tips">
+<h2>Tips<a class="headerlink" href="#tips" title="Link to this heading">#</a></h2>
+<section id="how-to-avoid-argument-type-mismatches">
+<h3>How to Avoid Argument Type Mismatches?<a class="headerlink" href="#how-to-avoid-argument-type-mismatches" title="Link to this heading">#</a></h3>
 <p>JavaScript function tolerates argument type or count mismatches because of its nature as a dynamic scripting language. But, Java is a strongly typed and static language. In the function callback from JavaScript to Java, argument type and count must conform with the corresponding Java method. Otherwise, the Java reflection API throws an exception. Javet performs throughout checks against those mismatches. The Javet checks sometimes cause unexpected behaviors in the applications. So, how to achieve the JavaScript flavored variable arguments?</p>
 <p>The solution is very simple: Declare varargs in Java.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Function</span>
-<span class="kd">public</span> <span class="n">V8Value</span> <span class="nf">sampleWithoutThis</span><span class="p">(</span><span class="n">V8Value</span><span class="p">...</span> <span class="n">v8Values</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
-    <span class="c1">// Do whatever you want to do.</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">V8Value</span><span class="w"> </span><span class="nf">sampleWithoutThis</span><span class="p">(</span><span class="n">V8Value</span><span class="p">...</span><span class="w"> </span><span class="n">v8Values</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">JavetException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Do whatever you want to do.</span>
 <span class="p">}</span>
 
-<span class="nd">@V8Function</span><span class="p">(</span><span class="n">thisObjectRequired</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
-<span class="kd">public</span> <span class="n">V8Value</span> <span class="nf">sampleWithThis</span><span class="p">(</span><span class="n">V8ValueObject</span> <span class="n">thisObject</span><span class="p">,</span> <span class="n">V8Value</span><span class="p">...</span> <span class="n">v8Values</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">JavetException</span> <span class="p">{</span>
-    <span class="c1">// Do whatever you want to do.</span>
+<span class="nd">@V8Function</span><span class="p">(</span><span class="n">thisObjectRequired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">V8Value</span><span class="w"> </span><span class="nf">sampleWithThis</span><span class="p">(</span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">thisObject</span><span class="p">,</span><span class="w"> </span><span class="n">V8Value</span><span class="p">...</span><span class="w"> </span><span class="n">v8Values</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">JavetException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Do whatever you want to do.</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -937,18 +940,18 @@ ScriptContextTable.</p>
 <li><p>Applications may test the argument type, perform custom type conversion, etc.</p></li>
 </ul>
 </div>
-</div>
-<div class="section" id="how-to-handle-argument-count-mismatches">
-<h3>How to Handle Argument Count Mismatches?<a class="headerlink" href="#how-to-handle-argument-count-mismatches" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="how-to-handle-argument-count-mismatches">
+<h3>How to Handle Argument Count Mismatches?<a class="headerlink" href="#how-to-handle-argument-count-mismatches" title="Link to this heading">#</a></h3>
 <p>Javet follows 2 simple rules for the argument count mismatches so that the Java callback function behaves the same as the JavaScript function does.</p>
 <ul class="simple">
 <li><p>Redundant parameters will be dropped.</p></li>
 <li><p>Absent parameters will be filled by the default values.</p></li>
 </ul>
 <p>Please review the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueFunction.java">test cases</a> for more detail.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
         </article>
       </div>
@@ -962,10 +965,10 @@ ScriptContextTable.</p>
                 </div>
                 <div class="title">V8 Promise</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="v8_collection.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -976,9 +979,18 @@ ScriptContextTable.</p>
               </div>
             </a>
         </div>
-
-        <div class="related-information">
-              Copyright &#169; 2021-2022. caoccao.com Sam Cao
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021-2022. caoccao.com Sam Cao
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
         </div>
         
       </footer>
@@ -989,7 +1001,7 @@ ScriptContextTable.</p>
       <div class="toc-sticky toc-scroll">
         <div class="toc-title-container">
           <span class="toc-title">
-            Contents
+            On this page
           </span>
         </div>
         <div class="toc-tree-container">
@@ -1053,11 +1065,10 @@ ScriptContextTable.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
-    <script src="../../_static/tabs.js"></script>
+</div><script src="../../_static/documentation_options.js?v=8b78a895"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
     </body>
 </html>
