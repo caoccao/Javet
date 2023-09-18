@@ -78,13 +78,8 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
         } catch (JavetCompilationException e) {
             assertEquals(JavetError.CompilationFailure, e.getError());
             JavetScriptingError javetScriptingError = e.getScriptingError();
-            if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals("SyntaxError: Unexpected identifier 'a'", e.getMessage());
-                assertEquals("SyntaxError: Unexpected identifier 'a'", javetScriptingError.getMessage());
-            } else {
-                assertEquals("SyntaxError: Unexpected identifier", e.getMessage());
-                assertEquals("SyntaxError: Unexpected identifier", javetScriptingError.getMessage());
-            }
+            assertEquals("SyntaxError: Unexpected identifier 'a'", e.getMessage());
+            assertEquals("SyntaxError: Unexpected identifier 'a'", javetScriptingError.getMessage());
             assertEquals("undefined", javetScriptingError.getResourceName());
             assertEquals("a a a a;", javetScriptingError.getSourceLine());
             assertEquals(2, javetScriptingError.getLineNumber());
@@ -92,25 +87,14 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             assertEquals(3, javetScriptingError.getEndColumn());
             assertEquals(15, javetScriptingError.getStartPosition());
             assertEquals(16, javetScriptingError.getEndPosition());
-            if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals(
-                        "SyntaxError: Unexpected identifier 'a'\n" +
-                                "Resource: undefined\n" +
-                                "Source Code: a a a a;\n" +
-                                "Line Number: 2\n" +
-                                "Column: 2, 3\n" +
-                                "Position: 15, 16",
-                        javetScriptingError.toString());
-            } else {
-                assertEquals(
-                        "SyntaxError: Unexpected identifier\n" +
-                                "Resource: undefined\n" +
-                                "Source Code: a a a a;\n" +
-                                "Line Number: 2\n" +
-                                "Column: 2, 3\n" +
-                                "Position: 15, 16",
-                        javetScriptingError.toString());
-            }
+            assertEquals(
+                    "SyntaxError: Unexpected identifier 'a'\n" +
+                            "Resource: undefined\n" +
+                            "Source Code: a a a a;\n" +
+                            "Line Number: 2\n" +
+                            "Column: 2, 3\n" +
+                            "Position: 15, 16",
+                    javetScriptingError.toString());
         } catch (JavetException e) {
             fail("JavetCompilationException should be thrown.");
         }

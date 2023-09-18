@@ -19,9 +19,11 @@
 
 #ifdef ENABLE_NODE
 
+#pragma warning(disable: 4244)
 #pragma warning(disable: 4251)
 #pragma warning(disable: 4267)
 #pragma warning(disable: 4275)
+#pragma warning(disable: 4819)
 #define NODE_WANT_INTERNALS 1
 #include <node.h>
 #include <uv.h>
@@ -49,9 +51,11 @@
 #undef DCHECK_NULL
 #undef UNREACHABLE
 // Hack Ends
+#pragma warning(default: 4244)
 #pragma warning(default: 4251)
 #pragma warning(default: 4267)
 #pragma warning(default: 4275)
+#pragma warning(default: 4819)
 
 #ifdef _WIN32
 #pragma comment(lib, "Crypt32.lib")

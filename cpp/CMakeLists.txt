@@ -116,7 +116,7 @@ if(DEFINED NODE_DIR)
     list(APPEND importLibraries
         ada base64 brotli cares histogram llhttp nghttp2 nghttp3 ngtcp2 openssl simdutf torque_base uvwasi
         v8_base_without_compiler v8_compiler v8_init v8_initializers
-        v8_libbase v8_libplatform v8_snapshot v8_zlib zlib zlib_adler32_simd zlib_inflate_chunk_simd)
+        v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib zlib_adler32_simd zlib_inflate_chunk_simd)
     if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
         list(APPEND importLibraries base64_neon64)
     else()

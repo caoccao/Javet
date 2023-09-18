@@ -63,11 +63,7 @@ public class TestV8Script extends BaseTestJavetRuntime {
         try (V8Script v8Script = v8Runtime.getExecutor("a b c").compileV8Script()) {
             fail("Failed to report error.");
         } catch (JavetCompilationException e) {
-            if (v8Runtime.getJSRuntimeType().isV8()) {
-                assertEquals("SyntaxError: Unexpected identifier 'b'", e.getScriptingError().getMessage());
-            } else {
-                assertEquals("SyntaxError: Unexpected identifier", e.getScriptingError().getMessage());
-            }
+            assertEquals("SyntaxError: Unexpected identifier 'b'", e.getScriptingError().getMessage());
         }
     }
 }

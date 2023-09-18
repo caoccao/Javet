@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Javet'
-copyright = '2021-2022. caoccao.com Sam Cao'
+copyright = '2021-2023. caoccao.com Sam Cao'
 author = 'Sam Cao'
 
 # The full version, including alpha/beta/rc tags
-release = '2.2.3'
+release = '3.0.0'
 
 
 # -- General configuration ---------------------------------------------------
