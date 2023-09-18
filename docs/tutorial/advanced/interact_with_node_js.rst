@@ -36,7 +36,7 @@ Step 1: JavaScript Server
 
     // This is the express handler.
     app.get('/', function (req, res) {
-    res.send('Hello');
+        res.send('Hello');
         console.log('GET /');
     })
 
