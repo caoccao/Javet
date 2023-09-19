@@ -25,10 +25,12 @@ Build Environment
 Linux Environment
 -----------------
 
-* Ubuntu 20.04
+* Ubuntu 20.04+
 * CMake 3.25.1+
 * JDK 8
-* Gradle 7.2+
+* Gradle 8.1+
+* GCC 10+
+* Python 3.9+
 
 MacOS Environment
 -----------------
@@ -38,7 +40,8 @@ MacOS Environment
 * Xcode 11.4.1+
 * Cmake 3.16+
 * JDK 8
-* Gradle 7.2+
+* Gradle 8.1+
+* Python 3.9+
 
 Windows Environment
 -------------------
@@ -48,15 +51,17 @@ Windows Environment
 * CMake 3.24+ (comes with Visual Studio 2022)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
-* Gradle 7.2+
+* Gradle 8.1+
+* Python 3.9+
 
 Android Environment
 -------------------
 
-* Ubuntu 20.04 or Ubuntu 20.04 in the WSL2 on the Latest Windows 10
-* CMake 3.10+
+* Ubuntu 20.04+ or Ubuntu 20.04+ in the WSL2 on the Latest Windows 10
+* CMake 3.25.1+
 * JDK 8
-* Gradle 7.2+
+* Gradle 8.1+
+* Python 3.9+
 * Latest Android Studio (Optional)
 * Android NDK r25b
 * Android SDK 30

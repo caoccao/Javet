@@ -12,7 +12,7 @@ Build Environment
 Linux Environment
 -----------------
 
-* Ubuntu 20.04
+* Ubuntu 20.04+
 * Git
 * Docker
 
@@ -20,7 +20,7 @@ Windows Environment
 -------------------
 
 * Latest Windows 10
-* WSL2 + Ubuntu 20.04
+* WSL2 + Ubuntu 20.04+
 * Git
 * Docker
 
