@@ -32,8 +32,15 @@ If you like my work, please **Star** this project. And, you may follow me `@sjtu
 Major Features
 ==============
 
-* Linux (x86_64) + Mac OS (x86_64, arm64) + ️Windows (x86_64)
-* Android (arm, arm64, x86 and x86_64)
+=========== ======= ======= ======= =======
+CPU Arch    Android Linux   MacOS   Windows
+=========== ======= ======= ======= =======
+x86         ✔        ❌      ❌       ❌
+x86_64      ✔        ✔       ✔        ✔
+arm         ✔        ❌      ❌       ❌
+arm64       ✔        ✔       ✔        ❌
+=========== ======= ======= ======= =======
+
 * Node.js ``v20.6.1`` + V8 ``v11.7.439.16``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
@@ -111,5 +118,6 @@ Documents
 =========
 
 * `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
+* `Performance Comparison of GraalJS, Javet and Nashorn <https://github.com/caoccao/GraalJS-vs-Javet-vs-Nashorn>`_
 * `Javet Javadoc <https://www.caoccao.com/Javet/reference/javadoc/index.html>`_
 * `Javet Document Portal <https://www.caoccao.com/Javet/>`_
