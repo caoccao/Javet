@@ -69,6 +69,13 @@ Maven
         <version>3.0.0</version>
     </dependency>
 
+    <!-- Linux (arm64) -->
+    <dependency>
+        <groupId>com.caoccao.javet</groupId>
+        <artifactId>javet-linux-arm64</artifactId>
+        <version>3.0.0</version>
+    </dependency>
+
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
@@ -82,6 +89,7 @@ Gradle Kotlin DSL
 .. code-block:: kotlin
 
     implementation("com.caoccao.javet:javet:3.0.0") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-linux-arm64:3.0.0") // Linux (arm64)
     implementation("com.caoccao.javet:javet-macos:3.0.0") // Mac OS (x86_64 and arm64)
     implementation("com.caoccao.javet:javet-android:3.0.0") // Android (arm, arm64, x86 and x86_64)
 
@@ -91,6 +99,7 @@ Gradle Groovy DSL
 .. code-block:: groovy
 
     implementation 'com.caoccao.javet:javet:3.0.0' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-linux-arm64:3.0.0' // Linux (arm64)
     implementation 'com.caoccao.javet:javet-macos:3.0.0' // Mac OS (x86_64 and arm64)
     implementation 'com.caoccao.javet:javet-android:3.0.0' // Android (arm, arm64, x86 and x86_64)
 
