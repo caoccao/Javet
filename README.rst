@@ -118,6 +118,11 @@ Hello Javet
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
     }
 
+Sponsors
+========
+
+`HiveMQ <https://www.hivemq.com/>`_
+
 License
 =======
 
