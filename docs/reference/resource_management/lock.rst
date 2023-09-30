@@ -43,3 +43,8 @@ Thread-safety
 The implicit mode is thread-safe because its locking granularity is at API call level. Multiple threads are free to share the same V8 runtime in the concurrent scenarios. But, please be careful that JavaScript variables may be changed by other threads. It's better not to touch the same JavaScript variable among multiple threads, otherwise, Javet may crash. Yes, crash, because Javet doesn't perform this kind of check.
 
 The explicit mode is **NOT** thread-safe because it's designed for maximizing the performance in the single-threaded scenarios. Sharing V8 locker protected V8 runtime among multiple threads will result in Javet crash immediately.
+
+Coroutines or Virtual Threads
+=============================
+
+Kotlin Coroutines and Java 21 Virtual Threads are incompatible with the V8 threading model. The V8 locking mechanism cannot handle the chaos from coroutines or virtual threads, because V8 sees the calls coming from the same OS thread and doesn't actually keep the calls in sequence. Calling Javet API in coroutines or virtual threads will result in the JVM crash, if an additional synchronization is absent.
