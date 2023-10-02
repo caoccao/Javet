@@ -30,7 +30,7 @@ jobs:
     - name: Setup XCode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest-stable
+        xcode-version: latest
 
     - name: Setup Path
       run: |
