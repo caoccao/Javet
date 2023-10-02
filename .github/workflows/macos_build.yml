@@ -30,7 +30,7 @@ jobs:
     - name: Setup XCode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest
+        xcode-version: latest-stable
 
     - name: Setup Path
       run: |
@@ -47,10 +47,11 @@ jobs:
         cd ..
         fetch v8
         cd v8
-        git checkout ${{ env.JAVET_V8_VERSION }}
+        git checkout 11.7.439.16
         cd ..
         gclient sync -D
         cd v8
+        git checkout ${{ env.JAVET_V8_VERSION }}
         python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
         gn gen out.gn/x64.release
         ninja -C out.gn/x64.release v8_monolith
