@@ -75,3 +75,18 @@ Environment Variables
 * ``${DEPOT_TOOLS_HOME}`` is the home directory of Google depot tools.
 * ``${ANDROID_NDK_HOME}`` is the home directory of Android NDK.
 * ``${ANDROID_SDK_HOME}`` is the home directory of Android SDK.
+
+V8 Feature Flags
+================
+
+======================= ======= ==================================================================================================================================
+Feature                 Flag    Description
+======================= ======= ==================================================================================================================================
+Custom libcxx           Off     The official release doesn't support custom libcxx.
+Debug                   Off     The official release is a **release** build.
+External Startup Data   Off     The official release doesn't support external startup data.
+i18n                    Off     The official release doesn't support i18n. Please contact the maintainer for private builds supporting this feature.
+Pointer Compression     Off     The official release doesn't support pointer compression.
+Sandbox                 Off     The official release doesn't support sandbox. Please contact the maintainer for private builds supporting this feature.
+Snapshot                Off     The official release doesn't support snapshot. Please contact the maintainer for private builds supporting this feature.
+======================= ======= ==================================================================================================================================
