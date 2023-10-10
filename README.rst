@@ -41,7 +41,7 @@ arm         ✔        ❌      ❌       ❌
 arm64       ✔        ✔       ✔        ❌
 =========== ======= ======= ======= =======
 
-* Node.js ``v20.6.1`` + V8 ``v11.8.172.15``
+* Node.js ``v20.8.0`` + V8 ``v11.8.172.15``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
