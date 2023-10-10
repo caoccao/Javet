@@ -2933,7 +2933,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 if (referenceType == V8ValueReferenceType.Module.getId()) {
                     removeV8Module((IV8Module) iV8ValueReference);
                 }
-                v8Native.removeReferenceHandle(referenceHandle, referenceType);
+                v8Native.removeReferenceHandle(handle, referenceHandle, referenceType);
                 referenceMap.remove(referenceHandle);
             }
         }

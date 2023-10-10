@@ -496,7 +496,7 @@ class V8Native implements IV8Native {
     public native void removeJNIGlobalRef(long handle);
 
     @Override
-    public native void removeReferenceHandle(long referenceHandle, int referenceType);
+    public native void removeReferenceHandle(long v8RuntimeHandle, long referenceHandle, int referenceType);
 
     @Override
     public native boolean reportPendingMessages(long v8RuntimeHandle);
