@@ -44,7 +44,7 @@ class ChangeJavetVersion(object):
       '.github/workflows/android_build.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
-      '.github/workflows/linux_build.yml', '\n',
+      '.github/workflows/linux_x86_64_build.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
       '.github/workflows/linux_build_artifact.yml', '\n',
@@ -53,7 +53,7 @@ class ChangeJavetVersion(object):
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
-      '.github/workflows/macos_build.yml', '\n',
+      '.github/workflows/macos_x86_64_build.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
       'docker/android/base.Dockerfile', '\n',

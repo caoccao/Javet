@@ -3,7 +3,7 @@ Javet
 
 |Maven Central| |Discord| |Donate|
 
-|Linux Build| |MacOS Build| |Android Build|
+|Linux x86_64 Build| |MacOS x86_64 Build| |Android Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
     :target: https://search.maven.org/search?q=g:com.caoccao.javet
@@ -14,11 +14,11 @@ Javet
 .. |Donate| image:: https://img.shields.io/badge/Donate-green?style=for-the-badge
     :target: https://opencollective.com/javet
 
-.. |Linux Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml/badge.svg
-    :target: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml
+.. |Linux x86_64 Build| image:: https://github.com/caoccao/Javet/actions/workflows/linux_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/linux_x86_64_build.yml
 
-.. |MacOS Build| image:: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml/badge.svg
-    :target: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml
+.. |MacOS x86_64 Build| image:: https://github.com/caoccao/Javet/actions/workflows/macos_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/macos_x86_64_build.yml
 
 .. |Android Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/android_build.yml
