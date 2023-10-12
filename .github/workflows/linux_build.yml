@@ -68,7 +68,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-linux.sh -DV8_DIR=${{ env.ROOT }}/google/v8
+        sh ./build-linux-x86_64.sh -DV8_DIR=${{ env.ROOT }}/google/v8
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
@@ -119,7 +119,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-linux.sh -DNODE_DIR=${{ env.ROOT }}/node
+        sh ./build-linux-x86_64.sh -DNODE_DIR=${{ env.ROOT }}/node
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3

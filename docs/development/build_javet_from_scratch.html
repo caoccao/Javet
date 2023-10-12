@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Test Javet" href="test.html" /><link rel="prev" title="Build Javet with Pre-built Binaries" href="build_javet_with_pre_built_binaries.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Test Javet" href="test.html" /><link rel="prev" title="Build Javet with Docker" href="build_javet_with_docker.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
         <title>Build Javet from Scratch - Javet 3.0.0 documentation</title>
@@ -255,7 +255,6 @@
 <li class="toctree-l2"><a class="reference internal" href="tools.html">Development Tools</a></li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="build.html">Build Javet</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Build Javet</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="build_javet_with_docker.html">Build Javet with Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="build_javet_with_pre_built_binaries.html">Build Javet with Pre-built Binaries</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Build Javet from Scratch</a></li>
 </ul>
 </li>
@@ -311,7 +310,23 @@
 <li><p>Checkout a proper version.</p></li>
 </ul>
 <p>Also, please make sure <code class="docutils literal notranslate"><span class="pre">args.gn</span></code> file looks like the following.</p>
-<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="na">is_debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1">; arm64</span>
+
+<span class="na">is_debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="na">target_cpu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;arm64&quot;</span>
+<span class="na">v8_monolithic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+<span class="na">v8_use_external_startup_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="na">is_component_build</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="na">v8_enable_i18n_support</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="na">v8_enable_pointer_compression</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="na">v8_static_library</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+<span class="na">symbol_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span>
+<span class="na">use_custom_libcxx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="na">v8_enable_sandbox</span><span class="o">=</span><span class="s">false</span>
+
+<span class="c1">; x86_64</span>
+
+<span class="na">is_debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
 <span class="na">target_cpu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;x64&quot;</span>
 <span class="na">v8_monolithic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
 <span class="na">v8_use_external_startup_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
@@ -331,8 +346,18 @@
 </ul>
 </div>
 </section>
-<section id="build-v8-for-linux">
-<h3>Build V8 for Linux<a class="headerlink" href="#build-v8-for-linux" title="Link to this heading">#</a></h3>
+<section id="build-v8-for-linux-arm64">
+<h3>Build V8 for Linux arm64<a class="headerlink" href="#build-v8-for-linux-arm64" title="Link to this heading">#</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
+<span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
+ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/arm64.release<span class="w"> </span>v8_monolith
+python3<span class="w"> </span><span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/scripts/python/patch_v8_build.py<span class="w"> </span>-p<span class="w"> </span>./
+ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/arm64.release<span class="w"> </span>v8_monolith
+</pre></div>
+</div>
+</section>
+<section id="build-v8-for-linux-x86-64">
+<h3>Build V8 for Linux x86_64<a class="headerlink" href="#build-v8-for-linux-x86-64" title="Link to this heading">#</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
 <span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
 ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/x64.release<span class="w"> </span>v8_monolith
@@ -341,8 +366,16 @@ ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/x64.release<span c
 </pre></div>
 </div>
 </section>
-<section id="build-v8-for-mac-os">
-<h3>Build V8 for Mac OS<a class="headerlink" href="#build-v8-for-mac-os" title="Link to this heading">#</a></h3>
+<section id="build-v8-for-mac-os-arm64">
+<h3>Build V8 for Mac OS arm64<a class="headerlink" href="#build-v8-for-mac-os-arm64" title="Link to this heading">#</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
+<span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
+ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/arm64.release<span class="w"> </span>v8_monolith
+</pre></div>
+</div>
+</section>
+<section id="build-v8-for-mac-os-x86-64">
+<h3>Build V8 for Mac OS x86_64<a class="headerlink" href="#build-v8-for-mac-os-x86-64" title="Link to this heading">#</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
 <span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
 ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/x64.release<span class="w"> </span>v8_monolith
@@ -445,15 +478,148 @@ make<span class="w"> </span>-j4
 vcbuild.bat<span class="w"> </span>static<span class="w"> </span>without-intl<span class="w"> </span>vs2022
 </pre></div>
 </div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Node.js v18 is not compatible with Visual Studio 2022 for now.</p>
-</div>
 </section>
 </section>
 <section id="build-javet">
 <h2>Build Javet<a class="headerlink" href="#build-javet" title="Link to this heading">#</a></h2>
-<p>Once Node.js and V8 are ready, please proceed with <a class="reference internal" href="build_javet_with_pre_built_binaries.html"><span class="doc">Build Javet with Pre-built Binaries</span></a>.</p>
+<p>Once Node.js and V8 are ready, please navigate to <code class="docutils literal notranslate"><span class="pre">${JAVET_HOME}/cpp</span></code>, make sure CMake is accessible and execute corresponding build script.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>OS</p></th>
+<th class="head"><p>Node.js Command</p></th>
+<th class="head"><p>V8 Command</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Linux arm64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">build-linux-arm64.sh</span> <span class="pre">-DNODE_DIR=${NODE_HOME}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">build-linux-arm64.sh</span> <span class="pre">-DV8_DIR=${V8_HOME}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Linux x86_64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">build-linux-x86_64.sh</span> <span class="pre">-DNODE_DIR=${NODE_HOME}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">build-linux-x86_64.sh</span> <span class="pre">-DV8_DIR=${V8_HOME}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Mac OS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">build-macos.sh</span> <span class="pre">-DNODE_DIR=${NODE_HOME}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">build-macos.sh</span> <span class="pre">-DV8_DIR=${V8_HOME}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Windows</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">build-windows.cmd</span> <span class="pre">-DNODE_DIR=%NODE_HOME%</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">build-windows.cmd</span> <span class="pre">-DV8_DIR=%V8_HOME%</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>After a while, the following libraries will be placed in folder <code class="docutils literal notranslate"><span class="pre">${JAVET_HOME}/src/main/resources</span></code>.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>OS</p></th>
+<th class="head"><p>Node.js Library</p></th>
+<th class="head"><p>V8 Library</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Linux arm64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-node-linux-arm64.v.*.*.*.so</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-v8-linux-arm64.v.*.*.*.so</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Linux x86_64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-node-linux-x86_64.v.*.*.*.so</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-v8-linux-x86_64.v.*.*.*.so</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Mac OS arm64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-node-macos-arm64.v.*.*.*.dylib</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-v8-macos-arm64.v.*.*.*.dylib</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Mac OS x86_64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-node-macos-x86_64.v.*.*.*.dylib</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-v8-macos-x86_64.v.*.*.*.dylib</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Windows</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-node-windows-x86_64.v.*.*.*.dll</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libjavet-v8-windows-x86_64.v.*.*.*.dll</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="build-javet-jni-library-for-android">
+<h2>Build Javet JNI Library for Android<a class="headerlink" href="#build-javet-jni-library-for-android" title="Link to this heading">#</a></h2>
+<p>Once V8 are ready, please navigate to <code class="docutils literal notranslate"><span class="pre">./cpp</span></code>, make sure CMake is accessible and execute corresponding build script.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Arch</p></th>
+<th class="head"><p>Command</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>arm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">./build-android.sh</span> <span class="pre">-DV8_DIR=${V8_HOME}</span> <span class="pre">-DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}</span> <span class="pre">-DCMAKE_ANDROID_ARCH=arm</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>arm64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">./build-android.sh</span> <span class="pre">-DV8_DIR=${V8_HOME}</span> <span class="pre">-DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}</span> <span class="pre">-DCMAKE_ANDROID_ARCH=arm64</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>x86</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">./build-android.sh</span> <span class="pre">-DV8_DIR=${V8_HOME}</span> <span class="pre">-DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}</span> <span class="pre">-DCMAKE_ANDROID_ARCH=x86</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>x86_64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">./build-android.sh</span> <span class="pre">-DV8_DIR=${V8_HOME}</span> <span class="pre">-DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}</span> <span class="pre">-DCMAKE_ANDROID_ARCH=x86_64</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>After a while, the following libraries will be placed in folder <code class="docutils literal notranslate"><span class="pre">${JAVET_HOME}/android/javet-android/src/main/jniLibs</span></code>.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Arch</p></th>
+<th class="head"><p>Library</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>arm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">armeabi-v7a/libjavet-v8-android.v.*.*.*.so</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>arm64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">arm64-v8a/libjavet-v8-android.v.*.*.*.so</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>x86</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">x86/libjavet-v8-android.v.*.*.*.so</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>x86_64</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">x86_64/libjavet-v8-android.v.*.*.*.so</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>To enable i18n support for V8 mode, please append <code class="docutils literal notranslate"><span class="pre">-DENABLE_I18N</span></code> to the command.</p></li>
+</ul>
+</div>
+</section>
+<section id="id1">
+<h2>Build Javet<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="build-javet-for-linux-mac-os-and-windows">
+<h3>Build Javet for Linux, Mac OS and Windows<a class="headerlink" href="#build-javet-for-linux-mac-os-and-windows" title="Link to this heading">#</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>
+gradle<span class="w"> </span>build<span class="w"> </span><span class="nb">test</span>
+</pre></div>
+</div>
+<p>After a while, <code class="docutils literal notranslate"><span class="pre">javet-*.*.*.jar</span></code> will be placed in folder <code class="docutils literal notranslate"><span class="pre">${JAVET_HOME}/build/libs</span></code>.</p>
+</section>
+<section id="build-javet-for-android">
+<h3>Build Javet for Android<a class="headerlink" href="#build-javet-for-android" title="Link to this heading">#</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/android
+gradle<span class="w"> </span>build
+</pre></div>
+</div>
+<p>After a while, <code class="docutils literal notranslate"><span class="pre">javet-android-*.*.*-release.aar</span></code> will be placed in folder <code class="docutils literal notranslate"><span class="pre">${JAVET_HOME}/android/javet-android/build/outputs/aar</span></code>.</p>
+</section>
 </section>
 </section>
 
@@ -471,14 +637,14 @@ vcbuild.bat<span class="w"> </span>static<span class="w"> </span>without-intl<sp
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="build_javet_with_pre_built_binaries.html">
+          <a class="prev-page" href="build_javet_with_docker.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Build Javet with Pre-built Binaries</div>
+                <div class="title">Build Javet with Docker</div>
                 
               </div>
             </a>
@@ -514,8 +680,10 @@ vcbuild.bat<span class="w"> </span>static<span class="w"> </span>without-intl<sp
 <li><a class="reference internal" href="#">Build Javet from Scratch</a><ul>
 <li><a class="reference internal" href="#build-v8">Build V8</a><ul>
 <li><a class="reference internal" href="#prepare-v8">Prepare V8</a></li>
-<li><a class="reference internal" href="#build-v8-for-linux">Build V8 for Linux</a></li>
-<li><a class="reference internal" href="#build-v8-for-mac-os">Build V8 for Mac OS</a></li>
+<li><a class="reference internal" href="#build-v8-for-linux-arm64">Build V8 for Linux arm64</a></li>
+<li><a class="reference internal" href="#build-v8-for-linux-x86-64">Build V8 for Linux x86_64</a></li>
+<li><a class="reference internal" href="#build-v8-for-mac-os-arm64">Build V8 for Mac OS arm64</a></li>
+<li><a class="reference internal" href="#build-v8-for-mac-os-x86-64">Build V8 for Mac OS x86_64</a></li>
 <li><a class="reference internal" href="#build-v8-for-windows">Build V8 for Windows</a></li>
 <li><a class="reference internal" href="#build-v8-for-android">Build V8 for Android</a></li>
 <li><a class="reference internal" href="#why-patching-v8">Why Patching V8?</a></li>
@@ -530,6 +698,12 @@ vcbuild.bat<span class="w"> </span>static<span class="w"> </span>without-intl<sp
 </ul>
 </li>
 <li><a class="reference internal" href="#build-javet">Build Javet</a></li>
+<li><a class="reference internal" href="#build-javet-jni-library-for-android">Build Javet JNI Library for Android</a></li>
+<li><a class="reference internal" href="#id1">Build Javet</a><ul>
+<li><a class="reference internal" href="#build-javet-for-linux-mac-os-and-windows">Build Javet for Linux, Mac OS and Windows</a></li>
+<li><a class="reference internal" href="#build-javet-for-android">Build Javet for Android</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
