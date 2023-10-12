@@ -2,11 +2,11 @@
 <html class="no-js" lang="en, zh-CN" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Release Notes 2.2.x" href="release_notes_2_2.html" /><link rel="prev" title="TODO List" href="../reference/todo_list.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Release Notes 3.0.x" href="release_notes_3_0.html" /><link rel="prev" title="TODO List" href="../reference/todo_list.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Release Notes - Javet 2.2.3 documentation</title>
+        <title>Release Notes - Javet 3.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 2.2.3 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 2.2.3 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -222,7 +222,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="release_notes_2_2.html">Release Notes 2.2.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes_3_0.html">Release Notes 3.0.x</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of FAQ</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -240,7 +240,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/environment/index.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Environment</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../faq/environment/can_javet_support_legacy_linux.html">Can Javet Support Legacy Linux?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../faq/environment/can_javet_support_mac.html">Can Javet Support Mac?</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../faq/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -302,17 +301,53 @@
         <article role="main">
           <section id="release-notes">
 <h1>Release Notes<a class="headerlink" href="#release-notes" title="Link to this heading">#</a></h1>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Node.js</p></th>
+<th class="head"><p>V8</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>v3</p></td>
+<td><p>Mainstream</p></td>
+<td><p>v20</p></td>
+<td><p>v11.8+</p></td>
+</tr>
+<tr class="row-odd"><td><p>v2</p></td>
+<td><p>Maintenance</p></td>
+<td><p>v18</p></td>
+<td><p>v10.6-v11.7</p></td>
+</tr>
+<tr class="row-even"><td><p>v1</p></td>
+<td><p>Maintenance</p></td>
+<td><p>v16</p></td>
+<td><p>v9.4-v10.5</p></td>
+</tr>
+<tr class="row-odd"><td><p>v0</p></td>
+<td><p>Maintenance</p></td>
+<td><p>v14</p></td>
+<td><p>v8.9-v9.4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>v2.x.x with Node.js v18 is the mainstream where the new features will be going.</p>
-<p>v1.x.x with Node.js v16, v0.x.x with Node.js v14 are in maintenance mode. Only critical bug fixes will be patched to them. Please contact the maintainer if you want to back port new features.</p>
+<ul class="simple">
+<li><p>Mainstream: New features will be going to the mainstream release.</p></li>
+<li><p>Maintenance: Only critical bug fixes will be patched to the maintenance release. Please contact the maintainer if you want to back port new features.</p></li>
+</ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="release_notes_2_2.html">Release Notes 2.2.x</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_3_0.html">Release Notes 3.0.x</a></li>
 </ul>
 </div>
 <ul class="simple">
+<li><p><a class="reference internal" href="release_notes_2_2.html"><span class="doc">Release Notes 2.2.x</span></a></p></li>
 <li><p><a class="reference internal" href="release_notes_2_1.html"><span class="doc">Release Notes 2.1.x</span></a></p></li>
 <li><p><a class="reference internal" href="release_notes_2_0.html"><span class="doc">Release Notes 2.0.x</span></a></p></li>
 <li><p><a class="reference internal" href="release_notes_1_1.html"><span class="doc">Release Notes 1.1.x</span></a></p></li>
@@ -328,12 +363,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="release_notes_2_2.html">
+          <a class="next-page" href="release_notes_3_0.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Release Notes 2.2.x</div>
+                <div class="title">Release Notes 3.0.x</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -352,7 +387,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2022. caoccao.com Sam Cao
+                Copyright &#169; 2021-2023. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -371,7 +406,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8b78a895"></script>
+</div><script src="../_static/documentation_options.js?v=5e0dd536"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
