@@ -17,11 +17,11 @@
 
 #include "javet_jni.h"
 
- /*
-  * Development Guide:
-  * 1. Omitting namespace is not recommended in this project.
-  * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
-  */
+/*
+ * Development Guide:
+ * 1. Omitting namespace is not recommended in this project.
+ * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
+ */
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerationFromStrings
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean allow) {
@@ -333,7 +333,9 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRe
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHandle
-(JNIEnv* jniEnv, jobject caller, jlong referenceHandle, jint referenceType) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong referenceHandle, jint referenceType) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8Locker = v8Runtime->GetSharedV8Locker();
     auto v8PersistentDataPointer = TO_V8_PERSISTENT_DATA_POINTER(referenceHandle);
     v8PersistentDataPointer->Reset();
     delete v8PersistentDataPointer;

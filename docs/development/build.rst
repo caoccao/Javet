@@ -25,10 +25,12 @@ Build Environment
 Linux Environment
 -----------------
 
-* Ubuntu 20.04
+* Ubuntu 20.04+
 * CMake 3.25.1+
 * JDK 8
-* Gradle 7.2+
+* Gradle 8.1+
+* GCC 10+
+* Python 3.9+
 
 MacOS Environment
 -----------------
@@ -38,7 +40,8 @@ MacOS Environment
 * Xcode 11.4.1+
 * Cmake 3.16+
 * JDK 8
-* Gradle 7.2+
+* Gradle 8.1+
+* Python 3.9+
 
 Windows Environment
 -------------------
@@ -48,15 +51,17 @@ Windows Environment
 * CMake 3.24+ (comes with Visual Studio 2022)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
-* Gradle 7.2+
+* Gradle 8.1+
+* Python 3.9+
 
 Android Environment
 -------------------
 
-* Ubuntu 20.04 or Ubuntu 20.04 in the WSL2 on the Latest Windows 10
-* CMake 3.10+
+* Ubuntu 20.04+ or Ubuntu 20.04+ in the WSL2 on the Latest Windows 10
+* CMake 3.25.1+
 * JDK 8
-* Gradle 7.2+
+* Gradle 8.1+
+* Python 3.9+
 * Latest Android Studio (Optional)
 * Android NDK r25b
 * Android SDK 30
@@ -70,3 +75,18 @@ Environment Variables
 * ``${DEPOT_TOOLS_HOME}`` is the home directory of Google depot tools.
 * ``${ANDROID_NDK_HOME}`` is the home directory of Android NDK.
 * ``${ANDROID_SDK_HOME}`` is the home directory of Android SDK.
+
+V8 Feature Flags
+================
+
+======================= ======= ==================================================================================================================================
+Feature                 Flag    Description
+======================= ======= ==================================================================================================================================
+Custom libcxx           Off     The official release doesn't support custom libcxx.
+Debug                   Off     The official release is a **release** build.
+External Startup Data   Off     The official release doesn't support external startup data.
+i18n                    Off     The official release doesn't support i18n. Please contact the maintainer for private builds supporting this feature.
+Pointer Compression     Off     The official release doesn't support pointer compression.
+Sandbox                 Off     The official release doesn't support sandbox. Please contact the maintainer for private builds supporting this feature.
+Snapshot                Off     The official release doesn't support snapshot. Please contact the maintainer for private builds supporting this feature.
+======================= ======= ==================================================================================================================================

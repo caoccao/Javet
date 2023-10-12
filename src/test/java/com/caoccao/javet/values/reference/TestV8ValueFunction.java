@@ -1590,10 +1590,6 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @Test
     public void testGetScopeInfosWith1Closure() throws JavetException {
         List<Boolean> options = Arrays.asList(true, false);
-        Set<String> globalVariables = new HashSet<>(Arrays.asList((
-                "global,queueMicrotask,clearImmediate,setImmediate," +
-                        "structuredClone,clearInterval,clearTimeout,setInterval," +
-                        "setTimeout,atob,btoa,performance,fetch,require").split(",")));
         String codeString = "(() => { let a = 1; return () => { const b = 0; return a; } })()";
         try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
             assertEquals(1, v8ValueFunction.callInteger(null));
@@ -1623,8 +1619,12 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
                     List<String> keys = scopeInfo2.getScopeObject().getOwnPropertyNameStrings();
                     if (v8Runtime.getJSRuntimeType().isNode()) {
-                        assertEquals(14, keys.size());
-                        keys.forEach(key -> assertTrue(globalVariables.contains(key)));
+                        Set<String> globalVariables = new HashSet<>(Arrays.asList((
+                                "global,queueMicrotask,clearImmediate,setImmediate," +
+                                        "structuredClone,clearInterval,clearTimeout,setInterval," +
+                                        "setTimeout,atob,btoa,crypto,performance,fetch,require").split(",")));
+                        assertEquals(globalVariables.size(), keys.size());
+                        keys.forEach(key -> assertTrue(globalVariables.contains(key), key + " is not found"));
                     } else {
                         assertEquals(0, keys.size());
                     }

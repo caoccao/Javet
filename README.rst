@@ -32,9 +32,16 @@ If you like my work, please **Star** this project. And, you may follow me `@sjtu
 Major Features
 ==============
 
-* Linux (x86_64) + Mac OS (x86_64, arm64) + ️Windows (x86_64)
-* Android (arm, arm64, x86 and x86_64)
-* Node.js ``v18.17.1`` + V8 ``v11.7.439.16``
+=========== ======= ======= ======= =======
+CPU Arch    Android Linux   MacOS   Windows
+=========== ======= ======= ======= =======
+x86         ✔        ❌      ❌       ❌
+x86_64      ✔        ✔       ✔        ✔
+arm         ✔        ❌      ❌       ❌
+arm64       ✔        ✔       ✔        ❌
+=========== ======= ======= ======= =======
+
+* Node.js ``v20.8.0`` + V8 ``v11.8.172.15``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
@@ -59,14 +66,21 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>2.2.3</version>
+        <version>3.0.0</version>
+    </dependency>
+
+    <!-- Linux (arm64) -->
+    <dependency>
+        <groupId>com.caoccao.javet</groupId>
+        <artifactId>javet-linux-arm64</artifactId>
+        <version>3.0.0</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>2.2.3</version>
+        <version>3.0.0</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -74,18 +88,20 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:2.2.3") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-macos:2.2.3") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:2.2.3") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:3.0.0") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-linux-arm64:3.0.0") // Linux (arm64)
+    implementation("com.caoccao.javet:javet-macos:3.0.0") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android:3.0.0") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:2.2.3' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-macos:2.2.3' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:2.2.3' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:3.0.0' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-linux-arm64:3.0.0' // Linux (arm64)
+    implementation 'com.caoccao.javet:javet-macos:3.0.0' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:3.0.0' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------
@@ -102,6 +118,11 @@ Hello Javet
         System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
     }
 
+Sponsors
+========
+
+`HiveMQ <https://www.hivemq.com/>`_
+
 License
 =======
 
@@ -111,5 +132,6 @@ Documents
 =========
 
 * `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
+* `Performance Comparison of GraalJS, Javet and Nashorn <https://github.com/caoccao/GraalJS-vs-Javet-vs-Nashorn>`_
 * `Javet Javadoc <https://www.caoccao.com/Javet/reference/javadoc/index.html>`_
 * `Javet Document Portal <https://www.caoccao.com/Javet/>`_

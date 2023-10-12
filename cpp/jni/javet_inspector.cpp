@@ -100,18 +100,11 @@ namespace Javet {
             auto v8Context = v8Runtime->GetV8LocalContext();
             javetInspectorChannel.reset(new JavetInspectorChannel(v8Runtime, mV8Inspector));
             v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
-#ifdef ENABLE_NODE
-            v8InspectorSession.reset(v8Inspector->connect(
-                CONTEXT_GROUP_ID,
-                javetInspectorChannel.get(),
-                v8_inspector::StringView()).release());
-#else
             v8InspectorSession.reset(v8Inspector->connect(
                 CONTEXT_GROUP_ID,
                 javetInspectorChannel.get(),
                 v8_inspector::StringView(),
                 v8_inspector::V8Inspector::kFullyTrusted).release());
-#endif
             v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
             auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
             v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));

@@ -16,6 +16,7 @@
 '''
 
 import argparse
+import glob
 import importlib
 import logging
 import pathlib
@@ -54,30 +55,6 @@ class PatchNodeBuild(object):
       'CFLAGS_CC_Release :=',
       'LDFLAGS_Release :=',
     ]
-    self._make_files = [
-      'out/libnode.target.mk',
-      'out/tools/v8_gypfiles/torque_base.target.mk',
-      'out/tools/v8_gypfiles/v8_base_without_compiler.target.mk',
-      'out/deps/cares/cares.target.mk',
-      'out/deps/uv/libuv.target.mk',
-      'out/deps/openssl/openssl.target.mk',
-      'out/deps/nghttp2/nghttp2.target.mk',
-      'out/deps/ngtcp2/nghttp3.target.mk',
-      'out/deps/ngtcp2/ngtcp2.target.mk',
-      'out/tools/icu/icutools.host.mk',
-      'out/tools/v8_gypfiles/v8_compiler.target.mk',
-      'out/tools/v8_gypfiles/v8_libbase.target.mk',
-      'out/deps/llhttp/llhttp.target.mk',
-      'out/deps/zlib/zlib.target.mk',
-      'out/deps/brotli/brotli.target.mk',
-      'out/tools/v8_gypfiles/v8_zlib.target.mk',
-      'out/tools/v8_gypfiles/v8_libsampler.target.mk',
-      'out/tools/v8_gypfiles/v8_libplatform.target.mk',
-      'out/tools/v8_gypfiles/v8_initializers.target.mk',
-      'out/deps/histogram/histogram.target.mk',
-      'out/deps/uvwasi/uvwasi.target.mk',
-      'out/tools/v8_gypfiles/v8_snapshot.target.mk',
-    ]
     self._make_property = '    -fPIC \\'
     self._make_property_inline = ' -fPIC '
 
@@ -114,8 +91,10 @@ class PatchNodeBuild(object):
       logging.error('Failed to locate %s.', str(file_path))
 
   def _patch_make_files(self):
-    for make_file in self._make_files:
-      file_path = self._node_repo_path.joinpath(make_file).resolve().absolute()
+    for file_path in glob.glob(
+      (self._node_repo_path.joinpath('out').resolve().absolute() / '**/*.mk').as_posix(),
+      recursive=True):
+      file_path = pathlib.Path(file_path)
       if file_path.exists():
         original_buffer = file_path.read_bytes()
         lines = []

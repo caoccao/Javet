@@ -37,7 +37,7 @@ public enum JSRuntimeType {
      */
     Node(
             "node",
-            "10.2.154.26-node.26", // node -p process.versions.v8
+            "11.3.244.8-node.16", // node -p process.versions.v8
             NodeRuntimeOptions::new,
             o -> o instanceof NodeRuntimeOptions),
     /**
@@ -47,7 +47,7 @@ public enum JSRuntimeType {
      */
     V8(
             "v8",
-            "11.7.439.16",
+            "11.8.172.15",
             V8RuntimeOptions::new,
             o -> o instanceof V8RuntimeOptions);
 

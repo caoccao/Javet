@@ -107,13 +107,13 @@ namespace Javet {
         jmethodID jmethodIDV8HostIsLibraryReloadable;
 
         void Dispose(JNIEnv* jniEnv) noexcept {
+#ifdef ENABLE_NODE
+            LOG_INFO("Calling cppgc::ShutdownProcess().");
+            cppgc::ShutdownProcess();
+#endif
             if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
                 v8::V8::Dispose();
-#ifdef ENABLE_NODE
-                v8::V8::ShutdownPlatform();
-#else
                 v8::V8::DisposePlatform();
-#endif
                 GlobalV8Platform.reset();
             }
         }
@@ -129,6 +129,7 @@ namespace Javet {
 
             LOG_INFO("V8::Initialize() begins.");
 #ifdef ENABLE_I18N
+            LOG_INFO("Calling v8::V8::InitializeICU().");
             v8::V8::InitializeICU();
 #endif
             if (Javet::V8Native::GlobalV8Platform) {
@@ -140,7 +141,12 @@ namespace Javet {
                 std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
                 std::vector<std::string> execArgs;
                 std::vector<std::string> errors;
-                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors);
+                auto flags = static_cast<node::ProcessInitializationFlags::Flags>(
+                    node::ProcessInitializationFlags::kNoFlags
+                    | node::ProcessInitializationFlags::kNoInitializeV8
+                    | node::ProcessInitializationFlags::kNoInitializeNodeV8Platform
+                    | node::ProcessInitializationFlags::kNoInitializeCppgc);
+                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors, flags);
                 if (exitCode != 0) {
                     LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
                 }
@@ -151,6 +157,11 @@ namespace Javet {
                 v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
                 v8::V8::Initialize();
             }
+#ifdef ENABLE_NODE
+            auto pageAllocator = Javet::V8Native::GlobalV8Platform->GetPageAllocator();
+            LOG_INFO("Calling cppgc::InitializeProcess().");
+            cppgc::InitializeProcess(pageAllocator);
+#endif
             LOG_INFO("V8::Initialize() ends.");
         }
     }

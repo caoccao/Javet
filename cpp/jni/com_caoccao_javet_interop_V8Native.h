@@ -1090,10 +1090,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRe
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    removeReferenceHandle
- * Signature: (JI)V
+ * Signature: (JJI)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHandle
-  (JNIEnv *, jobject, jlong, jint);
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
