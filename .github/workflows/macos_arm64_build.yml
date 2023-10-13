@@ -24,7 +24,9 @@ env:
 jobs:
   build_javet_v8:
     name: Build Javet V8
-    runs-on: macos-latest-xlarge
+    runs-on:
+      os: macos-latest
+      arch: arm64
 
     steps:
 
@@ -88,7 +90,9 @@ jobs:
 
   build_javet_node:
     name: Build Javet Node
-    runs-on: macos-latest
+    runs-on:
+      os: macos-latest
+      arch: arm64
 
     steps:
 
