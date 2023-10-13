@@ -78,7 +78,7 @@ class ChangeNodeVersion(ChangeVersion):
       '.github/workflows/android_build.yml', '\n',
       re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      '.github/workflows/linux_build.yml', '\n',
+      '.github/workflows/linux_x86_64_build.yml', '\n',
       re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       '.github/workflows/linux_build_artifact.yml', '\n',
@@ -87,7 +87,10 @@ class ChangeNodeVersion(ChangeVersion):
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
-      '.github/workflows/macos_build.yml', '\n',
+      '.github/workflows/macos_arm64_build.yml', '\n',
+      re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      '.github/workflows/macos_x86_64_build.yml', '\n',
       re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'docker/linux-x86_64/base_all_in_one.Dockerfile', '\n',
@@ -116,7 +119,7 @@ class ChangeV8Version(ChangeVersion):
       '.github/workflows/android_build.yml', '\n',
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
-      '.github/workflows/linux_build.yml', '\n',
+      '.github/workflows/linux_x86_64_build.yml', '\n',
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       '.github/workflows/linux_build_artifact.yml', '\n',
@@ -125,7 +128,10 @@ class ChangeV8Version(ChangeVersion):
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
-      '.github/workflows/macos_build.yml', '\n',
+      '.github/workflows/macos_arm64_build.yml', '\n',
+      re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
+      '.github/workflows/macos_x86_64_build.yml', '\n',
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       'docker/android/base.Dockerfile', '\n',

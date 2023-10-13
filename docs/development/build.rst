@@ -14,7 +14,6 @@ Here are 3 ways of building Javet.
     :maxdepth: 1
 
     build_javet_with_docker
-    build_javet_with_pre_built_binaries
     build_javet_from_scratch
 
 All of them share the same build environment in the next section.

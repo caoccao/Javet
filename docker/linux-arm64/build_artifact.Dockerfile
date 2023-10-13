@@ -33,7 +33,7 @@ RUN mkdir Javet
 WORKDIR /Javet
 COPY . .
 WORKDIR /Javet/cpp
-RUN sh ./build-linux.sh -DNODE_DIR=/node
+RUN sh ./build-linux-arm64.sh -DNODE_DIR=/node
 
 ARG JAVET_REPO
 ARG JAVET_V8_VERSION
@@ -45,7 +45,7 @@ RUN mkdir Javet
 WORKDIR /Javet
 COPY . .
 WORKDIR /Javet/cpp
-RUN sh ./build-linux.sh -DV8_DIR=/google/v8
+RUN sh ./build-linux-arm64.sh -DV8_DIR=/google/v8
 
 ARG JAVET_REPO
 ARG JAVET_VERSION
