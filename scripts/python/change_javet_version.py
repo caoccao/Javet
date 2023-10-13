@@ -53,6 +53,9 @@ class ChangeJavetVersion(object):
       '.github/workflows/linux_build_node_v8_image.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
+      '.github/workflows/macos_arm64_build.yml', '\n',
+      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
+    self._update(
       '.github/workflows/macos_x86_64_build.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
