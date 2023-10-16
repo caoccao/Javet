@@ -137,7 +137,7 @@ The wrapper class is as follows:
 Test
 ====
 
-After the 2 JS functions are executed in V8, the actual test will simply be calling these 2 functions with 2 type of inputs. The test method is as follows.
+After the 2 JS functions are executed in V8, the actual test will simply be calling these 2 functions with 2 types of inputs. The test method is as follows.
 
 .. code-block:: java
 
@@ -216,4 +216,4 @@ The JS flavored approach is strongly recommended.
 
 The only drawback is that some time has to be spent on the development of the wrapper class.
 
-Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/tutorial/TestJsonNodeInV8.java>` for detail.
+Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/tutorial/TestJsonNodeInV8.java>` for details.

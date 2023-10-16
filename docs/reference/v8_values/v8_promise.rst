@@ -106,7 +106,7 @@ The pseudo code is as following.
 
     * Java application needs to have background thread(s) process async calls from V8.
     * Node.js mode has its own event loop. So, sometimes, Java application has to call ``await()`` after ``resolve()`` or ``reject()``.
-    * Please refer to project `Javenode <https://github.com/caoccao/Javenode>`_ for detail.
+    * Please refer to project `Javenode <https://github.com/caoccao/Javenode>`_ for details.
 
 Unhandled Rejection
 ===================

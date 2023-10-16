@@ -70,4 +70,4 @@ Manual termination gives applications complete control. In return, the coding ef
 How about Debug Mode?
 =====================
 
-Usually, when application is being debugged, ``JavetEngineGuard`` may easily interrupt the debug. No worry, ``JavetEngineGuard`` is by default disabled in debug mode. Please refer to ``disableInDebugMode()`` and ``enableInDebugMode()`` for detail.
+Usually, when application is being debugged, ``JavetEngineGuard`` may easily interrupt the debug. No worry, ``JavetEngineGuard`` is by default disabled in debug mode. Please refer to ``disableInDebugMode()`` and ``enableInDebugMode()`` for details.

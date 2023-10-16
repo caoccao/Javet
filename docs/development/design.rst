@@ -24,7 +24,7 @@ Set to Weak                 No                      Yes
 
 Reference typed objects keep memory footprint in V8 + JNI + JVM. All resource will be recycled when ``close()`` is called. That is quite an old school way of managing resource. Javet tries to hide that kind of tedious work from Java applications via try-with-resource.
 
-Please refer to :doc:`../reference/tips/best_practices` for detail.
+Please refer to :doc:`../reference/tips/best_practices` for details.
 
 Node.js Mode vs. V8 Mode
 ========================
@@ -113,7 +113,7 @@ Multiple Javet engines are managed by Javet Engine Pool which works almost the s
 * V8 isolate and V8 context are single-threaded. Thread context violation results in V8 core dump immediately.
 * Javet Engine performs better without locks. Actually, Javet engine only validates current thread ID to minimize the performance overhead.
 
-Please refer to :doc:`../reference/tips/best_practices` for detail.
+Please refer to :doc:`../reference/tips/best_practices` for details.
 
 Interception
 ============

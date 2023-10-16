@@ -90,4 +90,4 @@ Inject a StringBuilder
      *   Hello from StringBuilder
      */
 
-Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/tutorial/TestJavaAndJSInterop.java>` for detail.
+Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/tutorial/TestJavaAndJSInterop.java>` for details.

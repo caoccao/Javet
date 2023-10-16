@@ -66,4 +66,4 @@ Map
     System.out.println(mapX.equals(mapY));
     // Output: true
 
-Please refer to :extsource3:`source code <../../../src/test/java/com/caoccao/javet/tutorial/TestObjectConverter.java>` for detail.
+Please refer to :extsource3:`source code <../../../src/test/java/com/caoccao/javet/tutorial/TestObjectConverter.java>` for details.
