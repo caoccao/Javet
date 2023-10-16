@@ -28,13 +28,23 @@ group = "com.caoccao.javet"
 version = "3.0.0"
 
 dependencies {
-    testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.49.v20220914")
-    testImplementation("org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.49.v20220914")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.14.0-rc2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1")
-    testImplementation("net.bytebuddy:byte-buddy:1.12.17")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.51.v20230217")
+    testImplementation("org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.51.v20230217")
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.15.3")
+
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
+
+    // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
+    testImplementation("net.bytebuddy:byte-buddy:1.14.9")
+
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
 }
 
 afterEvaluate {
