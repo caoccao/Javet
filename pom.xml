@@ -3,7 +3,7 @@
 
     <groupId>com.caoccao.javet</groupId>
     <artifactId>javet</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <name>javet</name>
     <description>Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding V8 in Java.</description>
     <url>https://github.com/caoccao/Javet</url>
@@ -28,7 +28,7 @@
         <connection>scm:git:git://github.com/caoccao/Javet.git</connection>
         <developerConnection>scm:git:git@github.com:caoccao/caoccao.git</developerConnection>
         <url>https://github.com/caoccao/Javet</url>
-        <tag>3.0.0</tag>
+        <tag>3.0.1</tag>
     </scm>
 
     <properties>

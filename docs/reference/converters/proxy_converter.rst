@@ -292,7 +292,7 @@ This feature is similar to the dynamic anonymous object for interface, but it al
     // Gradle Groovy DSL
     implementation 'net.bytebuddy:byte-buddy:1.12.17'
 
-2. Copy :extsource3:`JavetDynamicObjectFactory.java <../../../src/test/java/com/caoccao/javet/interop/proxy/JavetDynamicObjectFactory.java>` to your project. As Javet doesn't reference ``ByteBuddy`` directly, ``JavetDynamicObjectFactory`` has to stay at the test project.
+2. Copy :extsource3:`JavetReflectionObjectFactory.java <../../../src/test/java/com/caoccao/javet/interop/proxy/JavetReflectionObjectFactory.java>` to your project. As Javet doesn't reference ``ByteBuddy`` directly, ``JavetReflectionObjectFactory`` has to stay at the test project.
 
 3. Define a simple class ``DynamicClass`` for adding two integers.
 
@@ -316,12 +316,12 @@ This feature is similar to the dynamic anonymous object for interface, but it al
         }
     };
 
-5. Inject the implementation from JavaScript. Please note that dynamic object support is disabled by default and ``JavetDynamicObjectFactory`` needs to be set to the converter config for ``JavetProxyConverter`` to enable this feature.
+5. Inject the implementation from JavaScript. Please note that dynamic object support is disabled by default and ``JavetReflectionObjectFactory`` needs to be set to the converter config for ``JavetProxyConverter`` to enable this feature.
 
 .. code-block:: java
 
     try {
-        javetProxyConverter.getConfig().setDynamicObjectFactory(JavetDynamicObjectFactory.getInstance());
+        javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeString = "a.test({\n" +
                 "  add: (a, b) => a + b,\n" +
@@ -329,7 +329,7 @@ This feature is similar to the dynamic anonymous object for interface, but it al
         v8Runtime.getExecutor(codeString).executeVoid();
         v8Runtime.getGlobalObject().delete("a");
     } finally {
-        javetProxyConverter.getConfig().setDynamicObjectFactory(null);
+        javetProxyConverter.getConfig().setReflectionObjectFactory(null);
         v8Runtime.lowMemoryNotification();
     }
 
