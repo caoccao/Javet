@@ -131,10 +131,16 @@ License
 
 `APACHE LICENSE, VERSION 2.0 <LICENSE>`_.
 
+Blog
+====
+
+* `Performance Comparison of GraalJS, Javet and Nashorn <https://medium.com/towardsdev/performance-comparison-of-graaljs-javet-and-nashorn-7bae6925826a>`_
+* `How to Elegantly Expose JsonNode in V8 <https://medium.com/stackademic/how-to-elegantly-expose-jsonnode-in-v8-638aff9da549>`_
+* `How to Compromise V8 on JVM <https://sjtucaocao.medium.com/how-to-compromise-v8-on-jvm-ceb385572461>`_
+
 Documents
 =========
 
 * `Javet Intro <https://docs.google.com/presentation/d/1lQ8xIHuywuE0ydqm2w6xq8OeQZO_WeTLYXW9bNflQb8/>`_
-* `Performance Comparison of GraalJS, Javet and Nashorn <https://github.com/caoccao/GraalJS-vs-Javet-vs-Nashorn>`_
 * `Javet Javadoc <https://www.caoccao.com/Javet/reference/javadoc/index.html>`_
 * `Javet Document Portal <https://www.caoccao.com/Javet/>`_
