@@ -6,7 +6,7 @@ Javet
 |Linux x86_64 Build| |MacOS arm64 Build| |MacOS x86_64 Build| |Android Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
-    :target: https://search.maven.org/search?q=g:com.caoccao.javet
+    :target: https://central.sonatype.com/search?q=g:com.caoccao.javet
 
 .. |Discord| image:: https://img.shields.io/discord/870518906115211305?label=join%20our%20Discord&style=for-the-badge
     :target: https://discord.gg/R4vvKU96gw
@@ -38,10 +38,10 @@ Major Features
 =========== ======= ======= ======= =======
 CPU Arch    Android Linux   MacOS   Windows
 =========== ======= ======= ======= =======
-x86         ✔        ❌      ❌       ❌
-x86_64      ✔        ✔       ✔        ✔
-arm         ✔        ❌      ❌       ❌
-arm64       ✔        ✔       ✔        ❌
+x86         ✔️        ❌      ❌       ❌
+x86_64      ✔️        ✔️       ✔️        ✔️
+arm         ✔️        ❌      ❌       ❌
+arm64       ✔️        ✔️       ✔️        ❌
 =========== ======= ======= ======= =======
 
 * Node.js ``v20.8.0`` + V8 ``v11.8.172.15``
