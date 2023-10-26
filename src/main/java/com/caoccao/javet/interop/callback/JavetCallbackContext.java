@@ -148,6 +148,33 @@ public final class JavetCallbackContext {
     }
 
     /**
+     * Instantiates a new Javet callback context.
+     *
+     * @param name             the name
+     * @param symbolType       the symbol type
+     * @param callbackReceiver the callback receiver
+     * @param callbackType     the callback type
+     * @param directCall       the direct call
+     * @since 3.0.1
+     */
+    public JavetCallbackContext(
+            String name,
+            V8ValueSymbolType symbolType,
+            Object callbackReceiver,
+            JavetCallbackType callbackType,
+            IJavetDirectCallable.DirectCall directCall) {
+        this(
+                name,
+                symbolType,
+                callbackReceiver,
+                Objects.requireNonNull(callbackType),
+                directCall,
+                callbackType.getThisObjectRequired());
+        assert callbackType.getDirectCallClass().isAssignableFrom(directCall.getClass()) : ERROR_CALLBACK_TYPE_MISMATCHES;
+        this.returnResult = callbackType.getReturnResult();
+    }
+
+    /**
      * Instantiates a new Javet callback context that takes a Java method for making further reflection calls.
      *
      * @param name               the name
@@ -189,23 +216,6 @@ public final class JavetCallbackContext {
         this.name = name;
         this.thisObjectRequired = thisObjectRequired;
         this.symbolType = Objects.requireNonNull(symbolType);
-    }
-
-    private JavetCallbackContext(
-            String name,
-            V8ValueSymbolType symbolType,
-            Object callbackReceiver,
-            JavetCallbackType callbackType,
-            IJavetDirectCallable.DirectCall directCall) {
-        this(
-                name,
-                symbolType,
-                callbackReceiver,
-                Objects.requireNonNull(callbackType),
-                directCall,
-                callbackType.getThisObjectRequired());
-        assert callbackType.getDirectCallClass().isAssignableFrom(directCall.getClass()) : ERROR_CALLBACK_TYPE_MISMATCHES;
-        this.returnResult = callbackType.getReturnResult();
     }
 
     /**
@@ -259,6 +269,12 @@ public final class JavetCallbackContext {
         return name;
     }
 
+    /**
+     * Gets symbol type.
+     *
+     * @return the symbol type
+     * @since 2.2.0
+     */
     public V8ValueSymbolType getSymbolType() {
         return symbolType;
     }
