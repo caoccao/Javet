@@ -6,11 +6,11 @@ JAVET_VERSION=3.0.1
 rm -rf build_anroid
 mkdir build_anroid
 cd build_anroid
-mkdir -p ../../build_anroid/libs
+mkdir -p ../../build/libs
 cmake ../ -DCMAKE_SYSTEM_NAME=Android -DJAVET_VERSION=${JAVET_VERSION} "$@" \
   && make -j4
 if [ $? -eq 0 ]; then
-  cp -f *.a ../../build_anroid/libs
+  cp -f *.a ../../build/libs
   echo Build Completed
 else
   echo Build Failed
