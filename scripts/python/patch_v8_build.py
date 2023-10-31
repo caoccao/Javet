@@ -102,11 +102,7 @@ class PatchV8Build(object):
     return 0
 
 def main():
-  if platform.system().startswith('Windows') or platform.system().startswith('Linux'):
-    return PatchV8Build().patch()
-  else:
-    logging.error('This script is for Linux and Windows only.')
-    return 1
+  return PatchV8Build().patch()
 
 if __name__ == '__main__':
   sys.exit(int(main() or 0))
