@@ -104,7 +104,7 @@ jobs:
         python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
         ./configure --enable-static --without-intl
         python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
-        make -j4
+        make -j$(nproc)
 
     - name: Setup JDK 8
       uses: actions/setup-java@v3
