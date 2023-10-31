@@ -84,11 +84,10 @@ constexpr auto CONVERT_OFFSET_FOR_SCOPE_INFO(T offset) {
 }
 
 template<typename T>
-constexpr auto IS_API_FUNCTION(T v8InternalShared) {
-    return !v8InternalShared.native() && v8InternalShared.IsApiFunction();
-}
-
-template<typename T>
 constexpr auto IS_USER_DEFINED_FUNCTION(T v8InternalShared) {
+#ifdef ENABLE_NODE
     return !v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript();
+#else
+    return !v8InternalShared->native() && !v8InternalShared->IsApiFunction() && v8InternalShared->IsUserJavaScript();
+#endif
 }

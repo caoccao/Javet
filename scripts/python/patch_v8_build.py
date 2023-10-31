@@ -51,6 +51,7 @@ class PatchV8Build(object):
       '-Wno-deprecated-declarations',
       '-Wno-invalid-offsetof',
       '-Wno-range-loop-construct',
+      '-Wno-ctad-maybe-unsupported',
     ]
     self._common_ninja_file_root = 'out.gn'
     self._common_ninja_file_extension = '.ninja'

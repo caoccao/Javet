@@ -152,7 +152,11 @@ namespace Javet {
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
+#ifdef ENABLE_NODE
             const V8InternalObject& v8InternalObject) noexcept;
+#else
+            const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept;
+#endif
 
         jobject ToExternalV8Value(
             JNIEnv* jniEnv,
@@ -319,17 +323,29 @@ namespace Javet {
 
         static inline V8InternalContext ToV8InternalContext(
             const V8LocalContext& v8LocalContext) noexcept {
+#ifdef ENABLE_NODE
             return V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
+#else
+            return *V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
+#endif
         }
 
         static inline V8InternalJSFunction ToV8InternalJSFunction(
             const V8LocalValue& v8LocalValue) noexcept {
+#ifdef ENABLE_NODE
             return V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+#else
+            return *V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+#endif
         }
 
         static inline V8InternalScript ToV8InternalScript(
             const V8LocalScript& v8LocalScript) noexcept {
+#ifdef ENABLE_NODE
             return V8InternalScript::cast(*v8::Utils::OpenHandle(*v8LocalScript));
+#else
+            return *V8InternalScript::cast(*v8::Utils::OpenHandle(*v8LocalScript));
+#endif
         }
     }
 }

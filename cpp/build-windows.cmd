@@ -5,11 +5,11 @@ SET JAVET_VERSION=3.0.1
 rd /s/q build_windows
 mkdir build_windows
 cd build_windows
-mkdir ..\..\build_windows\libs
+mkdir ..\..\build\libs
 cmake ..\ -G "Visual Studio 17 2022" -A x64 -DJAVET_VERSION=%JAVET_VERSION% %* ^
   && cmake --build . -- /p:CharacterSet=Unicode /p:Configuration=Release /p:Platform=x64
 IF %ERRORLEVEL% EQU 0 (
-copy /y Release\*.lib ..\..\build_windows\libs
+copy /y Release\*.lib ..\..\build\libs
 echo Build Completed
 ) ELSE (
 echo Build Failed
