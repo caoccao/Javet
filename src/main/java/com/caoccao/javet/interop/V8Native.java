@@ -318,6 +318,12 @@ class V8Native implements IV8Native {
     public native boolean moduleInstantiate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native boolean moduleIsSourceTextModule(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean moduleIsSyntheticModule(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object objectCreate(long v8RuntimeHandle);
 
     @Override

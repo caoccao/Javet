@@ -70,6 +70,8 @@ public class TestV8Module extends BaseTestJavetRuntime {
         IV8Executor iV8Executor = v8Runtime.getExecutor(
                 "Object.a = 1").setResourceName("./test.js");
         try (V8Module v8Module = iV8Executor.compileV8Module()) {
+            assertTrue(v8Module.isSourceTextModule());
+            assertFalse(v8Module.isSyntheticModule());
             assertEquals(V8Module.Uninstantiated, v8Module.getStatus());
             assertTrue(v8Runtime.containsV8Module(v8Module.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
@@ -104,6 +106,8 @@ public class TestV8Module extends BaseTestJavetRuntime {
         String moduleName3 = "./module3.js";
         IV8Executor iV8Executor = v8Runtime.getExecutor(codeString1).setResourceName(moduleName1);
         try (V8Module v8Module1 = iV8Executor.compileV8Module()) {
+            assertTrue(v8Module1.isSourceTextModule());
+            assertFalse(v8Module1.isSyntheticModule());
             assertEquals(V8Module.Uninstantiated, v8Module1.getStatus());
             assertTrue(v8Runtime.containsV8Module(v8Module1.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
@@ -118,6 +122,8 @@ public class TestV8Module extends BaseTestJavetRuntime {
             }
             iV8Executor = v8Runtime.getExecutor(codeString2).setResourceName(moduleName2);
             try (V8Module v8Module2 = iV8Executor.compileV8Module()) {
+                assertTrue(v8Module2.isSourceTextModule());
+                assertFalse(v8Module2.isSyntheticModule());
                 assertEquals(V8Module.Uninstantiated, v8Module2.getStatus());
                 assertNull(v8Module2.getException());
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
@@ -131,6 +137,8 @@ public class TestV8Module extends BaseTestJavetRuntime {
             }
             iV8Executor = v8Runtime.getExecutor(codeString3).setResourceName(moduleName3);
             try (V8Module v8Module3 = iV8Executor.compileV8Module()) {
+                assertTrue(v8Module3.isSourceTextModule());
+                assertFalse(v8Module3.isSyntheticModule());
                 assertEquals(V8Module.Uninstantiated, v8Module3.getStatus());
                 assertNull(v8Module3.getException());
                 assertTrue(v8Runtime.containsV8Module(v8Module3.getResourceName()));
@@ -149,6 +157,8 @@ public class TestV8Module extends BaseTestJavetRuntime {
         String codeString = "export function test() { return { a: 1 }; };";
         IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");
         try (V8Module v8Module = iV8Executor.compileV8Module()) {
+            assertTrue(v8Module.isSourceTextModule());
+            assertFalse(v8Module.isSyntheticModule());
             if (v8Runtime.getJSRuntimeType().isNode()) {
                 v8Runtime.getExecutor("const process = require('process');\n" +
                         "var globalReason = null;\n" +

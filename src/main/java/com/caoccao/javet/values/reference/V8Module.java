@@ -110,6 +110,16 @@ public class V8Module extends V8ValueReference implements IV8Module {
     }
 
     @Override
+    public boolean isSyntheticModule() throws JavetException {
+        return checkV8Runtime().getV8Internal().moduleIsSyntheticModule(this);
+    }
+
+    @Override
+    public boolean isSourceTextModule() throws JavetException {
+        return checkV8Runtime().getV8Internal().moduleIsSourceTextModule(this);
+    }
+
+    @Override
     public void setResourceName(String resourceName) {
         this.resourceName = Objects.requireNonNull(resourceName);
     }

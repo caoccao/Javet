@@ -646,6 +646,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param <T>        the type parameter
      * @param iV8Context the V8 context
+     * @param index      the index
      * @return the t
      * @throws JavetException the javet exception
      */
@@ -2045,6 +2046,28 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     boolean moduleInstantiate(IV8Module iV8Module) throws JavetException {
         return v8Native.moduleInstantiate(handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
+     * Is source text module.
+     *
+     * @param iV8Module the V8 module
+     * @return true : yes, false : no
+     * @since 3.0.1
+     */
+    public boolean moduleIsSourceTextModule(IV8Module iV8Module) {
+        return v8Native.moduleIsSourceTextModule(handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
+     * Is synthetic module.
+     *
+     * @param iV8Module the V8 module
+     * @return true : yes, false : no
+     * @since 3.0.1
+     */
+    public boolean moduleIsSyntheticModule(IV8Module iV8Module) {
+        return v8Native.moduleIsSyntheticModule(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
     /**

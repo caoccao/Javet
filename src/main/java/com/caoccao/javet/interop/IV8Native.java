@@ -214,6 +214,10 @@ public interface IV8Native {
 
     boolean moduleInstantiate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    boolean moduleIsSourceTextModule(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    boolean moduleIsSyntheticModule(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object objectCreate(long v8RuntimeHandle);
 
     boolean objectDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
