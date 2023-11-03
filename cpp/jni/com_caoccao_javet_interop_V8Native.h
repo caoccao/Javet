@@ -609,6 +609,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCompile
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleCreate
+ * Signature: (JLjava/lang/String;JI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCreate
+  (JNIEnv *, jobject, jlong, jstring, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    moduleEvaluate
  * Signature: (JJIZ)Ljava/lang/Object;
  */

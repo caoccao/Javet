@@ -564,7 +564,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(true);
-        if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().length() == 0) {
+        if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().isEmpty()) {
             throw new JavetException(JavetError.ModuleNameEmpty);
         }
         Object result = v8Native.moduleCompile(
@@ -695,6 +695,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     boolean contextSetLength(IV8Context iV8Context, int length) throws JavetException {
         return v8Native.contextSetLength(handle, iV8Context.getHandle(), iV8Context.getType().getId(), length);
+    }
+
+    @Override
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    public V8Module createV8Module(String name, IV8ValueObject iV8ValueObject) throws JavetException {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(iV8ValueObject);
+        V8Module v8Module = (V8Module) v8Native.moduleCreate(
+                handle, name, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
+        if (v8Module != null) {
+            v8Module.setResourceName(name);
+            addV8Module(v8Module);
+        }
+        return v8Module;
     }
 
     @Override
@@ -838,7 +853,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
-        assert description != null && description.length() > 0 : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
+        assert description != null && !description.isEmpty() : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
         if (global) {
             try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
                 return v8ValueBuiltInSymbol._for(description);
@@ -1448,7 +1463,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @CheckReturnValue
     IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
-        if (resourceName != null && resourceName.length() > 0) {
+        if (resourceName != null && !resourceName.isEmpty()) {
             synchronized (v8ModuleLock) {
                 if (v8ModuleMap.containsKey(resourceName)) {
                     return v8ModuleMap.get(resourceName);

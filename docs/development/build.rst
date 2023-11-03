@@ -24,11 +24,11 @@ Build Environment
 Linux Environment
 -----------------
 
-* Ubuntu 20.04+
+* Ubuntu 22.04+
 * CMake 3.25.1+
 * JDK 8
 * Gradle 8.1+
-* GCC 10+
+* GCC 11+
 * Python 3.9+
 
 MacOS Environment
@@ -56,7 +56,7 @@ Windows Environment
 Android Environment
 -------------------
 
-* Ubuntu 20.04+ or Ubuntu 20.04+ in the WSL2 on the Latest Windows 10
+* Ubuntu 22.04+ or Ubuntu 22.04+ in the WSL2 on the Latest Windows 10
 * CMake 3.25.1+
 * JDK 8
 * Gradle 8.1+

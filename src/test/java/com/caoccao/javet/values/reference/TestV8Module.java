@@ -299,6 +299,30 @@ public class TestV8Module extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testSyntheticModule() throws JavetException {
+        v8Runtime.setV8ModuleResolver((v8Runtime, resourceName, v8ModuleReferrer) -> {
+            try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                v8ValueObject.set("a", 1);
+                try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("(x) => x + 1")) {
+                    v8ValueObject.set("b", v8ValueFunction);
+                }
+                V8Module v8Module = v8Runtime.createV8Module("test.js", v8ValueObject);
+                assertFalse(v8Module.isSourceTextModule());
+                assertTrue(v8Module.isSyntheticModule());
+                v8Module.instantiate();
+                return v8Module;
+            }
+        });
+        v8Runtime.getExecutor("import { a, b } from 'test.js';\n" +
+                        "globalThis.a = a;\n" +
+                        "globalThis.b = b;\n")
+                .setModule(true).executeVoid();
+        assertEquals(1, v8Runtime.getGlobalObject().getInteger("a"));
+        assertEquals(2, v8Runtime.getGlobalObject().invokeInteger("b", 1));
+        assertEquals(1, v8Runtime.getV8ModuleCount());
+    }
+
+    @Test
     public void testUnexpectedIdentifier() throws JavetException {
         try (V8Module v8Module = v8Runtime.getExecutor(
                 "a b c").setResourceName("./test.js").compileV8Module()) {

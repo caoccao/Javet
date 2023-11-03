@@ -195,6 +195,8 @@ public interface IV8Native {
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean isWASM, boolean isModule);
 
+    Object moduleCreate(long v8RuntimeHandle, String name, long v8ValueHandle, int v8ValueType);
+
     Object moduleEvaluate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     Object moduleExecute(

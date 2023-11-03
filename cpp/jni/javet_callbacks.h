@@ -38,6 +38,11 @@ namespace Javet {
             v8::Isolate* v8Isolate,
             v8::GCType v8GCType,
             v8::GCCallbackFlags v8GCCallbackFlags) noexcept;
+        V8MaybeLocalModule JavetModuleResolveCallback(
+            V8LocalContext v8Context,
+            V8LocalString specifier,
+            V8LocalFixedArray importAssertions,
+            V8LocalModule referrer) noexcept;
         void JavetPropertyGetterCallback(
             V8LocalName propertyName,
             const v8::PropertyCallbackInfo<v8::Value>& info) noexcept;
@@ -49,12 +54,9 @@ namespace Javet {
         void OOMErrorCallback(const char* location, const v8::OOMDetails& oomDetails) noexcept;
 #endif
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept;
-
-        V8MaybeLocalModule JavetModuleResolveCallback(
+        V8MaybeLocalValue JavetSyntheticModuleEvaluationStepsCallback(
             V8LocalContext v8Context,
-            V8LocalString specifier,
-            V8LocalFixedArray importAssertions,
-            V8LocalModule referrer) noexcept;
+            V8LocalModule v8LocalModule);
 
         class JavetCallbackContextReference {
         public:

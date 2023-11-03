@@ -53,6 +53,7 @@ arm64       ✔️        ✔️       ✔️        ❌
 * Javet engine pool
 * Easy spring integration
 * Live debug with Chrome DevTools
+* AST Analysis with `JavetSanitizer <https://github.com/caoccao/JavetSanitizer>`_
 
 Quick Start
 ===========
@@ -129,7 +130,7 @@ Sponsors
 License
 =======
 
-`APACHE LICENSE, VERSION 2.0 <LICENSE>`_.
+`APACHE LICENSE, VERSION 2.0 <LICENSE>`_
 
 Blog
 ====
