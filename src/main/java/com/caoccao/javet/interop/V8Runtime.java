@@ -700,13 +700,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
-    public V8Module createV8Module(String name, IV8ValueObject iV8ValueObject) throws JavetException {
-        Objects.requireNonNull(name);
+    public V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException {
+        Objects.requireNonNull(moduleName);
         Objects.requireNonNull(iV8ValueObject);
         V8Module v8Module = (V8Module) v8Native.moduleCreate(
-                handle, name, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
+                handle, moduleName, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
         if (v8Module != null) {
-            v8Module.setResourceName(name);
+            v8Module.setResourceName(moduleName);
             addV8Module(v8Module);
         }
         return v8Module;

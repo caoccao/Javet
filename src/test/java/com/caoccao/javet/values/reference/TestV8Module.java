@@ -309,7 +309,6 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 V8Module v8Module = v8Runtime.createV8Module("test.js", v8ValueObject);
                 assertFalse(v8Module.isSourceTextModule());
                 assertTrue(v8Module.isSyntheticModule());
-                v8Module.instantiate();
                 return v8Module;
             }
         });

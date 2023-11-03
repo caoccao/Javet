@@ -36,14 +36,14 @@ public interface IV8Creatable {
     /**
      * Create a V8 synthetic module.
      *
-     * @param name           the name
-     * @param iV8ValueObject the V8 value object
+     * @param moduleName     the module name
+     * @param iV8ValueObject the V8 value object to be exported
      * @return the V8 module
      * @throws JavetException the javet exception
      * @since 3.0.1
      */
     @CheckReturnValue
-    V8Module createV8Module(String name, IV8ValueObject iV8ValueObject) throws JavetException;
+    V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException;
 
     /**
      * Create V8 value array.
