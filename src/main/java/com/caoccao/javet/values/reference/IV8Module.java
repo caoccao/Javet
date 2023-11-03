@@ -115,6 +115,18 @@ public interface IV8Module extends IV8Cacheable, IV8ValueReference, IV8Executabl
     V8ValueError getException() throws JavetException;
 
     /**
+     * Gets namespace.
+     * <p>
+     * The module's status must be at least kInstantiated. Otherwise, core dump will take place.
+     *
+     * @return the namespace
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
+    @CheckReturnValue
+    V8ValueObject getNamespace() throws JavetException;
+
+    /**
      * Gets resource name.
      *
      * @return the resource name
@@ -125,7 +137,7 @@ public interface IV8Module extends IV8Cacheable, IV8ValueReference, IV8Executabl
     /**
      * Gets script id.
      * <p>
-     * Note: This API is not supported by Node because the V8 version is too low.
+     * The module must be a SourceTextModule and must not have a kErrored status.
      *
      * @return the script id
      * @throws JavetException the javet exception
