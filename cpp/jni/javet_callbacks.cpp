@@ -15,7 +15,6 @@
  *   limitations under the License.
  */
 
-#include <format>
 #include "javet_callbacks.h"
 #include "javet_converter.h"
 #include "javet_exceptions.h"
@@ -303,7 +302,7 @@ namespace Javet {
                 else {
                     V8TryCatch v8TryCatch(v8Isolate);
                     auto v8GlobalObject = v8Runtime->v8GlobalObject.Get(v8Isolate);
-                    auto stringKey = std::format("module:{}", v8LocalModule->GetIdentityHash());
+                    std::string stringKey("module:{}" + std::to_string(v8LocalModule->GetIdentityHash()));
                     auto v8LocalStringKey = Javet::Converter::ToV8String(v8Context, stringKey.c_str());
                     auto v8LocalPrivateKey = v8::Private::ForApi(v8Isolate, v8LocalStringKey);
                     auto v8MaybeLocalValue = v8GlobalObject->GetPrivate(v8Context, v8LocalPrivateKey);
@@ -328,7 +327,9 @@ namespace Javet {
                                         auto v8LocalStringKey = v8LocalValueKey.As<v8::String>();
                                         auto v8MaybeLocalValueValue = v8LocalObject->Get(v8Context, v8LocalStringKey);
                                         if (!v8MaybeLocalValueValue.IsEmpty()) {
-                                            v8LocalModule->SetSyntheticModuleExport(v8Isolate, v8LocalStringKey, v8MaybeLocalValueValue.ToLocalChecked());
+                                            auto v8MaybeBool = v8LocalModule->SetSyntheticModuleExport(
+                                                v8Isolate, v8LocalStringKey, v8MaybeLocalValueValue.ToLocalChecked());
+                                            v8MaybeBool.FromMaybe(false);
                                         }
                                     }
                                 }

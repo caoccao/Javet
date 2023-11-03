@@ -15,7 +15,6 @@
  *   limitations under the License.
  */
 
-#include <format>
 #include "javet_jni.h"
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCompile
@@ -83,7 +82,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCreate
                 Javet::Converter::ToV8String(jniEnv, v8Context, mModuleName),
                 exportNames,
                 Javet::Callback::JavetSyntheticModuleEvaluationStepsCallback);
-            auto stringKey = std::format("module:{}", v8LocalModule->GetIdentityHash());
+            std::string stringKey("module:{}" + std::to_string(v8LocalModule->GetIdentityHash()));
             auto v8LocalStringKey = Javet::Converter::ToV8String(v8Context, stringKey.c_str());
             auto v8LocalPrivateKey = v8::Private::ForApi(v8Context->GetIsolate(), v8LocalStringKey);
             auto v8GlobalObject = v8Runtime->v8GlobalObject.Get(v8Context->GetIsolate());
