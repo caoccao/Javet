@@ -12,6 +12,7 @@ Release Notes 3.0.x
 * Turned on a few compiler options for performance
 * Added ``isSourceTextModule()``, ``isSyntheticModule()`` to ``V8Module``
 * Added ``createV8Module()`` to ``V8Runtime``
+* Added ``freeze()`` to ``V8ValueBuiltInObject``
 
 3.0.0 V8 v11.8
 --------------

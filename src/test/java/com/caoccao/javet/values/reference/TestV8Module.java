@@ -23,6 +23,7 @@ import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockModuleResolver;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -300,24 +301,64 @@ public class TestV8Module extends BaseTestJavetRuntime {
 
     @Test
     public void testSyntheticModule() throws JavetException {
-        v8Runtime.setV8ModuleResolver((v8Runtime, resourceName, v8ModuleReferrer) -> {
-            try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
-                v8ValueObject.set("a", 1);
-                try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("(x) => x + 1")) {
-                    v8ValueObject.set("b", v8ValueFunction);
+        if (v8Runtime.getJSRuntimeType().isNode()) {
+            v8Runtime.getExecutor(
+                    "const process = require('process');\n" +
+                            "process.on('unhandledRejection', (reason, promise) => {\n" +
+                            "  globalThis.reason = reason.toString();\n" +
+                            "});")
+                    .executeVoid();
+        } else {
+            v8Runtime.setPromiseRejectCallback((event, promise, value) -> {
+                try {
+                    v8Runtime.getGlobalObject().set("reason", value.toString());
+                } catch (JavetException e) {
+                    fail(e);
                 }
-                V8Module v8Module = v8Runtime.createV8Module("test.js", v8ValueObject);
-                assertFalse(v8Module.isSourceTextModule());
-                assertTrue(v8Module.isSyntheticModule());
-                return v8Module;
+            });
+        }
+        v8Runtime.setV8ModuleResolver((v8Runtime, resourceName, v8ModuleReferrer) -> {
+            if ("test.js".equals(resourceName)) {
+                try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
+                     V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+                    v8ValueObject.set("a", 1);
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("(x) => x + 1")) {
+                        v8ValueObject.set("b", v8ValueFunction);
+                    }
+                    v8ValueObject.set("c", v8ValueArray);
+                    try (V8ValueBuiltInObject v8ValueBuiltInObject = v8Runtime.getGlobalObject().getBuiltInObject()) {
+                        v8ValueBuiltInObject.freeze(v8ValueObject);
+                    }
+                    v8ValueArray.push(1);
+                    V8Module v8Module = v8Runtime.createV8Module("test.js", v8ValueObject);
+                    assertFalse(v8Module.isSourceTextModule());
+                    assertTrue(v8Module.isSyntheticModule());
+                    return v8Module;
+                }
             }
+            return null;
         });
-        v8Runtime.getExecutor("import { a, b } from 'test.js';\n" +
-                        "globalThis.a = a;\n" +
-                        "globalThis.b = b;\n")
+        v8Runtime.getExecutor("import * as x from 'test.js'; Object.assign(globalThis, x);")
                 .setModule(true).executeVoid();
         assertEquals(1, v8Runtime.getGlobalObject().getInteger("a"));
         assertEquals(2, v8Runtime.getGlobalObject().invokeInteger("b", 1));
+        assertEquals("[1]", v8Runtime.getExecutor("JSON.stringify(c);").executeString());
+        v8Runtime.getExecutor("c.push(2);").executeVoid();
+        v8Runtime.getExecutor("import * as x from 'test.js'; Object.assign(globalThis, x);")
+                .setModule(true).executeVoid();
+        assertEquals(
+                "[1,2]",
+                v8Runtime.getExecutor("JSON.stringify(c);").executeString(),
+                "The array should be updated by the previous import.");
+        try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+                        "import * as x from 'test.js'; x['z'] = 1;")
+                .setModule(true).execute()) {
+            assertFalse(v8ValuePromise.isFulfilled());
+        }
+        v8Runtime.await();
+        assertEquals(
+                "TypeError: Cannot add property z, object is not extensible",
+                v8Runtime.getGlobalObject().getString("reason"));
         assertEquals(1, v8Runtime.getV8ModuleCount());
     }
 
