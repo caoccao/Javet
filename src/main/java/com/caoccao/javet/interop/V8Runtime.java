@@ -701,7 +701,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     public V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException {
-        Objects.requireNonNull(moduleName);
+        if (moduleName == null || moduleName.isEmpty()) {
+            throw new JavetException(JavetError.ModuleNameEmpty);
+        }
         Objects.requireNonNull(iV8ValueObject);
         V8Module v8Module = (V8Module) v8Native.moduleCreate(
                 handle, moduleName, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
@@ -1463,17 +1465,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @CheckReturnValue
     IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
+        IV8Module iV8Module = null;
         if (resourceName != null && !resourceName.isEmpty()) {
             synchronized (v8ModuleLock) {
-                if (v8ModuleMap.containsKey(resourceName)) {
-                    return v8ModuleMap.get(resourceName);
-                }
+                iV8Module = v8ModuleMap.get(resourceName);
             }
-            if (v8ModuleResolver != null) {
-                return v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
+            if (iV8Module == null && v8ModuleResolver != null) {
+                iV8Module = v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
             }
         }
-        return null;
+        return iV8Module;
     }
 
     /**
