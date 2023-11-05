@@ -157,6 +157,24 @@ Apart from rebuilding the native modules on Windows, there is also a manual way 
 5. Change the DLL name from ``node.exe`` to ``libjavet-node-windows-x86_64.v.x.x.x.dll`` where ``x.x.x`` needs to be replaced with the actual Javet version.
 6. Save the change.
 
+Dynamically Import Built-in Modules
+-----------------------------------
+
+The Node.js module resolution callback doesn't allow the embedder to relay the calls as a default callback. If the embedder sets its own callback, the Node.js built-in modules will not be reachable any more.
+
+There is workaround: create a new module that calls `require` internally by registering `JavetBuiltInModuleResolver` as the module resolver.
+
+.. code-block:: java
+
+    v8Runtime.setV8ModuleResolver(new JavetBuiltInModuleResolver());
+    v8Runtime.getExecutor(
+                    "import * as fs from 'node:fs';\n" +
+                            "globalThis.a = fs.existsSync('/path-not-found');")
+            .setModule(true).executeVoid();
+    assertFalse(v8Runtime.getGlobalObject().getBoolean("a"));
+
+The application may extend the capability of `JavetBuiltInModuleResolver` to gain granular control over the built-in modules.
+
 V8 Mode
 =======
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interfaces;
+package com.caoccao.javet.interop.callback;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
