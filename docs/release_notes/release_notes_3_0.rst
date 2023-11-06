@@ -13,6 +13,7 @@ Release Notes 3.0.x
 * Added ``isSourceTextModule()``, ``isSyntheticModule()`` to ``V8Module``
 * Added ``createV8Module()`` to ``V8Runtime``
 * Added ``freeze()`` to ``V8ValueBuiltInObject``
+* Added ``JavetBuiltInModuleResolver``
 
 3.0.0 V8 v11.8
 --------------
