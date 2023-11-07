@@ -157,6 +157,24 @@ Apart from rebuilding the native modules on Windows, there is also a manual way 
 5. Change the DLL name from ``node.exe`` to ``libjavet-node-windows-x86_64.v.x.x.x.dll`` where ``x.x.x`` needs to be replaced with the actual Javet version.
 6. Save the change.
 
+Dynamically Import Built-in Modules
+-----------------------------------
+
+The Node.js module resolution callback doesn't allow the embedder to relay the calls as a default callback. If the embedder sets its own callback, the Node.js built-in modules will not be reachable any more.
+
+There is workaround: create a new module that calls `require` internally by registering `JavetBuiltInModuleResolver` as the module resolver.
+
+.. code-block:: java
+
+    v8Runtime.setV8ModuleResolver(new JavetBuiltInModuleResolver());
+    v8Runtime.getExecutor(
+                    "import * as fs from 'node:fs';\n" +
+                            "globalThis.a = fs.existsSync('/path-not-found');")
+            .setModule(true).executeVoid();
+    assertFalse(v8Runtime.getGlobalObject().getBoolean("a"));
+
+The application may extend the capability of `JavetBuiltInModuleResolver` to gain granular control over the built-in modules.
+
 V8 Mode
 =======
 
@@ -241,6 +259,38 @@ Here is an example. Assuming ``test.js`` depends on ``module.js``, the code look
     }
 
 It is V8 that performs the dependency analysis. Javet just relays the callback to application and actively caches the compiled modules so that the module resolver is only called one time per module.
+
+Synthetic Module
+================
+
+A synthetic module in V8 is a module that is created by the V8 JavaScript engine at runtime. Synthetic modules are typically used to implement new features in JavaScript, such as the module proposal for JSON imports.
+
+Synthetic modules have a number of advantages over traditional JavaScript modules. First, they can be created and evaluated at runtime, which allows for more flexibility and dynamism. Second, synthetic modules can be isolated from the rest of the code, which makes them more secure.
+
+Synthetic modules are implemented in V8 using a special type of module called a "Module Record". Module Records are responsible for managing the exports and imports of a module. When a synthetic module is evaluated, V8 creates a new Module Record for the module. This Module Record is then used to resolve imports and exports.
+
+The following code snippet shows how to create and import a synthetic module.
+
+.. code-block:: java
+
+    v8Runtime.setV8ModuleResolver((v8Runtime, resourceName, v8ModuleReferrer) -> {
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.set("a", 1);
+            try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction("(x) => x + 1")) {
+                v8ValueObject.set("b", v8ValueFunction);
+            }
+            V8Module v8Module = v8Runtime.createV8Module("test.js", v8ValueObject);
+            assertFalse(v8Module.isSourceTextModule());
+            assertTrue(v8Module.isSyntheticModule());
+            return v8Module;
+        }
+    });
+    v8Runtime.getExecutor("import { a, b } from 'test.js';\n" +
+                    "globalThis.a = a;\n" +
+                    "globalThis.b = b;\n")
+            .setModule(true).executeVoid();
+    assertEquals(1, v8Runtime.getGlobalObject().getInteger("a"));
+    assertEquals(2, v8Runtime.getGlobalObject().invokeInteger("b", 1));
 
 Internals
 =========

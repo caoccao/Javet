@@ -609,6 +609,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCompile
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleCreate
+ * Signature: (JLjava/lang/String;JI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCreate
+  (JNIEnv *, jobject, jlong, jstring, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    moduleEvaluate
  * Signature: (JJIZ)Ljava/lang/Object;
  */
@@ -669,6 +677,22 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetStatus
  * Signature: (JJI)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstantiate
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleIsSourceTextModule
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleIsSourceTextModule
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleIsSyntheticModule
+ * Signature: (JJI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleIsSyntheticModule
   (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*

@@ -314,6 +314,14 @@ public final class V8Internal {
         return v8Runtime.moduleInstantiate(iV8Module);
     }
 
+    public boolean moduleIsSourceTextModule(IV8Module iV8Module) {
+        return v8Runtime.moduleIsSourceTextModule(iV8Module);
+    }
+
+    public boolean moduleIsSyntheticModule(IV8Module iV8Module) {
+        return v8Runtime.moduleIsSyntheticModule(iV8Module);
+    }
+
     public boolean objectDelete(IV8ValueObject iV8ValueObject, V8Value key) throws JavetException {
         return v8Runtime.objectDelete(iV8ValueObject, key);
     }

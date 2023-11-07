@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Javet Performance" href="performance.html" /><link rel="prev" title="Memory Management" href="memory_management.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Modularization - Javet 3.0.0 documentation</title>
+        <title>Modularization - Javet 3.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.0.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.0.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -462,6 +462,20 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 </ol>
 </section>
 </section>
+<section id="dynamically-import-built-in-modules">
+<h3>Dynamically Import Built-in Modules<a class="headerlink" href="#dynamically-import-built-in-modules" title="Link to this heading">#</a></h3>
+<p>The Node.js module resolution callback doesn't allow the embedder to relay the calls as a default callback. If the embedder sets its own callback, the Node.js built-in modules will not be reachable any more.</p>
+<p>There is workaround: create a new module that calls <cite>require</cite> internally by registering <cite>JavetBuiltInModuleResolver</cite> as the module resolver.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">setV8ModuleResolver</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JavetBuiltInModuleResolver</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
+<span class="w">                </span><span class="s">&quot;import * as fs from &#39;node:fs&#39;;\n&quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                        </span><span class="s">&quot;globalThis.a = fs.existsSync(&#39;/path-not-found&#39;);&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">setModule</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getBoolean</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The application may extend the capability of <cite>JavetBuiltInModuleResolver</cite> to gain granular control over the built-in modules.</p>
+</section>
 </section>
 <section id="v8-mode">
 <h2>V8 Mode<a class="headerlink" href="#v8-mode" title="Link to this heading">#</a></h2>
@@ -538,6 +552,33 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 <p>It is V8 that performs the dependency analysis. Javet just relays the callback to application and actively caches the compiled modules so that the module resolver is only called one time per module.</p>
 </section>
 </section>
+<section id="synthetic-module">
+<h2>Synthetic Module<a class="headerlink" href="#synthetic-module" title="Link to this heading">#</a></h2>
+<p>A synthetic module in V8 is a module that is created by the V8 JavaScript engine at runtime. Synthetic modules are typically used to implement new features in JavaScript, such as the module proposal for JSON imports.</p>
+<p>Synthetic modules have a number of advantages over traditional JavaScript modules. First, they can be created and evaluated at runtime, which allows for more flexibility and dynamism. Second, synthetic modules can be isolated from the rest of the code, which makes them more secure.</p>
+<p>Synthetic modules are implemented in V8 using a special type of module called a &quot;Module Record&quot;. Module Records are responsible for managing the exports and imports of a module. When a synthetic module is evaluated, V8 creates a new Module Record for the module. This Module Record is then used to resolve imports and exports.</p>
+<p>The following code snippet shows how to create and import a synthetic module.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">setV8ModuleResolver</span><span class="p">((</span><span class="n">v8Runtime</span><span class="p">,</span><span class="w"> </span><span class="n">resourceName</span><span class="p">,</span><span class="w"> </span><span class="n">v8ModuleReferrer</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueFunction</span><span class="w"> </span><span class="n">v8ValueFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueFunction</span><span class="p">(</span><span class="s">&quot;(x) =&gt; x + 1&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">v8ValueObject</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8ValueFunction</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">V8Module</span><span class="w"> </span><span class="n">v8Module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8Module</span><span class="p">(</span><span class="s">&quot;test.js&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="p">);</span>
+<span class="w">        </span><span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Module</span><span class="p">.</span><span class="na">isSourceTextModule</span><span class="p">());</span>
+<span class="w">        </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Module</span><span class="p">.</span><span class="na">isSyntheticModule</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">v8Module</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">});</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;import { a, b } from &#39;test.js&#39;;\n&quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                </span><span class="s">&quot;globalThis.a = a;\n&quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                </span><span class="s">&quot;globalThis.b = b;\n&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">setModule</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getInteger</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">));</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">invokeInteger</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+</pre></div>
+</div>
+</section>
 <section id="internals">
 <h2>Internals<a class="headerlink" href="#internals" title="Link to this heading">#</a></h2>
 <p>How Javet and V8 work internally for supporting modules can be found at <a class="reference internal" href="../../development/design.html"><span class="doc">Javet Design</span></a>.</p>
@@ -610,6 +651,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 <li><a class="reference internal" href="#manual-patch-native-modules-on-windows">Manual Patch Native Modules on Windows</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#dynamically-import-built-in-modules">Dynamically Import Built-in Modules</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v8-mode">V8 Mode</a><ul>
@@ -617,6 +659,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 <li><a class="reference internal" href="#on-demand">On-demand</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#synthetic-module">Synthetic Module</a></li>
 <li><a class="reference internal" href="#internals">Internals</a></li>
 </ul>
 </li>
@@ -629,7 +672,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=5e0dd536"></script>
+</div><script src="../../_static/documentation_options.js?v=2376872d"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -291,6 +291,9 @@ class V8Native implements IV8Native {
             int scriptId, boolean isWASM, boolean isModule);
 
     @Override
+    public native Object moduleCreate(long v8RuntimeHandle, String name, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object moduleEvaluate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     @Override
@@ -316,6 +319,12 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean moduleInstantiate(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean moduleIsSourceTextModule(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native boolean moduleIsSyntheticModule(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object objectCreate(long v8RuntimeHandle);

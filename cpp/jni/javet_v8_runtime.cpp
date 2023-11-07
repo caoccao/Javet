@@ -311,7 +311,11 @@ namespace Javet {
     jobject V8Runtime::SafeToExternalV8Value(
         JNIEnv * jniEnv,
         const V8LocalContext & v8Context,
+#ifdef ENABLE_NODE
         const V8InternalObject & v8InternalObject) noexcept {
+#else
+        const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept {
+#endif
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8InternalObject);
         if (v8TryCatch.HasCaught()) {

@@ -34,6 +34,18 @@ import java.time.ZonedDateTime;
  */
 public interface IV8Creatable {
     /**
+     * Create a V8 synthetic module.
+     *
+     * @param moduleName     the module name
+     * @param iV8ValueObject the V8 value object to be exported
+     * @return the V8 module
+     * @throws JavetException the javet exception
+     * @since 3.0.1
+     */
+    @CheckReturnValue
+    V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException;
+
+    /**
      * Create V8 value array.
      *
      * @return the V8 value array

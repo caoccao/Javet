@@ -23,11 +23,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IEnumBitset;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.interfaces.IV8ModuleResolver;
-import com.caoccao.javet.interop.callback.IJavetGCCallback;
-import com.caoccao.javet.interop.callback.IJavetPromiseRejectCallback;
-import com.caoccao.javet.interop.callback.JavetCallbackContext;
-import com.caoccao.javet.interop.callback.JavetPromiseRejectCallback;
+import com.caoccao.javet.interop.callback.*;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.executors.IV8Executor;
@@ -564,7 +560,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(true);
-        if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().length() == 0) {
+        if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().isEmpty()) {
             throw new JavetException(JavetError.ModuleNameEmpty);
         }
         Object result = v8Native.moduleCompile(
@@ -646,6 +642,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param <T>        the type parameter
      * @param iV8Context the V8 context
+     * @param index      the index
      * @return the t
      * @throws JavetException the javet exception
      */
@@ -694,6 +691,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     boolean contextSetLength(IV8Context iV8Context, int length) throws JavetException {
         return v8Native.contextSetLength(handle, iV8Context.getHandle(), iV8Context.getType().getId(), length);
+    }
+
+    @Override
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    public V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException {
+        if (moduleName == null || moduleName.isEmpty()) {
+            throw new JavetException(JavetError.ModuleNameEmpty);
+        }
+        Objects.requireNonNull(iV8ValueObject);
+        V8Module v8Module = (V8Module) v8Native.moduleCreate(
+                handle, moduleName, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
+        if (v8Module != null) {
+            v8Module.setResourceName(moduleName);
+            addV8Module(v8Module);
+        }
+        return v8Module;
     }
 
     @Override
@@ -837,7 +851,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
-        assert description != null && description.length() > 0 : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
+        assert description != null && !description.isEmpty() : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
         if (global) {
             try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
                 return v8ValueBuiltInSymbol._for(description);
@@ -1447,17 +1461,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @CheckReturnValue
     IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
-        if (resourceName != null && resourceName.length() > 0) {
+        IV8Module iV8Module = null;
+        if (resourceName != null && !resourceName.isEmpty()) {
             synchronized (v8ModuleLock) {
-                if (v8ModuleMap.containsKey(resourceName)) {
-                    return v8ModuleMap.get(resourceName);
-                }
+                iV8Module = v8ModuleMap.get(resourceName);
             }
-            if (v8ModuleResolver != null) {
-                return v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
+            if (iV8Module == null && v8ModuleResolver != null) {
+                iV8Module = v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);
             }
         }
-        return null;
+        return iV8Module;
     }
 
     /**
@@ -2045,6 +2058,28 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     boolean moduleInstantiate(IV8Module iV8Module) throws JavetException {
         return v8Native.moduleInstantiate(handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
+     * Is source text module.
+     *
+     * @param iV8Module the V8 module
+     * @return true : yes, false : no
+     * @since 3.0.1
+     */
+    public boolean moduleIsSourceTextModule(IV8Module iV8Module) {
+        return v8Native.moduleIsSourceTextModule(handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
+     * Is synthetic module.
+     *
+     * @param iV8Module the V8 module
+     * @return true : yes, false : no
+     * @since 3.0.1
+     */
+    public boolean moduleIsSyntheticModule(IV8Module iV8Module) {
+        return v8Native.moduleIsSyntheticModule(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
     /**

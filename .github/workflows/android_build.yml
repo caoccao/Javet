@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 20.8.0
-  JAVET_V8_VERSION: 11.8.172.15
-  JAVET_VERSION: 3.0.0
+  JAVET_NODE_VERSION: 20.9.0
+  JAVET_V8_VERSION: 11.9.169.6
+  JAVET_VERSION: 3.0.1
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
       uses: nttld/setup-ndk@v1
       with:
         ndk-version: r25b
-        local-cache: true
+        local-cache: false
 
     - name: Setup Path
       run: |
@@ -61,6 +61,7 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        ninja -C out.gn/arm.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/arm.release v8_monolith
 
     - name: Setup JDK 11
@@ -108,7 +109,7 @@ jobs:
       uses: nttld/setup-ndk@v1
       with:
         ndk-version: r25b
-        local-cache: true
+        local-cache: false
 
     - name: Setup Path
       run: |
@@ -132,6 +133,7 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py arm64.release -- 'target_os="android"' 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        ninja -C out.gn/arm64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/arm64.release v8_monolith
 
     - name: Setup JDK 11
@@ -179,7 +181,7 @@ jobs:
       uses: nttld/setup-ndk@v1
       with:
         ndk-version: r25b
-        local-cache: true
+        local-cache: false
 
     - name: Setup Path
       run: |
@@ -203,6 +205,7 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py ia32.release -- 'target_os="android"' 'target_cpu="x86"' 'v8_target_cpu="x86"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        ninja -C out.gn/ia32.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/ia32.release v8_monolith
 
     - name: Setup JDK 11
@@ -250,7 +253,7 @@ jobs:
       uses: nttld/setup-ndk@v1
       with:
         ndk-version: r25b
-        local-cache: true
+        local-cache: false
 
     - name: Setup Path
       run: |
@@ -274,6 +277,7 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        ninja -C out.gn/x64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/x64.release v8_monolith
 
     - name: Setup JDK 11

@@ -17,7 +17,7 @@
 package com.caoccao.javet.mock;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IV8ModuleResolver;
+import com.caoccao.javet.interop.callback.IV8ModuleResolver;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.reference.IV8Module;
 

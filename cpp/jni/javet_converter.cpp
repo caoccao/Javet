@@ -543,13 +543,13 @@ namespace Javet {
                 ToV8PersistentReference(v8Context, v8Script));
         }
 
+#ifdef ENABLE_NODE
         jobject ToExternalV8Value(
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8InternalObject& v8InternalObject) noexcept {
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-#ifdef ENABLE_NODE
             if (v8InternalObject.IsJSObject() || v8InternalObject.IsPrimitive()
                 || v8InternalObject.IsJSArray() || v8InternalObject.IsJSTypedArray()) {
                 auto v8LocalObject = v8::Utils::ToLocal(v8::internal::handle(v8InternalObject, v8InternalIsolate));
@@ -570,7 +570,15 @@ namespace Javet {
             else if (v8InternalObject.IsCode()) {
                 LOG_DEBUG("Converter: Code is not supported.");
             }
+            return ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+        }
 #else
+        jobject ToExternalV8Value(
+            JNIEnv* jniEnv,
+            const V8Runtime* v8Runtime,
+            const V8LocalContext& v8Context,
+            const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept {
+            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
             if (v8::internal::IsJSObject(v8InternalObject) || v8::internal::IsPrimitive(v8InternalObject)
                 || v8::internal::IsJSArray(v8InternalObject) || v8::internal::IsJSTypedArray(v8InternalObject)) {
                 auto v8LocalObject = v8::Utils::ToLocal(v8::internal::handle(v8InternalObject, v8InternalIsolate));
@@ -591,9 +599,9 @@ namespace Javet {
             else if (v8::internal::IsCode(v8InternalObject)) {
                 LOG_DEBUG("Converter: Code is not supported.");
             }
-#endif
             return ToExternalV8ValueUndefined(jniEnv, v8Runtime);
         }
+#endif
 
         jobject ToExternalV8Value(
             JNIEnv* jniEnv,

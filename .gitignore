@@ -77,3 +77,8 @@ _build
 pom.xml.releaseBackup
 release.properties
 target
+
+# ------------------------------------------------------------------------------
+# JNI
+
+cpp/build*

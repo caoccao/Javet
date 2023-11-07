@@ -61,8 +61,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,0,0,0
- PRODUCTVERSION 3,0,0,0
+ FILEVERSION 3,0,1,0
+ PRODUCTVERSION 3,0,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -79,12 +79,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "caoccao.com"
             VALUE "FileDescription", "caoccao.com"
-            VALUE "FileVersion", "3.0.0.0"
-            VALUE "InternalName", "libjavet-v8-windows-x86_64.v.3.0.0.dll"
+            VALUE "FileVersion", "3.0.1.0"
+            VALUE "InternalName", "libjavet-v8-windows-x86_64.v.3.0.1.dll"
             VALUE "LegalCopyright", "Copyright (C) 2021-2023"
-            VALUE "OriginalFilename", "libjavet-v8-windows-x86_64.v.3.0.0.dll"
+            VALUE "OriginalFilename", "libjavet-v8-windows-x86_64.v.3.0.1.dll"
             VALUE "ProductName", "Javet Windows"
-            VALUE "ProductVersion", "3.0.0.0"
+            VALUE "ProductVersion", "3.0.1.0"
         END
     END
     BLOCK "VarFileInfo"

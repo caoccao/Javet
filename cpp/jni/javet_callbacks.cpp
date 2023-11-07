@@ -285,6 +285,66 @@ namespace Javet {
             }
         }
 
+        V8MaybeLocalValue JavetSyntheticModuleEvaluationStepsCallback(
+            V8LocalContext v8Context,
+            V8LocalModule v8LocalModule) {
+            FETCH_JNI_ENV(GlobalJavaVM);
+            Javet::Exceptions::ClearJNIException(jniEnv);
+            if (v8Context.IsEmpty()) {
+                LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: V8 context is empty.");
+            }
+            else {
+                auto v8Isolate = v8Context->GetIsolate();
+                auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
+                if (v8Runtime == nullptr) {
+                    LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: V8 runtime is empty.");
+                }
+                else {
+                    V8TryCatch v8TryCatch(v8Isolate);
+                    auto v8GlobalObject = v8Runtime->v8GlobalObject.Get(v8Isolate);
+                    std::string stringKey("module:{}" + std::to_string(v8LocalModule->GetIdentityHash()));
+                    auto v8LocalStringKey = Javet::Converter::ToV8String(v8Context, stringKey.c_str());
+                    auto v8LocalPrivateKey = v8::Private::ForApi(v8Isolate, v8LocalStringKey);
+                    auto v8MaybeLocalValue = v8GlobalObject->GetPrivate(v8Context, v8LocalPrivateKey);
+                    if (v8MaybeLocalValue.IsEmpty()) {
+                        LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: Module " << stringKey << " is not found.");
+                    }
+                    else {
+                        v8GlobalObject->DeletePrivate(v8Context, v8LocalPrivateKey);
+                        auto v8LocalObject = v8MaybeLocalValue.ToLocalChecked().As<v8::Object>();
+                        auto v8MaybeLocalArray = v8LocalObject->GetPropertyNames(v8Context);
+                        if (v8MaybeLocalArray.IsEmpty()) {
+                            LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: Module " << stringKey << " is empty.");
+                        }
+                        else {
+                            auto v8LocalArray = v8MaybeLocalArray.ToLocalChecked();
+                            int length = v8LocalArray->Length();
+                            for (int i = 0; i < length; ++i) {
+                                auto v8MaybeLocalKey = v8LocalArray->Get(v8Context, i);
+                                if (!v8MaybeLocalKey.IsEmpty()) {
+                                    auto v8LocalValueKey = v8MaybeLocalKey.ToLocalChecked();
+                                    if (v8LocalValueKey->IsString() || v8LocalValueKey->IsStringObject()) {
+                                        auto v8LocalStringKey = v8LocalValueKey.As<v8::String>();
+                                        auto v8MaybeLocalValueValue = v8LocalObject->Get(v8Context, v8LocalStringKey);
+                                        if (!v8MaybeLocalValueValue.IsEmpty()) {
+                                            auto v8MaybeBool = v8LocalModule->SetSyntheticModuleExport(
+                                                v8Isolate, v8LocalStringKey, v8MaybeLocalValueValue.ToLocalChecked());
+                                            v8MaybeBool.FromMaybe(false);
+                                        }
+                                    }
+                                }
+                            }
+                            if (v8TryCatch.HasCaught()) {
+                                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+                            }
+                        }
+                    }
+                    return v8::Undefined(v8Isolate);
+                }
+            }
+            return V8MaybeLocalValue();
+        }
+
         JavetCallbackContextReference::JavetCallbackContextReference(JNIEnv* jniEnv, const jobject callbackContext) noexcept
             : v8PersistentCallbackContextHandlePointer(nullptr) {
             jniEnv->CallVoidMethod(callbackContext, jmethodIDJavetCallbackContextSetHandle, TO_JAVA_LONG(this));
@@ -294,7 +354,7 @@ namespace Javet {
             const v8::FunctionCallbackInfo<v8::Value>& args) noexcept {
             FETCH_JNI_ENV(GlobalJavaVM);
             Javet::Exceptions::ClearJNIException(jniEnv);
-            v8::Isolate* v8Isolate = args.GetIsolate();
+            auto v8Isolate = args.GetIsolate();
             V8IsolateScope v8IsolateScope(v8Isolate);
             V8HandleScope v8HandleScope(v8Isolate);
             auto v8Context = v8Isolate->GetCurrentContext();
@@ -355,7 +415,7 @@ namespace Javet {
             const V8LocalName& propertyName,
             const v8::PropertyCallbackInfo<v8::Value>& args) noexcept {
             FETCH_JNI_ENV(GlobalJavaVM);
-            v8::Isolate* v8Isolate = args.GetIsolate();
+            auto v8Isolate = args.GetIsolate();
             V8IsolateScope v8IsolateScope(v8Isolate);
             V8HandleScope v8HandleScope(v8Isolate);
             auto v8Context = v8Isolate->GetCurrentContext();
@@ -411,7 +471,7 @@ namespace Javet {
             const V8LocalValue& propertyValue,
             const v8::PropertyCallbackInfo<void>& args) noexcept {
             FETCH_JNI_ENV(GlobalJavaVM);
-            v8::Isolate* v8Isolate = args.GetIsolate();
+            auto v8Isolate = args.GetIsolate();
             V8IsolateScope v8IsolateScope(v8Isolate);
             V8HandleScope v8HandleScope(v8Isolate);
             auto v8Context = v8Isolate->GetCurrentContext();

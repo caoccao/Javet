@@ -45,6 +45,12 @@ public class V8ValueBuiltInObject extends V8ValueObject {
      * @since 0.9.11
      */
     public static final String FUNCTION_GET_OWN_PROPERTY_SYMBOLS = "getOwnPropertySymbols";
+    /**
+     * The constant FUNCTION_FREEZE.
+     *
+     * @since 3.0.1
+     */
+    public static final String FUNCTION_FREEZE = "freeze";
 
     /**
      * Instantiates a new V8 value built in object.
@@ -72,6 +78,16 @@ public class V8ValueBuiltInObject extends V8ValueObject {
         return invoke(FUNCTION_ASSIGN, Objects.requireNonNull(v8Value1), Objects.requireNonNull(v8Value2));
     }
 
+    /**
+     * Freeze V8 value object.
+     *
+     * @param v8ValueObject the V8 value object
+     * @throws JavetException the javet exception
+     * @since 3.0.1
+     */
+    public void freeze(V8ValueObject v8ValueObject) throws JavetException {
+        invokeVoid(FUNCTION_FREEZE, Objects.requireNonNull(v8ValueObject));
+    }
 
     /**
      * Gets own property symbols.

@@ -52,6 +52,51 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCompile
     return nullptr;
 }
 
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCreate
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mModuleName, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (v8LocalValue->IsObject()) {
+        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        auto v8LocalObject = v8LocalValue.As<v8::Object>();
+        auto v8MaybeLocalArray = v8LocalObject->GetPropertyNames(v8Context);
+        if (v8MaybeLocalArray.IsEmpty()) {
+            if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
+                return nullptr;
+            }
+        }
+        else {
+            auto v8LocalArray = v8MaybeLocalArray.ToLocalChecked();
+            std::vector<V8LocalString> exportNames;
+            int length = v8LocalArray->Length();
+            for (int i = 0; i < length; ++i) {
+                auto v8MaybeLocalValue = v8LocalArray->Get(v8Context, i);
+                if (!v8MaybeLocalValue.IsEmpty()) {
+                    auto v8LocalValueKey = v8MaybeLocalValue.ToLocalChecked();
+                    if (v8LocalValueKey->IsString() || v8LocalValueKey->IsStringObject()) {
+                        exportNames.emplace_back(v8LocalValueKey.As<v8::String>());
+                    }
+                }
+            }
+            auto v8LocalModule = v8::Module::CreateSyntheticModule(
+                v8Context->GetIsolate(),
+                Javet::Converter::ToV8String(jniEnv, v8Context, mModuleName),
+                exportNames,
+                Javet::Callback::JavetSyntheticModuleEvaluationStepsCallback);
+            std::string stringKey("module:{}" + std::to_string(v8LocalModule->GetIdentityHash()));
+            auto v8LocalStringKey = Javet::Converter::ToV8String(v8Context, stringKey.c_str());
+            auto v8LocalPrivateKey = v8::Private::ForApi(v8Context->GetIsolate(), v8LocalStringKey);
+            auto v8GlobalObject = v8Runtime->v8GlobalObject.Get(v8Context->GetIsolate());
+            v8GlobalObject->SetPrivate(v8Context, v8LocalPrivateKey, v8LocalObject);
+            if (v8TryCatch.HasCaught()) {
+                return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
+            }
+            return Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime, v8Context, v8LocalModule);
+        }
+    }
+    Javet::Exceptions::ClearJNIException(jniEnv);
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleEvaluate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jboolean mResultRequired) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
@@ -171,4 +216,16 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
         return v8MaybeBool.FromMaybe(false);
     }
     return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleIsSourceTextModule
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    return v8LocalModule->IsSourceTextModule();
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleIsSyntheticModule
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    return v8LocalModule->IsSyntheticModule();
 }

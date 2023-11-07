@@ -21,9 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetTypeUtils;
 import com.caoccao.javet.utils.JavetVirtualObject;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
@@ -36,30 +34,7 @@ import java.util.List;
  * @since 0.9.6
  */
 final class ScoredExecutable<E extends AccessibleObject> {
-    /**
-     * The constant V8_VALUE_CLASS.
-     *
-     * @since 0.9.10
-     */
     private static final Class<?> V8_VALUE_CLASS = V8Value.class;
-    /**
-     * The constant V8_VALUE_FUNCTION_CLASS.
-     *
-     * @since 0.9.10
-     */
-    private static final Class<?> V8_VALUE_FUNCTION_CLASS = V8ValueFunction.class;
-    /**
-     * The constant V8_VALUE_OBJECT_CLASS.
-     *
-     * @since 0.9.10
-     */
-    private static final Class<?> V8_VALUE_OBJECT_CLASS = V8ValueObject.class;
-    /**
-     * The constant V8_VALUE_PROXY_CLASS.
-     *
-     * @since 0.9.10
-     */
-    private static final Class<?> V8_VALUE_PROXY_CLASS = V8ValueProxy.class;
     private final E executable;
     private final IJavetReflectionObjectFactory reflectionObjectFactory;
     private final Object targetObject;

@@ -23,6 +23,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The type V8 module.
@@ -32,6 +33,18 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public class V8Module extends V8ValueReference implements IV8Module {
 
+    /**
+     * The Optional source text module is an internal cache storing whether the module is source text or not.
+     *
+     * @since 3.0.1
+     */
+    protected Optional<Boolean> optionalSourceTextModule;
+    /**
+     * The Optional synthetic module is an internal cache storing whether the module is synthetic or not.
+     *
+     * @since 3.0.1
+     */
+    protected Optional<Boolean> optionalSyntheticModule;
     /**
      * The Resource name.
      *
@@ -49,6 +62,8 @@ public class V8Module extends V8ValueReference implements IV8Module {
      */
     V8Module(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
+        optionalSourceTextModule = Optional.empty();
+        optionalSyntheticModule = Optional.empty();
         resourceName = null;
     }
 
@@ -69,16 +84,7 @@ public class V8Module extends V8ValueReference implements IV8Module {
         return checkV8Runtime().getV8Internal().moduleGetException(this);
     }
 
-    /**
-     * Gets namespace.
-     * <p>
-     * Note: Please avoid calling this API in production environment
-     * because its underlying V8 object is not persisted and core dump will take place.
-     *
-     * @return the namespace
-     * @throws JavetException the javet exception
-     * @since 0.8.0
-     */
+    @Override
     @CheckReturnValue
     public V8ValueObject getNamespace() throws JavetException {
         return checkV8Runtime().getV8Internal().moduleGetNamespace(this);
@@ -107,6 +113,24 @@ public class V8Module extends V8ValueReference implements IV8Module {
     @Override
     public boolean instantiate() throws JavetException {
         return checkV8Runtime().getV8Internal().moduleInstantiate(this);
+    }
+
+    @Override
+    public boolean isSourceTextModule() throws JavetException {
+        if (!optionalSourceTextModule.isPresent()) {
+            optionalSourceTextModule =
+                    Optional.of(checkV8Runtime().getV8Internal().moduleIsSourceTextModule(this));
+        }
+        return optionalSourceTextModule.get();
+    }
+
+    @Override
+    public boolean isSyntheticModule() throws JavetException {
+        if (!optionalSyntheticModule.isPresent()) {
+            optionalSyntheticModule =
+                    Optional.of(checkV8Runtime().getV8Internal().moduleIsSyntheticModule(this));
+        }
+        return optionalSyntheticModule.get();
     }
 
     @Override

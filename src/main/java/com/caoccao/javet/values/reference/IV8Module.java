@@ -21,20 +21,72 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.IV8Executable;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * The interface IV8Module.
+ *
+ * @since 0.8.0
+ */
 @SuppressWarnings("unchecked")
 public interface IV8Module extends IV8Cacheable, IV8ValueReference, IV8Executable {
+    /**
+     * The constant Uninstantiated.
+     *
+     * @since 0.8.0
+     */
     int Uninstantiated = 0;
+    /**
+     * The constant Instantiating.
+     *
+     * @since 0.8.0
+     */
     int Instantiating = 1;
+    /**
+     * The constant Instantiated.
+     *
+     * @since 0.8.0
+     */
     int Instantiated = 2;
+    /**
+     * The constant Evaluating.
+     *
+     * @since 0.8.0
+     */
     int Evaluating = 3;
+    /**
+     * The constant Evaluated.
+     *
+     * @since 0.8.0
+     */
     int Evaluated = 4;
+    /**
+     * The constant Errored.
+     *
+     * @since 0.8.0
+     */
     int Errored = 5;
 
+    /**
+     * Evaluate the module.
+     *
+     * @param <T> the type parameter
+     * @return the t
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     default <T extends V8Value> T evaluate() throws JavetException {
         return evaluate(true);
     }
 
+    /**
+     * Evaluate the module.
+     *
+     * @param <T>            the type parameter
+     * @param resultRequired the result required
+     * @return the t
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     <T extends V8Value> T evaluate(boolean resultRequired) throws JavetException;
 
@@ -52,25 +104,89 @@ public interface IV8Module extends IV8Cacheable, IV8ValueReference, IV8Executabl
         return (T) getV8Runtime().createV8ValueUndefined();
     }
 
+    /**
+     * Gets exception.
+     *
+     * @return the exception
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     @CheckReturnValue
     V8ValueError getException() throws JavetException;
 
+    /**
+     * Gets namespace.
+     * <p>
+     * The module's status must be at least kInstantiated. Otherwise, core dump will take place.
+     *
+     * @return the namespace
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
+    @CheckReturnValue
+    V8ValueObject getNamespace() throws JavetException;
+
+    /**
+     * Gets resource name.
+     *
+     * @return the resource name
+     * @since 0.8.0
+     */
     String getResourceName();
 
     /**
      * Gets script id.
      * <p>
-     * Note: This API is not supported by Node because the V8 version is too low.
+     * The module must be a SourceTextModule and must not have a kErrored status.
      *
      * @return the script id
      * @throws JavetException the javet exception
+     * @since 0.8.0
      */
     int getScriptId() throws JavetException;
 
+    /**
+     * Gets status.
+     *
+     * @return the status
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     int getStatus() throws JavetException;
 
+    /**
+     * Instantiate.
+     *
+     * @return true : instantiated, false : not instantiated
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     boolean instantiate() throws JavetException;
 
+    /**
+     * Is source text module.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 3.0.1
+     */
+    boolean isSourceTextModule() throws JavetException;
+
+    /**
+     * Is synthetic module.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 3.0.1
+     */
+    boolean isSyntheticModule() throws JavetException;
+
+    /**
+     * Sets resource name.
+     *
+     * @param resourceName the resource name
+     * @since 0.8.0
+     */
     void setResourceName(String resourceName);
 
     @Override

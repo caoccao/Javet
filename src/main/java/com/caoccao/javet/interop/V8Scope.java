@@ -140,6 +140,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     }
 
     @Override
+    public V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return add(v8Runtime.createV8Module(moduleName, iV8ValueObject));
+    }
+
+    @Override
     public V8ValueArray createV8ValueArray() throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return add(v8Runtime.createV8ValueArray());
