@@ -105,7 +105,7 @@ class ChangeJavetVersion(object):
       re.compile(r'release\s*=\s*\'(?P<version>\d+\.\d+\.\d+)\'$'))
     self._update(
       'docs/tutorial/basic/installation.rst', '\n',
-      re.compile(r'^        <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
+      re.compile(r'<version>(?P<version>\d+\.\d+\.\d+)</version>'),
       re.compile(r'<javet\.version>(?P<version>\d+\.\d+\.\d+)</javet\.version>$'),
       re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\'@]{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
@@ -184,7 +184,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('3.0.1')
+  change_javet_version = ChangeJavetVersion('3.0.2')
   change_javet_version.update()
   return 0
 

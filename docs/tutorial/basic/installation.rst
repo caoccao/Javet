@@ -16,21 +16,21 @@ Maven
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
         </dependency>
 
         <!-- Linux (arm64) -->
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet-linux-arm64</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
         </dependency>
 
         <!-- Mac OS (x86_64 and arm64) -->
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet-macos</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
         </dependency>
 
 .. tab:: Complete
@@ -38,57 +38,74 @@ Maven
     .. code-block:: xml
 
         <properties>
-            <javet.version>3.0.1</javet.version>
+          <javet.version>3.0.2</javet.version>
         </properties>
 
         <profiles>
-            <profile>
-                <id>windows</id>
-                <activation>
-                    <os>
-                        <family>windows</family>
-                        <arch>x86</arch>
-                    </os>
-                </activation>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.caoccao.javet</groupId>
-                        <artifactId>javet</artifactId>
-                        <version>${javet.version}</version>
-                    </dependency>
-                </dependencies>
-            </profile>
-            <profile>
-                <id>linux</id>
-                <activation>
-                    <os>
-                        <family>unix</family>
-                        <arch>x86</arch>
-                    </os>
-                </activation>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.caoccao.javet</groupId>
-                        <artifactId>javet</artifactId>
-                        <version>${javet.version}</version>
-                    </dependency>
-                </dependencies>
-            </profile>
-            <profile>
-                <id>macos</id>
-                <activation>
-                    <os>
-                        <family>mac</family>
-                    </os>
-                </activation>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.caoccao.javet</groupId>
-                        <artifactId>javet-macos</artifactId>
-                        <version>${javet.version}</version>
-                    </dependency>
-                </dependencies>
-            </profile>
+          <profile>
+            <id>windows</id>
+            <activation>
+              <os>
+                <family>windows</family>
+                <arch>x86</arch>
+              </os>
+            </activation>
+            <dependencies>
+              <dependency>
+                <groupId>com.caoccao.javet</groupId>
+                <artifactId>javet</artifactId>
+                <version>${javet.version}</version>
+              </dependency>
+            </dependencies>
+          </profile>
+          <profile>
+            <id>linux</id>
+            <activation>
+              <os>
+                <family>unix</family>
+                <arch>x86</arch>
+              </os>
+              <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+              <dependency>
+                <groupId>com.caoccao.javet</groupId>
+                <artifactId>javet</artifactId>
+                <version>${javet.version}</version>
+              </dependency>
+            </dependencies>
+          </profile>
+          <profile>
+            <id>linux-arm64</id>
+            <activation>
+              <os>
+                <family>unix</family>
+                <arch>arm64</arch>
+              </os>
+            </activation>
+            <dependencies>
+              <dependency>
+                <groupId>com.caoccao.javet</groupId>
+                <artifactId>javet-linux-arm64</artifactId>
+                <version>${javet.version}</version>
+              </dependency>
+            </dependencies>
+          </profile>
+          <profile>
+            <id>macos</id>
+            <activation>
+              <os>
+                <family>mac</family>
+              </os>
+            </activation>
+            <dependencies>
+              <dependency>
+                <groupId>com.caoccao.javet</groupId>
+                <artifactId>javet-macos</artifactId>
+                <version>${javet.version}</version>
+              </dependency>
+            </dependencies>
+          </profile>
         </profiles>
 
 Gradle Kotlin DSL
@@ -98,10 +115,10 @@ Gradle Kotlin DSL
 
     .. code-block:: kotlin
 
-        implementation("com.caoccao.javet:javet:3.0.1") // Linux and Windows (x86_64)
-        implementation("com.caoccao.javet:javet-linux-arm64:3.0.1") // Linux (arm64)
-        implementation("com.caoccao.javet:javet-macos:3.0.1") // Mac OS (x86_64 and arm64)
-        implementation("com.caoccao.javet:javet-android:3.0.1") // Android (arm, arm64, x86 and x86_64)
+        implementation("com.caoccao.javet:javet:3.0.2") // Linux and Windows (x86_64)
+        implementation("com.caoccao.javet:javet-linux-arm64:3.0.2") // Linux (arm64)
+        implementation("com.caoccao.javet:javet-macos:3.0.2") // Mac OS (x86_64 and arm64)
+        implementation("com.caoccao.javet:javet-android:3.0.2") // Android (arm, arm64, x86 and x86_64)
 
 .. tab:: Complete
 
@@ -112,11 +129,11 @@ Gradle Kotlin DSL
         val os = OperatingSystem.current()
         val cpuArch = System.getProperty("os.arch")
         if (os.isMacOsX) {
-            implementation("com.caoccao.javet:javet:3.0.1")
+            implementation("com.caoccao.javet:javet:3.0.2")
         } else if (os.isLinux && (cpuArch == "aarch64" || cpuArch == "arm64")) {
-            implementation("com.caoccao.javet:javet-linux-arm64:3.0.1")
+            implementation("com.caoccao.javet:javet-linux-arm64:3.0.2")
         } else {
-            implementation("com.caoccao.javet:javet-macos:3.0.1")
+            implementation("com.caoccao.javet:javet-macos:3.0.2")
         }
 
 Gradle Groovy DSL
@@ -124,10 +141,10 @@ Gradle Groovy DSL
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:3.0.1' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-linux-arm64:3.0.1' // Linux (arm64)
-    implementation 'com.caoccao.javet:javet-macos:3.0.1' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:3.0.1' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:3.0.2' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-linux-arm64:3.0.2' // Linux (arm64)
+    implementation 'com.caoccao.javet:javet-macos:3.0.2' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:3.0.2' // Android (arm, arm64, x86 and x86_64)
 
 OS Compatibility
 ================
