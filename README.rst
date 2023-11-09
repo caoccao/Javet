@@ -127,7 +127,7 @@ Sponsors
 License
 =======
 
-`APACHE LICENSE, VERSION 2.0 <LICENSE>`_
+`APACHE LICENSE, VERSION 2.0 <https://github.com/caoccao/Javet/blob/main/LICENSE>`_
 
 Blog
 ====
