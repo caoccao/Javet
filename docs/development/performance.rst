@@ -62,6 +62,10 @@ spectral-norm         4198      4128      98%
 coro-prime-sieve      796       105       13%
 ===================== ========= ========= ===========
 
+.. note::
+
+    Both benchmarks are not JIT optimized because there's no warm-up. So, the actual performance could be much higher. And further benchmarks are needed to measure the performance of the JIT.
+
 Please choose the code behind technology based on the actual benchmarks because according to the tests the performance difference is not significant and depends on the particular algorithms. However, please be aware that Wasm comes with some drawbacks.
 
 * The Wasm code size is considerable. e.g. An HelloWorld Wasm package written in rust is 21+KB (.js 4+KB + .wasm 16+KB). Fetching the files from storage, parsing and compiling the files also takes considerable amount of time which may eventually slow down the whole execution.
