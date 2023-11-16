@@ -147,7 +147,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        gradle-version: 8.1
+        gradle-version: 8.2
 
     - name: Download Javet V8
       uses: actions/download-artifact@v3
