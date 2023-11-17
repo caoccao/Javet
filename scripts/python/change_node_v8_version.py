@@ -160,7 +160,7 @@ class ChangeV8Version(ChangeVersion):
 def main():
   change_node_version = ChangeNodeVersion('20.9.0')
   change_node_version.update()
-  change_v8_version = ChangeV8Version('11.9.169.6')
+  change_v8_version = ChangeV8Version('12.0.267.5')
   change_v8_version.update()
   return 0
 
