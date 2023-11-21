@@ -135,6 +135,7 @@ Blog
 * `Performance Comparison of GraalJS, Javet and Nashorn <https://medium.com/towardsdev/performance-comparison-of-graaljs-javet-and-nashorn-7bae6925826a>`_
 * `How to Elegantly Expose JsonNode in V8 <https://medium.com/stackademic/how-to-elegantly-expose-jsonnode-in-v8-638aff9da549>`_
 * `How to Compromise V8 on JVM <https://sjtucaocao.medium.com/how-to-compromise-v8-on-jvm-ceb385572461>`_
+* `Is TypeScript a Good Choice for a Script Engine? <https://sjtucaocao.medium.com/is-typescript-a-good-choice-for-a-script-engine-01fe69921ace>`_
 
 Documents
 =========
