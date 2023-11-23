@@ -105,3 +105,8 @@ Build Javet for Android on Linux or Windows
 
     * Docker will pull the corresponding image (~11GB) from Docker Hub.
     * The actual build takes few minutes including pulling dependent libraries from Maven Central, building and testing.
+
+Linux arm64 Docker Files Deprecated
+===================================
+
+The V8 build process has been significantly changed since v12. That results in the deprecation of the corresponding docker files.
