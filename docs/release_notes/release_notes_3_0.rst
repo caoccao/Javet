@@ -2,6 +2,13 @@
 Release Notes 3.0.x
 ===================
 
+3.0.2 V8 v12.0
+--------------
+
+* Upgraded V8 to ``v12.0.267.8`` (2023-11-21)
+* Upgraded Node.js to ``v20.10.0`` `(2023-11-22) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.10.0>`_
+* Fixed Linux arm64 build addressing the changes in V8 v12
+
 3.0.1 V8 v11.9
 --------------
 

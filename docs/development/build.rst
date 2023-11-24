@@ -27,7 +27,7 @@ Linux Environment
 * Ubuntu 22.04+
 * CMake 3.25.1+
 * JDK 8
-* Gradle 8.1+
+* Gradle 8.2+
 * GCC 11+
 * Python 3.9+
 
@@ -39,7 +39,7 @@ MacOS Environment
 * Xcode 11.4.1+
 * Cmake 3.16+
 * JDK 8
-* Gradle 8.1+
+* Gradle 8.2+
 * Python 3.9+
 
 Windows Environment
@@ -50,7 +50,7 @@ Windows Environment
 * CMake 3.24+ (comes with Visual Studio 2022)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
-* Gradle 8.1+
+* Gradle 8.2+
 * Python 3.9+
 
 Android Environment
@@ -59,7 +59,7 @@ Android Environment
 * Ubuntu 22.04+ or Ubuntu 22.04+ in the WSL2 on the Latest Windows 10
 * CMake 3.25.1+
 * JDK 8
-* Gradle 8.1+
+* Gradle 8.2+
 * Python 3.9+
 * Latest Android Studio (Optional)
 * Android NDK r25b

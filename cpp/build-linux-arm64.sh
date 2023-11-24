@@ -2,7 +2,7 @@
 
 # Usage for V8: sh build-linux-arm64.sh -DV8_DIR=${HOME}/v8
 # Usage for Node: sh build-linux-arm64.sh -DNODE_DIR=${HOME}/node
-JAVET_VERSION=3.0.1
+JAVET_VERSION=3.0.2
 rm -rf build_linux_arm64
 mkdir build_linux_arm64
 cd build_linux_arm64

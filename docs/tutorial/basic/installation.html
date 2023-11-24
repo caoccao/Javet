@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Hello Javet" href="hello_javet.html" /><link rel="prev" title="Basic" href="index.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Installation - Javet 3.0.1 documentation</title>
+        <title>Installation - Javet 3.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.0.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.0.1 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -206,7 +206,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/resource_management/lock.html">Know the Lock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/resource_management/memory_management.html">Memory Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/resource_management/modularization.html">Modularization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/resource_management/performance.html">Javet Performance</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -311,78 +310,95 @@
 <span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;version&gt;</span>3.0.1<span class="nt">&lt;/version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>3.0.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 
 <span class="cm">&lt;!-- Linux (arm64) --&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>javet-linux-arm64<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;version&gt;</span>3.0.1<span class="nt">&lt;/version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>3.0.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 
 <span class="cm">&lt;!-- Mac OS (x86_64 and arm64) --&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;version&gt;</span>3.0.1<span class="nt">&lt;/version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>3.0.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Complete</label><div class="tab-content docutils container">
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;properties&gt;</span>
-<span class="w">    </span><span class="nt">&lt;javet.version&gt;</span>3.0.1<span class="nt">&lt;/javet.version&gt;</span>
+<span class="w">  </span><span class="nt">&lt;javet.version&gt;</span>3.0.2<span class="nt">&lt;/javet.version&gt;</span>
 <span class="nt">&lt;/properties&gt;</span>
 
 <span class="nt">&lt;profiles&gt;</span>
-<span class="w">    </span><span class="nt">&lt;profile&gt;</span>
-<span class="w">        </span><span class="nt">&lt;id&gt;</span>windows<span class="nt">&lt;/id&gt;</span>
-<span class="w">        </span><span class="nt">&lt;activation&gt;</span>
-<span class="w">            </span><span class="nt">&lt;os&gt;</span>
-<span class="w">                </span><span class="nt">&lt;family&gt;</span>windows<span class="nt">&lt;/family&gt;</span>
-<span class="w">                </span><span class="nt">&lt;arch&gt;</span>x86<span class="nt">&lt;/arch&gt;</span>
-<span class="w">            </span><span class="nt">&lt;/os&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/activation&gt;</span>
-<span class="w">        </span><span class="nt">&lt;dependencies&gt;</span>
-<span class="w">            </span><span class="nt">&lt;dependency&gt;</span>
-<span class="w">                </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">                </span><span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">                </span><span class="nt">&lt;version&gt;</span>${javet.version}<span class="nt">&lt;/version&gt;</span>
-<span class="w">            </span><span class="nt">&lt;/dependency&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/dependencies&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/profile&gt;</span>
-<span class="w">    </span><span class="nt">&lt;profile&gt;</span>
-<span class="w">        </span><span class="nt">&lt;id&gt;</span>linux<span class="nt">&lt;/id&gt;</span>
-<span class="w">        </span><span class="nt">&lt;activation&gt;</span>
-<span class="w">            </span><span class="nt">&lt;os&gt;</span>
-<span class="w">                </span><span class="nt">&lt;family&gt;</span>unix<span class="nt">&lt;/family&gt;</span>
-<span class="w">                </span><span class="nt">&lt;arch&gt;</span>x86<span class="nt">&lt;/arch&gt;</span>
-<span class="w">            </span><span class="nt">&lt;/os&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/activation&gt;</span>
-<span class="w">        </span><span class="nt">&lt;dependencies&gt;</span>
-<span class="w">            </span><span class="nt">&lt;dependency&gt;</span>
-<span class="w">                </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">                </span><span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">                </span><span class="nt">&lt;version&gt;</span>${javet.version}<span class="nt">&lt;/version&gt;</span>
-<span class="w">            </span><span class="nt">&lt;/dependency&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/dependencies&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/profile&gt;</span>
-<span class="w">    </span><span class="nt">&lt;profile&gt;</span>
-<span class="w">        </span><span class="nt">&lt;id&gt;</span>macos<span class="nt">&lt;/id&gt;</span>
-<span class="w">        </span><span class="nt">&lt;activation&gt;</span>
-<span class="w">            </span><span class="nt">&lt;os&gt;</span>
-<span class="w">                </span><span class="nt">&lt;family&gt;</span>mac<span class="nt">&lt;/family&gt;</span>
-<span class="w">            </span><span class="nt">&lt;/os&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/activation&gt;</span>
-<span class="w">        </span><span class="nt">&lt;dependencies&gt;</span>
-<span class="w">            </span><span class="nt">&lt;dependency&gt;</span>
-<span class="w">                </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">                </span><span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">                </span><span class="nt">&lt;version&gt;</span>${javet.version}<span class="nt">&lt;/version&gt;</span>
-<span class="w">            </span><span class="nt">&lt;/dependency&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/dependencies&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/profile&gt;</span>
+<span class="w">  </span><span class="nt">&lt;profile&gt;</span>
+<span class="w">    </span><span class="nt">&lt;id&gt;</span>windows<span class="nt">&lt;/id&gt;</span>
+<span class="w">    </span><span class="nt">&lt;activation&gt;</span>
+<span class="w">      </span><span class="nt">&lt;os&gt;</span>
+<span class="w">        </span><span class="nt">&lt;family&gt;</span>windows<span class="nt">&lt;/family&gt;</span>
+<span class="w">        </span><span class="nt">&lt;arch&gt;</span>x86<span class="nt">&lt;/arch&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/os&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/activation&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">      </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;version&gt;</span>${javet.version}<span class="nt">&lt;/version&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/profile&gt;</span>
+<span class="w">  </span><span class="nt">&lt;profile&gt;</span>
+<span class="w">    </span><span class="nt">&lt;id&gt;</span>linux<span class="nt">&lt;/id&gt;</span>
+<span class="w">    </span><span class="nt">&lt;activation&gt;</span>
+<span class="w">      </span><span class="nt">&lt;os&gt;</span>
+<span class="w">        </span><span class="nt">&lt;family&gt;</span>unix<span class="nt">&lt;/family&gt;</span>
+<span class="w">        </span><span class="nt">&lt;arch&gt;</span>x86<span class="nt">&lt;/arch&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/os&gt;</span>
+<span class="w">      </span><span class="nt">&lt;activeByDefault&gt;</span>true<span class="nt">&lt;/activeByDefault&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/activation&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">      </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>javet<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;version&gt;</span>${javet.version}<span class="nt">&lt;/version&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/profile&gt;</span>
+<span class="w">  </span><span class="nt">&lt;profile&gt;</span>
+<span class="w">    </span><span class="nt">&lt;id&gt;</span>linux-arm64<span class="nt">&lt;/id&gt;</span>
+<span class="w">    </span><span class="nt">&lt;activation&gt;</span>
+<span class="w">      </span><span class="nt">&lt;os&gt;</span>
+<span class="w">        </span><span class="nt">&lt;family&gt;</span>unix<span class="nt">&lt;/family&gt;</span>
+<span class="w">        </span><span class="nt">&lt;arch&gt;</span>arm64<span class="nt">&lt;/arch&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/os&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/activation&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">      </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>javet-linux-arm64<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;version&gt;</span>${javet.version}<span class="nt">&lt;/version&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/profile&gt;</span>
+<span class="w">  </span><span class="nt">&lt;profile&gt;</span>
+<span class="w">    </span><span class="nt">&lt;id&gt;</span>macos<span class="nt">&lt;/id&gt;</span>
+<span class="w">    </span><span class="nt">&lt;activation&gt;</span>
+<span class="w">      </span><span class="nt">&lt;os&gt;</span>
+<span class="w">        </span><span class="nt">&lt;family&gt;</span>mac<span class="nt">&lt;/family&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/os&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/activation&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">      </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>com.caoccao.javet<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>javet-macos<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;version&gt;</span>${javet.version}<span class="nt">&lt;/version&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/profile&gt;</span>
 <span class="nt">&lt;/profiles&gt;</span>
 </pre></div>
 </div>
@@ -393,10 +409,10 @@
 <h3>Gradle Kotlin DSL<a class="headerlink" href="#gradle-kotlin-dsl" title="Link to this heading">#</a></h3>
 <div class="tab-set docutils container">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Express</label><div class="tab-content docutils container">
-<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet:3.0.1&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Linux and Windows (x86_64)</span>
-<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-linux-arm64:3.0.1&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Linux (arm64)</span>
-<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-macos:3.0.1&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Mac OS (x86_64 and arm64)</span>
-<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-android:3.0.1&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet:3.0.2&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Linux and Windows (x86_64)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-linux-arm64:3.0.2&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Linux (arm64)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-macos:3.0.2&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Mac OS (x86_64 and arm64)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-android:3.0.2&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </div>
@@ -406,11 +422,11 @@
 <span class="kd">val</span><span class="w"> </span><span class="nv">os</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatingSystem</span><span class="p">.</span><span class="na">current</span><span class="p">()</span>
 <span class="kd">val</span><span class="w"> </span><span class="nv">cpuArch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">&quot;os.arch&quot;</span><span class="p">)</span>
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="na">isMacOsX</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet:3.0.1&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet:3.0.2&quot;</span><span class="p">)</span>
 <span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="na">isLinux</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">cpuArch</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;aarch64&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">cpuArch</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;arm64&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-linux-arm64:3.0.1&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-linux-arm64:3.0.2&quot;</span><span class="p">)</span>
 <span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-macos:3.0.1&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.caoccao.javet:javet-macos:3.0.2&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -419,10 +435,10 @@
 </section>
 <section id="gradle-groovy-dsl">
 <h3>Gradle Groovy DSL<a class="headerlink" href="#gradle-groovy-dsl" title="Link to this heading">#</a></h3>
-<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;com.caoccao.javet:javet:3.0.1&#39;</span><span class="w"> </span><span class="c1">// Linux and Windows (x86_64)</span>
-<span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;com.caoccao.javet:javet-linux-arm64:3.0.1&#39;</span><span class="w"> </span><span class="c1">// Linux (arm64)</span>
-<span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;com.caoccao.javet:javet-macos:3.0.1&#39;</span><span class="w"> </span><span class="c1">// Mac OS (x86_64 and arm64)</span>
-<span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;com.caoccao.javet:javet-android:3.0.1&#39;</span><span class="w"> </span><span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;com.caoccao.javet:javet:3.0.2&#39;</span><span class="w"> </span><span class="c1">// Linux and Windows (x86_64)</span>
+<span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;com.caoccao.javet:javet-linux-arm64:3.0.2&#39;</span><span class="w"> </span><span class="c1">// Linux (arm64)</span>
+<span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;com.caoccao.javet:javet-macos:3.0.2&#39;</span><span class="w"> </span><span class="c1">// Mac OS (x86_64 and arm64)</span>
+<span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;com.caoccao.javet:javet-android:3.0.2&#39;</span><span class="w"> </span><span class="c1">// Android (arm, arm64, x86 and x86_64)</span>
 </pre></div>
 </div>
 </section>
@@ -636,7 +652,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=2376872d"></script>
+</div><script src="../../_static/documentation_options.js?v=a4fb7100"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>

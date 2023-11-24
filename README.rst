@@ -41,7 +41,7 @@ arm         ✔️        ❌      ❌       ❌
 arm64       ✔️        ✔️       ✔️        ❌
 =========== ======= ======= ======= =======
 
-* Node.js ``v20.9.0`` + V8 ``v11.9.169.6``
+* Node.js ``v20.10.0`` + V8 ``v12.0.267.8``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
@@ -67,21 +67,21 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.2</version>
     </dependency>
 
     <!-- Linux (arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-linux-arm64</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.2</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.2</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -89,20 +89,20 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:3.0.1") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-linux-arm64:3.0.1") // Linux (arm64)
-    implementation("com.caoccao.javet:javet-macos:3.0.1") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:3.0.1") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:3.0.2") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-linux-arm64:3.0.2") // Linux (arm64)
+    implementation("com.caoccao.javet:javet-macos:3.0.2") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android:3.0.2") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:3.0.1' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-linux-arm64:3.0.1' // Linux (arm64)
-    implementation 'com.caoccao.javet:javet-macos:3.0.1' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:3.0.1' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:3.0.2' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-linux-arm64:3.0.2' // Linux (arm64)
+    implementation 'com.caoccao.javet:javet-macos:3.0.2' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:3.0.2' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------
@@ -127,7 +127,7 @@ Sponsors
 License
 =======
 
-`APACHE LICENSE, VERSION 2.0 <LICENSE>`_
+`APACHE LICENSE, VERSION 2.0 <https://github.com/caoccao/Javet/blob/main/LICENSE>`_
 
 Blog
 ====
@@ -135,6 +135,7 @@ Blog
 * `Performance Comparison of GraalJS, Javet and Nashorn <https://medium.com/towardsdev/performance-comparison-of-graaljs-javet-and-nashorn-7bae6925826a>`_
 * `How to Elegantly Expose JsonNode in V8 <https://medium.com/stackademic/how-to-elegantly-expose-jsonnode-in-v8-638aff9da549>`_
 * `How to Compromise V8 on JVM <https://sjtucaocao.medium.com/how-to-compromise-v8-on-jvm-ceb385572461>`_
+* `Is TypeScript a Good Choice for a Script Engine? <https://sjtucaocao.medium.com/is-typescript-a-good-choice-for-a-script-engine-01fe69921ace>`_
 
 Documents
 =========

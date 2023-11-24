@@ -21,9 +21,9 @@ on:
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
-  JAVET_NODE_VERSION: 20.9.0
-  JAVET_V8_VERSION: 11.9.169.6
-  JAVET_VERSION: 3.0.1
+  JAVET_NODE_VERSION: 20.10.0
+  JAVET_V8_VERSION: 12.0.267.8
+  JAVET_VERSION: 3.0.2
 
 # if we skip a job using a job level `if` condition, then any dependent jobs also don't run.
 # we can skip a step of the job, using a step level `if` condition.

@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 20.9.0
-  JAVET_V8_VERSION: 11.9.169.6
-  JAVET_VERSION: 3.0.1
+  JAVET_NODE_VERSION: 20.10.0
+  JAVET_V8_VERSION: 12.0.267.8
+  JAVET_VERSION: 3.0.2
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -147,7 +147,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        gradle-version: 8.1
+        gradle-version: 8.2
 
     - name: Download Javet V8
       uses: actions/download-artifact@v3

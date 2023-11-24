@@ -41,6 +41,6 @@ public class NodeModuleModule extends BaseNodeModule {
     }
 
     public void setRequireRootDirectory(File requireRootDirectory) throws JavetException {
-        setRequireRootDirectory(requireRootDirectory.getAbsolutePath());
+        setRequireRootDirectory(requireRootDirectory.getAbsolutePath() + File.separator);
     }
 }

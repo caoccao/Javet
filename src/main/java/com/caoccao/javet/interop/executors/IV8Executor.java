@@ -225,7 +225,7 @@ public interface IV8Executor extends IV8Executable {
             File parentFile = resourceFile.getParentFile();
             nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, parentFile.getAbsolutePath());
             nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourceFile.getAbsolutePath());
-            nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(parentFile.getAbsoluteFile() + File.separator);
+            nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(parentFile.getAbsoluteFile());
             nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(parentFile.getAbsolutePath());
         }
         return this;
