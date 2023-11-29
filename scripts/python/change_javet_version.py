@@ -39,7 +39,7 @@ class ChangeJavetVersion(object):
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'build.gradle.kts', '\n',
-      re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
+      re.compile(r'^        const val JAVET = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
       '.github/workflows/android_build.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
