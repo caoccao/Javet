@@ -164,6 +164,7 @@ jobs:
         touch src/main/resources/libjavet-node*
         gradle test --rerun-tasks --debug
         gradle build generatePomFileForGeneratePomPublication
+        zip -d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dylib
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
