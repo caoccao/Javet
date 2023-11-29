@@ -173,7 +173,7 @@ jobs:
     - name: Clear up Source Jar
       uses: edgarrc/action-7z@v1
       with:
-        args: 7z d javet-${{ env.JAVET_VERSION }}-sources.jar *.so
+        args: 7z d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.so
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
