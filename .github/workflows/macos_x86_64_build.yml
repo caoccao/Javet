@@ -165,7 +165,7 @@ jobs:
         gradle test --rerun-tasks --debug
         gradle build generatePomFileForGeneratePomPublication
 
-    -name: Clear up Source Jar
+    - name: Clear up Source Jar
       uses: edgarrc/action-7z@v1
       with:
         args: 7z d javet-${{ env.JAVET_VERSION }}-sources.jar *.dylib
