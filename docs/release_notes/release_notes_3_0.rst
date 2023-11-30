@@ -2,6 +2,11 @@
 Release Notes 3.0.x
 ===================
 
+3.0.3 V8
+--------
+
+* Restore the reference lock to fix another contention issue introduced in v3.0.0
+
 3.0.2 V8 v12.0
 --------------
 
