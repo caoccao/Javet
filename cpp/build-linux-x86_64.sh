@@ -8,7 +8,7 @@ mkdir build_linux_x86_64
 cd build_linux_x86_64
 mkdir -p ../../build/libs
 cmake ../ -DJAVET_VERSION=${JAVET_VERSION} "$@" \
-  && make -j$(nproc) \
+  && make -j `nproc` \
   && execstack -c ../../src/main/resources/libjavet-*-linux-x86_64.v.${JAVET_VERSION}.so \
   && strip --strip-unneeded -R .note -R .comment ../../src/main/resources/libjavet-*-linux-x86_64.v.${JAVET_VERSION}.so
 if [ $? -eq 0 ]; then

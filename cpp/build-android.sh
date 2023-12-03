@@ -8,7 +8,7 @@ mkdir build_android
 cd build_android
 mkdir -p ../../build/libs
 cmake ../ -DCMAKE_SYSTEM_NAME=Android -DJAVET_VERSION=${JAVET_VERSION} "$@" \
-  && make -j$(nproc)
+  && make -j `nproc`
 if [ $? -eq 0 ]; then
   cp -f *.a ../../build/libs
   echo Build Completed

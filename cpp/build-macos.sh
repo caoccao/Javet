@@ -8,7 +8,7 @@ mkdir build_macos
 cd build_macos
 mkdir -p ../../build/libs
 cmake ../ -DJAVET_VERSION=${JAVET_VERSION} "$@" \
-  && make -j$(nproc)
+  && make -j `nproc`
 if [ $? -eq 0 ]; then
   cp -f *.a ../../build/libs
   echo Build Completed
