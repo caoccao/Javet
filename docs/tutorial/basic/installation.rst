@@ -168,16 +168,26 @@ OS                          Compatible
 =========================== =======================================================================================================================
 Ubuntu 22.04                Yes
 Ubuntu 20.04                Yes
-Ubuntu 18.04                Yes (since v1.1.0)
-Ubuntu 16.04                Yes (since v1.1.0)
-Cent OS 8                   Yes (since v1.1.0)
-Cent OS 7                   Yes (since v1.1.0)
+Ubuntu 18.04                Yes (since v1.1.0 and private builds)
+Ubuntu 16.04                Yes (since v1.1.0 and private builds)
+Cent OS 8                   Yes (since v1.1.0 and private builds)
+Cent OS 7                   Yes (since v1.1.0 and private builds)
 Other Linux Distributions   Not Tested
 =========================== =======================================================================================================================
 
 .. caution::
 
     * Private builds imply considerable additional effort, so there is no commitments. Please contact the maintainer for private builds wisely. 
+
+=============== ========================
+glibc Version   Javet Version
+=============== ========================
+2.29            v3.0.3+
+2.34            v3.0.1 - v3.0.2
+2.29            v0.8.6 - v3.0.0
+2.25            v0.8.0 - v0.8.6
+2.14            v0.7.0 - v0.7.4
+=============== ========================
 
 Mac OS
 ------
