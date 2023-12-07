@@ -98,6 +98,7 @@ using V8PersistentSymbol = v8::Persistent<v8::Symbol>;
 using V8PersistentSymbolObject = v8::Persistent<v8::SymbolObject>;
 using V8PersistentValue = v8::Persistent<v8::Value>;
 
+using V8ArrayBufferAllocator = v8::ArrayBuffer::Allocator;
 using V8Platform = v8::Platform;
 using V8StringUtf8Value = v8::String::Utf8Value;
 using V8StringValue = v8::String::Value;

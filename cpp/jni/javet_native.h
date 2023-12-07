@@ -122,6 +122,7 @@ namespace Javet {
         extern std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
 #else
         extern std::unique_ptr<V8Platform> GlobalV8Platform;
+        extern std::shared_ptr<V8ArrayBufferAllocator> GlobalV8ArrayBufferAllocator;
 #endif
 
         void Dispose(JNIEnv* jniEnv) noexcept;

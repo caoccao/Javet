@@ -78,7 +78,7 @@ namespace Javet {
 #else
     V8Runtime::V8Runtime(
         V8Platform * v8PlatformPointer,
-        std::shared_ptr<ArrayBuffer::Allocator> v8ArrayBufferAllocator) noexcept
+        std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator) noexcept
         : v8Locker(nullptr) {
         this->v8ArrayBufferAllocator = v8ArrayBufferAllocator;
 #endif

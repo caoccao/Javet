@@ -53,7 +53,7 @@ namespace Javet {
 #else
         V8Runtime(
             V8Platform* v8PlatformPointer,
-            std::shared_ptr<ArrayBuffer::Allocator> v8ArrayBufferAllocator) noexcept;
+            std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator) noexcept;
 #endif
 
         bool Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept;
@@ -176,7 +176,7 @@ namespace Javet {
         std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
         uv_loop_t uvLoop;
 #else
-        std::shared_ptr<ArrayBuffer::Allocator> v8ArrayBufferAllocator;
+        std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator;
 #endif
     };
 }
