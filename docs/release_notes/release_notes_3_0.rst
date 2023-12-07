@@ -7,6 +7,7 @@ Release Notes 3.0.x
 
 * Restore the reference lock to fix another contention issue introduced in v3.0.0
 * Downgraded to Ubuntu 20.04 for better compatibility
+* Fixed a slight memory leak in closing the V8 runtime.
 
 3.0.2 V8 v12.0
 --------------

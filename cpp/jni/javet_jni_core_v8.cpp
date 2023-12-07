@@ -104,9 +104,13 @@ Creating multiple isolates allows running JavaScript code in multiple threads, t
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 (JNIEnv* jniEnv, jobject caller, jobject mRuntimeOptions) {
 #ifdef ENABLE_NODE
-    auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get(), Javet::NodeNative::GlobalNodeArrayBufferAllocator);
+    auto v8Runtime = new Javet::V8Runtime(
+        Javet::V8Native::GlobalV8Platform.get(),
+        Javet::NodeNative::GlobalNodeArrayBufferAllocator);
 #else
-    auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get());
+    auto v8Runtime = new Javet::V8Runtime(
+        Javet::V8Native::GlobalV8Platform.get(),
+        Javet::V8Native::GlobalV8ArrayBufferAllocator);
 #endif
     INCREASE_COUNTER(Javet::Monitor::CounterType::NewV8Runtime);
     v8Runtime->CreateV8Isolate();

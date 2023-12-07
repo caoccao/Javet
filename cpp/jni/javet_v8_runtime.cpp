@@ -76,8 +76,11 @@ namespace Javet {
         purgeEventLoopBeforeClose = false;
         this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
 #else
-    V8Runtime::V8Runtime(V8Platform * v8PlatformPointer) noexcept
+    V8Runtime::V8Runtime(
+        V8Platform * v8PlatformPointer,
+        std::shared_ptr<ArrayBuffer::Allocator> v8ArrayBufferAllocator) noexcept
         : v8Locker(nullptr) {
+        this->v8ArrayBufferAllocator = v8ArrayBufferAllocator;
 #endif
         externalV8Runtime = nullptr;
         externalException = nullptr;
@@ -301,7 +304,7 @@ namespace Javet {
         v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
 #else
         v8::Isolate::CreateParams createParams;
-        createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+        createParams.array_buffer_allocator = v8ArrayBufferAllocator.get();
         createParams.oom_error_callback = Javet::Callback::OOMErrorCallback;
         v8Isolate = v8::Isolate::New(createParams);
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);

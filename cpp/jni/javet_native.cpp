@@ -101,6 +101,7 @@ namespace Javet {
         std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
 #else
         std::unique_ptr<V8Platform> GlobalV8Platform;
+        std::shared_ptr<ArrayBuffer::Allocator> GlobalV8ArrayBufferAllocator;
 #endif
 
         jclass jclassV8Host;
@@ -115,6 +116,9 @@ namespace Javet {
                 v8::V8::Dispose();
                 v8::V8::DisposePlatform();
                 GlobalV8Platform.reset();
+#ifndef ENABLE_NODE
+                GlobalV8ArrayBufferAllocator.reset();
+#endif
             }
         }
 
@@ -161,6 +165,10 @@ namespace Javet {
             auto pageAllocator = Javet::V8Native::GlobalV8Platform->GetPageAllocator();
             LOG_INFO("Calling cppgc::InitializeProcess().");
             cppgc::InitializeProcess(pageAllocator);
+#else
+            if (!GlobalV8ArrayBufferAllocator) {
+                GlobalV8ArrayBufferAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+            }
 #endif
             LOG_INFO("V8::Initialize() ends.");
         }
