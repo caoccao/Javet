@@ -8,7 +8,8 @@ Release Notes 3.0.x
 * Restore the reference lock to fix another contention issue introduced in v3.0.0
 * Downgraded to Ubuntu 20.04 for better compatibility
 * Fixed a slight memory leak in closing the V8 runtime
-* Applied a temporary patch to V8 to avoid crashes on few Linux distributions in VM
+* Applied a temporary [patch](https://github.com/caoccao/Javet/issues/290) to V8 to avoid crashes on few Linux distributions in VM
+* Add ``kNoStdioInitialization`` and ``kNoDefaultSignalHandling`` to Node.js initialization
 
 3.0.2 V8 v12.0
 --------------

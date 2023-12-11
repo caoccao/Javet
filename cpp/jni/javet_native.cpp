@@ -147,6 +147,8 @@ namespace Javet {
                 std::vector<std::string> errors;
                 auto flags = static_cast<node::ProcessInitializationFlags::Flags>(
                     node::ProcessInitializationFlags::kNoFlags
+                    | node::ProcessInitializationFlags::kNoStdioInitialization
+                    | node::ProcessInitializationFlags::kNoDefaultSignalHandling
                     | node::ProcessInitializationFlags::kNoInitializeV8
                     | node::ProcessInitializationFlags::kNoInitializeNodeV8Platform
                     | node::ProcessInitializationFlags::kNoInitializeCppgc);
