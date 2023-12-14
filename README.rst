@@ -50,7 +50,8 @@ arm64       ✔️        ✔️       ✔️        ❌
 * Javet engine pool
 * Easy spring integration
 * Live debug with Chrome DevTools
-* AST Analysis with `JavetSanitizer <https://github.com/caoccao/JavetSanitizer>`_
+* AST analysis with `JavetSanitizer <https://github.com/caoccao/JavetSanitizer>`_
+* Live interaction with `JavetShell <https://github.com/caoccao/JavetShell>`_
 
 Quick Start
 ===========
