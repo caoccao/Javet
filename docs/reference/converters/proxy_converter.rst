@@ -279,18 +279,18 @@ This feature is similar to the dynamic anonymous object for interface, but it al
     <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy</artifactId>
-        <version>1.12.17</version>
+        <version>1.14.10</version>
     </dependency>
 
 .. code-block:: kotlin
 
     // Gradle Kotlin DSL
-    implementation("net.bytebuddy:byte-buddy:1.12.17")
+    implementation("net.bytebuddy:byte-buddy:1.14.10")
 
 .. code-block:: groovy
 
     // Gradle Groovy DSL
-    implementation 'net.bytebuddy:byte-buddy:1.12.17'
+    implementation 'net.bytebuddy:byte-buddy:1.14.10'
 
 2. Copy :extsource3:`JavetReflectionObjectFactory.java <../../../src/test/java/com/caoccao/javet/interop/proxy/JavetReflectionObjectFactory.java>` to your project. As Javet doesn't reference ``ByteBuddy`` directly, ``JavetReflectionObjectFactory`` has to stay at the test project.
 
