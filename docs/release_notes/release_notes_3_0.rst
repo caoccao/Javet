@@ -9,7 +9,8 @@ Release Notes 3.0.x
 * Downgraded to Ubuntu 20.04 for better compatibility
 * Fixed a slight memory leak in closing the V8 runtime
 * Applied a temporary [patch](https://github.com/caoccao/Javet/issues/290) to V8 to avoid crashes on few Linux distributions in VM
-* Add ``kNoStdioInitialization`` and ``kNoDefaultSignalHandling`` to Node.js initialization
+* Added ``kNoStdioInitialization`` and ``kNoDefaultSignalHandling`` to Node.js initialization
+* Improved performance of ``BaseJavetConsoleInterceptor``
 
 3.0.2 V8 v12.0
 --------------
