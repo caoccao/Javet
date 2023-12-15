@@ -62,7 +62,7 @@ public final class JavetReflectionProxyV8ValueObjectInvocationHandler implements
         } else if (v8ValueObject != null && !v8ValueObject.isClosed()) {
             if (method.isAnnotationPresent(V8Function.class)) {
                 String aliasMethodName = method.getAnnotation(V8Function.class).name();
-                if (aliasMethodName != null && aliasMethodName.length() > 0) {
+                if (aliasMethodName != null && !aliasMethodName.isEmpty()) {
                     methodName = aliasMethodName;
                 }
             }

@@ -17,9 +17,8 @@
 package com.caoccao.javet.interception.logging;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interception.BaseJavetInterceptor;
+import com.caoccao.javet.interception.BaseJavetDirectCallableInterceptor;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.utils.V8ValueUtils;
@@ -32,9 +31,7 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  *
  * @since 0.7.0
  */
-public abstract class BaseJavetConsoleInterceptor
-        extends BaseJavetInterceptor
-        implements IJavetDirectCallable {
+public abstract class BaseJavetConsoleInterceptor extends BaseJavetDirectCallableInterceptor {
     /**
      * The constant JS_FUNCTION_DEBUG.
      *
@@ -180,10 +177,10 @@ public abstract class BaseJavetConsoleInterceptor
     @Override
     public boolean register(IV8ValueObject... iV8ValueObjects) throws JavetException {
         boolean successful = true;
-        try (V8ValueObject console = v8Runtime.createV8ValueObject()) {
-            console.bind(this);
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.bind(this);
             for (IV8ValueObject iV8ValueObject : iV8ValueObjects) {
-                successful &= iV8ValueObject.set(PROPERTY_CONSOLE, console);
+                successful = iV8ValueObject.set(PROPERTY_CONSOLE, v8ValueObject) & successful;
             }
             return successful;
         }
@@ -193,15 +190,7 @@ public abstract class BaseJavetConsoleInterceptor
     public boolean unregister(IV8ValueObject... iV8ValueObjects) throws JavetException {
         boolean successful = true;
         for (IV8ValueObject iV8ValueObject : iV8ValueObjects) {
-            try (V8ValueObject console = iV8ValueObject.get(PROPERTY_CONSOLE)) {
-                console.delete(JS_FUNCTION_DEBUG);
-                console.delete(JS_FUNCTION_ERROR);
-                console.delete(JS_FUNCTION_INFO);
-                console.delete(JS_FUNCTION_LOG);
-                console.delete(JS_FUNCTION_TRACE);
-                console.delete(JS_FUNCTION_WARN);
-            }
-            successful &= iV8ValueObject.delete(PROPERTY_CONSOLE);
+            successful = iV8ValueObject.delete(PROPERTY_CONSOLE) & successful;
         }
         return successful;
     }

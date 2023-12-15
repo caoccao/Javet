@@ -11,6 +11,7 @@ Release Notes 3.0.x
 * Applied a temporary [patch](https://github.com/caoccao/Javet/issues/290) to V8 to avoid crashes on few Linux distributions in VM
 * Added ``kNoStdioInitialization`` and ``kNoDefaultSignalHandling`` to Node.js initialization
 * Improved performance of ``BaseJavetConsoleInterceptor``
+* Added ``JavetJVMInterceptor``
 
 3.0.2 V8 v12.0
 --------------
