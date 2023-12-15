@@ -39,6 +39,8 @@ import java.util.stream.Stream;
 
 /**
  * The Javet JVM interceptor exposes the whole JVM as <code>javet</code> in V8.
+ * It must be accompanied by {@link JavetProxyConverter}.
+ * <p>
  * Usages:
  * <code>
  * let sb = new javet.package.java.util.StringBuilder();
@@ -51,6 +53,13 @@ import java.util.stream.Stream;
  * @since 3.0.3
  */
 public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
+    /**
+     * The constant ERROR_THE_CONVERTER_MUST_BE_INSTANCE_OF_JAVET_PROXY_CONVERTER.
+     *
+     * @since 3.0.3
+     */
+    protected static final String ERROR_THE_CONVERTER_MUST_BE_INSTANCE_OF_JAVET_PROXY_CONVERTER =
+            "The converter must be instance of JavetProxyConverter.";
     /**
      * The constant JS_FUNCTION_GC.
      *
@@ -78,6 +87,7 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
      */
     public JavetJVMInterceptor(V8Runtime v8Runtime) {
         super(v8Runtime);
+        assert v8Runtime.getConverter() instanceof JavetProxyConverter : ERROR_THE_CONVERTER_MUST_BE_INSTANCE_OF_JAVET_PROXY_CONVERTER;
     }
 
     @Override
