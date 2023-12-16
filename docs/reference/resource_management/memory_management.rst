@@ -193,6 +193,16 @@ V8Runtime.lowMemoryNotification()
 
 This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It is also used in automatic GC aforementioned.
 
+System.gc() and System.runFinalization()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If ``JavetProxyConverter`` or  ``JavetBridgeConverter`` is used to inject JavaScript functions or objects to JVM, please be aware that those injected JavaScript functions and objects cannot be recycled by V8 garbage collector because they are referenced in JVM. They will be eventually recycled by JVM if their holding objects are recycled. The following code can explicitly recycle them.
+
+.. code-block:: java
+
+    System.gc();
+    System.runFinalization();
+
 Statistics
 ==========
 
