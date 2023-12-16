@@ -19,6 +19,7 @@ package com.caoccao.javet.interception.jvm;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
+import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,9 @@ public class TestJavetJVMInterceptor extends BaseTestJavetRuntime {
     @Override
     public void beforeEach() throws JavetException {
         super.beforeEach();
-        v8Runtime.setConverter(new JavetProxyConverter());
+        JavetProxyConverter javetProxyConverter = new JavetProxyConverter();
+        javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
+        v8Runtime.setConverter(javetProxyConverter);
         javetJVMInterceptor = new JavetJVMInterceptor(v8Runtime);
         assertTrue(javetJVMInterceptor.register(v8Runtime.getGlobalObject()));
     }
@@ -87,5 +90,21 @@ public class TestJavetJVMInterceptor extends BaseTestJavetRuntime {
                 "a1",
                 v8Runtime.getExecutor("let sb = new java.lang.StringBuilder(); sb.append('a').append(1); sb.toString();").executeString());
         v8Runtime.getExecutor("java = undefined; sb = undefined;").executeVoid();
+    }
+
+    @Test
+    public void testThread() throws JavetException, InterruptedException {
+        Thread thread = v8Runtime.getExecutor(
+                "let java = javet.package.java;" +
+                        "let count = 0;" +
+                        "let thread = new java.lang.Thread(() => { count++; });" +
+                        "thread.start();" +
+                        "thread; "
+        ).executeObject();
+        thread.join();
+        assertEquals(1, v8Runtime.getExecutor("count").executeInteger());
+        v8Runtime.getExecutor("java = undefined; thread = undefined;").executeVoid();
+        System.gc();
+        System.runFinalization();
     }
 }

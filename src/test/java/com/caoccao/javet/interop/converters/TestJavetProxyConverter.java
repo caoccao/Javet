@@ -99,13 +99,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals(2, list.size());
                 assertEquals("a", list.get(0));
                 assertNull(list.get(1));
-                if (list instanceof AutoCloseable) {
-                    try {
-                        ((AutoCloseable) list).close();
-                    } catch (Exception e) {
-                        fail(e.getMessage());
-                    }
-                }
             }
 
             public void expectLong(Long value1, long value2) {
@@ -577,6 +570,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         String codeStringWithoutCast = "a.expectListOfStrings(['a', null]);";
         v8Runtime.getExecutor(codeStringWithoutCast).executeVoid();
         v8Runtime.getGlobalObject().delete("a");
+        System.gc();
+        System.runFinalization();
     }
 
     @Test

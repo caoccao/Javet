@@ -17,12 +17,8 @@
 package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.annotations.V8Function;
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetClosable;
-import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
@@ -30,10 +26,8 @@ import java.lang.reflect.Method;
  *
  * @since 0.9.10
  */
-public final class JavetReflectionProxyV8ValueObjectInvocationHandler implements InvocationHandler, IJavetClosable {
-    private static final String METHOD_NAME_CLOSE = "close";
-    private V8ValueObject v8ValueObject;
-
+public final class JavetReflectionProxyV8ValueObjectInvocationHandler
+        extends BaseJavetReflectionProxyInvocationHandler<V8ValueObject> {
     /**
      * Instantiates a new Javet reflection proxy V8 value object invocation handler.
      *
@@ -41,13 +35,7 @@ public final class JavetReflectionProxyV8ValueObjectInvocationHandler implements
      * @since 0.9.10
      */
     public JavetReflectionProxyV8ValueObjectInvocationHandler(V8ValueObject v8ValueObject) {
-        this.v8ValueObject = v8ValueObject;
-    }
-
-    @Override
-    public void close() throws JavetException {
-        JavetResourceUtils.safeClose(v8ValueObject);
-        v8ValueObject = null;
+        super(v8ValueObject);
     }
 
     @Override
@@ -59,20 +47,15 @@ public final class JavetReflectionProxyV8ValueObjectInvocationHandler implements
         String methodName = method.getName();
         if (methodName.equals(METHOD_NAME_CLOSE) && args.length == 0) {
             close();
-        } else if (v8ValueObject != null && !v8ValueObject.isClosed()) {
+        } else if (v8ValueReference != null && !v8ValueReference.isClosed()) {
             if (method.isAnnotationPresent(V8Function.class)) {
                 String aliasMethodName = method.getAnnotation(V8Function.class).name();
                 if (aliasMethodName != null && !aliasMethodName.isEmpty()) {
                     methodName = aliasMethodName;
                 }
             }
-            result = v8ValueObject.invokeObject(methodName, args);
+            result = v8ValueReference.invokeObject(methodName, args);
         }
         return result;
-    }
-
-    @Override
-    public boolean isClosed() {
-        return v8ValueObject == null || v8ValueObject.isClosed();
     }
 }
