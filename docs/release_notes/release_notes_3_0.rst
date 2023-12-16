@@ -8,6 +8,7 @@ Release Notes 3.0.x
 * Restore the reference lock to fix another contention issue introduced in v3.0.0
 * Downgraded to Ubuntu 20.04 for better compatibility
 * Fixed a slight memory leak in closing the V8 runtime
+* Fixed a memory leak in dynamic proxy and dynamic object
 * Applied a temporary [patch](https://github.com/caoccao/Javet/issues/290) to V8 to avoid crashes on few Linux distributions in VM
 * Added ``kNoStdioInitialization`` and ``kNoDefaultSignalHandling`` to Node.js initialization
 * Improved performance of ``BaseJavetConsoleInterceptor``

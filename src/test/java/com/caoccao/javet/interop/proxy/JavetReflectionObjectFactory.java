@@ -145,6 +145,11 @@ public final class JavetReflectionObjectFactory implements IJavetReflectionObjec
             v8ValueObject = null;
         }
 
+        @Override
+        protected void finalize() throws Throwable {
+            close();
+        }
+
         /**
          * Gets dynamic object.
          *
