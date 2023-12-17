@@ -337,7 +337,13 @@ Voilà aussi! It works again.
 
 .. note::
 
-    The JavaScript implementation is backed up by ``V8ValueObject`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoCloseable`` as the sample shows so that the orphan ``V8ValueObject`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueObject`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
+    The JavaScript implementation is backed up by ``V8ValueObject`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer be callable. It's recommended to have the interface or the object implement ``AutoCloseable`` as the sample shows so that the orphan ``V8ValueObject`` can be recycled explicitly.
+    
+    If you don't own the interface or the object, there are 2 ways of recycling it to avoid memory leak.
+    
+    1. Manually calling ``System.gc(); System.runFinalization();`` will recycle the orphan ``V8ValueObject`` via the Java garbage collector.
+
+    2. Javet will force the recycle of the orphan ``V8ValueObject`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long time without recycling them in time, ``OutOfMemoryError`` may occur. Of course, that is less likely going to happen because the Java garbage collector runs periodically.
 
 Features
 ========
