@@ -5,7 +5,7 @@ Release Notes 3.0.x
 3.0.3 V8
 --------
 
-* Restore the reference lock to fix another contention issue introduced in v3.0.0
+* Restore the reference lock
 * Downgraded to Ubuntu 20.04 for better compatibility
 * Fixed a slight memory leak in closing the V8 runtime
 * Fixed a memory leak in dynamic proxy and dynamic object
