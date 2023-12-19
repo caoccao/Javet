@@ -113,7 +113,7 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
         Javet::V8Native::GlobalV8ArrayBufferAllocator);
 #endif
     INCREASE_COUNTER(Javet::Monitor::CounterType::NewV8Runtime);
-    v8Runtime->CreateV8Isolate();
+    v8Runtime->CreateV8Isolate(jniEnv, mRuntimeOptions);
     v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
     return TO_JAVA_LONG(v8Runtime);
 }
@@ -372,7 +372,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     v8Runtime->CloseV8Context();
     v8Runtime->CloseV8Isolate();
-    v8Runtime->CreateV8Isolate();
+    v8Runtime->CreateV8Isolate(jniEnv, mRuntimeOptions);
     v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
 }
 
@@ -391,6 +391,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
         v8ValueReference->v8PersistentDataPointer = v8PersistentDataPointer;
         v8PersistentDataPointer->SetWeak(v8ValueReference, Javet::Callback::JavetCloseWeakDataReference, v8::WeakCallbackType::kParameter);
     }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_snapshotCreate
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    return v8Runtime->createSnapshot(jniEnv);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals

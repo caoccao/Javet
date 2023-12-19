@@ -16,8 +16,6 @@
 
 package com.caoccao.javet.interop.options;
 
-import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
-
 /**
  * The type Runtime options.
  *
@@ -26,11 +24,12 @@ import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
  */
 public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
     /**
-     * The reflection object factory.
+     * The Snapshot enabled flag indicates whether the snapshot feature is enabled or not.
+     * It is disabled by default.
      *
-     * @since 2.0.1
+     * @since 3.0.3
      */
-    protected IJavetReflectionObjectFactory reflectionObjectFactory;
+    protected boolean snapshotEnabled;
 
     /**
      * Instantiates a new Runtime options.
@@ -38,28 +37,28 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      * @since 1.0.0
      */
     public RuntimeOptions() {
-        reflectionObjectFactory = null;
+        snapshotEnabled = false;
     }
 
     /**
-     * Gets reflection object factory.
+     * Is snapshot enabled.
      *
-     * @return the reflection object factory
-     * @since 2.0.1
+     * @return true : enabled, false : disabled
+     * @since 3.0.3
      */
-    public IJavetReflectionObjectFactory getReflectionObjectFactory() {
-        return reflectionObjectFactory;
+    public boolean isSnapshotEnabled() {
+        return snapshotEnabled;
     }
 
     /**
-     * Sets reflection object factory.
+     * Sets snapshot enabled.
      *
-     * @param reflectionObjectFactory the reflection object factory
+     * @param snapshotEnabled the snapshot enabled
      * @return the self
-     * @since 2.0.1
+     * @since 3.0.3
      */
-    public RuntimeOptions<Options> setReflectionObjectFactory(IJavetReflectionObjectFactory reflectionObjectFactory) {
-        this.reflectionObjectFactory = reflectionObjectFactory;
+    public RuntimeOptions<Options> setSnapshotEnabled(boolean snapshotEnabled) {
+        this.snapshotEnabled = snapshotEnabled;
         return this;
     }
 }

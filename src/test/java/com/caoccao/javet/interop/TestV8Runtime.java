@@ -24,6 +24,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.interop.callback.IJavetGCCallback;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.values.reference.V8ValueGlobalObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -198,6 +199,21 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.resetIsolate();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
+        }
+    }
+
+    @Test
+    public void testSnapshot() throws JavetException {
+        RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+        options.setSnapshotEnabled(true);
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+            v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
+            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            if (v8Runtime.getJSRuntimeType().isV8()) {
+                byte[] snapshot = v8Runtime.createSnapshot();
+                assertNotNull(snapshot);
+                assertTrue(snapshot.length > 0);
+            }
         }
     }
 

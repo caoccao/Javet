@@ -701,6 +701,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.contextSetLength(handle, iV8Context.getHandle(), iV8Context.getType().getId(), length);
     }
 
+    /**
+     * Create snapshot in byte array.
+     *
+     * @return the byte array
+     * @throws JavetException the javet exception
+     * @since 3.0.3
+     */
+    public byte[] createSnapshot() throws JavetException {
+        return v8Native.snapshotCreate(handle);
+    }
+
     @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue

@@ -81,8 +81,10 @@ namespace Javet {
         void CloseV8Context() noexcept;
         void CloseV8Isolate() noexcept;
 
+        jbyteArray createSnapshot(JNIEnv* jniEnv) noexcept;
+
         void CreateV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
-        void CreateV8Isolate() noexcept;
+        void CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
 
         static inline V8Runtime* FromHandle(jlong handle) noexcept {
             return reinterpret_cast<V8Runtime*>(handle);
@@ -167,6 +169,7 @@ namespace Javet {
         virtual ~V8Runtime();
 
     private:
+        std::unique_ptr<v8::SnapshotCreator> v8SnapshotCreator;
         std::shared_ptr<v8::Locker> v8Locker;
         V8PersistentContext v8PersistentContext;
 #ifdef ENABLE_NODE

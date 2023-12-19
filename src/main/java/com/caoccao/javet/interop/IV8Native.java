@@ -368,6 +368,8 @@ public interface IV8Native {
 
     void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
+    byte[] snapshotCreate(long v8RuntimeHandle);
+
     boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     Object symbolCreate(long v8RuntimeHandle, String description);

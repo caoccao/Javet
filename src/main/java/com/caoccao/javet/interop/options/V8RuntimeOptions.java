@@ -34,12 +34,7 @@ public final class V8RuntimeOptions extends RuntimeOptions<V8RuntimeOptions> {
      * @since 1.1.7
      */
     public static final V8Flags V8_FLAGS = new V8Flags();
-    /**
-     * The Global name.
-     *
-     * @since 1.0.0
-     */
-    protected String globalName;
+    private String globalName;
 
     /**
      * Instantiates a new V8 runtime options.
@@ -69,7 +64,7 @@ public final class V8RuntimeOptions extends RuntimeOptions<V8RuntimeOptions> {
      * @since 1.0.0
      */
     public V8RuntimeOptions setGlobalName(String globalName) {
-        this.globalName = globalName == null || globalName.length() == 0 ? null : globalName;
+        this.globalName = globalName == null || globalName.isEmpty() ? null : globalName;
         return this;
     }
 }

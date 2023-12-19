@@ -559,6 +559,9 @@ class V8Native implements IV8Native {
     public native void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 
     @Override
+    public native byte[] snapshotCreate(long v8RuntimeHandle);
+
+    @Override
     public native boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     @Override
