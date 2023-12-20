@@ -205,7 +205,7 @@ public class TestV8Runtime extends BaseTestJavet {
     @Test
     public void testSnapshot() throws JavetException {
         RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
-        options.setSnapshotEnabled(true);
+        options.setCreateSnapshotEnabled(true);
         try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
             v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
             assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());

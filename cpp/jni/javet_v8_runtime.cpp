@@ -26,7 +26,7 @@
 
 namespace Javet {
     jclass jclassRuntimeOptions;
-    jmethodID jmethodRuntimeOptionsIsSnapshotEnabled;
+    jmethodID jmethodRuntimeOptionsIsCreateSnapshotEnabled;
 #ifdef ENABLE_NODE
     jmethodID jmethodNodeRuntimeOptionsGetConsoleArguments;
     std::mutex mutexForNodeResetEnvrironment;
@@ -43,9 +43,9 @@ namespace Javet {
         jclassRuntimeOptions = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/options/V8RuntimeOptions");
         jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
 #endif
-        bool isFrozen = V8InternalFlagList::IsFrozen(); // Since V8 v10.5
-        jmethodRuntimeOptionsIsSnapshotEnabled = jniEnv->GetMethodID(jclassRuntimeOptions, "isSnapshotEnabled", "()Z");
+        jmethodRuntimeOptionsIsCreateSnapshotEnabled = jniEnv->GetMethodID(jclassRuntimeOptions, "isCreateSnapshotEnabled", "()Z");
         // Set V8 flags
+        bool isFrozen = V8InternalFlagList::IsFrozen(); // Since V8 v10.5
         if (!isFrozen) {
             jclass jclassV8Flags = jniEnv->FindClass("com/caoccao/javet/interop/options/V8Flags");
             jmethodID jmethodIDV8FlagsToString = jniEnv->GetMethodID(jclassV8Flags, "toString", "()Ljava/lang/String;");
@@ -73,7 +73,7 @@ namespace Javet {
     V8Runtime::V8Runtime(
         node::MultiIsolatePlatform* v8PlatformPointer,
         std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator) noexcept
-        : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), v8Locker(nullptr), v8SnapshotCreator(nullptr), uvLoop() {
+        : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), uvLoop(), v8Locker(nullptr), v8SnapshotCreator(nullptr) {
         purgeEventLoopBeforeClose = false;
         this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
 #else
@@ -322,9 +322,9 @@ namespace Javet {
     }
 
     void V8Runtime::CreateV8Isolate(JNIEnv * jniEnv, const jobject mRuntimeOptions) noexcept {
-        bool snapshotEnabled = false;
+        bool createSnapshotEnabled = false;
         if (mRuntimeOptions != nullptr) {
-            snapshotEnabled = jniEnv->CallBooleanMethod(mRuntimeOptions, jmethodRuntimeOptionsIsSnapshotEnabled);
+            createSnapshotEnabled = jniEnv->CallBooleanMethod(mRuntimeOptions, jmethodRuntimeOptionsIsCreateSnapshotEnabled);
         }
 #ifdef ENABLE_NODE
         int errorCode = uv_loop_init(&uvLoop);
@@ -342,7 +342,7 @@ namespace Javet {
         }
         v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
 #else
-        if (snapshotEnabled) {
+        if (createSnapshotEnabled) {
             v8SnapshotCreator.reset(new v8::SnapshotCreator());
             v8Isolate = v8SnapshotCreator->GetIsolate();
         }
