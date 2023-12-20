@@ -704,14 +704,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Create snapshot in byte array.
      *
-     * @see <a href="https://v8.dev/blog/custom-startup-snapshots">Custom startup snapshots</a>
-     *
      * @return the byte array
+     * @throws JavetException the javet exception
+     * @see <a href="https://v8.dev/blog/custom-startup-snapshots">Custom startup snapshots</a>
      * @since 3.0.3
      */
-    public byte[] createSnapshot() {
+    public byte[] createSnapshot() throws JavetException {
         if (!runtimeOptions.isCreateSnapshotEnabled()) {
-
+            throw new JavetException(JavetError.RuntimeCreateSnapshotDisabled);
+        }
+        final int callbackContextCount = getCallbackContextCount();
+        final int referenceCount = getReferenceCount();
+        final int v8ModuleCount = getV8ModuleCount();
+        if (callbackContextCount > 0 || referenceCount > 0 || v8ModuleCount > 0) {
+            throw new JavetException(JavetError.RuntimeCreateSnapshotBlocked, SimpleMap.of(
+                    JavetError.PARAMETER_CALLBACK_CONTEXT_COUNT, callbackContextCount,
+                    JavetError.PARAMETER_REFERENCE_COUNT, referenceCount,
+                    JavetError.PARAMETER_V8_MODULE_COUNT, v8ModuleCount));
         }
         return v8Native.snapshotCreate(handle);
     }

@@ -15,6 +15,7 @@ Release Notes 3.0.x
 * Added ``JavetJVMInterceptor``
 * Added ``createSnapshot()`` to ``V8Runtime``
 * Added ``isCreateSnapshotEnabled()``, ``setCreateSnapshotEnabled()``, ``getSnapshotBlob()``, ``setSnapshotBlob()`` to ``RuntimeOptions``
+* Added ``RuntimeCreateSnapshotDisabled``, ``RuntimeCreateSnapshotBlocked`` to ``JavetError``
 
 3.0.2 V8 v12.0
 --------------

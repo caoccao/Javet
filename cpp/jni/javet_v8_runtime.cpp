@@ -1,4 +1,4 @@
-﻿/*
+/*
  *   Copyright (c) 2021-2023 caoccao.com Sam Cao
  *   All rights reserved.
 
@@ -220,8 +220,10 @@ namespace Javet {
                 v8Isolate->Dispose();
             }
             if (v8StartupData) {
-                delete[] v8StartupData->data;
-                v8StartupData->raw_size = 0;
+                if (v8StartupData->raw_size > 0) {
+                    delete[] v8StartupData->data;
+                    v8StartupData->raw_size = 0;
+                }
                 v8StartupData.reset();
             }
 #ifdef ENABLE_NODE
@@ -369,7 +371,7 @@ namespace Javet {
                 v8StartupData.reset(new v8::StartupData());
                 v8StartupData->data = new char[snapshotBlobSize];
                 v8StartupData->raw_size = snapshotBlobSize;
-                memcpy((void *)v8StartupData->data, (void *)snapshotBlobElements, snapshotBlobSize);
+                memcpy((void*)v8StartupData->data, (void*)snapshotBlobElements, snapshotBlobSize);
                 createParams.snapshot_blob = v8StartupData.get();
                 jniEnv->ReleaseByteArrayElements(snapshotBlob, snapshotBlobElements, JNI_ABORT);
             }
