@@ -14,7 +14,7 @@ Release Notes 3.0.x
 * Improved performance of ``BaseJavetConsoleInterceptor``
 * Added ``JavetJVMInterceptor``
 * Added ``createSnapshot()`` to ``V8Runtime``
-* Added ``isCreateSnapshotEnabled()``, ``setCreateSnapshotEnabled()`` to ``RuntimeOptions``
+* Added ``isCreateSnapshotEnabled()``, ``setCreateSnapshotEnabled()``, ``getSnapshotBlob()``, ``setSnapshotBlob()`` to ``RuntimeOptions``
 
 3.0.2 V8 v12.0
 --------------

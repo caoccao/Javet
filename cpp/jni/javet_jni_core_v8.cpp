@@ -396,7 +396,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_snapshotCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    return v8Runtime->createSnapshot(jniEnv);
+    return v8Runtime->CreateSnapshot(jniEnv);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals

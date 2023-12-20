@@ -206,13 +206,23 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testSnapshot() throws JavetException {
         RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
         options.setCreateSnapshotEnabled(true);
+        byte[] snapshotBlob = null;
         try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
             v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
             assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
-            if (v8Runtime.getJSRuntimeType().isV8()) {
-                byte[] snapshot = v8Runtime.createSnapshot();
-                assertNotNull(snapshot);
-                assertTrue(snapshot.length > 0);
+            if (v8Host.getJSRuntimeType().isV8()) {
+                snapshotBlob = v8Runtime.createSnapshot();
+                assertNotNull(snapshotBlob);
+                assertTrue(snapshotBlob.length > 0);
+            }
+            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+        }
+        if (v8Host.getJSRuntimeType().isV8()) {
+            options.setSnapshotBlob(snapshotBlob).setCreateSnapshotEnabled(false);
+            for (int i = 0; i < 5; ++i) {
+                try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                    assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                }
             }
         }
     }

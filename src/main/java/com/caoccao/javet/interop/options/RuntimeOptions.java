@@ -30,6 +30,12 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      * @since 3.0.3
      */
     protected boolean createSnapshotEnabled;
+    /**
+     * The Snapshot blob.
+     *
+     * @since 3.0.3
+     */
+    protected byte[] snapshotBlob;
 
     /**
      * Instantiates a new Runtime options.
@@ -38,6 +44,17 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      */
     public RuntimeOptions() {
         createSnapshotEnabled = false;
+        snapshotBlob = null;
+    }
+
+    /**
+     * Get snapshot blob in byte array.
+     *
+     * @return the byte array
+     * @since 3.0.3
+     */
+    public byte[] getSnapshotBlob() {
+        return snapshotBlob;
     }
 
     /**
@@ -59,6 +76,18 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      */
     public RuntimeOptions<Options> setCreateSnapshotEnabled(boolean createSnapshotEnabled) {
         this.createSnapshotEnabled = createSnapshotEnabled;
+        return this;
+    }
+
+    /**
+     * Sets snapshot blob.
+     *
+     * @param snapshotBlob the snapshot blob
+     * @return the self
+     * @since 3.0.3
+     */
+    public RuntimeOptions<Options> setSnapshotBlob(byte[] snapshotBlob) {
+        this.snapshotBlob = snapshotBlob;
         return this;
     }
 }
