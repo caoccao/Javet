@@ -105,6 +105,7 @@ public class TestJavetJVMInterceptor extends BaseTestJavetRuntime {
         assertEquals(1, v8Runtime.getExecutor("count").executeInteger());
         v8Runtime.getExecutor("java = undefined; thread = undefined;").executeVoid();
         System.gc();
+        System.gc();
         System.runFinalization();
     }
 }
