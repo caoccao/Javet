@@ -247,6 +247,13 @@ namespace Javet {
             v8PersistentContext.Reset();
             v8GlobalObject.Reset();
             // Backup context and global object (End)
+#ifdef ENABLE_NODE
+            nodeIsolateData->Serialize(v8SnapshotCreator.get());
+            nodeEnvironment->Serialize(v8SnapshotCreator.get());
+            v8SnapshotCreator->SetDefaultContext(v8LocalContext, { node::SerializeNodeContextInternalFields, nodeEnvironment.get() });
+#else
+            v8SnapshotCreator->SetDefaultContext(v8LocalContext);
+#endif
             v8::StartupData newV8StartupData = v8SnapshotCreator->CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
             if (newV8StartupData.IsValid()) {
                 jbytes = jniEnv->NewByteArray(newV8StartupData.raw_size);
@@ -326,13 +333,6 @@ namespace Javet {
         v8PersistentContext.Reset(v8Isolate, v8LocalContext);
         v8GlobalObject.Reset(
             v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
-        if (v8SnapshotCreator) {
-#ifdef ENABLE_NODE
-            v8SnapshotCreator->SetDefaultContext(v8LocalContext, { node::SerializeNodeContextInternalFields, nodeEnvironment.get() });
-#else
-            v8SnapshotCreator->SetDefaultContext(v8LocalContext);
-#endif
-        }
     }
 
     void V8Runtime::CreateV8Isolate(JNIEnv * jniEnv, const jobject mRuntimeOptions) noexcept {
