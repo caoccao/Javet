@@ -28,6 +28,7 @@
 #include <node.h>
 #include <uv.h>
 #include <env-inl.h>
+#include <node_snapshot_builder.h>
 // Hack Begins (The hack is for resolving the conflicts between Node.js and V8)
 #define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
 #define V8_TRACING_TRACE_EVENT_H_

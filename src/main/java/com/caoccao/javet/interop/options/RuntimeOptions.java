@@ -69,7 +69,6 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
 
     /**
      * Sets create snapshot enabled.
-     * The snapshot blob will be set to null if create snapshot is enabled.
      *
      * @param createSnapshotEnabled the create snapshot enabled
      * @return the self
@@ -77,15 +76,11 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      */
     public RuntimeOptions<Options> setCreateSnapshotEnabled(boolean createSnapshotEnabled) {
         this.createSnapshotEnabled = createSnapshotEnabled;
-        if (this.createSnapshotEnabled) {
-            snapshotBlob = null;
-        }
         return this;
     }
 
     /**
      * Sets snapshot blob.
-     * The create snapshot enabled will be set to false if the snapshot blob is not empty.
      *
      * @param snapshotBlob the snapshot blob
      * @return the self
@@ -93,9 +88,6 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      */
     public RuntimeOptions<Options> setSnapshotBlob(byte[] snapshotBlob) {
         this.snapshotBlob = snapshotBlob == null || snapshotBlob.length == 0 ? null : snapshotBlob;
-        if (this.snapshotBlob != null) {
-            createSnapshotEnabled = false;
-        }
         return this;
     }
 }

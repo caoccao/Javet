@@ -247,14 +247,14 @@ namespace Javet {
             v8PersistentContext.Reset();
             v8GlobalObject.Reset();
             // Backup context and global object (End)
-            v8::StartupData tempV8StartupData = v8SnapshotCreator->CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
-            if (tempV8StartupData.IsValid()) {
-                jbytes = jniEnv->NewByteArray(tempV8StartupData.raw_size);
+            v8::StartupData newV8StartupData = v8SnapshotCreator->CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
+            if (newV8StartupData.IsValid()) {
+                jbytes = jniEnv->NewByteArray(newV8StartupData.raw_size);
                 jboolean isCopy;
                 void* data = jniEnv->GetPrimitiveArrayCritical(jbytes, &isCopy);
-                memcpy(data, tempV8StartupData.data, tempV8StartupData.raw_size);
+                memcpy(data, newV8StartupData.data, newV8StartupData.raw_size);
                 jniEnv->ReleasePrimitiveArrayCritical(jbytes, data, JNI_ABORT);
-                delete[] tempV8StartupData.data;
+                delete[] newV8StartupData.data;
             }
             // Restore context and global object (Begin)
             v8PersistentContext.Reset(v8Isolate, v8LocalContext);
@@ -274,7 +274,7 @@ namespace Javet {
         auto v8LocalContext = node::NewContext(v8Isolate);
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
         // Create and load the environment only once per isolate.
-        if (nodeEnvironment.get() == nullptr) {
+        if (!nodeEnvironment) {
             std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
             std::vector<std::string> execArgs;
             if (mRuntimeOptions != nullptr) {
@@ -327,7 +327,11 @@ namespace Javet {
         v8GlobalObject.Reset(
             v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
         if (v8SnapshotCreator) {
+#ifdef ENABLE_NODE
+            v8SnapshotCreator->SetDefaultContext(v8LocalContext, { node::SerializeNodeContextInternalFields, nodeEnvironment.get() });
+#else
             v8SnapshotCreator->SetDefaultContext(v8LocalContext);
+#endif
         }
     }
 
@@ -336,8 +340,16 @@ namespace Javet {
         jbyteArray snapshotBlob = nullptr;
         if (mRuntimeOptions != nullptr) {
             createSnapshotEnabled = jniEnv->CallBooleanMethod(mRuntimeOptions, jmethodRuntimeOptionsIsCreateSnapshotEnabled);
-            if (!createSnapshotEnabled) {
-                snapshotBlob = (jbyteArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodRuntimeOptionsGetSnapshotBlob);
+            snapshotBlob = (jbyteArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodRuntimeOptionsGetSnapshotBlob);
+            if (snapshotBlob) {
+                jsize snapshotBlobSize = jniEnv->GetArrayLength(snapshotBlob);
+                jboolean isCopy;
+                jbyte* snapshotBlobElements = jniEnv->GetByteArrayElements(snapshotBlob, &isCopy);
+                v8StartupData.reset(new v8::StartupData());
+                v8StartupData->data = new char[snapshotBlobSize];
+                v8StartupData->raw_size = snapshotBlobSize;
+                memcpy((void*)v8StartupData->data, (void*)snapshotBlobElements, snapshotBlobSize);
+                jniEnv->ReleaseByteArrayElements(snapshotBlob, snapshotBlobElements, JNI_ABORT);
             }
         }
 #ifdef ENABLE_NODE
@@ -345,8 +357,17 @@ namespace Javet {
         if (errorCode != 0) {
             LOG_ERROR("Failed to init uv loop. Reason: " << uv_err_name(errorCode));
         }
-        // node::NewIsolate is thread-safe.
-        v8Isolate = node::NewIsolate(nodeArrayBufferAllocator, &uvLoop, v8PlatformPointer);
+        if (createSnapshotEnabled) {
+            const std::vector<intptr_t>& externalReferences = node::SnapshotBuilder::CollectExternalReferences();
+            v8Isolate = v8::Isolate::Allocate();
+            v8PlatformPointer->RegisterIsolate(v8Isolate, &uvLoop);
+            v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, externalReferences.data()));
+            v8Isolate->SetCaptureStackTraceForUncaughtExceptions(true, 10, v8::StackTrace::StackTraceOptions::kDetailed);
+        }
+        else {
+            // node::NewIsolate is thread-safe.
+            v8Isolate = node::NewIsolate(nodeArrayBufferAllocator, &uvLoop, v8PlatformPointer);
+        }
         {
             auto internalV8Locker = GetUniqueV8Locker();
             auto v8IsolateScope = GetV8IsolateScope();
@@ -357,23 +378,15 @@ namespace Javet {
         v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
 #else
         if (createSnapshotEnabled) {
-            v8SnapshotCreator.reset(new v8::SnapshotCreator());
-            v8Isolate = v8SnapshotCreator->GetIsolate();
+            v8Isolate = v8::Isolate::Allocate();
+            v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, nullptr, v8StartupData ? v8StartupData.get() : nullptr, true));
         }
         else {
             v8::Isolate::CreateParams createParams;
             createParams.array_buffer_allocator = v8ArrayBufferAllocator.get();
             createParams.oom_error_callback = Javet::Callback::OOMErrorCallback;
-            if (snapshotBlob) {
-                jsize snapshotBlobSize = jniEnv->GetArrayLength(snapshotBlob);
-                jboolean isCopy;
-                jbyte* snapshotBlobElements = jniEnv->GetByteArrayElements(snapshotBlob, &isCopy);
-                v8StartupData.reset(new v8::StartupData());
-                v8StartupData->data = new char[snapshotBlobSize];
-                v8StartupData->raw_size = snapshotBlobSize;
-                memcpy((void*)v8StartupData->data, (void*)snapshotBlobElements, snapshotBlobSize);
+            if (v8StartupData) {
                 createParams.snapshot_blob = v8StartupData.get();
-                jniEnv->ReleaseByteArrayElements(snapshotBlob, snapshotBlobElements, JNI_ABORT);
             }
             v8Isolate = v8::Isolate::New(createParams);
         }

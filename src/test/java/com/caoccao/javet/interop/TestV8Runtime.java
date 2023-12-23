@@ -204,25 +204,45 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testSnapshot() throws JavetException {
-        RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
-        options.setCreateSnapshotEnabled(true);
-        byte[] snapshotBlob = null;
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
-            v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
-            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
-            if (v8Host.getJSRuntimeType().isV8()) {
-                snapshotBlob = v8Runtime.createSnapshot();
-                assertNotNull(snapshotBlob);
-                assertTrue(snapshotBlob.length > 0);
-            }
-            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
-        }
         if (v8Host.getJSRuntimeType().isV8()) {
-            options.setSnapshotBlob(snapshotBlob).setCreateSnapshotEnabled(false);
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            options.setCreateSnapshotEnabled(true);
+            byte[] snapshotBlob1;
+            byte[] snapshotBlob2;
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                snapshotBlob1 = v8Runtime.createSnapshot();
+                assertNotNull(snapshotBlob1);
+                assertTrue(snapshotBlob1.length > 0);
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            }
+            options.setSnapshotBlob(snapshotBlob1);
             for (int i = 0; i < 5; ++i) {
                 try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
                     assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
                 }
+            }
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                v8Runtime.getExecutor("const subtract = (a, b) => a - b;").executeVoid();
+                snapshotBlob2 = v8Runtime.createSnapshot();
+                assertNotNull(snapshotBlob2);
+                assertTrue(snapshotBlob2.length > 0);
+            }
+            options.setSnapshotBlob(snapshotBlob2);
+            for (int i = 0; i < 5; ++i) {
+                try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                    assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                    assertEquals(1, v8Runtime.getExecutor("subtract(3, 2)").executeInteger());
+                }
+            }
+            options.setCreateSnapshotEnabled(false).setSnapshotBlob(null);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                v8Runtime.createSnapshot();
+                fail("Failed to report create snapshot disabled");
+            } catch (JavetException e) {
+                assertEquals(JavetError.RuntimeCreateSnapshotDisabled.getCode(), e.getError().getCode());
             }
         }
     }
