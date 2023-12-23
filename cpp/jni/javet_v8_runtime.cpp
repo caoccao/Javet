@@ -379,7 +379,7 @@ namespace Javet {
 #else
         if (createSnapshotEnabled) {
             v8Isolate = v8::Isolate::Allocate();
-            v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, nullptr, v8StartupData ? v8StartupData.get() : nullptr, true));
+            v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, nullptr, v8StartupData.get(), true));
         }
         else {
             v8::Isolate::CreateParams createParams;
