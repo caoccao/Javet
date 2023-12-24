@@ -395,7 +395,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 
 JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_snapshotCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8Locker = v8Runtime->GetSharedV8Locker();
+#else
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+#endif
     return v8Runtime->CreateSnapshot(jniEnv);
 }
 
