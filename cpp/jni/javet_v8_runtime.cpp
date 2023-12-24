@@ -75,14 +75,18 @@ namespace Javet {
     V8Runtime::V8Runtime(
         node::MultiIsolatePlatform* v8PlatformPointer,
         std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator) noexcept
-        : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), uvLoop(), v8Locker(nullptr), v8SnapshotCreator(nullptr), v8StartupData(nullptr) {
-        purgeEventLoopBeforeClose = false;
-        this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
+        : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), uvLoop(),
 #else
     V8Runtime::V8Runtime(
         V8Platform * v8PlatformPointer,
         std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator) noexcept
-        : v8Locker(nullptr), v8SnapshotCreator(nullptr), v8StartupData(nullptr) {
+        :
+#endif
+        v8Locker(nullptr), v8SnapshotCreator(nullptr), v8StartupData(nullptr, [](v8::StartupData* x) { if (x->raw_size > 0) { delete[] x->data; } }) {
+#ifdef ENABLE_NODE
+        purgeEventLoopBeforeClose = false;
+        this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
+#else
         this->v8ArrayBufferAllocator = v8ArrayBufferAllocator;
 #endif
         externalV8Runtime = nullptr;
@@ -219,13 +223,7 @@ namespace Javet {
             else {
                 v8Isolate->Dispose();
             }
-            if (v8StartupData) {
-                if (v8StartupData->raw_size > 0) {
-                    delete[] v8StartupData->data;
-                    v8StartupData->raw_size = 0;
-                }
-                v8StartupData.reset();
-            }
+            v8StartupData.reset();
 #ifdef ENABLE_NODE
             while (!isIsolateFinished) {
                 uv_run(&uvLoop, UV_RUN_ONCE);
@@ -417,9 +415,7 @@ namespace Javet {
             v8::Isolate::CreateParams createParams;
             createParams.array_buffer_allocator = v8ArrayBufferAllocator.get();
             createParams.oom_error_callback = Javet::Callback::OOMErrorCallback;
-            if (v8StartupData) {
-                createParams.snapshot_blob = v8StartupData.get();
-            }
+            createParams.snapshot_blob = v8StartupData.get();
             v8Isolate = v8::Isolate::New(createParams);
         }
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);

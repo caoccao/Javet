@@ -170,7 +170,7 @@ namespace Javet {
 
     private:
         std::unique_ptr<v8::SnapshotCreator> v8SnapshotCreator;
-        std::unique_ptr<v8::StartupData> v8StartupData;
+        std::unique_ptr<v8::StartupData, std::function<void(v8::StartupData*)>> v8StartupData;
         std::shared_ptr<v8::Locker> v8Locker;
         V8PersistentContext v8PersistentContext;
 #ifdef ENABLE_NODE
