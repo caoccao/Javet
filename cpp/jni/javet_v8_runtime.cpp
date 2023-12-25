@@ -78,7 +78,7 @@ namespace Javet {
         : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), uvLoop(),
 #else
     V8Runtime::V8Runtime(
-        V8Platform * v8PlatformPointer,
+        V8Platform* v8PlatformPointer,
         std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator) noexcept
         :
 #endif
@@ -237,13 +237,13 @@ namespace Javet {
         }
     }
 
-    jbyteArray V8Runtime::CreateSnapshot(JNIEnv * jniEnv) noexcept {
+    jbyteArray V8Runtime::CreateSnapshot(JNIEnv* jniEnv) noexcept {
         jbyteArray jbytes = nullptr;
         if (v8SnapshotCreator) {
 #ifdef ENABLE_NODE
-            auto v8IsolateScope = GetV8IsolateScope();
             v8::MaybeLocal<v8::Context> v8MaybeLocalContext;
             {
+                auto v8IsolateScope = GetV8IsolateScope();
                 V8HandleScope v8HandleScope(v8Isolate);
                 auto v8LocalContext = GetV8LocalContext();
                 auto v8ContextScope = GetV8ContextScope(v8LocalContext);
@@ -267,6 +267,7 @@ namespace Javet {
                 delete[] newV8StartupData.data;
             }
             {
+                auto v8IsolateScope = GetV8IsolateScope();
                 V8HandleScope v8HandleScope(v8Isolate);
                 auto v8LocalContext = v8MaybeLocalContext.ToLocalChecked();
                 auto v8ContextScope = GetV8ContextScope(v8LocalContext);
@@ -302,7 +303,7 @@ namespace Javet {
         return jbytes;
     }
 
-    void V8Runtime::CreateV8Context(JNIEnv * jniEnv, const jobject mRuntimeOptions) noexcept {
+    void V8Runtime::CreateV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept {
         auto internalV8Locker = GetSharedV8Locker();
         auto v8IsolateScope = GetV8IsolateScope();
         V8HandleScope v8HandleScope(v8Isolate);
@@ -365,7 +366,7 @@ namespace Javet {
             v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
     }
 
-    void V8Runtime::CreateV8Isolate(JNIEnv * jniEnv, const jobject mRuntimeOptions) noexcept {
+    void V8Runtime::CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept {
         bool createSnapshotEnabled = false;
         jbyteArray snapshotBlob = nullptr;
         if (mRuntimeOptions != nullptr) {
@@ -393,6 +394,7 @@ namespace Javet {
             v8PlatformPointer->RegisterIsolate(v8Isolate, &uvLoop);
             v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, externalReferences.data(), v8StartupData.get()));
             v8Isolate->SetCaptureStackTraceForUncaughtExceptions(true, 10, v8::StackTrace::StackTraceOptions::kDetailed);
+            v8Isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kExplicit);
         }
         else {
             // node::NewIsolate is thread-safe.
@@ -404,6 +406,7 @@ namespace Javet {
             V8HandleScope v8HandleScope(v8Isolate);
             // node::CreateIsolateData is thread-safe.
             nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, nodeArrayBufferAllocator.get()));
+            // nodeIsolateData->set_is_building_snapshot(createSnapshotEnabled);
         }
         v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
 #else
@@ -423,10 +426,10 @@ namespace Javet {
     }
 
     jobject V8Runtime::SafeToExternalV8Value(
-        JNIEnv * jniEnv,
-        const V8LocalContext & v8Context,
+        JNIEnv* jniEnv,
+        const V8LocalContext& v8Context,
 #ifdef ENABLE_NODE
-        const V8InternalObject & v8InternalObject) noexcept {
+        const V8InternalObject& v8InternalObject) noexcept {
 #else
         const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept {
 #endif
