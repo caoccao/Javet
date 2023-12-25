@@ -206,33 +206,47 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testSnapshot() throws JavetException {
         if (v8Host.getJSRuntimeType().isV8()) {
             RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            // Set create snapshot enabled.
             options.setCreateSnapshotEnabled(true);
             byte[] snapshotBlob1;
             byte[] snapshotBlob2;
             try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                // Prepare function add.
                 v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
                 assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                // Create a snapshot with function add.
                 snapshotBlob1 = v8Runtime.createSnapshot();
                 assertNotNull(snapshotBlob1);
                 assertTrue(snapshotBlob1.length > 0);
+                // Test the runtime is still usable after the snapshot is created.
                 assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
             }
+            // Set the snapshot blob.
             options.setSnapshotBlob(snapshotBlob1);
             for (int i = 0; i < 5; ++i) {
+                // Create a new V8 runtime with the snapshot 5 times.
                 try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                    // Test the function add.
                     assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
                 }
             }
+            // Create a new V8 runtime with the snapshot.
             try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                // Test the function add.
                 assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                // Prepare function subtract.
                 v8Runtime.getExecutor("const subtract = (a, b) => a - b;").executeVoid();
+                // Create a new snapshot with function add and subtract.
                 snapshotBlob2 = v8Runtime.createSnapshot();
                 assertNotNull(snapshotBlob2);
                 assertTrue(snapshotBlob2.length > 0);
             }
+            // Set the new snapshot blob.
             options.setSnapshotBlob(snapshotBlob2);
             for (int i = 0; i < 5; ++i) {
+                // Create a new V8 runtime with the snapshot 5 times.
                 try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                    // Test the function add and subtract.
                     assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
                     assertEquals(1, v8Runtime.getExecutor("subtract(3, 2)").executeInteger());
                 }
