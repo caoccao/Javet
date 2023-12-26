@@ -34,6 +34,7 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,12 +48,18 @@ import java.util.stream.Stream;
  * sb.append(123).append('abc');
  * sb.toString(); // 123abc
  * sb = undefined;
- * javet.gc();
+ * javet.v8.gc();
  * </code>
  *
  * @since 3.0.3
  */
 public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
+    /**
+     * The constant DEFAULT_NAME.
+     *
+     * @since 3.0.3
+     */
+    public static final String DEFAULT_NAME = "javet";
     /**
      * The constant ERROR_THE_CONVERTER_MUST_BE_INSTANCE_OF_JAVET_PROXY_CONVERTER.
      *
@@ -61,11 +68,11 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
     protected static final String ERROR_THE_CONVERTER_MUST_BE_INSTANCE_OF_JAVET_PROXY_CONVERTER =
             "The converter must be instance of JavetProxyConverter.";
     /**
-     * The constant JS_FUNCTION_GC.
+     * The constant JAVET_PROXY_CONVERTER.
      *
      * @since 3.0.3
      */
-    protected static final String JS_FUNCTION_GC = "gc";
+    protected static final JavetProxyConverter JAVET_PROXY_CONVERTER = new JavetProxyConverter();
     /**
      * The constant JS_PROPERTY_PACKAGE.
      *
@@ -73,11 +80,17 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
      */
     protected static final String JS_PROPERTY_PACKAGE = "package";
     /**
-     * The constant PROPERTY_JAVET.
+     * The constant JS_PROPERTY_V8.
      *
      * @since 3.0.3
      */
-    protected static final String PROPERTY_JAVET = "javet";
+    protected static final String JS_PROPERTY_V8 = "v8";
+    /**
+     * The Name injected in V8.
+     *
+     * @since 3.0.3
+     */
+    protected String name;
 
     /**
      * Instantiates a new Javet JVM interceptor.
@@ -88,20 +101,31 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
     public JavetJVMInterceptor(V8Runtime v8Runtime) {
         super(v8Runtime);
         assert v8Runtime.getConverter() instanceof JavetProxyConverter : ERROR_THE_CONVERTER_MUST_BE_INSTANCE_OF_JAVET_PROXY_CONVERTER;
+        name = DEFAULT_NAME;
     }
 
     @Override
     public JavetCallbackContext[] getCallbackContexts() {
         return new JavetCallbackContext[]{
                 new JavetCallbackContext(
-                        JS_FUNCTION_GC,
-                        this, JavetCallbackType.DirectCallNoThisAndNoResult,
-                        (NoThisAndNoResult<Exception>) (v8Values) -> v8Runtime.lowMemoryNotification()),
+                        JS_PROPERTY_V8,
+                        this, JavetCallbackType.DirectCallGetterAndNoThis,
+                        (GetterAndNoThis<Exception>) () -> new JavetV8(v8Runtime).toV8Value()),
                 new JavetCallbackContext(
                         JS_PROPERTY_PACKAGE,
                         this, JavetCallbackType.DirectCallGetterAndNoThis,
                         (GetterAndNoThis<Exception>) () -> new JavetVirtualPackage(v8Runtime, V8ValueUtils.EMPTY).toV8Value()),
         };
+    }
+
+    /**
+     * Gets name.
+     *
+     * @return the name
+     * @since 3.0.3
+     */
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -110,17 +134,27 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8ValueObject.bind(this);
             for (IV8ValueObject iV8ValueObject : iV8ValueObjects) {
-                successful = iV8ValueObject.set(PROPERTY_JAVET, v8ValueObject) & successful;
+                successful = iV8ValueObject.set(DEFAULT_NAME, v8ValueObject) & successful;
             }
             return successful;
         }
+    }
+
+    /**
+     * Sets name.
+     *
+     * @param name the name
+     * @since 3.0.3
+     */
+    public void setName(String name) {
+        this.name = Objects.requireNonNull(name);
     }
 
     @Override
     public boolean unregister(IV8ValueObject... iV8ValueObjects) throws JavetException {
         boolean successful = true;
         for (IV8ValueObject iV8ValueObject : iV8ValueObjects) {
-            successful = iV8ValueObject.delete(PROPERTY_JAVET) & successful;
+            successful = iV8ValueObject.delete(DEFAULT_NAME) & successful;
         }
         return successful;
     }
@@ -131,12 +165,6 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
      * @since 3.0.3
      */
     abstract static class BaseJavetPackage implements IJavetDirectProxyHandler<Exception> {
-        /**
-         * The constant JAVET_PROXY_CONVERTER.
-         *
-         * @since 3.0.3
-         */
-        protected static final JavetProxyConverter JAVET_PROXY_CONVERTER = new JavetProxyConverter();
         /**
          * The String getter map.
          *
@@ -316,6 +344,69 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
                         (propertyName) -> v8Runtime.createV8ValueString(namedPackage.getSpecificationVendor()));
             }
             return stringGetterMap;
+        }
+    }
+
+    /**
+     * The type Javet V8.
+     *
+     * @since 3.0.3
+     */
+    static class JavetV8 implements IJavetDirectProxyHandler<Exception> {
+        /**
+         * The String getter map.
+         *
+         * @since 3.0.3
+         */
+        protected Map<String, IJavetUniFunction<String, ? extends V8Value, Exception>> stringGetterMap;
+        /**
+         * The V8 runtime.
+         *
+         * @since 3.0.3
+         */
+        protected V8Runtime v8Runtime;
+
+        /**
+         * Instantiates a new Javet V8.
+         *
+         * @param v8Runtime the V8 runtime
+         * @since 3.0.3
+         */
+        public JavetV8(V8Runtime v8Runtime) {
+            this.v8Runtime = v8Runtime;
+        }
+
+        @Override
+        public V8Runtime getV8Runtime() {
+            return v8Runtime;
+        }
+
+        @Override
+        public Map<String, IJavetUniFunction<String, ? extends V8Value, Exception>> proxyGetStringGetterMap() {
+            if (stringGetterMap == null) {
+                stringGetterMap = new HashMap<>();
+                stringGetterMap.put("gc", (propertyName) ->
+                        v8Runtime.createV8ValueFunction(
+                                new JavetCallbackContext(
+                                        propertyName,
+                                        this, JavetCallbackType.DirectCallNoThisAndNoResult,
+                                        (NoThisAndNoResult<Exception>) (v8Values) -> {
+                                            v8Runtime.lowMemoryNotification();
+                                        })
+                        ));
+            }
+            return stringGetterMap;
+        }
+
+        /**
+         * To V8 value V8 value.
+         *
+         * @return the V8 value
+         * @throws JavetException the javet exception
+         * @since 3.0.3
+         */
+        public V8Value toV8Value() throws JavetException {
+            return JAVET_PROXY_CONVERTER.toV8Value(v8Runtime, this);
         }
     }
 

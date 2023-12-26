@@ -52,10 +52,15 @@ public class TestJavetJVMInterceptor extends BaseTestJavetRuntime {
     public void testGC() throws JavetException {
         int initialCallbackContextCount = v8Runtime.getCallbackContextCount();
         v8Runtime.getGlobalObject().set("test", String.class);
+        // The proxy creates 5 callback contexts.
         assertEquals(initialCallbackContextCount + 5, v8Runtime.getCallbackContextCount());
         v8Runtime.getGlobalObject().delete("test");
+        // The 5 callback contexts are not recycled.
         assertEquals(initialCallbackContextCount + 5, v8Runtime.getCallbackContextCount());
-        v8Runtime.getExecutor("javet.gc()").executeVoid();
+        v8Runtime.getExecutor("javet.v8.gc()").executeVoid();
+        // javet.v8 creates another 5 callback contexts while the gc() collects 5 callback contexts.
+        assertEquals(initialCallbackContextCount + 5, v8Runtime.getCallbackContextCount());
+        v8Runtime.lowMemoryNotification();
         assertEquals(initialCallbackContextCount, v8Runtime.getCallbackContextCount());
     }
 

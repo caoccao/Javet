@@ -2,6 +2,8 @@
 Modularization
 ==============
 
+JavaScript ECMAScript Modules (ESM), is the official standardized format for modularizing JavaScript code. It was introduced in ES6 (ECMAScript 2015) and aims to address the drawbacks of earlier module systems like CommonJS and AMD.
+
 Node.js Mode
 ============
 

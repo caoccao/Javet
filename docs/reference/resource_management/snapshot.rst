@@ -2,7 +2,6 @@
 Snapshot
 ========
 
-
 A V8 snapshot is a way to speed up the startup time of JavaScript applications built with the V8 JavaScript engine, which powers Chrome, Node.js, and many other popular platforms. Think of it like pre-cooking a meal so you don't have to start from scratch when you're hungry.
 
 How Snapshot Works
