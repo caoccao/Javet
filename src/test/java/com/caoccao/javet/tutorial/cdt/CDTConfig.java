@@ -22,6 +22,7 @@ public final class CDTConfig {
     public static final String COMMAND_EXIT = ".exit";
     public static final String PATH_ROOT = "/";
     public static final String PATH_JSON = "/json";
+    public static final String PATH_JSON_LIST = "/json/list";
     public static final String PATH_JSON_VERSION = "/json/version";
     public static final String PATH_JAVET = "/javet";
     private static int port = 0;

@@ -42,7 +42,9 @@ public class CDTShell {
         jsonServletContextHandler.setContextPath(CDTConfig.PATH_ROOT);
         jsonServer.setHandler(jsonServletContextHandler);
         try {
+            jsonServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_ROOT);
             jsonServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_JSON);
+            jsonServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_JSON_LIST);
             jsonServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_JSON_VERSION);
             NativeWebSocketServletContainerInitializer.configure(jsonServletContextHandler,
                     (servletContext, nativeWebSocketConfiguration) -> {

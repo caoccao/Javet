@@ -2,8 +2,8 @@
 Release Notes 3.0.x
 ===================
 
-3.0.3 V8
---------
+3.0.3 V8 v12.1
+--------------
 
 * Restore the reference lock
 * Downgraded to Ubuntu 20.04 for better compatibility
@@ -16,6 +16,7 @@ Release Notes 3.0.x
 * Added ``createSnapshot()`` to ``V8Runtime``
 * Added ``isCreateSnapshotEnabled()``, ``setCreateSnapshotEnabled()``, ``getSnapshotBlob()``, ``setSnapshotBlob()`` to ``RuntimeOptions``
 * Added ``RuntimeCreateSnapshotDisabled``, ``RuntimeCreateSnapshotBlocked`` to ``JavetError``
+* Fixed ``CDTShell``
 
 3.0.2 V8 v12.0
 --------------

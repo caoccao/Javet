@@ -39,7 +39,7 @@ public class CDTHttpServlet extends HttpServlet {
         String requestURI = request.getRequestURI();
         response.setContentType(APPLICATION_JSON_CHARSET_UTF_8);
         response.setStatus(HttpServletResponse.SC_OK);
-        if (CDTConfig.PATH_JSON.equals(requestURI)) {
+        if (CDTConfig.PATH_JSON.equals(requestURI) || CDTConfig.PATH_JSON_LIST.equals(requestURI)) {
             response.getWriter().println("[ {\n" +
                     "  \"description\": \"javet\",\n" +
                     "  \"devtoolsFrontendUrl\": \"devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&" + CDTConfig.getWebSocketUrl() + "\",\n" +
