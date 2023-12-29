@@ -28,12 +28,16 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetMappable;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -238,8 +242,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals(1, set.size());
             assertTrue(set.contains("abc"));
         }
-        try (V8ValueSet v8ValueSet = converter.toV8Value(
-                v8Runtime, new HashSet<Object>(SimpleList.of("a", "b", "c")))) {
+        try (V8ValueSet v8ValueSet = converter.toV8Value(v8Runtime, SimpleSet.of("a", "b", "c"))) {
             assertEquals(3, v8ValueSet.getSize());
             assertTrue(v8ValueSet.has("a"));
             assertTrue(v8ValueSet.has("b"));

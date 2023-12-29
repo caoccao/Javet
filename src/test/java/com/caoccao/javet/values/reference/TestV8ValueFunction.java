@@ -35,6 +35,7 @@ import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -1620,10 +1621,10 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
                     List<String> keys = scopeInfo2.getScopeObject().getOwnPropertyNameStrings();
                     if (v8Runtime.getJSRuntimeType().isNode()) {
-                        Set<String> globalVariables = new HashSet<>(SimpleList.of((
+                        Set<String> globalVariables = SimpleSet.of((
                                 "global,queueMicrotask,clearImmediate,setImmediate," +
                                         "structuredClone,clearInterval,clearTimeout,setInterval," +
-                                        "setTimeout,atob,btoa,crypto,performance,fetch,require").split(",")));
+                                        "setTimeout,atob,btoa,crypto,performance,fetch,require").split(","));
                         assertEquals(globalVariables.size(), keys.size());
                         keys.forEach(key -> assertTrue(globalVariables.contains(key), key + " is not found"));
                     } else {

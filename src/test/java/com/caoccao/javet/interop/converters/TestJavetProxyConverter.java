@@ -34,6 +34,7 @@ import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -51,7 +52,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -722,10 +726,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testSet() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxySetEnabled(true);
-            Set<String> set = new HashSet<String>() {{
-                add("x");
-                add("y");
-            }};
+            Set<String> set = SimpleSet.of("x", "y");
             v8Runtime.getGlobalObject().set("set", set);
             assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
             assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());

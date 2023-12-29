@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.virtual.V8VirtualIterator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -179,10 +180,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testSet() throws JavetException {
-        Set<String> set = new HashSet<String>() {{
-            add("x");
-            add("y");
-        }};
+        Set<String> set = SimpleSet.of("x", "y");
         v8Runtime.getGlobalObject().set("set", set);
         assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
         assertTrue((Boolean) v8Runtime.getExecutor("set.contains('x')").executeObject());
