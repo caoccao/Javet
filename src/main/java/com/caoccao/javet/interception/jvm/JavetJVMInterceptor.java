@@ -25,7 +25,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
-import com.caoccao.javet.utils.V8ValueUtils;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.IV8ValueObject;
@@ -114,7 +114,7 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
                 new JavetCallbackContext(
                         JS_PROPERTY_PACKAGE,
                         this, JavetCallbackType.DirectCallGetterAndNoThis,
-                        (GetterAndNoThis<Exception>) () -> new JavetVirtualPackage(v8Runtime, V8ValueUtils.EMPTY).toV8Value()),
+                        (GetterAndNoThis<Exception>) () -> new JavetVirtualPackage(v8Runtime, StringUtils.EMPTY).toV8Value()),
         };
     }
 
@@ -215,9 +215,9 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
             if (v8Value.isUndefined()) {
                 if (property instanceof V8ValueString) {
                     String childName = ((V8ValueString) property).getValue();
-                    if (childName != null && !childName.isEmpty()) {
+                    if (!StringUtils.isEmpty(childName)) {
                         String name;
-                        if (getName().isEmpty()) {
+                        if (StringUtils.isEmpty(getName())) {
                             name = childName;
                         } else {
                             name = getName() + "." + childName;
@@ -390,9 +390,7 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
                                 new JavetCallbackContext(
                                         propertyName,
                                         this, JavetCallbackType.DirectCallNoThisAndNoResult,
-                                        (NoThisAndNoResult<Exception>) (v8Values) -> {
-                                            v8Runtime.lowMemoryNotification();
-                                        })
+                                        (NoThisAndNoResult<Exception>) (v8Values) -> v8Runtime.lowMemoryNotification())
                         ));
             }
             return stringGetterMap;

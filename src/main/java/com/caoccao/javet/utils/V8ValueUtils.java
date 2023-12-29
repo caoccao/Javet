@@ -26,12 +26,6 @@ import java.util.StringJoiner;
  * @since 0.7.1
  */
 public final class V8ValueUtils {
-    /**
-     * The constant EMPTY.
-     *
-     * @since 0.7.1
-     */
-    public static final String EMPTY = "";
 
     private V8ValueUtils() {
     }
@@ -46,10 +40,10 @@ public final class V8ValueUtils {
      */
     public static String concat(String delimiter, V8Value... v8Values) {
         if (v8Values == null || v8Values.length == 0) {
-            return EMPTY;
+            return StringUtils.EMPTY;
         }
         if (delimiter == null) {
-            delimiter = EMPTY;
+            delimiter = StringUtils.EMPTY;
         }
         StringJoiner stringJoiner = new StringJoiner(delimiter);
         for (V8Value v8Value : v8Values) {

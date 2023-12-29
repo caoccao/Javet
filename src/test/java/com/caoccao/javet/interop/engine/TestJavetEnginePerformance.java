@@ -22,6 +22,7 @@ import com.caoccao.javet.interop.V8Locker;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.utils.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -228,7 +229,7 @@ public class TestJavetEnginePerformance extends BaseTestJavetPool {
             }
             lines.add(line);
         }
-        lines.add("");
+        lines.add(StringUtils.EMPTY);
         try (FileWriter fileWriter = new FileWriter(docFile, false)) {
             fileWriter.write(String.join("\n", lines));
         }

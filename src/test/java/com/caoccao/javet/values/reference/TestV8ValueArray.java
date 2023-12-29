@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import org.junit.jupiter.api.Tag;
@@ -192,7 +193,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(1.23, v8ValueArray.popDouble(), 0.001);
             assertEquals(true, v8ValueArray.popBoolean());
             assertEquals(0, v8ValueArray.getLength());
-            assertEquals("", v8ValueArray.toString());
+            assertEquals(StringUtils.EMPTY, v8ValueArray.toString());
         }
     }
 

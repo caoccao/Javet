@@ -36,6 +36,7 @@ import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.SimpleSet;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -467,7 +468,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         globalObject.bindFunction(javetCallbackContext);
         assertEquals("abc", v8Runtime.getExecutor("echoString('abc')").executeString());
         assertEquals("abc,def", v8Runtime.getExecutor("echoString('abc', 'def')").executeString());
-        assertEquals("", v8Runtime.getExecutor("echoString()").executeString());
+        assertEquals(StringUtils.EMPTY, v8Runtime.getExecutor("echoString()").executeString());
         globalObject.delete("echoString");
         v8Runtime.lowMemoryNotification();
     }

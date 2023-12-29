@@ -26,7 +26,7 @@ public final class SimpleFreeMarkerFormat {
     private static final char CHAR_VARIABLE_OPEN = '{';
 
     public static String format(final String format, final Map<String, Object> parameters) {
-        if (format == null || format.length() == 0 || parameters == null || parameters.isEmpty()) {
+        if (StringUtils.isEmpty(format) || parameters == null || parameters.isEmpty()) {
             return format;
         }
         final int length = format.length();
