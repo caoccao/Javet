@@ -27,6 +27,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetMappable;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 import org.junit.jupiter.api.Test;
@@ -90,7 +91,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         }
         // ArrayList
         try (V8ValueArray v8ValueArray = converter.toV8Value(
-                v8Runtime, Arrays.asList("abc", 123))) {
+                v8Runtime, SimpleList.of("abc", 123))) {
             assertEquals(2, v8ValueArray.getLength());
             assertEquals("abc", v8ValueArray.getString(0));
             assertEquals(123, v8ValueArray.getInteger(1));
@@ -238,7 +239,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertTrue(set.contains("abc"));
         }
         try (V8ValueSet v8ValueSet = converter.toV8Value(
-                v8Runtime, new HashSet<Object>(Arrays.asList("a", "b", "c")))) {
+                v8Runtime, new HashSet<Object>(SimpleList.of("a", "b", "c")))) {
             assertEquals(3, v8ValueSet.getSize());
             assertTrue(v8ValueSet.has("a"));
             assertTrue(v8ValueSet.has("b"));

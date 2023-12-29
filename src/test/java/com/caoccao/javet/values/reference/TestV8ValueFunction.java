@@ -34,6 +34,7 @@ import com.caoccao.javet.interop.engine.JavetEnginePool;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
 import com.caoccao.javet.mock.MockCallbackReceiver;
+import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -1589,7 +1590,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testGetScopeInfosWith1Closure() throws JavetException {
-        List<Boolean> options = Arrays.asList(true, false);
+        List<Boolean> options = SimpleList.of(true, false);
         String codeString = "(() => { let a = 1; return () => { const b = 0; return a; } })()";
         try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(codeString).execute()) {
             assertEquals(1, v8ValueFunction.callInteger(null));
@@ -1619,7 +1620,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
                     List<String> keys = scopeInfo2.getScopeObject().getOwnPropertyNameStrings();
                     if (v8Runtime.getJSRuntimeType().isNode()) {
-                        Set<String> globalVariables = new HashSet<>(Arrays.asList((
+                        Set<String> globalVariables = new HashSet<>(SimpleList.of((
                                 "global,queueMicrotask,clearImmediate,setImmediate," +
                                         "structuredClone,clearInterval,clearTimeout,setInterval," +
                                         "setTimeout,atob,btoa,crypto,performance,fetch,require").split(",")));
@@ -1635,7 +1636,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testGetScopeInfosWith2Closures() throws JavetException {
-        List<Boolean> options = Arrays.asList(true, false);
+        List<Boolean> options = SimpleList.of(true, false);
         String codeString = "let a1 = 1;\n" +
                 "let a2 = 2;\n" +
                 "let ax = 1;\n" +
@@ -1665,9 +1666,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     Map<String, Object> map0 = v8Runtime.toObject(scopeInfos.get(0).getScopeObject());
                     Map<String, Object> map1 = v8Runtime.toObject(scopeInfos.get(1).getScopeObject());
                     Map<String, Object> map2 = v8Runtime.toObject(scopeInfos.get(2).getScopeObject());
-                    assertEquals(Arrays.asList("c1", "c2"), scopeInfos.get(0).getScopeObject().getOwnPropertyNameStrings());
-                    assertEquals(Arrays.asList("b1", "b2"), scopeInfos.get(1).getScopeObject().getOwnPropertyNameStrings());
-                    assertEquals(Arrays.asList("a1", "a2", "ax"), scopeInfos.get(2).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(SimpleList.of("c1", "c2"), scopeInfos.get(0).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(SimpleList.of("b1", "b2"), scopeInfos.get(1).getScopeObject().getOwnPropertyNameStrings());
+                    assertEquals(SimpleList.of("a1", "a2", "ax"), scopeInfos.get(2).getScopeObject().getOwnPropertyNameStrings());
                     assertEquals(100, map0.get("c1"));
                     assertEquals(200, map0.get("c2"));
                     assertEquals(10, map1.get("b1"));
@@ -1678,9 +1679,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertTrue(scopeInfos.hasVariablesInClosure());
                     List<List<String>> variablesList = scopeInfos.getVariablesInClosure();
                     assertEquals(3, variablesList.size());
-                    assertEquals(Arrays.asList("c1", "c2"), variablesList.get(0));
-                    assertEquals(Arrays.asList("b1", "b2"), variablesList.get(1));
-                    assertEquals(Arrays.asList("a1", "a2", "ax"), variablesList.get(2));
+                    assertEquals(SimpleList.of("c1", "c2"), variablesList.get(0));
+                    assertEquals(SimpleList.of("b1", "b2"), variablesList.get(1));
+                    assertEquals(SimpleList.of("a1", "a2", "ax"), variablesList.get(2));
                 }
             }
         }
@@ -1688,7 +1689,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testGetScopeInfosWithoutClosures() throws JavetException {
-        List<Boolean> options = Arrays.asList(true, false);
+        List<Boolean> options = SimpleList.of(true, false);
         String codeString = "function f1() {\n" +
                 "  let b = 2;\n" +
                 "  function f2() {\n" +

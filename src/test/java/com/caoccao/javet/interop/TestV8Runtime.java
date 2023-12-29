@@ -26,12 +26,12 @@ import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.interop.callback.IJavetGCCallback;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
+import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.values.reference.V8ValueGlobalObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8Runtime extends BaseTestJavet {
     @Test
     public void testAllowEval() throws JavetException {
-        List<String> codeStrings = Arrays.asList(
+        List<String> codeStrings = SimpleList.of(
                 "(() => eval('1'))()",
                 "(() => Function('return 1')())()");
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
