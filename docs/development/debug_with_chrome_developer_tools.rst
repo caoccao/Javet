@@ -31,7 +31,7 @@ Run arbitrary code in the console just like what can be done in a node console.
 3. Open CDT
 -----------
 
-Open chrome://inspect/ in Chrome, wait few seconds and Javet will appear as a remote target.
+Open `chrome://inspect/ <chrome://inspect/>`_ in Chrome, wait a few seconds and Javet will appear as a remote target.
 
 .. image:: ../resources/images/chome_developer_tools_devices_remote_target_javet.png
     :alt: Remote Target Javet
@@ -50,10 +50,10 @@ Chrome Developer Tools Internals
 Handshake
 ---------
 
-* CDT Shell listens to port 9229 by default because CDT constantly queries http://127.0.0.1:9229/json for remote target. CDT Shell tells CDT that it is a node flavored remote target via http://127.0.0.1:9229/json and the websocket address is http://127.0.0.1:9229/javet.
+* CDT Shell listens to port 9229 by default because CDT constantly queries http://127.0.0.1:9229/json/list for a list of remote targets. CDT Shell tells CDT that it is a node flavored remote target via http://127.0.0.1:9229/json/list and the websocket address is ``ws://127.0.0.1:9229/javet``.
 * CDT queries http://127.0.0.1:9229/json/version for protocol version. CDT Shell currently uses v1.3. The complete protocol API docs are available at https://chromedevtools.github.io/devtools-protocol/. 
-* CDT queries http://127.0.0.1:9229/javet with a websocket upgrade request. CDT Shell responses with websocket upgrade accepted.
-* CDT switches to ws://127.0.0.1:9229/javet and sends the following 8 messages to perform a handshake with a node flavored remote target.
+* CDT queries http://127.0.0.1:9229/javet/list with a websocket upgrade request. CDT Shell responses with websocket upgrade accepted.
+* CDT switches to ``ws://127.0.0.1:9229/javet`` and sends the following 8 messages to perform a handshake with a node flavored remote target.
 
 .. code-block:: js
 
@@ -93,4 +93,17 @@ Yes, please feel free to customize the debugging server in your environment. CDT
     * To send messages to CDT right after CDT is connected.
     * To turn on / off certain features.
     * To enforce authentication and authorization.
-    * To change V8 runtime.
+    * To switch among V8 runtimes.
+
+FAQs
+====
+
+Does it Support Node.js Mode?
+-----------------------------
+
+Yes, Javet V8 inspector supports the Node.js Mode as well as the V8 mode though the built-in Node.js inspector is disabled because of some other issues. Please visit :doc:`../faq/development/why_is_the_inspector_disabled_in_node_js_mode` for more details.
+
+Is There a Live Demo?
+---------------------
+
+Yes, `JavetShell <https://github.com/caoccao/JavetShell>`_ provides a live demo via either a jar file or a docker image.
