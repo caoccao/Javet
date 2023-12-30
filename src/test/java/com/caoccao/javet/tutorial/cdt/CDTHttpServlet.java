@@ -42,13 +42,13 @@ public class CDTHttpServlet extends HttpServlet {
         if (CDTConfig.PATH_JSON.equals(requestURI) || CDTConfig.PATH_JSON_LIST.equals(requestURI)) {
             response.getWriter().println("[ {\n" +
                     "  \"description\": \"javet\",\n" +
-                    "  \"devtoolsFrontendUrl\": \"devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&" + CDTConfig.getWebSocketUrl() + "\",\n" +
-                    "  \"devtoolsFrontendUrlCompat\": \"devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&" + CDTConfig.getWebSocketUrl() + "\",\n" +
+                    "  \"devtoolsFrontendUrl\": \"devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=" + CDTConfig.getWebSocketUrl() + "\",\n" +
+                    "  \"devtoolsFrontendUrlCompat\": \"devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=" + CDTConfig.getWebSocketUrl() + "\",\n" +
                     "  \"id\": \"javet\",\n" +
                     "  \"title\": \"javet\",\n" +
                     "  \"type\": \"node\",\n" + // Type must be node
                     "  \"url\": \"file://\",\n" +
-                    "  \"webSocketDebuggerUrl\": \"" + CDTConfig.getWebSocketUrl() + "\"\n" +
+                    "  \"webSocketDebuggerUrl\": \"ws://" + CDTConfig.getWebSocketUrl() + "\"\n" +
                     "} ]\n");
         } else if (CDTConfig.PATH_JSON_VERSION.equals(requestURI)) {
             response.getWriter().println("{\n" +
