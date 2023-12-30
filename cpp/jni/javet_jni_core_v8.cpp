@@ -236,7 +236,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingExc
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-    return v8InternalIsolate->has_pending_exception();
+    return HAS_PENDING_EXCEPTION(v8InternalIsolate);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMessage
@@ -248,9 +248,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMes
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledException
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
     return v8InternalIsolate->has_scheduled_exception();
+#else
+    return false;
+#endif
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
@@ -300,12 +304,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotifica
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promoteScheduledException
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
     if (v8InternalIsolate->has_scheduled_exception()) {
         v8InternalIsolate->PromoteScheduledException();
         return true;
     }
+#endif
     return false;
 }
 

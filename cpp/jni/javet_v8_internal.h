@@ -84,6 +84,15 @@ constexpr auto CONVERT_OFFSET_FOR_SCOPE_INFO(T offset) {
 }
 
 template<typename T>
+constexpr auto HAS_PENDING_EXCEPTION(T v8InternalIsolate) {
+#ifdef ENABLE_NODE
+    return v8InternalIsolate->has_pending_exception();
+#else
+    return v8InternalIsolate->has_exception();
+#endif
+}
+
+template<typename T>
 constexpr auto IS_USER_DEFINED_FUNCTION(T v8InternalShared) {
 #ifdef ENABLE_NODE
     return !v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript();

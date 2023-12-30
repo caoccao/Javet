@@ -5,6 +5,7 @@ Release Notes 3.0.x
 3.0.3 V8 v12.1
 --------------
 
+* Upgraded V8 to ``v12.1.285.17`` (2023-12-18)
 * Restore the reference lock
 * Downgraded to Ubuntu 20.04 for better compatibility
 * Fixed a slight memory leak in closing the V8 runtime
