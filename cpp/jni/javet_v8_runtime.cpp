@@ -82,7 +82,7 @@ namespace Javet {
         std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator) noexcept
         :
 #endif
-        v8Locker(nullptr), v8SnapshotCreator(nullptr), v8StartupData(nullptr, [](v8::StartupData* x) { if (x->raw_size > 0) { delete[] x->data; } }) {
+        v8SnapshotCreator(nullptr), v8StartupData(nullptr, [](v8::StartupData* x) { if (x->raw_size > 0) { delete[] x->data; } }), v8Locker(nullptr) {
 #ifdef ENABLE_NODE
         purgeEventLoopBeforeClose = false;
         this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
