@@ -78,6 +78,8 @@ object Config {
     }
 }
 
+val buildDir = layout.buildDirectory.get().toString()
+
 plugins {
     java
     `java-library`
