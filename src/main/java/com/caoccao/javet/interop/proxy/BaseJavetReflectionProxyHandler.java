@@ -291,7 +291,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             if (methods != null && !methods.isEmpty()) {
                 JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
                         reflectionObjectFactory, targetObject, propertyName, methods);
-                return v8Runtime.toV8Value(reflectionProxyInterceptor.invoke((V8ValueObject) target));
+                return reflectionProxyInterceptor.invokeV8Value(target);
             }
             if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
@@ -696,7 +696,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 if (methods != null) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
                             reflectionObjectFactory, targetObject, propertyName, methods);
-                    reflectionProxyInterceptor.invoke((V8ValueObject) target, propertyValue);
+                    reflectionProxyInterceptor.invokeObject((V8ValueObject) target, propertyValue);
                     return true;
                 }
             }

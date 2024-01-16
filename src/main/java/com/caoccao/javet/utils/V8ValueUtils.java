@@ -60,7 +60,7 @@ public final class V8ValueUtils {
      * @since 0.9.10
      */
     public static JavetVirtualObject[] convertToVirtualObjects(V8Value... v8Values) {
-        final int length = v8Values.length;
+        final int length = v8Values == null ? 0 : v8Values.length;
         JavetVirtualObject[] javetVirtualObjects = new JavetVirtualObject[length];
         for (int i = 0; i < length; ++i) {
             javetVirtualObjects[i] = new JavetVirtualObject(v8Values[i]);
