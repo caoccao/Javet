@@ -123,8 +123,7 @@ public class V8VirtualIterator<T, E extends Exception>
             if (FUNCTION_NEXT.equals(propertyName)) {
                 return v8Runtime.createV8ValueFunction(
                         new JavetCallbackContext(
-                                FUNCTION_NEXT,
-                                JavetCallbackType.DirectCallThisAndResult,
+                                FUNCTION_NEXT, this, JavetCallbackType.DirectCallThisAndResult,
                                 (IJavetDirectCallable.ThisAndResult<?>) this::next));
             }
             if (PROPERTY_DONE.equals(propertyName)) {
@@ -142,8 +141,8 @@ public class V8VirtualIterator<T, E extends Exception>
             String description = propertySymbol.getDescription();
             if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)) {
                 return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                        FUNCTION_NEXT, JavetCallbackType.DirectCallNoThisAndResult,
-                        (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.toV8Value(this)));
+                        FUNCTION_NEXT, this, JavetCallbackType.DirectCallThisAndResult,
+                        (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> thisObject));
             }
         }
         return IJavetDirectProxyHandler.super.proxyGet(target, property, receiver);
