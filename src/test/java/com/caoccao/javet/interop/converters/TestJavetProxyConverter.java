@@ -575,6 +575,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.getExecutor(codeStringWithoutCast).executeVoid();
         v8Runtime.getGlobalObject().delete("a");
         System.gc();
+        System.gc();
         System.runFinalization();
     }
 

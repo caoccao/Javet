@@ -87,6 +87,7 @@ public class TestAccessTheWholeJVM {
             javetJVMInterceptor.unregister(v8Runtime.getGlobalObject());
             // Step 9: Enforce the GC to avoid memory leak. (Optional)
             System.gc();
+            System.gc();
             System.runFinalization();
             v8Runtime.lowMemoryNotification();
         }
