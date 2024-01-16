@@ -82,6 +82,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         result = result == null ? getFromMethod(target, property) : result;
         result = result == null ? getFromSymbol(property) : result;
         result = result == null ? getFromGetter(property) : result;
+        result = result == null ? getFromPolyfill(property) : result;
         return result == null ? v8Runtime.createV8ValueUndefined() : result;
     }
 

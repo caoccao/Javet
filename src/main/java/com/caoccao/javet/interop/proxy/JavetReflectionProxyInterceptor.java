@@ -71,7 +71,7 @@ final class JavetReflectionProxyInterceptor {
      */
     public JavetCallbackContext getCallbackContext() {
         return new JavetCallbackContext(
-                METHOD_NAME_INVOKE, this, JavetCallbackType.DirectCallThisAndResult,
+                METHOD_NAME_INVOKE, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) this::invokeV8Value);
     }
 

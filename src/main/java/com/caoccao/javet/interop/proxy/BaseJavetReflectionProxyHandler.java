@@ -22,16 +22,17 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.virtual.V8VirtualIterator;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,30 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      * @since 0.9.7
      */
     protected static final Pattern PATTERN_CAPITALIZED_PREFIX = Pattern.compile("^[A-Z]+");
+    /**
+     * The constant POLYFILL_SET_DELETE.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SET_DELETE = "delete";
+    /**
+     * The constant POLYFILL_SET_HAS.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SET_HAS = "has";
+    /**
+     * The constant POLYFILL_SET_KEYS.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SET_KEYS = "keys";
+    /**
+     * The constant POLYFILL_SET_VALUES.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SET_VALUES = "values";
     /**
      * The constant SETTER_PREFIX_ARRAY.
      *
@@ -150,7 +175,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         if (method.isAnnotationPresent(V8Function.class)) {
             String methodName = method.getName();
             String aliasMethodName = method.getAnnotation(V8Function.class).name();
-            if (aliasMethodName.length() > 0) {
+            if (!aliasMethodName.isEmpty()) {
                 methodName = aliasMethodName;
             }
             List<Method> methods = map.computeIfAbsent(methodName, k -> new ArrayList<>());
@@ -296,6 +321,67 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             }
+        }
+        return null;
+    }
+
+    /**
+     * Gets from polyfill.
+     *
+     * @param property the property
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.3
+     */
+    protected V8Value getFromPolyfill(V8Value property) throws JavetException {
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).toPrimitive();
+            if (classDescriptor.isTargetTypeSet()) {
+                return getFromPolyfillSet(propertyName);
+            } else if (classDescriptor.isTargetTypeMap()) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets from polyfill set.
+     *
+     * @param propertyName the property name
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.3
+     */
+    protected V8Value getFromPolyfillSet(String propertyName) throws JavetException {
+        Set<?> set = (Set<?>) targetObject;
+        if (POLYFILL_SET_DELETE.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_SET_DELETE, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        boolean result = false;
+                        if (v8Values != null && v8Values.length > 0) {
+                            result = set.remove(v8Runtime.toObject(v8Values[0]));
+                        }
+                        return v8Runtime.createV8ValueBoolean(result);
+                    }));
+        }
+        if (POLYFILL_SET_HAS.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_SET_HAS, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        boolean result = false;
+                        if (v8Values != null && v8Values.length > 0) {
+                            result = set.contains(v8Runtime.toObject(v8Values[0]));
+                        }
+                        return v8Runtime.createV8ValueBoolean(result);
+                    }));
+        }
+        if (POLYFILL_SET_KEYS.equals(propertyName) || POLYFILL_SET_VALUES.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_SET_VALUES, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                            v8Runtime.toV8Value(new V8VirtualIterator<>(set.iterator()))
+            ));
         }
         return null;
     }

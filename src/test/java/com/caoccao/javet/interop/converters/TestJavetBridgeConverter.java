@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
-    protected String functionCastString;
     protected JavetBridgeConverter javetBridgeConverter;
 
     public TestJavetBridgeConverter() {
@@ -80,9 +79,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(Integer.valueOf(1), v8Runtime.getExecutor("a[Symbol.iterator]().next().value").executeObject());
         assertFalse(v8Runtime.getExecutor("a[Symbol.iterator]().next().done").executeBoolean());
         assertEquals(Integer.valueOf(2), v8Runtime.getExecutor("a[Symbol.iterator]().next().next().value").executeObject());
-        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().done").executeBoolean());
-        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().value").execute().isUndefined());
+        assertFalse(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().done").executeBoolean());
         assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().done").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().value").execute().isUndefined());
         assertArrayEquals(intArray, v8Runtime.getExecutor("a.toV8Value()").executeObject());
         v8Runtime.getGlobalObject().delete("a");
     }
@@ -110,9 +109,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(Integer.valueOf(1), v8Runtime.getExecutor("a[Symbol.iterator]().next().value").executeObject());
         assertFalse(v8Runtime.getExecutor("a[Symbol.iterator]().next().done").executeBoolean());
         assertEquals(Integer.valueOf(2), v8Runtime.getExecutor("a[Symbol.iterator]().next().next().value").executeObject());
-        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().done").executeBoolean());
-        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().value").execute().isUndefined());
+        assertFalse(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().done").executeBoolean());
         assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().done").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("a[Symbol.iterator]().next().next().next().value").execute().isUndefined());
         assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(a.toV8Value())").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }

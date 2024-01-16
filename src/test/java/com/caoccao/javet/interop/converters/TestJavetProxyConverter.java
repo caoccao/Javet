@@ -732,11 +732,19 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("set.has('z')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.add('z')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("set.has('z')").executeBoolean());
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("const keys = []; for (let key of set.keys()) { keys.push(key); } JSON.stringify(keys);").executeString());
+            assertTrue(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("set.has('z')").executeBoolean());
             v8Runtime.getGlobalObject().delete("set");
         } finally {
             javetProxyConverter.getConfig().setProxySetEnabled(false);
