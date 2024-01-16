@@ -29,7 +29,6 @@ import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
-import com.caoccao.javet.values.virtual.V8VirtualIterator;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -356,7 +355,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         Set<?> set = (Set<?>) targetObject;
         if (POLYFILL_SET_DELETE.equals(propertyName)) {
             return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_SET_DELETE, JavetCallbackType.DirectCallNoThisAndResult,
+                    POLYFILL_SET_DELETE, this, JavetCallbackType.DirectCallNoThisAndResult,
                     (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                         boolean result = false;
                         if (v8Values != null && v8Values.length > 0) {
@@ -367,7 +366,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         }
         if (POLYFILL_SET_HAS.equals(propertyName)) {
             return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_SET_HAS, JavetCallbackType.DirectCallNoThisAndResult,
+                    POLYFILL_SET_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
                     (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                         boolean result = false;
                         if (v8Values != null && v8Values.length > 0) {
@@ -377,11 +376,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                     }));
         }
         if (POLYFILL_SET_KEYS.equals(propertyName) || POLYFILL_SET_VALUES.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_SET_VALUES, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                            v8Runtime.toV8Value(new V8VirtualIterator<>(set.iterator()))
-            ));
+            return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
         }
         return null;
     }
