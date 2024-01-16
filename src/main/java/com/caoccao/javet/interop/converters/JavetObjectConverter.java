@@ -28,7 +28,6 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
-import com.caoccao.javet.interop.proxy.JavetReflectionProxyObjectHandler;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
@@ -338,61 +337,29 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 v8Scope.setEscapable();
             }
         } else if (object instanceof Map) {
-            if (config.isProxyMapEnabled()) {
-                try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                    V8ValueProxy v8ValueProxy = v8Scope.createV8ValueProxy();
-                    try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                        JavetReflectionProxyObjectHandler<Map<?, ?>, ?> javetProxyHandler =
-                                new JavetReflectionProxyObjectHandler<>(v8Runtime, null, (Map<?, ?>) object);
-                        List<JavetCallbackContext> javetCallbackContexts =
-                                iV8ValueObjectHandler.bind(javetProxyHandler);
-                        iV8ValueObjectHandler.setPrivateProperty(
-                                PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+            try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+                V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();
+                final Map<?, ?> mapObject = (Map<?, ?>) object;
+                for (Object key : mapObject.keySet()) {
+                    try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
+                        String childStringKey = key instanceof String ? (String) key : key.toString();
+                        v8ValueObject.set(childStringKey, childV8Value);
                     }
-                    v8Value = v8ValueProxy;
-                    v8Scope.setEscapable();
                 }
-            } else {
-                try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                    V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();
-                    final Map<?, ?> mapObject = (Map<?, ?>) object;
-                    for (Object key : mapObject.keySet()) {
-                        try (V8Value childV8Value = toV8Value(v8Runtime, mapObject.get(key), depth + 1)) {
-                            String childStringKey = key instanceof String ? (String) key : key.toString();
-                            v8ValueObject.set(childStringKey, childV8Value);
-                        }
-                    }
-                    v8Value = v8ValueObject;
-                    v8Scope.setEscapable();
-                }
+                v8Value = v8ValueObject;
+                v8Scope.setEscapable();
             }
         } else if (object instanceof Set) {
-            if (config.isProxySetEnabled()) {
-                try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                    V8ValueProxy v8ValueProxy = v8Scope.createV8ValueProxy();
-                    try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
-                        JavetReflectionProxyObjectHandler<Set<?>, ?> javetProxyHandler =
-                                new JavetReflectionProxyObjectHandler<>(v8Runtime, null, (Set<?>) object);
-                        List<JavetCallbackContext> javetCallbackContexts =
-                                iV8ValueObjectHandler.bind(javetProxyHandler);
-                        iV8ValueObjectHandler.setPrivateProperty(
-                                PRIVATE_PROPERTY_PROXY_TARGET, javetCallbackContexts.get(0).getHandle());
+            try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+                V8ValueSet v8ValueSet = v8Scope.createV8ValueSet();
+                final Set<?> setObject = (Set<?>) object;
+                for (Object item : setObject) {
+                    try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
+                        v8ValueSet.add(childV8Value);
                     }
-                    v8Value = v8ValueProxy;
-                    v8Scope.setEscapable();
                 }
-            } else {
-                try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                    V8ValueSet v8ValueSet = v8Scope.createV8ValueSet();
-                    final Set<?> setObject = (Set<?>) object;
-                    for (Object item : setObject) {
-                        try (V8Value childV8Value = toV8Value(v8Runtime, item, depth + 1)) {
-                            v8ValueSet.add(childV8Value);
-                        }
-                    }
-                    v8Value = v8ValueSet;
-                    v8Scope.setEscapable();
-                }
+                v8Value = v8ValueSet;
+                v8Scope.setEscapable();
             }
         } else if (object instanceof Collection) {
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {

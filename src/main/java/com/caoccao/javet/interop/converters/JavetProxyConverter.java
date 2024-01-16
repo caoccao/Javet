@@ -31,6 +31,8 @@ import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The type Javet proxy converter converts most of Java objects to
@@ -149,9 +151,13 @@ public class JavetProxyConverter extends JavetObjectConverter {
         if (object instanceof V8Value) {
             return (T) object;
         }
-        V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
-        if (v8Value != null && !(v8Value.isUndefined())) {
-            return (T) v8Value;
+        boolean proxyRequired = config.isProxyMapEnabled() && object instanceof Map;
+        proxyRequired = proxyRequired || (config.isProxySetEnabled() && object instanceof Set);
+        if (!proxyRequired) {
+            V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
+            if (v8Value != null && !(v8Value.isUndefined())) {
+                return (T) v8Value;
+            }
         }
         return toProxiedV8Value(v8Runtime, object);
     }

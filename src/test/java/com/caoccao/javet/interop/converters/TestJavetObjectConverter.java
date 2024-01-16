@@ -192,19 +192,6 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals(1, v8ValueMap.getSize());
             assertEquals("abc", v8ValueMap.getString("x"));
         }
-        converter.getConfig().setProxyMapEnabled(true);
-        Map<String, Object> map = new HashMap<String, Object>() {{
-            put("x", "abc");
-        }};
-        try (V8ValueProxy v8ValueProxy = converter.toV8Value(v8Runtime, map)) {
-            v8Runtime.getGlobalObject().set("a", v8ValueProxy);
-            assertEquals(map, v8Runtime.getGlobalObject().getObject("a"));
-        }
-        assertEquals("abc", v8Runtime.getExecutor("a['x']").executeString());
-        assertEquals("abc", v8Runtime.getExecutor("a.x").executeString());
-        assertEquals(1, v8Runtime.getExecutor("a['y'] = 1; a['y'];").executeInteger());
-        assertEquals(1, map.get("y"));
-        v8Runtime.getGlobalObject().delete("a");
         v8Runtime.lowMemoryNotification();
     }
 
