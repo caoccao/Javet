@@ -18,13 +18,33 @@ package com.caoccao.javet.utils;
 
 import java.util.Map;
 
+/**
+ * The type Simple free marker format.
+ *
+ * @since 0.8.5
+ */
 public final class SimpleFreeMarkerFormat {
-
+    /**
+     * The constant STRING_NULL.
+     *
+     * @since 0.8.5
+     */
     public static final String STRING_NULL = "<null>";
     private static final char CHAR_DOLLAR = '$';
     private static final char CHAR_VARIABLE_CLOSE = '}';
     private static final char CHAR_VARIABLE_OPEN = '{';
 
+    private SimpleFreeMarkerFormat() {
+    }
+
+    /**
+     * Format string.
+     *
+     * @param format     the format
+     * @param parameters the parameters
+     * @return the string
+     * @since 0.8.5
+     */
     public static String format(final String format, final Map<String, Object> parameters) {
         if (StringUtils.isEmpty(format) || parameters == null || parameters.isEmpty()) {
             return format;
@@ -105,9 +125,29 @@ public final class SimpleFreeMarkerFormat {
         return stringBuilderMessage.toString();
     }
 
+    /**
+     * The enum State.
+     *
+     * @since 0.8.5
+     */
     enum State {
+        /**
+         * Text state.
+         *
+         * @since 0.8.5
+         */
         Text,
+        /**
+         * Dollar state.
+         *
+         * @since 0.8.5
+         */
         Dollar,
+        /**
+         * Variable state.
+         *
+         * @since 0.8.5
+         */
         Variable,
     }
 }

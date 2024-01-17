@@ -17,9 +17,8 @@
 package com.caoccao.javet.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * The type Simple list.
@@ -27,6 +26,9 @@ import java.util.Objects;
  * @since 3.0.3
  */
 public final class SimpleList {
+    private SimpleList() {
+    }
+
     /**
      * Of list.
      *
@@ -48,6 +50,8 @@ public final class SimpleList {
      */
     @SafeVarargs
     public static <T> List<T> of(T... objects) {
-        return Arrays.asList(Objects.requireNonNull(objects));
+        List<T> list = new ArrayList<>();
+        Collections.addAll(list, objects);
+        return list;
     }
 }

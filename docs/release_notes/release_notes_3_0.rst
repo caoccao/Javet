@@ -18,6 +18,8 @@ Release Notes 3.0.x
 * Added ``createSnapshot()`` to ``V8Runtime``
 * Added ``isCreateSnapshotEnabled()``, ``setCreateSnapshotEnabled()``, ``getSnapshotBlob()``, ``setSnapshotBlob()`` to ``RuntimeOptions``
 * Added ``RuntimeCreateSnapshotDisabled``, ``RuntimeCreateSnapshotBlocked`` to ``JavetError``
+* Added ``isProxyListEnabled()``, ``setProxyListEnabled()`` to ``JavetConverterConfig``
+* Added ``ArrayUtils``, ``CollectionUtils``
 * Fixed ``CDTShell``
 
 3.0.2 V8 v12.0

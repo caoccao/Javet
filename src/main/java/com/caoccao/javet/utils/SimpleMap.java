@@ -25,6 +25,8 @@ import java.util.Map;
  * @since 0.8.5
  */
 public final class SimpleMap {
+    private SimpleMap() {
+    }
 
     /**
      * Of map.

@@ -29,6 +29,9 @@ public final class StringUtils {
      */
     public static final String EMPTY = "";
 
+    private StringUtils() {
+    }
+
     /**
      * Is blank.
      *

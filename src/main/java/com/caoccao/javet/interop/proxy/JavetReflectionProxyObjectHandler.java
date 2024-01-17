@@ -22,12 +22,13 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.utils.JavetStringUtils;
-import com.caoccao.javet.utils.ThreadSafeMap;
+import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
@@ -46,13 +47,60 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         extends BaseJavetReflectionProxyHandler<T, E> {
-
     /**
-     * The constant FUNCTION_NAME_LENGTH.
+     * The constant POLYFILL_ARRAY_LENGTH.
      *
      * @since 1.0.6
      */
-    protected static final String FUNCTION_NAME_LENGTH = "length";
+    protected static final String POLYFILL_ARRAY_LENGTH = "length";
+    /**
+     * The constant POLYFILL_LIST_INCLUDES.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_INCLUDES = "includes";
+    /**
+     * The constant POLYFILL_LIST_LENGTH.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_LENGTH = "length";
+    /**
+     * The constant POLYFILL_LIST_POP.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_POP = "pop";
+    /**
+     * The constant POLYFILL_LIST_PUSH.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_PUSH = "push";
+    /**
+     * The constant POLYFILL_SET_DELETE.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SET_DELETE = "delete";
+    /**
+     * The constant POLYFILL_SET_HAS.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SET_HAS = "has";
+    /**
+     * The constant POLYFILL_SET_KEYS.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SET_KEYS = "keys";
+    /**
+     * The constant POLYFILL_SET_VALUES.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SET_VALUES = "values";
     /**
      * The constant classDescriptorMap.
      *
@@ -75,6 +123,46 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         super(v8Runtime, reflectionObjectFactory, Objects.requireNonNull(targetObject));
     }
 
+    /**
+     * Delete from collection.
+     *
+     * @param property the property
+     * @return true : deleted, false : not deleted
+     * @throws JavetException the javet exception
+     */
+    protected boolean deleteFromCollection(V8Value property) throws JavetException {
+        if (property instanceof V8ValueString) {
+            String propertyString = ((V8ValueString) property).getValue();
+            if (JavetStringUtils.isDigital(propertyString)) {
+                final int index = Integer.parseInt(propertyString);
+                if (index >= 0) {
+                    if (classDescriptor.getTargetClass().isArray()) {
+                        if (index < Array.getLength(targetObject)) {
+                            // Only non-primitive array supports delete.
+                            if (!classDescriptor.getTargetClass().getComponentType().isPrimitive()) {
+                                Array.set(targetObject, index, null);
+                                return true;
+                            }
+                        }
+                    } else if (classDescriptor.isTargetTypeList()) {
+                        List<?> list = (List<?>) targetObject;
+                        if (index < list.size()) {
+                            list.remove(index);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public V8ValueBoolean deleteProperty(V8Value target, V8Value property) throws JavetException, E {
+        boolean result = deleteFromCollection(property);
+        return v8Runtime.createV8ValueBoolean(result);
+    }
+
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
         V8Value result = getFromCollection(property);
@@ -93,6 +181,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_DELETE_PROPERTY, this, JavetCallbackType.DirectCallNoThisAndResult,
+                            (NoThisAndResult<?>) (v8Values) -> deleteProperty(v8Values[0], v8Values[1])),
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> has(v8Values[0], v8Values[1])),
@@ -122,7 +213,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected V8Value getFromCollection(V8Value property) throws JavetException {
         if (property instanceof V8ValueString) {
-            String propertyString = ((V8ValueString) property).toPrimitive();
+            String propertyString = ((V8ValueString) property).getValue();
             if (JavetStringUtils.isDigital(propertyString)) {
                 final int index = Integer.parseInt(propertyString);
                 if (index >= 0) {
@@ -130,16 +221,124 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         if (index < Array.getLength(targetObject)) {
                             return v8Runtime.toV8Value(Array.get(targetObject, index));
                         }
-                    } else if (List.class.isAssignableFrom(classDescriptor.getTargetClass())) {
+                    } else if (classDescriptor.isTargetTypeList()) {
                         List<?> list = (List<?>) targetObject;
                         if (index < list.size()) {
                             return v8Runtime.toV8Value(list.get(index));
                         }
                     }
                 }
-            } else if (classDescriptor.getTargetClass().isArray() && FUNCTION_NAME_LENGTH.equals(propertyString)) {
+            } else if (classDescriptor.getTargetClass().isArray() && POLYFILL_ARRAY_LENGTH.equals(propertyString)) {
                 return v8Runtime.toV8Value(Array.getLength(targetObject));
             }
+        }
+        return null;
+    }
+
+    /**
+     * Gets from polyfill.
+     *
+     * @param property the property
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.3
+     */
+    protected V8Value getFromPolyfill(V8Value property) throws JavetException {
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).getValue();
+            if (classDescriptor.isTargetTypeList()) {
+                return getFromPolyfillList(propertyName);
+            } else if (classDescriptor.isTargetTypeMap()) {
+            } else if (classDescriptor.isTargetTypeSet()) {
+                return getFromPolyfillSet(propertyName);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets from polyfill collection.
+     *
+     * @param propertyName the property name
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.3
+     */
+    protected V8Value getFromPolyfillList(String propertyName) throws JavetException {
+        List<Object> list = (List<Object>) targetObject;
+        if (POLYFILL_LIST_INCLUDES.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_LIST_INCLUDES, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        boolean included = false;
+                        if (ArrayUtils.isNotEmpty(v8Values)) {
+                            Object object = v8Runtime.toObject(v8Values[0]);
+                            int fromIndex = 0;
+                            if (v8Values.length > 1 && v8Values[1] instanceof V8ValueInteger) {
+                                fromIndex = ((V8ValueInteger) v8Values[1]).getValue();
+                            }
+                            included = ListUtils.includes(list, object, fromIndex);
+                        }
+                        return v8Runtime.createV8ValueBoolean(included);
+                    }));
+        }
+        if (POLYFILL_LIST_LENGTH.equals(propertyName)) {
+            return v8Runtime.createV8ValueInteger(list.size());
+        }
+        if (POLYFILL_LIST_PUSH.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_LIST_PUSH, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                            v8Runtime.createV8ValueInteger(
+                                    ListUtils.push(list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
+        }
+        if (POLYFILL_LIST_POP.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_LIST_POP, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        if (list.isEmpty()) {
+                            return v8Runtime.createV8ValueUndefined();
+                        }
+                        return v8Runtime.toV8Value(ListUtils.pop(list));
+                    }));
+        }
+        return null;
+    }
+
+    /**
+     * Gets from polyfill set.
+     *
+     * @param propertyName the property name
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.3
+     */
+    protected V8Value getFromPolyfillSet(String propertyName) throws JavetException {
+        Set<?> set = (Set<?>) targetObject;
+        if (POLYFILL_SET_DELETE.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_SET_DELETE, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        boolean result = false;
+                        if (v8Values != null && v8Values.length > 0) {
+                            result = set.remove(v8Runtime.toObject(v8Values[0]));
+                        }
+                        return v8Runtime.createV8ValueBoolean(result);
+                    }));
+        }
+        if (POLYFILL_SET_HAS.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_SET_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        boolean result = false;
+                        if (v8Values != null && v8Values.length > 0) {
+                            result = set.contains(v8Runtime.toObject(v8Values[0]));
+                        }
+                        return v8Runtime.createV8ValueBoolean(result);
+                    }));
+        }
+        if (POLYFILL_SET_KEYS.equals(propertyName) || POLYFILL_SET_VALUES.equals(propertyName)) {
+            return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
         }
         return null;
     }
@@ -187,10 +386,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected boolean hasFromCollection(V8Value property) throws JavetException {
         if (classDescriptor.isTargetTypeMap()) {
             return ((Map<?, ?>) targetObject).containsKey(v8Runtime.toObject(property));
+        } else if (classDescriptor.isTargetTypeList()) {
+            return ((List<?>) targetObject).contains(v8Runtime.toObject(property));
         } else if (classDescriptor.isTargetTypeSet()) {
             return ((Set<?>) targetObject).contains(v8Runtime.toObject(property));
         } else if (property instanceof V8ValueString) {
-            String indexString = ((V8ValueString) property).toPrimitive();
+            String indexString = ((V8ValueString) property).getValue();
             if (JavetStringUtils.isDigital(indexString)) {
                 final int index = Integer.parseInt(indexString);
                 if (index >= 0) {
@@ -317,16 +518,16 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected boolean setToCollection(V8Value propertyKey, V8Value propertyValue) throws JavetException {
         if (propertyKey instanceof V8ValueString) {
-            String indexString = ((V8ValueString) propertyKey).toPrimitive();
-            if (JavetStringUtils.isDigital(indexString)) {
-                final int index = Integer.parseInt(indexString);
+            String propertyKeyString = ((V8ValueString) propertyKey).getValue();
+            if (JavetStringUtils.isDigital(propertyKeyString)) {
+                final int index = Integer.parseInt(propertyKeyString);
                 if (index >= 0) {
                     if (classDescriptor.getTargetClass().isArray()) {
                         if (index < Array.getLength(targetObject)) {
                             Array.set(targetObject, index, v8Runtime.toObject(propertyValue));
                             return true;
                         }
-                    } else if (List.class.isAssignableFrom(classDescriptor.getTargetClass())) {
+                    } else if (classDescriptor.isTargetTypeList()) {
                         List<?> list = (List<?>) targetObject;
                         if (index < list.size()) {
                             list.set(index, v8Runtime.toObject(propertyValue));

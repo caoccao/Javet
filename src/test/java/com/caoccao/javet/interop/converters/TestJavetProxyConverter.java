@@ -34,6 +34,7 @@ import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
@@ -561,6 +562,41 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
         v8Runtime.getGlobalObject().delete("AutoCloseable");
         v8Runtime.getGlobalObject().delete("IJavetClosable");
+    }
+
+    @Test
+    public void testList() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            List<String> list = SimpleList.of("x", "y");
+            v8Runtime.getGlobalObject().set("list", list);
+            assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
+            // contains
+            assertTrue(v8Runtime.getExecutor("list.contains('x')").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("list.contains('y')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("list.contains('z')").executeBoolean());
+            // includes
+            assertTrue(v8Runtime.getExecutor("list.includes('x')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("list.includes('x', 1)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("list.includes('y', 1)").executeBoolean());
+            // push
+            assertEquals(4, v8Runtime.getExecutor("list.push('z', '1')").executeInteger());
+            assertTrue(v8Runtime.getExecutor("list.includes('z')").executeBoolean());
+            // pop
+            assertEquals("1", v8Runtime.getExecutor("list.pop()").executeString());
+            // Symbol.iterator
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify([...list]);").executeString());
+            // delete
+            assertTrue(v8Runtime.getExecutor("delete list[2]").executeBoolean());
+            assertEquals(2, v8Runtime.getExecutor("list.size()").executeInteger());
+            // length
+            assertEquals(2, v8Runtime.getExecutor("list.length").executeInteger());
+            v8Runtime.getGlobalObject().delete("list");
+        } finally {
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
     }
 
     @Test

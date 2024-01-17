@@ -53,6 +53,12 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      */
     String PROXY_FUNCTION_NAME_CONSTRUCT = "construct";
     /**
+     * The constant PROXY_FUNCTION_NAME_DELETE_PROPERTY.
+     *
+     * @since 3.0.3
+     */
+    String PROXY_FUNCTION_NAME_DELETE_PROPERTY = "deleteProperty";
+    /**
      * The constant PROXY_FUNCTION_NAME_GET.
      *
      * @since 2.2.0
@@ -127,16 +133,14 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     /**
      * Delete property.
      *
-     * @param target     the target
-     * @param property   the property
-     * @param descriptor the descriptor
+     * @param target   the target
+     * @param property the property
      * @return the V8 value boolean
      * @throws JavetException the javet exception
      * @throws E              the custom exception
      * @since 2.2.0
      */
-    default V8ValueBoolean deleteProperty(
-            V8Value target, V8Value property, V8ValueObject descriptor)
+    default V8ValueBoolean deleteProperty(V8Value target, V8Value property)
             throws JavetException, E {
         return getV8Runtime().createV8ValueBoolean(false);
     }

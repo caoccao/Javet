@@ -26,6 +26,9 @@ import java.util.Set;
  * @since 3.0.3
  */
 public final class SimpleSet {
+    private SimpleSet() {
+    }
+
     /**
      * Of set.
      *
