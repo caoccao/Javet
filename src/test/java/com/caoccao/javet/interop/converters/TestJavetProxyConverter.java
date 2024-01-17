@@ -35,6 +35,7 @@ import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
@@ -634,10 +635,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testMap() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxyMapEnabled(true);
-            Map<String, Object> map = new HashMap<String, Object>() {{
-                put("x", 1);
-                put("y", "2");
-            }};
+            Map<String, Object> map = SimpleMap.of("x", 1, "y", "2");
             v8Runtime.getGlobalObject().set("map", map);
             assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
             assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
