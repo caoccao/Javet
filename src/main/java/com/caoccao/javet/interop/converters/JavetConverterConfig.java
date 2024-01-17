@@ -429,6 +429,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * Sets proxy list enabled.
      *
      * @param proxyListEnabled the proxy list enabled
+     * @return the self
      * @since 3.0.3
      */
     @SuppressWarnings("UnusedReturnValue")
