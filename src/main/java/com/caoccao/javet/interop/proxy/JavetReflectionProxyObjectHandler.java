@@ -31,6 +31,7 @@ import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
@@ -268,6 +269,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             if (classDescriptor.isTargetTypeList()) {
                 return getFromPolyfillList(propertyName);
             } else if (classDescriptor.isTargetTypeMap()) {
+                return getFromPolyfillMap(propertyName);
             } else if (classDescriptor.isTargetTypeSet()) {
                 return getFromPolyfillSet(propertyName);
             }
@@ -276,7 +278,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     /**
-     * Gets from polyfill collection.
+     * Gets from polyfill list.
      *
      * @param propertyName the property name
      * @return the V8 value
@@ -342,11 +344,45 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
                     POLYFILL_SHARED_TO_JSON, this, JavetCallbackType.DirectCallNoThisAndResult,
                     (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        Object[] objects = list.toArray();
                         try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                             V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                            v8ValueArray.push(list.toArray());
+                            v8ValueArray.push(objects);
                             v8Scope.setEscapable();
                             return v8ValueArray;
+                        }
+                    }
+            ));
+        }
+        return null;
+    }
+
+    /**
+     * Gets from polyfill map.
+     *
+     * @param propertyName the property name
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.3
+     */
+    protected V8Value getFromPolyfillMap(String propertyName) throws JavetException {
+        Map<?, ?> map = (Map<?, ?>) targetObject;
+        if (POLYFILL_SHARED_TO_JSON.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_SHARED_TO_JSON, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        Object[] objects = new Object[map.size() << 1];
+                        int index = 0;
+                        for (Map.Entry<?, ?> entry : map.entrySet()) {
+                            objects[index] = entry.getKey();
+                            objects[index + 1] = entry.getKey();
+                            index += 2;
+                        }
+                        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+                            V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();
+                            v8ValueObject.set(objects);
+                            v8Scope.setEscapable();
+                            return v8ValueObject;
                         }
                     }
             ));

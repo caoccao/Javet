@@ -656,6 +656,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
             assertTrue(v8Runtime.getExecutor("delete map['x']").executeBoolean());
             assertFalse(map.containsKey("x"));
+            assertTrue(v8Runtime.getExecutor("delete map['y']").executeBoolean());
+            assertFalse(map.containsKey("y"));
+            assertEquals(
+                    "{\"z\":\"z\"}",
+                    v8Runtime.getExecutor("JSON.stringify(map);").executeString());
             v8Runtime.getGlobalObject().delete("map");
         } finally {
             javetProxyConverter.getConfig().setProxyMapEnabled(false);
@@ -782,6 +787,9 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("set.add('z')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.has('z')").executeBoolean());
+            assertEquals(
+                    "{}",
+                    v8Runtime.getExecutor("JSON.stringify(set);").executeString());
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
