@@ -647,6 +647,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
+            assertTrue(v8Runtime.getExecutor("delete map['x']").executeBoolean());
+            assertFalse(map.containsKey("x"));
             v8Runtime.getGlobalObject().delete("map");
         } finally {
             javetProxyConverter.getConfig().setProxyMapEnabled(false);

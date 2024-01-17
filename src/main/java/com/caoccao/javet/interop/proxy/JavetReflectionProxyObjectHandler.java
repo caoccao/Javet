@@ -132,26 +132,33 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected boolean deleteFromCollection(V8Value property) throws JavetException {
         if (property instanceof V8ValueString) {
-            String propertyString = ((V8ValueString) property).getValue();
-            if (JavetStringUtils.isDigital(propertyString)) {
-                final int index = Integer.parseInt(propertyString);
-                if (index >= 0) {
-                    if (classDescriptor.getTargetClass().isArray()) {
-                        if (index < Array.getLength(targetObject)) {
-                            // Only non-primitive array supports delete.
-                            if (!classDescriptor.getTargetClass().getComponentType().isPrimitive()) {
-                                Array.set(targetObject, index, null);
+            try {
+                String propertyString = ((V8ValueString) property).getValue();
+                if (JavetStringUtils.isDigital(propertyString)) {
+                    final int index = Integer.parseInt(propertyString);
+                    if (index >= 0) {
+                        if (classDescriptor.getTargetClass().isArray()) {
+                            if (index < Array.getLength(targetObject)) {
+                                // Only non-primitive array supports delete.
+                                if (!classDescriptor.getTargetClass().getComponentType().isPrimitive()) {
+                                    Array.set(targetObject, index, null);
+                                    return true;
+                                }
+                            }
+                        } else if (classDescriptor.isTargetTypeList()) {
+                            List<?> list = (List<?>) targetObject;
+                            if (index < list.size()) {
+                                list.remove(index);
                                 return true;
                             }
                         }
-                    } else if (classDescriptor.isTargetTypeList()) {
-                        List<?> list = (List<?>) targetObject;
-                        if (index < list.size()) {
-                            list.remove(index);
-                            return true;
-                        }
                     }
                 }
+                if (classDescriptor.isTargetTypeMap()) {
+                    Map<?, ?> map = (Map<?, ?>) targetObject;
+                    return map.remove(propertyString) != null;
+                }
+            } catch (Throwable ignored) {
             }
         }
         return false;
@@ -160,7 +167,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     @Override
     public V8ValueBoolean deleteProperty(V8Value target, V8Value property) throws JavetException, E {
         boolean result = deleteFromCollection(property);
-        return v8Runtime.createV8ValueBoolean(result);
+        return super.deleteProperty(target, property);
     }
 
     @Override

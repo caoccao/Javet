@@ -142,7 +142,7 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      */
     default V8ValueBoolean deleteProperty(V8Value target, V8Value property)
             throws JavetException, E {
-        return getV8Runtime().createV8ValueBoolean(false);
+        return getV8Runtime().createV8ValueBoolean(true);
     }
 
     /**
