@@ -78,6 +78,18 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_LIST_PUSH = "push";
     /**
+     * The constant POLYFILL_LIST_SHIFT.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_SHIFT = "shift";
+    /**
+     * The constant POLYFILL_LIST_UNSHIFT.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_UNSHIFT = "unshift";
+    /**
      * The constant POLYFILL_SET_DELETE.
      *
      * @since 3.0.3
@@ -292,13 +304,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         if (POLYFILL_LIST_LENGTH.equals(propertyName)) {
             return v8Runtime.createV8ValueInteger(list.size());
         }
-        if (POLYFILL_LIST_PUSH.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_LIST_PUSH, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                            v8Runtime.createV8ValueInteger(
-                                    ListUtils.push(list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
-        }
         if (POLYFILL_LIST_POP.equals(propertyName)) {
             return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
                     POLYFILL_LIST_POP, this, JavetCallbackType.DirectCallNoThisAndResult,
@@ -308,6 +313,30 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         }
                         return v8Runtime.toV8Value(ListUtils.pop(list));
                     }));
+        }
+        if (POLYFILL_LIST_PUSH.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_LIST_PUSH, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                            v8Runtime.createV8ValueInteger(
+                                    ListUtils.push(list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
+        }
+        if (POLYFILL_LIST_SHIFT.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_LIST_SHIFT, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        if (list.isEmpty()) {
+                            return v8Runtime.createV8ValueUndefined();
+                        }
+                        return v8Runtime.toV8Value(ListUtils.shift(list));
+                    }));
+        }
+        if (POLYFILL_LIST_UNSHIFT.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_LIST_UNSHIFT, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                            v8Runtime.createV8ValueInteger(
+                                    ListUtils.unshift(list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
         }
         return null;
     }

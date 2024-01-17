@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.utils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +59,7 @@ public final class ListUtils {
      *
      * @param <T>  the type parameter
      * @param list the list
-     * @return the element
+     * @return the removed element
      * @since 3.0.3
      */
     public static <T> T pop(List<T> list) {
@@ -80,7 +81,41 @@ public final class ListUtils {
      * @since 3.0.3
      */
     public static <T> int push(List<T> list, T... elements) {
-        Collections.addAll(list, elements);
+        if (ArrayUtils.isNotEmpty(elements)) {
+            Collections.addAll(list, elements);
+        }
+        return list.size();
+    }
+
+    /**
+     * The shift() method of Array instances removes the first element from an array and
+     * returns that removed element. This method changes the length of the array.
+     *
+     * @param <T>  the type parameter
+     * @param list the list
+     * @return the removed element
+     */
+    public static <T> T shift(List<T> list) {
+        final int size = list.size();
+        if (size > 0) {
+            return list.remove(0);
+        }
+        return null;
+    }
+
+    /**
+     * The unshift() method of Array instances adds the specified elements to the beginning of an array and
+     * returns the new length of the array.
+     *
+     * @param <T>      the type parameter
+     * @param list     the list
+     * @param elements the elements
+     * @return the new length of the array
+     */
+    public static <T> int unshift(List<T> list, T... elements) {
+        if (ArrayUtils.isNotEmpty(elements)) {
+            list.addAll(0, Arrays.asList(elements));
+        }
         return list.size();
     }
 }
