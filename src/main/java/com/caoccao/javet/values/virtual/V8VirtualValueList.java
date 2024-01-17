@@ -20,6 +20,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.IJavetConverter;
+import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 
@@ -58,7 +59,7 @@ public class V8VirtualValueList implements IJavetClosable {
      */
     public V8VirtualValueList(V8Runtime v8Runtime, IJavetConverter converter, Object... objects) throws JavetException {
         Objects.requireNonNull(v8Runtime);
-        if (objects == null || objects.length == 0) {
+        if (ArrayUtils.isEmpty(objects)) {
             toBeClosedValues = null;
             values = null;
         } else {

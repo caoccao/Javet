@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interop.options;
 
+import com.caoccao.javet.utils.ArrayUtils;
+
 /**
  * The type Runtime options.
  *
@@ -87,7 +89,7 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      * @since 3.0.3
      */
     public RuntimeOptions<Options> setSnapshotBlob(byte[] snapshotBlob) {
-        this.snapshotBlob = snapshotBlob == null || snapshotBlob.length == 0 ? null : snapshotBlob;
+        this.snapshotBlob = ArrayUtils.isEmpty(snapshotBlob) ? null : snapshotBlob;
         return this;
     }
 }

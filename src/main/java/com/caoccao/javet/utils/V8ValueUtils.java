@@ -39,7 +39,7 @@ public final class V8ValueUtils {
      * @since 0.7.1
      */
     public static String concat(String delimiter, V8Value... v8Values) {
-        if (v8Values == null || v8Values.length == 0) {
+        if (ArrayUtils.isEmpty(v8Values)) {
             return StringUtils.EMPTY;
         }
         if (delimiter == null) {
