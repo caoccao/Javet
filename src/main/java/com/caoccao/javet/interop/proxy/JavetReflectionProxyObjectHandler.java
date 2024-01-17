@@ -48,23 +48,11 @@ import java.util.*;
 public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         extends BaseJavetReflectionProxyHandler<T, E> {
     /**
-     * The constant POLYFILL_ARRAY_LENGTH.
-     *
-     * @since 1.0.6
-     */
-    protected static final String POLYFILL_ARRAY_LENGTH = "length";
-    /**
      * The constant POLYFILL_LIST_INCLUDES.
      *
      * @since 3.0.3
      */
     protected static final String POLYFILL_LIST_INCLUDES = "includes";
-    /**
-     * The constant POLYFILL_LIST_LENGTH.
-     *
-     * @since 3.0.3
-     */
-    protected static final String POLYFILL_LIST_LENGTH = "length";
     /**
      * The constant POLYFILL_LIST_POP.
      *
@@ -113,6 +101,18 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.3
      */
     protected static final String POLYFILL_SET_VALUES = "values";
+    /**
+     * The constant POLYFILL_SHARED_LENGTH.
+     *
+     * @since 1.0.6
+     */
+    protected static final String POLYFILL_SHARED_LENGTH = "length";
+    /**
+     * The constant POLYFILL_SHARED_TO_JSON.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SHARED_TO_JSON = "toJSON";
     /**
      * The constant classDescriptorMap.
      *
@@ -247,7 +247,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         }
                     }
                 }
-            } else if (classDescriptor.getTargetClass().isArray() && POLYFILL_ARRAY_LENGTH.equals(propertyString)) {
+            } else if (classDescriptor.getTargetClass().isArray() && POLYFILL_SHARED_LENGTH.equals(propertyString)) {
                 return v8Runtime.toV8Value(Array.getLength(targetObject));
             }
         }
@@ -301,7 +301,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         return v8Runtime.createV8ValueBoolean(included);
                     }));
         }
-        if (POLYFILL_LIST_LENGTH.equals(propertyName)) {
+        if (POLYFILL_SHARED_LENGTH.equals(propertyName)) {
             return v8Runtime.createV8ValueInteger(list.size());
         }
         if (POLYFILL_LIST_POP.equals(propertyName)) {
@@ -337,6 +337,19 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                     (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
                             v8Runtime.createV8ValueInteger(
                                     ListUtils.unshift(list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
+        }
+        if (POLYFILL_SHARED_TO_JSON.equals(propertyName)) {
+            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    POLYFILL_SHARED_TO_JSON, this, JavetCallbackType.DirectCallNoThisAndResult,
+                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+                            V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                            v8ValueArray.push(list.toArray());
+                            v8Scope.setEscapable();
+                            return v8ValueArray;
+                        }
+                    }
+            ));
         }
         return null;
     }

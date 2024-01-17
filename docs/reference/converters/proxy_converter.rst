@@ -56,6 +56,10 @@ Instance: List
     assertTrue(v8Runtime.getExecutor("list.includes('z')").executeBoolean());
     // pop
     assertEquals("1", v8Runtime.getExecutor("list.pop()").executeString());
+    // toJSON
+    assertEquals(
+            "[\"x\",\"y\",\"z\"]",
+            v8Runtime.getExecutor("JSON.stringify(list);").executeString());
     // Symbol.iterator
     assertEquals(
             "[\"x\",\"y\",\"z\"]",

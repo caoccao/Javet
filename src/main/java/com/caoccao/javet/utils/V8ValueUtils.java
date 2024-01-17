@@ -71,7 +71,7 @@ public final class V8ValueUtils {
     }
 
     /**
-     * To array.
+     * Convert V8 values to objects.
      *
      * @param v8Runtime the V8 runtime
      * @param v8Values  the V8 values
