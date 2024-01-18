@@ -235,11 +235,11 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * Parameters
      * index
      * Zero-based index of the array element to be returned, converted to an integer.
-     * Negative index counts back from the end of the array — if index < 0, index + array.length is accessed.
+     * Negative index counts back from the end of the array — if index &lt; 0, index + array.length is accessed.
      * <p>
      * Return value
      * The element in the array matching the given index.
-     * Always returns undefined if index < -array.length or index >= array.length
+     * Always returns undefined if index &lt; -array.length or index &gt;= array.length
      * without attempting to access the corresponding property.
      *
      * @param handler the handler
