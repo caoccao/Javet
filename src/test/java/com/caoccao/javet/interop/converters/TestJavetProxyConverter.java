@@ -572,33 +572,47 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             List<String> list = SimpleList.of("x", "y");
             v8Runtime.getGlobalObject().set("list", list);
             assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
-            // contains
+            // contains()
             assertTrue(v8Runtime.getExecutor("list.contains('x')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("list.contains('y')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("list.contains('z')").executeBoolean());
-            // includes
+            // includes()
             assertTrue(v8Runtime.getExecutor("list.includes('x')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("list.includes('x', 1)").executeBoolean());
             assertTrue(v8Runtime.getExecutor("list.includes('y', 1)").executeBoolean());
-            // push
+            // push()
             assertEquals(4, v8Runtime.getExecutor("list.push('z', '1')").executeInteger());
             assertTrue(v8Runtime.getExecutor("list.includes('z')").executeBoolean());
-            // pop
+            // pop()
             assertEquals("1", v8Runtime.getExecutor("list.pop()").executeString());
-            // toJSON
+            // toJSON()
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
-                    v8Runtime.getExecutor("JSON.stringify(list);").executeString());
+                    v8Runtime.getExecutor("JSON.stringify(list)").executeString());
             // Symbol.iterator
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
-                    v8Runtime.getExecutor("JSON.stringify([...list]);").executeString());
-            // unshift
+                    v8Runtime.getExecutor("JSON.stringify([...list])").executeString());
+            // with()
+            assertEquals(
+                    "[\"1\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.with(0, '1'))").executeString());
+            // toString()
+            assertEquals(
+                    "[x, y, z]",
+                    v8Runtime.getExecutor("list.toString()").executeString());
+            // values()
+            assertEquals(
+                    "x",
+                    v8Runtime.getExecutor("list.values().next().value").executeString());
+            // unshift()
             assertEquals(5, v8Runtime.getExecutor("list.unshift('1', '2')").executeInteger());
-            // shift
-            assertEquals("1", v8Runtime.getExecutor("list.shift()").executeString());
+            // []
+            assertEquals("3", v8Runtime.getExecutor("list[0] = '3'; list[0]").executeString());
+            // shift()
+            assertEquals("3", v8Runtime.getExecutor("list.shift()").executeString());
             assertEquals("2", v8Runtime.getExecutor("list.shift()").executeString());
-            // delete
+            // delete()
             assertTrue(v8Runtime.getExecutor("delete list[2]").executeBoolean());
             assertEquals(2, v8Runtime.getExecutor("list.size()").executeInteger());
             // length

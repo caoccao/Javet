@@ -79,6 +79,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_LIST_UNSHIFT = "unshift";
     /**
+     * The constant POLYFILL_LIST_WITH.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_WITH = "with";
+    /**
      * The constant POLYFILL_SET_DELETE.
      *
      * @since 3.0.3
@@ -97,12 +103,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_SET_KEYS = "keys";
     /**
-     * The constant POLYFILL_SET_VALUES.
-     *
-     * @since 3.0.3
-     */
-    protected static final String POLYFILL_SET_VALUES = "values";
-    /**
      * The constant POLYFILL_SHARED_LENGTH.
      *
      * @since 1.0.6
@@ -114,6 +114,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.3
      */
     protected static final String POLYFILL_SHARED_TO_JSON = "toJSON";
+    /**
+     * The constant POLYFILL_SHARED_VALUES.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SHARED_VALUES = "values";
     /**
      * The constant classDescriptorMap.
      *
@@ -148,13 +154,15 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         polyfillListFunctionMap.put(POLYFILL_LIST_SHIFT, JavetReflectionProxyObjectHandler::polyfillListShift);
         polyfillListFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillListToJSON);
         polyfillListFunctionMap.put(POLYFILL_LIST_UNSHIFT, JavetReflectionProxyObjectHandler::polyfillListUnshift);
+        polyfillListFunctionMap.put(POLYFILL_SHARED_VALUES, JavetReflectionProxyObjectHandler::polyfillSharedValues);
+        polyfillListFunctionMap.put(POLYFILL_LIST_WITH, JavetReflectionProxyObjectHandler::polyfillListWith);
         polyfillMapFunctionMap = new HashMap<>();
         polyfillMapFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillMapToJSON);
         polyfillSetFunctionMap = new HashMap<>();
         polyfillSetFunctionMap.put(POLYFILL_SET_DELETE, JavetReflectionProxyObjectHandler::polyfillSetDelete);
         polyfillSetFunctionMap.put(POLYFILL_SET_HAS, JavetReflectionProxyObjectHandler::polyfillSetHas);
-        polyfillSetFunctionMap.put(POLYFILL_SET_KEYS, JavetReflectionProxyObjectHandler::polyfillSetValues);
-        polyfillSetFunctionMap.put(POLYFILL_SET_VALUES, JavetReflectionProxyObjectHandler::polyfillSetValues);
+        polyfillSetFunctionMap.put(POLYFILL_SET_KEYS, JavetReflectionProxyObjectHandler::polyfillSharedValues);
+        polyfillSetFunctionMap.put(POLYFILL_SHARED_VALUES, JavetReflectionProxyObjectHandler::polyfillSharedValues);
     }
 
     /**
@@ -315,6 +323,36 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     /**
+     * Polyfill Array.prototype.with().
+     * The with() method of Array instances is the copying version of using the bracket notation to change the value
+     * of a given index. It returns a new array with the element at the given index replaced with the given value.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListWith(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_WITH, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
+                        Object[] objects = list.toArray();
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (v8Values != null && v8Values.length > 1 && v8Values[0] instanceof V8ValueInteger) {
+                            int toBeReplacedIndex = ((V8ValueInteger) v8Values[0]).getValue();
+                            if (toBeReplacedIndex >= 0 && toBeReplacedIndex < objects.length) {
+                                objects[toBeReplacedIndex] = handler.getV8Runtime().toObject(v8Values[1]);
+                            }
+                        }
+                        v8ValueArray.push(objects);
+                        v8Scope.setEscapable();
+                        return v8ValueArray;
+                    }
+                }));
+    }
+
+    /**
      * Polyfill Map.toJSON().
      *
      * @param handler the handler
@@ -387,6 +425,10 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     /**
+     * Polyfill Array.prototype.values().
+     * The values() method of Array instances returns a new array iterator object that iterates the value
+     * of each item in the array.
+     * <p>
      * Polyfill Set.prototype.values().
      * The values() method of Set instances returns a new set iterator object that contains the values
      * for each element in this set in insertion order.
@@ -395,7 +437,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @return the V8 value
      * @throws JavetException the javet exception
      */
-    protected static V8Value polyfillSetValues(IJavetProxyHandler<?, ?> handler) throws JavetException {
+    protected static V8Value polyfillSharedValues(IJavetProxyHandler<?, ?> handler) throws JavetException {
         return new JavetProxySymbolIterableConverter<>(
                 handler.getV8Runtime(), handler.getTargetObject()).getV8ValueFunction();
     }
