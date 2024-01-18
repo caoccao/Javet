@@ -30,9 +30,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueSymbol;
+import com.caoccao.javet.values.reference.*;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.lang.reflect.Array;
@@ -67,6 +65,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_LIST_KEYS = "keys";
     /**
+     * The constant POLYFILL_LIST_MAP.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_MAP = "map";
+    /**
      * The constant POLYFILL_LIST_POP.
      *
      * @since 3.0.3
@@ -78,6 +82,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.3
      */
     protected static final String POLYFILL_LIST_PUSH = "push";
+    /**
+     * The constant POLYFILL_LIST_REVERSE.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_REVERSE = "reverse";
     /**
      * The constant POLYFILL_LIST_SHIFT.
      *
@@ -163,8 +173,10 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         polyfillListFunctionMap.put(POLYFILL_LIST_INCLUDES, JavetReflectionProxyObjectHandler::polyfillListIncludes);
         polyfillListFunctionMap.put(POLYFILL_LIST_KEYS, JavetReflectionProxyObjectHandler::polyfillListKeys);
         polyfillListFunctionMap.put(POLYFILL_SHARED_LENGTH, JavetReflectionProxyObjectHandler::polyfillListLength);
+        polyfillListFunctionMap.put(POLYFILL_LIST_MAP, JavetReflectionProxyObjectHandler::polyfillListMap);
         polyfillListFunctionMap.put(POLYFILL_LIST_POP, JavetReflectionProxyObjectHandler::polyfillListPop);
         polyfillListFunctionMap.put(POLYFILL_LIST_PUSH, JavetReflectionProxyObjectHandler::polyfillListPush);
+        polyfillListFunctionMap.put(POLYFILL_LIST_REVERSE, JavetReflectionProxyObjectHandler::polyfillListReverse);
         polyfillListFunctionMap.put(POLYFILL_LIST_SHIFT, JavetReflectionProxyObjectHandler::polyfillListShift);
         polyfillListFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillListToJSON);
         polyfillListFunctionMap.put(POLYFILL_LIST_UNSHIFT, JavetReflectionProxyObjectHandler::polyfillListUnshift);
@@ -304,6 +316,44 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     /**
+     * Polyfill Array.prototype.map().
+     * The map() method of Array instances creates a new array populated with the results of
+     * calling a provided function on every element in the calling array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListMap(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_MAP, handler, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] instanceof V8ValueFunction) {
+                            V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Values[0];
+                            IV8ValueObject thisArg = v8Values.length > 1 && v8Values[1] instanceof IV8ValueObject
+                                    ? (IV8ValueObject) v8Values[1] : null;
+                            List<V8Value> results = new ArrayList<>(list.size());
+                            try {
+                                int index = 0;
+                                for (Object object : list) {
+                                    results.add(v8ValueFunction.call(thisArg, object, index, thisObject));
+                                    ++index;
+                                }
+                                v8ValueArray.push(results.toArray());
+                            } finally {
+                                JavetResourceUtils.safeClose(results);
+                            }
+                        }
+                        v8Scope.setEscapable();
+                        return v8ValueArray;
+                    }
+                }));
+    }
+
+    /**
      * Polyfill Array.prototype.pop().
      * The pop() method of Array instances removes the last element from an array and returns that element.
      * This method changes the length of the array.
@@ -340,6 +390,28 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
                         handler.getV8Runtime().createV8ValueInteger(
                                 ListUtils.push(list, V8ValueUtils.toArray(handler.getV8Runtime(), v8Values)))));
+    }
+
+    /**
+     * Polyfill Array.prototype.reverse().
+     * The reverse() method of Array instances reverses an array in place and returns the reference to the same array,
+     * the first array element now becoming the last, and the last array element becoming the first. In other words,
+     * elements order in the array will be turned towards the direction opposite to that previously stated.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListReverse(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_REVERSE, handler, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    if (!list.isEmpty()) {
+                        Collections.reverse(list);
+                    }
+                    return thisObject;
+                }));
     }
 
     /**
