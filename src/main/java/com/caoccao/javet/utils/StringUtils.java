@@ -16,6 +16,9 @@
 
 package com.caoccao.javet.utils;
 
+import java.util.Objects;
+import java.util.StringJoiner;
+
 /**
  * The type String utils.
  *
@@ -54,6 +57,25 @@ public final class StringUtils {
     }
 
     /**
+     * Is digital.
+     *
+     * @param str the str
+     * @return true : yes, false : no
+     * @since 1.0.6
+     */
+    public static boolean isDigital(String str) {
+        if (isEmpty(str)) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); ++i) {
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Is empty.
      *
      * @param str the str
@@ -62,5 +84,52 @@ public final class StringUtils {
      */
     public static boolean isEmpty(String str) {
         return str == null || str.isEmpty();
+    }
+
+    /**
+     * Is not empty.
+     *
+     * @param str the str
+     * @return true : not empty, false : empty
+     * @since 3.0.3
+     */
+    public static boolean isNotEmpty(String str) {
+        return str != null && !str.isEmpty();
+    }
+
+    /**
+     * Join string.
+     *
+     * @param delimiter the delimiter
+     * @param elements  the elements
+     * @return the string
+     * @since 1.0.3
+     */
+    public static String join(CharSequence delimiter, CharSequence... elements) {
+        Objects.requireNonNull(delimiter);
+        Objects.requireNonNull(elements);
+        StringJoiner stringJoiner = new StringJoiner(delimiter);
+        for (CharSequence cs : elements) {
+            stringJoiner.add(cs);
+        }
+        return stringJoiner.toString();
+    }
+
+    /**
+     * Join string.
+     *
+     * @param delimiter the delimiter
+     * @param elements  the elements
+     * @return the string
+     * @since 1.0.3
+     */
+    public static String join(CharSequence delimiter, Iterable<? extends CharSequence> elements) {
+        Objects.requireNonNull(delimiter);
+        Objects.requireNonNull(elements);
+        StringJoiner stringJoiner = new StringJoiner(delimiter);
+        for (CharSequence cs : elements) {
+            stringJoiner.add(cs);
+        }
+        return stringJoiner.toString();
     }
 }

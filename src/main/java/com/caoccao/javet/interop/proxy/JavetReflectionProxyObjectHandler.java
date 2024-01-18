@@ -535,7 +535,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         if (property instanceof V8ValueString) {
             try {
                 String propertyString = ((V8ValueString) property).getValue();
-                if (JavetStringUtils.isDigital(propertyString)) {
+                if (StringUtils.isDigital(propertyString)) {
                     final int index = Integer.parseInt(propertyString);
                     if (index >= 0) {
                         if (classDescriptor.getTargetClass().isArray()) {
@@ -622,7 +622,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected V8Value getFromCollection(V8Value property) throws JavetException {
         if (property instanceof V8ValueString) {
             String propertyString = ((V8ValueString) property).getValue();
-            if (JavetStringUtils.isDigital(propertyString)) {
+            if (StringUtils.isDigital(propertyString)) {
                 final int index = Integer.parseInt(propertyString);
                 if (index >= 0) {
                     if (classDescriptor.getTargetClass().isArray()) {
@@ -722,7 +722,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             return ((Set<?>) targetObject).contains(v8Runtime.toObject(property));
         } else if (property instanceof V8ValueString) {
             String indexString = ((V8ValueString) property).getValue();
-            if (JavetStringUtils.isDigital(indexString)) {
+            if (StringUtils.isDigital(indexString)) {
                 final int index = Integer.parseInt(indexString);
                 if (index >= 0) {
                     if (classDescriptor.getTargetClass().isArray()) {
@@ -849,7 +849,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected boolean setToCollection(V8Value propertyKey, V8Value propertyValue) throws JavetException {
         if (propertyKey instanceof V8ValueString) {
             String propertyKeyString = ((V8ValueString) propertyKey).getValue();
-            if (JavetStringUtils.isDigital(propertyKeyString)) {
+            if (StringUtils.isDigital(propertyKeyString)) {
                 final int index = Integer.parseInt(propertyKeyString);
                 if (index >= 0) {
                     if (classDescriptor.getTargetClass().isArray()) {
