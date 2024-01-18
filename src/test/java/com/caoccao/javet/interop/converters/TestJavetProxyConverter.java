@@ -598,13 +598,18 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     "[\"1\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.with(0, '1'))").executeString());
             // toString()
-            assertEquals(
-                    "[x, y, z]",
-                    v8Runtime.getExecutor("list.toString()").executeString());
+            assertEquals("[x, y, z]", v8Runtime.getExecutor("list.toString()").executeString());
             // values()
-            assertEquals(
-                    "x",
-                    v8Runtime.getExecutor("list.values().next().value").executeString());
+            assertEquals("x", v8Runtime.getExecutor("list.values().next().value").executeString());
+            // keys()
+            assertEquals("0,1,2", v8Runtime.getExecutor("[...list.keys()].toString()").executeString());
+            // at()
+            assertEquals("x", v8Runtime.getExecutor("list.at(0)").executeString());
+            assertEquals("y", v8Runtime.getExecutor("list.at(1)").executeString());
+            assertEquals("z", v8Runtime.getExecutor("list.at(-1)").executeString());
+            assertEquals("x", v8Runtime.getExecutor("list.at(-3)").executeString());
+            assertTrue(v8Runtime.getExecutor("list.at(3)").execute().isUndefined());
+            assertTrue(v8Runtime.getExecutor("list.at(-4)").execute().isUndefined());
             // unshift()
             assertEquals(5, v8Runtime.getExecutor("list.unshift('1', '2')").executeInteger());
             // []

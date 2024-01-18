@@ -49,11 +49,23 @@ import java.util.*;
 public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         extends BaseJavetReflectionProxyHandler<T, E> {
     /**
+     * The constant POLYFILL_LIST_AT.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_AT = "at";
+    /**
      * The constant POLYFILL_LIST_INCLUDES.
      *
      * @since 3.0.3
      */
     protected static final String POLYFILL_LIST_INCLUDES = "includes";
+    /**
+     * The constant POLYFILL_LIST_KEYS.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_KEYS = "keys";
     /**
      * The constant POLYFILL_LIST_POP.
      *
@@ -147,7 +159,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     static {
         polyfillListFunctionMap = new HashMap<>();
+        polyfillListFunctionMap.put(POLYFILL_LIST_AT, JavetReflectionProxyObjectHandler::polyfillListAt);
         polyfillListFunctionMap.put(POLYFILL_LIST_INCLUDES, JavetReflectionProxyObjectHandler::polyfillListIncludes);
+        polyfillListFunctionMap.put(POLYFILL_LIST_KEYS, JavetReflectionProxyObjectHandler::polyfillListKeys);
         polyfillListFunctionMap.put(POLYFILL_SHARED_LENGTH, JavetReflectionProxyObjectHandler::polyfillListLength);
         polyfillListFunctionMap.put(POLYFILL_LIST_POP, JavetReflectionProxyObjectHandler::polyfillListPop);
         polyfillListFunctionMap.put(POLYFILL_LIST_PUSH, JavetReflectionProxyObjectHandler::polyfillListPush);
@@ -181,6 +195,44 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     /**
+     * Polyfill Array.prototype.at().
+     * The at() method of Array instances takes an integer value and returns the item at that index,
+     * allowing for positive and negative integers. Negative integers count back from the last item in the array.
+     * <p>
+     * Parameters
+     * index
+     * Zero-based index of the array element to be returned, converted to an integer.
+     * Negative index counts back from the end of the array — if index < 0, index + array.length is accessed.
+     * <p>
+     * Return value
+     * The element in the array matching the given index.
+     * Always returns undefined if index < -array.length or index >= array.length
+     * without attempting to access the corresponding property.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListAt(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_AT, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] instanceof V8ValueInteger) {
+                        final int size = list.size();
+                        int index = ((V8ValueInteger) v8Values[0]).getValue();
+                        if (index < 0) {
+                            index += size;
+                        }
+                        if (index >= 0 && index < size) {
+                            return handler.getV8Runtime().toV8Value(list.get(index));
+                        }
+                    }
+                    return handler.getV8Runtime().createV8ValueUndefined();
+                }));
+    }
+
+    /**
      * Polyfill Array.prototype.includes().
      * The includes() method of Array instances determines whether an array includes a certain value among its entries,
      * returning true or false as appropriate.
@@ -204,6 +256,36 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         included = ListUtils.includes(list, object, fromIndex);
                     }
                     return handler.getV8Runtime().createV8ValueBoolean(included);
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.keys()
+     * The keys() method of Array instances returns a new array iterator object
+     * that contains the keys for each index in the array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListKeys(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_KEYS, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    final int size = list.size();
+                    Object[] indexes = new Object[size];
+                    for (int i = 0; i < size; ++i) {
+                        indexes[i] = handler.getV8Runtime().createV8ValueInteger(i);
+                    }
+                    try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (size > 0) {
+                            v8ValueArray.push(indexes);
+                        }
+                        v8Scope.setEscapable();
+                        return v8ValueArray;
+                    }
                 }));
     }
 
