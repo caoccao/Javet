@@ -107,6 +107,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_LIST_SOME = "some";
     /**
+     * The constant POLYFILL_LIST_TO_REVERSED.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_LIST_TO_REVERSED = "toReversed";
+    /**
      * The constant POLYFILL_LIST_UNSHIFT.
      *
      * @since 3.0.3
@@ -193,6 +199,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         polyfillListFunctionMap.put(POLYFILL_LIST_SHIFT, JavetReflectionProxyObjectHandler::polyfillListShift);
         polyfillListFunctionMap.put(POLYFILL_LIST_SOME, JavetReflectionProxyObjectHandler::polyfillListSome);
         polyfillListFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillListToJSON);
+        polyfillListFunctionMap.put(POLYFILL_LIST_TO_REVERSED, JavetReflectionProxyObjectHandler::polyfillListToReversed);
         polyfillListFunctionMap.put(POLYFILL_LIST_UNSHIFT, JavetReflectionProxyObjectHandler::polyfillListUnshift);
         polyfillListFunctionMap.put(POLYFILL_SHARED_VALUES, JavetReflectionProxyObjectHandler::polyfillSharedValues);
         polyfillListFunctionMap.put(POLYFILL_LIST_WITH, JavetReflectionProxyObjectHandler::polyfillListWith);
@@ -539,8 +546,34 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         v8Scope.setEscapable();
                         return v8ValueArray;
                     }
-                }
-        ));
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.toReversed().
+     * The toReversed() method of Array instances is the copying counterpart of the reverse() method.
+     * It returns a new array with the elements in reversed order.
+     *
+     * @param handler the handler
+     * @return the v 8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListToReversed(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_TO_REVERSED, handler, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (!list.isEmpty()) {
+                            List<Object> reversedList = new ArrayList<>(list);
+                            Collections.reverse(reversedList);
+                            v8ValueArray.push(reversedList.toArray());
+                        }
+                        v8Scope.setEscapable();
+                        return v8ValueArray;
+                    }
+                }));
     }
 
     /**
@@ -616,8 +649,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         v8Scope.setEscapable();
                         return v8ValueObject;
                     }
-                }
-        ));
+                }));
     }
 
     /**
