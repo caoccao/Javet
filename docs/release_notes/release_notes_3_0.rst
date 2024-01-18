@@ -5,7 +5,7 @@ Release Notes 3.0.x
 3.0.3 V8 v12.1
 --------------
 
-* Upgraded V8 to ``v12.1.285.19`` (2024-01-05)
+* Upgraded V8 to ``v12.1.285.26`` (2024-01-17)
 * Upgraded Node.js to ``v20.11.0`` `(2024-01-09) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.0>`_
 * Restore the reference lock
 * Downgraded to Ubuntu 20.04 for better compatibility
