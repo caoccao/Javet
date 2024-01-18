@@ -120,6 +120,42 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
+    /**
+     * The constant polyfillListFunctionMap.
+     *
+     * @since 3.0.3
+     */
+    protected static final Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillListFunctionMap;
+    /**
+     * The constant polyfillMapFunctionMap.
+     *
+     * @since 3.0.3
+     */
+    protected static final Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillMapFunctionMap;
+    /**
+     * The constant polyfillSetFunctionMap.
+     *
+     * @since 3.0.3
+     */
+    protected static final Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillSetFunctionMap;
+
+    static {
+        polyfillListFunctionMap = new HashMap<>();
+        polyfillListFunctionMap.put(POLYFILL_LIST_INCLUDES, JavetReflectionProxyObjectHandler::polyfillListIncludes);
+        polyfillListFunctionMap.put(POLYFILL_SHARED_LENGTH, JavetReflectionProxyObjectHandler::polyfillListLength);
+        polyfillListFunctionMap.put(POLYFILL_LIST_POP, JavetReflectionProxyObjectHandler::polyfillListPop);
+        polyfillListFunctionMap.put(POLYFILL_LIST_PUSH, JavetReflectionProxyObjectHandler::polyfillListPush);
+        polyfillListFunctionMap.put(POLYFILL_LIST_SHIFT, JavetReflectionProxyObjectHandler::polyfillListShift);
+        polyfillListFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillListToJSON);
+        polyfillListFunctionMap.put(POLYFILL_LIST_UNSHIFT, JavetReflectionProxyObjectHandler::polyfillListUnshift);
+        polyfillMapFunctionMap = new HashMap<>();
+        polyfillMapFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillMapToJSON);
+        polyfillSetFunctionMap = new HashMap<>();
+        polyfillSetFunctionMap.put(POLYFILL_SET_DELETE, JavetReflectionProxyObjectHandler::polyfillSetDelete);
+        polyfillSetFunctionMap.put(POLYFILL_SET_HAS, JavetReflectionProxyObjectHandler::polyfillSetHas);
+        polyfillSetFunctionMap.put(POLYFILL_SET_KEYS, JavetReflectionProxyObjectHandler::polyfillSetValues);
+        polyfillSetFunctionMap.put(POLYFILL_SET_VALUES, JavetReflectionProxyObjectHandler::polyfillSetValues);
+    }
 
     /**
      * Instantiates a new Javet reflection proxy object handler.
@@ -134,6 +170,234 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
         super(v8Runtime, reflectionObjectFactory, Objects.requireNonNull(targetObject));
+    }
+
+    /**
+     * Polyfill Array.prototype.includes().
+     * The includes() method of Array instances determines whether an array includes a certain value among its entries,
+     * returning true or false as appropriate.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListIncludes(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_INCLUDES, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    boolean included = false;
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
+                        Object object = handler.getV8Runtime().toObject(v8Values[0]);
+                        int fromIndex = 0;
+                        if (v8Values.length > 1 && v8Values[1] instanceof V8ValueInteger) {
+                            fromIndex = ((V8ValueInteger) v8Values[1]).getValue();
+                        }
+                        included = ListUtils.includes(list, object, fromIndex);
+                    }
+                    return handler.getV8Runtime().createV8ValueBoolean(included);
+                }));
+    }
+
+    /**
+     * Polyfill Array: length.
+     * The length data property of an Array instance represents the number of elements in that array.
+     * The value is an unsigned, 32-bit integer that is always numerically greater than the highest index in the array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListLength(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueInteger(list.size());
+    }
+
+    /**
+     * Polyfill Array.prototype.pop().
+     * The pop() method of Array instances removes the last element from an array and returns that element.
+     * This method changes the length of the array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListPop(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_POP, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    if (list.isEmpty()) {
+                        return handler.getV8Runtime().createV8ValueUndefined();
+                    }
+                    return handler.getV8Runtime().toV8Value(ListUtils.pop(list));
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.push().
+     * The push() method of Array instances adds the specified elements to the end of an array
+     * and returns the new length of the array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListPush(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_PUSH, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        handler.getV8Runtime().createV8ValueInteger(
+                                ListUtils.push(list, V8ValueUtils.toArray(handler.getV8Runtime(), v8Values)))));
+    }
+
+    /**
+     * Polyfill Array.prototype.shift().
+     * The shift() method of Array instances removes the first element from an array and returns that removed element.
+     * This method changes the length of the array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListShift(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_SHIFT, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    if (list.isEmpty()) {
+                        return handler.getV8Runtime().createV8ValueUndefined();
+                    }
+                    return handler.getV8Runtime().toV8Value(ListUtils.shift(list));
+                }));
+    }
+
+    /**
+     * Polyfill Array.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Object[] objects = list.toArray();
+                    try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        v8ValueArray.push(objects);
+                        v8Scope.setEscapable();
+                        return v8ValueArray;
+                    }
+                }
+        ));
+    }
+
+    /**
+     * Polyfill Array.prototype.unshift()
+     * The unshift() method of Array instances adds the specified elements to the beginning of an array
+     * and returns the new length of the array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListUnshift(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_UNSHIFT, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        handler.getV8Runtime().createV8ValueInteger(
+                                ListUtils.unshift(list, V8ValueUtils.toArray(handler.getV8Runtime(), v8Values)))));
+    }
+
+    /**
+     * Polyfill Map.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillMapToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Map<?, ?> map = (Map<?, ?>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Object[] objects = new Object[map.size() << 1];
+                    int index = 0;
+                    for (Map.Entry<?, ?> entry : map.entrySet()) {
+                        objects[index] = entry.getKey();
+                        objects[index + 1] = entry.getKey();
+                        index += 2;
+                    }
+                    try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
+                        V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();
+                        v8ValueObject.set(objects);
+                        v8Scope.setEscapable();
+                        return v8ValueObject;
+                    }
+                }
+        ));
+    }
+
+    /**
+     * Polyfill Set.prototype.delete().
+     * The delete() method of Set instances removes a specified value from this set, if it is in the set.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillSetDelete(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Set<?> set = (Set<?>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SET_DELETE, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    boolean result = false;
+                    if (v8Values != null && v8Values.length > 0) {
+                        result = set.remove(handler.getV8Runtime().toObject(v8Values[0]));
+                    }
+                    return handler.getV8Runtime().createV8ValueBoolean(result);
+                }));
+    }
+
+    /**
+     * Polyfill Set.prototype.has().
+     * The has() method of Set instances returns a boolean indicating whether an element
+     * with the specified value exists in this set or not.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillSetHas(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Set<?> set = (Set<?>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SET_HAS, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    boolean result = false;
+                    if (v8Values != null && v8Values.length > 0) {
+                        result = set.contains(handler.getV8Runtime().toObject(v8Values[0]));
+                    }
+                    return handler.getV8Runtime().createV8ValueBoolean(result);
+                }));
+    }
+
+    /**
+     * Polyfill Set.prototype.values().
+     * The values() method of Set instances returns a new set iterator object that contains the values
+     * for each element in this set in insertion order.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillSetValues(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        return new JavetProxySymbolIterableConverter<>(
+                handler.getV8Runtime(), handler.getTargetObject()).getV8ValueFunction();
     }
 
     /**
@@ -184,7 +448,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     @Override
-    public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
+    public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
         V8Value result = getFromCollection(property);
         result = result == null ? getFromField(property) : result;
         result = result == null ? getFromMethod(target, property) : result;
@@ -261,169 +525,26 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @param property the property
      * @return the V8 value
      * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 3.0.3
      */
-    protected V8Value getFromPolyfill(V8Value property) throws JavetException {
+    protected V8Value getFromPolyfill(V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).getValue();
+            IJavetProxyPolyfillFunction<T, E> iJavetProxyPolyfillFunction = null;
             if (classDescriptor.isTargetTypeList()) {
-                return getFromPolyfillList(propertyName);
+                iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
+                        polyfillListFunctionMap.get(propertyName);
             } else if (classDescriptor.isTargetTypeMap()) {
-                return getFromPolyfillMap(propertyName);
+                iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
+                        polyfillMapFunctionMap.get(propertyName);
             } else if (classDescriptor.isTargetTypeSet()) {
-                return getFromPolyfillSet(propertyName);
+                iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
+                        polyfillSetFunctionMap.get(propertyName);
             }
-        }
-        return null;
-    }
-
-    /**
-     * Gets from polyfill list.
-     *
-     * @param propertyName the property name
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 3.0.3
-     */
-    protected V8Value getFromPolyfillList(String propertyName) throws JavetException {
-        List<Object> list = (List<Object>) targetObject;
-        if (POLYFILL_LIST_INCLUDES.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_LIST_INCLUDES, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                        boolean included = false;
-                        if (ArrayUtils.isNotEmpty(v8Values)) {
-                            Object object = v8Runtime.toObject(v8Values[0]);
-                            int fromIndex = 0;
-                            if (v8Values.length > 1 && v8Values[1] instanceof V8ValueInteger) {
-                                fromIndex = ((V8ValueInteger) v8Values[1]).getValue();
-                            }
-                            included = ListUtils.includes(list, object, fromIndex);
-                        }
-                        return v8Runtime.createV8ValueBoolean(included);
-                    }));
-        }
-        if (POLYFILL_SHARED_LENGTH.equals(propertyName)) {
-            return v8Runtime.createV8ValueInteger(list.size());
-        }
-        if (POLYFILL_LIST_POP.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_LIST_POP, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                        if (list.isEmpty()) {
-                            return v8Runtime.createV8ValueUndefined();
-                        }
-                        return v8Runtime.toV8Value(ListUtils.pop(list));
-                    }));
-        }
-        if (POLYFILL_LIST_PUSH.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_LIST_PUSH, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                            v8Runtime.createV8ValueInteger(
-                                    ListUtils.push(list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
-        }
-        if (POLYFILL_LIST_SHIFT.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_LIST_SHIFT, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                        if (list.isEmpty()) {
-                            return v8Runtime.createV8ValueUndefined();
-                        }
-                        return v8Runtime.toV8Value(ListUtils.shift(list));
-                    }));
-        }
-        if (POLYFILL_LIST_UNSHIFT.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_LIST_UNSHIFT, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                            v8Runtime.createV8ValueInteger(
-                                    ListUtils.unshift(list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
-        }
-        if (POLYFILL_SHARED_TO_JSON.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_SHARED_TO_JSON, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                        Object[] objects = list.toArray();
-                        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                            V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                            v8ValueArray.push(objects);
-                            v8Scope.setEscapable();
-                            return v8ValueArray;
-                        }
-                    }
-            ));
-        }
-        return null;
-    }
-
-    /**
-     * Gets from polyfill map.
-     *
-     * @param propertyName the property name
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 3.0.3
-     */
-    protected V8Value getFromPolyfillMap(String propertyName) throws JavetException {
-        Map<?, ?> map = (Map<?, ?>) targetObject;
-        if (POLYFILL_SHARED_TO_JSON.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_SHARED_TO_JSON, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                        Object[] objects = new Object[map.size() << 1];
-                        int index = 0;
-                        for (Map.Entry<?, ?> entry : map.entrySet()) {
-                            objects[index] = entry.getKey();
-                            objects[index + 1] = entry.getKey();
-                            index += 2;
-                        }
-                        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                            V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();
-                            v8ValueObject.set(objects);
-                            v8Scope.setEscapable();
-                            return v8ValueObject;
-                        }
-                    }
-            ));
-        }
-        return null;
-    }
-
-    /**
-     * Gets from polyfill set.
-     *
-     * @param propertyName the property name
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 3.0.3
-     */
-    protected V8Value getFromPolyfillSet(String propertyName) throws JavetException {
-        Set<?> set = (Set<?>) targetObject;
-        if (POLYFILL_SET_DELETE.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_SET_DELETE, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                        boolean result = false;
-                        if (v8Values != null && v8Values.length > 0) {
-                            result = set.remove(v8Runtime.toObject(v8Values[0]));
-                        }
-                        return v8Runtime.createV8ValueBoolean(result);
-                    }));
-        }
-        if (POLYFILL_SET_HAS.equals(propertyName)) {
-            return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
-                    POLYFILL_SET_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                        boolean result = false;
-                        if (v8Values != null && v8Values.length > 0) {
-                            result = set.contains(v8Runtime.toObject(v8Values[0]));
-                        }
-                        return v8Runtime.createV8ValueBoolean(result);
-                    }));
-        }
-        if (POLYFILL_SET_KEYS.equals(propertyName) || POLYFILL_SET_VALUES.equals(propertyName)) {
-            return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            if (iJavetProxyPolyfillFunction != null) {
+                return iJavetProxyPolyfillFunction.apply(this);
+            }
         }
         return null;
     }
