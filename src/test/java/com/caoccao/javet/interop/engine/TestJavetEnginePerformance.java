@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import com.caoccao.javet.interop.V8Locker;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.utils.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -220,7 +221,7 @@ public class TestJavetEnginePerformance extends BaseTestJavetPool {
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
         File docFile = new File(
                 JavetOSUtils.WORKING_DIRECTORY,
-                "docs/reference/resource_management/performance.rst");
+                "docs/development/performance.rst");
         List<String> lines = new ArrayList<>();
         for (String line : Files.readAllLines(docFile.toPath(), StandardCharsets.UTF_8)) {
             if (line.startsWith(prefix)) {
@@ -228,7 +229,7 @@ public class TestJavetEnginePerformance extends BaseTestJavetPool {
             }
             lines.add(line);
         }
-        lines.add("");
+        lines.add(StringUtils.EMPTY);
         try (FileWriter fileWriter = new FileWriter(docFile, false)) {
             fileWriter.write(String.join("\n", lines));
         }

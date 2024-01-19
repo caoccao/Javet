@@ -2,6 +2,26 @@
 Release Notes 3.0.x
 ===================
 
+3.0.3 V8 v12.1
+--------------
+
+* Upgraded V8 to ``v12.1.285.26`` (2024-01-17)
+* Upgraded Node.js to ``v20.11.0`` `(2024-01-09) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.0>`_
+* Restore the reference lock
+* Downgraded to Ubuntu 20.04 for better compatibility
+* Fixed a slight memory leak in closing the V8 runtime
+* Fixed a memory leak in dynamic proxy and dynamic object
+* Applied a temporary `patch <https://github.com/caoccao/Javet/issues/290>`_ to V8 to avoid crashes on few Linux distributions in VM
+* Added ``kNoStdioInitialization`` and ``kNoDefaultSignalHandling`` to Node.js initialization
+* Improved performance of ``BaseJavetConsoleInterceptor``
+* Added ``JavetJVMInterceptor``
+* Added ``createSnapshot()`` to ``V8Runtime``
+* Added ``isCreateSnapshotEnabled()``, ``setCreateSnapshotEnabled()``, ``getSnapshotBlob()``, ``setSnapshotBlob()`` to ``RuntimeOptions``
+* Added ``RuntimeCreateSnapshotDisabled``, ``RuntimeCreateSnapshotBlocked`` to ``JavetError``
+* Added ``isProxyListEnabled()``, ``setProxyListEnabled()`` to ``JavetConverterConfig``
+* Added ``ArrayUtils``, ``CollectionUtils``
+* Fixed ``CDTShell``
+
 3.0.2 V8 v12.0
 --------------
 

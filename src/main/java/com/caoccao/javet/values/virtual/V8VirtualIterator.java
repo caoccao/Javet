@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. caoccao.com Sam Cao
+ * Copyright (c) 2023-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueSymbol;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -75,7 +77,7 @@ public class V8VirtualIterator<T, E extends Exception>
      *
      * @since 2.2.1
      */
-    protected Optional<T> value;
+    protected T value;
 
     /**
      * Instantiates a new V8 virtual iterator.
@@ -105,7 +107,7 @@ public class V8VirtualIterator<T, E extends Exception>
     protected V8Value next(V8Value thisObject, V8Value... v8Values) {
         if (iterator != null) {
             if (iterator.hasNext()) {
-                value = Optional.ofNullable(iterator.next());
+                value = iterator.next();
             } else {
                 iterator = null;
                 value = null;
@@ -121,21 +123,26 @@ public class V8VirtualIterator<T, E extends Exception>
             if (FUNCTION_NEXT.equals(propertyName)) {
                 return v8Runtime.createV8ValueFunction(
                         new JavetCallbackContext(
-                                FUNCTION_NEXT,
-                                JavetCallbackType.DirectCallThisAndResult,
+                                FUNCTION_NEXT, this, JavetCallbackType.DirectCallThisAndResult,
                                 (IJavetDirectCallable.ThisAndResult<?>) this::next));
             }
             if (PROPERTY_DONE.equals(propertyName)) {
-                return v8Runtime.createV8ValueBoolean(iterator == null || !iterator.hasNext());
+                return v8Runtime.createV8ValueBoolean(iterator == null);
             }
             if (PROPERTY_VALUE.equals(propertyName)) {
-                if (value == null) {
+                if (iterator == null) {
                     return v8Runtime.createV8ValueUndefined();
                 }
-                if (value.isPresent()) {
-                    return v8Runtime.toV8Value(value.get());
-                }
-                return v8Runtime.createV8ValueNull();
+                return v8Runtime.toV8Value(value);
+            }
+        }
+        if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)) {
+                return v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                        FUNCTION_NEXT, this, JavetCallbackType.DirectCallThisAndResult,
+                        (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> thisObject));
             }
         }
         return IJavetDirectProxyHandler.super.proxyGet(target, property, receiver);

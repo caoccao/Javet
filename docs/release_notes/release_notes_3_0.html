@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ" href="../faq/index.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Release Notes 3.0.x - Javet 3.0.2 documentation</title>
+        <title>Release Notes 3.0.x - Javet 3.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 3.0.2 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.0.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.0.2 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.0.3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -176,6 +176,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/interact_with_node_js.html">Interact with Node.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/object_converter.html">Object Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/access_the_whole_jvm.html">Access the Whole JVM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/expose_json_node_in_v8.html">Expose JsonNode in V8</a></li>
 </ul>
 </li>
@@ -206,6 +207,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/resource_management/lock.html">Know the Lock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/resource_management/memory_management.html">Memory Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/resource_management/modularization.html">Modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/resource_management/snapshot.html">Snapshot</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -246,6 +248,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/can_i18n_be_supported.html">Can i18n be Supported?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/sigsegv_at_createv8runtime_in_v8_mode_on_aws.html">SIGSEGV at createV8Runtime() in V8 Mode on AWS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
 </ul>
 </li>
@@ -300,6 +303,27 @@
         <article role="main">
           <section id="release-notes-3-0-x">
 <h1>Release Notes 3.0.x<a class="headerlink" href="#release-notes-3-0-x" title="Link to this heading">#</a></h1>
+<section id="v8-v12-1">
+<h2>3.0.3 V8 v12.1<a class="headerlink" href="#v8-v12-1" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v12.1.285.26</span></code> (2024-01-17)</p></li>
+<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v20.11.0</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.0">(2024-01-09)</a></p></li>
+<li><p>Restore the reference lock</p></li>
+<li><p>Downgraded to Ubuntu 20.04 for better compatibility</p></li>
+<li><p>Fixed a slight memory leak in closing the V8 runtime</p></li>
+<li><p>Fixed a memory leak in dynamic proxy and dynamic object</p></li>
+<li><p>Applied a temporary <a class="reference external" href="https://github.com/caoccao/Javet/issues/290">patch</a> to V8 to avoid crashes on few Linux distributions in VM</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">kNoStdioInitialization</span></code> and <code class="docutils literal notranslate"><span class="pre">kNoDefaultSignalHandling</span></code> to Node.js initialization</p></li>
+<li><p>Improved performance of <code class="docutils literal notranslate"><span class="pre">BaseJavetConsoleInterceptor</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">JavetJVMInterceptor</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">createSnapshot()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">isCreateSnapshotEnabled()</span></code>, <code class="docutils literal notranslate"><span class="pre">setCreateSnapshotEnabled()</span></code>, <code class="docutils literal notranslate"><span class="pre">getSnapshotBlob()</span></code>, <code class="docutils literal notranslate"><span class="pre">setSnapshotBlob()</span></code> to <code class="docutils literal notranslate"><span class="pre">RuntimeOptions</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">RuntimeCreateSnapshotDisabled</span></code>, <code class="docutils literal notranslate"><span class="pre">RuntimeCreateSnapshotBlocked</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetError</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">isProxyListEnabled()</span></code>, <code class="docutils literal notranslate"><span class="pre">setProxyListEnabled()</span></code> to <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">ArrayUtils</span></code>, <code class="docutils literal notranslate"><span class="pre">CollectionUtils</span></code></p></li>
+<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">CDTShell</span></code></p></li>
+</ul>
+</section>
 <section id="v8-v12-0">
 <h2>3.0.2 V8 v12.0<a class="headerlink" href="#v8-v12-0" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -389,6 +413,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Release Notes 3.0.x</a><ul>
+<li><a class="reference internal" href="#v8-v12-1">3.0.3 V8 v12.1</a></li>
 <li><a class="reference internal" href="#v8-v12-0">3.0.2 V8 v12.0</a></li>
 <li><a class="reference internal" href="#v8-v11-9">3.0.1 V8 v11.9</a></li>
 <li><a class="reference internal" href="#v8-v11-8">3.0.0 V8 v11.8</a></li>
@@ -403,7 +428,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a4fb7100"></script>
+</div><script src="../_static/documentation_options.js?v=d980231b"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

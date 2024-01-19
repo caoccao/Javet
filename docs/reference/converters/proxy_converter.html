@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Bridge Converter" href="bridge_converter.html" /><link rel="prev" title="Object Converter" href="object_converter.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Proxy Converter - Javet 3.0.2 documentation</title>
+        <title>Proxy Converter - Javet 3.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.0.2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.0.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.0.2 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.0.3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -176,6 +176,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/interact_with_node_js.html">Interact with Node.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/object_converter.html">Object Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/access_the_whole_jvm.html">Access the Whole JVM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorial/advanced/expose_json_node_in_v8.html">Expose JsonNode in V8</a></li>
 </ul>
 </li>
@@ -206,6 +207,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../resource_management/lock.html">Know the Lock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../resource_management/memory_management.html">Memory Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../resource_management/modularization.html">Modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../resource_management/snapshot.html">Snapshot</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -246,6 +248,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i18n_be_supported.html">Can i18n be Supported?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/sigsegv_at_createv8runtime_in_v8_mode_on_aws.html">SIGSEGV at createV8Runtime() in V8 Mode on AWS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../faq/troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
 </ul>
 </li>
@@ -328,13 +331,53 @@
 </pre></div>
 </div>
 </section>
+<section id="instance-list">
+<h3>Instance: List<a class="headerlink" href="#instance-list" title="Link to this heading">#</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxyListEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleList</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;list&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">);</span>
+<span class="n">assertSame</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">&quot;list&quot;</span><span class="p">));</span>
+<span class="c1">// contains</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.contains(&#39;x&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.contains(&#39;y&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.contains(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="c1">// includes</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.includes(&#39;x&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.includes(&#39;x&#39;, 1)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.includes(&#39;y&#39;, 1)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="c1">// push</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.push(&#39;z&#39;, &#39;1&#39;)&quot;</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.includes(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="c1">// pop</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.pop()&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="c1">// toJSON</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;[\&quot;x\&quot;,\&quot;y\&quot;,\&quot;z\&quot;]&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;JSON.stringify(list);&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="c1">// Symbol.iterator</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;[\&quot;x\&quot;,\&quot;y\&quot;,\&quot;z\&quot;]&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;JSON.stringify([...list]);&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="c1">// unshift</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.unshift(&#39;1&#39;, &#39;2&#39;)&quot;</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="c1">// shift</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.shift()&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;2&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.shift()&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="c1">// delete</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;delete list[2]&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.size()&quot;</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="c1">// length</span>
+<span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;list.length&quot;</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;list&quot;</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxyListEnabled</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
 <section id="instance-map">
 <h3>Instance: Map<a class="headerlink" href="#instance-map" title="Link to this heading">#</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxyMapEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">{{</span>
-<span class="w">    </span><span class="n">put</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
-<span class="w">    </span><span class="n">put</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="p">);</span>
-<span class="p">}};</span>
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleMap</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;map&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">map</span><span class="p">);</span>
 <span class="n">assertTrue</span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">&quot;map&quot;</span><span class="p">));</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;map[&#39;x&#39;]&quot;</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
@@ -345,6 +388,16 @@
 <span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;3&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;z&quot;</span><span class="p">));</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;4&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;map.z = &#39;4&#39;; map.z;&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;4&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;z&quot;</span><span class="p">));</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;[\&quot;x\&quot;,\&quot;y\&quot;,\&quot;z\&quot;]&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;JSON.stringify(Object.getOwnPropertyNames(map));&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;delete map[&#39;x&#39;]&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">map</span><span class="p">.</span><span class="na">containsKey</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">));</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;delete map[&#39;y&#39;]&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">map</span><span class="p">.</span><span class="na">containsKey</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">));</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;{\&quot;z\&quot;:\&quot;z\&quot;}&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;JSON.stringify(map);&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;map&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
 <span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxyMapEnabled</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
@@ -363,6 +416,35 @@
 <span class="n">assertEquals</span><span class="p">(</span><span class="n">path</span><span class="p">.</span><span class="na">resolve</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">).</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;path.resolve(&#39;abc&#39;).toString()&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;path&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="instance-set">
+<h3>Instance: Set<a class="headerlink" href="#instance-set" title="Link to this heading">#</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxySetEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleSet</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">set</span><span class="p">);</span>
+<span class="n">assertSame</span><span class="p">(</span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">));</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.contains(&#39;x&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.contains(&#39;y&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.contains(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.has(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.add(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.contains(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.has(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;[\&quot;x\&quot;,\&quot;y\&quot;,\&quot;z\&quot;]&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;JSON.stringify(Object.getOwnPropertyNames(set));&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertEquals</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;[\&quot;x\&quot;,\&quot;y\&quot;,\&quot;z\&quot;]&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;const keys = []; for (let key of set.keys()) { keys.push(key); } JSON.stringify(keys);&quot;</span><span class="p">).</span><span class="na">executeString</span><span class="p">());</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.delete(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.delete(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;set.has(&#39;z&#39;)&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">delete</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">);</span>
+<span class="n">v8Runtime</span><span class="p">.</span><span class="na">lowMemoryNotification</span><span class="p">();</span>
+<span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxySetEnabled</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -558,16 +640,16 @@
 <span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>net.bytebuddy<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>byte-buddy<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;version&gt;</span>1.12.17<span class="nt">&lt;/version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>1.14.10<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 </div>
 <div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="c1">// Gradle Kotlin DSL</span>
-<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;net.bytebuddy:byte-buddy:1.12.17&quot;</span><span class="p">)</span>
+<span class="n">implementation</span><span class="p">(</span><span class="s">&quot;net.bytebuddy:byte-buddy:1.14.10&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="c1">// Gradle Groovy DSL</span>
-<span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;net.bytebuddy:byte-buddy:1.12.17&#39;</span>
+<span class="n">implementation</span><span class="w"> </span><span class="s1">&#39;net.bytebuddy:byte-buddy:1.14.10&#39;</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
@@ -613,7 +695,12 @@
 <p>Voilà aussi! It works again.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The JavaScript implementation is backed up by <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> which is an orphan object. After its internal <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is closed, it will no longer callable. It's recommended to have the interface implement <code class="docutils literal notranslate"><span class="pre">AutoCloseable</span></code> as the sample shows so that the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> when the <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is being closed. Be careful, if you keep the application running for long while without recycling them in time, <code class="docutils literal notranslate"><span class="pre">OutOfMemoryError</span></code> may occur.</p>
+<p>The JavaScript implementation is backed up by <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> which is an orphan object. After its internal <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is closed, it will no longer be callable. It's recommended to have the interface or the object implement <code class="docutils literal notranslate"><span class="pre">AutoCloseable</span></code> as the sample shows so that the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> can be recycled explicitly.</p>
+<p>If you don't own the interface or the object, there are 2 ways of recycling it to avoid memory leak.</p>
+<ol class="arabic simple">
+<li><p>Manually calling <code class="docutils literal notranslate"><span class="pre">System.gc();</span> <span class="pre">System.runFinalization();</span></code> will recycle the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> via the Java garbage collector.</p></li>
+<li><p>Javet will force the recycle of the orphan <code class="docutils literal notranslate"><span class="pre">V8ValueObject</span></code> when the <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is being closed. Be careful, if you keep the application running for long time without recycling them in time, <code class="docutils literal notranslate"><span class="pre">OutOfMemoryError</span></code> may occur. Of course, that is less likely going to happen because the Java garbage collector runs periodically.</p></li>
+</ol>
 </div>
 </section>
 </section>
@@ -753,8 +840,10 @@
 <li><a class="reference internal" href="#usage">Usage</a><ul>
 <li><a class="reference internal" href="#preparation">Preparation</a></li>
 <li><a class="reference internal" href="#instance-file">Instance: File</a></li>
+<li><a class="reference internal" href="#instance-list">Instance: List</a></li>
 <li><a class="reference internal" href="#instance-map">Instance: Map</a></li>
 <li><a class="reference internal" href="#instance-path">Instance: Path</a></li>
+<li><a class="reference internal" href="#instance-set">Instance: Set</a></li>
 <li><a class="reference internal" href="#static-stringbuilder">Static: StringBuilder</a></li>
 <li><a class="reference internal" href="#static-pattern">Static: Pattern</a></li>
 <li><a class="reference internal" href="#static-enum">Static: Enum</a></li>
@@ -783,7 +872,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=a4fb7100"></script>
+</div><script src="../../_static/documentation_options.js?v=d980231b"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>

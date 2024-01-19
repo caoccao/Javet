@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2023 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2024. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,12 +104,16 @@ Creating multiple isolates allows running JavaScript code in multiple threads, t
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 (JNIEnv* jniEnv, jobject caller, jobject mRuntimeOptions) {
 #ifdef ENABLE_NODE
-    auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get(), Javet::NodeNative::GlobalNodeArrayBufferAllocator);
+    auto v8Runtime = new Javet::V8Runtime(
+        Javet::V8Native::GlobalV8Platform.get(),
+        Javet::NodeNative::GlobalNodeArrayBufferAllocator);
 #else
-    auto v8Runtime = new Javet::V8Runtime(Javet::V8Native::GlobalV8Platform.get());
+    auto v8Runtime = new Javet::V8Runtime(
+        Javet::V8Native::GlobalV8Platform.get(),
+        Javet::V8Native::GlobalV8ArrayBufferAllocator);
 #endif
     INCREASE_COUNTER(Javet::Monitor::CounterType::NewV8Runtime);
-    v8Runtime->CreateV8Isolate();
+    v8Runtime->CreateV8Isolate(jniEnv, mRuntimeOptions);
     v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
     return TO_JAVA_LONG(v8Runtime);
 }
@@ -232,7 +236,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingExc
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-    return v8InternalIsolate->has_pending_exception();
+    return HAS_PENDING_EXCEPTION(v8InternalIsolate);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMessage
@@ -244,9 +248,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMes
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledException
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
     return v8InternalIsolate->has_scheduled_exception();
+#else
+    return false;
+#endif
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
@@ -296,12 +304,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotifica
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promoteScheduledException
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
     if (v8InternalIsolate->has_scheduled_exception()) {
         v8InternalIsolate->PromoteScheduledException();
         return true;
     }
+#endif
     return false;
 }
 
@@ -368,7 +378,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     v8Runtime->CloseV8Context();
     v8Runtime->CloseV8Isolate();
-    v8Runtime->CreateV8Isolate();
+    v8Runtime->CreateV8Isolate(jniEnv, mRuntimeOptions);
     v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
 }
 
@@ -387,6 +397,17 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
         v8ValueReference->v8PersistentDataPointer = v8PersistentDataPointer;
         v8PersistentDataPointer->SetWeak(v8ValueReference, Javet::Callback::JavetCloseWeakDataReference, v8::WeakCallbackType::kParameter);
     }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_snapshotCreate
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8Locker = v8Runtime->GetSharedV8Locker();
+#else
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+#endif
+    return v8Runtime->CreateSnapshot(jniEnv);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals

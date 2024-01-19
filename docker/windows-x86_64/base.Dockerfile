@@ -1,4 +1,4 @@
-# Copyright (c) 2021 caoccao.com Sam Cao
+# Copyright (c) 2021-2024. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,10 +29,10 @@
 #       The following dockerfile has been out of date because it still uses
 #       Visual Studio 2019 Community. Please contact the maintainer if you want an upgrade.
 
-# Usage: docker build -t sjtucaocao/javet-windows:3.0.2 -m 4G -f docker/windows-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-windows:3.0.3 -m 4G -f docker/windows-x86_64/base.Dockerfile .
 
-ARG JAVET_NODE_VERSION=20.10.0
-ARG JAVET_V8_VERSION=12.0.267.8
+ARG JAVET_NODE_VERSION=20.11.0
+ARG JAVET_V8_VERSION=12.1.285.26
 
 # https://hub.docker.com/_/microsoft-windows
 FROM mcr.microsoft.com/windows:20H2-amd64

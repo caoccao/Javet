@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2023 caoccao.com Sam Cao
+# Copyright (c) 2021-2024. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,13 +18,13 @@
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
 #  --build-arg JAVET_NODE_VERSION=18.12.1 \
 #  --build-arg JAVET_V8_VERSION=10.8.168.20 \
-#  --build-arg JAVET_VERSION=3.0.2 \
+#  --build-arg JAVET_VERSION=3.0.3 \
 #  -f docker/linux-x86_64/build_artifact.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
 ARG JAVET_NODE_VERSION=18.12.1
 ARG JAVET_V8_VERSION=10.8.168.20
-ARG JAVET_VERSION=3.0.2
+ARG JAVET_VERSION=3.0.3
 
 FROM ${JAVET_REPO}:x86_64-base-node_${JAVET_NODE_VERSION} as base-v8
 

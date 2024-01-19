@@ -1,4 +1,4 @@
-# Copyright (c) 2021 caoccao.com Sam Cao
+# Copyright (c) 2021-2024. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 
 # Usage: docker build -t javet:local -f docker/windows-x86_64/build.Dockerfile .
 
-FROM sjtucaocao/javet-windows:3.0.2
+FROM sjtucaocao/javet-windows:3.0.3
 
 SHELL ["cmd", "/S", "/C"]
 WORKDIR /

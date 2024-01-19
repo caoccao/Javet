@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.utils.SimpleList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,8 +42,7 @@ public final class V8Inspector {
     }
 
     public void addListeners(IV8InspectorListener... listeners) {
-        Objects.requireNonNull(listeners);
-        this.listeners.addAll(Arrays.asList(listeners));
+        Collections.addAll(this.listeners, Objects.requireNonNull(listeners));
     }
 
     public void flushProtocolNotifications() {
@@ -87,8 +87,7 @@ public final class V8Inspector {
     }
 
     public void removeListeners(IV8InspectorListener... listeners) {
-        Objects.requireNonNull(listeners);
-        this.listeners.removeAll(Arrays.asList(listeners));
+        this.listeners.removeAll(SimpleList.of(listeners));
     }
 
     public void runIfWaitingForDebugger(int contextGroupId) {

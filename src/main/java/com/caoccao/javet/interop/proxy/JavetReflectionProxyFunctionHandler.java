@@ -95,6 +95,9 @@ public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
                             PROXY_FUNCTION_NAME_APPLY, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> apply(v8Values[0], v8Values[1], (V8ValueArray) v8Values[2])),
                     new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_DELETE_PROPERTY, this, JavetCallbackType.DirectCallNoThisAndResult,
+                            (NoThisAndResult<?>) (v8Values) -> deleteProperty(v8Values[0], v8Values[1])),
+                    new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
                     new JavetCallbackContext(

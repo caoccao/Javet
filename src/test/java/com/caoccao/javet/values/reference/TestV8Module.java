@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,8 +162,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Module.isSourceTextModule());
             assertFalse(v8Module.isSyntheticModule());
             if (v8Runtime.getJSRuntimeType().isNode()) {
-                v8Runtime.getExecutor("const process = require('process');\n" +
-                        "var globalReason = null;\n" +
+                v8Runtime.getExecutor("var globalReason = null;\n" +
                         "process.on('unhandledRejection', (reason, promise) => {\n" +
                         "  globalReason = reason;\n" +
                         "});").executeVoid();
@@ -315,11 +314,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
     @Test
     public void testSyntheticModule() throws JavetException {
         if (v8Runtime.getJSRuntimeType().isNode()) {
-            v8Runtime.getExecutor(
-                            "const process = require('process');\n" +
-                                    "process.on('unhandledRejection', (reason, promise) => {\n" +
-                                    "  globalThis.reason = reason.toString();\n" +
-                                    "});")
+            v8Runtime.getExecutor("process.on('unhandledRejection', (reason, promise) => {\n" +
+                            "  globalThis.reason = reason.toString();\n" +
+                            "});")
                     .executeVoid();
         } else {
             v8Runtime.setPromiseRejectCallback((event, promise, value) -> {

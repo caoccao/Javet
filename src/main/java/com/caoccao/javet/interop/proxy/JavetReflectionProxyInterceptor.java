@@ -18,7 +18,9 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
@@ -68,15 +70,9 @@ final class JavetReflectionProxyInterceptor {
      * @since 0.9.6
      */
     public JavetCallbackContext getCallbackContext() {
-        try {
-            return new JavetCallbackContext(
-                    METHOD_NAME_INVOKE,
-                    this,
-                    getClass().getMethod(METHOD_NAME_INVOKE, V8ValueObject.class, V8Value[].class),
-                    true);
-        } catch (NoSuchMethodException ignored) {
-        }
-        return null;
+        return new JavetCallbackContext(
+                METHOD_NAME_INVOKE, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) this::invokeV8Value);
     }
 
     /**
@@ -110,7 +106,7 @@ final class JavetReflectionProxyInterceptor {
     }
 
     /**
-     * Invoke.
+     * Invoke and return object.
      *
      * @param thisObject this object
      * @param v8Values   the V8 values
@@ -118,7 +114,7 @@ final class JavetReflectionProxyInterceptor {
      * @throws JavetException the javet exception
      * @since 0.9.6
      */
-    public Object invoke(V8ValueObject thisObject, V8Value... v8Values) throws JavetException {
+    public Object invokeObject(V8ValueObject thisObject, V8Value... v8Values) throws JavetException {
         try {
             return BaseJavetReflectionProxyHandler.execute(
                     reflectionObjectFactory,
@@ -141,5 +137,17 @@ final class JavetReflectionProxyInterceptor {
                             JavetError.PARAMETER_MESSAGE, t.getMessage()),
                     t);
         }
+    }
+
+    /**
+     * Invoke and return V8 value.
+     *
+     * @param thisObject this object
+     * @param v8Values   the V8 values
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    public V8Value invokeV8Value(V8Value thisObject, V8Value... v8Values) throws JavetException {
+        return thisObject.getV8Runtime().toV8Value(invokeObject((V8ValueObject) thisObject, v8Values));
     }
 }

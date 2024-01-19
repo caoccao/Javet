@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import org.junit.jupiter.api.Tag;
@@ -192,7 +193,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(1.23, v8ValueArray.popDouble(), 0.001);
             assertEquals(true, v8ValueArray.popBoolean());
             assertEquals(0, v8ValueArray.getLength());
-            assertEquals("", v8ValueArray.toString());
+            assertEquals(StringUtils.EMPTY, v8ValueArray.toString());
         }
     }
 

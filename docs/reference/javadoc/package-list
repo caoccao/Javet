@@ -3,6 +3,7 @@ com.caoccao.javet.entities
 com.caoccao.javet.enums
 com.caoccao.javet.exceptions
 com.caoccao.javet.interception
+com.caoccao.javet.interception.jvm
 com.caoccao.javet.interception.logging
 com.caoccao.javet.interfaces
 com.caoccao.javet.interop

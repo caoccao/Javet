@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,9 @@ import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -51,7 +54,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -99,13 +105,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals(2, list.size());
                 assertEquals("a", list.get(0));
                 assertNull(list.get(1));
-                if (list instanceof AutoCloseable) {
-                    try {
-                        ((AutoCloseable) list).close();
-                    } catch (Exception e) {
-                        fail(e.getMessage());
-                    }
-                }
             }
 
             public void expectLong(Long value1, long value2) {
@@ -567,6 +566,83 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testList() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            List<String> list = SimpleList.of("x", "y");
+            v8Runtime.getGlobalObject().set("list", list);
+            assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
+            // contains()
+            assertTrue(v8Runtime.getExecutor("list.contains('x')").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("list.contains('y')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("list.contains('z')").executeBoolean());
+            // includes()
+            assertTrue(v8Runtime.getExecutor("list.includes('x')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("list.includes('x', 1)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("list.includes('y', 1)").executeBoolean());
+            // push()
+            assertEquals(4, v8Runtime.getExecutor("list.push('z', '1')").executeInteger());
+            assertTrue(v8Runtime.getExecutor("list.includes('z')").executeBoolean());
+            // pop()
+            assertEquals("1", v8Runtime.getExecutor("list.pop()").executeString());
+            // toJSON()
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list)").executeString());
+            // Symbol.iterator
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify([...list])").executeString());
+            // with()
+            assertEquals(
+                    "[\"1\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.with(0, '1'))").executeString());
+            // toString()
+            assertEquals("[x, y, z]", v8Runtime.getExecutor("list.toString()").executeString());
+            // values()
+            assertEquals("x", v8Runtime.getExecutor("list.values().next().value").executeString());
+            // keys()
+            assertEquals("0,1,2", v8Runtime.getExecutor("[...list.keys()].toString()").executeString());
+            // reverse()
+            assertEquals("[z, y, x]", v8Runtime.getExecutor("list.reverse().toString()").executeString());
+            assertEquals("[x, y, z]", v8Runtime.getExecutor("list.reverse().toString()").executeString());
+            // toReversed()
+            assertEquals("z,y,x", v8Runtime.getExecutor("list.toReversed().toString()").executeString());
+            assertEquals("[x, y, z]", v8Runtime.getExecutor("list.toString()").executeString());
+            // map()
+            assertEquals("x0,y1,z2", v8Runtime.getExecutor("list.map((x, i) => x+i).toString()").executeString());
+            // every()
+            assertFalse(v8Runtime.getExecutor("list.every((x, i) => x == 'x' && i == 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("list.every((x, i) => x >= 'x' && i >= 0)").executeBoolean());
+            // some()
+            assertTrue(v8Runtime.getExecutor("list.some((x, i) => x == 'x' && i == 0)").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("list.some((x, i) => x < 'x' && i < 0)").executeBoolean());
+            // at()
+            assertEquals("x", v8Runtime.getExecutor("list.at(0)").executeString());
+            assertEquals("y", v8Runtime.getExecutor("list.at(1)").executeString());
+            assertEquals("z", v8Runtime.getExecutor("list.at(-1)").executeString());
+            assertEquals("x", v8Runtime.getExecutor("list.at(-3)").executeString());
+            assertTrue(v8Runtime.getExecutor("list.at(3)").execute().isUndefined());
+            assertTrue(v8Runtime.getExecutor("list.at(-4)").execute().isUndefined());
+            // unshift()
+            assertEquals(5, v8Runtime.getExecutor("list.unshift('1', '2')").executeInteger());
+            // []
+            assertEquals("3", v8Runtime.getExecutor("list[0] = '3'; list[0]").executeString());
+            // shift()
+            assertEquals("3", v8Runtime.getExecutor("list.shift()").executeString());
+            assertEquals("2", v8Runtime.getExecutor("list.shift()").executeString());
+            // delete()
+            assertTrue(v8Runtime.getExecutor("delete list[2]").executeBoolean());
+            assertEquals(2, v8Runtime.getExecutor("list.size()").executeInteger());
+            // length
+            assertEquals(2, v8Runtime.getExecutor("list.length").executeInteger());
+            v8Runtime.getGlobalObject().delete("list");
+        } finally {
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testListOfStrings() throws JavetException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeStringWithCast = "a.expectListOfStrings({\n" +
@@ -577,6 +653,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         String codeStringWithoutCast = "a.expectListOfStrings(['a', null]);";
         v8Runtime.getExecutor(codeStringWithoutCast).executeVoid();
         v8Runtime.getGlobalObject().delete("a");
+        System.gc();
+        System.runFinalization();
+        System.gc();
+        System.runFinalization();
     }
 
     @Test
@@ -593,10 +673,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testMap() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxyMapEnabled(true);
-            Map<String, Object> map = new HashMap<String, Object>() {{
-                put("x", 1);
-                put("y", "2");
-            }};
+            Map<String, Object> map = SimpleMap.of("x", 1, "y", "2");
             v8Runtime.getGlobalObject().set("map", map);
             assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
             assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
@@ -611,6 +688,13 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
+            assertTrue(v8Runtime.getExecutor("delete map['x']").executeBoolean());
+            assertFalse(map.containsKey("x"));
+            assertTrue(v8Runtime.getExecutor("delete map['y']").executeBoolean());
+            assertFalse(map.containsKey("y"));
+            assertEquals(
+                    "{\"z\":\"z\"}",
+                    v8Runtime.getExecutor("JSON.stringify(map);").executeString());
             v8Runtime.getGlobalObject().delete("map");
         } finally {
             javetProxyConverter.getConfig().setProxyMapEnabled(false);
@@ -727,20 +811,28 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testSet() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxySetEnabled(true);
-            Set<String> set = new HashSet<String>() {{
-                add("x");
-                add("y");
-            }};
+            Set<String> set = SimpleSet.of("x", "y");
             v8Runtime.getGlobalObject().set("set", set);
             assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
             assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("set.has('z')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.add('z')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("set.has('z')").executeBoolean());
+            assertEquals(
+                    "{}",
+                    v8Runtime.getExecutor("JSON.stringify(set);").executeString());
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("const keys = []; for (let key of set.keys()) { keys.push(key); } JSON.stringify(keys);").executeString());
+            assertTrue(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("set.has('z')").executeBoolean());
             v8Runtime.getGlobalObject().delete("set");
         } finally {
             javetProxyConverter.getConfig().setProxySetEnabled(false);

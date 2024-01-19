@@ -54,6 +54,8 @@ Code Type        Name                                   Format
 804  Runtime     RuntimeLeakageDetected                 ${count} runtime(s) leakage is detected                                                                                                                          
 805  Runtime     RuntimeCloseFailure                    Failed to close the runtime with error message ${message}                                                                                                        
 806  Runtime     RuntimeOutOfMemory                     Runtime is out of memory because ${message} with ${heapStatistics}                                                                                               
+807  Runtime     RuntimeCreateSnapshotDisabled          Runtime create snapshot is disabled                                                                                                                              
+808  Runtime     RuntimeCreateSnapshotBlocked           Runtime create snapshot is blocked because of ${callbackContextCount} callback context(s), ${referenceCount} reference(s), ${v8ModuleCount} module(s)            
 901  Engine      EngineNotAvailable                     Engine is not available.                                                                                                                                         
 ==== =========== ====================================== =================================================================================================================================================================
 

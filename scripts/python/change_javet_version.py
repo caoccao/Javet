@@ -1,5 +1,5 @@
 '''
-  Copyright (c) 2021-2023 caoccao.com Sam Cao
+  Copyright (c) 2021-2024. caoccao.com Sam Cao
   All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@ class ChangeJavetVersion(object):
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'build.gradle.kts', '\n',
-      re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
+      re.compile(r'^        const val JAVET = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
       '.github/workflows/android_build.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
@@ -109,10 +109,6 @@ class ChangeJavetVersion(object):
       re.compile(r'<javet\.version>(?P<version>\d+\.\d+\.\d+)</javet\.version>$'),
       re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\'@]{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
-    self._update(
-      'pom.xml', '\n',
-      re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
-      re.compile(r'^        <tag>(?P<version>\d+\.\d+\.\d+)</tag>$'))
     self._update(
       'android/pom.xml', '\n',
       re.compile(r'^    <version>(?P<version>\d+\.\d+\.\d+)</version>$'),
@@ -184,7 +180,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('3.0.2')
+  change_javet_version = ChangeJavetVersion('3.0.3')
   change_javet_version.update()
   return 0
 

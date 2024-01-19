@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2023 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2024. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -122,6 +122,7 @@ namespace Javet {
         extern std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
 #else
         extern std::unique_ptr<V8Platform> GlobalV8Platform;
+        extern std::shared_ptr<V8ArrayBufferAllocator> GlobalV8ArrayBufferAllocator;
 #endif
 
         void Dispose(JNIEnv* jniEnv) noexcept;

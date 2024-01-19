@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.caoccao.javet.utils.receivers;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.utils.JavetStringUtils;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
@@ -129,7 +129,7 @@ public class JavetCallbackReceiver implements IJavetCallbackReceiver {
         for (V8Value arg : args) {
             stringList.add(arg == null ? null : arg.toString());
         }
-        return JavetStringUtils.join(COMMA, stringList);
+        return StringUtils.join(COMMA, stringList);
     }
 
     @Override

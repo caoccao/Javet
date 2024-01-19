@@ -1241,6 +1241,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    snapshotCreate
+ * Signature: (J)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_snapshotCreate
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    strictEquals
  * Signature: (JJJ)Z
  */

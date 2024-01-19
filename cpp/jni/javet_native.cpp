@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2023 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2024. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,6 +101,7 @@ namespace Javet {
         std::unique_ptr<node::MultiIsolatePlatform> GlobalV8Platform;
 #else
         std::unique_ptr<V8Platform> GlobalV8Platform;
+        std::shared_ptr<V8ArrayBufferAllocator> GlobalV8ArrayBufferAllocator;
 #endif
 
         jclass jclassV8Host;
@@ -115,6 +116,9 @@ namespace Javet {
                 v8::V8::Dispose();
                 v8::V8::DisposePlatform();
                 GlobalV8Platform.reset();
+#ifndef ENABLE_NODE
+                GlobalV8ArrayBufferAllocator.reset();
+#endif
             }
         }
 
@@ -143,6 +147,8 @@ namespace Javet {
                 std::vector<std::string> errors;
                 auto flags = static_cast<node::ProcessInitializationFlags::Flags>(
                     node::ProcessInitializationFlags::kNoFlags
+                    | node::ProcessInitializationFlags::kNoStdioInitialization
+                    | node::ProcessInitializationFlags::kNoDefaultSignalHandling
                     | node::ProcessInitializationFlags::kNoInitializeV8
                     | node::ProcessInitializationFlags::kNoInitializeNodeV8Platform
                     | node::ProcessInitializationFlags::kNoInitializeCppgc);
@@ -161,6 +167,11 @@ namespace Javet {
             auto pageAllocator = Javet::V8Native::GlobalV8Platform->GetPageAllocator();
             LOG_INFO("Calling cppgc::InitializeProcess().");
             cppgc::InitializeProcess(pageAllocator);
+#else
+            if (!GlobalV8ArrayBufferAllocator) {
+                GlobalV8ArrayBufferAllocator = std::shared_ptr<V8ArrayBufferAllocator>();
+                GlobalV8ArrayBufferAllocator.reset(V8ArrayBufferAllocator::NewDefaultAllocator());
+            }
 #endif
             LOG_INFO("V8::Initialize() ends.");
         }

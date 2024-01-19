@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.utils;
 
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.StringJoiner;
@@ -26,12 +28,6 @@ import java.util.StringJoiner;
  * @since 0.7.1
  */
 public final class V8ValueUtils {
-    /**
-     * The constant EMPTY.
-     *
-     * @since 0.7.1
-     */
-    public static final String EMPTY = "";
 
     private V8ValueUtils() {
     }
@@ -45,11 +41,11 @@ public final class V8ValueUtils {
      * @since 0.7.1
      */
     public static String concat(String delimiter, V8Value... v8Values) {
-        if (v8Values == null || v8Values.length == 0) {
-            return EMPTY;
+        if (ArrayUtils.isEmpty(v8Values)) {
+            return StringUtils.EMPTY;
         }
         if (delimiter == null) {
-            delimiter = EMPTY;
+            delimiter = StringUtils.EMPTY;
         }
         StringJoiner stringJoiner = new StringJoiner(delimiter);
         for (V8Value v8Value : v8Values) {
@@ -66,12 +62,30 @@ public final class V8ValueUtils {
      * @since 0.9.10
      */
     public static JavetVirtualObject[] convertToVirtualObjects(V8Value... v8Values) {
-        final int length = v8Values.length;
+        final int length = v8Values == null ? 0 : v8Values.length;
         JavetVirtualObject[] javetVirtualObjects = new JavetVirtualObject[length];
         for (int i = 0; i < length; ++i) {
             javetVirtualObjects[i] = new JavetVirtualObject(v8Values[i]);
         }
         return javetVirtualObjects;
+    }
+
+    /**
+     * Convert V8 values to objects.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param v8Values  the V8 values
+     * @return the array
+     * @throws JavetException the javet exception
+     * @since 3.0.3
+     */
+    public static Object[] toArray(V8Runtime v8Runtime, V8Value... v8Values) throws JavetException {
+        final int length = v8Values == null ? 0 : v8Values.length;
+        Object[] objects = new Object[length];
+        for (int i = 0; i < length; ++i) {
+            objects[i] = v8Runtime.toObject(v8Values[i]);
+        }
+        return objects;
     }
 
     /**

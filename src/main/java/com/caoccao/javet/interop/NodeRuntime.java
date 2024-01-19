@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.enums.JSRuntimeType;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.node.modules.INodeModule;
@@ -78,6 +79,11 @@ public class NodeRuntime extends V8Runtime {
     NodeRuntime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
         super(v8Host, handle, pooled, v8Native, runtimeOptions);
         nodeModuleMap = new HashMap<>();
+    }
+
+    @Override
+    public byte[] createSnapshot() throws JavetException {
+        throw new JavetException(JavetError.RuntimeCreateSnapshotDisabled);
     }
 
     @Override

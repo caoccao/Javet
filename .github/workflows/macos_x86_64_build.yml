@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 20.10.0
-  JAVET_V8_VERSION: 12.0.267.8
-  JAVET_VERSION: 3.0.2
+  JAVET_NODE_VERSION: 20.11.0
+  JAVET_V8_VERSION: 12.1.285.26
+  JAVET_VERSION: 3.0.3
   ROOT: /Users/runner/work/Javet
 
 jobs:
@@ -163,12 +163,16 @@ jobs:
         gradle build test --rerun-tasks --debug
         touch src/main/resources/libjavet-node*
         gradle test --rerun-tasks --debug
+        gradle build generatePomFileForGeneratePomPublication
+        zip -d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dylib
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
         name: javet-macos-x86_64-${{ env.JAVET_VERSION }}
-        path: build/libs/*.jar
+        path: |
+          build/libs/*.jar
+          build/libs/*.pom
 
     - name: Delete Javet V8
       uses: geekyeggo/delete-artifact@v2

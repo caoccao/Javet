@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.values.V8Value;
 
 /**
@@ -82,17 +84,14 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
         checkV8Runtime();
         try {
             JavetCallbackContext contextOnCatch = new JavetCallbackContext(
-                    IListener.ON_CATCH,
-                    listener,
-                    listener.getClass().getMethod(IListener.ON_CATCH, V8Value.class));
+                    IListener.ON_CATCH, listener, JavetCallbackType.DirectCallNoThisAndNoResult,
+                    (IJavetDirectCallable.NoThisAndNoResult<Exception>) (v8Values) -> listener.onCatch(v8Values[0]));
             JavetCallbackContext contextOnFulfilled = new JavetCallbackContext(
-                    IListener.ON_FULFILLED,
-                    listener,
-                    listener.getClass().getMethod(IListener.ON_FULFILLED, V8Value.class));
+                    IListener.ON_FULFILLED,listener, JavetCallbackType.DirectCallNoThisAndNoResult,
+                    (IJavetDirectCallable.NoThisAndNoResult<Exception>) (v8Values) -> listener.onFulfilled(v8Values[0]));
             JavetCallbackContext contextOnRejected = new JavetCallbackContext(
-                    IListener.ON_REJECTED,
-                    listener,
-                    listener.getClass().getMethod(IListener.ON_REJECTED, V8Value.class));
+                    IListener.ON_REJECTED,listener, JavetCallbackType.DirectCallNoThisAndNoResult,
+                    (IJavetDirectCallable.NoThisAndNoResult<Exception>) (v8Values) -> listener.onRejected(v8Values[0]));
             try (V8ValueFunction functionOnCatch = v8Runtime.createV8ValueFunction(contextOnCatch);
                  V8ValueFunction functionOnFulfilled = v8Runtime.createV8ValueFunction(contextOnFulfilled);
                  V8ValueFunction functionOnRejected = v8Runtime.createV8ValueFunction(contextOnRejected);

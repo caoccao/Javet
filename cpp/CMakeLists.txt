@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2023 caoccao.com Sam Cao
+# Copyright (c) 2021-2024. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,6 +98,7 @@ if(DEFINED V8_DIR)
     list(APPEND includeDirs
         ${V8_DIR}
         ${V8_DIR}/include
+        ${V8_DIR}/third_party/abseil-cpp
         ${V8_RELEASE_DIR}/gen)
     if(DEFINED ENABLE_I18N)
         add_definitions(-DENABLE_I18N -DV8_INTL_SUPPORT)
@@ -120,7 +121,7 @@ if(DEFINED NODE_DIR)
     if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
         list(APPEND importLibraries base64_neon64)
     else()
-        list(APPEND importLibraries base64_avx base64_avx2 base64_sse41 base64_sse42 base64_ssse3)
+        list(APPEND importLibraries base64_avx base64_avx2 base64_avx512 base64_sse41 base64_sse42 base64_ssse3)
     endif()
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND importLibraries libnode libuv)
@@ -203,6 +204,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         add_definitions(-D__linux__)
         list(APPEND includeDirs $ENV{JAVA_HOME}/include/linux)
         if(DEFINED V8_DIR)
+            if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
+                set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flax-vector-conversions ")
+                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flax-vector-conversions ")
+            endif()
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)

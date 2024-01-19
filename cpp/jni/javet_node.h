@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2023 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2024. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@
 #include <node.h>
 #include <uv.h>
 #include <env-inl.h>
+#include <node_snapshot_builder.h>
 // Hack Begins (The hack is for resolving the conflicts between Node.js and V8)
 #define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
 #define V8_TRACING_TRACE_EVENT_H_

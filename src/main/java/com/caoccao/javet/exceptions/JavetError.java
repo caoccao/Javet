@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,6 +129,24 @@ public class JavetError {
      * @since 0.8.5
      */
     public static final String PARAMETER_METHOD_NAME = "methodName";
+    /**
+     * The constant PARAMETER_V8_MODULE_COUNT.
+     *
+     * @since 3.0.3
+     */
+    public static final String PARAMETER_V8_MODULE_COUNT = "v8ModuleCount";
+    /**
+     * The constant PARAMETER_REFERENCE_COUNT.
+     *
+     * @since 3.0.3
+     */
+    public static final String PARAMETER_REFERENCE_COUNT = "referenceCount";
+    /**
+     * The constant PARAMETER_CALLBACK_CONTEXT_COUNT.
+     *
+     * @since 3.0.3
+     */
+    public static final String PARAMETER_CALLBACK_CONTEXT_COUNT = "callbackContextCount";
     /**
      * The constant PARAMETER_OS.
      *
@@ -394,6 +412,23 @@ public class JavetError {
      */
     public static final JavetError RuntimeOutOfMemory = new JavetError(
             806, JavetErrorType.Runtime, "Runtime is out of memory because ${message} with ${heapStatistics}");
+    /**
+     * The constant RuntimeCreateSnapshotDisabled.
+     *
+     * @since 3.0.3
+     */
+    public static final JavetError RuntimeCreateSnapshotDisabled = new JavetError(
+            807, JavetErrorType.Runtime, "Runtime create snapshot is disabled");
+    /**
+     * The constant RuntimeCreateSnapshotBlocked.
+     *
+     * @since 3.0.3
+     */
+    public static final JavetError RuntimeCreateSnapshotBlocked = new JavetError(
+            808, JavetErrorType.Runtime, "Runtime create snapshot is blocked because of " +
+            "${callbackContextCount} callback context(s), " +
+            "${referenceCount} reference(s), " +
+            "${v8ModuleCount} module(s)");
     /**
      * The constant EngineNotAvailable.
      *

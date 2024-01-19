@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Javet Performance" href="performance.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Debug with Chrome Developer Tools - Javet 3.0.2 documentation</title>
+        <title>Debug with Chrome Developer Tools - Javet 3.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 3.0.2 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.0.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.0.2 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.0.3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -176,6 +176,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/interact_with_node_js.html">Interact with Node.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/object_converter.html">Object Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/java_and_javascript_interop.html">Java and JavaScript Interop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/access_the_whole_jvm.html">Access the Whole JVM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorial/advanced/expose_json_node_in_v8.html">Expose JsonNode in V8</a></li>
 </ul>
 </li>
@@ -206,6 +207,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/resource_management/lock.html">Know the Lock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/resource_management/memory_management.html">Memory Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/resource_management/modularization.html">Modularization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/resource_management/snapshot.html">Snapshot</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/troubleshooting/index.html">Troubleshooting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Troubleshooting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -246,6 +248,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/a_dynamic_link_library_dll_initialization_routine_failed.html">A dynamic link library (DLL) initialization routine failed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/can_i18n_be_supported.html">Can i18n be Supported?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/can_i_debug_javet_in_chrome_dev_tools.html">Can I Debug Javet in Chrome DevTools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/sigsegv_at_createv8runtime_in_v8_mode_on_aws.html">SIGSEGV at createV8Runtime() in V8 Mode on AWS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../faq/troubleshooting/why_node_js_crashes_when_being_closed.html">Why Node.js Crashes When being Closed?</a></li>
 </ul>
 </li>
@@ -322,7 +325,7 @@
 </section>
 <section id="open-cdt">
 <h3>3. Open CDT<a class="headerlink" href="#open-cdt" title="Link to this heading">#</a></h3>
-<p>Open chrome://inspect/ in Chrome, wait few seconds and Javet will appear as a remote target.</p>
+<p>Open <a class="reference external" href="chrome://inspect/">chrome://inspect/</a> in Chrome, wait a few seconds and Javet will appear as a remote target.</p>
 <img alt="Remote Target Javet" src="../_images/chome_developer_tools_devices_remote_target_javet.png" />
 </section>
 <section id="debug-as-usual">
@@ -336,10 +339,10 @@
 <section id="handshake">
 <h3>Handshake<a class="headerlink" href="#handshake" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>CDT Shell listens to port 9229 by default because CDT constantly queries <a class="reference external" href="http://127.0.0.1:9229/json">http://127.0.0.1:9229/json</a> for remote target. CDT Shell tells CDT that it is a node flavored remote target via <a class="reference external" href="http://127.0.0.1:9229/json">http://127.0.0.1:9229/json</a> and the websocket address is <a class="reference external" href="http://127.0.0.1:9229/javet">http://127.0.0.1:9229/javet</a>.</p></li>
+<li><p>CDT Shell listens to port 9229 by default because CDT constantly queries <a class="reference external" href="http://127.0.0.1:9229/json/list">http://127.0.0.1:9229/json/list</a> for a list of remote targets. CDT Shell tells CDT that it is a node flavored remote target via <a class="reference external" href="http://127.0.0.1:9229/json/list">http://127.0.0.1:9229/json/list</a> and the websocket address is <code class="docutils literal notranslate"><span class="pre">ws://127.0.0.1:9229/javet</span></code>.</p></li>
 <li><p>CDT queries <a class="reference external" href="http://127.0.0.1:9229/json/version">http://127.0.0.1:9229/json/version</a> for protocol version. CDT Shell currently uses v1.3. The complete protocol API docs are available at <a class="reference external" href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p></li>
-<li><p>CDT queries <a class="reference external" href="http://127.0.0.1:9229/javet">http://127.0.0.1:9229/javet</a> with a websocket upgrade request. CDT Shell responses with websocket upgrade accepted.</p></li>
-<li><p>CDT switches to ws://127.0.0.1:9229/javet and sends the following 8 messages to perform a handshake with a node flavored remote target.</p></li>
+<li><p>CDT queries <a class="reference external" href="http://127.0.0.1:9229/javet/list">http://127.0.0.1:9229/javet/list</a> with a websocket upgrade request. CDT Shell responses with websocket upgrade accepted.</p></li>
+<li><p>CDT switches to <code class="docutils literal notranslate"><span class="pre">ws://127.0.0.1:9229/javet</span></code> and sends the following 8 messages to perform a handshake with a node flavored remote target.</p></li>
 </ul>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">Chrome</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="mf">1</span><span class="p">,</span><span class="s2">&quot;method&quot;</span><span class="o">:</span><span class="s2">&quot;Runtime.enable&quot;</span><span class="p">,</span><span class="s2">&quot;params&quot;</span><span class="o">:</span><span class="p">{}}</span>
 <span class="nx">Javet</span><span class="w"> </span><span class="nx">Notification</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;method&quot;</span><span class="o">:</span><span class="s2">&quot;Runtime.executionContextCreated&quot;</span><span class="p">,</span><span class="s2">&quot;params&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="mf">1</span><span class="p">,</span><span class="s2">&quot;origin&quot;</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;Javet Inspector 00000000&quot;</span><span class="p">,</span><span class="s2">&quot;uniqueId&quot;</span><span class="o">:</span><span class="s2">&quot;00000000.00000000&quot;</span><span class="p">}}}</span>
@@ -379,11 +382,22 @@
 <li><p>To send messages to CDT right after CDT is connected.</p></li>
 <li><p>To turn on / off certain features.</p></li>
 <li><p>To enforce authentication and authorization.</p></li>
-<li><p>To change V8 runtime.</p></li>
+<li><p>To switch among V8 runtimes.</p></li>
 </ul>
 </div></blockquote>
 </li>
 </ul>
+</section>
+<section id="faqs">
+<h2>FAQs<a class="headerlink" href="#faqs" title="Link to this heading">#</a></h2>
+<section id="does-it-support-node-js-mode">
+<h3>Does it Support Node.js Mode?<a class="headerlink" href="#does-it-support-node-js-mode" title="Link to this heading">#</a></h3>
+<p>Yes, Javet V8 inspector supports the Node.js Mode as well as the V8 mode though the built-in Node.js inspector is disabled because of some other issues. Please visit <a class="reference internal" href="../faq/development/why_is_the_inspector_disabled_in_node_js_mode.html"><span class="doc">Why is the Inspector Disabled in Node.js Mode?</span></a> for more details.</p>
+</section>
+<section id="is-there-a-live-demo">
+<h3>Is There a Live Demo?<a class="headerlink" href="#is-there-a-live-demo" title="Link to this heading">#</a></h3>
+<p>Yes, <a class="reference external" href="https://github.com/caoccao/JavetShell">JavetShell</a> provides a live demo via either a jar file or a docker image.</p>
+</section>
 </section>
 </section>
 
@@ -446,6 +460,11 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#customization">Customization</a></li>
+<li><a class="reference internal" href="#faqs">FAQs</a><ul>
+<li><a class="reference internal" href="#does-it-support-node-js-mode">Does it Support Node.js Mode?</a></li>
+<li><a class="reference internal" href="#is-there-a-live-demo">Is There a Live Demo?</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -457,7 +476,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a4fb7100"></script>
+</div><script src="../_static/documentation_options.js?v=d980231b"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

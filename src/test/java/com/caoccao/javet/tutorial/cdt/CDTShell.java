@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,52 +36,48 @@ public class CDTShell {
     }
 
     public void run() {
-        Server jsonServer = new Server(CDTConfig.getPort());
-        ServletContextHandler jsonServletContextHandler = new ServletContextHandler(
+        Server inspectorServer = new Server(CDTConfig.getPort());
+        ServletContextHandler inspectorServletContextHandler = new ServletContextHandler(
                 ServletContextHandler.SESSIONS | ServletContextHandler.NO_SECURITY);
-        jsonServletContextHandler.setContextPath(CDTConfig.PATH_ROOT);
-        jsonServer.setHandler(jsonServletContextHandler);
-        try {
-            jsonServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_JSON);
-            jsonServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_JSON_VERSION);
-            NativeWebSocketServletContainerInitializer.configure(jsonServletContextHandler,
+        inspectorServletContextHandler.setContextPath(CDTConfig.PATH_ROOT);
+        inspectorServer.setHandler(inspectorServletContextHandler);
+        try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
+            inspectorServletContextHandler.addServlet(CDTHttpServlet.class, CDTConfig.PATH_ROOT);
+            NativeWebSocketServletContainerInitializer.configure(inspectorServletContextHandler,
                     (servletContext, nativeWebSocketConfiguration) -> {
                         nativeWebSocketConfiguration.getPolicy().setMaxTextMessageBufferSize(0xFFFFFF);
-                        nativeWebSocketConfiguration.addMapping(CDTConfig.PATH_JAVET, CDTWebSocketAdapter.class);
+                        nativeWebSocketConfiguration.addMapping(
+                                CDTConfig.PATH_JAVET,
+                                new CDTWebSocketCreator(v8Runtime));
                     });
-            WebSocketUpgradeFilter.configure(jsonServletContextHandler);
-            try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
-                jsonServer.start();
-                logger.logInfo("Server is started. Please press any key to stop the server.");
-                System.out.println("Welcome to CDT Shell!");
-                System.out.println("Input the script or '" + CDTConfig.COMMAND_EXIT + "' to exit.");
-                CDTConfig.setV8Runtime(v8Runtime);
-                try (Scanner scanner = new Scanner(System.in)) {
-                    while (true) {
-                        System.out.print("> ");
-                        String command = scanner.nextLine();
-                        if (CDTConfig.COMMAND_EXIT.equals(command)) {
-                            break;
+            WebSocketUpgradeFilter.configure(inspectorServletContextHandler);
+            inspectorServer.start();
+            logger.logInfo("Server is started. Please press any key to stop the server.");
+            System.out.println("Welcome to CDT Shell!");
+            System.out.println("Input the script or '" + CDTConfig.COMMAND_EXIT + "' to exit.");
+            try (Scanner scanner = new Scanner(System.in)) {
+                while (true) {
+                    System.out.print("> ");
+                    String command = scanner.nextLine();
+                    if (CDTConfig.COMMAND_EXIT.equals(command)) {
+                        break;
+                    }
+                    try (V8Value v8Value = v8Runtime.getExecutor(command).execute()) {
+                        if (v8Value != null) {
+                            System.out.println(v8Value);
                         }
-                        try (V8Value v8Value = v8Runtime.getExecutor(command).execute()) {
-                            if (v8Value != null) {
-                                System.out.println(v8Value.toString());
-                            }
-                        } catch (Throwable t) {
-                            System.err.println(t.getMessage());
-                        }
+                    } catch (Throwable t) {
+                        System.err.println(t.getMessage());
                     }
                 }
-            } finally {
-                CDTConfig.setV8Runtime(null);
             }
         } catch (Throwable t) {
             logger.logError(t, t.getMessage());
         } finally {
-            if (jsonServer.isStarted() || jsonServer.isStarting()) {
+            if (inspectorServer.isStarted() || inspectorServer.isStarting()) {
                 logger.logInfo("Server is being stopped.");
                 try {
-                    jsonServer.stop();
+                    inspectorServer.stop();
                 } catch (Throwable t) {
                     logger.logError(t, t.getMessage());
                 }

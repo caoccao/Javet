@@ -10,4 +10,8 @@ Node.js has only one IO thread serving the inspector agent. In side the function
 
 The hacky option is to change the Node.js source code. But that scope would be too large because that implies changing the fundamental design of the inspector. I don't think the Node.js community would accept that.
 
-So, please debug the JavaScript applications in Node.js with the inspector. Or... contact the maintainer for a private build with the inspector enabled.
+Here are 3 options.
+
+1. Debug the JavaScript applications in Node.js with the inspector.
+2. Use the Javet V8 inspector instead. Please visit :doc:`../../development/debug_with_chrome_developer_tools` for more details.
+3. Contact the maintainer for a private build with the inspector enabled.

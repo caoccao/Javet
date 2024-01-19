@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.caoccao.javet.interop.options;
 
-import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
+import com.caoccao.javet.utils.ArrayUtils;
 
 /**
  * The type Runtime options.
@@ -26,11 +26,18 @@ import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
  */
 public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
     /**
-     * The reflection object factory.
+     * The Snapshot enabled flag indicates whether the snapshot feature is enabled or not.
+     * It is disabled by default.
      *
-     * @since 2.0.1
+     * @since 3.0.3
      */
-    protected IJavetReflectionObjectFactory reflectionObjectFactory;
+    protected boolean createSnapshotEnabled;
+    /**
+     * The Snapshot blob.
+     *
+     * @since 3.0.3
+     */
+    protected byte[] snapshotBlob;
 
     /**
      * Instantiates a new Runtime options.
@@ -38,28 +45,51 @@ public abstract class RuntimeOptions<Options extends RuntimeOptions<Options>> {
      * @since 1.0.0
      */
     public RuntimeOptions() {
-        reflectionObjectFactory = null;
+        createSnapshotEnabled = false;
+        snapshotBlob = null;
     }
 
     /**
-     * Gets reflection object factory.
+     * Get snapshot blob in byte array.
      *
-     * @return the reflection object factory
-     * @since 2.0.1
+     * @return the byte array
+     * @since 3.0.3
      */
-    public IJavetReflectionObjectFactory getReflectionObjectFactory() {
-        return reflectionObjectFactory;
+    public byte[] getSnapshotBlob() {
+        return snapshotBlob;
     }
 
     /**
-     * Sets reflection object factory.
+     * Is create snapshot enabled.
      *
-     * @param reflectionObjectFactory the reflection object factory
+     * @return true : enabled, false : disabled
+     * @since 3.0.3
+     */
+    public boolean isCreateSnapshotEnabled() {
+        return createSnapshotEnabled;
+    }
+
+    /**
+     * Sets create snapshot enabled.
+     *
+     * @param createSnapshotEnabled the create snapshot enabled
      * @return the self
-     * @since 2.0.1
+     * @since 3.0.3
      */
-    public RuntimeOptions<Options> setReflectionObjectFactory(IJavetReflectionObjectFactory reflectionObjectFactory) {
-        this.reflectionObjectFactory = reflectionObjectFactory;
+    public RuntimeOptions<Options> setCreateSnapshotEnabled(boolean createSnapshotEnabled) {
+        this.createSnapshotEnabled = createSnapshotEnabled;
+        return this;
+    }
+
+    /**
+     * Sets snapshot blob.
+     *
+     * @param snapshotBlob the snapshot blob
+     * @return the self
+     * @since 3.0.3
+     */
+    public RuntimeOptions<Options> setSnapshotBlob(byte[] snapshotBlob) {
+        this.snapshotBlob = ArrayUtils.isEmpty(snapshotBlob) ? null : snapshotBlob;
         return this;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.caoccao.javet.interop.options;
 
-import com.caoccao.javet.utils.JavetStringUtils;
+import com.caoccao.javet.utils.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -391,9 +391,9 @@ public final class V8Flags {
             tokens.add(FLAG_TRACK_RETAINING_PATH);
         }
         Collections.sort(tokens, String::compareTo);
-        if (customFlags != null && customFlags.length() > 0) {
+        if (StringUtils.isNotEmpty(customFlags)) {
             tokens.add(customFlags);
         }
-        return JavetStringUtils.join(SPACE, tokens);
+        return StringUtils.join(SPACE, tokens);
     }
 }

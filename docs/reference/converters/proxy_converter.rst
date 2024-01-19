@@ -34,16 +34,57 @@ Instance: File
     v8Runtime.getGlobalObject().delete("file");
     v8Runtime.lowMemoryNotification();
 
+Instance: List
+--------------
+
+.. code-block:: java
+
+    javetProxyConverter.getConfig().setProxyListEnabled(true);
+    List<String> list = SimpleList.of("x", "y");
+    v8Runtime.getGlobalObject().set("list", list);
+    assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
+    // contains
+    assertTrue(v8Runtime.getExecutor("list.contains('x')").executeBoolean());
+    assertTrue(v8Runtime.getExecutor("list.contains('y')").executeBoolean());
+    assertFalse(v8Runtime.getExecutor("list.contains('z')").executeBoolean());
+    // includes
+    assertTrue(v8Runtime.getExecutor("list.includes('x')").executeBoolean());
+    assertFalse(v8Runtime.getExecutor("list.includes('x', 1)").executeBoolean());
+    assertTrue(v8Runtime.getExecutor("list.includes('y', 1)").executeBoolean());
+    // push
+    assertEquals(4, v8Runtime.getExecutor("list.push('z', '1')").executeInteger());
+    assertTrue(v8Runtime.getExecutor("list.includes('z')").executeBoolean());
+    // pop
+    assertEquals("1", v8Runtime.getExecutor("list.pop()").executeString());
+    // toJSON
+    assertEquals(
+            "[\"x\",\"y\",\"z\"]",
+            v8Runtime.getExecutor("JSON.stringify(list);").executeString());
+    // Symbol.iterator
+    assertEquals(
+            "[\"x\",\"y\",\"z\"]",
+            v8Runtime.getExecutor("JSON.stringify([...list]);").executeString());
+    // unshift
+    assertEquals(5, v8Runtime.getExecutor("list.unshift('1', '2')").executeInteger());
+    // shift
+    assertEquals("1", v8Runtime.getExecutor("list.shift()").executeString());
+    assertEquals("2", v8Runtime.getExecutor("list.shift()").executeString());
+    // delete
+    assertTrue(v8Runtime.getExecutor("delete list[2]").executeBoolean());
+    assertEquals(2, v8Runtime.getExecutor("list.size()").executeInteger());
+    // length
+    assertEquals(2, v8Runtime.getExecutor("list.length").executeInteger());
+    v8Runtime.getGlobalObject().delete("list");
+    v8Runtime.lowMemoryNotification();
+    javetProxyConverter.getConfig().setProxyListEnabled(false);
+
 Instance: Map
 -------------
 
 .. code-block:: java
 
     javetProxyConverter.getConfig().setProxyMapEnabled(true);
-    Map<String, Object> map = new HashMap<String, Object>() {{
-        put("x", 1);
-        put("y", "2");
-    }};
+    Map<String, Object> map = SimpleMap.of("x", 1, "y", "2");
     v8Runtime.getGlobalObject().set("map", map);
     assertTrue(map == v8Runtime.getGlobalObject().getObject("map"));
     assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
@@ -54,6 +95,16 @@ Instance: Map
     assertEquals("3", map.get("z"));
     assertEquals("4", v8Runtime.getExecutor("map.z = '4'; map.z;").executeString());
     assertEquals("4", map.get("z"));
+    assertEquals(
+            "[\"x\",\"y\",\"z\"]",
+            v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
+    assertTrue(v8Runtime.getExecutor("delete map['x']").executeBoolean());
+    assertFalse(map.containsKey("x"));
+    assertTrue(v8Runtime.getExecutor("delete map['y']").executeBoolean());
+    assertFalse(map.containsKey("y"));
+    assertEquals(
+            "{\"z\":\"z\"}",
+            v8Runtime.getExecutor("JSON.stringify(map);").executeString());
     v8Runtime.getGlobalObject().delete("map");
     v8Runtime.lowMemoryNotification();
     javetProxyConverter.getConfig().setProxyMapEnabled(false);
@@ -73,6 +124,36 @@ Instance: Path
     assertEquals(path.resolve("abc").toString(), v8Runtime.getExecutor("path.resolve('abc').toString()").executeString());
     v8Runtime.getGlobalObject().delete("path");
     v8Runtime.lowMemoryNotification();
+
+Instance: Set
+-------------
+
+.. code-block:: java
+
+    javetProxyConverter.getConfig().setProxySetEnabled(true);
+    Set<String> set = SimpleSet.of("x", "y");
+    v8Runtime.getGlobalObject().set("set", set);
+    assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
+    assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
+    assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());
+    assertFalse(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+    assertFalse(v8Runtime.getExecutor("set.has('z')").executeBoolean());
+    assertTrue(v8Runtime.getExecutor("set.add('z')").executeBoolean());
+    assertTrue(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
+    assertTrue(v8Runtime.getExecutor("set.has('z')").executeBoolean());
+    assertEquals(
+            "[\"x\",\"y\",\"z\"]",
+            v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
+    assertEquals(
+            "[\"x\",\"y\",\"z\"]",
+            v8Runtime.getExecutor("const keys = []; for (let key of set.keys()) { keys.push(key); } JSON.stringify(keys);").executeString());
+    assertTrue(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
+    assertFalse(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
+    assertFalse(v8Runtime.getExecutor("set.has('z')").executeBoolean());
+    v8Runtime.getGlobalObject().delete("set");
+    v8Runtime.getGlobalObject().delete("set");
+    v8Runtime.lowMemoryNotification();
+    javetProxyConverter.getConfig().setProxySetEnabled(false);
 
 Static: StringBuilder
 ---------------------
@@ -279,18 +360,18 @@ This feature is similar to the dynamic anonymous object for interface, but it al
     <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy</artifactId>
-        <version>1.12.17</version>
+        <version>1.14.10</version>
     </dependency>
 
 .. code-block:: kotlin
 
     // Gradle Kotlin DSL
-    implementation("net.bytebuddy:byte-buddy:1.12.17")
+    implementation("net.bytebuddy:byte-buddy:1.14.10")
 
 .. code-block:: groovy
 
     // Gradle Groovy DSL
-    implementation 'net.bytebuddy:byte-buddy:1.12.17'
+    implementation 'net.bytebuddy:byte-buddy:1.14.10'
 
 2. Copy :extsource3:`JavetReflectionObjectFactory.java <../../../src/test/java/com/caoccao/javet/interop/proxy/JavetReflectionObjectFactory.java>` to your project. As Javet doesn't reference ``ByteBuddy`` directly, ``JavetReflectionObjectFactory`` has to stay at the test project.
 
@@ -337,7 +418,13 @@ Voilà aussi! It works again.
 
 .. note::
 
-    The JavaScript implementation is backed up by ``V8ValueObject`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer callable. It's recommended to have the interface implement ``AutoCloseable`` as the sample shows so that the orphan ``V8ValueObject`` can be recycled explicitly. If you don't own the interface, Javet will force the recycle of the orphan ``V8ValueObject`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long while without recycling them in time, ``OutOfMemoryError`` may occur.
+    The JavaScript implementation is backed up by ``V8ValueObject`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer be callable. It's recommended to have the interface or the object implement ``AutoCloseable`` as the sample shows so that the orphan ``V8ValueObject`` can be recycled explicitly.
+    
+    If you don't own the interface or the object, there are 2 ways of recycling it to avoid memory leak.
+    
+    1. Manually calling ``System.gc(); System.runFinalization();`` will recycle the orphan ``V8ValueObject`` via the Java garbage collector.
+
+    2. Javet will force the recycle of the orphan ``V8ValueObject`` when the ``V8Runtime`` is being closed. Be careful, if you keep the application running for long time without recycling them in time, ``OutOfMemoryError`` may occur. Of course, that is less likely going to happen because the Java garbage collector runs periodically.
 
 Features
 ========

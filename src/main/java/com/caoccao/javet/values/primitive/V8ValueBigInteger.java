@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.ArrayUtils;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -96,7 +97,7 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
      * @since 1.1.5
      */
     static BigInteger toBigInteger(int signum, long[] longArray) {
-        if (signum == 0 || signum > 1 || signum < -1 || longArray == null || longArray.length == 0) {
+        if (signum == 0 || signum > 1 || signum < -1 || ArrayUtils.isEmpty(longArray)) {
             return BigInteger.ZERO;
         }
         final int longLength = longArray.length;

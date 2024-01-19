@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.engine.observers;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
+import com.caoccao.javet.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,12 +70,12 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
     public V8HeapSpaceStatistics getResult() {
         long physicalSpaceSize = 0;
         long spaceAvailableSize = 0;
-        String spaceName = "";
+        String spaceName = StringUtils.EMPTY;
         long spaceSize = 0;
         long spaceUsedSize = 0;
         if (!v8HeapSpaceStatisticsList.isEmpty()) {
             for (V8HeapSpaceStatistics v8HeapSpaceStatistics : v8HeapSpaceStatisticsList) {
-                if (spaceName.length() == 0) {
+                if (spaceName.isEmpty()) {
                     spaceName = v8HeapSpaceStatistics.getSpaceName();
                 }
                 physicalSpaceSize += v8HeapSpaceStatistics.getPhysicalSpaceSize();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
@@ -49,7 +50,6 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
@@ -181,6 +181,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 2.2.0
      */
     final boolean[] primitiveFlags;
+    /**
+     * The Reference lock.
+     *
+     * @since 0.9.12
+     */
+    final Object referenceLock;
     /**
      * The Reference map.
      *
@@ -326,7 +332,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         this.pooled = pooled;
         primitiveFlags = new boolean[1];
         promiseRejectCallback = new JavetPromiseRejectCallback(logger);
-        referenceMap = new ConcurrentHashMap<>();
+        referenceLock = new Object();
+        referenceMap = new HashMap<>();
         this.v8Host = Objects.requireNonNull(v8Host);
         v8Inspector = null;
         this.v8Native = Objects.requireNonNull(v8Native);
@@ -376,7 +383,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.3
      */
     void addReference(IV8ValueReference iV8ValueReference) {
-        referenceMap.put(iV8ValueReference.getHandle(), iV8ValueReference);
+        synchronized (referenceLock) {
+            referenceMap.put(iV8ValueReference.getHandle(), iV8ValueReference);
+        }
     }
 
     /**
@@ -560,7 +569,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
         v8ScriptOrigin.setModule(true);
-        if (v8ScriptOrigin.getResourceName() == null || v8ScriptOrigin.getResourceName().isEmpty()) {
+        if (StringUtils.isEmpty(v8ScriptOrigin.getResourceName())) {
             throw new JavetException(JavetError.ModuleNameEmpty);
         }
         Object result = v8Native.moduleCompile(
@@ -693,11 +702,35 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.contextSetLength(handle, iV8Context.getHandle(), iV8Context.getType().getId(), length);
     }
 
+    /**
+     * Create snapshot in byte array.
+     *
+     * @return the byte array
+     * @throws JavetException the javet exception
+     * @see <a href="https://v8.dev/blog/custom-startup-snapshots">Custom startup snapshots</a>
+     * @since 3.0.3
+     */
+    public byte[] createSnapshot() throws JavetException {
+        if (!runtimeOptions.isCreateSnapshotEnabled()) {
+            throw new JavetException(JavetError.RuntimeCreateSnapshotDisabled);
+        }
+        final int callbackContextCount = getCallbackContextCount();
+        final int referenceCount = getReferenceCount();
+        final int v8ModuleCount = getV8ModuleCount();
+        if (callbackContextCount > 0 || referenceCount > 0 || v8ModuleCount > 0) {
+            throw new JavetException(JavetError.RuntimeCreateSnapshotBlocked, SimpleMap.of(
+                    JavetError.PARAMETER_CALLBACK_CONTEXT_COUNT, callbackContextCount,
+                    JavetError.PARAMETER_REFERENCE_COUNT, referenceCount,
+                    JavetError.PARAMETER_V8_MODULE_COUNT, v8ModuleCount));
+        }
+        return v8Native.snapshotCreate(handle);
+    }
+
     @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     public V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException {
-        if (moduleName == null || moduleName.isEmpty()) {
+        if (StringUtils.isEmpty(moduleName)) {
             throw new JavetException(JavetError.ModuleNameEmpty);
         }
         Objects.requireNonNull(iV8ValueObject);
@@ -851,7 +884,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
-        assert description != null && !description.isEmpty() : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
+        assert !StringUtils.isEmpty(description) : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
         if (global) {
             try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
                 return v8ValueBuiltInSymbol._for(description);
@@ -1462,7 +1495,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
         IV8Module iV8Module = null;
-        if (resourceName != null && !resourceName.isEmpty()) {
+        if (!StringUtils.isEmpty(resourceName)) {
             synchronized (v8ModuleLock) {
                 iV8Module = v8ModuleMap.get(resourceName);
             }
@@ -2954,12 +2987,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     void removeReference(IV8ValueReference iV8ValueReference) throws JavetException {
         final long referenceHandle = iV8ValueReference.getHandle();
-        if (referenceMap.remove(referenceHandle) != null) {
-            final int referenceType = iV8ValueReference.getType().getId();
-            if (referenceType == V8ValueReferenceType.Module.getId()) {
-                removeV8Module((IV8Module) iV8ValueReference);
+        synchronized (referenceLock) {
+            if (referenceMap.remove(referenceHandle) != null) {
+                final int referenceType = iV8ValueReference.getType().getId();
+                if (referenceType == V8ValueReferenceType.Module.getId()) {
+                    removeV8Module((IV8Module) iV8ValueReference);
+                }
+                v8Native.removeReferenceHandle(handle, referenceHandle, referenceType);
             }
-            v8Native.removeReferenceHandle(handle, referenceHandle, referenceType);
         }
         if (gcScheduled) {
             lowMemoryNotification();
@@ -2974,31 +3009,33 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     void removeReferences() throws JavetException {
-        if (!referenceMap.isEmpty()) {
-            final int referenceCount = getReferenceCount();
-            final int v8ModuleCount = getV8ModuleCount();
-            int weakReferenceCount = 0;
-            for (IV8ValueReference iV8ValueReference : new ArrayList<>(referenceMap.values())) {
-                if (iV8ValueReference instanceof IV8ValueObject) {
-                    IV8ValueObject iV8ValueObject = (IV8ValueObject) iV8ValueReference;
-                    if (iV8ValueObject.isWeak()) {
-                        ++weakReferenceCount;
+        synchronized (referenceLock) {
+            if (!referenceMap.isEmpty()) {
+                final int referenceCount = getReferenceCount();
+                final int v8ModuleCount = getV8ModuleCount();
+                int weakReferenceCount = 0;
+                for (IV8ValueReference iV8ValueReference : new ArrayList<>(referenceMap.values())) {
+                    if (iV8ValueReference instanceof IV8ValueObject) {
+                        IV8ValueObject iV8ValueObject = (IV8ValueObject) iV8ValueReference;
+                        if (iV8ValueObject.isWeak()) {
+                            ++weakReferenceCount;
+                        }
                     }
+                    iV8ValueReference.close(true);
                 }
-                iV8ValueReference.close(true);
+                if (v8ModuleCount + weakReferenceCount < referenceCount) {
+                    logger.logWarn("{0} V8 object(s) not recycled, {1} weak, {2} module(s).",
+                            Integer.toString(referenceCount),
+                            Integer.toString(weakReferenceCount),
+                            Integer.toString(v8ModuleCount));
+                } else {
+                    logger.logDebug("{0} V8 object(s) not recycled, {1} weak, {2} module(s).",
+                            Integer.toString(referenceCount),
+                            Integer.toString(weakReferenceCount),
+                            Integer.toString(v8ModuleCount));
+                }
+                referenceMap.clear();
             }
-            if (v8ModuleCount + weakReferenceCount < referenceCount) {
-                logger.logWarn("{0} V8 object(s) not recycled, {1} weak, {2} module(s).",
-                        Integer.toString(referenceCount),
-                        Integer.toString(weakReferenceCount),
-                        Integer.toString(v8ModuleCount));
-            } else {
-                logger.logDebug("{0} V8 object(s) not recycled, {1} weak, {2} module(s).",
-                        Integer.toString(referenceCount),
-                        Integer.toString(weakReferenceCount),
-                        Integer.toString(v8ModuleCount));
-            }
-            referenceMap.clear();
         }
     }
 

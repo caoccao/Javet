@@ -1,4 +1,4 @@
-# Copyright (c) 2021 caoccao.com Sam Cao
+# Copyright (c) 2021-2024. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-arm64:3.0.2 -f docker/linux-arm64/base_all_in_one.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-arm64:3.0.3 -f docker/linux-arm64/base_all_in_one.Dockerfile .
 
 ARG JAVET_NODE_VERSION=18.15.0
-ARG JAVET_V8_VERSION=12.0.267.8
+ARG JAVET_V8_VERSION=12.1.285.26
 
 FROM ubuntu:20.04
 WORKDIR /

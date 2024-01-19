@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     protected int maxDepth;
     /**
+     * The Proxy list enabled.
+     *
+     * @since 3.0.3
+     */
+    protected boolean proxyListEnabled;
+    /**
      * The Proxy map enabled.
      *
      * @since 0.9.6
@@ -130,10 +136,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         defaultInt = 0;
         defaultLong = 0L;
         defaultShort = 0;
-        reflectionObjectFactory = null;
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
+        proxyListEnabled = false;
         proxyMapEnabled = false;
+        proxySetEnabled = false;
+        reflectionObjectFactory = null;
         skipFunctionInObject = true;
     }
 
@@ -238,9 +246,9 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     }
 
     /**
-     * Is extract function source code boolean.
+     * Is extract function source code.
      *
-     * @return the boolean
+     * @return true : extract, false : skip
      * @since 0.9.4
      */
     public boolean isExtractFunctionSourceCode() {
@@ -248,9 +256,19 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     }
 
     /**
+     * Is proxy list enabled.
+     *
+     * @return true : enabled, false : disabled
+     * @since 3.0.3
+     */
+    public boolean isProxyListEnabled() {
+        return proxyListEnabled;
+    }
+
+    /**
      * Is proxy map enabled.
      *
-     * @return the boolean
+     * @return true : enabled, false : disabled
      * @since 0.9.6
      */
     public boolean isProxyMapEnabled() {
@@ -260,7 +278,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     /**
      * Is proxy set enabled.
      *
-     * @return the boolean
+     * @return true : enabled, false : disabled
      * @since 0.9.8
      */
     public boolean isProxySetEnabled() {
@@ -268,9 +286,9 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     }
 
     /**
-     * Is skip functions boolean.
+     * Is skip functions.
      *
-     * @return the boolean
+     * @return true : skip, false : not skip
      * @since 0.9.4
      */
     public boolean isSkipFunctionInObject() {
@@ -404,6 +422,19 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     @SuppressWarnings("UnusedReturnValue")
     public JavetConverterConfig<T> setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;
+        return this;
+    }
+
+    /**
+     * Sets proxy list enabled.
+     *
+     * @param proxyListEnabled the proxy list enabled
+     * @return the self
+     * @since 3.0.3
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setProxyListEnabled(boolean proxyListEnabled) {
+        this.proxyListEnabled = proxyListEnabled;
         return this;
     }
 

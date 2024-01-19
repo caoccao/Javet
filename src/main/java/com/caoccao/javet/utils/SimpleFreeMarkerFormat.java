@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,35 @@ package com.caoccao.javet.utils;
 
 import java.util.Map;
 
+/**
+ * The type Simple free marker format.
+ *
+ * @since 0.8.5
+ */
 public final class SimpleFreeMarkerFormat {
-
+    /**
+     * The constant STRING_NULL.
+     *
+     * @since 0.8.5
+     */
     public static final String STRING_NULL = "<null>";
     private static final char CHAR_DOLLAR = '$';
     private static final char CHAR_VARIABLE_CLOSE = '}';
     private static final char CHAR_VARIABLE_OPEN = '{';
 
+    private SimpleFreeMarkerFormat() {
+    }
+
+    /**
+     * Format string.
+     *
+     * @param format     the format
+     * @param parameters the parameters
+     * @return the string
+     * @since 0.8.5
+     */
     public static String format(final String format, final Map<String, Object> parameters) {
-        if (format == null || format.length() == 0 || parameters == null || parameters.isEmpty()) {
+        if (StringUtils.isEmpty(format) || parameters == null || parameters.isEmpty()) {
             return format;
         }
         final int length = format.length();
@@ -105,9 +125,29 @@ public final class SimpleFreeMarkerFormat {
         return stringBuilderMessage.toString();
     }
 
+    /**
+     * The enum State.
+     *
+     * @since 0.8.5
+     */
     enum State {
+        /**
+         * Text state.
+         *
+         * @since 0.8.5
+         */
         Text,
+        /**
+         * Dollar state.
+         *
+         * @since 0.8.5
+         */
         Dollar,
+        /**
+         * Variable state.
+         *
+         * @since 0.8.5
+         */
         Variable,
     }
 }

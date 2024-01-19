@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2023 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2024. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,9 @@ namespace Javet {
             node::MultiIsolatePlatform* v8PlatformPointer,
             std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator) noexcept;
 #else
-        V8Runtime(V8Platform* v8PlatformPointer) noexcept;
+        V8Runtime(
+            V8Platform* v8PlatformPointer,
+            std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator) noexcept;
 #endif
 
         bool Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept;
@@ -79,8 +81,10 @@ namespace Javet {
         void CloseV8Context() noexcept;
         void CloseV8Isolate() noexcept;
 
+        jbyteArray CreateSnapshot(JNIEnv* jniEnv) noexcept;
+
         void CreateV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
-        void CreateV8Isolate() noexcept;
+        void CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
 
         static inline V8Runtime* FromHandle(jlong handle) noexcept {
             return reinterpret_cast<V8Runtime*>(handle);
@@ -165,6 +169,8 @@ namespace Javet {
         virtual ~V8Runtime();
 
     private:
+        std::unique_ptr<v8::SnapshotCreator> v8SnapshotCreator;
+        std::unique_ptr<v8::StartupData, std::function<void(v8::StartupData*)>> v8StartupData;
         std::shared_ptr<v8::Locker> v8Locker;
         V8PersistentContext v8PersistentContext;
 #ifdef ENABLE_NODE
@@ -173,6 +179,8 @@ namespace Javet {
         std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> nodeEnvironment;
         std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
         uv_loop_t uvLoop;
+#else
+        std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator;
 #endif
     };
 }

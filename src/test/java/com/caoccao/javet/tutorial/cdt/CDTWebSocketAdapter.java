@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,36 +18,41 @@ package com.caoccao.javet.tutorial.cdt;
 
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.IV8InspectorListener;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
 public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8InspectorListener {
     protected IJavetLogger logger;
-    protected Session session;
+    protected V8Runtime v8Runtime;
 
-    public CDTWebSocketAdapter() {
+    public CDTWebSocketAdapter(V8Runtime v8Runtime) {
         this.logger = new JavetDefaultLogger(getClass().getName());
+        this.v8Runtime = v8Runtime;
         logger.logInfo("CDTWebSocketAdapter()");
-        session = null;
     }
 
     @Override
     public void flushProtocolNotifications() {
     }
 
+    public V8Runtime getV8Runtime() {
+        return v8Runtime;
+    }
+
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
         logger.logInfo("onWebSocketClose(): {0} {1}", Integer.toString(statusCode), reason);
-        session = null;
-        CDTConfig.getV8Runtime().getV8Inspector().removeListeners(this);
+        v8Runtime.getV8Inspector().removeListeners(this);
+        super.onWebSocketClose(statusCode, reason);
     }
 
     @Override
     public void onWebSocketConnect(Session session) {
+        super.onWebSocketConnect(session);
         logger.logInfo("onWebSocketConnect(): {0}", session.getRemoteAddress().toString());
-        this.session = session;
-        CDTConfig.getV8Runtime().getV8Inspector().addListeners(this);
+        v8Runtime.getV8Inspector().addListeners(this);
     }
 
     @Override
@@ -59,7 +64,7 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     public void onWebSocketText(String message) {
         logger.logInfo("onWebSocketText(): {0}", message);
         try {
-            CDTConfig.getV8Runtime().getV8Inspector().sendRequest(message);
+            v8Runtime.getV8Inspector().sendRequest(message);
         } catch (Exception e) {
             logger.logError(e, e.getMessage());
         }
@@ -69,7 +74,7 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     public void receiveNotification(String message) {
         logger.logInfo("receiveNotification(): {0}", message);
         try {
-            session.getRemote().sendString(message);
+            getRemote().sendString(message);
         } catch (Exception e) {
             logger.logError(e, e.getMessage());
         }
@@ -79,7 +84,7 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     public void receiveResponse(String message) {
         logger.logInfo("receiveResponse(): {0}", message);
         try {
-            session.getRemote().sendString(message);
+            getRemote().sendString(message);
         } catch (Exception e) {
             logger.logError(e, e.getMessage());
         }
@@ -88,7 +93,7 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     @Override
     public void runIfWaitingForDebugger(int contextGroupId) {
         try {
-            CDTConfig.getV8Runtime().getExecutor(
+            v8Runtime.getExecutor(
                     "console.log('Welcome to Javet Debugging Environment!');").executeVoid();
         } catch (Exception e) {
             logger.logError(e, e.getMessage());

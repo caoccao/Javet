@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,16 +39,16 @@ public class CDTHttpServlet extends HttpServlet {
         String requestURI = request.getRequestURI();
         response.setContentType(APPLICATION_JSON_CHARSET_UTF_8);
         response.setStatus(HttpServletResponse.SC_OK);
-        if (CDTConfig.PATH_JSON.equals(requestURI)) {
+        if (CDTConfig.PATH_JSON.equals(requestURI) || CDTConfig.PATH_JSON_LIST.equals(requestURI)) {
             response.getWriter().println("[ {\n" +
                     "  \"description\": \"javet\",\n" +
-                    "  \"devtoolsFrontendUrl\": \"devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&" + CDTConfig.getWebSocketUrl() + "\",\n" +
-                    "  \"devtoolsFrontendUrlCompat\": \"devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&" + CDTConfig.getWebSocketUrl() + "\",\n" +
+                    "  \"devtoolsFrontendUrl\": \"devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=" + CDTConfig.getWebSocketUrl() + "\",\n" +
+                    "  \"devtoolsFrontendUrlCompat\": \"devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=" + CDTConfig.getWebSocketUrl() + "\",\n" +
                     "  \"id\": \"javet\",\n" +
                     "  \"title\": \"javet\",\n" +
                     "  \"type\": \"node\",\n" + // Type must be node
                     "  \"url\": \"file://\",\n" +
-                    "  \"webSocketDebuggerUrl\": \"" + CDTConfig.getWebSocketUrl() + "\"\n" +
+                    "  \"webSocketDebuggerUrl\": \"ws://" + CDTConfig.getWebSocketUrl() + "\"\n" +
                     "} ]\n");
         } else if (CDTConfig.PATH_JSON_VERSION.equals(requestURI)) {
             response.getWriter().println("{\n" +

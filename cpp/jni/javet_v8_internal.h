@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2023 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2024. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,6 +81,15 @@ using V8InternalWriteBarrierMode = v8::internal::WriteBarrierMode;
 template<typename T>
 constexpr auto CONVERT_OFFSET_FOR_SCOPE_INFO(T offset) {
     return (offset - V8InternalHeapObject::kHeaderSize) / v8::internal::kTaggedSize;
+}
+
+template<typename T>
+constexpr auto HAS_PENDING_EXCEPTION(T v8InternalIsolate) {
+#ifdef ENABLE_NODE
+    return v8InternalIsolate->has_pending_exception();
+#else
+    return v8InternalIsolate->has_exception();
+#endif
 }
 
 template<typename T>

@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2023 caoccao.com Sam Cao
+ *   Copyright (c) 2021-2024. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const char* message) noexcept {
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-            if (v8InternalIsolate->has_pending_exception()) {
+            if (HAS_PENDING_EXCEPTION(v8InternalIsolate)) {
                 V8TryCatch v8TryCatch(v8Context->GetIsolate());
                 v8InternalIsolate->ReportPendingMessages();
                 if (v8TryCatch.HasCaught()) {
@@ -60,6 +60,7 @@ namespace Javet {
                     return true;
                 }
             }
+#ifdef ENABLE_NODE
             else if (v8InternalIsolate->has_scheduled_exception()) {
                 V8TryCatch v8TryCatch(v8Context->GetIsolate());
                 v8InternalIsolate->PromoteScheduledException();
@@ -70,6 +71,7 @@ namespace Javet {
                     }
                 }
             }
+#endif
             if (message != nullptr) {
                 ThrowJavetOutOfMemoryException(jniEnv, v8Context, message);
                 return true;

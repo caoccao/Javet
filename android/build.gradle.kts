@@ -1,5 +1,5 @@
 /*
- *    Copyright 2021. caoccao.com Sam Cao
+ *    Copyright 2021-2023. caoccao.com Sam Cao
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.0.0")
+        // https://developer.android.com/build/releases/gradle-plugin
+        classpath("com.android.tools.build:gradle:8.1.0")
     }
 }
 

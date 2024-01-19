@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -33,8 +34,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetError {
     @Test
@@ -85,20 +85,20 @@ public class TestJavetError {
                 row[3] = cell;
             }
         }
-        assertTrue(table.size() > 0);
+        assertFalse(table.isEmpty());
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(fileContent, 0, startPosition);
         String separator = Arrays.stream(maxLengths)
-                .mapToObj(length -> String.join("", Collections.nCopies(length, "=")))
+                .mapToObj(length -> String.join(StringUtils.EMPTY, Collections.nCopies(length, "=")))
                 .collect(Collectors.joining(" "));
         stringBuilder.append(separator).append("\n");
         stringBuilder.append(IntStream.range(0, maxLengths.length)
-                .mapToObj(i -> String.format("%1$-" + Integer.toString(maxLengths[i]) + "s", headerRow[i]))
+                .mapToObj(i -> String.format("%1$-" + maxLengths[i] + "s", headerRow[i]))
                 .collect(Collectors.joining(" "))).append("\n");
         stringBuilder.append(separator).append("\n");
         for (String[] row : table.values()) {
             stringBuilder.append(IntStream.range(0, maxLengths.length)
-                    .mapToObj(i -> String.format("%1$-" + Integer.toString(maxLengths[i]) + "s", row[i]))
+                    .mapToObj(i -> String.format("%1$-" + maxLengths[i] + "s", row[i]))
                     .collect(Collectors.joining(" "))).append("\n");
         }
         stringBuilder.append(separator).append("\n\n\n");

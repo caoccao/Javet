@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 20.10.0
-  JAVET_V8_VERSION: 12.0.267.8
-  JAVET_VERSION: 3.0.2
+  JAVET_NODE_VERSION: 20.11.0
+  JAVET_V8_VERSION: 12.1.285.26
+  JAVET_VERSION: 3.0.3
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -52,6 +52,8 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc
+        sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
         ninja -C out.gn/x64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/x64.release v8_monolith
 
@@ -168,12 +170,20 @@ jobs:
         gradle build test --rerun-tasks --debug
         touch src/main/resources/libjavet-node*
         gradle test --rerun-tasks --debug
+        gradle build generatePomFileForGeneratePomPublication
+
+    - name: Clear up Source Jar
+      uses: edgarrc/action-7z@v1
+      with:
+        args: 7z d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.so
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
         name: javet-linux-x86_64-${{ env.JAVET_VERSION }}
-        path: build/libs/*.jar
+        path: |
+          build/libs/*.jar
+          build/libs/*.pom
 
     - name: Delete Javet V8
       uses: geekyeggo/delete-artifact@v2

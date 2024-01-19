@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +150,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         if (method.isAnnotationPresent(V8Function.class)) {
             String methodName = method.getName();
             String aliasMethodName = method.getAnnotation(V8Function.class).name();
-            if (aliasMethodName.length() > 0) {
+            if (!aliasMethodName.isEmpty()) {
                 methodName = aliasMethodName;
             }
             List<Method> methods = map.computeIfAbsent(methodName, k -> new ArrayList<>());
@@ -291,7 +291,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             if (methods != null && !methods.isEmpty()) {
                 JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
                         reflectionObjectFactory, targetObject, propertyName, methods);
-                return v8Runtime.toV8Value(reflectionProxyInterceptor.invoke((V8ValueObject) target));
+                return reflectionProxyInterceptor.invokeV8Value(target);
             }
             if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
                 return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
@@ -447,7 +447,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             String fieldName = field.getName();
             if (field.isAnnotationPresent(V8Property.class)) {
                 String aliasFieldName = field.getAnnotation(V8Property.class).name();
-                if (aliasFieldName.length() > 0) {
+                if (!aliasFieldName.isEmpty()) {
                     fieldName = aliasFieldName;
                 }
             }
@@ -696,7 +696,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 if (methods != null) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
                             reflectionObjectFactory, targetObject, propertyName, methods);
-                    reflectionProxyInterceptor.invoke((V8ValueObject) target, propertyValue);
+                    reflectionProxyInterceptor.invokeObject((V8ValueObject) target, propertyValue);
                     return true;
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,12 +79,10 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
     @CheckReturnValue
     @Override
     public V8ValueFunction getV8ValueFunction() throws JavetException {
-        JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-                METHOD_NAME_TO_V8_VALUE,
-                this,
-                JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<?>) this::toV8Value);
-        return v8Runtime.createV8ValueFunction(javetCallbackContext);
+        return v8Runtime.createV8ValueFunction(
+                new JavetCallbackContext(
+                        METHOD_NAME_TO_V8_VALUE, JavetCallbackType.DirectCallNoThisAndResult,
+                        (IJavetDirectCallable.NoThisAndResult<?>) this::toV8Value));
     }
 
     /**

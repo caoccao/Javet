@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
-import com.caoccao.javet.utils.JavetStringUtils;
 import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,7 +48,7 @@ public final class JavetLibLoader {
      *
      * @since 0.8.0
      */
-    public static final String LIB_VERSION = "3.0.2";
+    public static final String LIB_VERSION = "3.0.3";
     private static final String ANDROID_ABI_ARM = "armeabi-v7a";
     private static final String ANDROID_ABI_ARM64 = "arm64-v8a";
     private static final String ANDROID_ABI_X86 = "x86";
@@ -295,7 +295,7 @@ public final class JavetLibLoader {
     public String getResourceFileName()
             throws JavetException {
         String resourceFileName = MessageFormat.format(RESOURCE_NAME_FORMAT, JavetOSUtils.IS_ANDROID
-                ? JavetStringUtils.join("/", LIB_FILE_NAME_PREFIX, getAndroidABI(), getLibFileName())
+                ? StringUtils.join("/", LIB_FILE_NAME_PREFIX, getAndroidABI(), getLibFileName())
                 : getLibFileName());
         if (JavetLibLoader.class.getResource(resourceFileName) == null) {
             throw new JavetException(

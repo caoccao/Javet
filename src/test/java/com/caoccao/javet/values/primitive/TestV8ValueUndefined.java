@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. caoccao.com Sam Cao
+ * Copyright (c) 2021-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueUndefined extends BaseTestJavetRuntime {
     @Test
     public void testEquals() throws JavetException {
-        V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor("undefined").execute();
-        assertTrue(v8ValueUndefined.equals(v8Runtime.createV8ValueUndefined()));
-        assertFalse(v8ValueUndefined.equals(null));
-        assertFalse(v8ValueUndefined.equals(v8Runtime.createV8ValueNull()));
+        try (V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor("undefined").execute()) {
+            assertTrue(v8ValueUndefined.equals(v8Runtime.createV8ValueUndefined()));
+            assertFalse(v8ValueUndefined.equals(v8Runtime.createV8ValueNull()));
+        }
     }
 
     @Test
@@ -37,7 +38,7 @@ public class TestV8ValueUndefined extends BaseTestJavetRuntime {
             assertNotNull(v8ValueUndefined);
             assertEquals(v8Runtime, v8ValueUndefined.getV8Runtime());
         }
-        try (V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor("").execute()) {
+        try (V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor(StringUtils.EMPTY).execute()) {
             assertNotNull(v8ValueUndefined);
             assertEquals(v8Runtime, v8ValueUndefined.getV8Runtime());
         }
