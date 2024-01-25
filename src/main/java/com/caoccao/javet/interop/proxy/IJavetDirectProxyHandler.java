@@ -50,7 +50,9 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
     V8Runtime getV8Runtime();
 
     /**
-     * Apply to object.
+     * Proxy handler.apply().
+     * The handler.apply() method is a trap for the [[Call]] object internal method,
+     * which is used by operations such as function calls.
      *
      * @param target     the target
      * @param thisObject this object
@@ -65,7 +67,25 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
     }
 
     /**
-     * Get by property.
+     * Proxy handler.deleteProperty().
+     * The handler.deleteProperty() method is a trap for the [[Delete]] object internal method,
+     * which is used by operations such as the delete operator.
+     *
+     * @param target   the target
+     * @param property the property
+     * @return the V8 value boolean
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 3.0.4
+     */
+    default V8ValueBoolean proxyDeleteProperty(V8Value target, V8Value property) throws JavetException, E {
+        return getV8Runtime().createV8ValueBoolean(true);
+    }
+
+    /**
+     * Proxy handler.get().
+     * The handler.get() method is a trap for the [[Get]] object internal method,
+     * which is used by operations such as property accessors.
      *
      * @param target   the target
      * @param property the property
@@ -163,7 +183,9 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
     }
 
     /**
-     * Has property
+     * Proxy handler.has().
+     * The handler.has() method is a trap for the [[HasProperty]] object internal method,
+     * which is used by operations such as the in operator.
      *
      * @param target   the target
      * @param property the property
@@ -193,7 +215,9 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
     }
 
     /**
-     * Own keys.
+     * Proxy handler.ownKeys().
+     * The handler.ownKeys() method is a trap for the [[OwnPropertyKeys]] object internal method,
+     * which is used by operations such as Object.keys(), Reflect.ownKeys(), etc.
      *
      * @param target the target
      * @return the V8 value array
@@ -219,7 +243,9 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
     }
 
     /**
-     * Set value by property.
+     * Proxy handler.set().
+     * The handler.set() method is a trap for the [[Set]] object internal method,
+     * which is used by operations such as using property accessors to set a property's value.
      *
      * @param target        the target
      * @param propertyKey   the property key

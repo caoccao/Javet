@@ -59,7 +59,7 @@ public class TestJavetJVMInterceptor extends BaseTestJavetRuntime {
         assertEquals(initialCallbackContextCount + 5, v8Runtime.getCallbackContextCount());
         v8Runtime.getExecutor("javet.v8.gc()").executeVoid();
         // javet.v8 creates another 5 callback contexts while the gc() collects 5 callback contexts.
-        assertEquals(initialCallbackContextCount + 5, v8Runtime.getCallbackContextCount());
+        assertEquals(initialCallbackContextCount + 6, v8Runtime.getCallbackContextCount());
         v8Runtime.lowMemoryNotification();
         assertEquals(initialCallbackContextCount, v8Runtime.getCallbackContextCount());
     }

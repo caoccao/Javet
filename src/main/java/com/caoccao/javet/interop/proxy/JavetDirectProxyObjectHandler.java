@@ -45,6 +45,11 @@ public class JavetDirectProxyObjectHandler<T extends IJavetDirectProxyHandler<E>
     }
 
     @Override
+    public V8ValueBoolean deleteProperty(V8Value target, V8Value property) throws JavetException, E {
+        return targetObject.proxyDeleteProperty(target, property);
+    }
+
+    @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
         return targetObject.proxyGet(target, property, receiver);
     }
@@ -52,6 +57,9 @@ public class JavetDirectProxyObjectHandler<T extends IJavetDirectProxyHandler<E>
     @Override
     public JavetCallbackContext[] getCallbackContexts() {
         return new JavetCallbackContext[]{
+                new JavetCallbackContext(
+                        PROXY_FUNCTION_NAME_DELETE_PROPERTY, this, JavetCallbackType.DirectCallNoThisAndResult,
+                        (NoThisAndResult<E>) (v8Values) -> deleteProperty(v8Values[0], v8Values[1])),
                 new JavetCallbackContext(
                         PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
                         (NoThisAndResult<E>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),

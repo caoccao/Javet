@@ -5,12 +5,14 @@ Release Notes 3.0.x
 3.0.4 V8 v12.2
 --------------
 
+* Added ``proxyDeleteProperty()`` to ``IJavetDirectProxyHandler``
+
 3.0.3 V8 v12.1
 --------------
 
 * Upgraded V8 to ``v12.1.285.26`` (2024-01-17)
 * Upgraded Node.js to ``v20.11.0`` `(2024-01-09) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.0>`_
-* Restore the reference lock
+* Restored the reference lock
 * Downgraded to Ubuntu 20.04 for better compatibility
 * Fixed a slight memory leak in closing the V8 runtime
 * Fixed a memory leak in dynamic proxy and dynamic object
