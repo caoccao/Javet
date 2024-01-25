@@ -167,6 +167,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
     /**
+     * The constant polyfillClassFunctionMap.
+     *
+     * @since 3.0.4
+     */
+    protected static final Map<Class<?>, Map<String, IJavetProxyPolyfillFunction<?, ?>>> polyfillClassFunctionMap;
+    /**
      * The constant polyfillListFunctionMap.
      *
      * @since 3.0.3
@@ -210,6 +216,61 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         polyfillSetFunctionMap.put(POLYFILL_SET_HAS, JavetReflectionProxyObjectHandler::polyfillSetHas);
         polyfillSetFunctionMap.put(POLYFILL_SET_KEYS, JavetReflectionProxyObjectHandler::polyfillSharedValues);
         polyfillSetFunctionMap.put(POLYFILL_SHARED_VALUES, JavetReflectionProxyObjectHandler::polyfillSharedValues);
+        polyfillClassFunctionMap = new HashMap<>();
+        {
+            // java.lang.Boolean
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillBooleanToJSON);
+            polyfillClassFunctionMap.put(Boolean.class, polyfillFunctionMap);
+        }
+        {
+            // java.lang.Byte
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillByteToJSON);
+            polyfillClassFunctionMap.put(Byte.class, polyfillFunctionMap);
+        }
+        {
+            // java.lang.Character
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillCharacterToJSON);
+            polyfillClassFunctionMap.put(Character.class, polyfillFunctionMap);
+        }
+        {
+            // java.lang.Double
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillDoubleToJSON);
+            polyfillClassFunctionMap.put(Double.class, polyfillFunctionMap);
+        }
+        {
+            // java.lang.Float
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillFloatToJSON);
+            polyfillClassFunctionMap.put(Float.class, polyfillFunctionMap);
+        }
+        {
+            // java.lang.Integer
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillIntegerToJSON);
+            polyfillClassFunctionMap.put(Integer.class, polyfillFunctionMap);
+        }
+        {
+            // java.lang.Long
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillLongToJSON);
+            polyfillClassFunctionMap.put(Long.class, polyfillFunctionMap);
+        }
+        {
+            // java.lang.Short
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillShortToJSON);
+            polyfillClassFunctionMap.put(Short.class, polyfillFunctionMap);
+        }
+        {
+            // java.lang.String
+            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillStringToJSON);
+            polyfillClassFunctionMap.put(String.class, polyfillFunctionMap);
+        }
     }
 
     /**
@@ -225,6 +286,90 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
         super(v8Runtime, reflectionObjectFactory, Objects.requireNonNull(targetObject));
+    }
+
+    /**
+     * Polyfill Boolean.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillBooleanToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Boolean value = (Boolean) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueBoolean(value)));
+    }
+
+    /**
+     * Polyfill Byte.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillByteToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Byte value = (Byte) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueInteger(value.intValue())));
+    }
+
+    /**
+     * Polyfill Character.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillCharacterToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Character value = (Character) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueString(value.toString())));
+    }
+
+    /**
+     * Polyfill Double.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillDoubleToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Double value = (Double) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueDouble(value)));
+    }
+
+    /**
+     * Polyfill Float.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillFloatToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Float value = (Float) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueDouble(value.doubleValue())));
+    }
+
+    /**
+     * Polyfill Integer.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillIntegerToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Integer value = (Integer) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueInteger(value)));
     }
 
     /**
@@ -625,6 +770,20 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     /**
+     * Polyfill Long.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillLongToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Long value = (Long) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueLong(value)));
+    }
+
+    /**
      * Polyfill Map.toJSON().
      *
      * @param handler the handler
@@ -711,6 +870,34 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected static V8Value polyfillSharedValues(IJavetProxyHandler<?, ?> handler) throws JavetException {
         return new JavetProxySymbolIterableConverter<>(
                 handler.getV8Runtime(), handler.getTargetObject()).getV8ValueFunction();
+    }
+
+    /**
+     * Polyfill Short.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillShortToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Short value = (Short) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueInteger(value.intValue())));
+    }
+
+    /**
+     * Polyfill String.toJSON().
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillStringToJSON(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        String value = (String) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_SHARED_TO_JSON, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (NoThisAndResult<Exception>) (v8Values) -> handler.getV8Runtime().createV8ValueString(value)));
     }
 
     /**
@@ -854,6 +1041,10 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             } else if (classDescriptor.isTargetTypeSet()) {
                 iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
                         polyfillSetFunctionMap.get(propertyName);
+            } else {
+                iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
+                        Optional.ofNullable(polyfillClassFunctionMap.get(classDescriptor.getTargetClass()))
+                                .map(map -> map.get(propertyName)).orElse(null);
             }
             if (iJavetProxyPolyfillFunction != null) {
                 return iJavetProxyPolyfillFunction.apply(this);
@@ -879,6 +1070,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
                     && (targetObject instanceof Iterable<?>
                     || targetObject instanceof Map<?, ?>
+                    || targetObject instanceof String
                     || classDescriptor.getTargetClass().isArray())) {
                 return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
             }
@@ -995,23 +1187,23 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                 keys[i] = i;
             }
         }
-        if (keys != null && keys.length > 0) {
-            try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-                for (Object key : keys) {
-                    if (key instanceof String) {
-                        v8ValueArray.push(v8Runtime.createV8ValueString((String) key));
-                    } else if (key instanceof V8ValueString || key instanceof V8ValueSymbol) {
-                        v8ValueArray.push(key);
-                    } else if (key != null) {
-                        v8ValueArray.push(v8Runtime.createV8ValueString(key.toString()));
-                    }
-                }
-                v8Scope.setEscapable();
-                return v8ValueArray;
+        if (ArrayUtils.isEmpty(keys)) {
+            keys = classDescriptor.getUniqueKeySet().toArray();
+        }
+        for (int i = 0; i < keys.length; i++) {
+            Object key = keys[i];
+            if (key instanceof String) {
+                keys[i] = v8Runtime.createV8ValueString((String) key);
+            } else if (!(key instanceof V8ValueString) && !(key instanceof V8ValueSymbol)) {
+                keys[i] = v8Runtime.createV8ValueString(key.toString());
             }
         }
-        return v8Runtime.toV8Value(classDescriptor.getUniqueKeySet().toArray());
+        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+            V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+            v8ValueArray.push(keys);
+            v8Scope.setEscapable();
+            return v8ValueArray;
+        }
     }
 
     @Override

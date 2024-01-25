@@ -230,12 +230,12 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
             V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
             Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
             if (stringGetterMap != null && !stringGetterMap.isEmpty()) {
-                V8ValueString[] v8ValueStrings = new V8ValueString[stringGetterMap.size()];
+                Object[] v8ValueStrings = new Object[stringGetterMap.size()];
                 int index = 0;
                 for (String key : stringGetterMap.keySet()) {
                     v8ValueStrings[index++] = getV8Runtime().createV8ValueString(key);
                 }
-                v8ValueArray.push((Object[]) v8ValueStrings);
+                v8ValueArray.push(v8ValueStrings);
             }
             v8Scope.setEscapable();
             return v8ValueArray;

@@ -57,14 +57,17 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void testBoolean() throws JavetException {
         v8Runtime.getGlobalObject().set("bTrue", true);
         v8Runtime.getGlobalObject().set("bFalse", false);
+        v8Runtime.getGlobalObject().set("list", SimpleList.of(true, false));
         assertTrue((Boolean) v8Runtime.getExecutor("bTrue").executeObject());
         assertFalse((Boolean) v8Runtime.getExecutor("bFalse").executeObject());
         assertEquals(1, v8Runtime.getExecutor("bTrue.toV8Value()?1:0").executeInteger());
         assertEquals(0, v8Runtime.getExecutor("bFalse.toV8Value()?1:0").executeInteger());
         assertEquals(1, v8Runtime.getExecutor("bTrue[Symbol.toPrimitive]()?1:0").executeInteger());
         assertEquals(0, v8Runtime.getExecutor("bFalse[Symbol.toPrimitive]()?1:0").executeInteger());
+        assertEquals("[true,false]", v8Runtime.getExecutor("JSON.stringify(list)").executeString());
         v8Runtime.getGlobalObject().delete("bTrue");
         v8Runtime.getGlobalObject().delete("bFalse");
+        v8Runtime.getGlobalObject().delete("list");
     }
 
     @Test
@@ -89,11 +92,14 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     @Test
     public void testInteger() throws JavetException {
         v8Runtime.getGlobalObject().set("i", 12345);
+        v8Runtime.getGlobalObject().set("list", SimpleList.of(1, -1));
         assertEquals(12345, (Integer) v8Runtime.getExecutor("i").executeObject());
         assertEquals(12345, v8Runtime.getExecutor("i.toV8Value()").executeInteger());
         assertEquals(12345, v8Runtime.getExecutor("i[Symbol.toPrimitive]()").executeInteger());
         assertEquals(12346, v8Runtime.getExecutor("1 + i").executeInteger());
+        assertEquals("[1,-1]", v8Runtime.getExecutor("JSON.stringify(list)").executeString());
         v8Runtime.getGlobalObject().delete("i");
+        v8Runtime.getGlobalObject().delete("list");
     }
 
     @Test
@@ -136,11 +142,15 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     @Test
     public void testLong() throws JavetException {
         v8Runtime.getGlobalObject().set("l", 12345L);
+        v8Runtime.getGlobalObject().set("list", SimpleList.of(1L, -1L));
         assertEquals(12345L, (Long) v8Runtime.getExecutor("l").executeObject());
         assertEquals(12345L, v8Runtime.getExecutor("l.toV8Value()").executeLong());
         assertEquals(12345L, v8Runtime.getExecutor("l[Symbol.toPrimitive]()").executeLong());
         assertEquals(12346L, v8Runtime.getExecutor("1n + l").executeLong());
+        assertEquals("[\"1\",\"-1\"]", v8Runtime.getExecutor("JSON.stringify(list, (key, value) =>" +
+                " typeof value === 'bigint'?value.toString():value)").executeString());
         v8Runtime.getGlobalObject().delete("l");
+        v8Runtime.getGlobalObject().delete("list");
     }
 
     @Test
@@ -197,6 +207,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void testString() throws JavetException {
         v8Runtime.getGlobalObject().set("s", "test");
         assertEquals("test", v8Runtime.getExecutor("s").executeObject());
+        assertEquals("[\"t\",\"e\",\"s\",\"t\"]", v8Runtime.getExecutor("JSON.stringify([...s])").executeString());
         assertEquals("test", v8Runtime.getExecutor("s.toV8Value()").executeString());
         assertEquals("test", v8Runtime.getExecutor("s[Symbol.toPrimitive]()").executeString());
         assertEquals("abc test", v8Runtime.getExecutor("'abc ' + s").executeString());

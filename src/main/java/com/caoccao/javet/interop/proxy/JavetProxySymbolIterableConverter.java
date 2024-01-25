@@ -57,6 +57,13 @@ public class JavetProxySymbolIterableConverter<T> extends BaseJavetProxySymbolCo
             iterator = ((Iterable<?>) targetObject).iterator();
         } else if (targetObject instanceof Map<?, ?>) {
             iterator = ((Map<?, ?>) targetObject).keySet().iterator();
+        } else if (targetObject instanceof String) {
+            String str = (String) targetObject;
+            List<String> chars = new ArrayList<>(str.length());
+            for (char c : str.toCharArray()) {
+                chars.add(String.valueOf(c));
+            }
+            iterator = chars.iterator();
         } else if (targetObject != null && targetObject.getClass().isArray()) {
             final int length = Array.getLength(targetObject);
             List<Object> list = new ArrayList<>(length);
