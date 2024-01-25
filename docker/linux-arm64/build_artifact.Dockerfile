@@ -18,13 +18,13 @@
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
 #  --build-arg JAVET_NODE_VERSION=18.12.1 \
 #  --build-arg JAVET_V8_VERSION=10.8.168.20 \
-#  --build-arg JAVET_VERSION=3.0.3 \
+#  --build-arg JAVET_VERSION=3.0.4 \
 #  -f docker/linux-arm64/build_artifact.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
 ARG JAVET_NODE_VERSION=18.12.1
 ARG JAVET_V8_VERSION=10.8.168.20
-ARG JAVET_VERSION=3.0.3
+ARG JAVET_VERSION=3.0.4
 
 FROM ${JAVET_REPO}:arm64-base-node_${JAVET_NODE_VERSION} as base-node
 
