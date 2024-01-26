@@ -35,6 +35,7 @@ import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The type Javet reflection proxy object handler.
@@ -143,6 +144,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_SET_KEYS = "keys";
     /**
+     * The constant POLYFILL_SHARED_ENTRIES.
+     *
+     * @since 3.0.4
+     */
+    protected static final String POLYFILL_SHARED_ENTRIES = "entries";
+    /**
      * The constant POLYFILL_SHARED_LENGTH.
      *
      * @since 1.0.6
@@ -213,6 +220,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         polyfillMapFunctionMap.put(POLYFILL_SHARED_TO_JSON, JavetReflectionProxyObjectHandler::polyfillMapToJSON);
         polyfillSetFunctionMap = new HashMap<>();
         polyfillSetFunctionMap.put(POLYFILL_SET_DELETE, JavetReflectionProxyObjectHandler::polyfillSetDelete);
+        polyfillSetFunctionMap.put(POLYFILL_SHARED_ENTRIES, JavetReflectionProxyObjectHandler::polyfillSetEntries);
         polyfillSetFunctionMap.put(POLYFILL_SET_HAS, JavetReflectionProxyObjectHandler::polyfillSetHas);
         polyfillSetFunctionMap.put(POLYFILL_SET_KEYS, JavetReflectionProxyObjectHandler::polyfillSharedValues);
         polyfillSetFunctionMap.put(POLYFILL_SHARED_VALUES, JavetReflectionProxyObjectHandler::polyfillSharedValues);
@@ -830,6 +838,24 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                     }
                     return handler.getV8Runtime().createV8ValueBoolean(result);
                 }));
+    }
+
+    /**
+     * Polyfill Set.prototype.entries().
+     * The entries() method of Set instances returns a new set iterator object that contains an array of
+     * [value, value] for each element in this set, in insertion order.
+     * For Set objects there is no key like in Map objects. However, to keep the API similar to the Map object,
+     * each entry has the same value for its key and value here, so that an array [value, value] is returned.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    protected static V8Value polyfillSetEntries(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        Set<Object> set = (Set<Object>) handler.getTargetObject();
+        List<List<Object>> entries = set.stream().map(o -> SimpleList.of(o, o)).collect(Collectors.toList());
+        return new JavetProxySymbolIterableConverter<>(handler.getV8Runtime(), entries).getV8ValueFunction();
     }
 
     /**
