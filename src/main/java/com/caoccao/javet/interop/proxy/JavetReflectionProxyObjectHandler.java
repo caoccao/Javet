@@ -201,6 +201,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     static {
         polyfillListFunctionMap = new HashMap<>();
         polyfillListFunctionMap.put(POLYFILL_LIST_AT, JavetReflectionProxyObjectHandler::polyfillListAt);
+        polyfillListFunctionMap.put(POLYFILL_SHARED_ENTRIES, JavetReflectionProxyObjectHandler::polyfillListEntries);
         polyfillListFunctionMap.put(POLYFILL_LIST_EVERY, JavetReflectionProxyObjectHandler::polyfillListEvery);
         polyfillListFunctionMap.put(POLYFILL_LIST_INCLUDES, JavetReflectionProxyObjectHandler::polyfillListIncludes);
         polyfillListFunctionMap.put(POLYFILL_LIST_KEYS, JavetReflectionProxyObjectHandler::polyfillListKeys);
@@ -416,6 +417,28 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                     }
                     return handler.getV8Runtime().createV8ValueUndefined();
                 }));
+    }
+
+    /**
+     * Polyfill Array.prototype.entries().
+     * The entries() method of Array instances returns a new array iterator object
+     * that contains the key/value pairs for each index in the array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    protected static V8Value polyfillListEntries(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        final int length = list.size();
+        List<List<Object>> entries = new ArrayList<>(length);
+        int index = 0;
+        for (Object object : list) {
+            entries.add(SimpleList.of(index, object));
+            ++index;
+        }
+        return new JavetProxySymbolIterableConverter<>(handler.getV8Runtime(), entries).getV8ValueFunction();
     }
 
     /**
