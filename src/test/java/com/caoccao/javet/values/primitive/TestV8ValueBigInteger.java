@@ -85,4 +85,10 @@ public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
             assertEquals(l, v8Runtime.getGlobalObject().getLong("a"));
         }
     }
+
+    @Test
+    public void testIsPositive() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).isPositive());
+        assertFalse(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).isPositive());
+    }
 }

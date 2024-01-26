@@ -72,6 +72,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_LIST_FILL = "fill";
     /**
+     * The constant POLYFILL_LIST_FILTER.
+     *
+     * @since 3.0.4
+     */
+    protected static final String POLYFILL_LIST_FILTER = "filter";
+    /**
      * The constant POLYFILL_LIST_INCLUDES.
      *
      * @since 3.0.3
@@ -211,6 +217,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         polyfillListFunctionMap.put(POLYFILL_SHARED_ENTRIES, JavetReflectionProxyObjectHandler::polyfillListEntries);
         polyfillListFunctionMap.put(POLYFILL_LIST_EVERY, JavetReflectionProxyObjectHandler::polyfillListEvery);
         polyfillListFunctionMap.put(POLYFILL_LIST_FILL, JavetReflectionProxyObjectHandler::polyfillListFill);
+        polyfillListFunctionMap.put(POLYFILL_LIST_FILTER, JavetReflectionProxyObjectHandler::polyfillListFilter);
         polyfillListFunctionMap.put(POLYFILL_LIST_INCLUDES, JavetReflectionProxyObjectHandler::polyfillListIncludes);
         polyfillListFunctionMap.put(POLYFILL_SHARED_KEYS, JavetReflectionProxyObjectHandler::polyfillListKeys);
         polyfillListFunctionMap.put(POLYFILL_SHARED_LENGTH, JavetReflectionProxyObjectHandler::polyfillListLength);
@@ -439,7 +446,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected static V8Value polyfillListConcat(IJavetProxyHandler<?, ?> handler) throws JavetException {
         final List<Object> list = (List<Object>) handler.getTargetObject();
         return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
-                POLYFILL_LIST_AT, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                POLYFILL_LIST_CONCAT, handler, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
                         V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
@@ -542,7 +549,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected static V8Value polyfillListFill(IJavetProxyHandler<?, ?> handler) throws JavetException {
         final List<Object> list = (List<Object>) handler.getTargetObject();
         return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
-                POLYFILL_LIST_EVERY, handler, JavetCallbackType.DirectCallThisAndResult,
+                POLYFILL_LIST_FILL, handler, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     if (ArrayUtils.isNotEmpty(v8Values)) {
                         final int length = v8Values.length;
@@ -574,6 +581,46 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         }
                     }
                     return thisObject;
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.filter().
+     * The filter() method of Array instances creates a shallow copy of a portion of a given array,
+     * filtered down to just the elements from the given array that pass the test implemented by the provided function.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListFilter(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        final List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_FILTER, handler, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] instanceof V8ValueFunction) {
+                            V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Values[0];
+                            IV8ValueObject thisArg = v8Values.length > 1 && v8Values[1] instanceof IV8ValueObject
+                                    ? (IV8ValueObject) v8Values[1] : null;
+                            List<Object> results = new ArrayList<>(list.size());
+                            int index = 0;
+                            for (Object object : list) {
+                                try (V8Value v8ValueResult = v8ValueFunction.call(thisArg, object, index, thisObject)) {
+                                    if (v8ValueResult.isPositive()) {
+                                        results.add(object);
+                                    }
+                                }
+                                ++index;
+                            }
+                            if (!results.isEmpty()) {
+                                v8ValueArray.push(results.toArray());
+                            }
+                        }
+                        v8Scope.setEscapable();
+                        return v8ValueArray;
+                    }
                 }));
     }
 

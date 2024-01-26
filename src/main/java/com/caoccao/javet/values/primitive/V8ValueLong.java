@@ -34,6 +34,11 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
     }
 
     @Override
+    public boolean isPositive() {
+        return value != 0L;
+    }
+
+    @Override
     public V8ValueLong toClone(boolean referenceCopy) throws JavetException {
         return this;
     }

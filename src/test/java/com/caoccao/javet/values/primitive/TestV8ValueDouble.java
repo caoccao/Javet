@@ -37,6 +37,14 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testIsPositive() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueDouble(1.0D).isPositive());
+        assertFalse(v8Runtime.createV8ValueDouble(0.0D).isPositive());
+        assertTrue(v8Runtime.getExecutor("1.0").execute().isPositive());
+        assertFalse(v8Runtime.getExecutor("0.0").execute().isPositive());
+    }
+
+    @Test
     public void testNaNAndInfiniteAndFinite() throws JavetException {
         V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("NaN").execute();
         assertNotNull(v8ValueDouble);

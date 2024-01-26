@@ -182,6 +182,11 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
     }
 
     @Override
+    public boolean isPositive() {
+        return !BigInteger.ZERO.equals(value);
+    }
+
+    @Override
     public V8ValueBigInteger toClone(boolean referenceCopy) throws JavetException {
         return this;
     }

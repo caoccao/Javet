@@ -58,6 +58,14 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testIsPositive() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueLong(1L).isPositive());
+        assertFalse(v8Runtime.createV8ValueLong(0L).isPositive());
+        assertTrue(v8Runtime.getExecutor("1n").execute().isPositive());
+        assertFalse(v8Runtime.getExecutor("0n").execute().isPositive());
+    }
+
+    @Test
     public void testString() throws JavetException {
         assertEquals("4611686018427387904", v8Runtime.getExecutor("(2n ** 62n).toString()").executeString());
         assertEquals("-2", v8Runtime.getExecutor("(-2n).toString()").executeString());

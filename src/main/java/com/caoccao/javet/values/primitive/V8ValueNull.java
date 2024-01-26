@@ -39,6 +39,11 @@ public final class V8ValueNull extends V8Value {
     }
 
     @Override
+    public boolean isPositive() {
+        return false;
+    }
+
+    @Override
     public boolean sameValue(V8Value v8Value) {
         return equals(v8Value);
     }

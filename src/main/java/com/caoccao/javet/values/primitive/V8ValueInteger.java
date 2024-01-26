@@ -30,6 +30,11 @@ public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
     }
 
     @Override
+    public boolean isPositive() {
+        return value != 0;
+    }
+
+    @Override
     public V8ValueInteger toClone(boolean referenceCopy) throws JavetException {
         return this;
     }

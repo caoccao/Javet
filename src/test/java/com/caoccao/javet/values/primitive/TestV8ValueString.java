@@ -25,11 +25,20 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueString extends BaseTestJavetRuntime {
     @Test
     public void testEquals() throws JavetException {
-        V8ValueString v8ValueString = v8Runtime.getExecutor("'abc'").execute();
-        assertTrue(v8ValueString.equals(v8Runtime.createV8ValueString("abc")));
-        assertFalse(v8ValueString.equals(null));
-        assertFalse(v8ValueString.equals(v8Runtime.createV8ValueString("def")));
-        assertFalse(v8ValueString.equals(v8Runtime.createV8ValueLong(1)));
+        try (V8ValueString v8ValueString = v8Runtime.getExecutor("'abc'").execute()) {
+            assertTrue(v8ValueString.equals(v8Runtime.createV8ValueString("abc")));
+            assertFalse(v8ValueString.equals(null));
+            assertFalse(v8ValueString.equals(v8Runtime.createV8ValueString("def")));
+            assertFalse(v8ValueString.equals(v8Runtime.createV8ValueLong(1)));
+        }
+    }
+
+    @Test
+    public void testIsPositive() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueString("0").isPositive());
+        assertFalse(v8Runtime.createV8ValueString("").isPositive());
+        assertTrue(v8Runtime.getExecutor("'0'").execute().isPositive());
+        assertFalse(v8Runtime.getExecutor("''").execute().isPositive());
     }
 
     @Test

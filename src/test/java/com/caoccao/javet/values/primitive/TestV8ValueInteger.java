@@ -50,4 +50,12 @@ public class TestV8ValueInteger extends BaseTestJavetRuntime {
     public void testInt32Object() throws JavetException {
         assertEquals(123, v8Runtime.getExecutor("Number(123)").executeInteger());
     }
+
+    @Test
+    public void testIsPositive() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueInteger(1).isPositive());
+        assertFalse(v8Runtime.createV8ValueInteger(0).isPositive());
+        assertTrue(v8Runtime.getExecutor("1").execute().isPositive());
+        assertFalse(v8Runtime.getExecutor("0").execute().isPositive());
+    }
 }

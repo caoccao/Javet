@@ -47,6 +47,11 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     }
 
     @Override
+    public boolean isPositive() {
+        return value != 0D;
+    }
+
+    @Override
     public V8ValueDouble toClone(boolean referenceCopy) throws JavetException {
         return this;
     }

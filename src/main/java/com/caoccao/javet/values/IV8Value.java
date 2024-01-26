@@ -25,6 +25,8 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
 /**
  * The interface V8 value.
+ *
+ * @since 0.7.0
  */
 public interface IV8Value extends IJavetClosable, IV8Cloneable {
     /**
@@ -35,6 +37,7 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      * @param v8Value the V8 value
      * @return the boolean
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     boolean equals(V8Value v8Value) throws JavetException;
 
@@ -42,13 +45,15 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      * Gets V8 runtime.
      *
      * @return the V8 runtime
+     * @since 0.9.1
      */
     V8Runtime getV8Runtime();
 
     /**
      * Is null.
      *
-     * @return the boolean
+     * @return true : null, false : not null
+     * @since 0.7.2
      */
     default boolean isNull() {
         return this instanceof V8ValueNull;
@@ -57,16 +62,28 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
     /**
      * Is null or undefined.
      *
-     * @return the boolean
+     * @return true : null or undefined, false : not null and not undefined
+     * @since 0.8.4
      */
     default boolean isNullOrUndefined() {
         return isNull() || isUndefined();
     }
 
     /**
+     * Is positive.
+     *
+     * @return true : positive, false : negative
+     * @since 3.0.4
+     */
+    default boolean isPositive() {
+        return true;
+    }
+
+    /**
      * Is undefined.
      *
-     * @return the boolean
+     * @return true : undefined, false : not undefined
+     * @since 0.7.2
      */
     default boolean isUndefined() {
         return this instanceof V8ValueUndefined;
@@ -78,19 +95,21 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      * The behavior is different from JS behavior but is the same as Java behavior.
      *
      * @param v8Value the V8 value
-     * @return the boolean
+     * @return true : same, false : different
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     boolean sameValue(V8Value v8Value) throws JavetException;
 
     /**
-     * Strict equals boolean.
+     * Strict equals.
      * <p>
      * The behavior is different from JS behavior but is the same as Java behavior.
      *
      * @param v8Value the V8 value
-     * @return the boolean
+     * @return true : strict equals, false : different
      * @throws JavetException the javet exception
+     * @since 0.7.2
      */
     boolean strictEquals(V8Value v8Value) throws JavetException;
 }
