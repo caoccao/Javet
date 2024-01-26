@@ -396,11 +396,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.1
      */
     public void addV8Module(IV8Module iV8Module) throws JavetException {
-        synchronized (v8ModuleLock) {
-            if (containsV8Module(iV8Module.getResourceName())) {
-                removeV8Module(iV8Module, true);
+        String resourceName = Objects.requireNonNull(iV8Module.getResourceName());
+        if (StringUtils.isNotEmpty(resourceName)) {
+            synchronized (v8ModuleLock) {
+                if (containsV8Module(resourceName)) {
+                    removeV8Module(resourceName, true);
+                }
+                v8ModuleMap.put(resourceName, iV8Module);
             }
-            v8ModuleMap.put(iV8Module.getResourceName(), iV8Module);
         }
     }
 
