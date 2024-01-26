@@ -607,6 +607,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals("x", v8Runtime.getExecutor("list.values().next().value").executeString());
             // keys()
             assertEquals("0,1,2", v8Runtime.getExecutor("[...list.keys()].toString()").executeString());
+            // concat()
+            assertEquals(
+                    "[\"x\",\"y\",\"z\",\"a\",\"b\",\"c\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.concat(['a', 'b'], 'c'))").executeString());
             // reverse()
             assertEquals("[z, y, x]", v8Runtime.getExecutor("list.reverse().toString()").executeString());
             assertEquals("[x, y, z]", v8Runtime.getExecutor("list.reverse().toString()").executeString());

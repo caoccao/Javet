@@ -54,6 +54,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_LIST_AT = "at";
     /**
+     * The constant POLYFILL_LIST_CONCAT.
+     *
+     * @since 3.0.4
+     */
+    protected static final String POLYFILL_LIST_CONCAT = "concat";
+    /**
      * The constant POLYFILL_LIST_EVERY.
      *
      * @since 3.0.3
@@ -65,12 +71,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.3
      */
     protected static final String POLYFILL_LIST_INCLUDES = "includes";
-    /**
-     * The constant POLYFILL_LIST_KEYS.
-     *
-     * @since 3.0.3
-     */
-    protected static final String POLYFILL_LIST_KEYS = "keys";
     /**
      * The constant POLYFILL_LIST_MAP.
      *
@@ -138,17 +138,17 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected static final String POLYFILL_SET_HAS = "has";
     /**
-     * The constant POLYFILL_SET_KEYS.
-     *
-     * @since 3.0.3
-     */
-    protected static final String POLYFILL_SET_KEYS = "keys";
-    /**
      * The constant POLYFILL_SHARED_ENTRIES.
      *
      * @since 3.0.4
      */
     protected static final String POLYFILL_SHARED_ENTRIES = "entries";
+    /**
+     * The constant POLYFILL_SHARED_KEYS.
+     *
+     * @since 3.0.3
+     */
+    protected static final String POLYFILL_SHARED_KEYS = "keys";
     /**
      * The constant POLYFILL_SHARED_LENGTH.
      *
@@ -201,10 +201,11 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     static {
         polyfillListFunctionMap = new HashMap<>();
         polyfillListFunctionMap.put(POLYFILL_LIST_AT, JavetReflectionProxyObjectHandler::polyfillListAt);
+        polyfillListFunctionMap.put(POLYFILL_LIST_CONCAT, JavetReflectionProxyObjectHandler::polyfillListConcat);
         polyfillListFunctionMap.put(POLYFILL_SHARED_ENTRIES, JavetReflectionProxyObjectHandler::polyfillListEntries);
         polyfillListFunctionMap.put(POLYFILL_LIST_EVERY, JavetReflectionProxyObjectHandler::polyfillListEvery);
         polyfillListFunctionMap.put(POLYFILL_LIST_INCLUDES, JavetReflectionProxyObjectHandler::polyfillListIncludes);
-        polyfillListFunctionMap.put(POLYFILL_LIST_KEYS, JavetReflectionProxyObjectHandler::polyfillListKeys);
+        polyfillListFunctionMap.put(POLYFILL_SHARED_KEYS, JavetReflectionProxyObjectHandler::polyfillListKeys);
         polyfillListFunctionMap.put(POLYFILL_SHARED_LENGTH, JavetReflectionProxyObjectHandler::polyfillListLength);
         polyfillListFunctionMap.put(POLYFILL_LIST_MAP, JavetReflectionProxyObjectHandler::polyfillListMap);
         polyfillListFunctionMap.put(POLYFILL_LIST_POP, JavetReflectionProxyObjectHandler::polyfillListPop);
@@ -223,7 +224,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         polyfillSetFunctionMap.put(POLYFILL_SET_DELETE, JavetReflectionProxyObjectHandler::polyfillSetDelete);
         polyfillSetFunctionMap.put(POLYFILL_SHARED_ENTRIES, JavetReflectionProxyObjectHandler::polyfillSetEntries);
         polyfillSetFunctionMap.put(POLYFILL_SET_HAS, JavetReflectionProxyObjectHandler::polyfillSetHas);
-        polyfillSetFunctionMap.put(POLYFILL_SET_KEYS, JavetReflectionProxyObjectHandler::polyfillSharedValues);
+        polyfillSetFunctionMap.put(POLYFILL_SHARED_KEYS, JavetReflectionProxyObjectHandler::polyfillSharedValues);
         polyfillSetFunctionMap.put(POLYFILL_SHARED_VALUES, JavetReflectionProxyObjectHandler::polyfillSharedValues);
         polyfillClassFunctionMap = new HashMap<>();
         {
@@ -420,6 +421,54 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     /**
+     * Polyfill Array.prototype.concat().
+     * The concat() method of Array instances is used to merge two or more arrays.
+     * This method does not change the existing arrays, but instead returns a new array.
+     *
+     * @param handler the handler
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected static V8Value polyfillListConcat(IJavetProxyHandler<?, ?> handler) throws JavetException {
+        List<Object> list = (List<Object>) handler.getTargetObject();
+        return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
+                POLYFILL_LIST_AT, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8Scope v8Scope = handler.getV8Runtime().getV8Scope()) {
+                        V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+                        v8ValueArray.push(list.toArray());
+                        if (ArrayUtils.isNotEmpty(v8Values)) {
+                            final int length = v8Values.length;
+                            List<Object> objects = new ArrayList<>(length);
+                            for (int i = 0; i < length; ++i) {
+                                V8Value v8Value = v8Values[i];
+                                if (v8Value instanceof IV8ValueArray) {
+                                    IV8ValueArray iV8ValueArray = (IV8ValueArray) v8Value;
+                                    V8Value[] items = new V8Value[iV8ValueArray.getLength()];
+                                    if (ArrayUtils.isNotEmpty(items)) {
+                                        iV8ValueArray.batchGet(items, 0, items.length);
+                                        Collections.addAll(objects, items);
+                                    }
+                                } else {
+                                    Object object = handler.getV8Runtime().toObject(v8Value);
+                                    if (object instanceof Collection) {
+                                        Collections.addAll(objects, (Collection<Object>) object);
+                                    } else {
+                                        objects.add(v8Value);
+                                    }
+                                }
+                            }
+                            if (!objects.isEmpty()) {
+                                v8ValueArray.push(objects.toArray());
+                            }
+                        }
+                        v8Scope.setEscapable();
+                        return v8ValueArray;
+                    }
+                }));
+    }
+
+    /**
      * Polyfill Array.prototype.entries().
      * The entries() method of Array instances returns a new array iterator object
      * that contains the key/value pairs for each index in the array.
@@ -515,7 +564,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected static V8Value polyfillListKeys(IJavetProxyHandler<?, ?> handler) throws JavetException {
         List<Object> list = (List<Object>) handler.getTargetObject();
         return handler.getV8Runtime().createV8ValueFunction(new JavetCallbackContext(
-                POLYFILL_LIST_KEYS, handler, JavetCallbackType.DirectCallNoThisAndResult,
+                POLYFILL_SHARED_KEYS, handler, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     final int size = list.size();
                     Object[] indexes = new Object[size];
