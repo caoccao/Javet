@@ -6,6 +6,7 @@ Release Notes 3.0.x
 --------------
 
 * Added ``proxyDeleteProperty()`` to ``IJavetDirectProxyHandler``
+* Fixed a memory leak in adding a V8 module with the same name
 
 3.0.3 V8 v12.1
 --------------
