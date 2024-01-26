@@ -182,7 +182,7 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
     }
 
     @Override
-    public boolean isPositive() {
+    public boolean ifTrue() {
         return !BigInteger.ZERO.equals(value);
     }
 

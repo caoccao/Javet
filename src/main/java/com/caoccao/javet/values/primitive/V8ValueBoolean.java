@@ -30,7 +30,7 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
     }
 
     @Override
-    public boolean isPositive() {
+    public boolean ifTrue() {
         return value;
     }
 

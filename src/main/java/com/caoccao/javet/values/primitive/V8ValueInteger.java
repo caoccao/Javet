@@ -30,7 +30,7 @@ public final class V8ValueInteger extends V8ValuePrimitive<Integer> {
     }
 
     @Override
-    public boolean isPositive() {
+    public boolean ifTrue() {
         return value != 0;
     }
 

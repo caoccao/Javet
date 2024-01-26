@@ -33,7 +33,7 @@ public final class V8ValueString extends V8ValuePrimitive<String> {
     }
 
     @Override
-    public boolean isPositive() {
+    public boolean ifTrue() {
         return StringUtils.isNotEmpty(value);
     }
 

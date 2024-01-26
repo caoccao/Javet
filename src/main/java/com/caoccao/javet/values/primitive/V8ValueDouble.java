@@ -34,6 +34,11 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
         cachedToString = null;
     }
 
+    @Override
+    public boolean ifTrue() {
+        return value != 0D;
+    }
+
     public boolean isFinite() {
         return Double.isFinite(value);
     }
@@ -44,11 +49,6 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
 
     public boolean isNaN() {
         return Double.isNaN(value);
-    }
-
-    @Override
-    public boolean isPositive() {
-        return value != 0D;
     }
 
     @Override

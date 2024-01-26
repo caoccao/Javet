@@ -34,7 +34,7 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
     }
 
     @Override
-    public boolean isPositive() {
+    public boolean ifTrue() {
         return value != 0L;
     }
 

@@ -39,7 +39,7 @@ public final class V8ValueUndefined extends V8Value {
     }
 
     @Override
-    public boolean isPositive() {
+    public boolean ifTrue() {
         return false;
     }
 

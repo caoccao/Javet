@@ -34,7 +34,7 @@ public class TestV8ValueNull extends BaseTestJavetRuntime {
 
     @Test
     public void testIsPositive() throws JavetException {
-        assertFalse(v8Runtime.createV8ValueNull().isPositive());
+        assertFalse(v8Runtime.createV8ValueNull().ifTrue());
     }
 
     @Test

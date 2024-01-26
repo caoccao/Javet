@@ -608,7 +608,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                             int index = 0;
                             for (Object object : list) {
                                 try (V8Value v8ValueResult = v8ValueFunction.call(thisArg, object, index, thisObject)) {
-                                    if (v8ValueResult.isPositive()) {
+                                    if (v8ValueResult.ifTrue()) {
                                         results.add(object);
                                     }
                                 }

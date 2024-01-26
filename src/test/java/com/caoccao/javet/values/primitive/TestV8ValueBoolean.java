@@ -60,9 +60,9 @@ public class TestV8ValueBoolean extends BaseTestJavetRuntime {
 
     @Test
     public void testIsPositive() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueBoolean(true).isPositive());
-        assertFalse(v8Runtime.createV8ValueBoolean(false).isPositive());
-        assertTrue(v8Runtime.getExecutor("true").execute().isPositive());
-        assertFalse(v8Runtime.getExecutor("false").execute().isPositive());
+        assertTrue(v8Runtime.createV8ValueBoolean(true).ifTrue());
+        assertFalse(v8Runtime.createV8ValueBoolean(false).ifTrue());
+        assertTrue(v8Runtime.getExecutor("true").execute().ifTrue());
+        assertFalse(v8Runtime.getExecutor("false").execute().ifTrue());
     }
 }

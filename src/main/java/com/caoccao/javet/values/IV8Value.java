@@ -50,6 +50,16 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
     V8Runtime getV8Runtime();
 
     /**
+     * A simulation of the JS <code>if (variable)</code>
+     *
+     * @return true : yes, false : no
+     * @since 3.0.4
+     */
+    default boolean ifTrue() {
+        return true;
+    }
+
+    /**
      * Is null.
      *
      * @return true : null, false : not null
@@ -67,16 +77,6 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      */
     default boolean isNullOrUndefined() {
         return isNull() || isUndefined();
-    }
-
-    /**
-     * Is positive.
-     *
-     * @return true : positive, false : negative
-     * @since 3.0.4
-     */
-    default boolean isPositive() {
-        return true;
     }
 
     /**
