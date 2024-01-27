@@ -26,7 +26,6 @@ import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.reference.IV8ValueArray;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -121,15 +120,13 @@ public final class JavetProxyPolyfillList {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 AT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] instanceof V8ValueInteger) {
-                        final int size = list.size();
-                        int index = ((V8ValueInteger) v8Values[0]).getValue();
-                        if (index < 0) {
-                            index += size;
-                        }
-                        if (index >= 0 && index < size) {
-                            return v8Runtime.toV8Value(list.get(index));
-                        }
+                    final int size = list.size();
+                    int index = V8ValueUtils.asInt(v8Values, 0);
+                    if (index < 0) {
+                        index += size;
+                    }
+                    if (index >= 0 && index < size) {
+                        return v8Runtime.toV8Value(list.get(index));
                     }
                     return v8Runtime.createV8ValueUndefined();
                 }));
@@ -205,47 +202,37 @@ public final class JavetProxyPolyfillList {
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     Object[] objects = list.toArray();
                     if (!list.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
-                        final int size = list.size();
-                        final int length = v8Values.length;
-                        int targetIndex = 0;
-                        if (v8Values[0] instanceof V8ValueInteger) {
-                            targetIndex = ((V8ValueInteger) v8Values[0]).getValue();
+                        final int length = list.size();
+                        int targetIndex = V8ValueUtils.asInt(v8Values, 0);
+                        if (targetIndex < 0) {
+                            targetIndex += length;
                             if (targetIndex < 0) {
-                                targetIndex += size;
-                                if (targetIndex < 0) {
-                                    targetIndex = 0;
-                                }
+                                targetIndex = 0;
                             }
                         }
-                        int startIndex = 0;
-                        if (length > 1 && v8Values[1] instanceof V8ValueInteger) {
-                            startIndex = ((V8ValueInteger) v8Values[1]).getValue();
+                        int startIndex = V8ValueUtils.asInt(v8Values, 1);
+                        if (startIndex < 0) {
+                            startIndex += length;
                             if (startIndex < 0) {
-                                startIndex += size;
-                                if (startIndex < 0) {
-                                    startIndex = 0;
-                                }
+                                startIndex = 0;
                             }
                         }
-                        int endIndex = 0;
-                        if (length > 2 && v8Values[2] instanceof V8ValueInteger) {
-                            endIndex = ((V8ValueInteger) v8Values[2]).getValue();
+                        int endIndex = V8ValueUtils.asInt(v8Values, 2);
+                        if (endIndex < 0) {
+                            endIndex += length;
                             if (endIndex < 0) {
-                                endIndex += size;
-                                if (endIndex < 0) {
-                                    endIndex = 0;
-                                }
+                                endIndex = 0;
                             }
-                            if (endIndex > size) {
-                                endIndex = size;
-                            }
+                        }
+                        if (endIndex > length) {
+                            endIndex = length;
                         }
                         if (endIndex == 0) {
-                            endIndex = size;
+                            endIndex = length;
                         }
-                        if (targetIndex < size && startIndex < size && endIndex > startIndex) {
-                            if (targetIndex + endIndex - startIndex > size) {
-                                endIndex = size + startIndex - targetIndex;
+                        if (targetIndex < length && startIndex < length && endIndex > startIndex) {
+                            if (targetIndex + endIndex - startIndex > length) {
+                                endIndex = length + startIndex - targetIndex;
                             }
                             for (int i = startIndex; i < endIndex; ++i) {
                                 list.set(targetIndex + i - startIndex, objects[i]);
@@ -336,33 +323,26 @@ public final class JavetProxyPolyfillList {
                 FILL, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     if (!list.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
-                        final int size = list.size();
-                        final int length = v8Values.length;
+                        final int length = list.size();
                         V8Value v8Value = v8Values[0];
-                        int startIndex = 0;
-                        if (length > 1 && v8Values[1] instanceof V8ValueInteger) {
-                            startIndex = ((V8ValueInteger) v8Values[1]).getValue();
+                        int startIndex = V8ValueUtils.asInt(v8Values, 1);
+                        if (startIndex < 0) {
+                            startIndex += length;
                             if (startIndex < 0) {
-                                startIndex += size;
-                                if (startIndex < 0) {
-                                    startIndex = 0;
-                                }
+                                startIndex = 0;
                             }
                         }
-                        int endIndex = 0;
-                        if (length > 2 && v8Values[2] instanceof V8ValueInteger) {
-                            endIndex = ((V8ValueInteger) v8Values[2]).getValue();
+                        int endIndex = V8ValueUtils.asInt(v8Values, 2);
+                        if (endIndex < 0) {
+                            endIndex += length;
                             if (endIndex < 0) {
-                                endIndex += size;
-                                if (endIndex < 0) {
-                                    endIndex = 0;
-                                }
+                                endIndex = 0;
                             }
                         }
                         if (endIndex == 0) {
-                            endIndex = size;
+                            endIndex = length;
                         }
-                        if (startIndex < size && endIndex > startIndex) {
+                        if (startIndex < length && endIndex > startIndex) {
                             for (int i = startIndex; i < endIndex; ++i) {
                                 list.set(i, v8Runtime.toObject(v8Value));
                             }
@@ -439,10 +419,7 @@ public final class JavetProxyPolyfillList {
                     boolean included = false;
                     if (ArrayUtils.isNotEmpty(v8Values)) {
                         Object object = v8Runtime.toObject(v8Values[0]);
-                        int fromIndex = 0;
-                        if (v8Values.length > 1 && v8Values[1] instanceof V8ValueInteger) {
-                            fromIndex = ((V8ValueInteger) v8Values[1]).getValue();
-                        }
+                        int fromIndex = V8ValueUtils.asInt(v8Values, 1);
                         included = ListUtils.includes((List<Object>) list, object, fromIndex);
                     }
                     return v8Runtime.createV8ValueBoolean(included);
@@ -762,11 +739,11 @@ public final class JavetProxyPolyfillList {
                 WITH, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     Object[] objects = list.toArray();
-                    if (v8Values != null && v8Values.length > 1 && v8Values[0] instanceof V8ValueInteger) {
-                        int toBeReplacedIndex = ((V8ValueInteger) v8Values[0]).getValue();
-                        if (toBeReplacedIndex >= 0 && toBeReplacedIndex < objects.length) {
-                            objects[toBeReplacedIndex] = v8Runtime.toObject(v8Values[1]);
-                        }
+                    int toBeReplacedIndex = V8ValueUtils.asInt(v8Values, 0);
+                    if (toBeReplacedIndex >= 0 && toBeReplacedIndex < objects.length) {
+                        objects[toBeReplacedIndex] = v8Values.length > 1
+                                ? v8Runtime.toObject(v8Values[1])
+                                : v8Runtime.createV8ValueUndefined();
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, objects);
                 }));

@@ -36,6 +36,38 @@ public final class V8ValueUtils {
     }
 
     /**
+     * Call asInt() by V8 value array and index.
+     *
+     * @param v8Values     the V8 values
+     * @param index        the index
+     * @param defaultValue the default value
+     * @return the int value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static int asInt(V8Value[] v8Values, int index, int defaultValue) throws JavetException {
+        if (v8Values != null) {
+            if (index >= 0 && index < v8Values.length) {
+                return v8Values[index].asInt();
+            }
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Call asInt() by V8 value array and index.
+     *
+     * @param v8Values the V8 values
+     * @param index    the index
+     * @return the int value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static int asInt(V8Value[] v8Values, int index) throws JavetException {
+        return asInt(v8Values, index, 0);
+    }
+
+    /**
      * Concat string.
      *
      * @param delimiter the delimiter
