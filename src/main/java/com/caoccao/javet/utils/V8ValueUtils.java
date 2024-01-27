@@ -18,7 +18,10 @@ package com.caoccao.javet.utils;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.StringJoiner;
 
@@ -68,6 +71,46 @@ public final class V8ValueUtils {
             javetVirtualObjects[i] = new JavetVirtualObject(v8Values[i]);
         }
         return javetVirtualObjects;
+    }
+
+    /**
+     * Create V8 value array from object array.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param objects   the objects
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8ValueArray createV8ValueArray(V8Runtime v8Runtime, Object... objects) throws JavetException {
+        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+            V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
+            if (ArrayUtils.isNotEmpty(objects)) {
+                v8ValueArray.push(objects);
+            }
+            v8Scope.setEscapable();
+            return v8ValueArray;
+        }
+    }
+
+    /**
+     * Create V8 value object from object array.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param objects   the objects
+     * @return the V8 value object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8ValueObject createV8ValueObject(V8Runtime v8Runtime, Object... objects) throws JavetException {
+        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+            V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();
+            if (ArrayUtils.isNotEmpty(objects)) {
+                v8ValueObject.set(objects);
+            }
+            v8Scope.setEscapable();
+            return v8ValueObject;
+        }
     }
 
     /**

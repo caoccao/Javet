@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. caoccao.com Sam Cao
+ * Copyright (c) 2024-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.proxy;
+package com.caoccao.javet.interop.proxy.polyfill;
 
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 /**
@@ -30,11 +31,12 @@ public interface IJavetProxyPolyfillFunction<T, E extends Exception> {
     /**
      * Apply to the handle and return a V8 value.
      *
-     * @param handler the handler
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
      * @return the V8 value
      * @throws JavetException the javet exception
      * @throws E              the custom exception
      * @since 3.0.3
      */
-    V8Value apply(IJavetProxyHandler<T, E> handler) throws JavetException, E;
+    V8Value apply(V8Runtime v8Runtime, T targetObject) throws JavetException, E;
 }
