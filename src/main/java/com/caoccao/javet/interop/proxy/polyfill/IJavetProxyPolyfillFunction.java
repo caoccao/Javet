@@ -29,7 +29,7 @@ import com.caoccao.javet.values.V8Value;
  */
 public interface IJavetProxyPolyfillFunction<T, E extends Exception> {
     /**
-     * Apply to the handle and return a V8 value.
+     * Invoke the function by the V8 runtime and the target object, then return a V8 value.
      *
      * @param v8Runtime    the V8 runtime
      * @param targetObject the target object
@@ -38,5 +38,5 @@ public interface IJavetProxyPolyfillFunction<T, E extends Exception> {
      * @throws E              the custom exception
      * @since 3.0.3
      */
-    V8Value apply(V8Runtime v8Runtime, T targetObject) throws JavetException, E;
+    V8Value invoke(V8Runtime v8Runtime, T targetObject) throws JavetException, E;
 }

@@ -43,6 +43,7 @@ import java.util.*;
 public final class JavetProxyPolyfillList {
     private static final String AT = "at";
     private static final String CONCAT = "concat";
+    private static final String COPY_WITHIN = "copyWithin";
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST =
             "Target object must be an instance of List.";
@@ -69,6 +70,7 @@ public final class JavetProxyPolyfillList {
         functionMap = new HashMap<>();
         functionMap.put(AT, JavetProxyPolyfillList::at);
         functionMap.put(CONCAT, JavetProxyPolyfillList::concat);
+        functionMap.put(COPY_WITHIN, JavetProxyPolyfillList::copyWithin);
         functionMap.put(ENTRIES, JavetProxyPolyfillList::entries);
         functionMap.put(EVERY, JavetProxyPolyfillList::every);
         functionMap.put(FILL, JavetProxyPolyfillList::fill);
@@ -185,6 +187,76 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
+     * Polyfill Array.prototype.copyWithin().
+     * The copyWithin() method of Array instances shallow copies part of this array to another location
+     * in the same array and returns this array without modifying its length.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value copyWithin(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                COPY_WITHIN, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    Object[] objects = list.toArray();
+                    if (!list.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
+                        final int size = list.size();
+                        final int length = v8Values.length;
+                        int targetIndex = 0;
+                        if (v8Values[0] instanceof V8ValueInteger) {
+                            targetIndex = ((V8ValueInteger) v8Values[0]).getValue();
+                            if (targetIndex < 0) {
+                                targetIndex += size;
+                                if (targetIndex < 0) {
+                                    targetIndex = 0;
+                                }
+                            }
+                        }
+                        int startIndex = 0;
+                        if (length > 1 && v8Values[1] instanceof V8ValueInteger) {
+                            startIndex = ((V8ValueInteger) v8Values[1]).getValue();
+                            if (startIndex < 0) {
+                                startIndex += size;
+                                if (startIndex < 0) {
+                                    startIndex = 0;
+                                }
+                            }
+                        }
+                        int endIndex = 0;
+                        if (length > 2 && v8Values[2] instanceof V8ValueInteger) {
+                            endIndex = ((V8ValueInteger) v8Values[2]).getValue();
+                            if (endIndex < 0) {
+                                endIndex += size;
+                                if (endIndex < 0) {
+                                    endIndex = 0;
+                                }
+                            }
+                            if (endIndex > size) {
+                                endIndex = size;
+                            }
+                        }
+                        if (endIndex == 0) {
+                            endIndex = size;
+                        }
+                        if (targetIndex < size && startIndex < size && endIndex > startIndex) {
+                            if (targetIndex + endIndex - startIndex > size) {
+                                endIndex = size + startIndex - targetIndex;
+                            }
+                            for (int i = startIndex; i < endIndex; ++i) {
+                                list.set(targetIndex + i - startIndex, objects[i]);
+                            }
+                        }
+                    }
+                    return thisObject;
+                }));
+    }
+
+    /**
      * Polyfill Array.prototype.entries().
      * The entries() method of Array instances returns a new array iterator object
      * that contains the key/value pairs for each index in the array.
@@ -263,14 +335,15 @@ public final class JavetProxyPolyfillList {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FILL, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    if (ArrayUtils.isNotEmpty(v8Values)) {
+                    if (!list.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
+                        final int size = list.size();
                         final int length = v8Values.length;
                         V8Value v8Value = v8Values[0];
                         int startIndex = 0;
                         if (length > 1 && v8Values[1] instanceof V8ValueInteger) {
                             startIndex = ((V8ValueInteger) v8Values[1]).getValue();
                             if (startIndex < 0) {
-                                startIndex += length;
+                                startIndex += size;
                                 if (startIndex < 0) {
                                     startIndex = 0;
                                 }
@@ -280,13 +353,16 @@ public final class JavetProxyPolyfillList {
                         if (length > 2 && v8Values[2] instanceof V8ValueInteger) {
                             endIndex = ((V8ValueInteger) v8Values[2]).getValue();
                             if (endIndex < 0) {
-                                endIndex += length;
+                                endIndex += size;
                                 if (endIndex < 0) {
                                     endIndex = 0;
                                 }
                             }
                         }
-                        if (startIndex < length && endIndex > startIndex) {
+                        if (endIndex == 0) {
+                            endIndex = size;
+                        }
+                        if (startIndex < size && endIndex > startIndex) {
                             for (int i = startIndex; i < endIndex; ++i) {
                                 list.set(i, v8Runtime.toObject(v8Value));
                             }

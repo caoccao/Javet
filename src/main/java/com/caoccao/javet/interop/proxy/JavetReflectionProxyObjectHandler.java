@@ -222,7 +222,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                         JavetProxyPolyfillPrimitive.getFunction(classDescriptor.getTargetClass(), propertyName);
             }
             if (iJavetProxyPolyfillFunction != null) {
-                return iJavetProxyPolyfillFunction.apply(getV8Runtime(), getTargetObject());
+                return iJavetProxyPolyfillFunction.invoke(getV8Runtime(), getTargetObject());
             }
         }
         return null;

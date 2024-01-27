@@ -611,13 +611,32 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"y\",\"z\",\"a\",\"b\",\"c\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.concat(['a', 'b'], 'c'))").executeString());
-            // fill()
-            assertEquals(
-                    "[\"x\",\"a\",\"z\"]",
-                    v8Runtime.getExecutor("JSON.stringify(list.fill('a', 1, 2))").executeString());
+            // copyWithin()
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
-                    v8Runtime.getExecutor("JSON.stringify(list.fill('y', 1, 2))").executeString());
+                    v8Runtime.getExecutor("JSON.stringify(list.copyWithin())").executeString());
+            assertEquals(
+                    "[\"x\",\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.copyWithin(1))").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.copyWithin(1, 2))").executeString());
+            assertEquals(
+                    "[\"x\",\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.copyWithin(1, 0, 2))").executeString());
+            // fill()
+            assertEquals(
+                    "[\"1\",\"1\",\"1\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.fill('1'))").executeString());
+            assertEquals(
+                    "[\"1\",\"a\",\"1\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.fill('a', 1, 2))").executeString());
+            assertEquals(
+                    "[\"1\",\"b\",\"b\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.fill('b', 1))").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.fill('x').fill('y', 1, 2).fill('z', 2))").executeString());
             // filter()
             assertEquals(
                     "[\"x\",\"z\"]",
