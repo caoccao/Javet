@@ -30,6 +30,17 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
  */
 public interface IV8Value extends IJavetClosable, IV8Cloneable {
     /**
+     * As int.
+     *
+     * @return the int value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    default int asInt() throws JavetException {
+        return 0;
+    }
+
+    /**
      * Equals.
      * <p>
      * The behavior is different from JS behavior but is the same as Java behavior.

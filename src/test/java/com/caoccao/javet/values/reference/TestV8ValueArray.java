@@ -35,6 +35,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueArray extends BaseTestJavetRuntime {
+    @Test
+    public void testAsInt() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[]").execute()) {
+            assertEquals(0, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[0,]").execute()) {
+            assertEquals(0, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[1,]").execute()) {
+            assertEquals(1, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[[1,],]").execute()) {
+            assertEquals(1, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("['a']").execute()) {
+            assertEquals(0, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[' 1 ',]").execute()) {
+            assertEquals(1, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[' 1 ', '2']").execute()) {
+            assertEquals(0, v8ValueArray.asInt());
+        }
+    }
 
     @Test
     public void testForEach() throws JavetException {
@@ -98,7 +122,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(2, v8ValueArray.batchGet(v8Values, 1, 3));
             assertEquals("2", ((V8ValueString) v8Values[0]).getValue());
             assertEquals(3L, ((V8ValueLong) v8Values[1]).getValue());
-            JavetResourceUtils.safeClose( v8Values);
+            JavetResourceUtils.safeClose(v8Values);
         }
     }
 

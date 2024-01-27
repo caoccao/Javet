@@ -33,7 +33,7 @@ public class TestV8ValueUndefined extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testIsPositive() throws JavetException {
+    public void testIfTrue() throws JavetException {
         assertFalse(v8Runtime.createV8ValueUndefined().ifTrue());
     }
 

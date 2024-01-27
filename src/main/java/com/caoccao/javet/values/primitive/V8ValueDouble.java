@@ -35,6 +35,11 @@ public class V8ValueDouble extends V8ValuePrimitive<Double> {
     }
 
     @Override
+    public int asInt() {
+        return value.intValue();
+    }
+
+    @Override
     public boolean ifTrue() {
         return value != 0D;
     }

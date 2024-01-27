@@ -158,6 +158,11 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
         return longArray;
     }
 
+    @Override
+    public int asInt() {
+        return value.intValue();
+    }
+
     /**
      * Get long array.
      *

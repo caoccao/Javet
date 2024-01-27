@@ -30,6 +30,11 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
     }
 
     @Override
+    public int asInt() {
+        return value ? 1 : 0;
+    }
+
+    @Override
     public boolean ifTrue() {
         return value;
     }

@@ -34,6 +34,11 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
     }
 
     @Override
+    public int asInt() {
+        return value.intValue();
+    }
+
+    @Override
     public boolean ifTrue() {
         return value != 0L;
     }

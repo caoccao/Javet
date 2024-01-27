@@ -24,6 +24,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueString extends BaseTestJavetRuntime {
     @Test
+    public void testAsInt() throws JavetException {
+        assertEquals(0, v8Runtime.createV8ValueString("").asInt());
+        assertEquals(0, v8Runtime.createV8ValueString("2a").asInt());
+        assertEquals(0, v8Runtime.createV8ValueString("a").asInt());
+        assertEquals(1, v8Runtime.createV8ValueString("1").asInt());
+        assertEquals(2, v8Runtime.createV8ValueString(" 2 ").asInt());
+    }
+
+    @Test
     public void testEquals() throws JavetException {
         try (V8ValueString v8ValueString = v8Runtime.getExecutor("'abc'").execute()) {
             assertTrue(v8ValueString.equals(v8Runtime.createV8ValueString("abc")));
@@ -34,7 +43,7 @@ public class TestV8ValueString extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testIsPositive() throws JavetException {
+    public void testIfTrue() throws JavetException {
         assertTrue(v8Runtime.createV8ValueString("0").ifTrue());
         assertFalse(v8Runtime.createV8ValueString("").ifTrue());
         assertTrue(v8Runtime.getExecutor("'0'").execute().ifTrue());

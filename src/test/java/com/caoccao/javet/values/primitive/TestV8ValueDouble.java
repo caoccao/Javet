@@ -28,6 +28,12 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
     public static final double DELTA = 0.001;
 
     @Test
+    public void testAsInt() throws JavetException {
+        assertEquals(0, v8Runtime.createV8ValueDouble(0.0D).asInt());
+        assertEquals(1, v8Runtime.createV8ValueDouble(1.0D).asInt());
+    }
+
+    @Test
     public void testEquals() throws JavetException {
         V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("1.23").execute();
         assertTrue(v8ValueDouble.equals(v8Runtime.createV8ValueDouble(1.23D)));
@@ -37,7 +43,7 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testIsPositive() throws JavetException {
+    public void testIfTrue() throws JavetException {
         assertTrue(v8Runtime.createV8ValueDouble(1.0D).ifTrue());
         assertFalse(v8Runtime.createV8ValueDouble(0.0D).ifTrue());
         assertTrue(v8Runtime.getExecutor("1.0").execute().ifTrue());

@@ -33,6 +33,18 @@ public final class V8ValueString extends V8ValuePrimitive<String> {
     }
 
     @Override
+    public int asInt() {
+        String trimmedString = value.trim();
+        if (StringUtils.isDigital(trimmedString)) {
+            try {
+                return Integer.parseInt(trimmedString);
+            } catch (Throwable ignored) {
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public boolean ifTrue() {
         return StringUtils.isNotEmpty(value);
     }

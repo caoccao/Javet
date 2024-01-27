@@ -24,12 +24,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueInteger extends BaseTestJavetRuntime {
     @Test
+    public void testAsInt() throws JavetException {
+        assertEquals(0, v8Runtime.createV8ValueInteger(0).asInt());
+        assertEquals(1, v8Runtime.createV8ValueInteger(1).asInt());
+    }
+
+    @Test
     public void testEquals() throws JavetException {
         V8ValueInteger v8ValueInteger = v8Runtime.getExecutor("1").execute();
         assertTrue(v8ValueInteger.equals(v8Runtime.createV8ValueInteger(1)));
         assertFalse(v8ValueInteger.equals(null));
         assertFalse(v8ValueInteger.equals(v8Runtime.createV8ValueInteger(2)));
         assertFalse(v8ValueInteger.equals(v8Runtime.createV8ValueLong(1)));
+    }
+
+    @Test
+    public void testIfTrue() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueInteger(1).ifTrue());
+        assertFalse(v8Runtime.createV8ValueInteger(0).ifTrue());
+        assertTrue(v8Runtime.getExecutor("1").execute().ifTrue());
+        assertFalse(v8Runtime.getExecutor("0").execute().ifTrue());
     }
 
     @Test
@@ -49,13 +63,5 @@ public class TestV8ValueInteger extends BaseTestJavetRuntime {
     @Test
     public void testInt32Object() throws JavetException {
         assertEquals(123, v8Runtime.getExecutor("Number(123)").executeInteger());
-    }
-
-    @Test
-    public void testIsPositive() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueInteger(1).ifTrue());
-        assertFalse(v8Runtime.createV8ValueInteger(0).ifTrue());
-        assertTrue(v8Runtime.getExecutor("1").execute().ifTrue());
-        assertFalse(v8Runtime.getExecutor("0").execute().ifTrue());
     }
 }

@@ -49,6 +49,16 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     }
 
     @Override
+    public int asInt() throws JavetException {
+        if (getLength() == 1) {
+            try (V8Value v8Value = get(0)) {
+                return v8Value.asInt();
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public int batchGet(V8Value[] v8Values, int startIndex, int endIndex) throws JavetException {
         return checkV8Runtime().getV8Internal().batchArrayGet(this, v8Values, startIndex, endIndex);
     }

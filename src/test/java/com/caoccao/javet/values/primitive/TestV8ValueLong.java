@@ -25,6 +25,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueLong extends BaseTestJavetRuntime {
     @Test
+    public void testAsInt() throws JavetException {
+        assertEquals(0, v8Runtime.createV8ValueLong(0L).asInt());
+        assertEquals(1, v8Runtime.createV8ValueLong(1L).asInt());
+    }
+
+    @Test
     public void testBigInt() throws JavetException {
         try (V8ValueLong v8ValueLong = v8Runtime.getExecutor("2n ** 62n").execute()) {
             assertNotNull(v8ValueLong);
@@ -58,7 +64,7 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testIsPositive() throws JavetException {
+    public void testIfTrue() throws JavetException {
         assertTrue(v8Runtime.createV8ValueLong(1L).ifTrue());
         assertFalse(v8Runtime.createV8ValueLong(0L).ifTrue());
         assertTrue(v8Runtime.getExecutor("1n").execute().ifTrue());
