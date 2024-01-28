@@ -65,12 +65,36 @@ public final class ListUtils {
      * @since 3.0.3
      */
     public static <T> int indexOf(List<T> list, T element, int fromIndex) {
-        int index = 0;
-        for (T item : list) {
-            if (Objects.equals(item, element) && index >= fromIndex) {
-                return index;
+        final int length = list.size();
+        if (fromIndex >= 0 && fromIndex < length) {
+            for (int i = fromIndex; i < length; ++i) {
+                if (Objects.equals(list.get(i), element)) {
+                    return i;
+                }
             }
-            ++index;
+        }
+        return -1;
+    }
+
+    /**
+     * The lastIndexOf() method of Array instances returns the last index at which a given element can be found
+     * in the array, or -1 if it is not present. The array is searched backwards, starting at fromIndex.
+     *
+     * @param <T>       the type parameter
+     * @param list      the list
+     * @param element   the element
+     * @param fromIndex the from index
+     * @return the index
+     * @since 3.0.3
+     */
+    public static <T> int lastIndexOf(List<T> list, T element, int fromIndex) {
+        final int length = list.size();
+        if (fromIndex >= 0 && fromIndex < length) {
+            for (int i = fromIndex; i >= 0; --i) {
+                if (Objects.equals(list.get(i), element)) {
+                    return i;
+                }
+            }
         }
         return -1;
     }

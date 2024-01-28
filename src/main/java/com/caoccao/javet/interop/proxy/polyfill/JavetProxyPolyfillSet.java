@@ -136,10 +136,6 @@ public final class JavetProxyPolyfillSet {
     }
 
     /**
-     * Polyfill Array.prototype.values().
-     * The values() method of Array instances returns a new array iterator object that iterates the value
-     * of each item in the array.
-     * <p>
      * Polyfill Set.prototype.values().
      * The values() method of Set instances returns a new set iterator object that contains the values
      * for each element in this set in insertion order.

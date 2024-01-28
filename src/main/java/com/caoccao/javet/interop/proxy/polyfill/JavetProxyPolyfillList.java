@@ -53,10 +53,12 @@ public final class JavetProxyPolyfillList {
     private static final String FIND_INDEX = "findIndex";
     private static final String FIND_LAST = "findLast";
     private static final String FIND_LAST_INDEX = "findLastIndex";
+    private static final String FOR_EACH = "forEach";
     private static final String INCLUDES = "includes";
     private static final String INDEX_OF = "indexOf";
     private static final String JOIN = "join";
     private static final String KEYS = "keys";
+    private static final String LAST_INDEX_OF = "lastIndexOf";
     private static final String LENGTH = "length";
     private static final String MAP = "map";
     private static final String POP = "pop";
@@ -84,10 +86,12 @@ public final class JavetProxyPolyfillList {
         functionMap.put(FIND_INDEX, JavetProxyPolyfillList::findIndex);
         functionMap.put(FIND_LAST, JavetProxyPolyfillList::findLast);
         functionMap.put(FIND_LAST_INDEX, JavetProxyPolyfillList::findLastIndex);
+        functionMap.put(FOR_EACH, JavetProxyPolyfillList::forEach);
         functionMap.put(INCLUDES, JavetProxyPolyfillList::includes);
         functionMap.put(INDEX_OF, JavetProxyPolyfillList::indexOf);
         functionMap.put(JOIN, JavetProxyPolyfillList::join);
         functionMap.put(KEYS, JavetProxyPolyfillList::keys);
+        functionMap.put(LAST_INDEX_OF, JavetProxyPolyfillList::lastIndexOf);
         functionMap.put(LENGTH, JavetProxyPolyfillList::length);
         functionMap.put(MAP, JavetProxyPolyfillList::map);
         functionMap.put(POP, JavetProxyPolyfillList::pop);
@@ -438,7 +442,7 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
-     * Polyfill Array.prototype.findIndex()
+     * Polyfill Array.prototype.findIndex().
      * The findIndex() method of Array instances returns the index of the first element in an array
      * that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.
      * <p>
@@ -475,7 +479,7 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
-     * Polyfill Array.prototype.findLast()
+     * Polyfill Array.prototype.findLast().
      * The findLast() method of Array instances iterates the array in reverse order
      * and returns the value of the first element that satisfies the provided testing function.
      * If no elements satisfy the testing function, undefined is returned.
@@ -522,7 +526,7 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
-     * Polyfill Array.prototype.findLastIndex()
+     * Polyfill Array.prototype.findLastIndex().
      * The findLastIndex() method of Array instances iterates the array in reverse order
      * and returns the index of the first element that satisfies the provided testing function.
      * If no elements satisfy the testing function, -1 is returned.
@@ -557,6 +561,36 @@ public final class JavetProxyPolyfillList {
                         }
                     }
                     return v8Runtime.createV8ValueInteger(-1);
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.forEach().
+     * The forEach() method of Array instances executes a provided function once for each array element.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                FOR_EACH, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                        int index = 0;
+                        for (Object object : list) {
+                            try (V8Value v8ValueResult = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                            }
+                            ++index;
+                        }
+                    }
+                    return v8Runtime.createV8ValueUndefined();
                 }));
     }
 
@@ -644,7 +678,7 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
-     * Polyfill Array.prototype.join()
+     * Polyfill Array.prototype.join().
      * The join() method of Array instances creates and returns a new string by concatenating all of the elements
      * in this array, separated by commas or a specified separator string. If the array has only one item,
      * then that item will be returned without using the separator.
@@ -659,7 +693,7 @@ public final class JavetProxyPolyfillList {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
         final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                INCLUDES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                JOIN, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     String delimiter = V8ValueUtils.asString(v8Values, 0);
                     String result = list.stream().map(Object::toString).collect(Collectors.joining(delimiter));
@@ -668,7 +702,7 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
-     * Polyfill Array.prototype.keys()
+     * Polyfill Array.prototype.keys().
      * The keys() method of Array instances returns a new array iterator object
      * that contains the keys for each index in the array.
      *
@@ -694,7 +728,44 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
-     * Polyfill Array: length.
+     * Polyfill Array.prototype.lastIndexOf().
+     * The lastIndexOf() method of Array instances returns the last index
+     * at which a given element can be found in the array, or -1 if it is not present.
+     * The array is searched backwards, starting at fromIndex.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value lastIndexOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                LAST_INDEX_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    int index = -1;
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
+                        Object object = v8Runtime.toObject(v8Values[0]);
+                        final int length = list.size();
+                        int fromIndex = V8ValueUtils.asInt(v8Values, 1, length - 1);
+                        if (fromIndex < 0) {
+                            fromIndex += length;
+                        }
+                        if (fromIndex < 0) {
+                            fromIndex = length - 1;
+                        }
+                        if (fromIndex < length) {
+                            index = ListUtils.lastIndexOf((List<Object>) list, object, fromIndex);
+                        }
+                    }
+                    return v8Runtime.createV8ValueInteger(index);
+                }));
+    }
+
+    /**
+     * Polyfill Array.length.
      * The length data property of an Array instance represents the number of elements in that array.
      * The value is an unsigned, 32-bit integer that is always numerically greater than the highest index in the array.
      *
@@ -917,7 +988,7 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
-     * Polyfill Array.prototype.unshift()
+     * Polyfill Array.prototype.unshift().
      * The unshift() method of Array instances adds the specified elements to the beginning of an array
      * and returns the new length of the array.
      *
@@ -941,10 +1012,6 @@ public final class JavetProxyPolyfillList {
      * Polyfill Array.prototype.values().
      * The values() method of Array instances returns a new array iterator object that iterates the value
      * of each item in the array.
-     * <p>
-     * Polyfill Set.prototype.values().
-     * The values() method of Set instances returns a new set iterator object that contains the values
-     * for each element in this set in insertion order.
      *
      * @param v8Runtime    the V8 runtime
      * @param targetObject the target object
