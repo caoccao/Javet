@@ -48,10 +48,8 @@ public final class V8ValueUtils {
      * @since 3.0.4
      */
     public static int asInt(V8Value[] v8Values, int index, int defaultValue) throws JavetException {
-        if (v8Values != null) {
-            if (index >= 0 && index < v8Values.length) {
-                return v8Values[index].asInt();
-            }
+        if (v8Values != null && index >= 0 && index < v8Values.length && v8Values[index] != null) {
+            return v8Values[index].asInt();
         }
         return defaultValue;
     }
@@ -67,6 +65,32 @@ public final class V8ValueUtils {
      */
     public static int asInt(V8Value[] v8Values, int index) throws JavetException {
         return asInt(v8Values, index, 0);
+    }
+
+    /**
+     * Call toString() by V8 value array and index.
+     *
+     * @param v8Values     the V8 values
+     * @param index        the index
+     * @param defaultValue the default value
+     * @return the string
+     */
+    public static String asString(V8Value[] v8Values, int index, String defaultValue) {
+        if (v8Values != null && index >= 0 && index < v8Values.length && v8Values[index] != null) {
+            return v8Values[index].toString();
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Call toString() by V8 value array and index.
+     *
+     * @param v8Values the V8 values
+     * @param index    the index
+     * @return the string
+     */
+    public static String asString(V8Value[] v8Values, int index) {
+        return asString(v8Values, index, StringUtils.EMPTY);
     }
 
     /**

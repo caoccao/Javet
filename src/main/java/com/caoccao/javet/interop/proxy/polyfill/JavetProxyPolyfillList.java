@@ -31,6 +31,7 @@ import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The type Javet proxy polyfill list.
@@ -54,6 +55,7 @@ public final class JavetProxyPolyfillList {
     private static final String FIND_LAST_INDEX = "findLastIndex";
     private static final String INCLUDES = "includes";
     private static final String INDEX_OF = "indexOf";
+    private static final String JOIN = "join";
     private static final String KEYS = "keys";
     private static final String LENGTH = "length";
     private static final String MAP = "map";
@@ -84,6 +86,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(FIND_LAST_INDEX, JavetProxyPolyfillList::findLastIndex);
         functionMap.put(INCLUDES, JavetProxyPolyfillList::includes);
         functionMap.put(INDEX_OF, JavetProxyPolyfillList::indexOf);
+        functionMap.put(JOIN, JavetProxyPolyfillList::join);
         functionMap.put(KEYS, JavetProxyPolyfillList::keys);
         functionMap.put(LENGTH, JavetProxyPolyfillList::length);
         functionMap.put(MAP, JavetProxyPolyfillList::map);
@@ -497,7 +500,7 @@ public final class JavetProxyPolyfillList {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
         final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                FIND, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                FIND_LAST, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
                     if (v8ValueFunction != null) {
@@ -537,7 +540,7 @@ public final class JavetProxyPolyfillList {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
         final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                FIND, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                FIND_LAST_INDEX, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
                     if (v8ValueFunction != null) {
@@ -619,7 +622,7 @@ public final class JavetProxyPolyfillList {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
         final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                INCLUDES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                INDEX_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     int index = -1;
                     if (ArrayUtils.isNotEmpty(v8Values)) {
@@ -637,6 +640,30 @@ public final class JavetProxyPolyfillList {
                         }
                     }
                     return v8Runtime.createV8ValueInteger(index);
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.join()
+     * The join() method of Array instances creates and returns a new string by concatenating all of the elements
+     * in this array, separated by commas or a specified separator string. If the array has only one item,
+     * then that item will be returned without using the separator.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value join(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                INCLUDES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    String delimiter = V8ValueUtils.asString(v8Values, 0);
+                    String result = list.stream().map(Object::toString).collect(Collectors.joining(delimiter));
+                    return v8Runtime.createV8ValueString(result);
                 }));
     }
 
