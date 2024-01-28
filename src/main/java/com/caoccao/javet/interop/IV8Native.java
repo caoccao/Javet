@@ -67,6 +67,8 @@ public interface IV8Native {
 
     boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
+    Object errorCreate(long v8RuntimeHandle, int v8ValueErrorTypeId, String message);
+
     Object functionCall(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object receiver, boolean returnResult, Object[] values);

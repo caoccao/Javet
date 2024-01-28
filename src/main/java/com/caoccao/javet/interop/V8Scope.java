@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
@@ -191,6 +192,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     public V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return v8Runtime.createV8ValueDouble(doubleValue);
+    }
+
+    @Override
+    public V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueError(v8ValueErrorType, message);
     }
 
     @Override

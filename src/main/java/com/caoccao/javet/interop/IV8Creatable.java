@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -127,6 +128,18 @@ public interface IV8Creatable {
      * @since 0.8.5
      */
     V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException;
+
+    /**
+     * Create V8 value error by type and message.
+     *
+     * @param v8ValueErrorType the V8 value error type
+     * @param message          the message
+     * @return the V8 value error
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException;
 
     /**
      * Create V8 value function.

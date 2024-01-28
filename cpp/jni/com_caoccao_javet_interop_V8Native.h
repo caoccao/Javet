@@ -161,6 +161,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    errorCreate
+ * Signature: (JILjava/lang/String;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_errorCreate
+  (JNIEnv *, jobject, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    functionCall
  * Signature: (JJILjava/lang/Object;Z[Ljava/lang/Object;)Ljava/lang/Object;
  */

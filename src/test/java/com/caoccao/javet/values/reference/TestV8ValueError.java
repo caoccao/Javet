@@ -18,18 +18,34 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetScriptingError;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
+import com.caoccao.javet.utils.SimpleList;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueError extends BaseTestJavetRuntime {
+    @Test
+    public void testCreation() throws JavetException {
+        String message = "test";
+        List<V8ValueErrorType> types = SimpleList.of(V8ValueErrorType.values());
+        types.remove(types.size() - 1);
+        for (V8ValueErrorType type : types) {
+            try (V8ValueError v8ValueError = v8Runtime.createV8ValueError(type, message)) {
+                assertEquals(message, v8ValueError.getMessage());
+                assertEquals(type, v8ValueError.getErrorType());
+            }
+        }
+    }
+
     @Test
     public void testError() throws JavetException {
         try (V8ValueError v8ValueError = v8Runtime.getExecutor("Error('test')").execute()) {
@@ -50,7 +66,7 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().invokeVoid("test");
             fail("Failed to catch the error.");
         } catch (JavetException e) {
-            assertTrue(e instanceof JavetExecutionException);
+            assertInstanceOf(JavetExecutionException.class, e);
             JavetExecutionException javetExecutionException = (JavetExecutionException) e;
             assertEquals("Error: test", javetExecutionException.getMessage());
         }
@@ -69,7 +85,7 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().invokeVoid("test");
             fail("Failed to catch the assertion error.");
         } catch (JavetException e) {
-            assertTrue(e instanceof JavetExecutionException);
+            assertInstanceOf(JavetExecutionException.class, e);
             JavetExecutionException javetExecutionException = (JavetExecutionException) e;
             JavetScriptingError javetScriptingError = javetExecutionException.getScriptingError();
             assertEquals("test", javetExecutionException.getMessage());
@@ -121,7 +137,7 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             v8ValueObject.unbind(anonymous);
             v8Runtime.getGlobalObject().delete("a");
         } catch (JavetException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             fail("Failed to hide the error.");
         } finally {
             v8Runtime.lowMemoryNotification();
@@ -149,7 +165,7 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             v8ValueObject.unbind(anonymous);
             v8Runtime.getGlobalObject().delete("a");
         } catch (JavetException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             fail("Failed to hide the error.");
         } finally {
             v8Runtime.lowMemoryNotification();
@@ -162,7 +178,7 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             v8Runtime.getExecutor("throw new Error('test');").executeVoid();
             fail("Failed to catch JavetExecutionException.");
         } catch (JavetException e) {
-            assertTrue(e instanceof JavetExecutionException);
+            assertInstanceOf(JavetExecutionException.class, e);
             JavetExecutionException javetExecutionException = (JavetExecutionException) e;
             assertEquals("Error: test", javetExecutionException.getMessage());
             assertEquals(301, javetExecutionException.getError().getCode());

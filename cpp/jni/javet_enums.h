@@ -48,6 +48,19 @@ namespace Javet {
             };
         };
 
+        namespace V8ValueErrorType {
+            enum V8ValueErrorType {
+                Error = 0,
+                RangeError = 1,
+                ReferenceError = 2,
+                SyntaxError = 3,
+                TypeError = 4,
+                WasmCompileError = 5,
+                WasmLinkError = 6,
+                WasmRuntimeError = 7,
+            };
+        };
+
         namespace V8ValueInternalType {
             enum V8ValueInternalType {
                 Undefined = 0,

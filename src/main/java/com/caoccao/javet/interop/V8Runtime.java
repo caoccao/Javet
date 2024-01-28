@@ -811,6 +811,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     @Override
     @CheckReturnValue
+    public V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException {
+        return (V8ValueError) v8Native.errorCreate(
+                handle, Objects.requireNonNull(v8ValueErrorType).getId(), Objects.requireNonNull(message));
+    }
+
+    @Override
+    @CheckReturnValue
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
         V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Native.functionCreate(
                 handle, Objects.requireNonNull(javetCallbackContext));
