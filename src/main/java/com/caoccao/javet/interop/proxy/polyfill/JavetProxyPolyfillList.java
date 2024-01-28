@@ -50,6 +50,8 @@ public final class JavetProxyPolyfillList {
     private static final String FILTER = "filter";
     private static final String FIND = "find";
     private static final String FIND_INDEX = "findIndex";
+    private static final String FIND_LAST = "findLast";
+    private static final String FIND_LAST_INDEX = "findLastIndex";
     private static final String INCLUDES = "includes";
     private static final String KEYS = "keys";
     private static final String LENGTH = "length";
@@ -77,6 +79,8 @@ public final class JavetProxyPolyfillList {
         functionMap.put(FILTER, JavetProxyPolyfillList::filter);
         functionMap.put(FIND, JavetProxyPolyfillList::find);
         functionMap.put(FIND_INDEX, JavetProxyPolyfillList::findIndex);
+        functionMap.put(FIND_LAST, JavetProxyPolyfillList::findLast);
+        functionMap.put(FIND_LAST_INDEX, JavetProxyPolyfillList::findLastIndex);
         functionMap.put(INCLUDES, JavetProxyPolyfillList::includes);
         functionMap.put(KEYS, JavetProxyPolyfillList::keys);
         functionMap.put(LENGTH, JavetProxyPolyfillList::length);
@@ -432,7 +436,7 @@ public final class JavetProxyPolyfillList {
      * Polyfill Array.prototype.findIndex()
      * The findIndex() method of Array instances returns the index of the first element in an array
      * that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.
-     *
+     * <p>
      * See also the find() method,
      * which returns the first element that satisfies the testing function (rather than its index).
      *
@@ -459,6 +463,92 @@ public final class JavetProxyPolyfillList {
                                 }
                             }
                             ++index;
+                        }
+                    }
+                    return v8Runtime.createV8ValueInteger(-1);
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.findLast()
+     * The findLast() method of Array instances iterates the array in reverse order
+     * and returns the value of the first element that satisfies the provided testing function.
+     * If no elements satisfy the testing function, undefined is returned.
+     * <p>
+     * If you need to find:
+     * <p>
+     * the first element that matches, use find().
+     * the index of the last matching element in the array, use findLastIndex().
+     * the index of a value, use indexOf(). (It's similar to findIndex(),
+     * but checks each element for equality with the value instead of using a testing function.)
+     * whether a value exists in an array, use includes().
+     * Again, it checks each element for equality with the value instead of using a testing function.
+     * if any element satisfies the provided testing function, use some().
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value findLast(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                FIND, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                        int index = list.size() - 1;
+                        ListIterator<?> listIterator = list.listIterator(list.size());
+                        while (listIterator.hasPrevious()) {
+                            Object object = listIterator.previous();
+                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                                if (result.ifTrue()) {
+                                    return v8Runtime.toV8Value(object);
+                                }
+                            }
+                            --index;
+                        }
+                    }
+                    return v8Runtime.createV8ValueUndefined();
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.findLastIndex()
+     * The findLastIndex() method of Array instances iterates the array in reverse order
+     * and returns the index of the first element that satisfies the provided testing function.
+     * If no elements satisfy the testing function, -1 is returned.
+     * <p>
+     * See also the findLast() method,
+     * which returns the value of last element that satisfies the testing function (rather than its index).
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value findLastIndex(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                FIND, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                        int index = list.size() - 1;
+                        ListIterator<?> listIterator = list.listIterator(list.size());
+                        while (listIterator.hasPrevious()) {
+                            try (V8Value result = v8ValueFunction.call(v8ValueObject, listIterator.previous(), index, thisObject)) {
+                                if (result.ifTrue()) {
+                                    return v8Runtime.createV8ValueInteger(index);
+                                }
+                            }
+                            --index;
                         }
                     }
                     return v8Runtime.createV8ValueInteger(-1);
