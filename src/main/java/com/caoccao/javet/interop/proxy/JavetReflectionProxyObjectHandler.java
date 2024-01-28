@@ -77,6 +77,16 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     /**
+     * Gets class descriptor map.
+     *
+     * @return the class descriptor map
+     * @since 3.0.4
+     */
+    public static ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorMap() {
+        return classDescriptorMap;
+    }
+
+    /**
      * Delete from collection.
      *
      * @param property the property

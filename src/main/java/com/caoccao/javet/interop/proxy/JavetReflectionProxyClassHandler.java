@@ -69,6 +69,16 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
         super(v8Runtime, reflectionObjectFactory, targetObject);
     }
 
+    /**
+     * Gets class descriptor map.
+     *
+     * @return the class descriptor map
+     * @since 3.0.4
+     */
+    public static ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorMap() {
+        return classDescriptorMap;
+    }
+
     @Override
     public V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException {
         if (!classDescriptor.getConstructors().isEmpty()) {
