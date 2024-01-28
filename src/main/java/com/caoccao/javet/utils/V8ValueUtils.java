@@ -16,11 +16,13 @@
 
 package com.caoccao.javet.utils;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.StringJoiner;
@@ -65,6 +67,40 @@ public final class V8ValueUtils {
      */
     public static int asInt(V8Value[] v8Values, int index) throws JavetException {
         return asInt(v8Values, index, 0);
+    }
+
+    /**
+     * As V8ValueFunction by V8 value array and index.
+     *
+     * @param v8Values the V8 values
+     * @param index    the index
+     * @return the V8 value function
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    public static V8ValueFunction asV8ValueFunction(V8Value[] v8Values, int index) {
+        if (v8Values != null && index >= 0 && index < v8Values.length
+                && v8Values[index] instanceof V8ValueFunction) {
+            return (V8ValueFunction) v8Values[index];
+        }
+        return null;
+    }
+
+    /**
+     * As V8ValueObject by V8 value array and index.
+     *
+     * @param v8Values the V8 values
+     * @param index    the index
+     * @return the V8 value object
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    public static V8ValueObject asV8ValueObject(V8Value[] v8Values, int index) {
+        if (v8Values != null && index >= 0 && index < v8Values.length
+                && v8Values[index] instanceof V8ValueObject) {
+            return (V8ValueObject) v8Values[index];
+        }
+        return null;
     }
 
     /**
@@ -114,6 +150,7 @@ public final class V8ValueUtils {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
+    @CheckReturnValue
     public static V8ValueArray createV8ValueArray(V8Runtime v8Runtime, Object... objects) throws JavetException {
         try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
             V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
@@ -134,6 +171,7 @@ public final class V8ValueUtils {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
+    @CheckReturnValue
     public static V8ValueObject createV8ValueObject(V8Runtime v8Runtime, Object... objects) throws JavetException {
         try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
             V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();

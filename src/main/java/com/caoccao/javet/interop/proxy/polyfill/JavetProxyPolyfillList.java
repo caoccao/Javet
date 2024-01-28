@@ -25,11 +25,10 @@ import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.reference.IV8ValueArray;
-import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.*;
 
@@ -285,15 +284,14 @@ public final class JavetProxyPolyfillList {
                 EVERY, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     boolean valid = false;
-                    if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] instanceof V8ValueFunction) {
-                        V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Values[0];
-                        IV8ValueObject thisArg = v8Values.length > 1 && v8Values[1] instanceof IV8ValueObject
-                                ? (IV8ValueObject) v8Values[1] : null;
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         valid = true;
                         for (Object object : list) {
-                            try (V8Value result = v8ValueFunction.call(thisArg, object, index, thisObject)) {
-                                if (!(result instanceof V8ValueBoolean) || !((V8ValueBoolean) result).getValue()) {
+                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                                if (!result.ifTrue()) {
                                     valid = false;
                                     break;
                                 }
@@ -370,13 +368,12 @@ public final class JavetProxyPolyfillList {
                 FILTER, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     List<Object> results = new ArrayList<>(list.size());
-                    if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] instanceof V8ValueFunction) {
-                        V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Values[0];
-                        IV8ValueObject thisArg = v8Values.length > 1 && v8Values[1] instanceof IV8ValueObject
-                                ? (IV8ValueObject) v8Values[1] : null;
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         for (Object object : list) {
-                            try (V8Value v8ValueResult = v8ValueFunction.call(thisArg, object, index, thisObject)) {
+                            try (V8Value v8ValueResult = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
                                 if (v8ValueResult.ifTrue()) {
                                     results.add(object);
                                 }
@@ -488,13 +485,12 @@ public final class JavetProxyPolyfillList {
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     List<V8Value> results = new ArrayList<>(list.size());
                     try {
-                        if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] instanceof V8ValueFunction) {
-                            V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Values[0];
-                            IV8ValueObject thisArg = v8Values.length > 1 && v8Values[1] instanceof IV8ValueObject
-                                    ? (IV8ValueObject) v8Values[1] : null;
+                        V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
+                        if (v8ValueFunction != null) {
+                            V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                             int index = 0;
                             for (Object object : list) {
-                                results.add(v8ValueFunction.call(thisArg, object, index, thisObject));
+                                results.add(v8ValueFunction.call(v8ValueObject, object, index, thisObject));
                                 ++index;
                             }
                         }
@@ -619,14 +615,13 @@ public final class JavetProxyPolyfillList {
                 SOME, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     boolean valid = false;
-                    if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] instanceof V8ValueFunction) {
-                        V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Values[0];
-                        IV8ValueObject thisArg = v8Values.length > 1 && v8Values[1] instanceof IV8ValueObject
-                                ? (IV8ValueObject) v8Values[1] : null;
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         for (Object object : list) {
-                            try (V8Value result = v8ValueFunction.call(thisArg, object, index, thisObject)) {
-                                if (result instanceof V8ValueBoolean && ((V8ValueBoolean) result).getValue()) {
+                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                                if (result.ifTrue()) {
                                     valid = true;
                                     break;
                                 }
@@ -717,8 +712,7 @@ public final class JavetProxyPolyfillList {
      */
     public static V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
-        return new JavetProxySymbolIterableConverter<>(
-                v8Runtime, targetObject).getV8ValueFunction();
+        return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
     }
 
     /**
@@ -742,7 +736,7 @@ public final class JavetProxyPolyfillList {
                     int toBeReplacedIndex = V8ValueUtils.asInt(v8Values, 0);
                     if (toBeReplacedIndex >= 0 && toBeReplacedIndex < objects.length) {
                         objects[toBeReplacedIndex] = v8Values.length > 1
-                                ? v8Runtime.toObject(v8Values[1])
+                                ? v8Values[1]
                                 : v8Runtime.createV8ValueUndefined();
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, objects);
