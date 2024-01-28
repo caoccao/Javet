@@ -53,6 +53,7 @@ public final class JavetProxyPolyfillList {
     private static final String FIND_LAST = "findLast";
     private static final String FIND_LAST_INDEX = "findLastIndex";
     private static final String INCLUDES = "includes";
+    private static final String INDEX_OF = "indexOf";
     private static final String KEYS = "keys";
     private static final String LENGTH = "length";
     private static final String MAP = "map";
@@ -82,6 +83,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(FIND_LAST, JavetProxyPolyfillList::findLast);
         functionMap.put(FIND_LAST_INDEX, JavetProxyPolyfillList::findLastIndex);
         functionMap.put(INCLUDES, JavetProxyPolyfillList::includes);
+        functionMap.put(INDEX_OF, JavetProxyPolyfillList::indexOf);
         functionMap.put(KEYS, JavetProxyPolyfillList::keys);
         functionMap.put(LENGTH, JavetProxyPolyfillList::length);
         functionMap.put(MAP, JavetProxyPolyfillList::map);
@@ -587,9 +589,54 @@ public final class JavetProxyPolyfillList {
                     if (ArrayUtils.isNotEmpty(v8Values)) {
                         Object object = v8Runtime.toObject(v8Values[0]);
                         int fromIndex = V8ValueUtils.asInt(v8Values, 1);
-                        included = ListUtils.includes((List<Object>) list, object, fromIndex);
+                        final int length = list.size();
+                        if (fromIndex < 0) {
+                            fromIndex += length;
+                        }
+                        if (fromIndex < 0) {
+                            fromIndex = 0;
+                        }
+                        if (fromIndex < length) {
+                            included = ListUtils.includes((List<Object>) list, object, fromIndex);
+                        }
                     }
                     return v8Runtime.createV8ValueBoolean(included);
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.indexOf().
+     * The indexOf() method of Array instances returns the first index
+     * at which a given element can be found in the array, or -1 if it is not present.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value indexOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                INCLUDES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    int index = -1;
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
+                        Object object = v8Runtime.toObject(v8Values[0]);
+                        int fromIndex = V8ValueUtils.asInt(v8Values, 1);
+                        final int length = list.size();
+                        if (fromIndex < 0) {
+                            fromIndex += length;
+                        }
+                        if (fromIndex < 0) {
+                            fromIndex = 0;
+                        }
+                        if (fromIndex < length) {
+                            index = ListUtils.indexOf((List<Object>) list, object, fromIndex);
+                        }
+                    }
+                    return v8Runtime.createV8ValueInteger(index);
                 }));
     }
 

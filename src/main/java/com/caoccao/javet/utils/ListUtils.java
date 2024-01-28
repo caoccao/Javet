@@ -54,6 +54,28 @@ public final class ListUtils {
     }
 
     /**
+     * The indexOf() method of Array instances returns the first index
+     * at which a given element can be found in the array, or -1 if it is not present.
+     *
+     * @param <T>       the type parameter
+     * @param list      the list
+     * @param element   the element
+     * @param fromIndex the from index
+     * @return the index
+     * @since 3.0.3
+     */
+    public static <T> int indexOf(List<T> list, T element, int fromIndex) {
+        int index = 0;
+        for (T item : list) {
+            if (Objects.equals(item, element) && index >= fromIndex) {
+                return index;
+            }
+            ++index;
+        }
+        return -1;
+    }
+
+    /**
      * The pop() method of Array instances removes the last element from an array and returns that element.
      * This method changes the length of the array.
      *
