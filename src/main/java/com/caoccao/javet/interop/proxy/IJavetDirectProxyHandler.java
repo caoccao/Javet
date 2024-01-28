@@ -105,6 +105,14 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
                     return getter.apply(propertyString);
                 }
             }
+            if (IJavetProxyHandler.FUNCTION_NAME_TO_JSON.equals(propertyString)) {
+                return getV8Runtime().createV8ValueFunction(
+                        new JavetCallbackContext(
+                                V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE,
+                                V8ValueSymbolType.BuiltIn,
+                                JavetCallbackType.DirectCallNoThisAndResult,
+                                (IJavetDirectCallable.NoThisAndResult<?>) this::toJSON));
+            }
             if (IJavetProxyHandler.FUNCTION_NAME_TO_V8_VALUE.equals(propertyString)) {
                 return getV8Runtime().createV8ValueFunction(
                         new JavetCallbackContext(
@@ -381,5 +389,18 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      */
     default V8Value symbolToPrimitive(V8Value... v8Values) throws JavetException, E {
         return getV8Runtime().createV8ValueNull();
+    }
+
+    /**
+     * To JSON.
+     *
+     * @param v8Values the V8 values
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 3.0.4
+     */
+    default V8Value toJSON(V8Value... v8Values) throws JavetException, E {
+        return getV8Runtime().createV8ValueObject();
     }
 }

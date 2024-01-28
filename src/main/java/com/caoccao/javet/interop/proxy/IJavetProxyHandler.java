@@ -35,6 +35,12 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  */
 public interface IJavetProxyHandler<T, E extends Exception> {
     /**
+     * The constant FUNCTION_NAME_TO_JSON.
+     *
+     * @since 3.0.4
+     */
+    String FUNCTION_NAME_TO_JSON = "toJSON";
+    /**
      * The constant FUNCTION_NAME_TO_V8_VALUE.
      *
      * @since 1.0.4
