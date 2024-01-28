@@ -49,6 +49,7 @@ public final class JavetProxyPolyfillList {
     private static final String FILL = "fill";
     private static final String FILTER = "filter";
     private static final String FIND = "find";
+    private static final String FIND_INDEX = "findIndex";
     private static final String INCLUDES = "includes";
     private static final String KEYS = "keys";
     private static final String LENGTH = "length";
@@ -75,6 +76,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(FILL, JavetProxyPolyfillList::fill);
         functionMap.put(FILTER, JavetProxyPolyfillList::filter);
         functionMap.put(FIND, JavetProxyPolyfillList::find);
+        functionMap.put(FIND_INDEX, JavetProxyPolyfillList::findIndex);
         functionMap.put(INCLUDES, JavetProxyPolyfillList::includes);
         functionMap.put(KEYS, JavetProxyPolyfillList::keys);
         functionMap.put(LENGTH, JavetProxyPolyfillList::length);
@@ -285,23 +287,21 @@ public final class JavetProxyPolyfillList {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 EVERY, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    boolean valid = false;
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
-                        valid = true;
                         for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
                                 if (!result.ifTrue()) {
-                                    valid = false;
-                                    break;
+                                    return v8Runtime.createV8ValueBoolean(false);
                                 }
                             }
                             ++index;
                         }
+                        return v8Runtime.createV8ValueBoolean(true);
                     }
-                    return v8Runtime.createV8ValueBoolean(valid);
+                    return v8Runtime.createV8ValueBoolean(false);
                 }));
     }
 
@@ -425,6 +425,43 @@ public final class JavetProxyPolyfillList {
                         }
                     }
                     return v8Runtime.createV8ValueUndefined();
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.findIndex()
+     * The findIndex() method of Array instances returns the index of the first element in an array
+     * that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.
+     *
+     * See also the find() method,
+     * which returns the first element that satisfies the testing function (rather than its index).
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value findIndex(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                FIND_INDEX, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                        int index = 0;
+                        for (Object object : list) {
+                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                                if (result.ifTrue()) {
+                                    return v8Runtime.createV8ValueInteger(index);
+                                }
+                            }
+                            ++index;
+                        }
+                    }
+                    return v8Runtime.createV8ValueInteger(-1);
                 }));
     }
 
@@ -657,7 +694,6 @@ public final class JavetProxyPolyfillList {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SOME, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    boolean valid = false;
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
@@ -665,14 +701,13 @@ public final class JavetProxyPolyfillList {
                         for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
                                 if (result.ifTrue()) {
-                                    valid = true;
-                                    break;
+                                    return v8Runtime.createV8ValueBoolean(true);
                                 }
                             }
                             ++index;
                         }
                     }
-                    return v8Runtime.createV8ValueBoolean(valid);
+                    return v8Runtime.createV8ValueBoolean(false);
                 }));
     }
 
