@@ -28,14 +28,15 @@ import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
-import com.caoccao.javet.interop.proxy.JavetReflectionProxyObjectHandler;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
-import com.caoccao.javet.utils.*;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -50,7 +51,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -572,15 +571,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             javetProxyConverter.getConfig().setProxyListEnabled(true);
             List<String> list = SimpleList.of("x", "y");
             v8Runtime.getGlobalObject().set("list", list);
-            ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap =
-                    JavetReflectionProxyObjectHandler.getClassDescriptorMap();
-            assertNotNull(classDescriptorMap);
-            ClassDescriptor classDescriptor = classDescriptorMap.get(list.getClass());
-            assertNotNull(classDescriptor);
-            Map<String, List<Method>> methodsMap = SimpleList.of(
-                            "forEach", "indexOf", "lastIndexOf", "size").stream()
-                    .collect(Collectors.toMap(key -> key, key -> classDescriptor.getMethodsMap().remove(key)));
-            assertFalse(methodsMap.isEmpty());
             assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
             // contains()
             assertTrue(v8Runtime.getExecutor("list.contains('x')").executeBoolean());
@@ -686,7 +676,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x0true\",\"y1true\",\"z2true\"]",
                     v8Runtime.getExecutor("const testForEach = [];" +
-                            "list.forEach((x, i, a) => testForEach.push(x + i + (a === list)));"+
+                            "list.forEach((x, i, a) => testForEach.push(x + i + (a === list)));" +
                             "JSON.stringify(testForEach)").executeString());
             // reverse()
             assertEquals("[z, y, x]", v8Runtime.getExecutor("list.reverse().toString()").executeString());
@@ -721,7 +711,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(2, v8Runtime.getExecutor("list.size").executeInteger());
             // length
             assertEquals(2, v8Runtime.getExecutor("list.length").executeInteger());
-            methodsMap.forEach((key, value) -> classDescriptor.getMethodsMap().put(key, value));
             v8Runtime.getGlobalObject().delete("list");
         } finally {
             javetProxyConverter.getConfig().setProxyListEnabled(false);

@@ -17,6 +17,9 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
+import com.caoccao.javet.utils.SimpleSet;
+
+import java.util.Set;
 
 /**
  * The type Javet converter config.
@@ -31,6 +34,19 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 0.9.4
      */
     public static final int DEFAULT_MAX_DEPTH = 20;
+    /**
+     * The constant DEFAULT_PROXY_LIST_OVERRIDE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXY_LIST_OVERRIDE_METHODS = new String[]{
+            "forEach", "indexOf", "lastIndexOf", "size"};
+    /**
+     * The Proxy list override methods.
+     *
+     * @since 3.0.4
+     */
+    protected final Set<String> proxyListOverrideMethods;
     /**
      * The Default boolean.
      *
@@ -139,6 +155,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
         proxyListEnabled = false;
+        proxyListOverrideMethods = SimpleSet.of(DEFAULT_PROXY_LIST_OVERRIDE_METHODS);
         proxyMapEnabled = false;
         proxySetEnabled = false;
         reflectionObjectFactory = null;
@@ -233,6 +250,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public int getMaxDepth() {
         return maxDepth;
+    }
+
+    /**
+     * Gets proxy list override methods.
+     *
+     * @return the proxy list override methods
+     * @since 3.0.4
+     */
+    public Set<String> getProxyListOverrideMethods() {
+        return proxyListOverrideMethods;
     }
 
     /**

@@ -64,16 +64,14 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     /**
      * Instantiates a new Javet reflection proxy object handler.
      *
-     * @param v8Runtime               the V8 runtime
-     * @param reflectionObjectFactory the reflection object factory
-     * @param targetObject            the target object
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
      * @since 0.9.6
      */
     public JavetReflectionProxyObjectHandler(
             V8Runtime v8Runtime,
-            IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
-        super(v8Runtime, reflectionObjectFactory, Objects.requireNonNull(targetObject));
+        super(v8Runtime, Objects.requireNonNull(targetObject));
     }
 
     /**
@@ -315,6 +313,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             initializeFieldsAndMethods(targetClass, false);
             classDescriptorMap.put(targetClass, classDescriptor);
         }
+        initializeOverrideMethods();
     }
 
     /**
@@ -353,6 +352,17 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             }
             currentClass = currentClass.getSuperclass();
         } while (currentClass != null);
+    }
+
+    /**
+     * Initialize override methods.
+     *
+     * @since 3.0.4
+     */
+    protected void initializeOverrideMethods() {
+        if (classDescriptor.isTargetTypeList()) {
+            overrideMethods = v8Runtime.getConverter().getConfig().getProxyListOverrideMethods();
+        }
     }
 
     @Override

@@ -57,16 +57,14 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
     /**
      * Instantiates a new Javet reflection proxy handler.
      *
-     * @param v8Runtime               the V8 runtime
-     * @param reflectionObjectFactory the reflection object factory
-     * @param targetObject            the target object
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
      * @since 0.9.6
      */
     public JavetReflectionProxyClassHandler(
             V8Runtime v8Runtime,
-            IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
-        super(v8Runtime, reflectionObjectFactory, targetObject);
+        super(v8Runtime, targetObject);
     }
 
     /**
@@ -86,7 +84,7 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
             try {
                 v8Values = arguments.toArray();
                 return v8Runtime.toV8Value(execute(
-                        reflectionObjectFactory,
+                        v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
                         null,
                         (V8ValueObject) target,
                         classDescriptor.getConstructors(),

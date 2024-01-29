@@ -28,10 +28,7 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,26 +66,23 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      */
     protected ClassDescriptor classDescriptor;
     /**
-     * The Reflection object factory.
+     * The Override methods.
      *
-     * @since 2.0.1
+     * @since 3.0.4
      */
-    protected IJavetReflectionObjectFactory reflectionObjectFactory;
+    protected Set<String> overrideMethods;
 
     /**
      * Instantiates a new Base javet reflection proxy handler.
      *
-     * @param v8Runtime               the V8 runtime
-     * @param reflectionObjectFactory the reflection object factory
-     * @param targetObject            the target object
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
      * @since 0.9.6
      */
-    public BaseJavetReflectionProxyHandler(
-            V8Runtime v8Runtime,
-            IJavetReflectionObjectFactory reflectionObjectFactory,
-            T targetObject) {
+    public BaseJavetReflectionProxyHandler(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, targetObject);
-        this.reflectionObjectFactory = reflectionObjectFactory;
+        classDescriptor = null;
+        overrideMethods = null;
         initialize();
     }
 
@@ -281,20 +275,28 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     protected V8Value getFromMethod(V8Value target, V8Value property) throws JavetException {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
-            if (methods != null && !methods.isEmpty()) {
-                JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
-                        reflectionObjectFactory, targetObject, propertyName, methods);
-                return v8Runtime.createV8ValueFunction(reflectionProxyInterceptor.getCallbackContext());
-            }
-            methods = classDescriptor.getGettersMap().get(propertyName);
-            if (methods != null && !methods.isEmpty()) {
-                JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
-                        reflectionObjectFactory, targetObject, propertyName, methods);
-                return reflectionProxyInterceptor.invokeV8Value(target);
-            }
-            if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
-                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+            if (overrideMethods == null || !overrideMethods.contains(propertyName)) {
+                List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
+                if (methods != null && !methods.isEmpty()) {
+                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
+                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
+                            targetObject,
+                            propertyName,
+                            methods);
+                    return v8Runtime.createV8ValueFunction(reflectionProxyInterceptor.getCallbackContext());
+                }
+                methods = classDescriptor.getGettersMap().get(propertyName);
+                if (methods != null && !methods.isEmpty()) {
+                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
+                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
+                            targetObject,
+                            propertyName,
+                            methods);
+                    return reflectionProxyInterceptor.invokeV8Value(target);
+                }
+                if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
+                    return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+                }
             }
         }
         return null;
@@ -695,7 +697,10 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 List<Method> methods = classDescriptor.getSettersMap().get(propertyName);
                 if (methods != null) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
-                            reflectionObjectFactory, targetObject, propertyName, methods);
+                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
+                            targetObject,
+                            propertyName,
+                            methods);
                     reflectionProxyInterceptor.invokeObject((V8ValueObject) target, propertyValue);
                     return true;
                 }

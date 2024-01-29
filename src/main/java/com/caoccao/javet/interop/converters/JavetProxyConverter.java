@@ -110,16 +110,14 @@ public class JavetProxyConverter extends JavetObjectConverter {
                 IJavetProxyHandler<?, ?> javetProxyHandler;
                 switch (proxyMode) {
                     case Class:
-                        javetProxyHandler = new JavetReflectionProxyClassHandler<>(
-                                v8Runtime, config.getReflectionObjectFactory(), (Class<?>) object);
+                        javetProxyHandler = new JavetReflectionProxyClassHandler<>(v8Runtime, (Class<?>) object);
                         break;
                     case Function:
                         if (object instanceof IJavetDirectProxyHandler<?>) {
                             javetProxyHandler = new JavetDirectProxyFunctionHandler<>(
                                     v8Runtime, (IJavetDirectProxyHandler<?>) object);
                         } else {
-                            javetProxyHandler = new JavetReflectionProxyFunctionHandler<>(
-                                    v8Runtime, config.getReflectionObjectFactory(), object);
+                            javetProxyHandler = new JavetReflectionProxyFunctionHandler<>(v8Runtime, object);
                         }
                         break;
                     default:
@@ -127,8 +125,7 @@ public class JavetProxyConverter extends JavetObjectConverter {
                             javetProxyHandler = new JavetDirectProxyObjectHandler<>(
                                     v8Runtime, (IJavetDirectProxyHandler<?>) object);
                         } else {
-                            javetProxyHandler = new JavetReflectionProxyObjectHandler<>(
-                                    v8Runtime, config.getReflectionObjectFactory(), object);
+                            javetProxyHandler = new JavetReflectionProxyObjectHandler<>(v8Runtime, object);
                         }
                         break;
                 }
