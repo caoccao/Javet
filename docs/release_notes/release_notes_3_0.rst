@@ -11,7 +11,7 @@ Release Notes 3.0.x
 * Added ``JavetProxyPolyfillList``, ``JavetProxyPolyfillMap``, ``JavetProxyPolyfillPrimitive``, ``JavetProxyPolyfillSet``
 * Added ``getClassDescriptorMap()`` to ``JavetReflectionProxyClassHandler``
 * Added ``getClassDescriptorMap()`` to ``JavetReflectionProxyObjectHandler``
-* Added ``createV8ValueError()`` to ``V8Runtime``
+* Added ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
 * Added ``V8ValueErrorType``
 * Added ``getErrorType()`` to ``V8ValueError``
 * Added ``getProxyListOverrideMethods()`` to ``JavetConverterConfig``

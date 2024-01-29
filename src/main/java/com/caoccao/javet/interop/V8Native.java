@@ -574,6 +574,12 @@ class V8Native implements IV8Native {
     public native void terminateExecution(long v8RuntimeHandle);
 
     @Override
+    public native boolean throwError(long v8RuntimeHandle, int v8ValueErrorType, String message);
+
+    @Override
+    public native boolean throwError(long v8RuntimeHandle, long v8ValueHandle);
+
+    @Override
     public native String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override

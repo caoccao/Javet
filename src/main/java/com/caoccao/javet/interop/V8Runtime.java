@@ -3373,6 +3373,30 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         v8Native.terminateExecution(handle);
     }
 
+    /**
+     * Throw error.
+     *
+     * @param v8ValueErrorType the V8 value error type
+     * @param message          the message
+     * @return true : thrown, false : not thrown
+     * @since 3.0.4
+     */
+    public boolean throwError(V8ValueErrorType v8ValueErrorType, String message) {
+        return v8Native.throwError(
+                handle, Objects.requireNonNull(v8ValueErrorType).getId(), Objects.requireNonNull(message));
+    }
+
+    /**
+     * Throw error.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return true : thrown, false : not thrown
+     * @since 3.0.4
+     */
+    public boolean throwError(IV8ValueObject iV8ValueObject) {
+        return v8Native.throwError(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+    }
+
     @Override
     public <T, V extends V8Value> T toObject(V v8Value) throws JavetException {
         return converter.toObject(v8Value);

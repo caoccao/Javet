@@ -34,19 +34,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueError extends BaseTestJavetRuntime {
     @Test
-    public void testCreation() throws JavetException {
-        String message = "test";
-        List<V8ValueErrorType> types = SimpleList.of(V8ValueErrorType.values());
-        types.remove(types.size() - 1);
-        for (V8ValueErrorType type : types) {
-            try (V8ValueError v8ValueError = v8Runtime.createV8ValueError(type, message)) {
-                assertEquals(message, v8ValueError.getMessage());
-                assertEquals(type, v8ValueError.getErrorType());
-            }
-        }
-    }
-
-    @Test
     public void testError() throws JavetException {
         try (V8ValueError v8ValueError = v8Runtime.getExecutor("Error('test')").execute()) {
             assertNotNull(v8ValueError);
@@ -55,6 +42,19 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             try (IV8ValueArray iV8ValueArray = v8ValueError.getOwnPropertyNames()) {
                 assertNotNull(iV8ValueArray);
                 assertEquals(0, iV8ValueArray.getLength());
+            }
+        }
+    }
+
+    @Test
+    public void testErrorTypes() throws JavetException {
+        String message = "test";
+        List<V8ValueErrorType> types = SimpleList.of(V8ValueErrorType.values());
+        types.remove(types.size() - 1);
+        for (V8ValueErrorType type : types) {
+            try (V8ValueError v8ValueError = v8Runtime.createV8ValueError(type, message)) {
+                assertEquals(message, v8ValueError.getMessage());
+                assertEquals(type, v8ValueError.getErrorType());
             }
         }
     }
@@ -111,6 +111,114 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
                 assertEquals("a", iV8ValueArray.getString(0));
             }
             assertEquals(1, v8ValueError.getInteger("a"));
+        }
+    }
+
+    @Test
+    public void testThrowErrorByError() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test() throws JavetException {
+                try (V8ValueError v8ValueError = v8Runtime.createV8ValueError(V8ValueErrorType.Error, "test")) {
+                    assertTrue(v8Runtime.throwError(v8ValueError));
+                }
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("x", v8ValueObject);
+            try {
+                v8Runtime.getExecutor("x.test()").executeInteger();
+                fail("Failed to throw an error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("Error: test", e.getMessage());
+                assertEquals("Error: test\n" +
+                                "Resource: undefined\n" +
+                                "Source Code: x.test()\n" +
+                                "Line Number: 1\n" +
+                                "Column: 2, 3\n" +
+                                "Position: 2, 3",
+                        e.getScriptingError().toString());
+            }
+            try (V8ValueError v8ValueError = v8Runtime.getExecutor(
+                    "let a = null; try { x.test() } catch (e) { a = e; } a;").execute()) {
+                assertEquals("test", v8ValueError.getMessage());
+                assertEquals(V8ValueErrorType.Error, v8ValueError.getErrorType());
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("x");
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testThrowErrorByObject() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test() throws JavetException {
+                try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[1,2,3]").execute()) {
+                    assertTrue(v8Runtime.throwError(v8ValueArray));
+                }
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("x", v8ValueObject);
+            try {
+                v8Runtime.getExecutor("x.test()").executeInteger();
+                fail("Failed to throw an error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("<null>", e.getMessage());
+                assertEquals("null\n" +
+                                "Resource: undefined\n" +
+                                "Source Code: x.test()\n" +
+                                "Line Number: 1\n" +
+                                "Column: 2, 3\n" +
+                                "Position: 2, 3",
+                        e.getScriptingError().toString());
+            }
+            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
+                    "let a = null; try { x.test() } catch (e) { a = e; } a;").execute()) {
+                assertEquals("1,2,3", v8ValueArray.toString());
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("x");
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testThrowErrorByTypeAndMessage() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test() {
+                assertTrue(v8Runtime.throwError(V8ValueErrorType.Error, "test"));
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("x", v8ValueObject);
+            try {
+                v8Runtime.getExecutor("x.test()").executeInteger();
+                fail("Failed to throw an error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("Error: test", e.getMessage());
+                assertEquals("Error: test\n" +
+                                "Resource: undefined\n" +
+                                "Source Code: x.test()\n" +
+                                "Line Number: 1\n" +
+                                "Column: 2, 3\n" +
+                                "Position: 2, 3",
+                        e.getScriptingError().toString());
+            }
+            try (V8ValueError v8ValueError = v8Runtime.getExecutor(
+                    "let a = null; try { x.test() } catch (e) { a = e; } a;").execute()) {
+                assertEquals("test", v8ValueError.getMessage());
+                assertEquals(V8ValueErrorType.Error, v8ValueError.getErrorType());
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("x");
+            v8Runtime.lowMemoryNotification();
         }
     }
 

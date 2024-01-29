@@ -1281,6 +1281,22 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_terminateExecutio
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    throwError
+ * Signature: (JILjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JILjava_lang_String_2
+  (JNIEnv *, jobject, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    throwError
+ * Signature: (JJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JJ
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    toString
  * Signature: (JJI)Ljava/lang/String;
  */

@@ -378,6 +378,10 @@ public interface IV8Native {
 
     void terminateExecution(long v8RuntimeHandle);
 
+    boolean throwError(long v8RuntimeHandle, int v8ValueErrorType, String message);
+
+    boolean throwError(long v8RuntimeHandle, long v8ValueHandle);
+
     String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean unlockV8Runtime(long v8RuntimeHandle);

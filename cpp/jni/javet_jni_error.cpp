@@ -34,3 +34,36 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_errorCreate
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JILjava_lang_String_2
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mErrorTypeId, jstring mMessage) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    auto errorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, mMessage);
+    V8LocalValue v8LocalValueError;
+    using namespace Javet::Enums::V8ValueErrorType;
+    switch (mErrorTypeId) {
+    case V8ValueErrorType::Error: v8LocalValueError = v8::Exception::Error(errorMessage); break;
+    case V8ValueErrorType::RangeError: v8LocalValueError = v8::Exception::RangeError(errorMessage); break;
+    case V8ValueErrorType::ReferenceError: v8LocalValueError = v8::Exception::ReferenceError(errorMessage); break;
+    case V8ValueErrorType::SyntaxError: v8LocalValueError = v8::Exception::SyntaxError(errorMessage); break;
+    case V8ValueErrorType::TypeError: v8LocalValueError = v8::Exception::TypeError(errorMessage); break;
+    case V8ValueErrorType::WasmCompileError: v8LocalValueError = v8::Exception::WasmCompileError(errorMessage); break;
+    case V8ValueErrorType::WasmLinkError: v8LocalValueError = v8::Exception::WasmLinkError(errorMessage); break;
+    case V8ValueErrorType::WasmRuntimeError: v8LocalValueError = v8::Exception::WasmRuntimeError(errorMessage); break;
+    }
+    if (!v8LocalValueError.IsEmpty()) {
+        v8Context->GetIsolate()->ThrowException(v8LocalValueError);
+        return true;
+    }
+    return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JJ
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (v8LocalValue->IsObject()) {
+        v8Context->GetIsolate()->ThrowException(v8LocalValue);
+        return true;
+    }
+    return false;
+}

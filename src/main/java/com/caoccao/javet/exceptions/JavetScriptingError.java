@@ -89,7 +89,7 @@ public final class JavetScriptingError {
                 });
             }
         } catch (JavetException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         } finally {
             JavetResourceUtils.safeClose(v8Value);
         }
