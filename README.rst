@@ -25,7 +25,7 @@ Javet
 
 `Javet <https://github.com/caoccao/Javet/>`_ is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
-If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit https://sjtucaocao.medium.com/ or https://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
+If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit https://blog.caoccao.com/ or https://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
 💖 If you like my work, please `donate <https://opencollective.com/javet>`_ to support me. If you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will be great because I don't have such device to support the community. Thank you for supporting Javet.
 
@@ -133,10 +133,10 @@ License
 Blog
 ====
 
-* `Performance Comparison of GraalJS, Javet and Nashorn <https://medium.com/towardsdev/performance-comparison-of-graaljs-javet-and-nashorn-7bae6925826a>`_
-* `How to Elegantly Expose JsonNode in V8 <https://medium.com/stackademic/how-to-elegantly-expose-jsonnode-in-v8-638aff9da549>`_
-* `How to Compromise V8 on JVM <https://sjtucaocao.medium.com/how-to-compromise-v8-on-jvm-ceb385572461>`_
-* `Is TypeScript a Good Choice for a Script Engine? <https://sjtucaocao.medium.com/is-typescript-a-good-choice-for-a-script-engine-01fe69921ace>`_
+* `Performance Comparison of GraalJS, Javet and Nashorn <https://blog.caoccao.com/performance-comparison-of-graaljs-javet-and-nashorn-7bae6925826a>`_
+* `How to Elegantly Expose JsonNode in V8 <https://blog.caoccao.com/how-to-elegantly-expose-jsonnode-in-v8-638aff9da549>`_
+* `How to Compromise V8 on JVM <https://blog.caoccao.com/how-to-compromise-v8-on-jvm-ceb385572461>`_
+* `Is TypeScript a Good Choice for a Script Engine? <https://blog.caoccao.com/is-typescript-a-good-choice-for-a-script-engine-01fe69921ace>`_
 
 Documents
 =========
