@@ -582,6 +582,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("list.includes('y', 1)").executeBoolean());
             // push()
             assertEquals(4, v8Runtime.getExecutor("list.push('z', '1')").executeInteger());
+            assertEquals(4, v8Runtime.getExecutor("list.push()").executeInteger());
             assertTrue(v8Runtime.getExecutor("list.includes('z')").executeBoolean());
             // pop()
             assertEquals("1", v8Runtime.getExecutor("list.pop()").executeString());
@@ -641,22 +642,32 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.filter(x => x == 'x' || x == 'z'))").executeString());
+            assertTrue(v8Runtime.getExecutor("(() => { try { list.filter(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // find()
             assertEquals("x", v8Runtime.getExecutor("list.find(x => x == 'x')").executeString());
             assertEquals("y", v8Runtime.getExecutor("list.find(x => x == 'y')").executeString());
             assertTrue(v8Runtime.getExecutor("list.find(x => x == '1') === undefined").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { list.find(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // findIndex()
             assertEquals(0, v8Runtime.getExecutor("list.findIndex(x => x == 'x')").executeInteger());
             assertEquals(1, v8Runtime.getExecutor("list.findIndex(x => x == 'y')").executeInteger());
             assertEquals(-1, v8Runtime.getExecutor("list.findIndex(x => x == '1')").executeInteger());
+            assertTrue(v8Runtime.getExecutor("(() => { try { list.findIndex(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // findLast()
             assertEquals("x", v8Runtime.getExecutor("list.findLast(x => x == 'x')").executeString());
             assertEquals("y", v8Runtime.getExecutor("list.findLast(x => x == 'y')").executeString());
             assertTrue(v8Runtime.getExecutor("list.findLast(x => x == '1') === undefined").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { list.findLast(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // findLastIndex()
             assertEquals(0, v8Runtime.getExecutor("list.findLastIndex(x => x == 'x')").executeInteger());
             assertEquals(1, v8Runtime.getExecutor("list.findLastIndex(x => x == 'y')").executeInteger());
             assertEquals(-1, v8Runtime.getExecutor("list.findLastIndex(x => x == '1')").executeInteger());
+            assertTrue(v8Runtime.getExecutor("(() => { try { list.findLastIndex(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // indexOf()
             assertEquals(0, v8Runtime.getExecutor("list.indexOf('x')").executeInteger());
             assertEquals(1, v8Runtime.getExecutor("list.indexOf('y')").executeInteger());
@@ -686,12 +697,18 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals("[x, y, z]", v8Runtime.getExecutor("list.toString()").executeString());
             // map()
             assertEquals("x0,y1,z2", v8Runtime.getExecutor("list.map((x, i) => x+i).toString()").executeString());
+            assertTrue(v8Runtime.getExecutor("(() => { try { list.map(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // every()
             assertFalse(v8Runtime.getExecutor("list.every((x, i) => x == 'x' && i == 0)").executeBoolean());
             assertTrue(v8Runtime.getExecutor("list.every((x, i) => x >= 'x' && i >= 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { list.every(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // some()
             assertTrue(v8Runtime.getExecutor("list.some((x, i) => x == 'x' && i == 0)").executeBoolean());
             assertFalse(v8Runtime.getExecutor("list.some((x, i) => x < 'x' && i < 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { list.some(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // at()
             assertEquals("x", v8Runtime.getExecutor("list.at(0)").executeString());
             assertEquals("y", v8Runtime.getExecutor("list.at(1)").executeString());

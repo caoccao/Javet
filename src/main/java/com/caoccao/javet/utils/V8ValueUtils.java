@@ -17,7 +17,9 @@
 package com.caoccao.javet.utils;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.V8ErrorTemplate;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
@@ -91,23 +93,6 @@ public final class V8ValueUtils {
      */
     public static String asString(V8Value[] v8Values, int index) {
         return asString(v8Values, index, StringUtils.EMPTY);
-    }
-
-    /**
-     * As V8ValueFunction by V8 value array and index.
-     *
-     * @param v8Values the V8 values
-     * @param index    the index
-     * @return the V8 value function
-     * @since 3.0.4
-     */
-    @CheckReturnValue
-    public static V8ValueFunction asV8ValueFunction(V8Value[] v8Values, int index) {
-        if (v8Values != null && index >= 0 && index < v8Values.length
-                && v8Values[index] instanceof V8ValueFunction) {
-            return (V8ValueFunction) v8Values[index];
-        }
-        return null;
     }
 
     /**
@@ -259,6 +244,28 @@ public final class V8ValueUtils {
                 }
             }
         }
+        return null;
+    }
+
+    /**
+     * Get and validate V8ValueFunction by V8 value array and index.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param v8Values  the V8 values
+     * @param index     the index
+     * @return the V8 value function
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    public static V8ValueFunction validateV8ValueFunction(V8Runtime v8Runtime, V8Value[] v8Values, int index) {
+        V8Value v8Value = null;
+        if (v8Values != null && index >= 0 && index < v8Values.length) {
+            v8Value = v8Values[index];
+            if (v8Values[index] instanceof V8ValueFunction) {
+                return (V8ValueFunction) v8Values[index];
+            }
+        }
+        v8Runtime.throwError(V8ValueErrorType.TypeError, V8ErrorTemplate.typeErrorValueIsNotAFunction(v8Value));
         return null;
     }
 }

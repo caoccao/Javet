@@ -15,6 +15,7 @@ Release Notes 3.0.x
 * Added ``V8ValueErrorType``
 * Added ``getErrorType()`` to ``V8ValueError``
 * Added ``getProxyListOverrideMethods()`` to ``JavetConverterConfig``
+* Added ``V8ErrorTemplate``
 
 3.0.3 V8 v12.1
 --------------
