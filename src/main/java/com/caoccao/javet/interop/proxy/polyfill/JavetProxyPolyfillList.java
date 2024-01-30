@@ -66,6 +66,7 @@ public final class JavetProxyPolyfillList {
     private static final String POP = "pop";
     private static final String PUSH = "push";
     private static final String REDUCE = "reduce";
+    private static final String REDUCE_RIGHT = "reduceRight";
     private static final String REVERSE = "reverse";
     private static final String SHIFT = "shift";
     private static final String SIZE = "size";
@@ -101,6 +102,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(POP, JavetProxyPolyfillList::pop);
         functionMap.put(PUSH, JavetProxyPolyfillList::push);
         functionMap.put(REDUCE, JavetProxyPolyfillList::reduce);
+        functionMap.put(REDUCE_RIGHT, JavetProxyPolyfillList::reduceRight);
         functionMap.put(REVERSE, JavetProxyPolyfillList::reverse);
         functionMap.put(SHIFT, JavetProxyPolyfillList::shift);
         functionMap.put(SIZE, JavetProxyPolyfillList::length);
@@ -941,6 +943,89 @@ public final class JavetProxyPolyfillList {
                                     }
                                     accumulator = result;
                                     ++index;
+                                }
+                                return accumulator;
+                            }
+                        }
+                    }
+                    return v8Runtime.createV8ValueUndefined();
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.reduceRight()
+     * The reduceRight() method of Array instances applies a function against an accumulator and each value
+     * of the array (from right-to-left) to reduce it to a single value.
+     * <p>
+     * See also Array.prototype.reduce() for left-to-right.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value reduceRight(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                REDUCE, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.validateV8ValueFunction(v8Runtime, v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8Value initialValue = V8ValueUtils.asV8Value(v8Values, 1);
+                        final int length = list.size();
+                        if (initialValue == null) {
+                            if (length == 0) {
+                                v8Runtime.throwError(
+                                        V8ValueErrorType.TypeError,
+                                        V8ErrorTemplate.typeErrorReduceOfEmptyArrayWithNoInitialValue());
+                            } else if (length == 1) {
+                                return v8Runtime.toV8Value(list.get(0));
+                            } else {
+                                /**
+                                 * If initialValue is not specified, accumulator is initialized
+                                 * to the first value in the array, and callbackFn starts executing
+                                 * with the second value in the array as currentValue.
+                                 */
+                                V8Value accumulator = v8Runtime.toV8Value(list.get(length - 1));
+                                int index = length - 1;
+                                ListIterator<?> listIterator = list.listIterator(length);
+                                while (listIterator.hasPrevious()) {
+                                    if (index == length - 1) {
+                                        listIterator.previous();
+                                        --index;
+                                        continue;
+                                    }
+                                    V8Value result;
+                                    try (V8Value currentValue = v8Runtime.toV8Value(listIterator.previous())) {
+                                        result = v8ValueFunction.call(
+                                                null, accumulator, currentValue, index, thisObject);
+                                    } finally {
+                                        JavetResourceUtils.safeClose(accumulator);
+                                    }
+                                    accumulator = result;
+                                    --index;
+                                }
+                                return accumulator;
+                            }
+                        } else {
+                            if (length == 0) {
+                                return initialValue;
+                            } else {
+                                V8Value accumulator = initialValue.toClone();
+                                int index = length - 1;
+                                ListIterator<?> listIterator = list.listIterator(length);
+                                while (listIterator.hasPrevious()) {
+                                    V8Value result;
+                                    try (V8Value currentValue = v8Runtime.toV8Value(listIterator.previous())) {
+                                        result = v8ValueFunction.call(
+                                                null, accumulator, currentValue, index, thisObject);
+                                    } finally {
+                                        JavetResourceUtils.safeClose(accumulator);
+                                    }
+                                    accumulator = result;
+                                    --index;
                                 }
                                 return accumulator;
                             }
