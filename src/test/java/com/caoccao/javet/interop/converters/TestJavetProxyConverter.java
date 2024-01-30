@@ -735,6 +735,14 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals("x", v8Runtime.getExecutor("list.clear(); list.reduceRight((x,y)=>x+y+',', 'x')").executeString());
             assertEquals("_x0true", v8Runtime.getExecutor("list.push('x'); list.reduceRight((x,y,i,a)=>x+y+i+(a===list), '_')").executeString());
             assertEquals("zy1truex0true", v8Runtime.getExecutor("list.push('y','z'); list.reduceRight((x,y,i,a)=>x+y+i+(a===list))").executeString());
+            // slice()
+            assertEquals("[\"x\",\"y\",\"z\"]", v8Runtime.getExecutor("JSON.stringify(list.slice())").executeString());
+            assertEquals("[\"x\",\"y\",\"z\"]", v8Runtime.getExecutor("JSON.stringify(list.slice(0))").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify(list.slice(0,0))").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify(list.slice(-5,-5))").executeString());
+            assertEquals("[\"x\",\"y\",\"z\"]", v8Runtime.getExecutor("JSON.stringify(list.slice(0,100))").executeString());
+            assertEquals("[\"y\",\"z\"]", v8Runtime.getExecutor("JSON.stringify(list.slice(1))").executeString());
+            assertEquals("[\"y\"]", v8Runtime.getExecutor("JSON.stringify(list.slice(1,2))").executeString());
             // reverse()
             assertEquals("[z, y, x]", v8Runtime.getExecutor("list.reverse().toString()").executeString());
             assertEquals("[x, y, z]", v8Runtime.getExecutor("list.reverse().toString()").executeString());

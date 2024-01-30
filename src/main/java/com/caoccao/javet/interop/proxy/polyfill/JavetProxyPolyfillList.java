@@ -70,6 +70,7 @@ public final class JavetProxyPolyfillList {
     private static final String REVERSE = "reverse";
     private static final String SHIFT = "shift";
     private static final String SIZE = "size";
+    private static final String SLICE = "slice";
     private static final String SOME = "some";
     private static final String TO_JSON = "toJSON";
     private static final String TO_REVERSED = "toReversed";
@@ -106,6 +107,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(REVERSE, JavetProxyPolyfillList::reverse);
         functionMap.put(SHIFT, JavetProxyPolyfillList::shift);
         functionMap.put(SIZE, JavetProxyPolyfillList::length);
+        functionMap.put(SLICE, JavetProxyPolyfillList::slice);
         functionMap.put(SOME, JavetProxyPolyfillList::some);
         functionMap.put(TO_JSON, JavetProxyPolyfillList::toJSON);
         functionMap.put(TO_REVERSED, JavetProxyPolyfillList::toReversed);
@@ -1081,6 +1083,52 @@ public final class JavetProxyPolyfillList {
                         return v8Runtime.createV8ValueUndefined();
                     }
                     return v8Runtime.toV8Value(ListUtils.shift(list));
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.slice().
+     * The slice() method of Array instances returns a shallow copy of a portion of an array
+     * into a new array object selected from start to end (end not included) where start
+     * and end represent the index of items in that array. The original array will not be modified.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value slice(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                SHIFT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    List<Object> results = new ArrayList<>();
+                    if (!list.isEmpty()) {
+                        final int length = list.size();
+                        int startIndex = V8ValueUtils.asInt(v8Values, 0);
+                        if (startIndex < 0) {
+                            startIndex += length;
+                        }
+                        if (startIndex < 0) {
+                            startIndex = 0;
+                        }
+                        int endIndex = V8ValueUtils.asInt(v8Values, 1, length);
+                        if (endIndex < 0) {
+                            endIndex += length;
+                        }
+                        if (endIndex < 0) {
+                            endIndex = 0;
+                        }
+                        if (endIndex > length) {
+                            endIndex = length;
+                        }
+                        if (startIndex < endIndex) {
+                            results.addAll(list.subList(startIndex, endIndex));
+                        }
+                    }
+                    return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
                 }));
     }
 
