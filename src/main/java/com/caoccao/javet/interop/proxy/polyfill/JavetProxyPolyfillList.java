@@ -72,6 +72,7 @@ public final class JavetProxyPolyfillList {
     private static final String SIZE = "size";
     private static final String SLICE = "slice";
     private static final String SOME = "some";
+    private static final String SORT = "sort";
     private static final String TO_JSON = "toJSON";
     private static final String TO_REVERSED = "toReversed";
     private static final String UNSHIFT = "unshift";
@@ -109,6 +110,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(SIZE, JavetProxyPolyfillList::length);
         functionMap.put(SLICE, JavetProxyPolyfillList::slice);
         functionMap.put(SOME, JavetProxyPolyfillList::some);
+        functionMap.put(SORT, JavetProxyPolyfillList::sort);
         functionMap.put(TO_JSON, JavetProxyPolyfillList::toJSON);
         functionMap.put(TO_REVERSED, JavetProxyPolyfillList::toReversed);
         functionMap.put(UNSHIFT, JavetProxyPolyfillList::unshift);
@@ -1165,6 +1167,55 @@ public final class JavetProxyPolyfillList {
                         }
                     }
                     return v8Runtime.createV8ValueBoolean(false);
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.sort().
+     * The sort() method of Array instances sorts the elements of an array in place
+     * and returns the reference to the same array, now sorted.
+     * The default sort order is ascending, built upon converting the elements into strings,
+     * then comparing their sequences of UTF-16 code units values.
+     * <p>
+     * The time and space complexity of the sort cannot be guaranteed as it depends on the implementation.
+     * <p>
+     * To sort the elements in an array without mutating the original array, use toSorted().
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value sort(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                SOME, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    final int length = list.size();
+                    if (length > 1) {
+                        V8ValueFunction v8ValueFunction = ArrayUtils.isEmpty(v8Values)
+                                ? null
+                                : V8ValueUtils.validateV8ValueFunction(v8Runtime, v8Values, 0);
+                        if (v8ValueFunction == null) {
+                            list.sort((o1, o2) -> ((Comparator<String>) Comparator.naturalOrder()).compare(
+                                    String.valueOf(o1), String.valueOf(o2)));
+                        } else {
+                            try {
+                                list.sort((o1, o2) -> {
+                                    try (V8Value v8Value = v8ValueFunction.call(null, o1, o2)) {
+                                        return v8Value.asInt();
+                                    } catch (JavetException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
+                            } catch (Throwable t) {
+                                v8Runtime.throwError(V8ValueErrorType.Error, t.getMessage());
+                            }
+                        }
+                    }
+                    return thisObject;
                 }));
     }
 
