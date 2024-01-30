@@ -18,9 +18,11 @@ package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.*;
+import com.caoccao.javet.entities.JavetEntityError;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
@@ -689,6 +691,28 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     v8Runtime.getExecutor("const testForEach = [];" +
                             "list.forEach((x, i, a) => testForEach.push(x + i + (a === list)));" +
                             "JSON.stringify(testForEach)").executeString());
+            // reduce()
+            try {
+                v8Runtime.getExecutor("list.reduce()").executeVoid();
+                fail("Failed to raise type error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: undefined is not a function", e.getMessage());
+                assertEquals(
+                        V8ValueErrorType.TypeError,
+                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+            }
+            try {
+                v8Runtime.getExecutor("list.clear(); list.reduce((x,y)=>x+y)").executeVoid();
+                fail("Failed to raise type error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: Reduce of empty array with no initial value", e.getMessage());
+                assertEquals(
+                        V8ValueErrorType.TypeError,
+                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+            }
+            assertEquals("x", v8Runtime.getExecutor("list.clear(); list.reduce((x,y)=>x+y+',', 'x')").executeString());
+            assertEquals("_x0true", v8Runtime.getExecutor("list.push('x'); list.reduce((x,y,i,a)=>x+y+i+(a===list), '_')").executeString());
+            assertEquals("xy1truez2true", v8Runtime.getExecutor("list.push('y','z'); list.reduce((x,y,i,a)=>x+y+i+(a===list))").executeString());
             // reverse()
             assertEquals("[z, y, x]", v8Runtime.getExecutor("list.reverse().toString()").executeString());
             assertEquals("[x, y, z]", v8Runtime.getExecutor("list.reverse().toString()").executeString());

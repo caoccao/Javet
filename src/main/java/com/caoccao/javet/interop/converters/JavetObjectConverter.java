@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.entities.JavetEntityError;
 import com.caoccao.javet.entities.JavetEntityFunction;
 import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.entities.JavetEntitySymbol;
@@ -29,6 +30,7 @@ import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.IJavetProxyHandler;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
 
@@ -256,6 +258,17 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (v8Value instanceof V8ValueSymbol) {
             final V8ValueSymbol v8ValueSymbol = (V8ValueSymbol) v8Value;
             return (T) new JavetEntitySymbol(v8ValueSymbol.getDescription());
+        } else if (v8Value instanceof V8ValueError) {
+            // https://v8.dev/features/error-cause
+            final V8ValueError v8ValueError = (V8ValueError) v8Value;
+            final JavetEntityError javetEntityError = new JavetEntityError(
+                    v8ValueError.getErrorType(),
+                    v8ValueError.getMessage(),
+                    v8ValueError.toString(),
+                    v8ValueError.getStack());
+            v8ValueError.forEach((V8Value key, V8Value value) ->
+                    javetEntityError.getContext().put(key.toString(), toObject(value, depth + 1)));
+            return (T) javetEntityError;
         } else if (v8Value instanceof V8ValueObject) {
             if (v8Value instanceof V8ValueProxy) {
                 final V8ValueProxy v8ValueProxy = (V8ValueProxy) v8Value;
@@ -285,8 +298,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 } else if (config.isSkipFunctionInObject() && value instanceof V8ValueFunction) {
                     // Pass
                 } else {
-                    Object object = toObject(value, depth + 1);
-                    map.put(keyString, object);
+                    map.put(keyString, toObject(value, depth + 1));
                 }
             });
             if (!customObjectMap.isEmpty()
@@ -408,7 +420,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             final IJavetEntityFunction javetEntityFunction = (IJavetEntityFunction) object;
             String sourceCode = javetEntityFunction.getJSFunctionType().isUserDefined() ?
                     javetEntityFunction.getSourceCode() : null;
-            if (sourceCode == null || sourceCode.length() == 0) {
+            if (StringUtils.isEmpty(sourceCode)) {
                 v8Value = v8Runtime.createV8ValueNull();
             } else {
                 v8Value = v8Runtime.getExecutor(sourceCode).execute();
@@ -416,6 +428,21 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (object instanceof JavetEntitySymbol) {
             final JavetEntitySymbol javetEntitySymbol = (JavetEntitySymbol) object;
             v8Value = v8Runtime.createV8ValueSymbol(javetEntitySymbol.getDescription(), true);
+        } else if (object instanceof JavetEntityError) {
+            final JavetEntityError javetEntityError = (JavetEntityError) object;
+            try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+                V8ValueError v8ValueError = v8Scope.createV8ValueError(
+                        javetEntityError.getType(), javetEntityError.getMessage());
+                v8ValueError.setStack(javetEntityError.getStack());
+                List<Object> objects = new ArrayList<>(javetEntityError.getContext().size() << 1);
+                javetEntityError.getContext().forEach((key, value) -> {
+                    objects.add(key);
+                    objects.add(value);
+                });
+                v8ValueError.set(objects.toArray());
+                v8Scope.setEscapable();
+                v8Value = v8ValueError;
+            }
         } else if (object.getClass().isArray()) {
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                 if (object instanceof boolean[]) {

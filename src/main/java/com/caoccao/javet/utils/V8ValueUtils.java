@@ -23,6 +23,7 @@ import com.caoccao.javet.exceptions.V8ErrorTemplate;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueUndefined;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -37,6 +38,19 @@ import java.util.StringJoiner;
 public final class V8ValueUtils {
 
     private V8ValueUtils() {
+    }
+
+    /**
+     * Call asInt() by V8 value array and index.
+     *
+     * @param v8Values the V8 values
+     * @param index    the index
+     * @return the int value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static int asInt(V8Value[] v8Values, int index) throws JavetException {
+        return asInt(v8Values, index, 0);
     }
 
     /**
@@ -57,16 +71,15 @@ public final class V8ValueUtils {
     }
 
     /**
-     * Call asInt() by V8 value array and index.
+     * Call toString() by V8 value array and index.
      *
      * @param v8Values the V8 values
      * @param index    the index
-     * @return the int value
-     * @throws JavetException the javet exception
+     * @return the string
      * @since 3.0.4
      */
-    public static int asInt(V8Value[] v8Values, int index) throws JavetException {
-        return asInt(v8Values, index, 0);
+    public static String asString(V8Value[] v8Values, int index) {
+        return asString(v8Values, index, V8ValueUndefined.UNDEFINED);
     }
 
     /**
@@ -76,6 +89,7 @@ public final class V8ValueUtils {
      * @param index        the index
      * @param defaultValue the default value
      * @return the string
+     * @since 3.0.4
      */
     public static String asString(V8Value[] v8Values, int index, String defaultValue) {
         if (v8Values != null && index >= 0 && index < v8Values.length && v8Values[index] != null) {
@@ -85,14 +99,42 @@ public final class V8ValueUtils {
     }
 
     /**
-     * Call toString() by V8 value array and index.
+     * Call toString() by V8 value.
+     *
+     * @param v8Value the V8 value
+     * @return the string
+     * @since 3.0.4
+     */
+    public static String asString(V8Value v8Value) {
+        return asString(v8Value, V8ValueUndefined.UNDEFINED);
+    }
+
+    /**
+     * Call toString() by V8 value.
+     *
+     * @param v8Value      the V8 value
+     * @param defaultValue the default value
+     * @return the string
+     * @since 3.0.4
+     */
+    public static String asString(V8Value v8Value, String defaultValue) {
+        return v8Value == null ? defaultValue : v8Value.toString();
+    }
+
+    /**
+     * As V8Value by V8 value array and index.
      *
      * @param v8Values the V8 values
      * @param index    the index
-     * @return the string
+     * @return the V8 value
+     * @since 3.0.4
      */
-    public static String asString(V8Value[] v8Values, int index) {
-        return asString(v8Values, index, StringUtils.EMPTY);
+    @CheckReturnValue
+    public static V8Value asV8Value(V8Value[] v8Values, int index) {
+        if (v8Values != null && index >= 0 && index < v8Values.length) {
+            return v8Values[index];
+        }
+        return null;
     }
 
     /**
@@ -129,7 +171,7 @@ public final class V8ValueUtils {
         }
         StringJoiner stringJoiner = new StringJoiner(delimiter);
         for (V8Value v8Value : v8Values) {
-            stringJoiner.add(v8Value.toString());
+            stringJoiner.add(asString(v8Value));
         }
         return stringJoiner.toString();
     }

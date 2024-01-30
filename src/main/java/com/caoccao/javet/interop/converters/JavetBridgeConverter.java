@@ -17,6 +17,10 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.entities.JavetEntityError;
+import com.caoccao.javet.entities.JavetEntityFunction;
+import com.caoccao.javet.entities.JavetEntityMap;
+import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
@@ -72,6 +76,11 @@ public class JavetBridgeConverter extends JavetProxyConverter {
             }
         } else if (object instanceof V8Value) {
             v8Value = (V8Value) object;
+        } else if (object instanceof JavetEntityFunction
+                || object instanceof JavetEntityMap
+                || object instanceof JavetEntitySymbol
+                || object instanceof JavetEntityError) {
+            v8Value = super.toV8Value(v8Runtime, object, depth);
         } else {
             v8Value = toProxiedV8Value(v8Runtime, object);
         }

@@ -35,6 +35,50 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_errorCreate
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingException
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+    return HAS_PENDING_EXCEPTION(v8InternalIsolate);
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMessage
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+    return v8InternalIsolate->has_pending_message();
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledException
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+    return v8InternalIsolate->has_scheduled_exception();
+#else
+    return false;
+#endif
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promoteScheduledException
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+#ifdef ENABLE_NODE
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+    if (v8InternalIsolate->has_scheduled_exception()) {
+        v8InternalIsolate->PromoteScheduledException();
+        return true;
+    }
+#endif
+    return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_reportPendingMessages
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    return Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JILjava_lang_String_2
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mErrorTypeId, jstring mMessage) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);

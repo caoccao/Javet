@@ -29,6 +29,7 @@ import com.caoccao.javet.interop.binding.BindingContext;
 import com.caoccao.javet.interop.binding.MethodDescriptor;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.ThreadSafeMap;
@@ -645,26 +646,29 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean set(Object... keysAndValues) throws JavetException {
-        assert keysAndValues.length > 0 && keysAndValues.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
-        final int length = keysAndValues.length;
-        final int pairLength = keysAndValues.length >> 1;
-        Object[] keys = new Object[pairLength];
-        Object[] values = new Object[pairLength];
-        for (int i = 0; i < pairLength; i++) {
-            keys[i] = keysAndValues[i * 2];
-            values[i] = keysAndValues[i * 2 + 1];
-        }
-        try (V8VirtualValueList v8VirtualValueKeys = new V8VirtualValueList(checkV8Runtime(), OBJECT_CONVERTER, keys);
-             V8VirtualValueList v8VirtualValueValues = new V8VirtualValueList(v8Runtime, null, values)) {
-            V8Value[] v8ValueKeys = v8VirtualValueKeys.get();
-            V8Value[] v8ValueValues = v8VirtualValueValues.get();
-            V8Value[] v8Values = new V8Value[length];
+        if (ArrayUtils.isNotEmpty(keysAndValues)) {
+            assert keysAndValues.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
+            final int length = keysAndValues.length;
+            final int pairLength = length >> 1;
+            Object[] keys = new Object[pairLength];
+            Object[] values = new Object[pairLength];
             for (int i = 0; i < pairLength; i++) {
-                v8Values[i * 2] = v8ValueKeys[i];
-                v8Values[i * 2 + 1] = v8ValueValues[i];
+                keys[i] = keysAndValues[i * 2];
+                values[i] = keysAndValues[i * 2 + 1];
             }
-            return v8Runtime.getV8Internal().objectSet(this, v8Values);
+            try (V8VirtualValueList v8VirtualValueKeys = new V8VirtualValueList(checkV8Runtime(), OBJECT_CONVERTER, keys);
+                 V8VirtualValueList v8VirtualValueValues = new V8VirtualValueList(v8Runtime, null, values)) {
+                V8Value[] v8ValueKeys = v8VirtualValueKeys.get();
+                V8Value[] v8ValueValues = v8VirtualValueValues.get();
+                V8Value[] v8Values = new V8Value[length];
+                for (int i = 0; i < pairLength; i++) {
+                    v8Values[i * 2] = v8ValueKeys[i];
+                    v8Values[i * 2 + 1] = v8ValueValues[i];
+                }
+                return v8Runtime.getV8Internal().objectSet(this, v8Values);
+            }
         }
+        return false;
     }
 
     @Override

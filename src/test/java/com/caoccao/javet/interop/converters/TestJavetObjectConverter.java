@@ -17,10 +17,12 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.entities.JavetEntityError;
 import com.caoccao.javet.entities.JavetEntityFunction;
 import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.enums.JSFunctionType;
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetError;
@@ -28,6 +30,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetMappable;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.*;
@@ -173,6 +176,42 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals(customObjects[i].getValue(), v8CustomObjects.get(i).getValue());
         }
         v8Runtime.setConverter(originalConverter);
+    }
+
+    @Test
+    public void testError() throws JavetException {
+        IJavetConverter converter = new JavetObjectConverter();
+        JavetEntityError javetEntityError;
+        try (V8ValueError v8ValueError = v8Runtime.createV8ValueError(V8ValueErrorType.Error, "test")) {
+            javetEntityError = converter.toObject(v8ValueError);
+            assertEquals("test", javetEntityError.getMessage());
+            assertEquals("Error: test", javetEntityError.getDetailedMessage());
+            assertEquals(V8ValueErrorType.Error, javetEntityError.getType());
+            assertEquals("Error: test", javetEntityError.getStack());
+        }
+        try (V8ValueError v8ValueError = converter.toV8Value(v8Runtime, javetEntityError)) {
+            assertEquals("test", v8ValueError.getMessage());
+            assertEquals("Error: test", v8ValueError.toString());
+            assertEquals(V8ValueErrorType.Error, v8ValueError.getErrorType());
+            assertEquals("Error: test", v8ValueError.getStack());
+        }
+        try (V8ValueError v8ValueError = v8Runtime.getExecutor(
+                "Object.assign(new TypeError('test'), {a:1,b:2})").execute()) {
+            javetEntityError = converter.toObject(v8ValueError);
+            assertEquals("test", javetEntityError.getMessage());
+            assertEquals("TypeError: test", javetEntityError.getDetailedMessage());
+            assertEquals(V8ValueErrorType.TypeError, javetEntityError.getType());
+            assertTrue(javetEntityError.getStack().startsWith("TypeError: test"));
+            assertEquals(SimpleMap.of("a", 1, "b", 2), javetEntityError.getContext());
+        }
+        try (V8ValueError v8ValueError = converter.toV8Value(v8Runtime, javetEntityError)) {
+            assertEquals("test", v8ValueError.getMessage());
+            assertEquals("TypeError: test", v8ValueError.toString());
+            assertEquals(V8ValueErrorType.TypeError, v8ValueError.getErrorType());
+            assertTrue(v8ValueError.getStack().startsWith("TypeError: test"));
+            assertEquals(1, v8ValueError.getInteger("a"));
+            assertEquals(2, v8ValueError.getInteger("b"));
+        }
     }
 
     @Test

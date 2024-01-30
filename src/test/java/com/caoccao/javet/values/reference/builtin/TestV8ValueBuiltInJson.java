@@ -49,7 +49,7 @@ public class TestV8ValueBuiltInJson extends BaseTestJavetRuntime {
                                 "    --> starting at object with constructor 'Object'\n" +
                                 "    |     property 'y' -> object with constructor 'Object'\n" +
                                 "    --- property 'x' closes the circle",
-                        e.getScriptingError().getDetailedMessage());
+                        e.getScriptingError().getMessage());
                 assertEquals(
                         "TypeError: Converting circular structure to JSON\n" +
                                 "    --> starting at object with constructor 'Object'\n" +
@@ -64,7 +64,7 @@ public class TestV8ValueBuiltInJson extends BaseTestJavetRuntime {
     @Test
     public void testConversion() throws JavetException {
         Object jsonObject = v8Runtime.toObject(v8Runtime.getGlobalObject().getBuiltInJson(), true);
-        assertTrue(jsonObject instanceof Map);
-        assertTrue(((Map) jsonObject).isEmpty());
+        assertInstanceOf(Map.class, jsonObject);
+        assertTrue(((Map<?, ?>) jsonObject).isEmpty());
     }
 }

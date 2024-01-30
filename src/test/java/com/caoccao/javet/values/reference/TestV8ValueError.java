@@ -24,11 +24,11 @@ import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetScriptingError;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleMap;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -92,10 +92,9 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
             assertEquals("test", javetScriptingError.getMessage());
             assertEquals("test", javetScriptingError.getDetailedMessage());
             assertEquals("abc", javetScriptingError.getStack());
-            Map<String, Object> context = javetScriptingError.getContext();
-            assertEquals(2, context.size());
-            assertEquals(123, context.get("x"));
-            assertEquals("def", context.get("y"));
+            assertEquals(
+                    SimpleMap.of("x", 123, "y", "def", "stack", "abc", "message", "test"),
+                    javetScriptingError.getContext());
         }
     }
 
@@ -223,6 +222,27 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testThrowErrorWithoutCatch() {
+        try {
+            v8Runtime.getExecutor("throw new Error('test');").executeVoid();
+            fail("Failed to catch JavetExecutionException.");
+        } catch (JavetException e) {
+            assertInstanceOf(JavetExecutionException.class, e);
+            JavetExecutionException javetExecutionException = (JavetExecutionException) e;
+            assertEquals("Error: test", javetExecutionException.getMessage());
+            assertEquals(301, javetExecutionException.getError().getCode());
+            assertEquals(
+                    "Error: test\n" +
+                            "Resource: undefined\n" +
+                            "Source Code: throw new Error('test');\n" +
+                            "Line Number: 1\n" +
+                            "Column: 0, 1\n" +
+                            "Position: 0, 1",
+                    javetExecutionException.getScriptingError().toString());
+        }
+    }
+
+    @Test
     public void testThrowInCallback() {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
@@ -281,19 +301,20 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testThrowWithoutCatch() {
+    public void testThrowNumberWithoutCatch() {
         try {
-            v8Runtime.getExecutor("throw new Error('test');").executeVoid();
+            v8Runtime.getExecutor("throw 123;").executeVoid();
             fail("Failed to catch JavetExecutionException.");
         } catch (JavetException e) {
             assertInstanceOf(JavetExecutionException.class, e);
             JavetExecutionException javetExecutionException = (JavetExecutionException) e;
-            assertEquals("Error: test", javetExecutionException.getMessage());
+            assertEquals("<null>", javetExecutionException.getMessage());
             assertEquals(301, javetExecutionException.getError().getCode());
+            assertEquals(123, javetExecutionException.getScriptingError().getContext());
             assertEquals(
-                    "Error: test\n" +
+                    "null\n" +
                             "Resource: undefined\n" +
-                            "Source Code: throw new Error('test');\n" +
+                            "Source Code: throw 123;\n" +
                             "Line Number: 1\n" +
                             "Column: 0, 1\n" +
                             "Position: 0, 1",

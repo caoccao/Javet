@@ -16,7 +16,9 @@
 
 package com.caoccao.javet.interop.proxy.polyfill;
 
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.V8ErrorTemplate;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
@@ -63,6 +65,7 @@ public final class JavetProxyPolyfillList {
     private static final String MAP = "map";
     private static final String POP = "pop";
     private static final String PUSH = "push";
+    private static final String REDUCE = "reduce";
     private static final String REVERSE = "reverse";
     private static final String SHIFT = "shift";
     private static final String SIZE = "size";
@@ -97,6 +100,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(MAP, JavetProxyPolyfillList::map);
         functionMap.put(POP, JavetProxyPolyfillList::pop);
         functionMap.put(PUSH, JavetProxyPolyfillList::push);
+        functionMap.put(REDUCE, JavetProxyPolyfillList::reduce);
         functionMap.put(REVERSE, JavetProxyPolyfillList::reverse);
         functionMap.put(SHIFT, JavetProxyPolyfillList::shift);
         functionMap.put(SIZE, JavetProxyPolyfillList::length);
@@ -697,7 +701,7 @@ public final class JavetProxyPolyfillList {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 JOIN, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    String delimiter = V8ValueUtils.asString(v8Values, 0);
+                    String delimiter = V8ValueUtils.asString(v8Values, 0, StringUtils.EMPTY);
                     String result = list.stream().map(Object::toString).collect(Collectors.joining(delimiter));
                     return v8Runtime.createV8ValueString(result);
                 }));
@@ -861,6 +865,89 @@ public final class JavetProxyPolyfillList {
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
                         v8Runtime.createV8ValueInteger(
                                 ListUtils.push((List<Object>) list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
+    }
+
+    /**
+     * Polyfill Array.prototype.reduce().
+     * The reduce() method of Array instances executes a user-supplied "reducer" callback function on each element
+     * of the array, in order, passing in the return value from the calculation on the preceding element.
+     * The final result of running the reducer across all elements of the array is a single value.
+     * <p>
+     * The first time that the callback is run there is no "return value of the previous calculation".
+     * If supplied, an initial value may be used in its place. Otherwise the array element at index 0 is used
+     * as the initial value and iteration starts from the next element (index 1 instead of index 0).
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value reduce(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                REDUCE, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.validateV8ValueFunction(v8Runtime, v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8Value initialValue = V8ValueUtils.asV8Value(v8Values, 1);
+                        final int length = list.size();
+                        if (initialValue == null) {
+                            if (length == 0) {
+                                v8Runtime.throwError(
+                                        V8ValueErrorType.TypeError,
+                                        V8ErrorTemplate.typeErrorReduceOfEmptyArrayWithNoInitialValue());
+                            } else if (length == 1) {
+                                return v8Runtime.toV8Value(list.get(0));
+                            } else {
+                                /**
+                                 * If initialValue is not specified, accumulator is initialized
+                                 * to the first value in the array, and callbackFn starts executing
+                                 * with the second value in the array as currentValue.
+                                 */
+                                V8Value accumulator = v8Runtime.toV8Value(list.get(0));
+                                int index = 0;
+                                for (Object object : list) {
+                                    if (index == 0) {
+                                        ++index;
+                                        continue;
+                                    }
+                                    V8Value result;
+                                    try (V8Value currentValue = v8Runtime.toV8Value(object)) {
+                                        result = v8ValueFunction.call(
+                                                null, accumulator, currentValue, index, thisObject);
+                                    } finally {
+                                        JavetResourceUtils.safeClose(accumulator);
+                                    }
+                                    accumulator = result;
+                                    ++index;
+                                }
+                                return accumulator;
+                            }
+                        } else {
+                            if (length == 0) {
+                                return initialValue;
+                            } else {
+                                V8Value accumulator = initialValue.toClone();
+                                int index = 0;
+                                for (Object object : list) {
+                                    V8Value result;
+                                    try (V8Value currentValue = v8Runtime.toV8Value(object)) {
+                                        result = v8ValueFunction.call(
+                                                null, accumulator, currentValue, index, thisObject);
+                                    } finally {
+                                        JavetResourceUtils.safeClose(accumulator);
+                                    }
+                                    accumulator = result;
+                                    ++index;
+                                }
+                                return accumulator;
+                            }
+                        }
+                    }
+                    return v8Runtime.createV8ValueUndefined();
+                }));
     }
 
     /**

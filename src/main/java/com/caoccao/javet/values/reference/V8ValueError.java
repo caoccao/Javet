@@ -120,4 +120,16 @@ public class V8ValueError extends V8ValueObject {
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Error;
     }
+
+    /**
+     * Sets stack.
+     *
+     * @param stack the stack
+     * @return the stack
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public boolean setStack(String stack) throws JavetException {
+        return setProperty(STACK, stack);
+    }
 }

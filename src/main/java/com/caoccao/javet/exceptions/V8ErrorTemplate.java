@@ -16,18 +16,36 @@
 
 package com.caoccao.javet.exceptions;
 
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
 
+/**
+ * The type V8 error template is for generating the V8 error message.
+ *
+ * @since 3.0.4
+ */
 public final class V8ErrorTemplate {
     private V8ErrorTemplate() {
     }
 
-    public static String typeErrorValueIsNotAFunction(V8Value v8Value) {
-        return v8ValueToString(v8Value) + " is not a function";
+    /**
+     * TypeError: Reduce of empty array with no initial value.
+     *
+     * @return the message
+     * @since 3.0.4
+     */
+    public static String typeErrorReduceOfEmptyArrayWithNoInitialValue() {
+        return "Reduce of empty array with no initial value";
     }
 
-    private static String v8ValueToString(V8Value v8Value) {
-        return v8Value == null ? V8ValueUndefined.UNDEFINED : v8Value.toString();
+    /**
+     * TypeError: ${value} is not a function.
+     *
+     * @param v8Value the V8 value
+     * @return the message
+     * @since 3.0.4
+     */
+    public static String typeErrorValueIsNotAFunction(V8Value v8Value) {
+        return V8ValueUtils.asString(v8Value) + " is not a function";
     }
 }

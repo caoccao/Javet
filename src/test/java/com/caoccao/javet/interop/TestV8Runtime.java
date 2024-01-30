@@ -58,7 +58,7 @@ public class TestV8Runtime extends BaseTestJavet {
             } catch (JavetExecutionException e) {
                 assertEquals(
                         "EvalError: Code generation from strings disallowed for this context",
-                        e.getScriptingError().getMessage());
+                        e.getScriptingError().getDetailedMessage());
             }
         }
     }

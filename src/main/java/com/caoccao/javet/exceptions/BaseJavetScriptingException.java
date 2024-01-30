@@ -46,7 +46,7 @@ public abstract class BaseJavetScriptingException extends JavetException {
         super(
                 error,
                 SimpleMap.of(
-                        JavetError.PARAMETER_MESSAGE, scriptingError.getMessage(),
+                        JavetError.PARAMETER_MESSAGE, scriptingError.getDetailedMessage(),
                         JavetError.PARAMETER_RESOURCE_NAME, scriptingError.getResourceName(),
                         JavetError.PARAMETER_SOURCE_LINE, scriptingError.getSourceLine(),
                         JavetError.PARAMETER_LINE_NUMBER, scriptingError.getLineNumber(),

@@ -12,10 +12,11 @@ Release Notes 3.0.x
 * Added ``getClassDescriptorMap()`` to ``JavetReflectionProxyClassHandler``
 * Added ``getClassDescriptorMap()`` to ``JavetReflectionProxyObjectHandler``
 * Added ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
-* Added ``V8ValueErrorType``
+* Added ``V8ValueErrorType``, ``V8ErrorTemplate``, ``JavetEntityError``
 * Added ``getErrorType()`` to ``V8ValueError``
 * Added ``getProxyListOverrideMethods()`` to ``JavetConverterConfig``
-* Added ``V8ErrorTemplate``
+* Fixed improper conversions in ``JavetBridgeConverter``
+* Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
 
 3.0.3 V8 v12.1
 --------------
