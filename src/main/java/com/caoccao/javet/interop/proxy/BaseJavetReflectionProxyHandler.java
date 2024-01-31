@@ -176,6 +176,12 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         }
     }
 
+    @Override
+    public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
+        V8Value v8Value = internalGet(target, property);
+        return v8Value == null ? v8Runtime.createV8ValueUndefined() : v8Value;
+    }
+
     /**
      * Gets class descriptor cache.
      *
@@ -324,7 +330,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     public V8ValueObject getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
         V8Value v8Value = null;
         try {
-            v8Value = get(target, property, null);
+            v8Value = internalGet(target, property);
             return V8ValueUtils.createV8ValueObject(getV8Runtime(),
                     getV8Runtime().createV8ValueString(PROXY_PROPERTY_CONFIGURABLE),
                     getV8Runtime().createV8ValueBoolean(true),
@@ -539,6 +545,18 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             addMethod(method, 0, classDescriptor.getMethodsMap());
         }
     }
+
+    /**
+     * Internal get.
+     *
+     * @param target   the target
+     * @param property the property
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 3.0.4
+     */
+    protected abstract V8Value internalGet(V8Value target, V8Value property) throws JavetException, E;
 
     /**
      * Is allowed.

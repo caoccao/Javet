@@ -132,17 +132,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     @Override
-    public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
-        V8Value v8Value = getFromCollection(property);
-        v8Value = v8Value == null ? getFromField(property) : v8Value;
-        v8Value = v8Value == null ? getFromMethod(target, property) : v8Value;
-        v8Value = v8Value == null ? getFromSymbol(property) : v8Value;
-        v8Value = v8Value == null ? getFromGetter(property) : v8Value;
-        v8Value = v8Value == null ? getFromPolyfill(property) : v8Value;
-        return v8Value == null ? v8Runtime.createV8ValueUndefined() : v8Value;
-    }
-
-    @Override
     public JavetCallbackContext[] getCallbackContexts() {
         if (callbackContexts == null) {
             callbackContexts = new JavetCallbackContext[]{
@@ -366,6 +355,17 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         if (classDescriptor.isTargetTypeList()) {
             overrideMethods = v8Runtime.getConverter().getConfig().getProxyListOverrideMethods();
         }
+    }
+
+    @Override
+    protected V8Value internalGet(V8Value target, V8Value property) throws JavetException, E {
+        V8Value v8Value = getFromCollection(property);
+        v8Value = v8Value == null ? getFromField(property) : v8Value;
+        v8Value = v8Value == null ? getFromMethod(target, property) : v8Value;
+        v8Value = v8Value == null ? getFromSymbol(property) : v8Value;
+        v8Value = v8Value == null ? getFromGetter(property) : v8Value;
+        v8Value = v8Value == null ? getFromPolyfill(property) : v8Value;
+        return v8Value;
     }
 
     @Override
