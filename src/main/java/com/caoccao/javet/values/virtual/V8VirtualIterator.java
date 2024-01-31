@@ -18,11 +18,11 @@ package com.caoccao.javet.values.virtual;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
@@ -150,14 +150,10 @@ public class V8VirtualIterator<T, E extends Exception>
 
     @Override
     public V8ValueArray proxyOwnKeys(V8Value target) throws JavetException, E {
-        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-            V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-            v8ValueArray.push(
-                    v8Runtime.createV8ValueString(PROPERTY_DONE),
-                    v8Runtime.createV8ValueString(PROPERTY_VALUE));
-            v8Scope.setEscapable();
-            return v8ValueArray;
-        }
+        return V8ValueUtils.createV8ValueArray(
+                v8Runtime,
+                v8Runtime.createV8ValueString(PROPERTY_DONE),
+                v8Runtime.createV8ValueString(PROPERTY_VALUE));
     }
 
     @Override

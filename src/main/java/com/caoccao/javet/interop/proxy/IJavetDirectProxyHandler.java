@@ -21,10 +21,10 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiFunction;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -234,20 +234,18 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      * @since 2.2.0
      */
     default V8ValueArray proxyOwnKeys(V8Value target) throws JavetException, E {
-        try (V8Scope v8Scope = getV8Runtime().getV8Scope()) {
-            V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-            Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
-            if (stringGetterMap != null && !stringGetterMap.isEmpty()) {
-                Object[] v8ValueStrings = new Object[stringGetterMap.size()];
-                int index = 0;
-                for (String key : stringGetterMap.keySet()) {
-                    v8ValueStrings[index++] = getV8Runtime().createV8ValueString(key);
-                }
-                v8ValueArray.push(v8ValueStrings);
+        Object[] v8ValueStrings;
+        Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
+        if (stringGetterMap == null || stringGetterMap.isEmpty()) {
+            v8ValueStrings = new Object[0];
+        } else {
+            v8ValueStrings = new Object[stringGetterMap.size()];
+            int index = 0;
+            for (String key : stringGetterMap.keySet()) {
+                v8ValueStrings[index++] = getV8Runtime().createV8ValueString(key);
             }
-            v8Scope.setEscapable();
-            return v8ValueArray;
         }
+        return V8ValueUtils.createV8ValueArray(getV8Runtime(), v8ValueStrings);
     }
 
     /**
