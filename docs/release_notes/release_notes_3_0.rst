@@ -17,6 +17,8 @@ Release Notes 3.0.x
 * Added ``getProxyListOverrideMethods()`` to ``JavetConverterConfig``
 * Fixed improper conversions in ``JavetBridgeConverter``
 * Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
+* Added ``proxyGetOwnPropertyDescriptor()`` to ``IJavetDirectProxyHandler``
+* Added ``getOwnPropertyDescriptor()`` to ``BaseJavetReflectionProxyHandler``
 
 3.0.3 V8 v12.1
 --------------

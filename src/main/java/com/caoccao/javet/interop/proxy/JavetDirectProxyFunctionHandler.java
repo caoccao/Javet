@@ -61,6 +61,9 @@ public class JavetDirectProxyFunctionHandler<T extends IJavetDirectProxyHandler<
                         PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
                         (NoThisAndResult<E>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
                 new JavetCallbackContext(
+                        PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR, this, JavetCallbackType.DirectCallNoThisAndResult,
+                        (NoThisAndResult<E>) (v8Values) -> getOwnPropertyDescriptor(v8Values[0], v8Values[1])),
+                new JavetCallbackContext(
                         PROXY_FUNCTION_NAME_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
                         (NoThisAndResult<E>) (v8Values) -> has(v8Values[0], v8Values[1])),
                 new JavetCallbackContext(

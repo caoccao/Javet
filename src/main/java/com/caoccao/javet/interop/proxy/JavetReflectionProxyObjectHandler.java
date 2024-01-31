@@ -133,13 +133,13 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
-        V8Value result = getFromCollection(property);
-        result = result == null ? getFromField(property) : result;
-        result = result == null ? getFromMethod(target, property) : result;
-        result = result == null ? getFromSymbol(property) : result;
-        result = result == null ? getFromGetter(property) : result;
-        result = result == null ? getFromPolyfill(property) : result;
-        return result == null ? v8Runtime.createV8ValueUndefined() : result;
+        V8Value v8Value = getFromCollection(property);
+        v8Value = v8Value == null ? getFromField(property) : v8Value;
+        v8Value = v8Value == null ? getFromMethod(target, property) : v8Value;
+        v8Value = v8Value == null ? getFromSymbol(property) : v8Value;
+        v8Value = v8Value == null ? getFromGetter(property) : v8Value;
+        v8Value = v8Value == null ? getFromPolyfill(property) : v8Value;
+        return v8Value == null ? v8Runtime.createV8ValueUndefined() : v8Value;
     }
 
     @Override
@@ -147,11 +147,14 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         if (callbackContexts == null) {
             callbackContexts = new JavetCallbackContext[]{
                     new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_DELETE_PROPERTY, this, JavetCallbackType.DirectCallNoThisAndResult,
+                            (NoThisAndResult<?>) (v8Values) -> deleteProperty(v8Values[0], v8Values[1])),
+                    new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
                     new JavetCallbackContext(
-                            PROXY_FUNCTION_NAME_DELETE_PROPERTY, this, JavetCallbackType.DirectCallNoThisAndResult,
-                            (NoThisAndResult<?>) (v8Values) -> deleteProperty(v8Values[0], v8Values[1])),
+                            PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR, this, JavetCallbackType.DirectCallNoThisAndResult,
+                            (NoThisAndResult<?>) (v8Values) -> getOwnPropertyDescriptor(v8Values[0], v8Values[1])),
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> has(v8Values[0], v8Values[1])),

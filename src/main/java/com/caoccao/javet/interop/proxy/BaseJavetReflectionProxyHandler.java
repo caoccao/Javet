@@ -320,6 +320,20 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         return 0;
     }
 
+    @Override
+    public V8ValueObject getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
+        V8Value v8Value = null;
+        try {
+            v8Value = get(target, property, null);
+            return V8ValueUtils.createV8ValueObject(getV8Runtime(),
+                    PROXY_PROPERTY_CONFIGURABLE, true,
+                    PROXY_PROPERTY_ENUMERABLE, v8Value != null,
+                    PROXY_PROPERTY_VALUE, v8Value);
+        } finally {
+            JavetResourceUtils.safeClose(v8Value);
+        }
+    }
+
     /**
      * Gets setter prefix length.
      *

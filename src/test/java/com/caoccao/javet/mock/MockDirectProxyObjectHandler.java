@@ -25,6 +25,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -72,6 +73,12 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
     public V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, IOException {
         ++callCount;
         return IJavetDirectProxyHandler.super.proxyGet(target, property, receiver);
+    }
+
+    @Override
+    public V8ValueObject proxyGetOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, IOException {
+        ++callCount;
+        return IJavetDirectProxyHandler.super.proxyGetOwnPropertyDescriptor(target, property);
     }
 
     @Override

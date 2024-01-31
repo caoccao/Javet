@@ -107,10 +107,10 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
 
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
-        V8Value result = getFromField(property);
-        result = result == null ? getFromMethod(target, property) : result;
-        result = result == null ? getFromGetter(property) : result;
-        return result == null ? v8Runtime.createV8ValueUndefined() : result;
+        V8Value v8Value = getFromField(property);
+        v8Value = v8Value == null ? getFromMethod(target, property) : v8Value;
+        v8Value = v8Value == null ? getFromGetter(property) : v8Value;
+        return v8Value == null ? v8Runtime.createV8ValueUndefined() : v8Value;
     }
 
     @Override
@@ -123,6 +123,9 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR, this, JavetCallbackType.DirectCallNoThisAndResult,
+                            (NoThisAndResult<?>) (v8Values) -> getOwnPropertyDescriptor(v8Values[0], v8Values[1])),
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> has(v8Values[0], v8Values[1])),
@@ -185,7 +188,7 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
 
     @Override
     public V8ValueArray ownKeys(V8Value target) throws JavetException {
-        return v8Runtime.toV8Value(classDescriptor.getUniqueKeySet().toArray());
+        return V8ValueUtils.createV8ValueArray(v8Runtime, classDescriptor.getUniqueKeySet().toArray());
     }
 
     @Override

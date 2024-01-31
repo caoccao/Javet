@@ -83,11 +83,35 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      */
     String PROXY_FUNCTION_NAME_OWN_KEYS = "ownKeys";
     /**
+     * The constant PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR.
+     *
+     * @since 3.0.4
+     */
+    String PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR = "getOwnPropertyDescriptor";
+    /**
      * The constant PROXY_FUNCTION_NAME_SET.
      *
      * @since 2.2.0
      */
     String PROXY_FUNCTION_NAME_SET = "set";
+    /**
+     * The constant PROXY_PROPERTY_CONFIGURABLE.
+     *
+     * @since 3.0.4
+     */
+    String PROXY_PROPERTY_CONFIGURABLE = "configurable";
+    /**
+     * The constant PROXY_PROPERTY_ENUMERABLE.
+     *
+     * @since 3.0.4
+     */
+    String PROXY_PROPERTY_ENUMERABLE = "enumerable";
+    /**
+     * The constant PROXY_PROPERTY_VALUE.
+     *
+     * @since 3.0.4
+     */
+    String PROXY_PROPERTY_VALUE = "value";
 
     /**
      * Apply to object.

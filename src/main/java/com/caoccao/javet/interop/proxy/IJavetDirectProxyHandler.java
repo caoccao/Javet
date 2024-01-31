@@ -24,15 +24,18 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The interface Javet direct proxy handler.
@@ -97,13 +100,11 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      */
     default V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
         if (property instanceof V8ValueString) {
-            String propertyString = ((V8ValueString) property).getValue();
-            Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
-            if (stringGetterMap != null && !stringGetterMap.isEmpty()) {
-                IJavetUniFunction<String, ? extends V8Value, E> getter = stringGetterMap.get(propertyString);
-                if (getter != null) {
-                    return getter.apply(propertyString);
-                }
+            final String propertyString = ((V8ValueString) property).getValue();
+            Optional<IJavetUniFunction<String, ? extends V8Value, E>> optionalGetter =
+                    Optional.ofNullable(proxyGetStringGetterMap()).map(m -> m.get(propertyString));
+            if (optionalGetter.isPresent()) {
+                return optionalGetter.get().apply(propertyString);
             }
             if (IJavetProxyHandler.FUNCTION_NAME_TO_JSON.equals(propertyString)) {
                 return getV8Runtime().createV8ValueFunction(
@@ -122,14 +123,12 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
                                 (IJavetDirectCallable.NoThisAndResult<?>) this::symbolToPrimitive));
             }
         } else if (property instanceof V8ValueSymbol) {
-            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
-            String description = propertySymbol.getDescription();
-            Map<String, IJavetUniFunction<V8ValueSymbol, ? extends V8Value, E>> symbolGetterMap = proxyGetSymbolGetterMap();
-            if (symbolGetterMap != null && !symbolGetterMap.isEmpty()) {
-                IJavetUniFunction<V8ValueSymbol, ? extends V8Value, E> getter = symbolGetterMap.get(description);
-                if (getter != null) {
-                    return getter.apply(propertySymbol);
-                }
+            final V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            final String description = propertySymbol.getDescription();
+            Optional<IJavetUniFunction<V8ValueSymbol, ? extends V8Value, E>> optionalGetter =
+                    Optional.ofNullable(proxyGetSymbolGetterMap()).map(m -> m.get(description));
+            if (optionalGetter.isPresent()) {
+                return optionalGetter.get().apply(propertySymbol);
             }
             if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
                 return getV8Runtime().createV8ValueFunction(
@@ -148,6 +147,45 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
             }
         }
         return getV8Runtime().createV8ValueUndefined();
+    }
+
+    /**
+     * Proxy handler.getOwnPropertyDescriptor().
+     * The handler.getOwnPropertyDescriptor() method is a trap for the [[GetOwnProperty]] object internal method,
+     * which is used by operations such as Object.getOwnPropertyDescriptor().
+     *
+     * @param target   the target
+     * @param property the property
+     * @return the V8 value object
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     */
+    default V8ValueObject proxyGetOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
+        V8Value v8Value = null;
+        try {
+            if (property instanceof V8ValueString) {
+                final String propertyString = ((V8ValueString) property).getValue();
+                Optional<IJavetUniFunction<String, ? extends V8Value, E>> optionalGetter =
+                        Optional.ofNullable(proxyGetStringGetterMap()).map(m -> m.get(propertyString));
+                if (optionalGetter.isPresent()) {
+                    v8Value = optionalGetter.get().apply(propertyString);
+                }
+            } else if (property instanceof V8ValueSymbol) {
+                final V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+                final String description = propertySymbol.getDescription();
+                Optional<IJavetUniFunction<V8ValueSymbol, ? extends V8Value, E>> optionalGetter =
+                        Optional.ofNullable(proxyGetSymbolGetterMap()).map(m -> m.get(description));
+                if (optionalGetter.isPresent()) {
+                    v8Value = optionalGetter.get().apply(propertySymbol);
+                }
+            }
+            return V8ValueUtils.createV8ValueObject(getV8Runtime(),
+                    IJavetProxyHandler.PROXY_PROPERTY_CONFIGURABLE, true,
+                    IJavetProxyHandler.PROXY_PROPERTY_ENUMERABLE, v8Value != null,
+                    IJavetProxyHandler.PROXY_PROPERTY_VALUE, v8Value);
+        } finally {
+            JavetResourceUtils.safeClose(v8Value);
+        }
     }
 
     /**
