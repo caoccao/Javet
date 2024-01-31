@@ -129,7 +129,7 @@ class ChangeV8Version(ChangeVersion):
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       '.github/workflows/macos_arm64_build.yml', '\n',
-      re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
+      re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       '.github/workflows/macos_x86_64_build.yml', '\n',
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
