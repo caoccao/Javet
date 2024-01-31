@@ -326,9 +326,12 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         try {
             v8Value = get(target, property, null);
             return V8ValueUtils.createV8ValueObject(getV8Runtime(),
-                    PROXY_PROPERTY_CONFIGURABLE, true,
-                    PROXY_PROPERTY_ENUMERABLE, v8Value != null,
-                    PROXY_PROPERTY_VALUE, v8Value);
+                    getV8Runtime().createV8ValueString(PROXY_PROPERTY_CONFIGURABLE),
+                    getV8Runtime().createV8ValueBoolean(true),
+                    getV8Runtime().createV8ValueString(PROXY_PROPERTY_ENUMERABLE),
+                    getV8Runtime().createV8ValueBoolean(v8Value != null),
+                    getV8Runtime().createV8ValueString(PROXY_PROPERTY_VALUE),
+                    v8Value);
         } finally {
             JavetResourceUtils.safeClose(v8Value);
         }

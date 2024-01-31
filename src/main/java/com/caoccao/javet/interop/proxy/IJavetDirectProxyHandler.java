@@ -180,9 +180,12 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
                 }
             }
             return V8ValueUtils.createV8ValueObject(getV8Runtime(),
-                    IJavetProxyHandler.PROXY_PROPERTY_CONFIGURABLE, true,
-                    IJavetProxyHandler.PROXY_PROPERTY_ENUMERABLE, v8Value != null,
-                    IJavetProxyHandler.PROXY_PROPERTY_VALUE, v8Value);
+                    getV8Runtime().createV8ValueString(IJavetProxyHandler.PROXY_PROPERTY_CONFIGURABLE),
+                    getV8Runtime().createV8ValueBoolean(true),
+                    getV8Runtime().createV8ValueString(IJavetProxyHandler.PROXY_PROPERTY_ENUMERABLE),
+                    getV8Runtime().createV8ValueBoolean(v8Value != null),
+                    getV8Runtime().createV8ValueString(IJavetProxyHandler.PROXY_PROPERTY_VALUE),
+                    v8Value);
         } finally {
             JavetResourceUtils.safeClose(v8Value);
         }
