@@ -42,6 +42,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
+import com.caoccao.javet.values.virtual.V8VirtualValue;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -98,6 +99,24 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     protected static final String ERROR_THE_PROPERTY_NAME_MUST_BE_EITHER_STRING_OR_SYMBOL =
             "The property name must be either string or symbol.";
+    /**
+     * The constant ERROR_VALUE_CANNOT_BE_A_V_8_CONTEXT.
+     *
+     * @since 3.0.4
+     */
+    protected static final String ERROR_VALUE_CANNOT_BE_A_V_8_CONTEXT = "Value cannot be a V8 context.";
+    /**
+     * The constant ERROR_VALUE_CANNOT_BE_A_V_8_MODULE.
+     *
+     * @since 3.0.4
+     */
+    protected static final String ERROR_VALUE_CANNOT_BE_A_V_8_MODULE = "Value cannot be a V8 module.";
+    /**
+     * The constant ERROR_VALUE_CANNOT_BE_A_V_8_SCRIPT.
+     *
+     * @since 3.0.4
+     */
+    protected static final String ERROR_VALUE_CANNOT_BE_A_V_8_SCRIPT = "Value cannot be a V8 script.";
     /**
      * The Default converter.
      *
@@ -3389,12 +3408,30 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Throw error.
      *
-     * @param iV8ValueObject the V8 value object
+     * @param errorObject the error object
+     * @return true : thrown, false : not thrown
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public boolean throwError(Object errorObject) throws JavetException {
+        try (V8VirtualValue v8VirtualValue = new V8VirtualValue(
+                this, getConverter(), Objects.requireNonNull(errorObject))) {
+            return throwError(v8VirtualValue.get());
+        }
+    }
+
+    /**
+     * Throw error.
+     *
+     * @param errorV8Value the error v 8 value
      * @return true : thrown, false : not thrown
      * @since 3.0.4
      */
-    public boolean throwError(IV8ValueObject iV8ValueObject) {
-        return v8Native.throwError(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+    public boolean throwError(V8Value errorV8Value) {
+        assert !(errorV8Value instanceof V8Context) : ERROR_VALUE_CANNOT_BE_A_V_8_CONTEXT;
+        assert !(errorV8Value instanceof V8Module) : ERROR_VALUE_CANNOT_BE_A_V_8_MODULE;
+        assert !(errorV8Value instanceof V8Script) : ERROR_VALUE_CANNOT_BE_A_V_8_SCRIPT;
+        return v8Native.throwError(handle, Objects.requireNonNull(errorV8Value));
     }
 
     @Override

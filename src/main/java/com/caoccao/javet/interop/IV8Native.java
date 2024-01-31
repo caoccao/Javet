@@ -380,7 +380,7 @@ public interface IV8Native {
 
     boolean throwError(long v8RuntimeHandle, int v8ValueErrorType, String message);
 
-    boolean throwError(long v8RuntimeHandle, long v8ValueHandle);
+    boolean throwError(long v8RuntimeHandle, Object v8Value);
 
     String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

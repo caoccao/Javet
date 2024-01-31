@@ -1290,10 +1290,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__J
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    throwError
- * Signature: (JJ)Z
+ * Signature: (JLjava/lang/Object;)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JJ
-  (JNIEnv *, jobject, jlong, jlong);
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JLjava_lang_Object_2
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

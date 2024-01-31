@@ -577,7 +577,7 @@ class V8Native implements IV8Native {
     public native boolean throwError(long v8RuntimeHandle, int v8ValueErrorType, String message);
 
     @Override
-    public native boolean throwError(long v8RuntimeHandle, long v8ValueHandle);
+    public native boolean throwError(long v8RuntimeHandle, Object v8Value);
 
     @Override
     public native String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

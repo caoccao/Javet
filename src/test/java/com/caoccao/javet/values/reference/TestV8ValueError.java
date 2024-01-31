@@ -151,6 +151,37 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testThrowErrorByInteger() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test() throws JavetException {
+                assertTrue(v8Runtime.throwError(123));
+            }
+        };
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            v8ValueObject.bind(anonymous);
+            v8Runtime.getGlobalObject().set("x", v8ValueObject);
+            try {
+                v8Runtime.getExecutor("x.test()").executeInteger();
+                fail("Failed to throw an error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("<null>", e.getMessage());
+                assertEquals("null\n" +
+                                "Resource: undefined\n" +
+                                "Source Code: x.test()\n" +
+                                "Line Number: 1\n" +
+                                "Column: 2, 3\n" +
+                                "Position: 2, 3",
+                        e.getScriptingError().toString());
+                assertEquals(123, e.getScriptingError().getContext());
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("x");
+            v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
     public void testThrowErrorByObject() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             @V8Function
@@ -175,10 +206,7 @@ public class TestV8ValueError extends BaseTestJavetRuntime {
                                 "Column: 2, 3\n" +
                                 "Position: 2, 3",
                         e.getScriptingError().toString());
-            }
-            try (V8ValueArray v8ValueArray = v8Runtime.getExecutor(
-                    "let a = null; try { x.test() } catch (e) { a = e; } a;").execute()) {
-                assertEquals("1,2,3", v8ValueArray.toString());
+                assertEquals(SimpleList.of(1, 2, 3), e.getScriptingError().getContext());
             }
         } finally {
             v8Runtime.getGlobalObject().delete("x");

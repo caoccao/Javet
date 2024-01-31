@@ -102,10 +102,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__J
     return false;
 }
 
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JJ
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle) {
-    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (v8LocalValue->IsObject()) {
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JLjava_lang_Object_2
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Value) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    auto v8LocalValue = Javet::Converter::ToV8Value(jniEnv, v8Context, mV8Value);
+    if (!v8LocalValue.IsEmpty()) {
         v8Context->GetIsolate()->ThrowException(v8LocalValue);
         return true;
     }
