@@ -9,8 +9,7 @@ Release Notes 3.0.x
 * Fixed a memory leak in adding a V8 module with the same name
 * Added ``ifTrue()``, ``asInt()`` to ``IV8Value``
 * Added ``JavetProxyPolyfillList``, ``JavetProxyPolyfillMap``, ``JavetProxyPolyfillPrimitive``, ``JavetProxyPolyfillSet``
-* Added ``getClassDescriptorMap()`` to ``JavetReflectionProxyClassHandler``
-* Added ``getClassDescriptorMap()`` to ``JavetReflectionProxyObjectHandler``
+* Added ``BindingContextStore``, ``ClassDescriptorStore``
 * Added ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
 * Added ``V8ValueErrorType``, ``V8ErrorTemplate``, ``JavetEntityError``
 * Added ``getErrorType()`` to ``V8ValueError``

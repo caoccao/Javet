@@ -22,12 +22,12 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.binding.ClassDescriptorStore;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.polyfill.*;
 import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.StringUtils;
-import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -54,12 +54,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.4
      */
     protected static final String LENGTH = "length";
-    /**
-     * The constant classDescriptorMap.
-     *
-     * @since 1.1.7
-     */
-    protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
      * Instantiates a new Javet reflection proxy object handler.
@@ -72,16 +66,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             V8Runtime v8Runtime,
             T targetObject) {
         super(v8Runtime, Objects.requireNonNull(targetObject));
-    }
-
-    /**
-     * Gets class descriptor map.
-     *
-     * @return the class descriptor map
-     * @since 3.0.4
-     */
-    public static ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorMap() {
-        return classDescriptorMap;
     }
 
     /**
@@ -156,11 +140,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             };
         }
         return callbackContexts;
-    }
-
-    @Override
-    public ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorCache() {
-        return classDescriptorMap;
     }
 
     /**
@@ -295,7 +274,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     @Override
     protected void initialize() {
         Class<T> targetClass = (Class<T>) targetObject.getClass();
-        classDescriptor = classDescriptorMap.get(targetClass);
+        classDescriptor = ClassDescriptorStore.getObjectMap().get(targetClass);
         if (classDescriptor == null) {
             classDescriptor = new ClassDescriptor(V8ProxyMode.Object, targetClass);
             if (targetObject instanceof Class) {
@@ -303,7 +282,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             }
             initializeCollection();
             initializeFieldsAndMethods(targetClass, false);
-            classDescriptorMap.put(targetClass, classDescriptor);
+            ClassDescriptorStore.getObjectMap().put(targetClass, classDescriptor);
         }
         initializeOverrideMethods();
     }

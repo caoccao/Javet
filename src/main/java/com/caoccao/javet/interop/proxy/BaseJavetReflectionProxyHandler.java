@@ -183,14 +183,6 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Gets class descriptor cache.
-     *
-     * @return the thread safe map
-     * @since 1.1.7
-     */
-    public abstract ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorCache();
-
-    /**
      * Gets from field.
      *
      * @param property the property

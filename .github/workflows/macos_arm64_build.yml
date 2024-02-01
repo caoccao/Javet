@@ -177,11 +177,11 @@ jobs:
           build/libs/*.pom
 
     - name: Delete Javet V8
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}
 
     - name: Delete Javet Node
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}

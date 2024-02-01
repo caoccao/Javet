@@ -95,22 +95,16 @@ public final class ThreadSafeMap<TKey, TValue> {
     public void setType(Type type) {
         Objects.requireNonNull(type);
         if (this.type == null) {
-            switch (type) {
-                case Weak:
-                    map = Collections.synchronizedMap(new WeakHashMap<>());
-                    break;
-                default:
-                    map = new ConcurrentHashMap<>();
-                    break;
+            if (type == Type.Weak) {
+                map = Collections.synchronizedMap(new WeakHashMap<>());
+            } else {
+                map = new ConcurrentHashMap<>();
             }
         } else if (this.type != type) {
-            switch (type) {
-                case Weak:
-                    map = Collections.synchronizedMap(new WeakHashMap<>(map));
-                    break;
-                default:
-                    map = new ConcurrentHashMap<>(map);
-                    break;
+            if (type == Type.Weak) {
+                map = Collections.synchronizedMap(new WeakHashMap<>(map));
+            } else {
+                map = new ConcurrentHashMap<>(map);
             }
         }
         this.type = type;

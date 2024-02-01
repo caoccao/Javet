@@ -22,11 +22,11 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.binding.ClassDescriptorStore;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
-import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
@@ -47,12 +47,6 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
      * @since 0.9.8
      */
     protected static final String METHOD_NAME_CONSTRUCTOR = "constructor";
-    /**
-     * The constant classDescriptorMap.
-     *
-     * @since 1.1.7
-     */
-    protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
      * Instantiates a new Javet reflection proxy handler.
@@ -65,16 +59,6 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
             V8Runtime v8Runtime,
             T targetObject) {
         super(v8Runtime, targetObject);
-    }
-
-    /**
-     * Gets class descriptor map.
-     *
-     * @return the class descriptor map
-     * @since 3.0.4
-     */
-    public static ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorMap() {
-        return classDescriptorMap;
     }
 
     @Override
@@ -133,11 +117,6 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
     }
 
     @Override
-    public ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorCache() {
-        return classDescriptorMap;
-    }
-
-    @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = hasFromRegular(property);
         isFound = isFound || hasFromGeneric(property);
@@ -146,13 +125,13 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
 
     @Override
     protected void initialize() {
-        classDescriptor = classDescriptorMap.get(targetObject);
+        classDescriptor = ClassDescriptorStore.getClassMap().get(targetObject);
         if (classDescriptor == null) {
             classDescriptor = new ClassDescriptor(V8ProxyMode.Class, targetObject);
             Class<?> targetClass = targetObject.getClass();
             initializeFieldsAndMethods(targetObject, true);
             initializeFieldsAndMethods(targetClass, false);
-            classDescriptorMap.put(targetObject, classDescriptor);
+            ClassDescriptorStore.getClassMap().put(targetObject, classDescriptor);
         }
     }
 
