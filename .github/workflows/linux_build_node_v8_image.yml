@@ -44,7 +44,7 @@ jobs:
 
       - name: Checkout the code
         if: inputs.skip_base_jvm == false
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Ubuntu, Build Tools and JDK 8 Base Image
         if: inputs.skip_base_jvm == false
@@ -74,7 +74,7 @@ jobs:
 
       - name: Checkout the code
         if: inputs.skip_base_node == false
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Node.js Base Image
         if: inputs.skip_base_node == false
@@ -106,7 +106,7 @@ jobs:
 
       - name: Checkout the code
         if: inputs.skip_base_v8 == false
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build V8 Base Image
         if: inputs.skip_base_v8 == false
@@ -136,7 +136,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Gradle Base Image
         run: |

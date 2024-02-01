@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build the Artifact
         run: |
@@ -42,7 +42,7 @@ jobs:
         run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet:local cp -rf /Javet/build/libs /output
 
       - name: Upload the Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: javet-linux-x86_64
           path: build/libs/javet*.jar

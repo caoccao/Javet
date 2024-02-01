@@ -21,7 +21,7 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Ubuntu
       run: |
@@ -67,13 +67,13 @@ jobs:
         ninja -C out.gn/arm.release v8_monolith
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v1.14
       with:
         cmake-version: '3.23.x'
 
@@ -83,7 +83,7 @@ jobs:
         sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-v8-arm-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/armeabi-v7a/*.so
@@ -95,7 +95,7 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Ubuntu
       run: |
@@ -141,13 +141,13 @@ jobs:
         ninja -C out.gn/arm64.release v8_monolith
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v1.14
       with:
         cmake-version: '3.23.x'
 
@@ -157,7 +157,7 @@ jobs:
         sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm64
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/arm64-v8a/*.so
@@ -169,7 +169,7 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Ubuntu
       run: |
@@ -215,13 +215,13 @@ jobs:
         ninja -C out.gn/ia32.release v8_monolith
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v1.14
       with:
         cmake-version: '3.23.x'
 
@@ -231,7 +231,7 @@ jobs:
         sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=x86
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-v8-x86-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86/*.so
@@ -243,7 +243,7 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Ubuntu
       run: |
@@ -289,13 +289,13 @@ jobs:
         ninja -C out.gn/x64.release v8_monolith
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v1.14
       with:
         cmake-version: '3.23.x'
 
@@ -305,7 +305,7 @@ jobs:
         sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=x86_64
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86_64/*.so
@@ -318,10 +318,10 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 17
@@ -344,25 +344,25 @@ jobs:
         mkdir -p android/javet-android/src/main/jniLibs/x86_64
 
     - name: Download Javet arm
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-arm-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/armeabi-v7a
 
     - name: Download Javet arm64
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/arm64-v8a
 
     - name: Download Javet x86
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-x86-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86
 
     - name: Download Javet x86_64
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86_64
@@ -375,7 +375,7 @@ jobs:
         gradle build --debug
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-${{ env.JAVET_VERSION }}
         path: android/javet-android/build/outputs/aar/javet*release.aar
