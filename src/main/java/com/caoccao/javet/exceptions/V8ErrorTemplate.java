@@ -29,6 +29,16 @@ public final class V8ErrorTemplate {
     }
 
     /**
+     * RangeError: Start ${start} is out or range.
+     *
+     * @return the message
+     * @since 3.0.4
+     */
+    public static String rangeErrorStartIsOutOfRange(int start) {
+        return "Start " + start + " is out of range";
+    }
+
+    /**
      * TypeError: Reduce of empty array with no initial value.
      *
      * @return the message

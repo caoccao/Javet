@@ -73,6 +73,7 @@ public final class JavetProxyPolyfillList {
     private static final String SLICE = "slice";
     private static final String SOME = "some";
     private static final String SORT = "sort";
+    private static final String SPLICE = "splice";
     private static final String TO_JSON = "toJSON";
     private static final String TO_REVERSED = "toReversed";
     private static final String UNSHIFT = "unshift";
@@ -111,6 +112,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(SLICE, JavetProxyPolyfillList::slice);
         functionMap.put(SOME, JavetProxyPolyfillList::some);
         functionMap.put(SORT, JavetProxyPolyfillList::sort);
+        functionMap.put(SPLICE, JavetProxyPolyfillList::splice);
         functionMap.put(TO_JSON, JavetProxyPolyfillList::toJSON);
         functionMap.put(TO_REVERSED, JavetProxyPolyfillList::toReversed);
         functionMap.put(UNSHIFT, JavetProxyPolyfillList::unshift);
@@ -1104,7 +1106,7 @@ public final class JavetProxyPolyfillList {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
         final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                SHIFT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                SLICE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     List<Object> results = new ArrayList<>();
                     if (!list.isEmpty()) {
@@ -1191,7 +1193,7 @@ public final class JavetProxyPolyfillList {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
         final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                SOME, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                SORT, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     final int length = list.size();
                     if (length > 1) {
@@ -1216,6 +1218,61 @@ public final class JavetProxyPolyfillList {
                         }
                     }
                     return thisObject;
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.splice().
+     * The splice() method of Array instances changes the contents of an array by removing
+     * or replacing existing elements and/or adding new elements in place.
+     * <p>
+     * To create a new array with a segment removed and/or replaced without mutating the original array,
+     * use toSpliced(). To access part of an array without modifying it, see slice().
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value splice(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                SPLICE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    List<Object> results = new ArrayList<>();
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
+                        final int length = list.size();
+                        int startIndex = V8ValueUtils.asInt(v8Values, 0);
+                        if (startIndex < 0) {
+                            startIndex += length;
+                        }
+                        if (startIndex < 0) {
+                            startIndex = 0;
+                        }
+                        if (startIndex >= length) {
+                            v8Runtime.throwError(
+                                    V8ValueErrorType.RangeError,
+                                    V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
+                        } else {
+                            int deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            deleteCount = Math.min(deleteCount, length - startIndex);
+                            if (deleteCount > 0) {
+                                List<?> subList = list.subList(startIndex, startIndex + deleteCount);
+                                results.addAll(subList);
+                                subList.clear();
+                            }
+                            if (v8Values.length > 2) {
+                                List<Object> toBeAddedList = new ArrayList<>();
+                                for (int i = 2; i < v8Values.length; ++i) {
+                                    toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
+                                }
+                                list.addAll(startIndex, toBeAddedList);
+                            }
+                        }
+                    }
+                    return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
                 }));
     }
 
