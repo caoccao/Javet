@@ -24,6 +24,7 @@ import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetReflectionUtils;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
@@ -84,10 +85,7 @@ public class MockAnnotationBasedCallbackReceiver {
     @V8Function
     public V8ValueArray generateArrayWithoutConverter() throws JavetException {
         count.incrementAndGet();
-        V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-        v8ValueArray.push("a");
-        v8ValueArray.push(1);
-        return v8ValueArray;
+        return V8ValueUtils.createV8ValueArray(v8Runtime, "a", 1);
     }
 
     public int getCount() {

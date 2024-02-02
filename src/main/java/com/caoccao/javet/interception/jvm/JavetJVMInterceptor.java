@@ -249,16 +249,13 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
                                         this, JavetCallbackType.DirectCallNoThisAndResult,
                                         (NoThisAndResult<Exception>) (v8Values) -> {
                                             final String prefix = getName() + ".";
-                                            List<Package> packages = Stream.of(Package.getPackages())
+                                            final List<Package> packages = Stream.of(Package.getPackages())
                                                     .filter((p) -> p.getName().startsWith(prefix))
                                                     .filter((p) -> p.getName().substring(prefix.length()).contains("."))
                                                     .collect(Collectors.toList());
-                                            List<V8Value> results = new ArrayList<>(packages.size());
+                                            final List<V8Value> results = new ArrayList<>(packages.size());
                                             try {
-                                                for (Package p : Stream.of(Package.getPackages())
-                                                        .filter((p) -> p.getName().startsWith(prefix))
-                                                        .filter((p) -> p.getName().substring(prefix.length()).contains("."))
-                                                        .collect(Collectors.toList())) {
+                                                for (Package p : packages) {
                                                     results.add(new JavetPackage(v8Runtime, p).toV8Value());
                                                 }
                                                 return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());

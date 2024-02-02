@@ -20,7 +20,6 @@ import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -28,6 +27,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.polyfill.*;
 import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.StringUtils;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
@@ -375,12 +375,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                 keys[i] = v8Runtime.createV8ValueString(key.toString());
             }
         }
-        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-            V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
-            v8ValueArray.push(keys);
-            v8Scope.setEscapable();
-            return v8ValueArray;
-        }
+        return V8ValueUtils.createV8ValueArray(v8Runtime, keys);
     }
 
     @Override
