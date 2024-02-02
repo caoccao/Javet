@@ -138,6 +138,48 @@ public final class V8ValueUtils {
     }
 
     /**
+     * Get V8ValueFunction by V8 value array and index.
+     *
+     * @param v8Values the V8 values
+     * @param index    the index
+     * @return the V8 value function
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    public static V8ValueFunction asV8ValueFunction(V8Value[] v8Values, int index) {
+        if (ArrayUtils.isNotEmpty(v8Values) && index >= 0 && index < v8Values.length) {
+            V8Value v8Value = v8Values[index];
+            if (v8Value instanceof V8ValueFunction) {
+                return (V8ValueFunction) v8Value;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get V8ValueFunction by V8 value array and index.
+     * If the V8ValueFunction is invalid, throw a TypeError.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param v8Values  the V8 values
+     * @param index     the index
+     * @return the V8 value function
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    public static V8ValueFunction asV8ValueFunctionWithError(V8Runtime v8Runtime, V8Value[] v8Values, int index) {
+        V8Value v8Value = null;
+        if (ArrayUtils.isNotEmpty(v8Values) && index >= 0 && index < v8Values.length) {
+            v8Value = v8Values[index];
+            if (v8Value instanceof V8ValueFunction) {
+                return (V8ValueFunction) v8Value;
+            }
+        }
+        v8Runtime.throwError(V8ValueErrorType.TypeError, V8ErrorTemplate.typeErrorValueIsNotAFunction(v8Value));
+        return null;
+    }
+
+    /**
      * As V8ValueObject by V8 value array and index.
      *
      * @param v8Values the V8 values
@@ -286,28 +328,6 @@ public final class V8ValueUtils {
                 }
             }
         }
-        return null;
-    }
-
-    /**
-     * Get and validate V8ValueFunction by V8 value array and index.
-     *
-     * @param v8Runtime the V8 runtime
-     * @param v8Values  the V8 values
-     * @param index     the index
-     * @return the V8 value function
-     * @since 3.0.4
-     */
-    @CheckReturnValue
-    public static V8ValueFunction validateV8ValueFunction(V8Runtime v8Runtime, V8Value[] v8Values, int index) {
-        V8Value v8Value = null;
-        if (v8Values != null && index >= 0 && index < v8Values.length) {
-            v8Value = v8Values[index];
-            if (v8Values[index] instanceof V8ValueFunction) {
-                return (V8ValueFunction) v8Values[index];
-            }
-        }
-        v8Runtime.throwError(V8ValueErrorType.TypeError, V8ErrorTemplate.typeErrorValueIsNotAFunction(v8Value));
         return null;
     }
 }
