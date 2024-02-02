@@ -805,9 +805,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @SuppressWarnings("RedundantThrows")
     public V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException {
-        return booleanValue ?
-                cachedV8ValueBooleans[V8_VALUE_BOOLEAN_TRUE_INDEX] :
-                cachedV8ValueBooleans[V8_VALUE_BOOLEAN_FALSE_INDEX];
+        return cachedV8ValueBooleans[booleanValue ? V8_VALUE_BOOLEAN_TRUE_INDEX : V8_VALUE_BOOLEAN_FALSE_INDEX];
     }
 
     @Override
