@@ -22,6 +22,7 @@ import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
+import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.values.V8Value;
 
@@ -72,7 +73,7 @@ public final class JavetProxyPolyfillSet {
                 DELETE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     boolean result = false;
-                    if (v8Values != null && v8Values.length > 0) {
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
                         result = set.remove(v8Runtime.toObject(v8Values[0]));
                     }
                     return v8Runtime.createV8ValueBoolean(result);
@@ -128,7 +129,7 @@ public final class JavetProxyPolyfillSet {
                 HAS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     boolean result = false;
-                    if (v8Values != null && v8Values.length > 0) {
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
                         result = set.contains(v8Runtime.toObject(v8Values[0]));
                     }
                     return v8Runtime.createV8ValueBoolean(result);
@@ -148,7 +149,6 @@ public final class JavetProxyPolyfillSet {
      */
     public static V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Set : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET;
-        return new JavetProxySymbolIterableConverter<>(
-                v8Runtime, targetObject).getV8ValueFunction();
+        return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
     }
 }
