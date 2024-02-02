@@ -76,6 +76,8 @@ public final class JavetProxyPolyfillList {
     private static final String SPLICE = "splice";
     private static final String TO_JSON = "toJSON";
     private static final String TO_REVERSED = "toReversed";
+    private static final String TO_SORTED = "toSorted";
+    private static final String TO_SPLICED = "toSpliced";
     private static final String UNSHIFT = "unshift";
     private static final String VALUES = "values";
     private static final String WITH = "with";
@@ -115,6 +117,8 @@ public final class JavetProxyPolyfillList {
         functionMap.put(SPLICE, JavetProxyPolyfillList::splice);
         functionMap.put(TO_JSON, JavetProxyPolyfillList::toJSON);
         functionMap.put(TO_REVERSED, JavetProxyPolyfillList::toReversed);
+        functionMap.put(TO_SORTED, JavetProxyPolyfillList::toSorted);
+        functionMap.put(TO_SPLICED, JavetProxyPolyfillList::toSpliced);
         functionMap.put(UNSHIFT, JavetProxyPolyfillList::unshift);
         functionMap.put(VALUES, JavetProxyPolyfillList::values);
         functionMap.put(WITH, JavetProxyPolyfillList::with);
@@ -1318,6 +1322,100 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
+     * Polyfill Array.prototype.toSorted()
+     * The toSorted() method of Array instances is the copying version of the sort() method.
+     * It returns a new array with the elements sorted in ascending order.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value toSorted(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_SORTED, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    List<?> results = new ArrayList<>(list);
+                    final int length = list.size();
+                    if (length > 1) {
+                        V8ValueFunction v8ValueFunction = ArrayUtils.isEmpty(v8Values)
+                                ? null
+                                : V8ValueUtils.validateV8ValueFunction(v8Runtime, v8Values, 0);
+                        if (v8ValueFunction == null) {
+                            results.sort((o1, o2) -> ((Comparator<String>) Comparator.naturalOrder()).compare(
+                                    String.valueOf(o1), String.valueOf(o2)));
+                        } else {
+                            try {
+                                results.sort((o1, o2) -> {
+                                    try (V8Value v8Value = v8ValueFunction.call(null, o1, o2)) {
+                                        return v8Value.asInt();
+                                    } catch (JavetException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
+                            } catch (Throwable t) {
+                                v8Runtime.throwError(V8ValueErrorType.Error, t.getMessage());
+                            }
+                        }
+                    }
+                    return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.toSpliced()
+     * The toSpliced() method of Array instances is the copying version of the splice() method.
+     * It returns a new array with some elements removed and/or replaced at a given index.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value toSpliced(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_SPLICED, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    List<Object> results = new ArrayList<>(list);
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
+                        final int length = list.size();
+                        int startIndex = V8ValueUtils.asInt(v8Values, 0);
+                        if (startIndex < 0) {
+                            startIndex += length;
+                        }
+                        if (startIndex < 0) {
+                            startIndex = 0;
+                        }
+                        if (startIndex >= length) {
+                            v8Runtime.throwError(
+                                    V8ValueErrorType.RangeError,
+                                    V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
+                        } else {
+                            int deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            deleteCount = Math.min(deleteCount, length - startIndex);
+                            if (deleteCount > 0) {
+                                results.subList(startIndex, startIndex + deleteCount).clear();
+                            }
+                            if (v8Values.length > 2) {
+                                List<Object> toBeAddedList = new ArrayList<>();
+                                for (int i = 2; i < v8Values.length; ++i) {
+                                    toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
+                                }
+                                results.addAll(startIndex, toBeAddedList);
+                            }
+                        }
+                    }
+                    return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
+                }));
+    }
+
+    /**
      * Polyfill Array.prototype.unshift().
      * The unshift() method of Array instances adds the specified elements to the beginning of an array
      * and returns the new length of the array.
@@ -1372,11 +1470,15 @@ public final class JavetProxyPolyfillList {
                 WITH, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     Object[] objects = list.toArray();
-                    int toBeReplacedIndex = V8ValueUtils.asInt(v8Values, 0);
-                    if (toBeReplacedIndex >= 0 && toBeReplacedIndex < objects.length) {
-                        objects[toBeReplacedIndex] = v8Values.length > 1
+                    int index = V8ValueUtils.asInt(v8Values, 0);
+                    if (index >= 0 && index < objects.length) {
+                        objects[index] = v8Values.length > 1
                                 ? v8Values[1]
                                 : v8Runtime.createV8ValueUndefined();
+                    } else {
+                        v8Runtime.throwError(
+                                V8ValueErrorType.RangeError,
+                                V8ErrorTemplate.rangeErrorInvalidIndex(index));
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, objects);
                 }));

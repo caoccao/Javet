@@ -771,6 +771,23 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             // toReversed()
             assertEquals("z,y,x", v8Runtime.getExecutor("list.toReversed().toString()").executeString());
             assertEquals("[x, y, z]", v8Runtime.getExecutor("list.toString()").executeString());
+            // toSorted()
+            assertEquals("[]", v8Runtime.getExecutor("list.clear(); JSON.stringify(list.toSorted())").executeString());
+            assertEquals("[1]", v8Runtime.getExecutor("list.push(1); JSON.stringify(list.toSorted())").executeString());
+            assertEquals("[1,2,3]", v8Runtime.getExecutor("list.push(3,2); JSON.stringify(list.toSorted())").executeString());
+            assertEquals("[3,2,1]", v8Runtime.getExecutor("JSON.stringify(list.toSorted((x,y)=>y-x))").executeString());
+            assertEquals("[1,3,2]", v8Runtime.getExecutor("JSON.stringify(list)").executeString());
+            v8Runtime.getExecutor("list.clear(); list.push('x', 'y', 'z')").executeVoid();
+            // toSpliced()
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced())+JSON.stringify(list)").executeString());
+            assertEquals(
+                    "[\"x\",\"z\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(1,1))+JSON.stringify(list)").executeString());
+            assertEquals(
+                    "[\"x\",\"x\",\"y\",\"z\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(1,1,'x','y'))+JSON.stringify(list)").executeString());
             // map()
             assertEquals("x0,y1,z2", v8Runtime.getExecutor("list.map((x, i) => x+i).toString()").executeString());
             assertTrue(v8Runtime.getExecutor("(() => { try { list.map(); } " +

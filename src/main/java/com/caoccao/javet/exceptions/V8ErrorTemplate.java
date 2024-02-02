@@ -29,6 +29,17 @@ public final class V8ErrorTemplate {
     }
 
     /**
+     * RangeError: Invalid index : ${index}.
+     *
+     * @param index the index
+     * @return the message
+     * @since 3.0.4
+     */
+    public static String rangeErrorInvalidIndex(int index) {
+        return "Invalid index : " + index;
+    }
+
+    /**
      * RangeError: Start ${start} is out or range.
      *
      * @return the message
