@@ -20,10 +20,47 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * The interface V8 value map.
+ *
+ * @since 0.7.0
+ */
 public interface IV8ValueMap extends IV8ValueKeyContainer {
+    /**
+     * As array.
+     *
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    IV8ValueArray asArray() throws JavetException;
+
+    /**
+     * Clear.
+     *
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    void clear() throws JavetException;
+
+    /**
+     * Gets entries.
+     *
+     * @return the entries
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
     @CheckReturnValue
     IV8ValueIterator<V8ValueArray> getEntries() throws JavetException;
 
+    /**
+     * Gets values.
+     *
+     * @return the values
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
     @CheckReturnValue
     IV8ValueIterator<? extends V8Value> getValues() throws JavetException;
 }

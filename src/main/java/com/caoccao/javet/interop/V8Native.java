@@ -225,6 +225,12 @@ class V8Native implements IV8Native {
     public native void lowMemoryNotification(long v8RuntimeHandle);
 
     @Override
+    public native Object mapAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native void mapClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object mapCreate(long v8RuntimeHandle);
 
     @Override

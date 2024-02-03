@@ -156,6 +156,10 @@ public interface IV8Native {
 
     void lowMemoryNotification(long v8RuntimeHandle);
 
+    Object mapAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    void mapClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object mapCreate(long v8RuntimeHandle);
 
     boolean mapDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);

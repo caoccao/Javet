@@ -41,6 +41,17 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
+    @CheckReturnValue
+    public V8ValueArray asArray() throws JavetException {
+        return checkV8Runtime().getV8Internal().mapAsArray(this);
+    }
+
+    @Override
+    public void clear() throws JavetException {
+        checkV8Runtime().getV8Internal().mapClear(this);
+    }
+
+    @Override
     public boolean delete(Object key) throws JavetException {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {

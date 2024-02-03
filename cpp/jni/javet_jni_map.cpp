@@ -100,6 +100,24 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_mapCreate
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_mapAsArray
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_MAP(v8ValueType)) {
+        auto v8LocalArray = v8LocalValue.As<v8::Map>()->AsArray();
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalArray);
+    }
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_mapClear
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_MAP(v8ValueType)) {
+        v8LocalValue.As<v8::Map>()->Clear();
+    }
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapDelete
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

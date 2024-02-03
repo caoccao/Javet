@@ -30,6 +30,29 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueMap extends BaseTestJavetRuntime {
     @Test
+    public void testAsArray() throws JavetException {
+        try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
+            v8ValueMap.set("a", 1, "b", "x");
+            try (V8ValueArray v8ValueArray = v8ValueMap.asArray()) {
+                assertEquals(4, v8ValueArray.getLength());
+                assertEquals("a", v8ValueArray.getString(0));
+                assertEquals(1, v8ValueArray.getInteger(1));
+                assertEquals("b", v8ValueArray.getString(2));
+                assertEquals("x", v8ValueArray.getString(3));
+            }
+        }
+    }
+    @Test
+    public void testClear() throws JavetException {
+        try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
+            v8ValueMap.set("a", 1, "b", "x");
+            assertEquals(2, v8ValueMap.getSize());
+            v8ValueMap.clear();
+            assertEquals(0, v8ValueMap.getSize());
+        }
+    }
+
+    @Test
     public void testForEach() throws JavetException {
         try (V8ValueMap v8ValueMap = v8Runtime.getExecutor(
                 "const a = new Map(); a.set('0', 0); a.set('1', 1); a.set('2', 2); a;").execute()) {

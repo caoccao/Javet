@@ -1743,6 +1743,30 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Convert map to array.
+     *
+     * @param iV8ValueMap the V8 value map
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    V8ValueArray mapAsArray(IV8ValueMap iV8ValueMap) throws JavetException {
+        return (V8ValueArray) v8Native.mapAsArray(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId());
+    }
+
+    /**
+     * Clear the map.
+     *
+     * @param iV8ValueMap the V8 value map
+     * @since 3.0.4
+     */
+    void mapClear(IV8ValueMap iV8ValueMap) {
+        v8Native.mapClear(handle, iV8ValueMap.getHandle(), iV8ValueMap.getType().getId());
+    }
+
+    /**
      * Delete a key from a map.
      *
      * @param iV8ValueMap the V8 value map
@@ -3260,6 +3284,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         v8Native.setAdd(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), key);
     }
 
+    /**
+     * Convert set to array.
+     *
+     * @param iV8ValueSet the V8 value set
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     V8ValueArray setAsArray(IV8ValueSet iV8ValueSet) throws JavetException {

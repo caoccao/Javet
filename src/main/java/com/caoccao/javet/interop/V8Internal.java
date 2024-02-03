@@ -193,6 +193,15 @@ public final class V8Internal {
         return v8Runtime.isWeak(iV8ValueReference);
     }
 
+    @CheckReturnValue
+    public V8ValueArray mapAsArray(IV8ValueMap iV8ValueMap) throws JavetException {
+        return v8Runtime.mapAsArray(iV8ValueMap);
+    }
+
+    public void mapClear(IV8ValueMap iV8ValueMap) {
+        v8Runtime.mapClear(iV8ValueMap);
+    }
+
     public boolean mapDelete(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
         return v8Runtime.mapDelete(iV8ValueMap, key);
     }

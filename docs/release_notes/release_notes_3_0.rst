@@ -18,6 +18,7 @@ Release Notes 3.0.x
 * Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
 * Added ``proxyGetOwnPropertyDescriptor()`` to ``IJavetDirectProxyHandler``
 * Added ``getOwnPropertyDescriptor()`` to ``BaseJavetReflectionProxyHandler``
+* Added ``asArray()``, ``clear()`` to ``V8ValueMap``
 * Added ``asArray()``, ``clear()`` to ``V8ValueSet``
 * Improved performance of ``JavetObjectConverter``
 

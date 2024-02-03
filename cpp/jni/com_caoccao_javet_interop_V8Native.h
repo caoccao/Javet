@@ -465,6 +465,22 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotifica
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapAsArray
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_mapAsArray
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    mapClear
+ * Signature: (JJI)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_mapClear
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    mapCreate
  * Signature: (J)Ljava/lang/Object;
  */
