@@ -360,6 +360,8 @@ public interface IV8Native {
 
     void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
+    Object setAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     void setClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object setCreate(long v8RuntimeHandle);

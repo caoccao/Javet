@@ -3251,13 +3251,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Add a value to a set.
      *
      * @param iV8ValueSet the V8 value set
-     * @param value       the value
+     * @param key         the key
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     @SuppressWarnings("RedundantThrows")
-    void setAdd(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
-        v8Native.setAdd(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), value);
+    void setAdd(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
+        v8Native.setAdd(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), key);
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    V8ValueArray setAsArray(IV8ValueSet iV8ValueSet) throws JavetException {
+        return (V8ValueArray) v8Native.setAsArray(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId());
     }
 
     /**
@@ -3284,7 +3290,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Delete a key from a set.
      *
-     * @param iV8ValueSet the v 8 value set
+     * @param iV8ValueSet the V8 value set
      * @param key         the key
      * @return true : deleted, false : key is not found
      * @throws JavetException the javet exception
@@ -3322,14 +3328,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Has a property in a set.
      *
      * @param iV8ValueSet the V8 value set
-     * @param value       the value
+     * @param key         the key
      * @return true : yes, false : no
      * @throws JavetException the javet exception
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
-    boolean setHas(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
-        return v8Native.setHas(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), value);
+    boolean setHas(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
+        return v8Native.setHas(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId(), key);
     }
 
     /**

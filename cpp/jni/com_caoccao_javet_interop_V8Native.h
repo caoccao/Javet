@@ -1209,6 +1209,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setAdd
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setAsArray
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_setAsArray
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    setClear
  * Signature: (JJI)V
  */

@@ -563,8 +563,13 @@ public final class V8Internal {
         return v8Runtime.scriptRun(iV8Script, resultRequired);
     }
 
-    public void setAdd(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
-        v8Runtime.setAdd(iV8ValueSet, value);
+    public void setAdd(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
+        v8Runtime.setAdd(iV8ValueSet, key);
+    }
+
+    @CheckReturnValue
+    public V8ValueArray setAsArray(IV8ValueSet iV8ValueSet) throws JavetException {
+        return v8Runtime.setAsArray(iV8ValueSet);
     }
 
     public void setClear(IV8ValueSet iV8ValueSet) {
@@ -579,8 +584,8 @@ public final class V8Internal {
         return v8Runtime.setGetSize(iV8ValueSet);
     }
 
-    public boolean setHas(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
-        return v8Runtime.setHas(iV8ValueSet, value);
+    public boolean setHas(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
+        return v8Runtime.setHas(iV8ValueSet, key);
     }
 
     public void setWeak(IV8ValueReference iV8ValueReference) {

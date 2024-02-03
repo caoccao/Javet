@@ -67,6 +67,12 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
+    @CheckReturnValue
+    public V8ValueArray asArray() throws JavetException {
+        return checkV8Runtime().getV8Internal().setAsArray(this);
+    }
+
+    @Override
     public void clear() throws JavetException {
         checkV8Runtime().getV8Internal().setClear(this);
     }

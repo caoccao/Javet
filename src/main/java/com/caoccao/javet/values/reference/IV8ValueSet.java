@@ -55,6 +55,16 @@ public interface IV8ValueSet extends IV8ValueKeyContainer {
     }
 
     /**
+     * As array.
+     *
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    IV8ValueArray asArray() throws JavetException;
+
+    /**
      * Clear.
      *
      * @throws JavetException the javet exception

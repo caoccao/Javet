@@ -61,6 +61,30 @@ public class TestV8ValueSet extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testAsArray() throws JavetException {
+        try (V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet()) {
+            v8ValueSet.add(1);
+            v8ValueSet.add("x");
+            try (V8ValueArray v8ValueArray = v8ValueSet.asArray()) {
+                assertEquals(2, v8ValueArray.getLength());
+                assertEquals(1, v8ValueArray.getInteger(0));
+                assertEquals("x", v8ValueArray.getString(1));
+            }
+        }
+    }
+
+    @Test
+    public void testClear() throws JavetException {
+        try (V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet()) {
+            v8ValueSet.add(1);
+            v8ValueSet.add("x");
+            assertEquals(2, v8ValueSet.getSize());
+            v8ValueSet.clear();
+            assertEquals(0, v8ValueSet.getSize());
+        }
+    }
+
+    @Test
     public void testForEach() throws JavetException {
         try (V8ValueSet v8ValueSet = v8Runtime.getExecutor(
                 "const a = new Set(); a.add('0'); a.add('1'); a.add('2'); a;").execute()) {
