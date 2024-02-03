@@ -27,6 +27,25 @@ import com.caoccao.javet.values.V8Value;
  */
 public interface IV8ValueMap extends IV8ValueKeyContainer {
     /**
+     * The constant FUNCTION_ENTRIES.
+     *
+     * @since 3.0.4
+     */
+    String FUNCTION_ENTRIES = "entries";
+    /**
+     * The constant FUNCTION_KEYS.
+     *
+     * @since 3.0.4
+     */
+    String FUNCTION_KEYS = "keys";
+    /**
+     * The constant FUNCTION_VALUES.
+     *
+     * @since 3.0.4
+     */
+    String FUNCTION_VALUES = "values";
+
+    /**
      * As array.
      *
      * @return the V8 value array
@@ -52,7 +71,21 @@ public interface IV8ValueMap extends IV8ValueKeyContainer {
      * @since 0.7.2
      */
     @CheckReturnValue
-    IV8ValueIterator<V8ValueArray> getEntries() throws JavetException;
+    default IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
+        return invoke(FUNCTION_ENTRIES);
+    }
+
+    /**
+     * Gets keys.
+     *
+     * @return the keys
+     * @throws JavetException the javet exception
+     * @since 0.7.2
+     */
+    @CheckReturnValue
+    default IV8ValueIterator<? extends V8Value> getKeys() throws JavetException {
+        return invoke(FUNCTION_KEYS);
+    }
 
     /**
      * Gets values.
@@ -62,5 +95,7 @@ public interface IV8ValueMap extends IV8ValueKeyContainer {
      * @since 0.7.2
      */
     @CheckReturnValue
-    IV8ValueIterator<? extends V8Value> getValues() throws JavetException;
+    default IV8ValueIterator<? extends V8Value> getValues() throws JavetException {
+        return invoke(FUNCTION_VALUES);
+    }
 }

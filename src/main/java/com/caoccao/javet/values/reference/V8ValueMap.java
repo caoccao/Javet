@@ -30,12 +30,21 @@ import com.caoccao.javet.values.virtual.V8VirtualValueList;
 
 import java.util.Objects;
 
+/**
+ * The type V8 value map.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
 public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
-    protected static final String FUNCTION_ENTRIES = "entries";
-    protected static final String FUNCTION_KEYS = "keys";
-    protected static final String FUNCTION_VALUES = "values";
-
+    /**
+     * Instantiates a new V8 value map.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     V8ValueMap(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
     }
@@ -164,23 +173,11 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     }
 
     @Override
-    @CheckReturnValue
-    public IV8ValueIterator<V8ValueArray> getEntries() throws JavetException {
-        return invoke(FUNCTION_ENTRIES);
-    }
-
-    @Override
     public Integer getInteger(Object key) throws JavetException {
         try (V8VirtualValue virtualKey = new V8VirtualValue(
                 checkV8Runtime(), OBJECT_CONVERTER, Objects.requireNonNull(key))) {
             return v8Runtime.getV8Internal().mapGetInteger(this, virtualKey.get());
         }
-    }
-
-    @Override
-    @CheckReturnValue
-    public IV8ValueIterator<? extends V8Value> getKeys() throws JavetException {
-        return invoke(FUNCTION_KEYS);
     }
 
     @Override
@@ -207,12 +204,6 @@ public class V8ValueMap extends V8ValueObject implements IV8ValueMap {
     @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Map;
-    }
-
-    @Override
-    @CheckReturnValue
-    public IV8ValueIterator<? extends V8Value> getValues() throws JavetException {
-        return invoke(FUNCTION_VALUES);
     }
 
     @Override
