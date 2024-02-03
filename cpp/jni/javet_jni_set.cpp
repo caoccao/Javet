@@ -29,6 +29,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setAdd
     }
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setClear
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_SET(v8ValueType)) {
+        v8LocalValue.As<v8::Set>()->Clear();
+    }
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_setCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);

@@ -3261,6 +3261,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Clear the set.
+     *
+     * @param iV8ValueSet the V8 value set
+     * @since 3.0.4
+     */
+    void setClear(IV8ValueSet iV8ValueSet) {
+        v8Native.setClear(handle, iV8ValueSet.getHandle(), iV8ValueSet.getType().getId());
+    }
+
+    /**
      * Sets converter.
      *
      * @param converter the converter

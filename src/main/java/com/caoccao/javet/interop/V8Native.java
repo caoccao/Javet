@@ -547,6 +547,9 @@ class V8Native implements IV8Native {
     public native void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     @Override
+    public native void setClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object setCreate(long v8RuntimeHandle);
 
     @Override
