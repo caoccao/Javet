@@ -21,12 +21,16 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
+import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The type Javet proxy polyfill map.
@@ -34,6 +38,7 @@ import java.util.Objects;
  * @since 3.0.4
  */
 public final class JavetProxyPolyfillMap {
+    private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
             "Target object must be an instance of Map.";
     private static final String TO_JSON = "toJSON";
@@ -41,10 +46,31 @@ public final class JavetProxyPolyfillMap {
 
     static {
         functionMap = new HashMap<>();
+        functionMap.put(ENTRIES, JavetProxyPolyfillMap::entries);
         functionMap.put(TO_JSON, JavetProxyPolyfillMap::toJSON);
     }
 
     private JavetProxyPolyfillMap() {
+    }
+
+    /**
+     * Polyfill Map.prototype.entries()
+     * The entries() method of Map instances returns a new map iterator object that contains the [key, value]
+     * pairs for each element in this map in insertion order.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        List<List<Object>> entries = map.entrySet().stream()
+                .map(entry -> SimpleList.of(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+        return new JavetProxySymbolIterableConverter<>(v8Runtime, entries).getV8ValueFunction();
     }
 
     /**
