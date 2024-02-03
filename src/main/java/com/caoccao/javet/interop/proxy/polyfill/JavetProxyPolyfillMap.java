@@ -22,6 +22,7 @@ import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
+import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
  * @since 3.0.4
  */
 public final class JavetProxyPolyfillMap {
+    private static final String DELETE = "delete";
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
             "Target object must be an instance of Map.";
@@ -47,12 +49,37 @@ public final class JavetProxyPolyfillMap {
 
     static {
         functionMap = new HashMap<>();
+        functionMap.put(DELETE, JavetProxyPolyfillMap::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillMap::entries);
         functionMap.put(SIZE, JavetProxyPolyfillMap::size);
         functionMap.put(TO_JSON, JavetProxyPolyfillMap::toJSON);
     }
 
     private JavetProxyPolyfillMap() {
+    }
+
+    /**
+     * Polyfill Map.prototype.delete()
+     * The delete() method of Map instances removes the specified element from this map by key.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value delete(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                DELETE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    boolean deleted = false;
+                    if (!map.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
+                        deleted = map.remove(v8Runtime.toObject(v8Values[0])) != null;
+                    }
+                    return v8Runtime.createV8ValueBoolean(deleted);
+                }));
     }
 
     /**
