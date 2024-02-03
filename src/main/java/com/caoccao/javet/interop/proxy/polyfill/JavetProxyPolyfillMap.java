@@ -43,6 +43,7 @@ public final class JavetProxyPolyfillMap {
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
             "Target object must be an instance of Map.";
+    private static final String HAS = "has";
     private static final String KEYS = "keys";
     private static final String SIZE = "size";
     private static final String TO_JSON = "toJSON";
@@ -53,6 +54,7 @@ public final class JavetProxyPolyfillMap {
         functionMap = new HashMap<>();
         functionMap.put(DELETE, JavetProxyPolyfillMap::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillMap::entries);
+        functionMap.put(HAS, JavetProxyPolyfillMap::has);
         functionMap.put(KEYS, JavetProxyPolyfillMap::keys);
         functionMap.put(SIZE, JavetProxyPolyfillMap::size);
         functionMap.put(TO_JSON, JavetProxyPolyfillMap::toJSON);
@@ -115,6 +117,31 @@ public final class JavetProxyPolyfillMap {
      */
     public static IJavetProxyPolyfillFunction<?, ?> getFunction(String name) {
         return functionMap.get(name);
+    }
+
+    /**
+     * Polyfill Map.prototype.has()
+     * The has() method of Map instances returns a boolean indicating whether an element
+     * with the specified key exists in this map or not.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value has(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    boolean found = false;
+                    if (!map.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
+                        found = map.containsKey(v8Runtime.toObject(v8Values[0]));
+                    }
+                    return v8Runtime.createV8ValueBoolean(found);
+                }));
     }
 
     /**
