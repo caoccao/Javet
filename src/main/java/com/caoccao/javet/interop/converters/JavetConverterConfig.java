@@ -40,13 +40,26 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 3.0.4
      */
     protected static final String[] DEFAULT_PROXY_LIST_OVERRIDE_METHODS = new String[]{
-            "forEach", "indexOf", "lastIndexOf", "size", "sort"};
+            "forEach", "indexOf", "lastIndexOf", "sort"};
+    /**
+     * The constant DEFAULT_PROXY_MAP_OVERRIDE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXY_MAP_OVERRIDE_METHODS = new String[]{
+            "forEach", "size"};
     /**
      * The Proxy list override methods.
      *
      * @since 3.0.4
      */
     protected final Set<String> proxyListOverrideMethods;
+    /**
+     * The Proxy map override methods.
+     *
+     * @since 3.0.4
+     */
+    protected final Set<String> proxyMapOverrideMethods;
     /**
      * The Default boolean.
      *
@@ -156,6 +169,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         maxDepth = DEFAULT_MAX_DEPTH;
         proxyListEnabled = false;
         proxyListOverrideMethods = SimpleSet.of(DEFAULT_PROXY_LIST_OVERRIDE_METHODS);
+        proxyMapOverrideMethods = SimpleSet.of(DEFAULT_PROXY_MAP_OVERRIDE_METHODS);
         proxyMapEnabled = false;
         proxySetEnabled = false;
         reflectionObjectFactory = null;
@@ -260,6 +274,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public Set<String> getProxyListOverrideMethods() {
         return proxyListOverrideMethods;
+    }
+
+    /**
+     * Gets proxy map override methods.
+     *
+     * @return the proxy map override methods
+     * @since 3.0.4
+     */
+    public Set<String> getProxyMapOverrideMethods() {
+        return proxyMapOverrideMethods;
     }
 
     /**

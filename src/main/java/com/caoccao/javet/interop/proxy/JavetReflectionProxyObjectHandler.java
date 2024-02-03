@@ -333,6 +333,8 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected void initializeOverrideMethods() {
         if (classDescriptor.isTargetTypeList()) {
             overrideMethods = v8Runtime.getConverter().getConfig().getProxyListOverrideMethods();
+        } else if (classDescriptor.isTargetTypeMap()) {
+            overrideMethods = v8Runtime.getConverter().getConfig().getProxyMapOverrideMethods();
         }
     }
 

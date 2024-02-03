@@ -69,7 +69,6 @@ public final class JavetProxyPolyfillList {
     private static final String REDUCE_RIGHT = "reduceRight";
     private static final String REVERSE = "reverse";
     private static final String SHIFT = "shift";
-    private static final String SIZE = "size";
     private static final String SLICE = "slice";
     private static final String SOME = "some";
     private static final String SORT = "sort";
@@ -110,7 +109,6 @@ public final class JavetProxyPolyfillList {
         functionMap.put(REDUCE_RIGHT, JavetProxyPolyfillList::reduceRight);
         functionMap.put(REVERSE, JavetProxyPolyfillList::reverse);
         functionMap.put(SHIFT, JavetProxyPolyfillList::shift);
-        functionMap.put(SIZE, JavetProxyPolyfillList::length);
         functionMap.put(SLICE, JavetProxyPolyfillList::slice);
         functionMap.put(SOME, JavetProxyPolyfillList::some);
         functionMap.put(SORT, JavetProxyPolyfillList::sort);

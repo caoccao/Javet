@@ -822,7 +822,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals("2", v8Runtime.getExecutor("list.shift()").executeString());
             // delete()
             assertTrue(v8Runtime.getExecutor("delete list[2]").executeBoolean());
-            assertEquals(2, v8Runtime.getExecutor("list.size").executeInteger());
             // length
             assertEquals(2, v8Runtime.getExecutor("list.length").executeInteger());
             v8Runtime.getGlobalObject().delete("list");
@@ -875,6 +874,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals("3", map.get("z"));
             assertEquals("4", v8Runtime.getExecutor("map.z = '4'; map.z;").executeString());
             assertEquals("4", map.get("z"));
+            // size
+            assertEquals(3, v8Runtime.getExecutor("map.size").executeInteger());
             // ownKeys()
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
