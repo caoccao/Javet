@@ -888,6 +888,14 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[[\"x\",1],[\"y\",\"2\"],[\"z\",\"4\"]]",
                     v8Runtime.getExecutor("JSON.stringify([...map.entries()]);").executeString());
+            // keys()
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify([...map.keys()]);").executeString());
+            // values()
+            assertEquals(
+                    "[1,\"2\",\"4\"]",
+                    v8Runtime.getExecutor("JSON.stringify([...map.values()]);").executeString());
             // delete
             assertTrue(v8Runtime.getExecutor("delete map['x']").executeBoolean());
             assertFalse(map.containsKey("x"));

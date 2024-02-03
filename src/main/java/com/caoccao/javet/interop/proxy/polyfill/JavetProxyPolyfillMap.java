@@ -43,16 +43,20 @@ public final class JavetProxyPolyfillMap {
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
             "Target object must be an instance of Map.";
+    private static final String KEYS = "keys";
     private static final String SIZE = "size";
     private static final String TO_JSON = "toJSON";
+    private static final String VALUES = "values";
     private static final Map<String, IJavetProxyPolyfillFunction<?, ?>> functionMap;
 
     static {
         functionMap = new HashMap<>();
         functionMap.put(DELETE, JavetProxyPolyfillMap::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillMap::entries);
+        functionMap.put(KEYS, JavetProxyPolyfillMap::keys);
         functionMap.put(SIZE, JavetProxyPolyfillMap::size);
         functionMap.put(TO_JSON, JavetProxyPolyfillMap::toJSON);
+        functionMap.put(VALUES, JavetProxyPolyfillMap::values);
     }
 
     private JavetProxyPolyfillMap() {
@@ -114,6 +118,23 @@ public final class JavetProxyPolyfillMap {
     }
 
     /**
+     * Polyfill Map.prototype.keys()
+     * The keys() method of Map instances returns a new map iterator object that contains the keys for each element
+     * in this map in insertion order.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value keys(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        return new JavetProxySymbolIterableConverter<>(v8Runtime, map.keySet()).getV8ValueFunction();
+    }
+
+    /**
      * Polyfill Map.prototype.size.
      * The size accessor property of Map instances returns the number of elements in this map.
      *
@@ -153,5 +174,22 @@ public final class JavetProxyPolyfillMap {
                     }
                     return V8ValueUtils.createV8ValueObject(v8Runtime, objects);
                 }));
+    }
+
+    /**
+     * Polyfill Map.prototype.values()
+     * The values() method of Map instances returns a new map iterator object that contains the values
+     * for each element in this map in insertion order.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        return new JavetProxySymbolIterableConverter<>(v8Runtime, map.values()).getV8ValueFunction();
     }
 }
