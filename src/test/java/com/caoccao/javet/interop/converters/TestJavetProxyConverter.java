@@ -874,6 +874,12 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals("3", map.get("z"));
             assertEquals("4", v8Runtime.getExecutor("map.z = '4'; map.z;").executeString());
             assertEquals("4", map.get("z"));
+            // set() and get()
+            assertTrue(v8Runtime.getExecutor("map.set('z', '5') === map").executeBoolean());
+            assertEquals("5", v8Runtime.getExecutor("map.get('z')").executeString());
+            assertTrue(v8Runtime.getExecutor("map.set('z', '4') === map").executeBoolean());
+            assertEquals("4", v8Runtime.getExecutor("map.get('z')").executeString());
+            assertTrue(v8Runtime.getExecutor("map.get('aaa') === undefined").executeBoolean());
             // size
             assertEquals(3, v8Runtime.getExecutor("map.size").executeInteger());
             // ownKeys()

@@ -40,14 +40,17 @@ import java.util.stream.Collectors;
  *
  * @since 3.0.4
  */
+@SuppressWarnings("unchecked")
 public final class JavetProxyPolyfillMap {
     private static final String DELETE = "delete";
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
             "Target object must be an instance of Map.";
     private static final String FOR_EACH = "forEach";
+    private static final String GET = "get";
     private static final String HAS = "has";
     private static final String KEYS = "keys";
+    private static final String SET = "set";
     private static final String SIZE = "size";
     private static final String TO_JSON = "toJSON";
     private static final String VALUES = "values";
@@ -58,8 +61,10 @@ public final class JavetProxyPolyfillMap {
         functionMap.put(DELETE, JavetProxyPolyfillMap::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillMap::entries);
         functionMap.put(FOR_EACH, JavetProxyPolyfillMap::forEach);
+        functionMap.put(GET, JavetProxyPolyfillMap::get);
         functionMap.put(HAS, JavetProxyPolyfillMap::has);
         functionMap.put(KEYS, JavetProxyPolyfillMap::keys);
+        functionMap.put(SET, JavetProxyPolyfillMap::set);
         functionMap.put(SIZE, JavetProxyPolyfillMap::size);
         functionMap.put(TO_JSON, JavetProxyPolyfillMap::toJSON);
         functionMap.put(VALUES, JavetProxyPolyfillMap::values);
@@ -143,6 +148,35 @@ public final class JavetProxyPolyfillMap {
     }
 
     /**
+     * Polyfill Map.prototype.get().
+     * The get() method of Map instances returns a specified element from this map.
+     * If the value that is associated to the provided key is an object,
+     * then you will get a reference to that object and any change made to
+     * that object will effectively modify it inside the Map object.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value get(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                GET, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    if (!map.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
+                        Object key = v8Runtime.toObject(v8Values[0]);
+                        if (map.containsKey(key)) {
+                            return v8Runtime.toV8Value(map.get(key));
+                        }
+                    }
+                    return v8Runtime.createV8ValueUndefined();
+                }));
+    }
+
+    /**
      * Gets function.
      *
      * @param name the name
@@ -168,7 +202,7 @@ public final class JavetProxyPolyfillMap {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
         final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                HAS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     boolean found = false;
                     if (!map.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
@@ -193,6 +227,31 @@ public final class JavetProxyPolyfillMap {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
         final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
         return new JavetProxySymbolIterableConverter<>(v8Runtime, map.keySet()).getV8ValueFunction();
+    }
+
+    /**
+     * Polyfill Map.prototype.set().
+     * The set() method of Map instances adds or updates an entry in this map with a specified key and a value.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value set(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<Object, Object> map = (Map<Object, Object>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                SET, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    Object key = v8Runtime.toObject(V8ValueUtils.asV8Value(v8Values, 0));
+                    Object value = v8Runtime.toObject(V8ValueUtils.asV8Value(v8Values, 1));
+                    if (key != null) {
+                        map.put(key, value);
+                    }
+                    return thisObject;
+                }));
     }
 
     /**
