@@ -24,7 +24,10 @@ import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,6 +43,7 @@ public final class JavetProxyPolyfillSet {
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET =
             "Target object must be an instance of Set.";
+    private static final String FOR_EACH = "forEach";
     private static final String HAS = "has";
     private static final String KEYS = "keys";
     private static final String SIZE = "size";
@@ -51,6 +55,7 @@ public final class JavetProxyPolyfillSet {
         functionMap.put(ADD, JavetProxyPolyfillSet::add);
         functionMap.put(DELETE, JavetProxyPolyfillSet::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillSet::entries);
+        functionMap.put(FOR_EACH, JavetProxyPolyfillSet::forEach);
         functionMap.put(HAS, JavetProxyPolyfillSet::has);
         functionMap.put(KEYS, JavetProxyPolyfillSet::values);
         functionMap.put(SIZE, JavetProxyPolyfillSet::size);
@@ -126,6 +131,35 @@ public final class JavetProxyPolyfillSet {
         final Set<?> set = (Set<?>) Objects.requireNonNull(targetObject);
         final List<List<?>> entries = set.stream().map(o -> SimpleList.of(o, o)).collect(Collectors.toList());
         return new JavetProxySymbolIterableConverter<>(v8Runtime, entries).getV8ValueFunction();
+    }
+
+    /**
+     * Polyfill Set.prototype.forEach()
+     * The forEach() method of Set instances executes a provided function once for each value in this set,
+     * in insertion order.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Set : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET;
+        final Set<?> set = (Set<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                FOR_EACH, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                        for (Object key : set) {
+                            try (V8Value v8ValueResult = v8ValueFunction.call(v8ValueObject, key, key, thisObject)) {
+                            }
+                        }
+                    }
+                    return v8Runtime.createV8ValueUndefined();
+                }));
     }
 
     /**
