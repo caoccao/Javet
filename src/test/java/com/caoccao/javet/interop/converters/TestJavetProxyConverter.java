@@ -577,7 +577,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testList() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxyListEnabled(true);
-            List<String> list = SimpleList.of("x", "y");
+            List<Object> list = SimpleList.of("x", "y");
             v8Runtime.getGlobalObject().set("list", list);
             assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
             // contains()
@@ -824,6 +824,25 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("delete list[2]").executeBoolean());
             // length
             assertEquals(2, v8Runtime.getExecutor("list.length").executeInteger());
+            v8Runtime.getGlobalObject().delete("list");
+            // flat()
+            list = SimpleList.of("x", "y", SimpleList.of("x1", "y1", new String[]{"x2", "y2"}));
+            v8Runtime.getGlobalObject().set("list", list);
+            assertEquals(
+                    "[\"x\",\"y\",[\"x1\",\"y1\",[\"x2\",\"y2\"]]]",
+                    v8Runtime.getExecutor("JSON.stringify(list);").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",[\"x1\",\"y1\",[\"x2\",\"y2\"]]]",
+                    v8Runtime.getExecutor("JSON.stringify(list.flat(0));").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"x1\",\"y1\",[\"x2\",\"y2\"]]",
+                    v8Runtime.getExecutor("JSON.stringify(list.flat());").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"x1\",\"y1\",[\"x2\",\"y2\"]]",
+                    v8Runtime.getExecutor("JSON.stringify(list.flat(1));").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"x1\",\"y1\",\"x2\",\"y2\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.flat(2));").executeString());
             v8Runtime.getGlobalObject().delete("list");
         } finally {
             javetProxyConverter.getConfig().setProxyListEnabled(false);

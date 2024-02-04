@@ -55,6 +55,7 @@ public final class JavetProxyPolyfillList {
     private static final String FIND_INDEX = "findIndex";
     private static final String FIND_LAST = "findLast";
     private static final String FIND_LAST_INDEX = "findLastIndex";
+    private static final String FLAT = "flat";
     private static final String FOR_EACH = "forEach";
     private static final String INCLUDES = "includes";
     private static final String INDEX_OF = "indexOf";
@@ -95,6 +96,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(FIND_INDEX, JavetProxyPolyfillList::findIndex);
         functionMap.put(FIND_LAST, JavetProxyPolyfillList::findLast);
         functionMap.put(FIND_LAST_INDEX, JavetProxyPolyfillList::findLastIndex);
+        functionMap.put(FLAT, JavetProxyPolyfillList::flat);
         functionMap.put(FOR_EACH, JavetProxyPolyfillList::forEach);
         functionMap.put(INCLUDES, JavetProxyPolyfillList::includes);
         functionMap.put(INDEX_OF, JavetProxyPolyfillList::indexOf);
@@ -577,6 +579,30 @@ public final class JavetProxyPolyfillList {
                         }
                     }
                     return v8Runtime.createV8ValueInteger(-1);
+                }));
+    }
+
+    /**
+     * Polyfill Array.prototype.flat().
+     * The flat() method of Array instances creates a new array with all sub-array elements concatenated into
+     * it recursively up to the specified depth.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value flat(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                FLAT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    final int depth = V8ValueUtils.asInt(v8Values, 0, 1);
+                    List<Object> results = new ArrayList<>(list.size());
+                    ListUtils.flat(results, list, depth);
+                    return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
                 }));
     }
 

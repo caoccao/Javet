@@ -16,10 +16,8 @@
 
 package com.caoccao.javet.utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * The type List utils.
@@ -29,6 +27,36 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public final class ListUtils {
     private ListUtils() {
+    }
+
+    /**
+     * The flat() method of Array instances creates a new array with all sub-array elements concatenated
+     * into it recursively up to the specified depth.
+     *
+     * @param targetList the target list
+     * @param sourceList the source list
+     * @param depth      the depth
+     * @since 3.0.4
+     */
+    public static void flat(List<Object> targetList, List<Object> sourceList, int depth) {
+        if (depth <= 0) {
+            targetList.addAll(sourceList);
+        } else if (!sourceList.isEmpty()) {
+            for (Object object : sourceList) {
+                if (object instanceof List) {
+                    flat(targetList, (List<Object>) object, depth - 1);
+                } else if (object != null && object.getClass().isArray()) {
+                    final int length = Array.getLength(object);
+                    List<Object> childList = new ArrayList<>(length);
+                    for (int i = 0; i < length; ++i) {
+                        childList.add(Array.get(object, i));
+                    }
+                    flat(targetList, childList, depth - 1);
+                } else {
+                    targetList.add(object);
+                }
+            }
+        }
     }
 
     /**
