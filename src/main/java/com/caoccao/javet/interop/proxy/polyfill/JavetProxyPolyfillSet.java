@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  * @since 3.0.4
  */
 public final class JavetProxyPolyfillSet {
+    private static final String ADD = "add";
     private static final String DELETE = "delete";
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET =
@@ -47,6 +48,7 @@ public final class JavetProxyPolyfillSet {
 
     static {
         functionMap = new HashMap<>();
+        functionMap.put(ADD, JavetProxyPolyfillSet::add);
         functionMap.put(DELETE, JavetProxyPolyfillSet::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillSet::entries);
         functionMap.put(HAS, JavetProxyPolyfillSet::has);
@@ -56,6 +58,30 @@ public final class JavetProxyPolyfillSet {
     }
 
     private JavetProxyPolyfillSet() {
+    }
+
+    /**
+     * Polyfill Set.prototype.add().
+     * The add() method of Set instances inserts a new element with a specified value in to this set,
+     * if there isn't an element with the same value already in this set
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value add(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Set : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET;
+        final Set<?> set = (Set<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                ADD, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
+                        set.add(v8Runtime.toObject(v8Values[0]));
+                    }
+                    return thisObject;
+                }));
     }
 
     /**
@@ -74,11 +100,11 @@ public final class JavetProxyPolyfillSet {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 DELETE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    boolean result = false;
+                    boolean removed = false;
                     if (ArrayUtils.isNotEmpty(v8Values)) {
-                        result = set.remove(v8Runtime.toObject(v8Values[0]));
+                        removed = set.remove(v8Runtime.toObject(v8Values[0]));
                     }
-                    return v8Runtime.createV8ValueBoolean(result);
+                    return v8Runtime.createV8ValueBoolean(removed);
                 }));
     }
 
