@@ -26,8 +26,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -128,11 +126,11 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         integerList.add(1);
         integerList.add(2);
         v8Runtime.getGlobalObject().set("a", integerList);
-        assertEquals(2, (Integer) v8Runtime.getExecutor("a.size").executeObject());
+        assertEquals(2, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
         v8Runtime.getExecutor("a.add(3);").executeVoid();
-        assertEquals(3, (Integer) v8Runtime.getExecutor("a.size").executeObject());
+        assertEquals(3, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
         assertEquals(3, (Integer) v8Runtime.getExecutor("a[2]").executeObject());
         assertEquals(3, integerList.size());
         assertEquals(3, integerList.get(2));
@@ -157,7 +155,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void testLongList() throws JavetException {
         List<Long> longList = Collections.unmodifiableList(SimpleList.of(1L, 2L));
         v8Runtime.getGlobalObject().set("a", longList);
-        assertEquals(2, (Integer) v8Runtime.getExecutor("a.size").executeObject());
+        assertEquals(2, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
         assertEquals(1L, (Long) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2L, (Long) v8Runtime.getExecutor("a[1]").executeObject());
         v8Runtime.getGlobalObject().delete("a");
@@ -172,7 +170,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().set("map", map);
         assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
         assertTrue((Boolean) v8Runtime.getExecutor("map.containsKey('x')").executeObject());
-        assertEquals(2, (Integer) v8Runtime.getExecutor("map.size()").executeObject());
+        assertEquals(2, (Integer) v8Runtime.getExecutor("map.size").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("map['x']").executeObject());
         assertEquals("2", v8Runtime.getExecutor("map['y']").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("map.x").executeObject());
@@ -195,7 +193,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertTrue((Boolean) v8Runtime.getExecutor("set.contains('x')").executeObject());
         assertTrue((Boolean) v8Runtime.getExecutor("set.contains('y')").executeObject());
         assertFalse((Boolean) v8Runtime.getExecutor("set.contains('z')").executeObject());
-        assertTrue((Boolean) v8Runtime.getExecutor("set.add('z')").executeObject());
+        assertEquals(set, v8Runtime.getExecutor("set.add('z')").executeObject());
         assertTrue((Boolean) v8Runtime.getExecutor("set.contains('z')").executeObject());
         assertEquals(
                 "[\"x\",\"y\",\"z\"]",
@@ -236,8 +234,8 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testStringList() throws JavetException {
-        v8Runtime.getGlobalObject().set("l", Stream.of("x", "y").collect(Collectors.toList()));
-        assertEquals(2, (Integer) v8Runtime.getExecutor("l.size").executeObject());
+        v8Runtime.getGlobalObject().set("l", SimpleList.of("x", "y"));
+        assertEquals(2, (Integer) v8Runtime.getExecutor("l.size()").executeObject());
         assertEquals("x", v8Runtime.getExecutor("l.get(0)").executeObject());
         assertEquals("y", v8Runtime.getExecutor("l.get(1)").executeObject());
         assertEquals(
