@@ -826,7 +826,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(2, v8Runtime.getExecutor("list.length").executeInteger());
             v8Runtime.getGlobalObject().delete("list");
             // flat()
-            list = SimpleList.of("x", "y", SimpleList.of("x1", "y1", new String[]{"x2", "y2"}));
+            list = SimpleList.of("x", "y", SimpleList.of("x1", "y1", SimpleList.of("x2", "y2")));
             v8Runtime.getGlobalObject().set("list", list);
             assertEquals(
                     "[\"x\",\"y\",[\"x1\",\"y1\",[\"x2\",\"y2\"]]]",
@@ -843,6 +843,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"y\",\"x1\",\"y1\",\"x2\",\"y2\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.flat(2));").executeString());
+            // flatMap()
+            assertEquals(
+                    "[\"x0true\",\"y1true\",\"[x1, y1, [x2, y2]]2true\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.flatMap((e,i,a)=>e+i+(a===list)));").executeString());
             v8Runtime.getGlobalObject().delete("list");
         } finally {
             javetProxyConverter.getConfig().setProxyListEnabled(false);

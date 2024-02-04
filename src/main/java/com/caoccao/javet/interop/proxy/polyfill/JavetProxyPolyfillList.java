@@ -56,6 +56,7 @@ public final class JavetProxyPolyfillList {
     private static final String FIND_LAST = "findLast";
     private static final String FIND_LAST_INDEX = "findLastIndex";
     private static final String FLAT = "flat";
+    private static final String FLAT_MAP = "flatMap";
     private static final String FOR_EACH = "forEach";
     private static final String INCLUDES = "includes";
     private static final String INDEX_OF = "indexOf";
@@ -97,6 +98,7 @@ public final class JavetProxyPolyfillList {
         functionMap.put(FIND_LAST, JavetProxyPolyfillList::findLast);
         functionMap.put(FIND_LAST_INDEX, JavetProxyPolyfillList::findLastIndex);
         functionMap.put(FLAT, JavetProxyPolyfillList::flat);
+        functionMap.put(FLAT_MAP, JavetProxyPolyfillList::flatMap);
         functionMap.put(FOR_EACH, JavetProxyPolyfillList::forEach);
         functionMap.put(INCLUDES, JavetProxyPolyfillList::includes);
         functionMap.put(INDEX_OF, JavetProxyPolyfillList::indexOf);
@@ -323,7 +325,8 @@ public final class JavetProxyPolyfillList {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         for (Object object : list) {
-                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                            try (V8Value result = v8ValueFunction.call(
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (!result.ifTrue()) {
                                     return v8Runtime.createV8ValueBoolean(false);
                                 }
@@ -406,7 +409,8 @@ public final class JavetProxyPolyfillList {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         for (Object object : list) {
-                            try (V8Value v8ValueResult = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                            try (V8Value v8ValueResult = v8ValueFunction.call(
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (v8ValueResult.ifTrue()) {
                                     results.add(object);
                                 }
@@ -447,7 +451,8 @@ public final class JavetProxyPolyfillList {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         for (Object object : list) {
-                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                            try (V8Value result = v8ValueFunction.call(
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.ifTrue()) {
                                     return v8Runtime.toV8Value(object);
                                 }
@@ -484,7 +489,8 @@ public final class JavetProxyPolyfillList {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         for (Object object : list) {
-                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                            try (V8Value result = v8ValueFunction.call(
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.ifTrue()) {
                                     return v8Runtime.createV8ValueInteger(index);
                                 }
@@ -531,7 +537,8 @@ public final class JavetProxyPolyfillList {
                         ListIterator<?> listIterator = list.listIterator(list.size());
                         while (listIterator.hasPrevious()) {
                             Object object = listIterator.previous();
-                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                            try (V8Value result = v8ValueFunction.call(
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.ifTrue()) {
                                     return v8Runtime.toV8Value(object);
                                 }
@@ -570,7 +577,11 @@ public final class JavetProxyPolyfillList {
                         int index = list.size() - 1;
                         ListIterator<?> listIterator = list.listIterator(list.size());
                         while (listIterator.hasPrevious()) {
-                            try (V8Value result = v8ValueFunction.call(v8ValueObject, listIterator.previous(), index, thisObject)) {
+                            try (V8Value result = v8ValueFunction.call(
+                                    v8ValueObject,
+                                    listIterator.previous(),
+                                    v8Runtime.createV8ValueInteger(index),
+                                    thisObject)) {
                                 if (result.ifTrue()) {
                                     return v8Runtime.createV8ValueInteger(index);
                                 }
@@ -607,6 +618,46 @@ public final class JavetProxyPolyfillList {
     }
 
     /**
+     * Polyfill Array.prototype.flatMap().
+     * The flatMap() method of Array instances returns a new array formed by applying a given callback function
+     * to each element of the array, and then flattening the result by one level.
+     * It is identical to a map() followed by a flat() of depth 1 (arr.map(...args).flat()),
+     * but slightly more efficient than calling those two methods separately.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value flatMap(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                FLAT_MAP, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    List<V8Value> results = new ArrayList<>(list.size());
+                    try {
+                        V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
+                        if (v8ValueFunction != null) {
+                            V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                            int index = 0;
+                            for (Object object : list) {
+                                results.add(v8ValueFunction.call(
+                                        v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject));
+                                ++index;
+                            }
+                        }
+                        try (V8ValueArray v8ValueArray = V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray())) {
+                            return (V8ValueArray) v8ValueArray.flat();
+                        }
+                    } finally {
+                        JavetResourceUtils.safeClose(results);
+                    }
+                }));
+    }
+
+    /**
      * Polyfill Array.prototype.forEach().
      * The forEach() method of Array instances executes a provided function once for each array element.
      *
@@ -627,7 +678,8 @@ public final class JavetProxyPolyfillList {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         for (Object object : list) {
-                            try (V8Value v8ValueResult = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                            try (V8Value v8ValueResult = v8ValueFunction.call(
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                             }
                             ++index;
                         }
@@ -847,7 +899,8 @@ public final class JavetProxyPolyfillList {
                             V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                             int index = 0;
                             for (Object object : list) {
-                                results.add(v8ValueFunction.call(v8ValueObject, object, index, thisObject));
+                                results.add(v8ValueFunction.call(
+                                        v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject));
                                 ++index;
                             }
                         }
@@ -952,7 +1005,11 @@ public final class JavetProxyPolyfillList {
                                     V8Value result;
                                     try (V8Value currentValue = v8Runtime.toV8Value(object)) {
                                         result = v8ValueFunction.call(
-                                                null, accumulator, currentValue, index, thisObject);
+                                                null,
+                                                accumulator,
+                                                currentValue,
+                                                v8Runtime.createV8ValueInteger(index),
+                                                thisObject);
                                     } finally {
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
@@ -971,7 +1028,11 @@ public final class JavetProxyPolyfillList {
                                     V8Value result;
                                     try (V8Value currentValue = v8Runtime.toV8Value(object)) {
                                         result = v8ValueFunction.call(
-                                                null, accumulator, currentValue, index, thisObject);
+                                                null,
+                                                accumulator,
+                                                currentValue,
+                                                v8Runtime.createV8ValueInteger(index),
+                                                thisObject);
                                     } finally {
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
@@ -1034,7 +1095,11 @@ public final class JavetProxyPolyfillList {
                                     V8Value result;
                                     try (V8Value currentValue = v8Runtime.toV8Value(listIterator.previous())) {
                                         result = v8ValueFunction.call(
-                                                null, accumulator, currentValue, index, thisObject);
+                                                null,
+                                                accumulator,
+                                                currentValue,
+                                                v8Runtime.createV8ValueInteger(index),
+                                                thisObject);
                                     } finally {
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
@@ -1054,7 +1119,11 @@ public final class JavetProxyPolyfillList {
                                     V8Value result;
                                     try (V8Value currentValue = v8Runtime.toV8Value(listIterator.previous())) {
                                         result = v8ValueFunction.call(
-                                                null, accumulator, currentValue, index, thisObject);
+                                                null,
+                                                accumulator,
+                                                currentValue,
+                                                v8Runtime.createV8ValueInteger(index),
+                                                thisObject);
                                     } finally {
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
@@ -1188,7 +1257,8 @@ public final class JavetProxyPolyfillList {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
                         int index = 0;
                         for (Object object : list) {
-                            try (V8Value result = v8ValueFunction.call(v8ValueObject, object, index, thisObject)) {
+                            try (V8Value result = v8ValueFunction.call(
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.ifTrue()) {
                                     return v8Runtime.createV8ValueBoolean(true);
                                 }

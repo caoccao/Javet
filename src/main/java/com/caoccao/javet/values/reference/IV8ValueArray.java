@@ -39,6 +39,12 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public interface IV8ValueArray extends IV8ValueObject {
     /**
+     * The constant FUNCTION_FLAT.
+     *
+     * @since 3.0.4
+     */
+    String FUNCTION_FLAT = "flat";
+    /**
      * The constant FUNCTION_SHIFT.
      *
      * @since 3.0.4
@@ -96,6 +102,35 @@ public interface IV8ValueArray extends IV8ValueObject {
             }
         }
         return (T[]) v8Values;
+    }
+
+    /**
+     * Array.prototype.flat().
+     * The flat() method of Array instances creates a new array with all sub-array elements concatenated
+     * into it recursively up to the default depth 1.
+     *
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    default IV8ValueArray flat() throws JavetException {
+        return invoke(FUNCTION_FLAT);
+    }
+
+    /**
+     * Array.prototype.flat().
+     * The flat() method of Array instances creates a new array with all sub-array elements concatenated
+     * into it recursively up to the specified depth.
+     *
+     * @param depth the depth level specifying how deep a nested array structure should be flattened. Defaults to 1.
+     * @return the V8 value array
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    default IV8ValueArray flat(int depth) throws JavetException {
+        return invoke(FUNCTION_FLAT, getV8Runtime().createV8ValueInteger(depth));
     }
 
     /**
