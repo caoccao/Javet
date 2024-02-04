@@ -47,7 +47,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 3.0.4
      */
     protected static final String[] DEFAULT_PROXY_MAP_OVERRIDE_METHODS = new String[]{
-            "forEach", "get", "size"};
+            "clear", "forEach", "get", "size"};
     /**
      * The constant DEFAULT_PROXY_SET_OVERRIDE_METHODS.
      *

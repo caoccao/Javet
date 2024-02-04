@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("unchecked")
 public final class JavetProxyPolyfillMap {
+    private static final String CLEAR = "clear";
     private static final String DELETE = "delete";
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
@@ -58,6 +59,7 @@ public final class JavetProxyPolyfillMap {
 
     static {
         functionMap = new HashMap<>();
+        functionMap.put(CLEAR, JavetProxyPolyfillMap::clear);
         functionMap.put(DELETE, JavetProxyPolyfillMap::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillMap::entries);
         functionMap.put(FOR_EACH, JavetProxyPolyfillMap::forEach);
@@ -71,6 +73,27 @@ public final class JavetProxyPolyfillMap {
     }
 
     private JavetProxyPolyfillMap() {
+    }
+
+    /**
+     * Polyfill Map.prototype.clear().
+     * The clear() method of Map instances removes all elements from this map.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value clear(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                CLEAR, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    map.clear();
+                    return v8Runtime.createV8ValueUndefined();
+                }));
     }
 
     /**
