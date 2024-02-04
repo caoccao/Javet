@@ -879,35 +879,43 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             // ownKeys()
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
-                    v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
+                    v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map).sort());").executeString());
             // getOwnPropertyDescriptor()
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
-                    v8Runtime.getExecutor("JSON.stringify(Object.keys(map));").executeString());
+                    v8Runtime.getExecutor("JSON.stringify(Object.keys(map).sort());").executeString());
             // has()
             assertTrue(v8Runtime.getExecutor("map.has('x')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("map.has('1')").executeBoolean());
             // entries()
             assertEquals(
                     "[[\"x\",1],[\"y\",\"2\"],[\"z\",\"4\"]]",
-                    v8Runtime.getExecutor("JSON.stringify([...map.entries()]);").executeString());
+                    v8Runtime.getExecutor("JSON.stringify([...map.entries()].sort((a,b)=>a[0]-b[0]));").executeString());
             // keys()
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
-                    v8Runtime.getExecutor("JSON.stringify([...map.keys()]);").executeString());
+                    v8Runtime.getExecutor("JSON.stringify([...map.keys()].sort());").executeString());
             // values()
             assertEquals(
                     "[1,\"2\",\"4\"]",
-                    v8Runtime.getExecutor("JSON.stringify([...map.values()]);").executeString());
+                    v8Runtime.getExecutor("JSON.stringify([...map.values()].sort());").executeString());
+            // forEach()
+            assertEquals(
+                    "[\"1xtrue\",\"2ytrue\",\"4ztrue\"]",
+                    v8Runtime.getExecutor("const f = []; map.forEach((v,k,m)=>f.push(v+k+(m===map))); JSON.stringify(f);").executeString());
             // delete
             assertTrue(v8Runtime.getExecutor("delete map['x']").executeBoolean());
             assertFalse(map.containsKey("x"));
+            // delete()
             assertTrue(v8Runtime.getExecutor("map.delete('y')").executeBoolean());
             assertFalse(map.containsKey("y"));
             // toJSON()
             assertEquals(
                     "{\"z\":\"z\"}",
                     v8Runtime.getExecutor("JSON.stringify(map);").executeString());
+            // clear()
+            v8Runtime.getExecutor("map.clear()").executeVoid();
+            assertEquals(0, v8Runtime.getExecutor("map.size").executeInteger());
             v8Runtime.getGlobalObject().delete("map");
         } finally {
             javetProxyConverter.getConfig().setProxyMapEnabled(false);

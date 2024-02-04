@@ -26,6 +26,8 @@ import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,7 @@ public final class JavetProxyPolyfillMap {
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
             "Target object must be an instance of Map.";
+    private static final String FOR_EACH = "forEach";
     private static final String HAS = "has";
     private static final String KEYS = "keys";
     private static final String SIZE = "size";
@@ -54,6 +57,7 @@ public final class JavetProxyPolyfillMap {
         functionMap = new HashMap<>();
         functionMap.put(DELETE, JavetProxyPolyfillMap::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillMap::entries);
+        functionMap.put(FOR_EACH, JavetProxyPolyfillMap::forEach);
         functionMap.put(HAS, JavetProxyPolyfillMap::has);
         functionMap.put(KEYS, JavetProxyPolyfillMap::keys);
         functionMap.put(SIZE, JavetProxyPolyfillMap::size);
@@ -106,6 +110,36 @@ public final class JavetProxyPolyfillMap {
                 .map(entry -> SimpleList.of(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
         return new JavetProxySymbolIterableConverter<>(v8Runtime, entries).getV8ValueFunction();
+    }
+
+    /**
+     * Polyfill Map.prototype.forEach().
+     * The forEach() method of Map instances executes a provided function once per each key/value pair in this map,
+     * in insertion order.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                FOR_EACH, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
+                    if (v8ValueFunction != null) {
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                        for (Map.Entry<?, ?> entry : map.entrySet()) {
+                            try (V8Value v8ValueResult = v8ValueFunction.call(
+                                    v8ValueObject, entry.getValue(), entry.getKey(), thisObject)) {
+                            }
+                        }
+                    }
+                    return v8Runtime.createV8ValueUndefined();
+                }));
     }
 
     /**
