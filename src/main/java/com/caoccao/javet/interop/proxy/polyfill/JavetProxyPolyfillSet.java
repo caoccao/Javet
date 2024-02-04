@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
  */
 public final class JavetProxyPolyfillSet {
     private static final String ADD = "add";
+    private static final String CLEAR = "clear";
     private static final String DELETE = "delete";
     private static final String ENTRIES = "entries";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET =
@@ -53,6 +54,7 @@ public final class JavetProxyPolyfillSet {
     static {
         functionMap = new HashMap<>();
         functionMap.put(ADD, JavetProxyPolyfillSet::add);
+        functionMap.put(CLEAR, JavetProxyPolyfillSet::clear);
         functionMap.put(DELETE, JavetProxyPolyfillSet::delete);
         functionMap.put(ENTRIES, JavetProxyPolyfillSet::entries);
         functionMap.put(FOR_EACH, JavetProxyPolyfillSet::forEach);
@@ -86,6 +88,27 @@ public final class JavetProxyPolyfillSet {
                         set.add(v8Runtime.toObject(v8Values[0]));
                     }
                     return thisObject;
+                }));
+    }
+
+    /**
+     * Polyfill Set.prototype.clear().
+     * The clear() method of Set instances removes all elements from this set.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value clear(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Set : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET;
+        final Set<?> set = (Set<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                CLEAR, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    set.clear();
+                    return v8Runtime.createV8ValueUndefined();
                 }));
     }
 

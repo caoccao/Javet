@@ -1093,6 +1093,9 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("set.has('z')").executeBoolean());
+            // clear()
+            v8Runtime.getExecutor("set.clear()").executeVoid();
+            assertEquals(0, v8Runtime.getExecutor("set.size").executeInteger());
             v8Runtime.getGlobalObject().delete("set");
         } finally {
             javetProxyConverter.getConfig().setProxySetEnabled(false);
