@@ -335,6 +335,8 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             overrideMethods = v8Runtime.getConverter().getConfig().getProxyListOverrideMethods();
         } else if (classDescriptor.isTargetTypeMap()) {
             overrideMethods = v8Runtime.getConverter().getConfig().getProxyMapOverrideMethods();
+        } else if (classDescriptor.isTargetTypeSet()) {
+            overrideMethods = v8Runtime.getConverter().getConfig().getProxySetOverrideMethods();
         }
     }
 

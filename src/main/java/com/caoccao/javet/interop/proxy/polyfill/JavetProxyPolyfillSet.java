@@ -41,6 +41,7 @@ public final class JavetProxyPolyfillSet {
             "Target object must be an instance of Set.";
     private static final String HAS = "has";
     private static final String KEYS = "keys";
+    private static final String SIZE = "size";
     private static final String VALUES = "values";
     private static final Map<String, IJavetProxyPolyfillFunction<?, ?>> functionMap;
 
@@ -50,6 +51,7 @@ public final class JavetProxyPolyfillSet {
         functionMap.put(ENTRIES, JavetProxyPolyfillSet::entries);
         functionMap.put(HAS, JavetProxyPolyfillSet::has);
         functionMap.put(KEYS, JavetProxyPolyfillSet::values);
+        functionMap.put(SIZE, JavetProxyPolyfillSet::size);
         functionMap.put(VALUES, JavetProxyPolyfillSet::values);
     }
 
@@ -134,6 +136,22 @@ public final class JavetProxyPolyfillSet {
                     }
                     return v8Runtime.createV8ValueBoolean(result);
                 }));
+    }
+
+    /**
+     * Polyfill Set.prototype.size
+     * The size accessor property of Set instances returns the number of (unique) elements in this set.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value size(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Set : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET;
+        final Set<?> set = (Set<?>) Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueInteger(set.size());
     }
 
     /**
