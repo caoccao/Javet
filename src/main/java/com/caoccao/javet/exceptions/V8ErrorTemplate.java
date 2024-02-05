@@ -50,6 +50,17 @@ public final class V8ErrorTemplate {
     }
 
     /**
+     * TypeError: ${functionName}() is not supported.
+     *
+     * @param functionName the function name
+     * @return the message
+     * @since 3.0.4
+     */
+    public static String typeErrorFunctionIsNotSupported(String functionName) {
+        return functionName + "() is not supported";
+    }
+
+    /**
      * TypeError: Reduce of empty array with no initial value.
      *
      * @return the message

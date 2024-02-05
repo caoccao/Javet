@@ -39,6 +39,13 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      *
      * @since 3.0.4
      */
+    protected static final String[] DEFAULT_PROXY_ARRAY_OVERRIDE_METHODS = new String[]{
+            "length", "toString"};
+    /**
+     * The constant DEFAULT_PROXY_LIST_OVERRIDE_METHODS.
+     *
+     * @since 3.0.4
+     */
     protected static final String[] DEFAULT_PROXY_LIST_OVERRIDE_METHODS = new String[]{
             "forEach", "indexOf", "lastIndexOf", "sort"};
     /**
@@ -55,6 +62,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     protected static final String[] DEFAULT_PROXY_SET_OVERRIDE_METHODS = new String[]{
             "add", "clear", "forEach", "size"};
+    /**
+     * The Proxy array override methods.
+     *
+     * @since 3.0.4
+     */
+    protected final Set<String> proxyArrayOverrideMethods;
     /**
      * The Proxy list override methods.
      *
@@ -134,6 +147,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     protected int maxDepth;
     /**
+     * The Proxy array enabled.
+     *
+     * @since 3.0.4
+     */
+    protected boolean proxyArrayEnabled;
+    /**
      * The Proxy list enabled.
      *
      * @since 3.0.3
@@ -180,7 +199,9 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         defaultShort = 0;
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
+        proxyArrayEnabled = false;
         proxyListEnabled = false;
+        proxyArrayOverrideMethods = SimpleSet.of(DEFAULT_PROXY_ARRAY_OVERRIDE_METHODS);
         proxyListOverrideMethods = SimpleSet.of(DEFAULT_PROXY_LIST_OVERRIDE_METHODS);
         proxyMapOverrideMethods = SimpleSet.of(DEFAULT_PROXY_MAP_OVERRIDE_METHODS);
         proxySetOverrideMethods = SimpleSet.of(DEFAULT_PROXY_SET_OVERRIDE_METHODS);
@@ -281,6 +302,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     }
 
     /**
+     * Gets proxy array override methods.
+     *
+     * @return the proxy array override methods
+     * @since 3.0.4
+     */
+    public Set<String> getProxyArrayOverrideMethods() {
+        return proxyArrayOverrideMethods;
+    }
+
+    /**
      * Gets proxy list override methods.
      *
      * @return the proxy list override methods
@@ -328,6 +359,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public boolean isExtractFunctionSourceCode() {
         return extractFunctionSourceCode;
+    }
+
+    /**
+     * Is proxy array enabled.
+     *
+     * @return true : enabled, false : disabled
+     * @since 3.0.4
+     */
+    public boolean isProxyArrayEnabled() {
+        return proxyArrayEnabled;
     }
 
     /**
@@ -497,6 +538,19 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     @SuppressWarnings("UnusedReturnValue")
     public JavetConverterConfig<T> setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;
+        return this;
+    }
+
+    /**
+     * Sets proxy array enabled.
+     *
+     * @param proxyArrayEnabled the proxy array enabled
+     * @return the self
+     * @since 3.0.4
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setProxyArrayEnabled(boolean proxyArrayEnabled) {
+        this.proxyArrayEnabled = proxyArrayEnabled;
         return this;
     }
 

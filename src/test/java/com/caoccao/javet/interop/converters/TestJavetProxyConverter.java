@@ -250,6 +250,375 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testArray() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            int[] intArray = new int[]{1, 2};
+            String[] stringArray = new String[]{"x", "y"};
+            v8Runtime.getGlobalObject().set("intArray", intArray);
+            v8Runtime.getGlobalObject().set("stringArray", stringArray);
+            assertSame(intArray, v8Runtime.getGlobalObject().getObject("intArray"));
+            assertSame(stringArray, v8Runtime.getGlobalObject().getObject("stringArray"));
+            // includes()
+            assertTrue(v8Runtime.getExecutor("intArray.includes(1)").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("intArray.includes(1, 1)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("intArray.includes(2, 1)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("stringArray.includes('x')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("stringArray.includes('x', 1)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("stringArray.includes('y', 1)").executeBoolean());
+            // toJSON()
+            assertEquals(
+                    "[1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray)").executeString());
+            assertEquals(
+                    "[\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray)").executeString());
+            // Symbol.iterator
+            assertEquals(
+                    "[1,2]",
+                    v8Runtime.getExecutor("JSON.stringify([...intArray])").executeString());
+            assertEquals(
+                    "[\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify([...stringArray])").executeString());
+            // entries()
+            assertEquals(
+                    "[[0,1],[1,2]]",
+                    v8Runtime.getExecutor("JSON.stringify([...intArray.entries()])").executeString());
+            assertEquals(
+                    "[[0,\"x\"],[1,\"y\"]]",
+                    v8Runtime.getExecutor("JSON.stringify([...stringArray.entries()])").executeString());
+            // with()
+            assertEquals(
+                    "[\"1\",2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.with(0, '1'))").executeString());
+            assertEquals(
+                    "[\"1\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.with(0, '1'))").executeString());
+            // toString()
+            assertEquals("[1, 2]", v8Runtime.getExecutor("intArray.toString()").executeString());
+            assertEquals("[x, y]", v8Runtime.getExecutor("stringArray.toString()").executeString());
+            // values()
+            assertEquals("1,2", v8Runtime.getExecutor("[...intArray.values()].toString()").executeString());
+            assertEquals("x,y", v8Runtime.getExecutor("[...stringArray.values()].toString()").executeString());
+            // keys()
+            assertEquals("0,1", v8Runtime.getExecutor("[...intArray.keys()].toString()").executeString());
+            assertEquals("0,1", v8Runtime.getExecutor("[...stringArray.keys()].toString()").executeString());
+            // concat()
+            assertEquals(
+                    "[1,2,\"a\",\"b\",\"c\"]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.concat(['a', 'b'], 'c'))").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"a\",\"b\",\"c\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.concat(['a', 'b'], 'c'))").executeString());
+            // copyWithin()
+            assertEquals(
+                    "[1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.copyWithin())").executeString());
+            assertEquals(
+                    "[1,1]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.copyWithin(1))").executeString());
+            assertEquals(
+                    "[\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.copyWithin())").executeString());
+            assertEquals(
+                    "[\"x\",\"x\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.copyWithin(1))").executeString());
+            // fill()
+            assertEquals(
+                    "[3,3]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.fill(3))").executeString());
+            assertEquals(
+                    "[3,4]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.fill(4, 1, 2))").executeString());
+            assertEquals(
+                    "[1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.fill(1).fill(2, 1))").executeString());
+            assertEquals(
+                    "[\"z\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.fill('z'))").executeString());
+            assertEquals(
+                    "[\"z\",\"a\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.fill('a', 1, 2))").executeString());
+            assertEquals(
+                    "[\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.fill('x').fill('y', 1))").executeString());
+            // filter()
+            assertEquals(
+                    "[1]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.filter(x => x == 1))").executeString());
+            assertTrue(v8Runtime.getExecutor("(() => { try { intArray.filter(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            assertEquals(
+                    "[\"x\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.filter(x => x == 'x'))").executeString());
+            assertTrue(v8Runtime.getExecutor("(() => { try { stringArray.filter(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            // find()
+            assertEquals(1, v8Runtime.getExecutor("intArray.find(x => x == 1)").executeInteger());
+            assertEquals(2, v8Runtime.getExecutor("intArray.find(x => x == 2)").executeInteger());
+            assertTrue(v8Runtime.getExecutor("intArray.find(x => x == 'a') === undefined").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { intArray.find(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            assertEquals("x", v8Runtime.getExecutor("stringArray.find(x => x == 'x')").executeString());
+            assertEquals("y", v8Runtime.getExecutor("stringArray.find(x => x == 'y')").executeString());
+            assertTrue(v8Runtime.getExecutor("stringArray.find(x => x == 'a') === undefined").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { stringArray.find(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            // findIndex()
+            assertEquals(0, v8Runtime.getExecutor("intArray.findIndex(x => x == 1)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("intArray.findIndex(x => x == 2)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("intArray.findIndex(x => x == 'a')").executeInteger());
+            assertTrue(v8Runtime.getExecutor("(() => { try { intArray.findIndex(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            assertEquals(0, v8Runtime.getExecutor("stringArray.findIndex(x => x == 'x')").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("stringArray.findIndex(x => x == 'y')").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("stringArray.findIndex(x => x == 'a')").executeInteger());
+            assertTrue(v8Runtime.getExecutor("(() => { try { stringArray.findIndex(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            // findLast()
+            assertEquals(1, v8Runtime.getExecutor("intArray.findLast(x => x == 1)").executeInteger());
+            assertEquals(2, v8Runtime.getExecutor("intArray.findLast(x => x == 2)").executeInteger());
+            assertTrue(v8Runtime.getExecutor("intArray.findLast(x => x == 'a') === undefined").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { intArray.findLast(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            assertEquals("x", v8Runtime.getExecutor("stringArray.findLast(x => x == 'x')").executeString());
+            assertEquals("y", v8Runtime.getExecutor("stringArray.findLast(x => x == 'y')").executeString());
+            assertTrue(v8Runtime.getExecutor("stringArray.findLast(x => x == 'a') === undefined").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { stringArray.findLast(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            // findLastIndex()
+            assertEquals(0, v8Runtime.getExecutor("intArray.findLastIndex(x => x == 1)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("intArray.findLastIndex(x => x == 2)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("intArray.findLastIndex(x => x == 'a')").executeInteger());
+            assertTrue(v8Runtime.getExecutor("(() => { try { intArray.findLastIndex(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            assertEquals(0, v8Runtime.getExecutor("stringArray.findLastIndex(x => x == 'x')").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("stringArray.findLastIndex(x => x == 'y')").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("stringArray.findLastIndex(x => x == 'a')").executeInteger());
+            assertTrue(v8Runtime.getExecutor("(() => { try { stringArray.findLastIndex(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            // indexOf()
+            assertEquals(0, v8Runtime.getExecutor("intArray.indexOf(1)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("intArray.indexOf(2)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("intArray.indexOf(2,1)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("intArray.indexOf(2,2)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("intArray.indexOf('a')").executeInteger());
+            assertEquals(0, v8Runtime.getExecutor("stringArray.indexOf('x')").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("stringArray.indexOf('y')").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("stringArray.indexOf('y',1)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("stringArray.indexOf('y',2)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("stringArray.indexOf('a')").executeInteger());
+            // lastIndexOf()
+            assertEquals(0, v8Runtime.getExecutor("intArray.lastIndexOf(1)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("intArray.lastIndexOf(2)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("intArray.lastIndexOf(2,1)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("intArray.lastIndexOf(2,0)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("intArray.lastIndexOf('a')").executeInteger());
+            assertEquals(0, v8Runtime.getExecutor("stringArray.lastIndexOf('x')").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("stringArray.lastIndexOf('y')").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("stringArray.lastIndexOf('y',1)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("stringArray.lastIndexOf('y',0)").executeInteger());
+            assertEquals(-1, v8Runtime.getExecutor("stringArray.lastIndexOf('a')").executeInteger());
+            // join()
+            assertEquals("12", v8Runtime.getExecutor("intArray.join()").executeString());
+            assertEquals("1,2", v8Runtime.getExecutor("intArray.join(',')").executeString());
+            assertEquals("xy", v8Runtime.getExecutor("stringArray.join()").executeString());
+            assertEquals("x,y", v8Runtime.getExecutor("stringArray.join(',')").executeString());
+            // forEach()
+            assertEquals(
+                    "[\"10true\",\"21true\"]",
+                    v8Runtime.getExecutor("const testForEach1 = [];" +
+                            "intArray.forEach((x, i, a) => testForEach1.push(x+''+i+(a === intArray)));" +
+                            "JSON.stringify(testForEach1)").executeString());
+            assertEquals(
+                    "[\"x0true\",\"y1true\"]",
+                    v8Runtime.getExecutor("const testForEach2 = [];" +
+                            "stringArray.forEach((x, i, a) => testForEach2.push(x+''+i+(a === stringArray)));" +
+                            "JSON.stringify(testForEach2)").executeString());
+            // reduce()
+            try {
+                v8Runtime.getExecutor("intArray.reduce()").executeVoid();
+                fail("Failed to raise type error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: undefined is not a function", e.getMessage());
+                assertEquals(
+                        V8ValueErrorType.TypeError,
+                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+            }
+            assertEquals("_10true21true", v8Runtime.getExecutor("intArray.reduce((x,y,i,a)=>''+x+y+i+(a===intArray), '_')").executeString());
+            assertEquals("121true", v8Runtime.getExecutor("intArray.reduce((x,y,i,a)=>''+x+y+i+(a===intArray))").executeString());
+            try {
+                v8Runtime.getExecutor("stringArray.reduce()").executeVoid();
+                fail("Failed to raise type error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: undefined is not a function", e.getMessage());
+                assertEquals(
+                        V8ValueErrorType.TypeError,
+                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+            }
+            assertEquals("_x0truey1true", v8Runtime.getExecutor("stringArray.reduce((x,y,i,a)=>x+y+i+(a===stringArray), '_')").executeString());
+            assertEquals("xy1true", v8Runtime.getExecutor("stringArray.reduce((x,y,i,a)=>x+y+i+(a===stringArray))").executeString());
+            // reduceRight()
+            try {
+                v8Runtime.getExecutor("intArray.reduceRight()").executeVoid();
+                fail("Failed to raise type error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: undefined is not a function", e.getMessage());
+                assertEquals(
+                        V8ValueErrorType.TypeError,
+                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+            }
+            assertEquals("_21true10true", v8Runtime.getExecutor("intArray.reduceRight((x,y,i,a)=>''+x+y+i+(a===intArray), '_')").executeString());
+            assertEquals("210true", v8Runtime.getExecutor("intArray.reduceRight((x,y,i,a)=>''+x+y+i+(a===intArray))").executeString());
+            try {
+                v8Runtime.getExecutor("stringArray.reduceRight()").executeVoid();
+                fail("Failed to raise type error.");
+            } catch (JavetExecutionException e) {
+                assertEquals("TypeError: undefined is not a function", e.getMessage());
+                assertEquals(
+                        V8ValueErrorType.TypeError,
+                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+            }
+            assertEquals("_y1truex0true", v8Runtime.getExecutor("stringArray.reduceRight((x,y,i,a)=>x+y+i+(a===stringArray), '_')").executeString());
+            assertEquals("yx0true", v8Runtime.getExecutor("stringArray.reduceRight((x,y,i,a)=>x+y+i+(a===stringArray))").executeString());
+            // slice()
+            assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(intArray.slice())").executeString());
+            assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(intArray.slice(0))").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify(intArray.slice(0,0))").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify(intArray.slice(-5,-5))").executeString());
+            assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(intArray.slice(0,100))").executeString());
+            assertEquals("[2]", v8Runtime.getExecutor("JSON.stringify(intArray.slice(1))").executeString());
+            assertEquals("[2]", v8Runtime.getExecutor("JSON.stringify(intArray.slice(1,2))").executeString());
+            assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.slice())").executeString());
+            assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.slice(0))").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify(stringArray.slice(0,0))").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify(stringArray.slice(-5,-5))").executeString());
+            assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.slice(0,100))").executeString());
+            assertEquals("[\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.slice(1))").executeString());
+            assertEquals("[\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.slice(1,2))").executeString());
+            // sort()
+            assertEquals("[2,1]", v8Runtime.getExecutor("JSON.stringify(intArray.sort((x,y)=>y-x))").executeString());
+            assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(intArray.sort())").executeString());
+            assertEquals("[\"y\",\"x\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.sort((x,y)=>y.localeCompare(x)))").executeString());
+            assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.sort())").executeString());
+            // reverse()
+            assertEquals("[2,1]", v8Runtime.getExecutor("JSON.stringify(intArray.reverse())").executeString());
+            assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(intArray.reverse())").executeString());
+            assertEquals("[\"y\",\"x\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.reverse())").executeString());
+            assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.reverse())").executeString());
+            // toReversed()
+            assertEquals("[2,1]", v8Runtime.getExecutor("JSON.stringify(intArray.toReversed())").executeString());
+            assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(intArray)").executeString());
+            assertEquals("[\"y\",\"x\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.toReversed())").executeString());
+            assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray)").executeString());
+            // toSorted()
+            assertEquals("[2,1]", v8Runtime.getExecutor("JSON.stringify(intArray.toSorted((x,y)=>y-x))").executeString());
+            assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(intArray)").executeString());
+            assertEquals("[\"y\",\"x\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.toSorted((x,y)=>y.localeCompare(x)))").executeString());
+            assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify(stringArray)").executeString());
+            // toSpliced()
+            assertEquals(
+                    "[1,2][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced())+JSON.stringify(intArray)").executeString());
+            assertEquals(
+                    "[1][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(1,1))+JSON.stringify(intArray)").executeString());
+            assertEquals(
+                    "[1,1,2][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(1,1,1,2))+JSON.stringify(intArray)").executeString());
+            assertEquals(
+                    "[\"x\",\"y\"][\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.toSpliced())+JSON.stringify(stringArray)").executeString());
+            assertEquals(
+                    "[\"x\"][\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.toSpliced(1,1))+JSON.stringify(stringArray)").executeString());
+            assertEquals(
+                    "[\"x\",\"x\",\"y\"][\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.toSpliced(1,1,'x','y'))+JSON.stringify(stringArray)").executeString());
+            // Symbol.iterator
+            assertEquals(
+                    "[1,2]",
+                    v8Runtime.getExecutor("JSON.stringify([...intArray[Symbol.iterator]()]);").executeString());
+            assertEquals(
+                    "[\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify([...stringArray[Symbol.iterator]()]);").executeString());
+            // map()
+            assertEquals("[\"10\",\"21\"]", v8Runtime.getExecutor("JSON.stringify(intArray.map((x, i) => ''+x+i))").executeString());
+            assertTrue(v8Runtime.getExecutor("(() => { try { intArray.map(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            assertEquals("[\"x0\",\"y1\"]", v8Runtime.getExecutor("JSON.stringify(stringArray.map((x, i) => ''+x+i))").executeString());
+            assertTrue(v8Runtime.getExecutor("(() => { try { stringArray.map(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            // every()
+            assertFalse(v8Runtime.getExecutor("intArray.every((x, i) => x == 1 && i == 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("intArray.every((x, i) => x >= 1 && i >= 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { intArray.every(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("stringArray.every((x, i) => x == 'x' && i == 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("stringArray.every((x, i) => x >= 'x' && i >= 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { stringArray.every(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            // some()
+            assertTrue(v8Runtime.getExecutor("intArray.some((x, i) => x == 1 && i == 0)").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("intArray.some((x, i) => x < 1 && i < 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { intArray.some(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("stringArray.some((x, i) => x == 'x' && i == 0)").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("stringArray.some((x, i) => x < 'x' && i < 0)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("(() => { try { stringArray.some(); } " +
+                    "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
+            // at()
+            assertEquals(1, v8Runtime.getExecutor("intArray.at(0)").executeInteger());
+            assertEquals(2, v8Runtime.getExecutor("intArray.at(1)").executeInteger());
+            assertEquals(2, v8Runtime.getExecutor("intArray.at(-1)").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("intArray.at(-2)").executeInteger());
+            assertTrue(v8Runtime.getExecutor("intArray.at(2)").execute().isUndefined());
+            assertTrue(v8Runtime.getExecutor("intArray.at(-3)").execute().isUndefined());
+            assertEquals("x", v8Runtime.getExecutor("stringArray.at(0)").executeString());
+            assertEquals("y", v8Runtime.getExecutor("stringArray.at(1)").executeString());
+            assertEquals("y", v8Runtime.getExecutor("stringArray.at(-1)").executeString());
+            assertEquals("x", v8Runtime.getExecutor("stringArray.at(-2)").executeString());
+            assertTrue(v8Runtime.getExecutor("stringArray.at(2)").execute().isUndefined());
+            assertTrue(v8Runtime.getExecutor("stringArray.at(-3)").execute().isUndefined());
+            // []
+            assertEquals(3, v8Runtime.getExecutor("intArray[0] = 3; intArray[0]").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("intArray[0] = 1; intArray[0]").executeInteger());
+            assertEquals("z", v8Runtime.getExecutor("stringArray[0] = 'z'; stringArray[0]").executeString());
+            assertEquals("x", v8Runtime.getExecutor("stringArray[0] = 'x'; stringArray[0]").executeString());
+            // length
+            assertEquals(2, v8Runtime.getExecutor("intArray.length").executeInteger());
+            assertEquals(2, v8Runtime.getExecutor("stringArray.length").executeInteger());
+            v8Runtime.getGlobalObject().delete("intArray");
+            v8Runtime.getGlobalObject().delete("stringArray");
+            // flat()
+            Object[] objectArray = new Object[]{"x", "y", SimpleList.of("x1", "y1", SimpleList.of("x2", "y2"))};
+            v8Runtime.getGlobalObject().set("objectArray", objectArray);
+            assertEquals(
+                    "[\"x\",\"y\",[\"x1\",\"y1\",[\"x2\",\"y2\"]]]",
+                    v8Runtime.getExecutor("JSON.stringify(objectArray);").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",[\"x1\",\"y1\",[\"x2\",\"y2\"]]]",
+                    v8Runtime.getExecutor("JSON.stringify(objectArray.flat(0));").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"x1\",\"y1\",[\"x2\",\"y2\"]]",
+                    v8Runtime.getExecutor("JSON.stringify(objectArray.flat());").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"x1\",\"y1\",[\"x2\",\"y2\"]]",
+                    v8Runtime.getExecutor("JSON.stringify(objectArray.flat(1));").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"x1\",\"y1\",\"x2\",\"y2\"]",
+                    v8Runtime.getExecutor("JSON.stringify(objectArray.flat(2));").executeString());
+            // flatMap()
+            assertEquals(
+                    "[\"x0true\",\"y1true\",\"x1,y1,x2,y22true\"]",
+                    v8Runtime.getExecutor("JSON.stringify(objectArray.flatMap((e,i,a)=>e+i+(a===objectArray)));").executeString());
+            v8Runtime.getGlobalObject().delete("objectArray");
+        } finally {
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testByte() throws JavetException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeString = String.join("\n",
@@ -613,7 +982,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             // toString()
             assertEquals("[x, y, z]", v8Runtime.getExecutor("list.toString()").executeString());
             // values()
-            assertEquals("x", v8Runtime.getExecutor("list.values().next().value").executeString());
+            assertEquals("x,y,z", v8Runtime.getExecutor("[...list.values()].toString()").executeString());
             // keys()
             assertEquals("0,1,2", v8Runtime.getExecutor("[...list.keys()].toString()").executeString());
             // concat()
@@ -766,11 +1135,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals("[3,2,1]", v8Runtime.getExecutor("JSON.stringify(list.sort((x,y)=>y-x))").executeString());
             v8Runtime.getExecutor("list.clear(); list.push('x', 'y', 'z')").executeVoid();
             // reverse()
-            assertEquals("[z, y, x]", v8Runtime.getExecutor("list.reverse().toString()").executeString());
-            assertEquals("[x, y, z]", v8Runtime.getExecutor("list.reverse().toString()").executeString());
+            assertEquals("[\"z\",\"y\",\"x\"]", v8Runtime.getExecutor("JSON.stringify(list.reverse())").executeString());
+            assertEquals("[\"x\",\"y\",\"z\"]", v8Runtime.getExecutor("JSON.stringify(list.reverse())").executeString());
             // toReversed()
-            assertEquals("z,y,x", v8Runtime.getExecutor("list.toReversed().toString()").executeString());
-            assertEquals("[x, y, z]", v8Runtime.getExecutor("list.toString()").executeString());
+            assertEquals("[\"z\",\"y\",\"x\"]", v8Runtime.getExecutor("JSON.stringify(list.toReversed())").executeString());
+            assertEquals("[\"x\",\"y\",\"z\"]", v8Runtime.getExecutor("JSON.stringify(list)").executeString());
             // toSorted()
             assertEquals("[]", v8Runtime.getExecutor("list.clear(); JSON.stringify(list.toSorted())").executeString());
             assertEquals("[1]", v8Runtime.getExecutor("list.push(1); JSON.stringify(list.toSorted())").executeString());
@@ -793,7 +1162,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     "[\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify([...list[Symbol.iterator]()]);").executeString());
             // map()
-            assertEquals("x0,y1,z2", v8Runtime.getExecutor("list.map((x, i) => x+i).toString()").executeString());
+            assertEquals("[\"x0\",\"y1\",\"z2\"]", v8Runtime.getExecutor("JSON.stringify(list.map((x, i) => x+i))").executeString());
             assertTrue(v8Runtime.getExecutor("(() => { try { list.map(); } " +
                     "catch (e) { return e instanceof TypeError; } return false; })()").executeBoolean());
             // every()

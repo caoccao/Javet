@@ -196,6 +196,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             } else if (classDescriptor.isTargetTypeSet()) {
                 iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
                         JavetProxyPolyfillSet.getFunction(propertyName);
+            } else if (classDescriptor.isTargetTypeArray()) {
+                iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
+                        JavetProxyPolyfillArray.getFunction(propertyName);
             } else {
                 iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
                         JavetProxyPolyfillPrimitive.getFunction(classDescriptor.getTargetClass(), propertyName);
@@ -337,6 +340,8 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             overrideMethods = v8Runtime.getConverter().getConfig().getProxyMapOverrideMethods();
         } else if (classDescriptor.isTargetTypeSet()) {
             overrideMethods = v8Runtime.getConverter().getConfig().getProxySetOverrideMethods();
+        } else if (classDescriptor.isTargetTypeArray()) {
+            overrideMethods = v8Runtime.getConverter().getConfig().getProxyArrayOverrideMethods();
         }
     }
 

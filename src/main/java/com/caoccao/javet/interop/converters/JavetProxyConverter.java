@@ -151,6 +151,7 @@ public class JavetProxyConverter extends JavetObjectConverter {
         boolean proxyRequired = config.isProxyListEnabled() && object instanceof List;
         proxyRequired = proxyRequired || (config.isProxyMapEnabled() && object instanceof Map);
         proxyRequired = proxyRequired || (config.isProxySetEnabled() && object instanceof Set);
+        proxyRequired = proxyRequired || (config.isProxyArrayEnabled() && (object != null && object.getClass().isArray()));
         if (!proxyRequired) {
             V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
             if (v8Value != null && !(v8Value.isUndefined())) {

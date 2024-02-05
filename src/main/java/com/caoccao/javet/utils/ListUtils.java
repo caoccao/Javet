@@ -30,26 +30,44 @@ public final class ListUtils {
     }
 
     /**
+     * Add all items from the array to the list.
+     *
+     * @param <T>   the type parameter
+     * @param list  the list
+     * @param array the array
+     * @return the length of the array
+     * @since 3.0.4
+     */
+    public static <T> int addAll(List<T> list, Object array) {
+        final int length = Array.getLength(array);
+        for (int i = 0; i < length; ++i) {
+            list.add((T) Array.get(array, i));
+        }
+        return length;
+    }
+
+    /**
      * The flat() method of Array instances creates a new array with all sub-array elements concatenated
      * into it recursively up to the specified depth.
      *
+     * @param <T>        the type parameter
      * @param targetList the target list
      * @param sourceList the source list
      * @param depth      the depth
      * @since 3.0.4
      */
-    public static void flat(List<Object> targetList, List<Object> sourceList, int depth) {
+    public static <T> void flat(List<T> targetList, List<T> sourceList, int depth) {
         if (depth <= 0) {
             targetList.addAll(sourceList);
         } else if (!sourceList.isEmpty()) {
-            for (Object object : sourceList) {
+            for (T object : sourceList) {
                 if (object instanceof List) {
-                    flat(targetList, (List<Object>) object, depth - 1);
+                    flat(targetList, (List<T>) object, depth - 1);
                 } else if (object != null && object.getClass().isArray()) {
                     final int length = Array.getLength(object);
-                    List<Object> childList = new ArrayList<>(length);
+                    List<T> childList = new ArrayList<>(length);
                     for (int i = 0; i < length; ++i) {
-                        childList.add(Array.get(object, i));
+                        childList.add((T) Array.get(object, i));
                     }
                     flat(targetList, childList, depth - 1);
                 } else {

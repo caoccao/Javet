@@ -92,6 +92,12 @@ public class ClassDescriptor {
      */
     protected Class<?> targetClass;
     /**
+     * The Target type array.
+     *
+     * @since 3.0.4
+     */
+    protected boolean targetTypeArray;
+    /**
      * The Target type list.
      *
      * @since 3.0.3
@@ -134,13 +140,10 @@ public class ClassDescriptor {
         this.proxyMode = proxyMode;
         settersMap = new LinkedHashMap<>();
         this.targetClass = targetClass;
+        targetTypeArray = targetClass.isArray();
         targetTypeList = List.class.isAssignableFrom(targetClass);
-        if (!targetTypeList) {
-            targetTypeMap = Map.class.isAssignableFrom(targetClass);
-            if (!targetTypeMap) {
-                targetTypeSet = Set.class.isAssignableFrom(targetClass);
-            }
-        }
+        targetTypeMap = Map.class.isAssignableFrom(targetClass);
+        targetTypeSet = Set.class.isAssignableFrom(targetClass);
         uniqueKeySet = new LinkedHashSet<>();
     }
 
@@ -264,6 +267,16 @@ public class ClassDescriptor {
      */
     public Set<String> getUniqueKeySet() {
         return uniqueKeySet;
+    }
+
+    /**
+     * Is target type array.
+     *
+     * @return true: is an array, false: is not an array
+     * @since 3.0.4
+     */
+    public boolean isTargetTypeArray() {
+        return targetTypeArray;
     }
 
     /**

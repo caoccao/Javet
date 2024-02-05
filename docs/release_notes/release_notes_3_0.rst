@@ -8,12 +8,12 @@ Release Notes 3.0.x
 * Added ``toJSON()``, ``proxyDeleteProperty()`` to ``IJavetDirectProxyHandler``
 * Fixed a memory leak in adding a V8 module with the same name
 * Added ``ifTrue()``, ``asInt()`` to ``IV8Value``
-* Added ``JavetProxyPolyfillList``, ``JavetProxyPolyfillMap``, ``JavetProxyPolyfillPrimitive``, ``JavetProxyPolyfillSet``
+* Added ``JavetProxyPolyfillArray``, ``JavetProxyPolyfillList``, ``JavetProxyPolyfillMap``, ``JavetProxyPolyfillPrimitive``, ``JavetProxyPolyfillSet``
 * Added ``BindingContextStore``, ``ClassDescriptorStore``
 * Added ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
 * Added ``V8ValueErrorType``, ``V8ErrorTemplate``, ``JavetEntityError``
 * Added ``getErrorType()`` to ``V8ValueError``
-* Added ``getProxyListOverrideMethods()``, ``getProxyMapOverrideMethods()``, ``getProxySetOverrideMethods()`` to ``JavetConverterConfig``
+* Added ``isProxyArrayEnabled()``, ``setProxyArrayEnabled()``, ``getProxyArrayOverrideMethods()``, ``getProxyListOverrideMethods()``, ``getProxyMapOverrideMethods()``, ``getProxySetOverrideMethods()`` to ``JavetConverterConfig``
 * Fixed improper conversions in ``JavetBridgeConverter``
 * Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
 * Added ``proxyGetOwnPropertyDescriptor()`` to ``IJavetDirectProxyHandler``
