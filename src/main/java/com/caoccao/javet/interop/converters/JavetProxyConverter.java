@@ -24,10 +24,12 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.*;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.util.List;
@@ -103,7 +105,17 @@ public class JavetProxyConverter extends JavetObjectConverter {
                     }
                     break;
                 default:
-                    v8ValueProxy = v8Scope.createV8ValueProxy();
+                    V8ValueObject v8ValueObjectTarget = null;
+                    try {
+                        if (object instanceof List || object.getClass().isArray()) {
+                            v8ValueObjectTarget = v8Runtime.createV8ValueArray();
+                        } else if (object instanceof Set) {
+                            v8ValueObjectTarget = v8Runtime.createV8ValueSet();
+                        }
+                        v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueObjectTarget);
+                    } finally {
+                        JavetResourceUtils.safeClose(v8ValueObjectTarget);
+                    }
                     break;
             }
             try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {

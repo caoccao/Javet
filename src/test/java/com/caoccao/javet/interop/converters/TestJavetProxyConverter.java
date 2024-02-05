@@ -259,6 +259,9 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().set("stringArray", stringArray);
             assertSame(intArray, v8Runtime.getGlobalObject().getObject("intArray"));
             assertSame(stringArray, v8Runtime.getGlobalObject().getObject("stringArray"));
+            // Array.isArray()
+            assertTrue(v8Runtime.getExecutor("Array.isArray(intArray)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("Array.isArray(stringArray)").executeBoolean());
             // includes()
             assertTrue(v8Runtime.getExecutor("intArray.includes(1)").executeBoolean());
             assertFalse(v8Runtime.getExecutor("intArray.includes(1, 1)").executeBoolean());
@@ -949,6 +952,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             List<Object> list = SimpleList.of("x", "y");
             v8Runtime.getGlobalObject().set("list", list);
             assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
+            // Array.isArray()
+            assertTrue(v8Runtime.getExecutor("Array.isArray(list)").executeBoolean());
             // contains()
             assertTrue(v8Runtime.getExecutor("list.contains('x')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("list.contains('y')").executeBoolean());
