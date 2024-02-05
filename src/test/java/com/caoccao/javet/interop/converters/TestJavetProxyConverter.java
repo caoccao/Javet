@@ -262,6 +262,9 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             // Array.isArray()
             assertTrue(v8Runtime.getExecutor("Array.isArray(intArray)").executeBoolean());
             assertTrue(v8Runtime.getExecutor("Array.isArray(stringArray)").executeBoolean());
+            // constructor.name
+            assertEquals("Array", v8Runtime.getExecutor("intArray.constructor.name").executeString());
+            assertEquals("Array", v8Runtime.getExecutor("stringArray.constructor.name").executeString());
             // includes()
             assertTrue(v8Runtime.getExecutor("intArray.includes(1)").executeBoolean());
             assertFalse(v8Runtime.getExecutor("intArray.includes(1, 1)").executeBoolean());
@@ -954,6 +957,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
             // Array.isArray()
             assertTrue(v8Runtime.getExecutor("Array.isArray(list)").executeBoolean());
+            // constructor.name
+            assertEquals("Array", v8Runtime.getExecutor("list.constructor.name").executeString());
             // contains()
             assertTrue(v8Runtime.getExecutor("list.contains('x')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("list.contains('y')").executeBoolean());
@@ -1262,6 +1267,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().set("map", map);
             assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
             assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
+            // constructor.name
+            assertEquals("Object", v8Runtime.getExecutor("map.constructor.name").executeString());
             // []
             assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
             assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
@@ -1444,6 +1451,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             Set<String> set = SimpleSet.of("x", "y");
             v8Runtime.getGlobalObject().set("set", set);
             assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
+            // constructor.name
+            assertEquals("Set", v8Runtime.getExecutor("set.constructor.name").executeString());
             // contains()
             assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());
