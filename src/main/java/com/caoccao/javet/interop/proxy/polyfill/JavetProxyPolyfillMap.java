@@ -51,9 +51,11 @@ public final class JavetProxyPolyfillMap {
     private static final String GET = "get";
     private static final String HAS = "has";
     private static final String KEYS = "keys";
+    private static final String OBJECT_MAP = "[object Map]";
     private static final String SET = "set";
     private static final String SIZE = "size";
     private static final String TO_JSON = "toJSON";
+    private static final String TO_STRING = "toString";
     private static final String VALUES = "values";
     private static final Map<String, IJavetProxyPolyfillFunction<?, ?>> functionMap;
 
@@ -69,6 +71,7 @@ public final class JavetProxyPolyfillMap {
         functionMap.put(SET, JavetProxyPolyfillMap::set);
         functionMap.put(SIZE, JavetProxyPolyfillMap::size);
         functionMap.put(TO_JSON, JavetProxyPolyfillMap::toJSON);
+        functionMap.put(TO_STRING, JavetProxyPolyfillMap::toString);
         functionMap.put(VALUES, JavetProxyPolyfillMap::values);
     }
 
@@ -317,6 +320,24 @@ public final class JavetProxyPolyfillMap {
                     }
                     return V8ValueUtils.createV8ValueObject(v8Runtime, objects);
                 }));
+    }
+
+    /**
+     * Polyfill Object.prototype.toString()
+     * The toString() method of Map instances always returns [object Map].
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public static V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueString(OBJECT_MAP)));
     }
 
     /**
