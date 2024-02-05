@@ -92,29 +92,11 @@ public class ClassDescriptor {
      */
     protected Class<?> targetClass;
     /**
-     * The Target type array.
+     * The Target class type.
      *
      * @since 3.0.4
      */
-    protected boolean targetTypeArray;
-    /**
-     * The Target type list.
-     *
-     * @since 3.0.3
-     */
-    protected boolean targetTypeList;
-    /**
-     * The target type map.
-     *
-     * @since 0.9.7
-     */
-    protected boolean targetTypeMap;
-    /**
-     * The target type set.
-     *
-     * @since 0.9.7
-     */
-    protected boolean targetTypeSet;
+    protected TargetClassType targetClassType;
     /**
      * The Unique key set.
      *
@@ -140,10 +122,7 @@ public class ClassDescriptor {
         this.proxyMode = proxyMode;
         settersMap = new LinkedHashMap<>();
         this.targetClass = targetClass;
-        targetTypeArray = targetClass.isArray();
-        targetTypeList = List.class.isAssignableFrom(targetClass);
-        targetTypeMap = Map.class.isAssignableFrom(targetClass);
-        targetTypeSet = Set.class.isAssignableFrom(targetClass);
+        targetClassType = TargetClassType.parse(targetClass);
         uniqueKeySet = new LinkedHashSet<>();
     }
 
@@ -260,6 +239,16 @@ public class ClassDescriptor {
     }
 
     /**
+     * Gets target class type.
+     *
+     * @return the target class type
+     * @since 3.0.4
+     */
+    public TargetClassType getTargetClassType() {
+        return targetClassType;
+    }
+
+    /**
      * Gets unique key set.
      *
      * @return the unique key set
@@ -270,42 +259,73 @@ public class ClassDescriptor {
     }
 
     /**
-     * Is target type array.
+     * The enum Target class type.
      *
-     * @return true: is an array, false: is not an array
      * @since 3.0.4
      */
-    public boolean isTargetTypeArray() {
-        return targetTypeArray;
-    }
+    public enum TargetClassType {
+        Array,
+        List,
+        Map,
+        Object,
+        Set;
 
-    /**
-     * Is target type list.
-     *
-     * @return true: is a list, false: is not a list
-     * @since 3.0.3
-     */
-    public boolean isTargetTypeList() {
-        return targetTypeList;
-    }
+        public static TargetClassType parse(Class<?> targetClass) {
+            if (Map.class.isAssignableFrom(targetClass)) return Map;
+            if (List.class.isAssignableFrom(targetClass)) return List;
+            if (Set.class.isAssignableFrom(targetClass)) return Set;
+            if (targetClass.isArray()) return Array;
+            return Object;
+        }
 
-    /**
-     * Is target type map.
-     *
-     * @return true: is a map, false: is not a map
-     * @since 1.1.7
-     */
-    public boolean isTargetTypeMap() {
-        return targetTypeMap;
-    }
+        /**
+         * Is array.
+         *
+         * @return true : array, false : not array
+         * @since 3.0.4
+         */
+        public boolean isArray() {
+            return this == Array;
+        }
 
-    /**
-     * Is target type set.
-     *
-     * @return true: is a set, false: is not a set
-     * @since 1.1.7
-     */
-    public boolean isTargetTypeSet() {
-        return targetTypeSet;
+        /**
+         * Is list.
+         *
+         * @return true : list, false : not list
+         * @since 3.0.4
+         */
+        public boolean isList() {
+            return this == List;
+        }
+
+        /**
+         * Is map.
+         *
+         * @return true : map, false : not map
+         * @since 3.0.4
+         */
+        public boolean isMap() {
+            return this == Map;
+        }
+
+        /**
+         * Is set.
+         *
+         * @return true : set, false : not set
+         * @since 3.0.4
+         */
+        public boolean isSet() {
+            return this == Set;
+        }
+
+        /**
+         * Is unique key supported.
+         *
+         * @return true : supported, false : not supported
+         * @since 3.0.4
+         */
+        public boolean isUniqueKeySupported() {
+            return this == Map || this == Set;
+        }
     }
 }

@@ -473,7 +473,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             }
             JavetReflectionUtils.safeSetAccessible(field);
             classDescriptor.getFieldMap().put(fieldName, field);
-            if (!classDescriptor.isTargetTypeMap() && !classDescriptor.isTargetTypeSet()) {
+            if (!classDescriptor.getTargetClassType().isUniqueKeySupported()) {
                 classDescriptor.getUniqueKeySet().add(fieldName);
             }
         }
@@ -511,7 +511,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 final int getterPrefixLength = getGetterPrefixLength(method);
                 if (getterPrefixLength > 0) {
                     addMethod(method, getterPrefixLength, classDescriptor.getGettersMap());
-                    if (!classDescriptor.isTargetTypeMap() && !classDescriptor.isTargetTypeSet()) {
+                    if (!classDescriptor.getTargetClassType().isUniqueKeySupported()) {
                         String aliasMethodName = method.getName().substring(getterPrefixLength);
                         Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
                         if (matcher.find()) {
