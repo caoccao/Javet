@@ -385,7 +385,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         v8Value = v8Value == null ? getFromSymbol(property) : v8Value;
         v8Value = v8Value == null ? getFromGetter(property) : v8Value;
         v8Value = v8Value == null ? getFromPolyfill(property) : v8Value;
-        v8Value = v8Value == null ? getFromReflect(target, property) : v8Value;
         return v8Value;
     }
 

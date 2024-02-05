@@ -1477,7 +1477,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set).sort());").executeString());
             // Object.keys()
             assertEquals(
-                    "[\"x\",\"y\",\"z\"]",
+                    "[]",
                     v8Runtime.getExecutor("JSON.stringify(Object.keys(set).sort());").executeString());
             // Symbol.iterator
             assertEquals(

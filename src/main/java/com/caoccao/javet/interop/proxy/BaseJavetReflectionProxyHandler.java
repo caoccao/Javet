@@ -26,7 +26,6 @@ import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
-import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInReflect;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -180,7 +179,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
         V8Value v8Value = internalGet(target, property);
-        return v8Value == null ? v8Runtime.createV8ValueUndefined() : v8Value;
+        return v8Value == null ? super.get(target, property, receiver) : v8Value;
     }
 
     /**
@@ -302,20 +301,6 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Gets from Reflect.get().
-     *
-     * @param target   the target
-     * @param property the property
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     */
-    protected V8Value getFromReflect(V8Value target, V8Value property) throws JavetException {
-        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = v8Runtime.getGlobalObject().getBuiltInReflect()) {
-            return v8ValueBuiltInReflect.get(target, property);
-        }
-    }
-
-    /**
      * Gets getter prefix length.
      *
      * @param method the method
@@ -334,20 +319,23 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     @Override
-    public V8ValueObject getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
+    public V8Value getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
         V8Value v8Value = null;
         try {
             v8Value = internalGet(target, property);
-            return V8ValueUtils.createV8ValueObject(getV8Runtime(),
-                    getV8Runtime().createV8ValueString(PROXY_PROPERTY_CONFIGURABLE),
-                    getV8Runtime().createV8ValueBoolean(true),
-                    getV8Runtime().createV8ValueString(PROXY_PROPERTY_ENUMERABLE),
-                    getV8Runtime().createV8ValueBoolean(v8Value != null),
-                    getV8Runtime().createV8ValueString(PROXY_PROPERTY_VALUE),
-                    v8Value);
+            if (v8Value != null) {
+                return V8ValueUtils.createV8ValueObject(getV8Runtime(),
+                        getV8Runtime().createV8ValueString(PROXY_PROPERTY_CONFIGURABLE),
+                        getV8Runtime().createV8ValueBoolean(true),
+                        getV8Runtime().createV8ValueString(PROXY_PROPERTY_ENUMERABLE),
+                        getV8Runtime().createV8ValueBoolean(true),
+                        getV8Runtime().createV8ValueString(PROXY_PROPERTY_VALUE),
+                        v8Value);
+            }
         } finally {
             JavetResourceUtils.safeClose(v8Value);
         }
+        return super.getOwnPropertyDescriptor(target, property);
     }
 
     /**

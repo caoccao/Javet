@@ -22,6 +22,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInReflect;
 
 /**
  * The interface Javet proxy handler.
@@ -114,7 +115,8 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     String PROXY_PROPERTY_VALUE = "value";
 
     /**
-     * Apply to object.
+     * Reflect.apply().
+     * The Reflect.apply() static method calls a target function with arguments as specified.
      *
      * @param target     the target
      * @param thisObject this object
@@ -125,11 +127,16 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException, E {
-        return getV8Runtime().createV8ValueUndefined();
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.apply(target, thisObject, arguments);
+        }
     }
 
     /**
-     * Construct.
+     * Reflect.construct().
+     * The Reflect.construct() static method is like the new operator, but as a function.
+     * It is equivalent to calling new target(...args).
+     * It gives also the added option to specify a different new.target value.
      *
      * @param target    the target
      * @param arguments the arguments
@@ -144,7 +151,8 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Define property.
+     * Reflect.defineProperty().
+     * The Reflect.defineProperty() static method is like Object.defineProperty() but returns a Boolean.
      *
      * @param target     the target
      * @param property   the property
@@ -161,7 +169,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Delete property.
+     * Reflect.deleteProperty().
+     * The Reflect.deleteProperty() static method is like the delete operator,
+     * but as a function. It deletes a property from an object.
      *
      * @param target   the target
      * @param property the property
@@ -176,7 +186,8 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Get by property.
+     * Reflect.get().
+     * The Reflect.get() static method is like the property accessor syntax, but as a function.
      *
      * @param target   the target
      * @param property the property
@@ -187,11 +198,15 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
-        return getV8Runtime().createV8ValueUndefined();
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.get(target, property);
+        }
     }
 
     /**
-     * Gets own property descriptor.
+     * Reflect.getOwnPropertyDescriptor().
+     * The Reflect.getOwnPropertyDescriptor() static method is like Object.getOwnPropertyDescriptor().
+     * It returns a property descriptor of the given property if it exists on the object, undefined otherwise.
      *
      * @param target   the target
      * @param property the property
@@ -200,12 +215,16 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @throws E              the custom exception
      * @since 2.2.0
      */
-    default V8ValueObject getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
-        return getV8Runtime().createV8ValueObject();
+    default V8Value getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.getOwnPropertyDescriptor(target, property);
+        }
     }
 
     /**
-     * Gets prototype of.
+     * Reflect.getPrototypeOf().
+     * The Reflect.getPrototypeOf() static method is like Object.getPrototypeOf().
+     * It returns the prototype of the specified object.
      *
      * @param target the target
      * @return the prototype of
@@ -234,7 +253,8 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     V8Runtime getV8Runtime();
 
     /**
-     * Has property
+     * Reflect.has().
+     * The Reflect.has() static method is like the in operator, but as a function.
      *
      * @param target   the target
      * @param property the property
@@ -248,7 +268,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Is extensible.
+     * Reflect.isExtensible().
+     * The Reflect.isExtensible() static method is like Object.isExtensible().
+     * It determines if an object is extensible (whether it can have new properties added to it).
      *
      * @param target the target
      * @return the V8 value boolean
@@ -261,7 +283,8 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Own keys.
+     * Reflect.ownKeys().
+     * The Reflect.ownKeys() static method returns an array of the target object's own property keys.
      *
      * @param target the target
      * @return the V8 value array
@@ -274,7 +297,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Prevent extensions.
+     * Reflect.preventExtensions().
+     * The Reflect.preventExtensions() static method is like Object.preventExtensions().
+     * It prevents new properties from ever being added to an object (i.e., prevents future extensions to the object).
      *
      * @param target the target
      * @return the V8 value boolean
@@ -287,7 +312,8 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Set value by property.
+     * Reflect.set().
+     * The Reflect.set() static method is like the property accessor and assignment syntax, but as a function.
      *
      * @param target        the target
      * @param propertyKey   the property key
@@ -305,7 +331,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Sets prototype of.
+     * Reflect.setPrototypeOf().
+     * The Reflect.setPrototypeOf() static method is like Object.setPrototypeOf() but returns a Boolean.
+     * It sets the prototype (i.e., the internal [[Prototype]] property) of a specified object.
      *
      * @param target    the target
      * @param prototype the prototype

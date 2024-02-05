@@ -58,7 +58,7 @@ public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
     }
 
     @Override
-    public V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException {
+    public V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException, E {
         if (!classDescriptor.getApplyFunctions().isEmpty()) {
             V8Value[] v8Values = null;
             try {
@@ -82,7 +82,7 @@ public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
                 }
             }
         }
-        return v8Runtime.createV8ValueUndefined();
+        return super.apply(target, thisObject, arguments);
     }
 
     @Override
