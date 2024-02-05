@@ -147,7 +147,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8Value construct(V8Value target, V8ValueArray arguments, V8Value newTarget) throws JavetException, E {
-        return getV8Runtime().createV8ValueUndefined();
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.construct(target, arguments, newTarget);
+        }
     }
 
     /**
@@ -165,7 +167,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     default V8ValueBoolean defineProperty(
             V8Value target, V8Value property, V8ValueObject descriptor)
             throws JavetException, E {
-        return getV8Runtime().createV8ValueBoolean(false);
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.defineProperty(target, property, descriptor);
+        }
     }
 
     /**
@@ -182,7 +186,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      */
     default V8ValueBoolean deleteProperty(V8Value target, V8Value property)
             throws JavetException, E {
-        return getV8Runtime().createV8ValueBoolean(true);
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.deleteProperty(target, property);
+        }
     }
 
     /**
@@ -199,7 +205,7 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      */
     default V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
         try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
-            return v8ValueBuiltInReflect.get(target, property);
+            return v8ValueBuiltInReflect._get(target, property);
         }
     }
 
@@ -233,7 +239,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8Value getPrototypeOf(V8Value target) throws JavetException, E {
-        return getV8Runtime().createV8ValueUndefined();
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.getPrototypeOf(target);
+        }
     }
 
     /**
@@ -264,7 +272,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8ValueBoolean has(V8Value target, V8Value property) throws JavetException, E {
-        return getV8Runtime().createV8ValueBoolean(false);
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect._has(target, property);
+        }
     }
 
     /**
@@ -279,7 +289,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8ValueBoolean isExtensible(V8Value target) throws JavetException, E {
-        return getV8Runtime().createV8ValueBoolean(false);
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.isExtensible(target);
+        }
     }
 
     /**
@@ -293,7 +305,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8ValueArray ownKeys(V8Value target) throws JavetException, E {
-        return getV8Runtime().createV8ValueArray();
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.ownKeys(target);
+        }
     }
 
     /**
@@ -308,7 +322,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8ValueBoolean preventExtensions(V8Value target) throws JavetException, E {
-        return getV8Runtime().createV8ValueBoolean(false);
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.preventExtensions(target);
+        }
     }
 
     /**
@@ -327,7 +343,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     default V8ValueBoolean set(
             V8Value target, V8Value propertyKey, V8Value propertyValue, V8Value receiver)
             throws JavetException, E {
-        return getV8Runtime().createV8ValueBoolean(false);
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect._set(target, propertyKey, propertyValue, receiver);
+        }
     }
 
     /**
@@ -343,6 +361,8 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 0.9.6
      */
     default V8ValueBoolean setPrototypeOf(V8Value target, V8Value prototype) throws JavetException, E {
-        return getV8Runtime().createV8ValueBoolean(false);
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.setPrototypeOf(target, prototype);
+        }
     }
 }
