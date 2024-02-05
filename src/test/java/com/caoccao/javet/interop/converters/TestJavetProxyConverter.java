@@ -1449,6 +1449,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("set.add('z') === set").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.contains('z')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.has('z')").executeBoolean());
+            // toString()
+            assertEquals("[object Set]", v8Runtime.getExecutor("set.toString()").executeString());
             // toJSON()
             assertEquals(
                     "{}",

@@ -61,7 +61,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 3.0.4
      */
     protected static final String[] DEFAULT_PROXY_SET_OVERRIDE_METHODS = new String[]{
-            "add", "clear", "forEach", "size"};
+            "add", "clear", "forEach", "size", "toString"};
     /**
      * The Proxy array override methods.
      *
