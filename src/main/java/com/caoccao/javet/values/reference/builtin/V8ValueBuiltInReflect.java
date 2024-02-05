@@ -24,53 +24,53 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import java.util.Objects;
 
 /**
- * The type V8 value built-in JSON.
+ * The type V8 value built in reflect.
  *
- * @since 0.8.0
+ * @since 3.0.4
  */
 @SuppressWarnings("unchecked")
-public class V8ValueBuiltInJson extends V8ValueObject {
+public class V8ValueBuiltInReflect extends V8ValueObject {
     /**
-     * The constant FUNCTION_STRINGIFY.
+     * The constant FUNCTION_GET.
      *
-     * @since 0.8.0
+     * @since 3.0.4
      */
-    public static final String FUNCTION_STRINGIFY = "stringify";
-
+    public static final String FUNCTION_GET = "get";
     /**
      * The constant NAME.
      *
-     * @since 0.8.0
+     * @since 3.0.4
      */
-    public static final String NAME = "JSON";
+    public static final String NAME = "Reflect";
 
     /**
-     * Instantiates a new V8 value built-in JSON.
+     * Instantiates a new V8 value built in reflect.
      *
      * @param v8Runtime the V8 runtime
      * @param handle    the handle
      * @throws JavetException the javet exception
-     * @since 0.8.0
+     * @since 3.0.4
      */
-    public V8ValueBuiltInJson(V8Runtime v8Runtime, long handle) throws JavetException {
+    public V8ValueBuiltInReflect(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
     }
 
     /**
-     * Stringify string.
+     * Reflect.get()
+     * The Reflect.get() static method is like the property accessor syntax, but as a function.
      *
-     * @param v8Value the V8 value
-     * @return the JSON string
+     * @param target   the target
+     * @param property the property
+     * @return the v 8 value
      * @throws JavetException the javet exception
-     * @since 0.8.0
+     * @since 3.0.4
      */
-    public String stringify(V8Value v8Value) throws JavetException {
-        Objects.requireNonNull(v8Value);
-        return invokeString(FUNCTION_STRINGIFY, v8Value);
+    public V8Value get(V8Value target, V8Value property) throws JavetException {
+        return invoke(FUNCTION_GET, Objects.requireNonNull(target), Objects.requireNonNull(property));
     }
 
     @Override
-    public V8ValueBuiltInJson toClone() throws JavetException {
+    public V8ValueBuiltInReflect toClone() throws JavetException {
         return this;
     }
 }

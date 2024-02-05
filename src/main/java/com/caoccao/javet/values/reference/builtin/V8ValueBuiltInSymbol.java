@@ -28,6 +28,7 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class V8ValueBuiltInSymbol extends V8ValueFunction {
+    public static final String NAME = "Symbol";
 
     public static final String PROPERTY_ASYNC_ITERATOR = "asyncIterator";
     public static final String PROPERTY_HAS_INSTANCE = "hasInstance";

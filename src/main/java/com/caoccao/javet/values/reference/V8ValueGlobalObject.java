@@ -23,10 +23,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
-import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
-import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInPromise;
-import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
+import com.caoccao.javet.values.reference.builtin.*;
 
 /**
  * The type V8 value global object is a special object.
@@ -34,19 +31,18 @@ import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
  * 2. It does not have reference count.
  * 3. It cannot be set to weak.
  * 4. Its clone is itself.
+ *
+ * @since 0.7.0
  */
 @SuppressWarnings("unchecked")
 public final class V8ValueGlobalObject extends V8ValueObject {
-
-    public static final String PROPERTY_JSON = "JSON";
-    public static final String PROPERTY_PROMISE = "Promise";
-    public static final String PROPERTY_SYMBOL = "Symbol";
-    public static final String PROPERTY_OBJECT = "Object";
-
     /**
      * Instantiates a new V8 value global object.
      *
-     * @param handle the handle
+     * @param v8Runtime the V8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
+     * @since 0.7.0
      */
     V8ValueGlobalObject(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
@@ -67,44 +63,99 @@ public final class V8ValueGlobalObject extends V8ValueObject {
         // Global object lives as long as V8 runtime lives.
     }
 
+    /**
+     * Gets built-in JSON.
+     *
+     * @return the built-in JSON
+     * @throws JavetException the javet exception
+     * @since 0.9.2
+     */
     @CheckReturnValue
     public V8ValueBuiltInJson getBuiltInJson() throws JavetException {
-        V8Value v8Value = v8Runtime.getExecutor(PROPERTY_JSON).execute();
+        V8Value v8Value = v8Runtime.getExecutor(V8ValueBuiltInJson.NAME).execute();
         if (v8Value instanceof V8ValueObject) {
             return new V8ValueBuiltInJson(v8Runtime, ((V8ValueObject) v8Value).getHandle());
         }
         JavetResourceUtils.safeClose(v8Value);
-        throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, PROPERTY_JSON));
+        throw new JavetException(
+                JavetError.NotSupported,
+                SimpleMap.of(JavetError.PARAMETER_FEATURE, V8ValueBuiltInJson.NAME));
     }
 
+    /**
+     * Gets built-in Object.
+     *
+     * @return the built-in Object
+     * @throws JavetException the javet exception
+     * @since 0.9.2
+     */
     @CheckReturnValue
     public V8ValueBuiltInObject getBuiltInObject() throws JavetException {
-        V8Value v8Value = v8Runtime.getExecutor(PROPERTY_OBJECT).execute();
+        V8Value v8Value = v8Runtime.getExecutor(V8ValueBuiltInObject.NAME).execute();
         if (v8Value instanceof V8ValueObject) {
             return new V8ValueBuiltInObject(v8Runtime, ((V8ValueObject) v8Value).getHandle());
         }
         JavetResourceUtils.safeClose(v8Value);
-        throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, PROPERTY_OBJECT));
+        throw new JavetException(
+                JavetError.NotSupported,
+                SimpleMap.of(JavetError.PARAMETER_FEATURE, V8ValueBuiltInObject.NAME));
     }
 
+    /**
+     * Gets built-in Promise.
+     *
+     * @return the built-in Promise
+     * @throws JavetException the javet exception
+     * @since 0.9.2
+     */
     @CheckReturnValue
     public V8ValueBuiltInPromise getBuiltInPromise() throws JavetException {
-        V8Value v8Value = v8Runtime.getExecutor(PROPERTY_PROMISE).execute();
+        V8Value v8Value = v8Runtime.getExecutor(V8ValueBuiltInPromise.NAME).execute();
         if (v8Value instanceof V8ValueObject) {
             return new V8ValueBuiltInPromise(v8Runtime, ((V8ValueObject) v8Value).getHandle());
         }
         JavetResourceUtils.safeClose(v8Value);
-        throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, PROPERTY_PROMISE));
+        throw new JavetException(
+                JavetError.NotSupported,
+                SimpleMap.of(JavetError.PARAMETER_FEATURE, V8ValueBuiltInPromise.NAME));
     }
 
+    /**
+     * Gets built-in Reflect.
+     *
+     * @return the built-in Reflect
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
+    @CheckReturnValue
+    public V8ValueBuiltInReflect getBuiltInReflect() throws JavetException {
+        V8Value v8Value = v8Runtime.getExecutor(V8ValueBuiltInReflect.NAME).execute();
+        if (v8Value instanceof V8ValueObject) {
+            return new V8ValueBuiltInReflect(v8Runtime, ((V8ValueObject) v8Value).getHandle());
+        }
+        JavetResourceUtils.safeClose(v8Value);
+        throw new JavetException(
+                JavetError.NotSupported,
+                SimpleMap.of(JavetError.PARAMETER_FEATURE, V8ValueBuiltInReflect.NAME));
+    }
+
+    /**
+     * Gets built-in Symbol.
+     *
+     * @return the built-in Symbol
+     * @throws JavetException the javet exception
+     * @since 0.9.11
+     */
     @CheckReturnValue
     public V8ValueBuiltInSymbol getBuiltInSymbol() throws JavetException {
-        V8Value v8Value = v8Runtime.getExecutor(PROPERTY_SYMBOL).execute();
+        V8Value v8Value = v8Runtime.getExecutor(V8ValueBuiltInSymbol.NAME).execute();
         if (v8Value instanceof V8ValueObject) {
             return new V8ValueBuiltInSymbol(v8Runtime, ((V8ValueObject) v8Value).getHandle());
         }
         JavetResourceUtils.safeClose(v8Value);
-        throw new JavetException(JavetError.NotSupported, SimpleMap.of(JavetError.PARAMETER_FEATURE, PROPERTY_SYMBOL));
+        throw new JavetException(
+                JavetError.NotSupported,
+                SimpleMap.of(JavetError.PARAMETER_FEATURE, V8ValueBuiltInSymbol.NAME));
     }
 
     @Override

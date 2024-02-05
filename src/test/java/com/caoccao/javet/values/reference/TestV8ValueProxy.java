@@ -130,7 +130,9 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     "Parameters with varargs should work.");
             assertEquals(3.3, v8Runtime.getExecutor("y.add(1.1,2.2)").executeDouble(), 0.001,
                     "Parameters with non-primitive type should work.");
-            assertTrue(v8Runtime.getExecutor("y['a']").execute().isUndefined(),
+            assertEquals(1, v8Runtime.getExecutor("y['a']").executeInteger(),
+                    "Reflect.get() should work.");
+            assertTrue(v8Runtime.getExecutor("y['c']").execute().isUndefined(),
                     "Generic getter should return undefined.");
             v8Runtime.getExecutor("y['name'] = 'abc';").executeVoid();
             assertEquals("abc", handler.getTargetObject().getName(), "Getter should work.");
@@ -239,7 +241,9 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
             }
             assertEquals("3", v8Runtime.getExecutor("y['c']").executeString(),
                     "Generic getter should work.");
-            assertTrue(v8Runtime.getExecutor("y['a']").execute().isUndefined(),
+            assertEquals(1, v8Runtime.getExecutor("y['a']").executeInteger(),
+                    "Reflect.get() should work.");
+            assertTrue(v8Runtime.getExecutor("y['e']").execute().isUndefined(),
                     "Generic getter should return undefined.");
             v8Runtime.getExecutor("y['name'] = 'abc';").executeVoid();
             assertNull(handler.getTargetObject().getName(), "Generic getter should take higher priority.");

@@ -26,6 +26,7 @@ import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInReflect;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -298,6 +299,20 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             }
         }
         return null;
+    }
+
+    /**
+     * Gets from Reflect.get().
+     *
+     * @param target   the target
+     * @param property the property
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected V8Value getFromReflect(V8Value target, V8Value property) throws JavetException {
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = v8Runtime.getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect.get(target, property);
+        }
     }
 
     /**

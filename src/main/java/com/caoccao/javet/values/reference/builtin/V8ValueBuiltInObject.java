@@ -32,7 +32,6 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public class V8ValueBuiltInObject extends V8ValueObject {
-
     /**
      * The constant FUNCTION_ASSIGN.
      *
@@ -51,6 +50,12 @@ public class V8ValueBuiltInObject extends V8ValueObject {
      * @since 3.0.1
      */
     public static final String FUNCTION_FREEZE = "freeze";
+    /**
+     * The constant NAME.
+     *
+     * @since 3.0.4
+     */
+    public static final String NAME = "Object";
 
     /**
      * Instantiates a new V8 value built in object.

@@ -219,10 +219,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                             JavetProxyPolyfillPrimitive.getFunction(classDescriptor.getTargetClass(), propertyName);
                     break;
             }
-            if (iJavetProxyPolyfillFunction == null) {
-                iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
-                        JavetProxyPolyfillObject.getFunction(propertyName);
-            }
             if (iJavetProxyPolyfillFunction != null) {
                 return iJavetProxyPolyfillFunction.invoke(getV8Runtime(), getTargetObject());
             }
@@ -389,6 +385,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         v8Value = v8Value == null ? getFromSymbol(property) : v8Value;
         v8Value = v8Value == null ? getFromGetter(property) : v8Value;
         v8Value = v8Value == null ? getFromPolyfill(property) : v8Value;
+        v8Value = v8Value == null ? getFromReflect(target, property) : v8Value;
         return v8Value;
     }
 
