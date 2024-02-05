@@ -295,8 +295,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     "[\"1\",\"y\"]",
                     v8Runtime.getExecutor("JSON.stringify(stringArray.with(0, '1'))").executeString());
             // toString()
-            assertEquals("[1, 2]", v8Runtime.getExecutor("intArray.toString()").executeString());
-            assertEquals("[x, y]", v8Runtime.getExecutor("stringArray.toString()").executeString());
+            assertEquals("1,2", v8Runtime.getExecutor("intArray.toString()").executeString());
+            assertEquals("x,y", v8Runtime.getExecutor("stringArray.toString()").executeString());
             // values()
             assertEquals("1,2", v8Runtime.getExecutor("[...intArray.values()].toString()").executeString());
             assertEquals("x,y", v8Runtime.getExecutor("[...stringArray.values()].toString()").executeString());
@@ -980,7 +980,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     "[\"1\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.with(0, '1'))").executeString());
             // toString()
-            assertEquals("[x, y, z]", v8Runtime.getExecutor("list.toString()").executeString());
+            assertEquals("x,y,z", v8Runtime.getExecutor("list.toString()").executeString());
             // values()
             assertEquals("x,y,z", v8Runtime.getExecutor("[...list.values()].toString()").executeString());
             // keys()

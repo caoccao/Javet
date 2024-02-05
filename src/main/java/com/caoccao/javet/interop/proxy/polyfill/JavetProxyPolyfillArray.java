@@ -1464,11 +1464,10 @@ public final class JavetProxyPolyfillArray {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    final int length = Array.getLength(targetObject);
-                    List<Object> results = new ArrayList<>(length);
-                    ListUtils.addAll(results, targetObject);
-                    // TODO The behavior is not identical to the V8's behavior.
-                    return v8Runtime.createV8ValueString(results.toString());
+                    try (V8ValueArray v8ValueArray =
+                                 V8ValueUtils.createV8ValueArray(v8Runtime, ArrayUtils.copyOf(targetObject))) {
+                        return v8Runtime.createV8ValueString(v8ValueArray.toString());
+                    }
                 }));
     }
 
