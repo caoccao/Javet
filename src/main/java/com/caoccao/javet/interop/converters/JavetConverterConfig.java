@@ -16,9 +16,13 @@
 
 package com.caoccao.javet.interop.converters;
 
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
+import com.caoccao.javet.interop.proxy.plugins.*;
+import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.SimpleSet;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -56,6 +60,18 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     protected static final String[] DEFAULT_PROXY_MAP_OVERRIDE_METHODS = new String[]{
             "clear", "forEach", "get", "size", "toString"};
     /**
+     * The constant DEFAULT_PROXY_PLUGINS.
+     *
+     * @since 3.0.4
+     */
+    protected static final IClassProxyPlugin[] DEFAULT_PROXY_PLUGINS = new IClassProxyPlugin[]{
+            JavetProxyPluginMap.getInstance(),
+            JavetProxyPluginSet.getInstance(),
+            JavetProxyPluginList.getInstance(),
+            JavetProxyPluginArray.getInstance(),
+            JavetProxyPluginDefault.getInstance(),
+    };
+    /**
      * The constant DEFAULT_PROXY_SET_OVERRIDE_METHODS.
      *
      * @since 3.0.4
@@ -80,6 +96,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 3.0.4
      */
     protected final Set<String> proxyMapOverrideMethods;
+    /**
+     * The Proxy plugins.
+     *
+     * @since 3.0.4
+     */
+    protected final List<IClassProxyPlugin> proxyPlugins;
     /**
      * The Proxy set override methods.
      *
@@ -200,13 +222,14 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
         proxyArrayEnabled = false;
-        proxyListEnabled = false;
         proxyArrayOverrideMethods = SimpleSet.of(DEFAULT_PROXY_ARRAY_OVERRIDE_METHODS);
+        proxyListEnabled = false;
         proxyListOverrideMethods = SimpleSet.of(DEFAULT_PROXY_LIST_OVERRIDE_METHODS);
-        proxyMapOverrideMethods = SimpleSet.of(DEFAULT_PROXY_MAP_OVERRIDE_METHODS);
-        proxySetOverrideMethods = SimpleSet.of(DEFAULT_PROXY_SET_OVERRIDE_METHODS);
         proxyMapEnabled = false;
+        proxyMapOverrideMethods = SimpleSet.of(DEFAULT_PROXY_MAP_OVERRIDE_METHODS);
+        proxyPlugins = SimpleList.of(DEFAULT_PROXY_PLUGINS);
         proxySetEnabled = false;
+        proxySetOverrideMethods = SimpleSet.of(DEFAULT_PROXY_SET_OVERRIDE_METHODS);
         reflectionObjectFactory = null;
         skipFunctionInObject = true;
     }
@@ -329,6 +352,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public Set<String> getProxyMapOverrideMethods() {
         return proxyMapOverrideMethods;
+    }
+
+    /**
+     * Gets proxy plugins.
+     *
+     * @return the proxy plugins
+     * @since 3.0.4
+     */
+    public List<IClassProxyPlugin> getProxyPlugins() {
+        return proxyPlugins;
     }
 
     /**

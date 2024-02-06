@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.proxy.polyfill;
+package com.caoccao.javet.interop.binding;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
 /**
- * The interface Javet proxy polyfill function.
+ * The interface Class proxy plugin function.
  *
- * @param <T> the type parameter
  * @param <E> the type parameter
  * @since 3.0.3
  */
-public interface IJavetProxyPolyfillFunction<T, E extends Exception> {
+public interface IClassProxyPluginFunction<E extends Exception> {
     /**
      * Invoke the function by the V8 runtime and the target object, then return a V8 value.
      *
@@ -38,5 +37,5 @@ public interface IJavetProxyPolyfillFunction<T, E extends Exception> {
      * @throws E              the custom exception
      * @since 3.0.3
      */
-    V8Value invoke(V8Runtime v8Runtime, T targetObject) throws JavetException, E;
+    V8Value invoke(V8Runtime v8Runtime, Object targetObject) throws JavetException, E;
 }

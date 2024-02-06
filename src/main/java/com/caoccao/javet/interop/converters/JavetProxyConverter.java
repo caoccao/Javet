@@ -24,6 +24,10 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.*;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginArray;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginList;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginMap;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginSet;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
@@ -33,7 +37,6 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -160,10 +163,18 @@ public class JavetProxyConverter extends JavetObjectConverter {
         if (object instanceof V8Value) {
             return (T) object;
         }
-        boolean proxyRequired = config.isProxyListEnabled() && object instanceof List;
-        proxyRequired = proxyRequired || (config.isProxyMapEnabled() && object instanceof Map);
-        proxyRequired = proxyRequired || (config.isProxySetEnabled() && object instanceof Set);
-        proxyRequired = proxyRequired || (config.isProxyArrayEnabled() && (object != null && object.getClass().isArray()));
+        boolean proxyRequired = false;
+        if (object != null) {
+            Class<?> objectClass = object.getClass();
+            proxyRequired =
+                    config.isProxyListEnabled() && JavetProxyPluginList.getInstance().isProxyable(objectClass);
+            proxyRequired = proxyRequired ||
+                    (config.isProxyMapEnabled() && JavetProxyPluginMap.getInstance().isProxyable(objectClass));
+            proxyRequired = proxyRequired ||
+                    (config.isProxySetEnabled() && JavetProxyPluginSet.getInstance().isProxyable(objectClass));
+            proxyRequired = proxyRequired ||
+                    (config.isProxyArrayEnabled() && JavetProxyPluginArray.getInstance().isProxyable(objectClass));
+        }
         if (!proxyRequired) {
             V8Value v8Value = super.toV8Value(v8Runtime, object, depth);
             if (v8Value != null && !(v8Value.isUndefined())) {

@@ -36,43 +36,61 @@ public class ClassDescriptor {
      *
      * @since 1.1.7
      */
-    protected List<Method> applyFunctions;
+    protected final List<Method> applyFunctions;
+    /**
+     * The Class proxy plugin.
+     *
+     * @since 3.0.4
+     */
+    protected final IClassProxyPlugin classProxyPlugin;
     /**
      * The Constructors.
      *
      * @since 0.9.8
      */
-    protected List<Constructor<?>> constructors;
+    protected final List<Constructor<?>> constructors;
     /**
      * The Field map.
      *
      * @since 0.9.7
      */
-    protected Map<String, Field> fieldMap;
+    protected final Map<String, Field> fieldMap;
     /**
      * The Generic getters.
      *
      * @since 0.9.6
      */
-    protected List<Method> genericGetters;
+    protected final List<Method> genericGetters;
     /**
      * The Generic setters.
      *
      * @since 0.9.6
      */
-    protected List<Method> genericSetters;
+    protected final List<Method> genericSetters;
     /**
      * The Getters map.
      *
      * @since 0.9.6
      */
-    protected Map<String, List<Method>> gettersMap;
+    protected final Map<String, List<Method>> gettersMap;
     /**
      * The Methods map.
      *
      * @since 0.9.6
      */
-    protected Map<String, List<Method>> methodsMap;
+    protected final Map<String, List<Method>> methodsMap;
+    /**
+     * The Setters map.
+     *
+     * @since 0.9.6
+     */
+    protected final Map<String, List<Method>> settersMap;
+    /**
+     * The Unique key set.
+     *
+     * @since 0.9.7
+     */
+    protected final Set<String> uniqueKeySet;
     /**
      * The Proxy mode.
      *
@@ -80,29 +98,11 @@ public class ClassDescriptor {
      */
     protected V8ProxyMode proxyMode;
     /**
-     * The Setters map.
-     *
-     * @since 0.9.6
-     */
-    protected Map<String, List<Method>> settersMap;
-    /**
      * The Target class.
      *
      * @since 0.9.6
      */
     protected Class<?> targetClass;
-    /**
-     * The Target class type.
-     *
-     * @since 3.0.4
-     */
-    protected TargetClassType targetClassType;
-    /**
-     * The Unique key set.
-     *
-     * @since 0.9.7
-     */
-    protected Set<String> uniqueKeySet;
 
     /**
      * Instantiates a new Class descriptor.
@@ -111,18 +111,18 @@ public class ClassDescriptor {
      * @param targetClass the target class
      * @since 1.1.7
      */
-    public ClassDescriptor(V8ProxyMode proxyMode, Class<?> targetClass) {
+    public ClassDescriptor(V8ProxyMode proxyMode, Class<?> targetClass, IClassProxyPlugin classProxyPlugin) {
         applyFunctions = new ArrayList<>();
         constructors = new ArrayList<>();
         fieldMap = new LinkedHashMap<>();
         genericGetters = new ArrayList<>();
         genericSetters = new ArrayList<>();
         gettersMap = new LinkedHashMap<>();
+        this.classProxyPlugin = Objects.requireNonNull(classProxyPlugin);
         methodsMap = new LinkedHashMap<>();
         this.proxyMode = proxyMode;
         settersMap = new LinkedHashMap<>();
         this.targetClass = targetClass;
-        targetClassType = TargetClassType.parse(targetClass);
         uniqueKeySet = new LinkedHashSet<>();
     }
 
@@ -134,6 +134,16 @@ public class ClassDescriptor {
      */
     public List<Method> getApplyFunctions() {
         return applyFunctions;
+    }
+
+    /**
+     * Gets class proxy plugin.
+     *
+     * @return the class proxy plugin
+     * @since 3.0.4
+     */
+    public IClassProxyPlugin getClassProxyPlugin() {
+        return classProxyPlugin;
     }
 
     /**
@@ -239,16 +249,6 @@ public class ClassDescriptor {
     }
 
     /**
-     * Gets target class type.
-     *
-     * @return the target class type
-     * @since 3.0.4
-     */
-    public TargetClassType getTargetClassType() {
-        return targetClassType;
-    }
-
-    /**
      * Gets unique key set.
      *
      * @return the unique key set
@@ -256,76 +256,5 @@ public class ClassDescriptor {
      */
     public Set<String> getUniqueKeySet() {
         return uniqueKeySet;
-    }
-
-    /**
-     * The enum Target class type.
-     *
-     * @since 3.0.4
-     */
-    public enum TargetClassType {
-        Array,
-        List,
-        Map,
-        Object,
-        Set;
-
-        public static TargetClassType parse(Class<?> targetClass) {
-            if (Map.class.isAssignableFrom(targetClass)) return Map;
-            if (List.class.isAssignableFrom(targetClass)) return List;
-            if (Set.class.isAssignableFrom(targetClass)) return Set;
-            if (targetClass.isArray()) return Array;
-            return Object;
-        }
-
-        /**
-         * Is array.
-         *
-         * @return true : array, false : not array
-         * @since 3.0.4
-         */
-        public boolean isArray() {
-            return this == Array;
-        }
-
-        /**
-         * Is list.
-         *
-         * @return true : list, false : not list
-         * @since 3.0.4
-         */
-        public boolean isList() {
-            return this == List;
-        }
-
-        /**
-         * Is map.
-         *
-         * @return true : map, false : not map
-         * @since 3.0.4
-         */
-        public boolean isMap() {
-            return this == Map;
-        }
-
-        /**
-         * Is set.
-         *
-         * @return true : set, false : not set
-         * @since 3.0.4
-         */
-        public boolean isSet() {
-            return this == Set;
-        }
-
-        /**
-         * Is unique key supported.
-         *
-         * @return true : supported, false : not supported
-         * @since 3.0.4
-         */
-        public boolean isUniqueKeySupported() {
-            return this == Map || this == Set;
-        }
     }
 }

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.proxy.polyfill;
+package com.caoccao.javet.interop.proxy.plugins;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
@@ -30,11 +31,18 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The type Javet proxy polyfill primitive.
+ * The type Javet proxy plugin primitive.
  *
  * @since 3.0.4
  */
-public final class JavetProxyPolyfillPrimitive {
+@SuppressWarnings("unchecked")
+public class JavetProxyPluginDefault extends BaseJavetProxyPlugin {
+    /**
+     * The constant NAME.
+     *
+     * @since 3.0.4
+     */
+    public static final String NAME = Object.class.getName();
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BIG_INTEGER =
             "Target object must be an instance of BigInteger.";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BOOLEAN =
@@ -55,74 +63,82 @@ public final class JavetProxyPolyfillPrimitive {
             "Target object must be an instance of Short.";
     private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING =
             "Target object must be an instance of String.";
-    private static final String TO_JSON = "toJSON";
-    private static final Map<Class<?>, Map<String, IJavetProxyPolyfillFunction<?, ?>>> primitiveFunctionMap;
+    private static final JavetProxyPluginDefault instance = new JavetProxyPluginDefault();
+    protected final Map<Class<?>, Map<String, IClassProxyPluginFunction<?>>> proxyGetByStringMap;
 
-    static {
-        primitiveFunctionMap = new HashMap<>();
+    protected JavetProxyPluginDefault() {
+        super();
+        proxyGetByStringMap = new HashMap<>();
         {
             // java.math.BigInteger
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::bigIntegerToJSON);
-            primitiveFunctionMap.put(BigInteger.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::bigIntegerToJSON);
+            proxyGetByStringMap.put(BigInteger.class, polyfillFunctionMap);
         }
         {
             // java.lang.Boolean
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::booleanToJSON);
-            primitiveFunctionMap.put(Boolean.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::booleanToJSON);
+            proxyGetByStringMap.put(Boolean.class, polyfillFunctionMap);
         }
         {
             // java.lang.Byte
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::byteToJSON);
-            primitiveFunctionMap.put(Byte.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::byteToJSON);
+            proxyGetByStringMap.put(Byte.class, polyfillFunctionMap);
         }
         {
             // java.lang.Character
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::characterToJSON);
-            primitiveFunctionMap.put(Character.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::characterToJSON);
+            proxyGetByStringMap.put(Character.class, polyfillFunctionMap);
         }
         {
             // java.lang.Double
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::doubleToJSON);
-            primitiveFunctionMap.put(Double.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::doubleToJSON);
+            proxyGetByStringMap.put(Double.class, polyfillFunctionMap);
         }
         {
             // java.lang.Float
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::floatToJSON);
-            primitiveFunctionMap.put(Float.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::floatToJSON);
+            proxyGetByStringMap.put(Float.class, polyfillFunctionMap);
         }
         {
             // java.lang.Integer
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::integerToJSON);
-            primitiveFunctionMap.put(Integer.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::integerToJSON);
+            proxyGetByStringMap.put(Integer.class, polyfillFunctionMap);
         }
         {
             // java.lang.Long
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::longToJSON);
-            primitiveFunctionMap.put(Long.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::longToJSON);
+            proxyGetByStringMap.put(Long.class, polyfillFunctionMap);
         }
         {
             // java.lang.Short
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::shortToJSON);
-            primitiveFunctionMap.put(Short.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::shortToJSON);
+            proxyGetByStringMap.put(Short.class, polyfillFunctionMap);
         }
         {
             // java.lang.String
-            Map<String, IJavetProxyPolyfillFunction<?, ?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_JSON, JavetProxyPolyfillPrimitive::stringToJSON);
-            primitiveFunctionMap.put(String.class, polyfillFunctionMap);
+            Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(TO_JSON, this::stringToJSON);
+            proxyGetByStringMap.put(String.class, polyfillFunctionMap);
         }
     }
 
-    private JavetProxyPolyfillPrimitive() {
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     * @since 3.0.4
+     */
+    public static JavetProxyPluginDefault getInstance() {
+        return instance;
     }
 
     /**
@@ -134,7 +150,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value bigIntegerToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value bigIntegerToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof BigInteger : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BIG_INTEGER;
         final BigInteger value = (BigInteger) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
@@ -151,7 +167,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value booleanToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value booleanToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Boolean : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BOOLEAN;
         final Boolean value = (Boolean) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
@@ -168,7 +184,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value byteToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value byteToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Byte : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BYTE;
         final Byte value = (Byte) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
@@ -185,7 +201,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value characterToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value characterToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Character : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_CHARACTER;
         final Character value = (Character) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
@@ -202,7 +218,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value doubleToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value doubleToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Double : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_DOUBLE;
         final Double value = (Double) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
@@ -219,7 +235,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value floatToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value floatToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Float : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_FLOAT;
         final Float value = (Float) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
@@ -235,9 +251,22 @@ public final class JavetProxyPolyfillPrimitive {
      * @return the function
      * @since 3.0.4
      */
-    public static IJavetProxyPolyfillFunction<?, ?> getFunction(Class<?> clazz, String name) {
-        return Optional.ofNullable(primitiveFunctionMap.get(clazz))
+    public IClassProxyPluginFunction<?> getFunction(Class<?> clazz, String name) {
+        return Optional.ofNullable(proxyGetByStringMap.get(clazz))
                 .map(map -> map.get(name))
+                .orElse(null);
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
+            Class<?> targetClass, String propertyName) {
+        return (IClassProxyPluginFunction<E>) Optional.ofNullable(proxyGetByStringMap.get(targetClass))
+                .map(map -> map.get(propertyName))
                 .orElse(null);
     }
 
@@ -250,12 +279,17 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value integerToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value integerToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Integer : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_INTEGER;
         final Integer value = (Integer) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueInteger(value)));
+    }
+
+    @Override
+    public boolean isProxyable(Class<?> targetClass) {
+        return targetClass != null;
     }
 
     /**
@@ -267,7 +301,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value longToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value longToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Long : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LONG;
         final Long value = (Long) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
@@ -284,7 +318,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value shortToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value shortToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Short : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SHORT;
         final Short value = (Short) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
@@ -301,7 +335,7 @@ public final class JavetProxyPolyfillPrimitive {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value stringToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value stringToJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
         final String value = (String) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(

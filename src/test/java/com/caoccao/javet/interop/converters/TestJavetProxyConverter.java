@@ -262,6 +262,13 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             // Array.isArray()
             assertTrue(v8Runtime.getExecutor("Array.isArray(intArray)").executeBoolean());
             assertTrue(v8Runtime.getExecutor("Array.isArray(stringArray)").executeBoolean());
+            // in
+            assertTrue(v8Runtime.getExecutor("0 in intArray").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("2 in intArray").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("'x' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("0 in stringArray").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("2 in stringArray").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("'x' in stringArray").executeBoolean());
             // constructor.name
             assertEquals("Array", v8Runtime.getExecutor("intArray.constructor.name").executeString());
             assertEquals("Array", v8Runtime.getExecutor("stringArray.constructor.name").executeString());
@@ -959,6 +966,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("Array.isArray(list)").executeBoolean());
             // constructor.name
             assertEquals("Array", v8Runtime.getExecutor("list.constructor.name").executeString());
+            // in
+            assertTrue(v8Runtime.getExecutor("0 in list").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("2 in list").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("'x' in list").executeBoolean());
             // contains()
             assertTrue(v8Runtime.getExecutor("list.contains('x')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("list.contains('y')").executeBoolean());
@@ -1269,6 +1280,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
             // constructor.name
             assertEquals("Object", v8Runtime.getExecutor("map.constructor.name").executeString());
+            // in
+            assertTrue(v8Runtime.getExecutor("'x' in map").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("1 in map").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("'2' in map").executeBoolean());
             // []
             assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
             assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
@@ -1453,6 +1468,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
             // constructor.name
             assertEquals("Set", v8Runtime.getExecutor("set.constructor.name").executeString());
+            // in
+            assertTrue(v8Runtime.getExecutor("'x' in set").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("1 in set").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("'2' in set").executeBoolean());
             // contains()
             assertTrue(v8Runtime.getExecutor("set.contains('x')").executeBoolean());
             assertTrue(v8Runtime.getExecutor("set.contains('y')").executeBoolean());

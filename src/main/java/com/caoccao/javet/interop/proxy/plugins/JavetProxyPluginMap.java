@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2024. caoccao.com Sam Cao
+ * Copyright (c) 2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.proxy.polyfill;
+package com.caoccao.javet.interop.proxy.plugins;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.interop.converters.JavetConverterConfig;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.SimpleList;
@@ -29,19 +31,22 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * The type Javet proxy polyfill map.
+ * The type Javet proxy plugin map.
  *
  * @since 3.0.4
  */
 @SuppressWarnings("unchecked")
-public final class JavetProxyPolyfillMap {
+public final class JavetProxyPluginMap extends BaseJavetProxyPlugin {
+    /**
+     * The constant NAME.
+     *
+     * @since 3.0.4
+     */
+    public static final String NAME = Map.class.getName();
     private static final String CLEAR = "clear";
     private static final String DELETE = "delete";
     private static final String ENTRIES = "entries";
@@ -54,28 +59,35 @@ public final class JavetProxyPolyfillMap {
     private static final String OBJECT_MAP = "[object Map]";
     private static final String SET = "set";
     private static final String SIZE = "size";
-    private static final String TO_JSON = "toJSON";
-    private static final String TO_STRING = "toString";
     private static final String VALUES = "values";
-    private static final Map<String, IJavetProxyPolyfillFunction<?, ?>> functionMap;
+    private static final JavetProxyPluginMap instance = new JavetProxyPluginMap();
+    private final Map<String, IClassProxyPluginFunction<?>> proxyGetByStringMap;
 
-    static {
-        functionMap = new HashMap<>();
-        functionMap.put(CLEAR, JavetProxyPolyfillMap::clear);
-        functionMap.put(DELETE, JavetProxyPolyfillMap::delete);
-        functionMap.put(ENTRIES, JavetProxyPolyfillMap::entries);
-        functionMap.put(FOR_EACH, JavetProxyPolyfillMap::forEach);
-        functionMap.put(GET, JavetProxyPolyfillMap::get);
-        functionMap.put(HAS, JavetProxyPolyfillMap::has);
-        functionMap.put(KEYS, JavetProxyPolyfillMap::keys);
-        functionMap.put(SET, JavetProxyPolyfillMap::set);
-        functionMap.put(SIZE, JavetProxyPolyfillMap::size);
-        functionMap.put(TO_JSON, JavetProxyPolyfillMap::toJSON);
-        functionMap.put(TO_STRING, JavetProxyPolyfillMap::toString);
-        functionMap.put(VALUES, JavetProxyPolyfillMap::values);
+    private JavetProxyPluginMap() {
+        super();
+        proxyGetByStringMap = new HashMap<>();
+        proxyGetByStringMap.put(CLEAR, this::clear);
+        proxyGetByStringMap.put(DELETE, this::delete);
+        proxyGetByStringMap.put(ENTRIES, this::entries);
+        proxyGetByStringMap.put(FOR_EACH, this::forEach);
+        proxyGetByStringMap.put(GET, this::get);
+        proxyGetByStringMap.put(HAS, this::has);
+        proxyGetByStringMap.put(KEYS, this::keys);
+        proxyGetByStringMap.put(SET, this::set);
+        proxyGetByStringMap.put(SIZE, this::size);
+        proxyGetByStringMap.put(TO_JSON, this::toJSON);
+        proxyGetByStringMap.put(TO_STRING, this::toString);
+        proxyGetByStringMap.put(VALUES, this::values);
     }
 
-    private JavetProxyPolyfillMap() {
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     * @since 3.0.4
+     */
+    public static JavetProxyPluginMap getInstance() {
+        return instance;
     }
 
     /**
@@ -88,9 +100,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value clear(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value clear(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 CLEAR, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -109,9 +121,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value delete(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value delete(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 DELETE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -121,6 +133,13 @@ public final class JavetProxyPolyfillMap {
                     }
                     return v8Runtime.createV8ValueBoolean(deleted);
                 }));
+    }
+
+    @Override
+    public boolean deleteByObject(Object targetObject, Object propertyKey) {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        return propertyKey != null && map.remove(propertyKey) != null;
     }
 
     /**
@@ -134,9 +153,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         List<List<Object>> entries = map.entrySet().stream()
                 .map(entry -> SimpleList.of(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
@@ -154,9 +173,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FOR_EACH, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -186,9 +205,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value get(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value get(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 GET, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -202,15 +221,26 @@ public final class JavetProxyPolyfillMap {
                 }));
     }
 
-    /**
-     * Gets function.
-     *
-     * @param name the name
-     * @return the function
-     * @since 3.0.4
-     */
-    public static IJavetProxyPolyfillFunction<?, ?> getFunction(String name) {
-        return functionMap.get(name);
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public Set<String> getOverrideMethods(JavetConverterConfig<?> config) {
+        return config.getProxyMapOverrideMethods();
+    }
+
+    @Override
+    public Object[] getOwnKeys(Object targetObject) {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        return ((Map<?, ?>) targetObject).keySet().toArray();
+    }
+
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
+            Class<?> targetClass, String propertyName) {
+        return (IClassProxyPluginFunction<E>) proxyGetByStringMap.get(propertyName);
     }
 
     /**
@@ -224,9 +254,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value has(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value has(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 HAS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -236,6 +266,32 @@ public final class JavetProxyPolyfillMap {
                     }
                     return v8Runtime.createV8ValueBoolean(found);
                 }));
+    }
+
+    @Override
+    public boolean hasByObject(Object targetObject, Object propertyKey) {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        return ((Map<?, ?>) targetObject).containsKey(propertyKey);
+    }
+
+    @Override
+    public boolean isDeleteSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isHasSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isProxyable(Class<?> targetClass) {
+        return targetClass != null && Map.class.isAssignableFrom(targetClass);
+    }
+
+    @Override
+    public boolean isUniqueKeySupported() {
+        return true;
     }
 
     /**
@@ -249,10 +305,19 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value keys(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value keys(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return new JavetProxySymbolIterableConverter<>(v8Runtime, map.keySet()).getV8ValueFunction();
+    }
+
+    @Override
+    public void populateUniqueKeys(Set<String> uniqueKeySet, Object targetObject) {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        ((Map<Object, ?>) targetObject).keySet().stream()
+                .map(Object::toString)
+                .filter(Objects::nonNull)
+                .forEach(Objects.requireNonNull(uniqueKeySet)::add);
     }
 
     /**
@@ -265,9 +330,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value set(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value set(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<Object, Object> map = (Map<Object, Object>) Objects.requireNonNull(targetObject);
+        final Map<Object, Object> map = (Map<Object, Object>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SET, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -290,9 +355,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value size(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value size(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueInteger(map.size());
     }
 
@@ -305,9 +370,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -332,7 +397,7 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
@@ -351,9 +416,9 @@ public final class JavetProxyPolyfillMap {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) Objects.requireNonNull(targetObject);
+        final Map<?, ?> map = (Map<?, ?>) targetObject;
         return new JavetProxySymbolIterableConverter<>(v8Runtime, map.values()).getV8ValueFunction();
     }
 }

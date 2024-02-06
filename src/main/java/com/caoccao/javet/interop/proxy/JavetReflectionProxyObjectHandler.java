@@ -22,9 +22,11 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
+import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.interop.proxy.polyfill.*;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginDefault;
 import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.utils.V8ValueUtils;
@@ -35,12 +37,8 @@ import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
-import java.lang.reflect.Array;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.IntStream;
 
 /**
  * The type Javet reflection proxy object handler.
@@ -52,13 +50,6 @@ import java.util.stream.IntStream;
 @SuppressWarnings("unchecked")
 public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         extends BaseJavetReflectionProxyHandler<T, E> {
-    /**
-     * The constant LENGTH.
-     *
-     * @since 3.0.4
-     */
-    protected static final String LENGTH = "length";
-
     /**
      * Instantiates a new Javet reflection proxy object handler.
      *
@@ -80,38 +71,8 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @throws JavetException the javet exception
      */
     protected boolean deleteFromCollection(V8Value property) throws JavetException {
-        if (property instanceof V8ValueString) {
-            try {
-                String propertyString = ((V8ValueString) property).getValue();
-                if (StringUtils.isDigital(propertyString)) {
-                    final int index = Integer.parseInt(propertyString);
-                    if (index >= 0) {
-                        switch (classDescriptor.getTargetClassType()) {
-                            case Array:
-                                if (index < Array.getLength(targetObject)) {
-                                    // Only non-primitive array supports delete.
-                                    if (!classDescriptor.getTargetClass().getComponentType().isPrimitive()) {
-                                        Array.set(targetObject, index, null);
-                                        return true;
-                                    }
-                                }
-                                break;
-                            case List:
-                                List<?> list = (List<?>) targetObject;
-                                if (index < list.size()) {
-                                    list.remove(index);
-                                    return true;
-                                }
-                                break;
-                        }
-                    }
-                }
-                if (classDescriptor.getTargetClassType().isMap()) {
-                    Map<?, ?> map = (Map<?, ?>) targetObject;
-                    return map.remove(propertyString) != null;
-                }
-            } catch (Throwable ignored) {
-            }
+        if (classDescriptor.getClassProxyPlugin().isDeleteSupported()) {
+            return classDescriptor.getClassProxyPlugin().deleteByObject(targetObject, v8Runtime.toObject(property));
         }
         return false;
     }
@@ -163,22 +124,8 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             if (StringUtils.isDigital(propertyString)) {
                 final int index = Integer.parseInt(propertyString);
                 if (index >= 0) {
-                    switch (classDescriptor.getTargetClassType()) {
-                        case Array:
-                            if (index < Array.getLength(targetObject)) {
-                                return v8Runtime.toV8Value(Array.get(targetObject, index));
-                            }
-                            break;
-                        case List:
-                            List<?> list = (List<?>) targetObject;
-                            if (index < list.size()) {
-                                return v8Runtime.toV8Value(list.get(index));
-                            }
-                            break;
-                    }
+                    return v8Runtime.toV8Value(classDescriptor.getClassProxyPlugin().getByIndex(targetObject, index));
                 }
-            } else if (classDescriptor.getTargetClassType().isArray() && LENGTH.equals(propertyString)) {
-                return v8Runtime.toV8Value(Array.getLength(targetObject));
             }
         }
         return null;
@@ -196,31 +143,11 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     protected V8Value getFromPolyfill(V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).getValue();
-            IJavetProxyPolyfillFunction<T, E> iJavetProxyPolyfillFunction;
-            switch (classDescriptor.getTargetClassType()) {
-                case List:
-                    iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
-                            JavetProxyPolyfillList.getFunction(propertyName);
-                    break;
-                case Map:
-                    iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
-                            JavetProxyPolyfillMap.getFunction(propertyName);
-                    break;
-                case Set:
-                    iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
-                            JavetProxyPolyfillSet.getFunction(propertyName);
-                    break;
-                case Array:
-                    iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
-                            JavetProxyPolyfillArray.getFunction(propertyName);
-                    break;
-                default:
-                    iJavetProxyPolyfillFunction = (IJavetProxyPolyfillFunction<T, E>)
-                            JavetProxyPolyfillPrimitive.getFunction(classDescriptor.getTargetClass(), propertyName);
-                    break;
-            }
-            if (iJavetProxyPolyfillFunction != null) {
-                return iJavetProxyPolyfillFunction.invoke(getV8Runtime(), getTargetObject());
+            IClassProxyPluginFunction<E> iClassProxyPluginFunction =
+                    classDescriptor.getClassProxyPlugin().getProxyGetByString(
+                            classDescriptor.getTargetClass(), propertyName);
+            if (iClassProxyPluginFunction != null) {
+                return iClassProxyPluginFunction.invoke(getV8Runtime(), targetObject);
             }
         }
         return null;
@@ -268,29 +195,8 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected boolean hasFromCollection(V8Value property) throws JavetException {
-        switch (classDescriptor.getTargetClassType()) {
-            case Map:
-                return ((Map<?, ?>) targetObject).containsKey(v8Runtime.toObject(property));
-            case List:
-                return ((List<?>) targetObject).contains(v8Runtime.toObject(property));
-            case Set:
-                return ((Set<?>) targetObject).contains(v8Runtime.toObject(property));
-            default:
-                if (property instanceof V8ValueString) {
-                    String indexString = ((V8ValueString) property).getValue();
-                    if (StringUtils.isDigital(indexString)) {
-                        final int index = Integer.parseInt(indexString);
-                        if (index >= 0) {
-                            switch (classDescriptor.getTargetClassType()) {
-                                case Array:
-                                    return index < Array.getLength(targetObject);
-                                case List:
-                                    return index < ((List<?>) targetObject).size();
-                            }
-                        }
-                    }
-                }
-                break;
+        if (classDescriptor.getClassProxyPlugin().isHasSupported()) {
+            return classDescriptor.getClassProxyPlugin().hasByObject(targetObject, v8Runtime.toObject(property));
         }
         return false;
     }
@@ -300,7 +206,11 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         Class<T> targetClass = (Class<T>) targetObject.getClass();
         classDescriptor = ClassDescriptorStore.getObjectMap().get(targetClass);
         if (classDescriptor == null) {
-            classDescriptor = new ClassDescriptor(V8ProxyMode.Object, targetClass);
+            IClassProxyPlugin iClassProxyPlugin = v8Runtime.getConverter().getConfig().getProxyPlugins().stream()
+                    .filter(p -> p.isProxyable(targetClass))
+                    .findFirst()
+                    .orElse(JavetProxyPluginDefault.getInstance());
+            classDescriptor = new ClassDescriptor(V8ProxyMode.Object, targetClass, iClassProxyPlugin);
             if (targetObject instanceof Class) {
                 initializeFieldsAndMethods((Class<?>) targetObject, true);
             }
@@ -317,19 +227,8 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected void initializeCollection() {
-        switch (classDescriptor.getTargetClassType()) {
-            case Map:
-                ((Map<Object, ?>) targetObject).keySet().stream()
-                        .map(Object::toString)
-                        .filter(Objects::nonNull)
-                        .forEach(classDescriptor.getUniqueKeySet()::add);
-                break;
-            case Set:
-                ((Set<Object>) targetObject).stream()
-                        .map(Object::toString)
-                        .filter(Objects::nonNull)
-                        .forEach(classDescriptor.getUniqueKeySet()::add);
-                break;
+        if (classDescriptor.getClassProxyPlugin().isUniqueKeySupported()) {
+            classDescriptor.getClassProxyPlugin().populateUniqueKeys(classDescriptor.getUniqueKeySet(), targetObject);
         }
     }
 
@@ -358,23 +257,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.4
      */
     protected void initializeOverrideMethods() {
-        switch (classDescriptor.getTargetClassType()) {
-            case List:
-                overrideMethods = v8Runtime.getConverter().getConfig().getProxyListOverrideMethods();
-                break;
-            case Map:
-                overrideMethods = v8Runtime.getConverter().getConfig().getProxyMapOverrideMethods();
-                break;
-            case Set:
-                overrideMethods = v8Runtime.getConverter().getConfig().getProxySetOverrideMethods();
-                break;
-            case Array:
-                overrideMethods = v8Runtime.getConverter().getConfig().getProxyArrayOverrideMethods();
-                break;
-            default:
-                overrideMethods = null;
-                break;
-        }
+        overrideMethods = classDescriptor.getClassProxyPlugin().getOverrideMethods(v8Runtime.getConverter().getConfig());
     }
 
     @Override
@@ -390,21 +273,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     @Override
     public V8ValueArray ownKeys(V8Value target) throws JavetException {
-        Object[] keys = null;
-        switch (classDescriptor.getTargetClassType()) {
-            case Map:
-                keys = ((Map<?, ?>) targetObject).keySet().toArray();
-                break;
-            case Set:
-                keys = ((Set<?>) targetObject).toArray();
-                break;
-            case Array:
-                keys = IntStream.range(0, Array.getLength(targetObject)).boxed().toArray();
-                break;
-            case List:
-                keys = IntStream.range(0, ((List<?>) targetObject).size()).boxed().toArray();
-                break;
-        }
+        Object[] keys = classDescriptor.getClassProxyPlugin().getOwnKeys(targetObject);
         if (ArrayUtils.isEmpty(keys)) {
             keys = classDescriptor.getUniqueKeySet().toArray();
         }
@@ -445,22 +314,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             String propertyKeyString = ((V8ValueString) propertyKey).getValue();
             if (StringUtils.isDigital(propertyKeyString)) {
                 final int index = Integer.parseInt(propertyKeyString);
-                if (index >= 0) {
-                    switch (classDescriptor.getTargetClassType()) {
-                        case Array:
-                            if (index < Array.getLength(targetObject)) {
-                                Array.set(targetObject, index, v8Runtime.toObject(propertyValue));
-                                return true;
-                            }
-                            break;
-                        case List:
-                            List<?> list = (List<?>) targetObject;
-                            if (index < list.size()) {
-                                list.set(index, v8Runtime.toObject(propertyValue));
-                                return true;
-                            }
-                            break;
-                    }
+                if (index >= 0 && classDescriptor.getClassProxyPlugin().isIndexedPropertySupported()) {
+                    return classDescriptor.getClassProxyPlugin().setByIndex(
+                            targetObject, index, v8Runtime.toObject(propertyValue));
                 }
             }
         }

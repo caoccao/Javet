@@ -25,6 +25,7 @@ import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginClass;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.V8ValueUtils;
@@ -127,7 +128,10 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
     protected void initialize() {
         classDescriptor = ClassDescriptorStore.getClassMap().get(targetObject);
         if (classDescriptor == null) {
-            classDescriptor = new ClassDescriptor(V8ProxyMode.Class, targetObject);
+            classDescriptor = new ClassDescriptor(
+                    V8ProxyMode.Class,
+                    targetObject,
+                    JavetProxyPluginClass.getInstance());
             Class<?> targetClass = targetObject.getClass();
             initializeFieldsAndMethods(targetObject, true);
             initializeFieldsAndMethods(targetClass, false);

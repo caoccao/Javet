@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2024. caoccao.com Sam Cao
+ * Copyright (c) 2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.proxy.polyfill;
+package com.caoccao.javet.interop.proxy.plugins;
 
 import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.V8ErrorTemplate;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.interop.converters.JavetConverterConfig;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
@@ -31,25 +33,29 @@ import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
- * The type Javet proxy polyfill array.
+ * The type Javet proxy plugin list.
  *
  * @since 3.0.4
  */
 @SuppressWarnings("unchecked")
-public final class JavetProxyPolyfillArray {
+public final class JavetProxyPluginList extends BaseJavetProxyPlugin {
+    /**
+     * The constant NAME.
+     *
+     * @since 3.0.4
+     */
+    public static final String NAME = List.class.getName();
     private static final String AT = "at";
     private static final String CONCAT = "concat";
     private static final String COPY_WITHIN = "copyWithin";
     private static final String ENTRIES = "entries";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY =
-            "Target object must be an array.";
+    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST =
+            "Target object must be an instance of List.";
     private static final String EVERY = "every";
     private static final String FILL = "fill";
     private static final String FILTER = "filter";
@@ -77,60 +83,67 @@ public final class JavetProxyPolyfillArray {
     private static final String SOME = "some";
     private static final String SORT = "sort";
     private static final String SPLICE = "splice";
-    private static final String TO_JSON = "toJSON";
     private static final String TO_REVERSED = "toReversed";
     private static final String TO_SORTED = "toSorted";
     private static final String TO_SPLICED = "toSpliced";
-    private static final String TO_STRING = "toString";
     private static final String UNSHIFT = "unshift";
     private static final String VALUES = "values";
     private static final String WITH = "with";
-    private static final Map<String, IJavetProxyPolyfillFunction<?, ?>> functionMap;
+    private static final JavetProxyPluginList instance = new JavetProxyPluginList();
+    private final Map<String, IClassProxyPluginFunction<?>> proxyGetByStringMap;
 
-    static {
-        functionMap = new HashMap<>();
-        functionMap.put(AT, JavetProxyPolyfillArray::at);
-        functionMap.put(CONCAT, JavetProxyPolyfillArray::concat);
-        functionMap.put(COPY_WITHIN, JavetProxyPolyfillArray::copyWithin);
-        functionMap.put(ENTRIES, JavetProxyPolyfillArray::entries);
-        functionMap.put(EVERY, JavetProxyPolyfillArray::every);
-        functionMap.put(FILL, JavetProxyPolyfillArray::fill);
-        functionMap.put(FILTER, JavetProxyPolyfillArray::filter);
-        functionMap.put(FIND, JavetProxyPolyfillArray::find);
-        functionMap.put(FIND_INDEX, JavetProxyPolyfillArray::findIndex);
-        functionMap.put(FIND_LAST, JavetProxyPolyfillArray::findLast);
-        functionMap.put(FIND_LAST_INDEX, JavetProxyPolyfillArray::findLastIndex);
-        functionMap.put(FLAT, JavetProxyPolyfillArray::flat);
-        functionMap.put(FLAT_MAP, JavetProxyPolyfillArray::flatMap);
-        functionMap.put(FOR_EACH, JavetProxyPolyfillArray::forEach);
-        functionMap.put(INCLUDES, JavetProxyPolyfillArray::includes);
-        functionMap.put(INDEX_OF, JavetProxyPolyfillArray::indexOf);
-        functionMap.put(JOIN, JavetProxyPolyfillArray::join);
-        functionMap.put(KEYS, JavetProxyPolyfillArray::keys);
-        functionMap.put(LAST_INDEX_OF, JavetProxyPolyfillArray::lastIndexOf);
-        functionMap.put(LENGTH, JavetProxyPolyfillArray::length);
-        functionMap.put(MAP, JavetProxyPolyfillArray::map);
-        functionMap.put(POP, JavetProxyPolyfillArray::pop);
-        functionMap.put(PUSH, JavetProxyPolyfillArray::push);
-        functionMap.put(REDUCE, JavetProxyPolyfillArray::reduce);
-        functionMap.put(REDUCE_RIGHT, JavetProxyPolyfillArray::reduceRight);
-        functionMap.put(REVERSE, JavetProxyPolyfillArray::reverse);
-        functionMap.put(SHIFT, JavetProxyPolyfillArray::shift);
-        functionMap.put(SLICE, JavetProxyPolyfillArray::slice);
-        functionMap.put(SOME, JavetProxyPolyfillArray::some);
-        functionMap.put(SORT, JavetProxyPolyfillArray::sort);
-        functionMap.put(SPLICE, JavetProxyPolyfillArray::splice);
-        functionMap.put(TO_JSON, JavetProxyPolyfillArray::toJSON);
-        functionMap.put(TO_REVERSED, JavetProxyPolyfillArray::toReversed);
-        functionMap.put(TO_SORTED, JavetProxyPolyfillArray::toSorted);
-        functionMap.put(TO_SPLICED, JavetProxyPolyfillArray::toSpliced);
-        functionMap.put(TO_STRING, JavetProxyPolyfillArray::toString);
-        functionMap.put(UNSHIFT, JavetProxyPolyfillArray::unshift);
-        functionMap.put(VALUES, JavetProxyPolyfillArray::values);
-        functionMap.put(WITH, JavetProxyPolyfillArray::with);
+    private JavetProxyPluginList() {
+        super();
+        proxyGetByStringMap = new HashMap<>();
+        proxyGetByStringMap.put(AT, this::at);
+        proxyGetByStringMap.put(CONCAT, this::concat);
+        proxyGetByStringMap.put(COPY_WITHIN, this::copyWithin);
+        proxyGetByStringMap.put(ENTRIES, this::entries);
+        proxyGetByStringMap.put(EVERY, this::every);
+        proxyGetByStringMap.put(FILL, this::fill);
+        proxyGetByStringMap.put(FILTER, this::filter);
+        proxyGetByStringMap.put(FIND, this::find);
+        proxyGetByStringMap.put(FIND_INDEX, this::findIndex);
+        proxyGetByStringMap.put(FIND_LAST, this::findLast);
+        proxyGetByStringMap.put(FIND_LAST_INDEX, this::findLastIndex);
+        proxyGetByStringMap.put(FLAT, this::flat);
+        proxyGetByStringMap.put(FLAT_MAP, this::flatMap);
+        proxyGetByStringMap.put(FOR_EACH, this::forEach);
+        proxyGetByStringMap.put(INCLUDES, this::includes);
+        proxyGetByStringMap.put(INDEX_OF, this::indexOf);
+        proxyGetByStringMap.put(JOIN, this::join);
+        proxyGetByStringMap.put(KEYS, this::keys);
+        proxyGetByStringMap.put(LAST_INDEX_OF, this::lastIndexOf);
+        proxyGetByStringMap.put(LENGTH, this::length);
+        proxyGetByStringMap.put(MAP, this::map);
+        proxyGetByStringMap.put(POP, this::pop);
+        proxyGetByStringMap.put(PUSH, this::push);
+        proxyGetByStringMap.put(REDUCE, this::reduce);
+        proxyGetByStringMap.put(REDUCE_RIGHT, this::reduceRight);
+        proxyGetByStringMap.put(REVERSE, this::reverse);
+        proxyGetByStringMap.put(SHIFT, this::shift);
+        proxyGetByStringMap.put(SLICE, this::slice);
+        proxyGetByStringMap.put(SOME, this::some);
+        proxyGetByStringMap.put(SORT, this::sort);
+        proxyGetByStringMap.put(SPLICE, this::splice);
+        proxyGetByStringMap.put(TO_JSON, this::toJSON);
+        proxyGetByStringMap.put(TO_REVERSED, this::toReversed);
+        proxyGetByStringMap.put(TO_SORTED, this::toSorted);
+        proxyGetByStringMap.put(TO_SPLICED, this::toSpliced);
+        proxyGetByStringMap.put(TO_STRING, this::toString);
+        proxyGetByStringMap.put(UNSHIFT, this::unshift);
+        proxyGetByStringMap.put(VALUES, this::values);
+        proxyGetByStringMap.put(WITH, this::with);
     }
 
-    private JavetProxyPolyfillArray() {
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     * @since 3.0.4
+     */
+    public static JavetProxyPluginList getInstance() {
+        return instance;
     }
 
     /**
@@ -154,18 +167,19 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value at(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value at(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 AT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    final int length = Array.getLength(targetObject);
+                    final int length = list.size();
                     int index = V8ValueUtils.asInt(v8Values, 0);
                     if (index < 0) {
                         index += length;
                     }
                     if (index >= 0 && index < length) {
-                        return v8Runtime.toV8Value(Array.get(targetObject, index));
+                        return v8Runtime.toV8Value(list.get(index));
                     }
                     return v8Runtime.createV8ValueUndefined();
                 }));
@@ -182,13 +196,16 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value concat(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value concat(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 CONCAT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    List<Object> results = new ArrayList<>();
-                    ListUtils.addAll(results, targetObject);
+                    List<Object> results = new ArrayList<>(list.size());
+                    if (!list.isEmpty()) {
+                        results.addAll(list);
+                    }
                     if (ArrayUtils.isNotEmpty(v8Values)) {
                         for (V8Value v8Value : v8Values) {
                             if (v8Value instanceof IV8ValueArray) {
@@ -225,14 +242,15 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value copyWithin(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value copyWithin(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 COPY_WITHIN, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    Object[] objects = ArrayUtils.copyOf(targetObject);
-                    final int length = Array.getLength(targetObject);
-                    if (length > 0 && ArrayUtils.isNotEmpty(v8Values)) {
+                    Object[] objects = list.toArray();
+                    if (!list.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
+                        final int length = list.size();
                         int targetIndex = V8ValueUtils.asInt(v8Values, 0);
                         if (targetIndex < 0) {
                             targetIndex += length;
@@ -265,12 +283,29 @@ public final class JavetProxyPolyfillArray {
                                 endIndex = length + startIndex - targetIndex;
                             }
                             for (int i = startIndex; i < endIndex; ++i) {
-                                Array.set(targetObject, targetIndex + i - startIndex, objects[i]);
+                                list.set(targetIndex + i - startIndex, objects[i]);
                             }
                         }
                     }
                     return thisObject;
                 }));
+    }
+
+    @Override
+    public boolean deleteByObject(Object targetObject, Object propertyKey) {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        if (propertyKey instanceof String) {
+            String propertyName = (String) propertyKey;
+            if (StringUtils.isDigital(propertyName)) {
+                final int index = Integer.parseInt(propertyName);
+                List<?> list = (List<?>) targetObject;
+                if (index >= 0 && index < list.size()) {
+                    list.remove(index);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -284,11 +319,12 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
-        final int length = Array.getLength(targetObject);
+    public V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
+        final int length = list.size();
         List<List<Object>> entries = IntStream.range(0, length)
-                .mapToObj(i -> SimpleList.of(i, Array.get(targetObject, i)))
+                .mapToObj(i -> SimpleList.of(i, list.get(i)))
                 .collect(Collectors.toList());
         return new JavetProxySymbolIterableConverter<>(v8Runtime, entries).getV8ValueFunction();
     }
@@ -304,25 +340,24 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value every(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value every(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 EVERY, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
-                        for (int i = 0; i < length; ++i) {
+                        int index = 0;
+                        for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(
-                                    v8ValueObject,
-                                    Array.get(targetObject, i),
-                                    v8Runtime.createV8ValueInteger(i),
-                                    thisObject)) {
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (!result.ifTrue()) {
                                     return v8Runtime.createV8ValueBoolean(false);
                                 }
                             }
+                            ++index;
                         }
                         return v8Runtime.createV8ValueBoolean(true);
                     }
@@ -341,13 +376,14 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value fill(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value fill(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FILL, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    final int length = Array.getLength(targetObject);
-                    if (length > 0 && ArrayUtils.isNotEmpty(v8Values)) {
+                    if (!list.isEmpty() && ArrayUtils.isNotEmpty(v8Values)) {
+                        final int length = list.size();
                         V8Value v8Value = v8Values[0];
                         int startIndex = V8ValueUtils.asInt(v8Values, 1);
                         if (startIndex < 0) {
@@ -368,7 +404,7 @@ public final class JavetProxyPolyfillArray {
                         }
                         if (startIndex < length && endIndex > startIndex) {
                             for (int i = startIndex; i < endIndex; ++i) {
-                                Array.set(targetObject, i, v8Runtime.toObject(v8Value));
+                                list.set(i, v8Runtime.toObject(v8Value));
                             }
                         }
                     }
@@ -387,27 +423,25 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value filter(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value filter(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FILTER, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    final int length = Array.getLength(targetObject);
-                    List<Object> results = new ArrayList<>(length);
+                    List<Object> results = new ArrayList<>(list.size());
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        for (int i = 0; i < length; ++i) {
-                            Object object = Array.get(targetObject, i);
+                        int index = 0;
+                        for (Object object : list) {
                             try (V8Value v8ValueResult = v8ValueFunction.call(
-                                    v8ValueObject,
-                                    object,
-                                    v8Runtime.createV8ValueInteger(i),
-                                    thisObject)) {
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (v8ValueResult.ifTrue()) {
                                     results.add(object);
                                 }
                             }
+                            ++index;
                         }
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
@@ -432,26 +466,24 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value find(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value find(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FIND, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
-                        for (int i = 0; i < length; ++i) {
-                            Object object = Array.get(targetObject, i);
+                        int index = 0;
+                        for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(
-                                    v8ValueObject,
-                                    object,
-                                    v8Runtime.createV8ValueInteger(i),
-                                    thisObject)) {
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.ifTrue()) {
                                     return v8Runtime.toV8Value(object);
                                 }
                             }
+                            ++index;
                         }
                     }
                     return v8Runtime.createV8ValueUndefined();
@@ -472,25 +504,24 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value findIndex(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value findIndex(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FIND_INDEX, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
-                        for (int i = 0; i < length; ++i) {
+                        int index = 0;
+                        for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(
-                                    v8ValueObject,
-                                    Array.get(targetObject, i),
-                                    v8Runtime.createV8ValueInteger(i),
-                                    thisObject)) {
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.ifTrue()) {
-                                    return v8Runtime.createV8ValueInteger(i);
+                                    return v8Runtime.createV8ValueInteger(index);
                                 }
                             }
+                            ++index;
                         }
                     }
                     return v8Runtime.createV8ValueInteger(-1);
@@ -519,26 +550,26 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value findLast(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value findLast(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FIND_LAST, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
-                        for (int i = length - 1; i >= 0; --i) {
-                            Object object = Array.get(targetObject, i);
+                        int index = list.size() - 1;
+                        ListIterator<?> listIterator = list.listIterator(list.size());
+                        while (listIterator.hasPrevious()) {
+                            Object object = listIterator.previous();
                             try (V8Value result = v8ValueFunction.call(
-                                    v8ValueObject,
-                                    object,
-                                    v8Runtime.createV8ValueInteger(i),
-                                    thisObject)) {
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.ifTrue()) {
                                     return v8Runtime.toV8Value(object);
                                 }
                             }
+                            --index;
                         }
                     }
                     return v8Runtime.createV8ValueUndefined();
@@ -560,25 +591,28 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value findLastIndex(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value findLastIndex(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FIND_LAST_INDEX, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
-                        for (int i = length - 1; i >= 0; --i) {
+                        int index = list.size() - 1;
+                        ListIterator<?> listIterator = list.listIterator(list.size());
+                        while (listIterator.hasPrevious()) {
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject,
-                                    Array.get(targetObject, i),
-                                    v8Runtime.createV8ValueInteger(i),
+                                    listIterator.previous(),
+                                    v8Runtime.createV8ValueInteger(index),
                                     thisObject)) {
                                 if (result.ifTrue()) {
-                                    return v8Runtime.createV8ValueInteger(i);
+                                    return v8Runtime.createV8ValueInteger(index);
                                 }
                             }
+                            --index;
                         }
                     }
                     return v8Runtime.createV8ValueInteger(-1);
@@ -596,15 +630,15 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value flat(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value flat(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FLAT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     final int depth = V8ValueUtils.asInt(v8Values, 0, 1);
-                    final int length = Array.getLength(targetObject);
-                    List<Object> results = new ArrayList<>(length);
-                    ListUtils.flat(results, SimpleList.of(ArrayUtils.copyOf(targetObject)), depth);
+                    List<Object> results = new ArrayList<>(list.size());
+                    ListUtils.flat(results, list, depth);
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
                 }));
     }
@@ -622,23 +656,22 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value flatMap(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value flatMap(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FLAT_MAP, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    final int length = Array.getLength(targetObject);
-                    List<V8Value> results = new ArrayList<>(length);
+                    List<V8Value> results = new ArrayList<>(list.size());
                     try {
                         V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                         if (v8ValueFunction != null) {
                             V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                            for (int i = 0; i < length; ++i) {
+                            int index = 0;
+                            for (Object object : list) {
                                 results.add(v8ValueFunction.call(
-                                        v8ValueObject,
-                                        Array.get(targetObject, i),
-                                        v8Runtime.createV8ValueInteger(i),
-                                        thisObject));
+                                        v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject));
+                                ++index;
                             }
                         }
                         try (V8ValueArray v8ValueArray = V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray())) {
@@ -660,37 +693,70 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FOR_EACH, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
-                        for (int i = 0; i < length; ++i) {
+                        int index = 0;
+                        for (Object object : list) {
                             try (V8Value v8ValueResult = v8ValueFunction.call(
-                                    v8ValueObject,
-                                    Array.get(targetObject, i),
-                                    v8Runtime.createV8ValueInteger(i),
-                                    thisObject)) {
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                             }
+                            ++index;
                         }
                     }
                     return v8Runtime.createV8ValueUndefined();
                 }));
     }
 
-    /**
-     * Gets function.
-     *
-     * @param name the name
-     * @return the function
-     * @since 3.0.4
-     */
-    public static IJavetProxyPolyfillFunction<?, ?> getFunction(String name) {
-        return functionMap.get(name);
+    @Override
+    public Object getByIndex(Object targetObject, int index) {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        List<?> list = (List<?>) targetObject;
+        if (index >= 0 && index < list.size()) {
+            return list.get(index);
+        }
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public Set<String> getOverrideMethods(JavetConverterConfig<?> config) {
+        return config.getProxyListOverrideMethods();
+    }
+
+    @Override
+    public Object[] getOwnKeys(Object targetObject) {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        return IntStream.range(0, ((List<?>) targetObject).size()).boxed().toArray();
+    }
+
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
+            Class<?> targetClass, String propertyName) {
+        return (IClassProxyPluginFunction<E>) proxyGetByStringMap.get(propertyName);
+    }
+
+    @Override
+    public boolean hasByObject(Object targetObject, Object propertyKey) {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        if (propertyKey instanceof String) {
+            String propertyName = (String) propertyKey;
+            if (StringUtils.isDigital(propertyName)) {
+                final int index = Integer.parseInt(propertyName);
+                return index >= 0 && index < ((List<?>) targetObject).size();
+            }
+        }
+        return false;
     }
 
     /**
@@ -704,8 +770,9 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value includes(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value includes(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 INCLUDES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -713,7 +780,7 @@ public final class JavetProxyPolyfillArray {
                     if (ArrayUtils.isNotEmpty(v8Values)) {
                         Object object = v8Runtime.toObject(v8Values[0]);
                         int fromIndex = V8ValueUtils.asInt(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
+                        final int length = list.size();
                         if (fromIndex < 0) {
                             fromIndex += length;
                         }
@@ -721,7 +788,7 @@ public final class JavetProxyPolyfillArray {
                             fromIndex = 0;
                         }
                         if (fromIndex < length) {
-                            included = ArrayUtils.includes(targetObject, object, fromIndex);
+                            included = ListUtils.includes((List<Object>) list, object, fromIndex);
                         }
                     }
                     return v8Runtime.createV8ValueBoolean(included);
@@ -739,8 +806,9 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value indexOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value indexOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 INDEX_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -748,7 +816,7 @@ public final class JavetProxyPolyfillArray {
                     if (ArrayUtils.isNotEmpty(v8Values)) {
                         Object object = v8Runtime.toObject(v8Values[0]);
                         int fromIndex = V8ValueUtils.asInt(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
+                        final int length = list.size();
                         if (fromIndex < 0) {
                             fromIndex += length;
                         }
@@ -756,11 +824,31 @@ public final class JavetProxyPolyfillArray {
                             fromIndex = 0;
                         }
                         if (fromIndex < length) {
-                            index = ArrayUtils.indexOf(targetObject, object, fromIndex);
+                            index = ListUtils.indexOf((List<Object>) list, object, fromIndex);
                         }
                     }
                     return v8Runtime.createV8ValueInteger(index);
                 }));
+    }
+
+    @Override
+    public boolean isDeleteSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isHasSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isIndexedPropertySupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isProxyable(Class<?> targetClass) {
+        return targetClass != null && List.class.isAssignableFrom(targetClass);
     }
 
     /**
@@ -775,15 +863,14 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value join(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value join(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 JOIN, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     String delimiter = V8ValueUtils.asString(v8Values, 0, StringUtils.EMPTY);
-                    String result = Stream.of(ArrayUtils.copyOf(targetObject))
-                            .map(Object::toString)
-                            .collect(Collectors.joining(delimiter));
+                    String result = list.stream().map(Object::toString).collect(Collectors.joining(delimiter));
                     return v8Runtime.createV8ValueString(result);
                 }));
     }
@@ -799,12 +886,13 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value keys(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value keys(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 KEYS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    final int length = Array.getLength(targetObject);
+                    final int length = list.size();
                     Object[] indexes = new Object[length];
                     for (int i = 0; i < length; ++i) {
                         indexes[i] = v8Runtime.createV8ValueInteger(i);
@@ -825,15 +913,16 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value lastIndexOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value lastIndexOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 LAST_INDEX_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     int index = -1;
                     if (ArrayUtils.isNotEmpty(v8Values)) {
                         Object object = v8Runtime.toObject(v8Values[0]);
-                        final int length = Array.getLength(targetObject);
+                        final int length = list.size();
                         int fromIndex = V8ValueUtils.asInt(v8Values, 1, length - 1);
                         if (fromIndex < 0) {
                             fromIndex += length;
@@ -841,8 +930,8 @@ public final class JavetProxyPolyfillArray {
                         if (fromIndex < 0) {
                             fromIndex = length - 1;
                         }
-                        if (fromIndex <= length) {
-                            index = ArrayUtils.lastIndexOf(targetObject, object, fromIndex);
+                        if (fromIndex < length) {
+                            index = ListUtils.lastIndexOf((List<Object>) list, object, fromIndex);
                         }
                     }
                     return v8Runtime.createV8ValueInteger(index);
@@ -860,9 +949,10 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value length(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
-        return Objects.requireNonNull(v8Runtime).createV8ValueInteger(Array.getLength(targetObject));
+    public V8Value length(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
+        return Objects.requireNonNull(v8Runtime).createV8ValueInteger(list.size());
     }
 
     /**
@@ -876,23 +966,22 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value map(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value map(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 MAP, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    final int length = Array.getLength(targetObject);
-                    List<V8Value> results = new ArrayList<>(length);
+                    List<V8Value> results = new ArrayList<>(list.size());
                     try {
                         V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                         if (v8ValueFunction != null) {
                             V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                            for (int i = 0; i < length; ++i) {
+                            int index = 0;
+                            for (Object object : list) {
                                 results.add(v8ValueFunction.call(
-                                        v8ValueObject,
-                                        Array.get(targetObject, i),
-                                        v8Runtime.createV8ValueInteger(i),
-                                        thisObject));
+                                        v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject));
+                                ++index;
                             }
                         }
                         return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
@@ -913,15 +1002,16 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value pop(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value pop(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 POP, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    v8Runtime.throwError(
-                            V8ValueErrorType.TypeError,
-                            V8ErrorTemplate.typeErrorFunctionIsNotSupported(POP));
-                    return v8Runtime.createV8ValueUndefined();
+                    if (list.isEmpty()) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    return v8Runtime.toV8Value(ListUtils.pop(list));
                 }));
     }
 
@@ -936,16 +1026,14 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value push(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value push(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 PUSH, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    v8Runtime.throwError(
-                            V8ValueErrorType.TypeError,
-                            V8ErrorTemplate.typeErrorFunctionIsNotSupported(PUSH));
-                    return v8Runtime.createV8ValueUndefined();
-                }));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueInteger(
+                                ListUtils.push((List<Object>) list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
     }
 
     /**
@@ -964,42 +1052,49 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value reduce(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value reduce(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 REDUCE, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8Value initialValue = V8ValueUtils.asV8Value(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
+                        final int length = list.size();
                         if (initialValue == null) {
                             if (length == 0) {
                                 v8Runtime.throwError(
                                         V8ValueErrorType.TypeError,
                                         V8ErrorTemplate.typeErrorReduceOfEmptyArrayWithNoInitialValue());
                             } else if (length == 1) {
-                                return v8Runtime.toV8Value(Array.get(targetObject, 0));
+                                return v8Runtime.toV8Value(list.get(0));
                             } else {
                                 /**
                                  * If initialValue is not specified, accumulator is initialized
                                  * to the first value in the array, and callbackFn starts executing
                                  * with the second value in the array as currentValue.
                                  */
-                                V8Value accumulator = v8Runtime.toV8Value(Array.get(targetObject, 0));
-                                for (int i = 1; i < length; ++i) {
+                                V8Value accumulator = v8Runtime.toV8Value(list.get(0));
+                                int index = 0;
+                                for (Object object : list) {
+                                    if (index == 0) {
+                                        ++index;
+                                        continue;
+                                    }
                                     V8Value result;
-                                    try (V8Value currentValue = v8Runtime.toV8Value(Array.get(targetObject, i))) {
+                                    try (V8Value currentValue = v8Runtime.toV8Value(object)) {
                                         result = v8ValueFunction.call(
                                                 null,
                                                 accumulator,
                                                 currentValue,
-                                                v8Runtime.createV8ValueInteger(i),
+                                                v8Runtime.createV8ValueInteger(index),
                                                 thisObject);
                                     } finally {
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
                                     accumulator = result;
+                                    ++index;
                                 }
                                 return accumulator;
                             }
@@ -1008,19 +1103,21 @@ public final class JavetProxyPolyfillArray {
                                 return initialValue;
                             } else {
                                 V8Value accumulator = initialValue.toClone();
-                                for (int i = 0; i < length; ++i) {
+                                int index = 0;
+                                for (Object object : list) {
                                     V8Value result;
-                                    try (V8Value currentValue = v8Runtime.toV8Value(Array.get(targetObject, i))) {
+                                    try (V8Value currentValue = v8Runtime.toV8Value(object)) {
                                         result = v8ValueFunction.call(
                                                 null,
                                                 accumulator,
                                                 currentValue,
-                                                v8Runtime.createV8ValueInteger(i),
+                                                v8Runtime.createV8ValueInteger(index),
                                                 thisObject);
                                     } finally {
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
                                     accumulator = result;
+                                    ++index;
                                 }
                                 return accumulator;
                             }
@@ -1043,42 +1140,51 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value reduceRight(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value reduceRight(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 REDUCE, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8Value initialValue = V8ValueUtils.asV8Value(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
+                        final int length = list.size();
                         if (initialValue == null) {
                             if (length == 0) {
                                 v8Runtime.throwError(
                                         V8ValueErrorType.TypeError,
                                         V8ErrorTemplate.typeErrorReduceOfEmptyArrayWithNoInitialValue());
                             } else if (length == 1) {
-                                return v8Runtime.toV8Value(Array.get(targetObject, 0));
+                                return v8Runtime.toV8Value(list.get(0));
                             } else {
                                 /**
                                  * If initialValue is not specified, accumulator is initialized
                                  * to the first value in the array, and callbackFn starts executing
                                  * with the second value in the array as currentValue.
                                  */
-                                V8Value accumulator = v8Runtime.toV8Value(Array.get(targetObject, length - 1));
-                                for (int i = length - 2; i >= 0; --i) {
+                                V8Value accumulator = v8Runtime.toV8Value(list.get(length - 1));
+                                int index = length - 1;
+                                ListIterator<?> listIterator = list.listIterator(length);
+                                while (listIterator.hasPrevious()) {
+                                    if (index == length - 1) {
+                                        listIterator.previous();
+                                        --index;
+                                        continue;
+                                    }
                                     V8Value result;
-                                    try (V8Value currentValue = v8Runtime.toV8Value(Array.get(targetObject, i))) {
+                                    try (V8Value currentValue = v8Runtime.toV8Value(listIterator.previous())) {
                                         result = v8ValueFunction.call(
                                                 null,
                                                 accumulator,
                                                 currentValue,
-                                                v8Runtime.createV8ValueInteger(i),
+                                                v8Runtime.createV8ValueInteger(index),
                                                 thisObject);
                                     } finally {
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
                                     accumulator = result;
+                                    --index;
                                 }
                                 return accumulator;
                             }
@@ -1087,19 +1193,22 @@ public final class JavetProxyPolyfillArray {
                                 return initialValue;
                             } else {
                                 V8Value accumulator = initialValue.toClone();
-                                for (int i = length - 1; i >= 0; --i) {
+                                int index = length - 1;
+                                ListIterator<?> listIterator = list.listIterator(length);
+                                while (listIterator.hasPrevious()) {
                                     V8Value result;
-                                    try (V8Value currentValue = v8Runtime.toV8Value(Array.get(targetObject, i))) {
+                                    try (V8Value currentValue = v8Runtime.toV8Value(listIterator.previous())) {
                                         result = v8ValueFunction.call(
                                                 null,
                                                 accumulator,
                                                 currentValue,
-                                                v8Runtime.createV8ValueInteger(i),
+                                                v8Runtime.createV8ValueInteger(index),
                                                 thisObject);
                                     } finally {
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
                                     accumulator = result;
+                                    --index;
                                 }
                                 return accumulator;
                             }
@@ -1121,14 +1230,28 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value reverse(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value reverse(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 REVERSE, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    ArrayUtils.reverse(targetObject);
+                    if (!list.isEmpty()) {
+                        Collections.reverse(list);
+                    }
                     return thisObject;
                 }));
+    }
+
+    @Override
+    public boolean setByIndex(Object targetObject, int index, Object value) {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        List<Object> list = (List<Object>) targetObject;
+        if (index >= 0 && index < list.size()) {
+            list.set(index, value);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -1142,15 +1265,16 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value shift(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value shift(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SHIFT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    v8Runtime.throwError(
-                            V8ValueErrorType.TypeError,
-                            V8ErrorTemplate.typeErrorFunctionIsNotSupported(SHIFT));
-                    return v8Runtime.createV8ValueUndefined();
+                    if (list.isEmpty()) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    return v8Runtime.toV8Value(ListUtils.shift(list));
                 }));
     }
 
@@ -1166,14 +1290,15 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value slice(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value slice(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SLICE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    final int length = Array.getLength(targetObject);
                     List<Object> results = new ArrayList<>();
-                    if (length > 0) {
+                    if (!list.isEmpty()) {
+                        final int length = list.size();
                         int startIndex = V8ValueUtils.asInt(v8Values, 0);
                         if (startIndex < 0) {
                             startIndex += length;
@@ -1191,8 +1316,8 @@ public final class JavetProxyPolyfillArray {
                         if (endIndex > length) {
                             endIndex = length;
                         }
-                        for (int i = startIndex; i < endIndex; ++i) {
-                            results.add(Array.get(targetObject, i));
+                        if (startIndex < endIndex) {
+                            results.addAll(list.subList(startIndex, endIndex));
                         }
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
@@ -1212,25 +1337,24 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value some(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value some(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SOME, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        final int length = Array.getLength(targetObject);
-                        for (int i = 0; i < length; ++i) {
+                        int index = 0;
+                        for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(
-                                    v8ValueObject,
-                                    Array.get(targetObject, i),
-                                    v8Runtime.createV8ValueInteger(i),
-                                    thisObject)) {
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.ifTrue()) {
                                     return v8Runtime.createV8ValueBoolean(true);
                                 }
                             }
+                            ++index;
                         }
                     }
                     return v8Runtime.createV8ValueBoolean(false);
@@ -1254,16 +1378,15 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value sort(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value sort(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SORT, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    final int length = Array.getLength(targetObject);
+                    final int length = list.size();
                     if (length > 1) {
                         V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
-                        List<Object> list = new ArrayList<>(length);
-                        ListUtils.addAll(list, targetObject);
                         if (v8ValueFunction == null) {
                             list.sort((o1, o2) -> ((Comparator<String>) Comparator.naturalOrder()).compare(
                                     String.valueOf(o1), String.valueOf(o2)));
@@ -1279,11 +1402,6 @@ public final class JavetProxyPolyfillArray {
                             } catch (Throwable t) {
                                 v8Runtime.throwError(V8ValueErrorType.Error, t.getMessage());
                             }
-                        }
-                        int index = 0;
-                        for (Object object : list) {
-                            Array.set(targetObject, index, object);
-                            ++index;
                         }
                     }
                     return thisObject;
@@ -1304,15 +1422,44 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value splice(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value splice(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SPLICE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    v8Runtime.throwError(
-                            V8ValueErrorType.TypeError,
-                            V8ErrorTemplate.typeErrorFunctionIsNotSupported(SPLICE));
-                    return v8Runtime.createV8ValueUndefined();
+                    List<Object> results = new ArrayList<>();
+                    if (ArrayUtils.isNotEmpty(v8Values)) {
+                        final int length = list.size();
+                        int startIndex = V8ValueUtils.asInt(v8Values, 0);
+                        if (startIndex < 0) {
+                            startIndex += length;
+                        }
+                        if (startIndex < 0) {
+                            startIndex = 0;
+                        }
+                        if (startIndex >= length) {
+                            v8Runtime.throwError(
+                                    V8ValueErrorType.RangeError,
+                                    V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
+                        } else {
+                            int deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            deleteCount = Math.min(deleteCount, length - startIndex);
+                            if (deleteCount > 0) {
+                                List<?> subList = list.subList(startIndex, startIndex + deleteCount);
+                                results.addAll(subList);
+                                subList.clear();
+                            }
+                            if (v8Values.length > 2) {
+                                List<Object> toBeAddedList = new ArrayList<>();
+                                for (int i = 2; i < v8Values.length; ++i) {
+                                    toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
+                                }
+                                list.addAll(startIndex, toBeAddedList);
+                            }
+                        }
+                    }
+                    return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
                 }));
     }
 
@@ -1325,12 +1472,13 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                        V8ValueUtils.createV8ValueArray(v8Runtime, ArrayUtils.copyOf(targetObject))));
+                        V8ValueUtils.createV8ValueArray(v8Runtime, list.toArray())));
     }
 
     /**
@@ -1344,14 +1492,13 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value toReversed(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value toReversed(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_REVERSED, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
-                    final int length = Array.getLength(targetObject);
-                    List<Object> reversedList = new ArrayList<>(length);
-                    ListUtils.addAll(reversedList, targetObject);
+                    List<Object> reversedList = new ArrayList<>(list);
                     Collections.reverse(reversedList);
                     return V8ValueUtils.createV8ValueArray(v8Runtime, reversedList.toArray());
                 }));
@@ -1368,14 +1515,14 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value toSorted(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value toSorted(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_SORTED, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    final int length = Array.getLength(targetObject);
-                    List<Object> results = new ArrayList<>(length);
-                    ListUtils.addAll(results, targetObject);
+                    List<?> results = new ArrayList<>(list);
+                    final int length = list.size();
                     if (length > 1) {
                         V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunction(v8Values, 0);
                         if (v8ValueFunction == null) {
@@ -1410,15 +1557,15 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value toSpliced(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value toSpliced(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<Object> list = (List<Object>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_SPLICED, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    final int length = Array.getLength(targetObject);
-                    List<Object> results = new ArrayList<>(length);
-                    ListUtils.addAll(results, targetObject);
+                    List<Object> results = new ArrayList<>(list);
                     if (ArrayUtils.isNotEmpty(v8Values)) {
+                        final int length = list.size();
                         int startIndex = V8ValueUtils.asInt(v8Values, 0);
                         if (startIndex < 0) {
                             startIndex += length;
@@ -1459,13 +1606,14 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     try (V8ValueArray v8ValueArray =
-                                 V8ValueUtils.createV8ValueArray(v8Runtime, ArrayUtils.copyOf(targetObject))) {
+                                 V8ValueUtils.createV8ValueArray(v8Runtime, list.toArray())) {
                         return v8Runtime.createV8ValueString(v8ValueArray.toString());
                     }
                 }));
@@ -1482,16 +1630,14 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value unshift(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value unshift(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 UNSHIFT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    v8Runtime.throwError(
-                            V8ValueErrorType.TypeError,
-                            V8ErrorTemplate.typeErrorFunctionIsNotSupported(UNSHIFT));
-                    return v8Runtime.createV8ValueUndefined();
-                }));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueInteger(
+                                ListUtils.unshift((List<Object>) list, V8ValueUtils.toArray(v8Runtime, v8Values)))));
     }
 
     /**
@@ -1505,12 +1651,9 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
-        final int length = Array.getLength(targetObject);
-        List<Object> values = new ArrayList<>(length);
-        ListUtils.addAll(values, targetObject);
-        return new JavetProxySymbolIterableConverter<>(v8Runtime, values).getV8ValueFunction();
+    public V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
     }
 
     /**
@@ -1524,12 +1667,13 @@ public final class JavetProxyPolyfillArray {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public static V8Value with(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+    public V8Value with(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
+        final List<?> list = (List<?>) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 WITH, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    Object[] objects = ArrayUtils.copyOf(targetObject);
+                    Object[] objects = list.toArray();
                     int index = V8ValueUtils.asInt(v8Values, 0);
                     if (index >= 0 && index < objects.length) {
                         objects[index] = v8Values.length > 1
