@@ -128,6 +128,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     @Override
     public void afterEach() throws JavetException {
         v8Runtime.lowMemoryNotification();
+        assertFalse(javetProxyConverter.getConfig().isProxyArrayEnabled());
+        assertFalse(javetProxyConverter.getConfig().isProxyListEnabled());
+        assertFalse(javetProxyConverter.getConfig().isProxyMapEnabled());
+        assertFalse(javetProxyConverter.getConfig().isProxySetEnabled());
+        assertTrue(javetProxyConverter.getConfig().getProxyPlugins().isEmpty());
         super.afterEach();
     }
 
@@ -136,6 +141,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void beforeEach() throws JavetException {
         super.beforeEach();
         v8Runtime.setConverter(javetProxyConverter);
+        assertTrue(javetProxyConverter.getConfig().getProxyPlugins().isEmpty());
+        assertFalse(javetProxyConverter.getConfig().isProxyArrayEnabled());
+        assertFalse(javetProxyConverter.getConfig().isProxyListEnabled());
+        assertFalse(javetProxyConverter.getConfig().isProxyMapEnabled());
+        assertFalse(javetProxyConverter.getConfig().isProxySetEnabled());
     }
 
     @Test
@@ -253,6 +263,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testArray() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            assertTrue(javetProxyConverter.getConfig().isProxyArrayEnabled());
             int[] intArray = new int[]{1, 2};
             String[] stringArray = new String[]{"x", "y"};
             v8Runtime.getGlobalObject().set("intArray", intArray);
@@ -627,7 +638,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                     v8Runtime.getExecutor("JSON.stringify(objectArray.flatMap((e,i,a)=>e+i+(a===objectArray)));").executeString());
             v8Runtime.getGlobalObject().delete("objectArray");
         } finally {
-            javetProxyConverter.getConfig().setProxyListEnabled(false);
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
         }
     }
 
@@ -959,6 +970,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testList() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxyListEnabled(true);
+            assertTrue(javetProxyConverter.getConfig().isProxyListEnabled());
             List<Object> list = SimpleList.of("x", "y");
             v8Runtime.getGlobalObject().set("list", list);
             assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
@@ -1274,6 +1286,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testMap() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxyMapEnabled(true);
+            assertTrue(javetProxyConverter.getConfig().isProxyMapEnabled());
             Map<String, Object> map = SimpleMap.of("x", 1, "y", "2");
             v8Runtime.getGlobalObject().set("map", map);
             assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
@@ -1463,6 +1476,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testSet() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxySetEnabled(true);
+            assertTrue(javetProxyConverter.getConfig().isProxySetEnabled());
             Set<String> set = SimpleSet.of("x", "y");
             v8Runtime.getGlobalObject().set("set", set);
             assertSame(set, v8Runtime.getGlobalObject().getObject("set"));

@@ -23,7 +23,11 @@ import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
+import com.caoccao.javet.interop.proxy.plugins.*;
 import com.caoccao.javet.values.V8Value;
+
+import java.util.Collections;
 
 /**
  * The type Javet bridge converter converts all Java objects to
@@ -36,12 +40,27 @@ import com.caoccao.javet.values.V8Value;
 @SuppressWarnings("unchecked")
 public class JavetBridgeConverter extends JavetProxyConverter {
     /**
+     * The constant DEFAULT_PROXY_PLUGINS.
+     *
+     * @since 3.0.4
+     */
+    protected static final IClassProxyPlugin[] DEFAULT_PROXY_PLUGINS = new IClassProxyPlugin[]{
+            JavetProxyPluginMap.getInstance(),
+            JavetProxyPluginSet.getInstance(),
+            JavetProxyPluginList.getInstance(),
+            JavetProxyPluginArray.getInstance(),
+            JavetProxyPluginDefault.getInstance(), // The default proxy plugin must be the last one.
+    };
+
+    /**
      * Instantiates a new Javet bridge converter.
      *
      * @since 1.0.4
      */
     public JavetBridgeConverter() {
         super();
+        // The bridge converter has all built-in proxy plugins enabled by default.
+        Collections.addAll(getConfig().getProxyPlugins(), DEFAULT_PROXY_PLUGINS);
     }
 
     @SuppressWarnings("ConstantConditions")

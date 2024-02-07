@@ -18,7 +18,6 @@ package com.caoccao.javet.interop.proxy.plugins;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
@@ -31,7 +30,10 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,32 +42,30 @@ import java.util.stream.Collectors;
  * @since 3.0.4
  */
 @SuppressWarnings("unchecked")
-public final class JavetProxyPluginMap extends BaseJavetProxyPlugin {
+public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
     /**
      * The constant NAME.
      *
      * @since 3.0.4
      */
     public static final String NAME = Map.class.getName();
-    private static final String CLEAR = "clear";
-    private static final String DELETE = "delete";
-    private static final String ENTRIES = "entries";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
+    protected static final String CLEAR = "clear";
+    protected static final String DELETE = "delete";
+    protected static final String ENTRIES = "entries";
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
             "Target object must be an instance of Map.";
-    private static final String FOR_EACH = "forEach";
-    private static final String GET = "get";
-    private static final String HAS = "has";
-    private static final String KEYS = "keys";
-    private static final String OBJECT_MAP = "[object Map]";
-    private static final String SET = "set";
-    private static final String SIZE = "size";
-    private static final String VALUES = "values";
+    protected static final String FOR_EACH = "forEach";
+    protected static final String GET = "get";
+    protected static final String HAS = "has";
+    protected static final String KEYS = "keys";
+    protected static final String OBJECT_MAP = "[object Map]";
+    protected static final String SET = "set";
+    protected static final String SIZE = "size";
+    protected static final String VALUES = "values";
     private static final JavetProxyPluginMap instance = new JavetProxyPluginMap();
-    private final Map<String, IClassProxyPluginFunction<?>> proxyGetByStringMap;
 
-    private JavetProxyPluginMap() {
+    protected JavetProxyPluginMap() {
         super();
-        proxyGetByStringMap = new HashMap<>();
         proxyGetByStringMap.put(CLEAR, this::clear);
         proxyGetByStringMap.put(DELETE, this::delete);
         proxyGetByStringMap.put(ENTRIES, this::entries);
@@ -235,12 +235,6 @@ public final class JavetProxyPluginMap extends BaseJavetProxyPlugin {
     public Object[] getOwnKeys(Object targetObject) {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
         return ((Map<?, ?>) targetObject).keySet().toArray();
-    }
-
-    @Override
-    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
-            Class<?> targetClass, String propertyName) {
-        return (IClassProxyPluginFunction<E>) proxyGetByStringMap.get(propertyName);
     }
 
     /**

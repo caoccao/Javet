@@ -28,47 +28,43 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * The type Javet proxy plugin primitive.
  *
  * @since 3.0.4
  */
-@SuppressWarnings("unchecked")
-public class JavetProxyPluginDefault extends BaseJavetProxyPlugin {
+public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
     /**
      * The constant NAME.
      *
      * @since 3.0.4
      */
     public static final String NAME = Object.class.getName();
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BIG_INTEGER =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BIG_INTEGER =
             "Target object must be an instance of BigInteger.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BOOLEAN =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BOOLEAN =
             "Target object must be an instance of Boolean.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BYTE =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BYTE =
             "Target object must be an instance of Byte.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_CHARACTER =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_CHARACTER =
             "Target object must be an instance of Character.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_DOUBLE =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_DOUBLE =
             "Target object must be an instance of Double.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_FLOAT =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_FLOAT =
             "Target object must be an instance of Float.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_INTEGER =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_INTEGER =
             "Target object must be an instance of Integer.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LONG =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LONG =
             "Target object must be an instance of Long.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SHORT =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SHORT =
             "Target object must be an instance of Short.";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING =
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING =
             "Target object must be an instance of String.";
     private static final JavetProxyPluginDefault instance = new JavetProxyPluginDefault();
-    protected final Map<Class<?>, Map<String, IClassProxyPluginFunction<?>>> proxyGetByStringMap;
 
     protected JavetProxyPluginDefault() {
         super();
-        proxyGetByStringMap = new HashMap<>();
         {
             // java.math.BigInteger
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
@@ -243,31 +239,9 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPlugin {
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueDouble(value.doubleValue())));
     }
 
-    /**
-     * Gets function.
-     *
-     * @param clazz the clazz
-     * @param name  the name
-     * @return the function
-     * @since 3.0.4
-     */
-    public IClassProxyPluginFunction<?> getFunction(Class<?> clazz, String name) {
-        return Optional.ofNullable(proxyGetByStringMap.get(clazz))
-                .map(map -> map.get(name))
-                .orElse(null);
-    }
-
     @Override
     public String getName() {
         return NAME;
-    }
-
-    @Override
-    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
-            Class<?> targetClass, String propertyName) {
-        return (IClassProxyPluginFunction<E>) Optional.ofNullable(proxyGetByStringMap.get(targetClass))
-                .map(map -> map.get(propertyName))
-                .orElse(null);
     }
 
     /**

@@ -49,6 +49,11 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void beforeEach() throws JavetException {
         super.beforeEach();
         v8Runtime.setConverter(javetBridgeConverter);
+        assertEquals(5, javetBridgeConverter.getConfig().getProxyPlugins().size());
+        assertTrue(javetBridgeConverter.getConfig().isProxyArrayEnabled());
+        assertTrue(javetBridgeConverter.getConfig().isProxyListEnabled());
+        assertTrue(javetBridgeConverter.getConfig().isProxyMapEnabled());
+        assertTrue(javetBridgeConverter.getConfig().isProxySetEnabled());
     }
 
     @Test

@@ -20,7 +20,6 @@ import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.V8ErrorTemplate;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
@@ -45,58 +44,56 @@ import java.util.stream.Stream;
  * @since 3.0.4
  */
 @SuppressWarnings("unchecked")
-public final class JavetProxyPluginArray extends BaseJavetProxyPlugin {
+public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
     /**
      * The constant NAME.
      *
      * @since 3.0.4
      */
     public static final String NAME = Object[].class.getName();
-    private static final String AT = "at";
-    private static final String CONCAT = "concat";
-    private static final String COPY_WITHIN = "copyWithin";
-    private static final String ENTRIES = "entries";
-    private static final String ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY =
+    protected static final String AT = "at";
+    protected static final String CONCAT = "concat";
+    protected static final String COPY_WITHIN = "copyWithin";
+    protected static final String ENTRIES = "entries";
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY =
             "Target object must be an array.";
-    private static final String EVERY = "every";
-    private static final String FILL = "fill";
-    private static final String FILTER = "filter";
-    private static final String FIND = "find";
-    private static final String FIND_INDEX = "findIndex";
-    private static final String FIND_LAST = "findLast";
-    private static final String FIND_LAST_INDEX = "findLastIndex";
-    private static final String FLAT = "flat";
-    private static final String FLAT_MAP = "flatMap";
-    private static final String FOR_EACH = "forEach";
-    private static final String INCLUDES = "includes";
-    private static final String INDEX_OF = "indexOf";
-    private static final String JOIN = "join";
-    private static final String KEYS = "keys";
-    private static final String LAST_INDEX_OF = "lastIndexOf";
-    private static final String LENGTH = "length";
-    private static final String MAP = "map";
-    private static final String POP = "pop";
-    private static final String PUSH = "push";
-    private static final String REDUCE = "reduce";
-    private static final String REDUCE_RIGHT = "reduceRight";
-    private static final String REVERSE = "reverse";
-    private static final String SHIFT = "shift";
-    private static final String SLICE = "slice";
-    private static final String SOME = "some";
-    private static final String SORT = "sort";
-    private static final String SPLICE = "splice";
-    private static final String TO_REVERSED = "toReversed";
-    private static final String TO_SORTED = "toSorted";
-    private static final String TO_SPLICED = "toSpliced";
-    private static final String UNSHIFT = "unshift";
-    private static final String VALUES = "values";
-    private static final String WITH = "with";
+    protected static final String EVERY = "every";
+    protected static final String FILL = "fill";
+    protected static final String FILTER = "filter";
+    protected static final String FIND = "find";
+    protected static final String FIND_INDEX = "findIndex";
+    protected static final String FIND_LAST = "findLast";
+    protected static final String FIND_LAST_INDEX = "findLastIndex";
+    protected static final String FLAT = "flat";
+    protected static final String FLAT_MAP = "flatMap";
+    protected static final String FOR_EACH = "forEach";
+    protected static final String INCLUDES = "includes";
+    protected static final String INDEX_OF = "indexOf";
+    protected static final String JOIN = "join";
+    protected static final String KEYS = "keys";
+    protected static final String LAST_INDEX_OF = "lastIndexOf";
+    protected static final String LENGTH = "length";
+    protected static final String MAP = "map";
+    protected static final String POP = "pop";
+    protected static final String PUSH = "push";
+    protected static final String REDUCE = "reduce";
+    protected static final String REDUCE_RIGHT = "reduceRight";
+    protected static final String REVERSE = "reverse";
+    protected static final String SHIFT = "shift";
+    protected static final String SLICE = "slice";
+    protected static final String SOME = "some";
+    protected static final String SORT = "sort";
+    protected static final String SPLICE = "splice";
+    protected static final String TO_REVERSED = "toReversed";
+    protected static final String TO_SORTED = "toSorted";
+    protected static final String TO_SPLICED = "toSpliced";
+    protected static final String UNSHIFT = "unshift";
+    protected static final String VALUES = "values";
+    protected static final String WITH = "with";
     private static final JavetProxyPluginArray instance = new JavetProxyPluginArray();
-    private final Map<String, IClassProxyPluginFunction<?>> proxyGetByStringMap;
 
-    private JavetProxyPluginArray() {
+    protected JavetProxyPluginArray() {
         super();
-        proxyGetByStringMap = new HashMap<>();
         proxyGetByStringMap.put(AT, this::at);
         proxyGetByStringMap.put(CONCAT, this::concat);
         proxyGetByStringMap.put(COPY_WITHIN, this::copyWithin);
@@ -739,12 +736,6 @@ public final class JavetProxyPluginArray extends BaseJavetProxyPlugin {
     public Object[] getOwnKeys(Object targetObject) {
         assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
         return IntStream.range(0, Array.getLength(targetObject)).boxed().toArray();
-    }
-
-    @Override
-    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
-            Class<?> targetClass, String propertyName) {
-        return (IClassProxyPluginFunction<E>) proxyGetByStringMap.get(propertyName);
     }
 
     @Override
