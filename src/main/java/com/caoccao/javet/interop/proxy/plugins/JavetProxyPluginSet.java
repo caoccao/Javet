@@ -21,10 +21,10 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.interop.converters.JavetConverterConfig;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
@@ -50,6 +50,13 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle {
     public static final String NAME = Set.class.getName();
     protected static final String ADD = "add";
     protected static final String CLEAR = "clear";
+    /**
+     * The constant DEFAULT_PROXYABLE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
+            "add", "clear", "forEach", "size", "toString"};
     protected static final String DELETE = "delete";
     protected static final String ENTRIES = "entries";
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET =
@@ -61,9 +68,16 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle {
     protected static final String SIZE = "size";
     protected static final String VALUES = "values";
     private static final JavetProxyPluginSet instance = new JavetProxyPluginSet();
+    /**
+     * The Override methods.
+     *
+     * @since 3.0.4
+     */
+    protected final Set<String> proxyableMethods;
 
-    protected JavetProxyPluginSet() {
+    public JavetProxyPluginSet() {
         super();
+        proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);
         proxyGetByStringMap.put(ADD, this::add);
         proxyGetByStringMap.put(CLEAR, this::clear);
         proxyGetByStringMap.put(DELETE, this::delete);
@@ -211,14 +225,19 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle {
     }
 
     @Override
-    public Set<String> getOverrideMethods(JavetConverterConfig<?> config) {
-        return config.getProxySetOverrideMethods();
-    }
-
-    @Override
     public Object[] getOwnKeys(Object targetObject) {
         assert targetObject instanceof Set : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET;
         return ((Set<?>) targetObject).toArray();
+    }
+
+    /**
+     * Gets proxyable methods.
+     *
+     * @return the proxyable methods
+     * @since 3.0.4
+     */
+    public Set<String> getProxyableMethods() {
+        return proxyableMethods;
     }
 
     /**
@@ -255,6 +274,11 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle {
     @Override
     public boolean isHasSupported() {
         return true;
+    }
+
+    @Override
+    public boolean isMethodProxyable(String methodName) {
+        return proxyableMethods.contains(methodName);
     }
 
     @Override

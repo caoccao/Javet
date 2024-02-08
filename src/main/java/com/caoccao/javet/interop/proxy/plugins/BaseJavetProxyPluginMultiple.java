@@ -53,4 +53,14 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
                 .map(map -> map.get(propertyName))
                 .orElse(null);
     }
+
+    /**
+     * Gets proxy get by string map.
+     *
+     * @return the proxy get by string map
+     * @since 3.0.4
+     */
+    public Map<Class<?>, Map<String, IClassProxyPluginFunction<?>>> getProxyGetByStringMap() {
+        return proxyGetByStringMap;
+    }
 }

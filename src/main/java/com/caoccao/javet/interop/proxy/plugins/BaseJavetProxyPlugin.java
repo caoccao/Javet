@@ -19,7 +19,6 @@ package com.caoccao.javet.interop.proxy.plugins;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.IClassProxyPlugin;
-import com.caoccao.javet.interop.converters.JavetConverterConfig;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.values.V8Value;
 
@@ -79,7 +78,7 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
      *
      * @since 3.0.4
      */
-    protected BaseJavetProxyPlugin() {
+    public BaseJavetProxyPlugin() {
     }
 
     @Override
@@ -89,11 +88,6 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
 
     @Override
     public Object getByIndex(Object targetObject, int index) {
-        return null;
-    }
-
-    @Override
-    public Set<String> getOverrideMethods(JavetConverterConfig<?> config) {
         return null;
     }
 

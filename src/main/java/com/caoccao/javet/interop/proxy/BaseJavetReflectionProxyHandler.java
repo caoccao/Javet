@@ -34,7 +34,10 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,12 +74,6 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected ClassDescriptor classDescriptor;
-    /**
-     * The Override methods.
-     *
-     * @since 3.0.4
-     */
-    protected Set<String> overrideMethods;
 
     /**
      * Instantiates a new Base javet reflection proxy handler.
@@ -88,7 +85,6 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     public BaseJavetReflectionProxyHandler(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, targetObject);
         classDescriptor = null;
-        overrideMethods = null;
         initialize();
     }
 
@@ -279,7 +275,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     protected V8Value getFromMethod(V8Value target, V8Value property) throws JavetException {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            if (overrideMethods == null || !overrideMethods.contains(propertyName)) {
+            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName)) {
                 List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
                 if (methods != null && !methods.isEmpty()) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(

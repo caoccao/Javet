@@ -64,7 +64,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             "Target object must be an instance of String.";
     private static final JavetProxyPluginDefault instance = new JavetProxyPluginDefault();
 
-    protected JavetProxyPluginDefault() {
+    public JavetProxyPluginDefault() {
         super();
         {
             // java.math.BigInteger
@@ -260,6 +260,11 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueInteger(value)));
+    }
+
+    @Override
+    public boolean isMethodProxyable(String methodName) {
+        return false;
     }
 
     @Override

@@ -22,11 +22,9 @@ import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginArray;
 import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginList;
 import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginMap;
 import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginSet;
-import com.caoccao.javet.utils.SimpleSet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The type Javet converter config.
@@ -42,63 +40,11 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public static final int DEFAULT_MAX_DEPTH = 20;
     /**
-     * The constant DEFAULT_PROXY_LIST_OVERRIDE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXY_ARRAY_OVERRIDE_METHODS = new String[]{
-            "length", "toString"};
-    /**
-     * The constant DEFAULT_PROXY_LIST_OVERRIDE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXY_LIST_OVERRIDE_METHODS = new String[]{
-            "forEach", "indexOf", "lastIndexOf", "sort", "toString"};
-    /**
-     * The constant DEFAULT_PROXY_MAP_OVERRIDE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXY_MAP_OVERRIDE_METHODS = new String[]{
-            "clear", "forEach", "get", "size", "toString"};
-    /**
-     * The constant DEFAULT_PROXY_SET_OVERRIDE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXY_SET_OVERRIDE_METHODS = new String[]{
-            "add", "clear", "forEach", "size", "toString"};
-    /**
-     * The Proxy array override methods.
-     *
-     * @since 3.0.4
-     */
-    protected final Set<String> proxyArrayOverrideMethods;
-    /**
-     * The Proxy list override methods.
-     *
-     * @since 3.0.4
-     */
-    protected final Set<String> proxyListOverrideMethods;
-    /**
-     * The Proxy map override methods.
-     *
-     * @since 3.0.4
-     */
-    protected final Set<String> proxyMapOverrideMethods;
-    /**
      * The Proxy plugins.
      *
      * @since 3.0.4
      */
     protected final List<IClassProxyPlugin> proxyPlugins;
-    /**
-     * The Proxy set override methods.
-     *
-     * @since 3.0.4
-     */
-    protected final Set<String> proxySetOverrideMethods;
     /**
      * The Default boolean.
      *
@@ -188,11 +134,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         defaultShort = 0;
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
-        proxyArrayOverrideMethods = SimpleSet.of(DEFAULT_PROXY_ARRAY_OVERRIDE_METHODS);
-        proxyListOverrideMethods = SimpleSet.of(DEFAULT_PROXY_LIST_OVERRIDE_METHODS);
-        proxyMapOverrideMethods = SimpleSet.of(DEFAULT_PROXY_MAP_OVERRIDE_METHODS);
         proxyPlugins = new ArrayList<>();
-        proxySetOverrideMethods = SimpleSet.of(DEFAULT_PROXY_SET_OVERRIDE_METHODS);
         reflectionObjectFactory = null;
         skipFunctionInObject = true;
     }
@@ -288,36 +230,6 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     }
 
     /**
-     * Gets proxy array override methods.
-     *
-     * @return the proxy array override methods
-     * @since 3.0.4
-     */
-    public Set<String> getProxyArrayOverrideMethods() {
-        return proxyArrayOverrideMethods;
-    }
-
-    /**
-     * Gets proxy list override methods.
-     *
-     * @return the proxy list override methods
-     * @since 3.0.4
-     */
-    public Set<String> getProxyListOverrideMethods() {
-        return proxyListOverrideMethods;
-    }
-
-    /**
-     * Gets proxy map override methods.
-     *
-     * @return the proxy map override methods
-     * @since 3.0.4
-     */
-    public Set<String> getProxyMapOverrideMethods() {
-        return proxyMapOverrideMethods;
-    }
-
-    /**
      * Gets proxy plugins.
      *
      * @return the proxy plugins
@@ -325,16 +237,6 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public List<IClassProxyPlugin> getProxyPlugins() {
         return proxyPlugins;
-    }
-
-    /**
-     * Gets proxy set override methods.
-     *
-     * @return the proxy set override methods
-     * @since 3.0.4
-     */
-    public Set<String> getProxySetOverrideMethods() {
-        return proxySetOverrideMethods;
     }
 
     /**

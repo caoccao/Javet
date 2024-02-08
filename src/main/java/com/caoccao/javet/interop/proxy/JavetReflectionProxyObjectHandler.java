@@ -222,7 +222,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             initializeFieldsAndMethods(targetClass, false);
             ClassDescriptorStore.getObjectMap().put(targetClass, classDescriptor);
         }
-        initializeOverrideMethods();
     }
 
     /**
@@ -253,15 +252,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             }
             currentClass = currentClass.getSuperclass();
         } while (currentClass != null);
-    }
-
-    /**
-     * Initialize override methods.
-     *
-     * @since 3.0.4
-     */
-    protected void initializeOverrideMethods() {
-        overrideMethods = classDescriptor.getClassProxyPlugin().getOverrideMethods(v8Runtime.getConverter().getConfig());
     }
 
     @Override

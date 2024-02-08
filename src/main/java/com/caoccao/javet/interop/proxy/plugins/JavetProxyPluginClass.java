@@ -37,7 +37,7 @@ public class JavetProxyPluginClass extends BaseJavetProxyPlugin {
      *
      * @since 3.0.4
      */
-    protected JavetProxyPluginClass() {
+    public JavetProxyPluginClass() {
         super();
     }
 
@@ -60,6 +60,11 @@ public class JavetProxyPluginClass extends BaseJavetProxyPlugin {
     public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
             Class<?> targetClass, String propertyName) {
         return null;
+    }
+
+    @Override
+    public boolean isMethodProxyable(String methodName) {
+        return false;
     }
 
     @Override

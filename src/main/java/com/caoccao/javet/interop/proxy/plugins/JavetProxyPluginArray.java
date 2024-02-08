@@ -23,7 +23,6 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.interop.converters.JavetConverterConfig;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
@@ -54,6 +53,12 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
     protected static final String AT = "at";
     protected static final String CONCAT = "concat";
     protected static final String COPY_WITHIN = "copyWithin";
+    /**
+     * The constant DEFAULT_PROXYABLE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{"length", "toString"};
     protected static final String ENTRIES = "entries";
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY =
             "Target object must be an array.";
@@ -91,9 +96,16 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
     protected static final String VALUES = "values";
     protected static final String WITH = "with";
     private static final JavetProxyPluginArray instance = new JavetProxyPluginArray();
+    /**
+     * The proxyable methods.
+     *
+     * @since 3.0.4
+     */
+    protected final Set<String> proxyableMethods;
 
-    protected JavetProxyPluginArray() {
+    public JavetProxyPluginArray() {
         super();
+        proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);
         proxyGetByStringMap.put(AT, this::at);
         proxyGetByStringMap.put(CONCAT, this::concat);
         proxyGetByStringMap.put(COPY_WITHIN, this::copyWithin);
@@ -728,14 +740,19 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
     }
 
     @Override
-    public Set<String> getOverrideMethods(JavetConverterConfig<?> config) {
-        return config.getProxyArrayOverrideMethods();
-    }
-
-    @Override
     public Object[] getOwnKeys(Object targetObject) {
         assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
         return IntStream.range(0, Array.getLength(targetObject)).boxed().toArray();
+    }
+
+    /**
+     * Gets proxyable methods.
+     *
+     * @return the proxyable methods
+     * @since 3.0.4
+     */
+    public Set<String> getProxyableMethods() {
+        return proxyableMethods;
     }
 
     @Override
@@ -834,6 +851,11 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
     @Override
     public boolean isIndexedPropertySupported() {
         return true;
+    }
+
+    @Override
+    public boolean isMethodProxyable(String methodName) {
+        return proxyableMethods.contains(methodName);
     }
 
     @Override

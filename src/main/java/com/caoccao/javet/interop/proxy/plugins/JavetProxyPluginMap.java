@@ -21,10 +21,10 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.interop.converters.JavetConverterConfig;
 import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
@@ -50,6 +50,13 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      */
     public static final String NAME = Map.class.getName();
     protected static final String CLEAR = "clear";
+    /**
+     * The constant DEFAULT_PROXYABLE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
+            "clear", "forEach", "get", "size", "toString"};
     protected static final String DELETE = "delete";
     protected static final String ENTRIES = "entries";
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
@@ -63,9 +70,16 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
     protected static final String SIZE = "size";
     protected static final String VALUES = "values";
     private static final JavetProxyPluginMap instance = new JavetProxyPluginMap();
+    /**
+     * The proxyable methods.
+     *
+     * @since 3.0.4
+     */
+    protected final Set<String> proxyableMethods;
 
-    protected JavetProxyPluginMap() {
+    public JavetProxyPluginMap() {
         super();
+        proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);
         proxyGetByStringMap.put(CLEAR, this::clear);
         proxyGetByStringMap.put(DELETE, this::delete);
         proxyGetByStringMap.put(ENTRIES, this::entries);
@@ -227,14 +241,19 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
     }
 
     @Override
-    public Set<String> getOverrideMethods(JavetConverterConfig<?> config) {
-        return config.getProxyMapOverrideMethods();
-    }
-
-    @Override
     public Object[] getOwnKeys(Object targetObject) {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
         return ((Map<?, ?>) targetObject).keySet().toArray();
+    }
+
+    /**
+     * Gets proxyable methods.
+     *
+     * @return the proxyable methods
+     * @since 3.0.4
+     */
+    public Set<String> getProxyableMethods() {
+        return proxyableMethods;
     }
 
     /**
@@ -276,6 +295,11 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
     @Override
     public boolean isHasSupported() {
         return true;
+    }
+
+    @Override
+    public boolean isMethodProxyable(String methodName) {
+        return proxyableMethods.contains(methodName);
     }
 
     @Override

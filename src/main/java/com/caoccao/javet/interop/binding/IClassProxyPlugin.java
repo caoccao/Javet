@@ -18,7 +18,6 @@ package com.caoccao.javet.interop.binding;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.converters.JavetConverterConfig;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.Set;
@@ -55,15 +54,6 @@ public interface IClassProxyPlugin {
      * @since 3.0.4
      */
     String getName();
-
-    /**
-     * Gets override methods from the converter config.
-     *
-     * @param config the config
-     * @return the override methods
-     * @since 3.0.4
-     */
-    Set<String> getOverrideMethods(JavetConverterConfig<?> config);
 
     /**
      * Get own keys.
@@ -118,6 +108,15 @@ public interface IClassProxyPlugin {
      * @since 3.0.4
      */
     boolean isIndexedPropertySupported();
+
+    /**
+     * Is method proxyable.
+     *
+     * @param methodName the method name
+     * @return true : yes, false : no
+     * @since 3.0.4
+     */
+    boolean isMethodProxyable(String methodName);
 
     /**
      * Is the target class proxyable.

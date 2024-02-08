@@ -40,7 +40,7 @@ public abstract class BaseJavetProxyPluginSingle extends BaseJavetProxyPlugin {
      *
      * @since 3.0.4
      */
-    protected BaseJavetProxyPluginSingle() {
+    public BaseJavetProxyPluginSingle() {
         super();
         proxyGetByStringMap = new HashMap<>();
     }
@@ -49,5 +49,15 @@ public abstract class BaseJavetProxyPluginSingle extends BaseJavetProxyPlugin {
     public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
             Class<?> targetClass, String propertyName) {
         return (IClassProxyPluginFunction<E>) proxyGetByStringMap.get(propertyName);
+    }
+
+    /**
+     * Gets proxy get by string map.
+     *
+     * @return the proxy get by string map
+     * @since 3.0.4
+     */
+    public Map<String, IClassProxyPluginFunction<?>> getProxyGetByStringMap() {
+        return proxyGetByStringMap;
     }
 }

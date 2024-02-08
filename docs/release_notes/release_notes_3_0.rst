@@ -14,7 +14,7 @@ Release Notes 3.0.x
 * Added ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
 * Added ``V8ValueErrorType``, ``V8ErrorTemplate``, ``JavetEntityError``
 * Added ``getErrorType()`` to ``V8ValueError``
-* Added ``getProxyPlugins()``, ``isProxyArrayEnabled()``, ``setProxyArrayEnabled()``, ``getProxyArrayOverrideMethods()``, ``getProxyListOverrideMethods()``, ``getProxyMapOverrideMethods()``, ``getProxySetOverrideMethods()`` to ``JavetConverterConfig``
+* Added ``getProxyPlugins()``, ``isProxyArrayEnabled()``, ``setProxyArrayEnabled()``, to ``JavetConverterConfig``
 * Added ``proxyGetOwnPropertyDescriptor()`` to ``IJavetDirectProxyHandler``
 * Added ``getOwnPropertyDescriptor()`` to ``BaseJavetReflectionProxyHandler``
 * Added ``flat()``, ``shift()``, ``unshift()`` to ``IV8ValueArray``
