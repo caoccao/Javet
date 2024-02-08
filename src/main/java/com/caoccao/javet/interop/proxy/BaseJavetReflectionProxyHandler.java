@@ -22,10 +22,16 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginDefault;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -293,7 +299,10 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                     return reflectionProxyInterceptor.invokeV8Value(target);
                 }
                 if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
-                    return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+                    return v8Runtime.createV8ValueFunction(
+                            new JavetCallbackContext(
+                                    V8ValueBuiltInSymbol.PROPERTY_TO_PRIMITIVE, JavetCallbackType.DirectCallNoThisAndResult,
+                                    (IJavetDirectCallable.NoThisAndResult<?>) this::toPrimitive));
                 }
             }
         }
@@ -737,5 +746,15 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             }
         }
         return false;
+    }
+
+    protected V8Value toPrimitive(V8Value... v8Values) throws JavetException {
+        final String hintString = V8ValueUtils.asString(v8Values, 0);
+        IClassProxyPlugin classProxyPlugin = v8Runtime.getConverter().getConfig().getProxyPlugins().stream()
+                .filter(p -> p.isProxyable(classDescriptor.getTargetClass()))
+                .filter(IClassProxyPlugin::isSymbolToPrimitiveSupported)
+                .findFirst()
+                .orElse(JavetProxyPluginDefault.getInstance());
+        return classProxyPlugin.toPrimitive(v8Runtime, targetObject, hintString);
     }
 }

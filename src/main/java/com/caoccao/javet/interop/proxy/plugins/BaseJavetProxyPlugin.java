@@ -16,8 +16,12 @@
 
 package com.caoccao.javet.interop.proxy.plugins;
 
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.converters.JavetConverterConfig;
+import com.caoccao.javet.interop.converters.JavetObjectConverter;
+import com.caoccao.javet.values.V8Value;
 
 import java.util.Set;
 
@@ -27,6 +31,36 @@ import java.util.Set;
  * @since 3.0.4
  */
 public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
+    /**
+     * The constant HINT_BOOLEAN.
+     *
+     * @since 3.0.4
+     */
+    protected static final String HINT_BOOLEAN = "boolean";
+    /**
+     * The constant HINT_DEFAULT.
+     *
+     * @since 3.0.4
+     */
+    protected static final String HINT_DEFAULT = "default";
+    /**
+     * The constant HINT_NUMBER.
+     *
+     * @since 3.0.4
+     */
+    protected static final String HINT_NUMBER = "number";
+    /**
+     * The constant HINT_STRING.
+     *
+     * @since 3.0.4
+     */
+    protected static final String HINT_STRING = "string";
+    /**
+     * The constant OBJECT_CONVERTER.
+     *
+     * @since 3.0.4
+     */
+    protected static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
     /**
      * The constant TO_JSON.
      *
@@ -89,6 +123,11 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     }
 
     @Override
+    public boolean isSymbolToPrimitiveSupported() {
+        return false;
+    }
+
+    @Override
     public boolean isUniqueKeySupported() {
         return false;
     }
@@ -100,5 +139,10 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     @Override
     public boolean setByIndex(Object targetObject, int index, Object value) {
         return false;
+    }
+
+    @Override
+    public V8Value toPrimitive(V8Runtime v8Runtime, Object targetObject, String hintString) throws JavetException {
+        return OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject);
     }
 }

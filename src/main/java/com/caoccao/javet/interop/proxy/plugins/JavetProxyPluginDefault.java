@@ -22,6 +22,7 @@ import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 
 import java.math.BigInteger;
@@ -266,6 +267,11 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         return targetClass != null;
     }
 
+    @Override
+    public boolean isSymbolToPrimitiveSupported() {
+        return true;
+    }
+
     /**
      * Polyfill Long.toJSON().
      *
@@ -315,5 +321,78 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueString(value)));
+    }
+
+    @Override
+    public V8Value toPrimitive(V8Runtime v8Runtime, Object targetObject, String hintString) throws JavetException {
+        if (targetObject != null) {
+            if (HINT_NUMBER.equals(hintString)) {
+                if (targetObject instanceof Integer) {
+                    return v8Runtime.createV8ValueInteger((Integer) targetObject);
+                }
+                if (targetObject instanceof Double) {
+                    return v8Runtime.createV8ValueDouble((Double) targetObject);
+                }
+                if (targetObject instanceof Long) {
+                    return v8Runtime.createV8ValueInteger(((Long) targetObject).intValue());
+                }
+                if (targetObject instanceof Float) {
+                    return v8Runtime.createV8ValueDouble(((Float) targetObject).doubleValue());
+                }
+                if (targetObject instanceof Short) {
+                    return v8Runtime.createV8ValueInteger(((Short) targetObject).intValue());
+                }
+                if (targetObject instanceof Boolean) {
+                    return v8Runtime.createV8ValueInteger(((Boolean) targetObject) ? 1 : 0);
+                }
+                return v8Runtime.createV8ValueInteger(0);
+            } else if (HINT_STRING.equals(hintString)) {
+                return v8Runtime.createV8ValueString(targetObject.toString());
+            } else if (HINT_BOOLEAN.equals(hintString)) {
+                if (targetObject instanceof Boolean) {
+                    return v8Runtime.createV8ValueBoolean((Boolean) targetObject);
+                }
+                if (targetObject instanceof Integer) {
+                    return v8Runtime.createV8ValueBoolean(((Integer) targetObject) != 0);
+                }
+                if (targetObject instanceof Double) {
+                    return v8Runtime.createV8ValueBoolean(((Double) targetObject) != 0);
+                }
+                if (targetObject instanceof Long) {
+                    return v8Runtime.createV8ValueBoolean(((Long) targetObject) != 0);
+                }
+                if (targetObject instanceof Float) {
+                    return v8Runtime.createV8ValueBoolean(((Float) targetObject) != 0);
+                }
+                if (targetObject instanceof Short) {
+                    return v8Runtime.createV8ValueBoolean(((Short) targetObject) != 0);
+                }
+                if (targetObject instanceof String) {
+                    return v8Runtime.createV8ValueBoolean(StringUtils.isNotEmpty((String) targetObject));
+                }
+                return v8Runtime.createV8ValueBoolean(false);
+            } else if (HINT_DEFAULT.equals(hintString)) {
+                if (targetObject instanceof Integer) {
+                    return v8Runtime.createV8ValueInteger((Integer) targetObject);
+                }
+                if (targetObject instanceof Double) {
+                    return v8Runtime.createV8ValueDouble((Double) targetObject);
+                }
+                if (targetObject instanceof Long) {
+                    return v8Runtime.createV8ValueLong((Long) targetObject);
+                }
+                if (targetObject instanceof Float) {
+                    return v8Runtime.createV8ValueDouble(((Float) targetObject).doubleValue());
+                }
+                if (targetObject instanceof Short) {
+                    return v8Runtime.createV8ValueInteger(((Short) targetObject).intValue());
+                }
+                if (targetObject instanceof Boolean) {
+                    return v8Runtime.createV8ValueBoolean((Boolean) targetObject);
+                }
+                return v8Runtime.createV8ValueString(targetObject.toString());
+            }
+        }
+        return super.toPrimitive(v8Runtime, targetObject, hintString);
     }
 }

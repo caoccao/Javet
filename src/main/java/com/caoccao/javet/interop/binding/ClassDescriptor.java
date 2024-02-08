@@ -107,8 +107,9 @@ public class ClassDescriptor {
     /**
      * Instantiates a new Class descriptor.
      *
-     * @param proxyMode   the proxy mode
-     * @param targetClass the target class
+     * @param proxyMode        the proxy mode
+     * @param targetClass      the target class
+     * @param classProxyPlugin the class proxy plugin
      * @since 1.1.7
      */
     public ClassDescriptor(V8ProxyMode proxyMode, Class<?> targetClass, IClassProxyPlugin classProxyPlugin) {

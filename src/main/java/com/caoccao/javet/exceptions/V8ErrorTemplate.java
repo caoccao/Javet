@@ -42,6 +42,7 @@ public final class V8ErrorTemplate {
     /**
      * RangeError: Start ${start} is out or range.
      *
+     * @param start the start
      * @return the message
      * @since 3.0.4
      */

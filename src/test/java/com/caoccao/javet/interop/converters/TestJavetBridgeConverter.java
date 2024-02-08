@@ -80,7 +80,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(2, (Integer) v8Runtime.getExecutor("a.length").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
-        assertArrayEquals(intArray, v8Runtime.getExecutor("a[Symbol.toPrimitive]()").executeObject());
+        assertEquals("1,2", v8Runtime.getExecutor("'' + a[Symbol.toPrimitive]()").executeString());
         assertInstanceOf(V8VirtualIterator.class, v8Runtime.getExecutor("a[Symbol.iterator]()").executeObject());
         assertEquals(Integer.valueOf(1), v8Runtime.getExecutor("a[Symbol.iterator]().next().value").executeObject());
         assertFalse(v8Runtime.getExecutor("a[Symbol.iterator]().next().done").executeBoolean());
@@ -113,6 +113,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(1, (Integer) v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals(2, (Integer) v8Runtime.getExecutor("a[1]").executeObject());
         assertEquals("[1,2]", v8Runtime.getExecutor("JSON.stringify(a[Symbol.toPrimitive]())").executeString());
+        assertEquals("1,2", v8Runtime.getExecutor("'' + a[Symbol.toPrimitive]()").executeString());
         assertEquals("{}", v8Runtime.getExecutor("JSON.stringify(a[Symbol.iterator]())").executeString());
         assertInstanceOf(V8VirtualIterator.class, v8Runtime.getExecutor("a[Symbol.iterator]()").executeObject());
         assertEquals(Integer.valueOf(1), v8Runtime.getExecutor("a[Symbol.iterator]().next().value").executeObject());

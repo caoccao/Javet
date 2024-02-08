@@ -24,6 +24,7 @@ import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
 import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginDefault;
@@ -166,7 +167,10 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
             String description = propertySymbol.getDescription();
             if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
-                return new JavetProxySymbolToPrimitiveConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+                return v8Runtime.createV8ValueFunction(
+                        new JavetCallbackContext(
+                                V8ValueBuiltInSymbol.PROPERTY_TO_PRIMITIVE, JavetCallbackType.DirectCallNoThisAndResult,
+                                (IJavetDirectCallable.NoThisAndResult<?>) this::toPrimitive));
             } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
                     && (targetObject instanceof Iterable<?>
                     || targetObject instanceof Map<?, ?>

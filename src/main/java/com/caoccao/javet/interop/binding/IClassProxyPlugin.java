@@ -16,7 +16,10 @@
 
 package com.caoccao.javet.interop.binding;
 
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.JavetConverterConfig;
+import com.caoccao.javet.values.V8Value;
 
 import java.util.Set;
 
@@ -126,6 +129,14 @@ public interface IClassProxyPlugin {
     boolean isProxyable(Class<?> targetClass);
 
     /**
+     * Is Symbol.toPrimitive supported.
+     *
+     * @return true : supported, false : not supported
+     * @since 3.0.4
+     */
+    boolean isSymbolToPrimitiveSupported();
+
+    /**
      * Is unique key supported.
      *
      * @return true : supported, false : not supported
@@ -152,4 +163,16 @@ public interface IClassProxyPlugin {
      * @since 3.0.4
      */
     boolean setByIndex(Object targetObject, int index, Object value);
+
+    /**
+     * Convert object to primitive by hint string.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @param hintString   the hint string
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8Value toPrimitive(V8Runtime v8Runtime, Object targetObject, String hintString) throws JavetException;
 }

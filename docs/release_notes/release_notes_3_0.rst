@@ -6,7 +6,6 @@ Release Notes 3.0.x
 --------------
 
 * Added proxy plugin system for converters
-* Fixed a memory leak in adding a V8 module with the same name
 * Added ``toJSON()``, ``proxyDeleteProperty()`` to ``IJavetDirectProxyHandler``
 * Added ``ifTrue()``, ``asInt()`` to ``IV8Value``
 * Added ``IClassProxyPlugin``, ``JavetProxyPluginArray``, ``JavetProxyPluginClass``, ``JavetProxyPluginDefault``, ``JavetProxyPluginList``, ``JavetProxyPluginMap``, ``JavetProxyPluginSet``
@@ -16,14 +15,16 @@ Release Notes 3.0.x
 * Added ``V8ValueErrorType``, ``V8ErrorTemplate``, ``JavetEntityError``
 * Added ``getErrorType()`` to ``V8ValueError``
 * Added ``getProxyPlugins()``, ``isProxyArrayEnabled()``, ``setProxyArrayEnabled()``, ``getProxyArrayOverrideMethods()``, ``getProxyListOverrideMethods()``, ``getProxyMapOverrideMethods()``, ``getProxySetOverrideMethods()`` to ``JavetConverterConfig``
-* Fixed improper conversions in ``JavetBridgeConverter``
-* Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
 * Added ``proxyGetOwnPropertyDescriptor()`` to ``IJavetDirectProxyHandler``
 * Added ``getOwnPropertyDescriptor()`` to ``BaseJavetReflectionProxyHandler``
 * Added ``flat()``, ``shift()``, ``unshift()`` to ``IV8ValueArray``
 * Added ``asArray()``, ``clear()`` to ``V8ValueMap``
 * Added ``asArray()``, ``clear()`` to ``V8ValueSet``
 * Improved performance of ``JavetObjectConverter``
+* Fixed improper conversions in ``JavetBridgeConverter``
+* Fixed a memory leak in adding a V8 module with the same name
+* Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
+* Removed ``JavetProxySymbolToPrimitiveConverter``
 
 3.0.3 V8 v12.1
 --------------
