@@ -24,7 +24,6 @@ import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
 import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
-import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginDefault;
@@ -36,9 +35,7 @@ import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
-import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -142,42 +139,19 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.3
      */
     protected V8Value getFromPolyfill(V8Value property) throws JavetException, E {
+        IClassProxyPluginFunction<E> classProxyPluginFunction = null;
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).getValue();
-            IClassProxyPluginFunction<E> iClassProxyPluginFunction =
-                    classDescriptor.getClassProxyPlugin().getProxyGetByString(
-                            classDescriptor.getTargetClass(), propertyName);
-            if (iClassProxyPluginFunction != null) {
-                return iClassProxyPluginFunction.invoke(getV8Runtime(), targetObject);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Gets from symbol.
-     *
-     * @param property the property
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 1.1.7
-     */
-    protected V8Value getFromSymbol(V8Value property) throws JavetException {
-        if (property instanceof V8ValueSymbol) {
+            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetByString(
+                    classDescriptor.getTargetClass(), propertyName);
+        } else if (property instanceof V8ValueSymbol) {
             V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
             String description = propertySymbol.getDescription();
-            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(description)) {
-                return v8Runtime.createV8ValueFunction(
-                        new JavetCallbackContext(
-                                V8ValueBuiltInSymbol.PROPERTY_TO_PRIMITIVE, JavetCallbackType.DirectCallNoThisAndResult,
-                                (IJavetDirectCallable.NoThisAndResult<?>) this::toPrimitive));
-            } else if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR.equals(description)
-                    && (targetObject instanceof Iterable<?>
-                    || targetObject instanceof Map<?, ?>
-                    || targetObject instanceof String
-                    || classDescriptor.getTargetClass().isArray())) {
-                return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
-            }
+            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetBySymbol(
+                    classDescriptor.getTargetClass(), description);
+        }
+        if (classProxyPluginFunction != null) {
+            return classProxyPluginFunction.invoke(v8Runtime, targetObject);
         }
         return null;
     }
@@ -259,7 +233,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         V8Value v8Value = getFromCollection(property);
         v8Value = v8Value == null ? getFromField(property) : v8Value;
         v8Value = v8Value == null ? getFromMethod(target, property) : v8Value;
-        v8Value = v8Value == null ? getFromSymbol(property) : v8Value;
         v8Value = v8Value == null ? getFromGetter(property) : v8Value;
         v8Value = v8Value == null ? getFromPolyfill(property) : v8Value;
         return v8Value;

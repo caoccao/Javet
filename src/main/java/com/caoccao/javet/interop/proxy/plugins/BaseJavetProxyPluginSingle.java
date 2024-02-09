@@ -34,6 +34,12 @@ public abstract class BaseJavetProxyPluginSingle extends BaseJavetProxyPlugin {
      * @since 3.0.4
      */
     protected final Map<String, IClassProxyPluginFunction<?>> proxyGetByStringMap;
+    /**
+     * The Proxy get by symbol map.
+     *
+     * @since 3.0.4
+     */
+    protected final Map<String, IClassProxyPluginFunction<?>> proxyGetBySymbolMap;
 
     /**
      * Instantiates a new Base javet proxy plugin for single class.
@@ -43,6 +49,7 @@ public abstract class BaseJavetProxyPluginSingle extends BaseJavetProxyPlugin {
     public BaseJavetProxyPluginSingle() {
         super();
         proxyGetByStringMap = new HashMap<>();
+        proxyGetBySymbolMap = new HashMap<>();
     }
 
     @Override
@@ -51,13 +58,13 @@ public abstract class BaseJavetProxyPluginSingle extends BaseJavetProxyPlugin {
         return (IClassProxyPluginFunction<E>) proxyGetByStringMap.get(propertyName);
     }
 
-    /**
-     * Gets proxy get by string map.
-     *
-     * @return the proxy get by string map
-     * @since 3.0.4
-     */
-    public Map<String, IClassProxyPluginFunction<?>> getProxyGetByStringMap() {
-        return proxyGetByStringMap;
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetBySymbol(
+            Class<?> targetClass, String symbolName) {
+        IClassProxyPluginFunction<E> classProxyPluginFunction = super.getProxyGetBySymbol(targetClass, symbolName);
+        if (classProxyPluginFunction != null) {
+            return classProxyPluginFunction;
+        }
+        return (IClassProxyPluginFunction<E>) proxyGetBySymbolMap.get(symbolName);
     }
 }

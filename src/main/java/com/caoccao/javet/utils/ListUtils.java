@@ -123,6 +123,28 @@ public final class ListUtils {
     }
 
     /**
+     * Is empty.
+     *
+     * @param list the list
+     * @return true : empty, false : not empty
+     * @since 3.0.4
+     */
+    public static boolean isEmpty(List<?> list) {
+        return list == null || list.isEmpty();
+    }
+
+    /**
+     * Is not empty.
+     *
+     * @param list the list
+     * @return true : not empty, false : empty
+     * @since 3.0.4
+     */
+    public static boolean isNotEmpty(List<?> list) {
+        return list != null && !list.isEmpty();
+    }
+
+    /**
      * The lastIndexOf() method of Array instances returns the last index at which a given element can be found
      * in the array, or -1 if it is not present. The array is searched backwards, starting at fromIndex.
      *

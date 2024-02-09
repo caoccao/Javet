@@ -19,9 +19,18 @@ package com.caoccao.javet.interop.proxy.plugins;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.IClassProxyPlugin;
+import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
+import com.caoccao.javet.interop.converters.JavetProxyConverter;
+import com.caoccao.javet.utils.StringUtils;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -61,6 +70,12 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
      */
     protected static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
     /**
+     * The constant PROXY_CONVERTER.
+     *
+     * @since 3.0.4
+     */
+    protected static final JavetProxyConverter PROXY_CONVERTER = new JavetProxyConverter();
+    /**
      * The constant TO_JSON.
      *
      * @since 3.0.4
@@ -97,6 +112,20 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     }
 
     @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetBySymbol(
+            Class<?> targetClass, String symbolName) {
+        if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(symbolName)) {
+            return this::symbolToPrimitive;
+        }
+        return null;
+    }
+
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getProxySymbolToPrimitive() {
+        return this::symbolToPrimitive;
+    }
+
+    @Override
     public boolean hasByObject(Object targetObject, Object propertyKey) {
         return false;
     }
@@ -117,11 +146,6 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     }
 
     @Override
-    public boolean isSymbolToPrimitiveSupported() {
-        return false;
-    }
-
-    @Override
     public boolean isUniqueKeySupported() {
         return false;
     }
@@ -135,8 +159,92 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
         return false;
     }
 
-    @Override
-    public V8Value toPrimitive(V8Runtime v8Runtime, Object targetObject, String hintString) throws JavetException {
-        return OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject);
+    /**
+     * Convert to primitive.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value symbolToPrimitive(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    if (targetObject != null) {
+                        String hintString = V8ValueUtils.asString(v8Values, 0);
+                        if (HINT_NUMBER.equals(hintString)) {
+                            if (targetObject instanceof Integer) {
+                                return v8Runtime.createV8ValueInteger((Integer) targetObject);
+                            }
+                            if (targetObject instanceof Double) {
+                                return v8Runtime.createV8ValueDouble((Double) targetObject);
+                            }
+                            if (targetObject instanceof Long) {
+                                return v8Runtime.createV8ValueInteger(((Long) targetObject).intValue());
+                            }
+                            if (targetObject instanceof Float) {
+                                return v8Runtime.createV8ValueDouble(((Float) targetObject).doubleValue());
+                            }
+                            if (targetObject instanceof Short) {
+                                return v8Runtime.createV8ValueInteger(((Short) targetObject).intValue());
+                            }
+                            if (targetObject instanceof Boolean) {
+                                return v8Runtime.createV8ValueInteger(((Boolean) targetObject) ? 1 : 0);
+                            }
+                            return v8Runtime.createV8ValueInteger(0);
+                        } else if (HINT_STRING.equals(hintString)) {
+                            return v8Runtime.createV8ValueString(targetObject.toString());
+                        } else if (HINT_BOOLEAN.equals(hintString)) {
+                            if (targetObject instanceof Boolean) {
+                                return v8Runtime.createV8ValueBoolean((Boolean) targetObject);
+                            }
+                            if (targetObject instanceof Integer) {
+                                return v8Runtime.createV8ValueBoolean(((Integer) targetObject) != 0);
+                            }
+                            if (targetObject instanceof Double) {
+                                return v8Runtime.createV8ValueBoolean(((Double) targetObject) != 0);
+                            }
+                            if (targetObject instanceof Long) {
+                                return v8Runtime.createV8ValueBoolean(((Long) targetObject) != 0);
+                            }
+                            if (targetObject instanceof Float) {
+                                return v8Runtime.createV8ValueBoolean(((Float) targetObject) != 0);
+                            }
+                            if (targetObject instanceof Short) {
+                                return v8Runtime.createV8ValueBoolean(((Short) targetObject) != 0);
+                            }
+                            if (targetObject instanceof String) {
+                                return v8Runtime.createV8ValueBoolean(StringUtils.isNotEmpty((String) targetObject));
+                            }
+                            if (targetObject instanceof Character) {
+                                return v8Runtime.createV8ValueBoolean(true);
+                            }
+                            return v8Runtime.createV8ValueBoolean(false);
+                        } else if (HINT_DEFAULT.equals(hintString)) {
+                            if (targetObject instanceof Integer) {
+                                return v8Runtime.createV8ValueInteger((Integer) targetObject);
+                            }
+                            if (targetObject instanceof Double) {
+                                return v8Runtime.createV8ValueDouble((Double) targetObject);
+                            }
+                            if (targetObject instanceof Long) {
+                                return v8Runtime.createV8ValueLong((Long) targetObject);
+                            }
+                            if (targetObject instanceof Float) {
+                                return v8Runtime.createV8ValueDouble(((Float) targetObject).doubleValue());
+                            }
+                            if (targetObject instanceof Short) {
+                                return v8Runtime.createV8ValueInteger(((Short) targetObject).intValue());
+                            }
+                            if (targetObject instanceof Boolean) {
+                                return v8Runtime.createV8ValueBoolean((Boolean) targetObject);
+                            }
+                            return v8Runtime.createV8ValueString(targetObject.toString());
+                        }
+                    }
+                    return OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject);
+                }));
     }
 }

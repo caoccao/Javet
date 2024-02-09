@@ -21,7 +21,6 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.SimpleSet;
@@ -29,6 +28,8 @@ import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
+import com.caoccao.javet.values.virtual.V8VirtualIterator;
 
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
         proxyGetByStringMap.put(TO_JSON, this::toJSON);
         proxyGetByStringMap.put(TO_STRING, this::toString);
         proxyGetByStringMap.put(VALUES, this::values);
+        proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::entries);
     }
 
     /**
@@ -173,7 +175,10 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
         List<List<Object>> entries = map.entrySet().stream()
                 .map(entry -> SimpleList.of(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
-        return new JavetProxySymbolIterableConverter<>(v8Runtime, entries).getV8ValueFunction();
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                ENTRIES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(entries.iterator()))));
     }
 
     /**
@@ -326,7 +331,10 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
     public V8Value keys(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
         final Map<?, ?> map = (Map<?, ?>) targetObject;
-        return new JavetProxySymbolIterableConverter<>(v8Runtime, map.keySet()).getV8ValueFunction();
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                KEYS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(map.keySet().iterator()))));
     }
 
     @Override
@@ -398,7 +406,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
                     int index = 0;
                     for (Map.Entry<?, ?> entry : map.entrySet()) {
                         objects[index] = entry.getKey();
-                        objects[index + 1] = entry.getKey();
+                        objects[index + 1] = entry.getValue();
                         index += 2;
                     }
                     return V8ValueUtils.createV8ValueObject(v8Runtime, objects);
@@ -437,6 +445,9 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
     public V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
         final Map<?, ?> map = (Map<?, ?>) targetObject;
-        return new JavetProxySymbolIterableConverter<>(v8Runtime, map.values()).getV8ValueFunction();
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                VALUES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(map.values().iterator()))));
     }
 }

@@ -35,6 +35,12 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
      * @since 3.0.4
      */
     protected final Map<Class<?>, Map<String, IClassProxyPluginFunction<?>>> proxyGetByStringMap;
+    /**
+     * The Proxy get by symbol map.
+     *
+     * @since 3.0.4
+     */
+    protected final Map<Class<?>, Map<String, IClassProxyPluginFunction<?>>> proxyGetBySymbolMap;
 
     /**
      * Instantiates a new Base javet proxy plugin for multiple classes.
@@ -44,6 +50,7 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
     public BaseJavetProxyPluginMultiple() {
         super();
         proxyGetByStringMap = new HashMap<>();
+        proxyGetBySymbolMap = new HashMap<>();
     }
 
     @Override
@@ -54,13 +61,15 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
                 .orElse(null);
     }
 
-    /**
-     * Gets proxy get by string map.
-     *
-     * @return the proxy get by string map
-     * @since 3.0.4
-     */
-    public Map<Class<?>, Map<String, IClassProxyPluginFunction<?>>> getProxyGetByStringMap() {
-        return proxyGetByStringMap;
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetBySymbol(
+            Class<?> targetClass, String symbolName) {
+        IClassProxyPluginFunction<E> classProxyPluginFunction = super.getProxyGetBySymbol(targetClass, symbolName);
+        if (classProxyPluginFunction != null) {
+            return classProxyPluginFunction;
+        }
+        return (IClassProxyPluginFunction<E>) Optional.ofNullable(proxyGetBySymbolMap.get(targetClass))
+                .map(map -> map.get(symbolName))
+                .orElse(null);
     }
 }

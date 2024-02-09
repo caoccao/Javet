@@ -24,7 +24,7 @@ Release Notes 3.0.x
 * Fixed improper conversions in ``JavetBridgeConverter``
 * Fixed a memory leak in adding a V8 module with the same name
 * Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
-* Removed ``JavetProxySymbolToPrimitiveConverter``
+* Removed ``JavetProxySymbolIterableConverter``, ``JavetProxySymbolToPrimitiveConverter``
 
 3.0.3 V8 v12.1
 --------------

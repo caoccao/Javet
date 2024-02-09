@@ -63,6 +63,12 @@ public class JavetProxyPluginClass extends BaseJavetProxyPlugin {
     }
 
     @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetBySymbol(
+            Class<?> targetClass, String symbolName) {
+        return null;
+    }
+
+    @Override
     public boolean isMethodProxyable(String methodName) {
         return false;
     }

@@ -23,13 +23,14 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
+import com.caoccao.javet.values.virtual.V8VirtualIterator;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -145,6 +146,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
         proxyGetByStringMap.put(UNSHIFT, this::unshift);
         proxyGetByStringMap.put(VALUES, this::values);
         proxyGetByStringMap.put(WITH, this::with);
+        proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::values);
     }
 
     /**
@@ -333,7 +335,10 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
         List<List<Object>> entries = IntStream.range(0, length)
                 .mapToObj(i -> SimpleList.of(i, Array.get(targetObject, i)))
                 .collect(Collectors.toList());
-        return new JavetProxySymbolIterableConverter<>(v8Runtime, entries).getV8ValueFunction();
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                ENTRIES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(entries.iterator()))));
     }
 
     /**
@@ -1620,7 +1625,10 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
         final int length = Array.getLength(targetObject);
         List<Object> values = new ArrayList<>(length);
         ListUtils.addAll(values, targetObject);
-        return new JavetProxySymbolIterableConverter<>(v8Runtime, values).getV8ValueFunction();
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                VALUES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(values.iterator()))));
     }
 
     /**

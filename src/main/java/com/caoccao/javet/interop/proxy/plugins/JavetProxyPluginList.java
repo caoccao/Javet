@@ -23,13 +23,14 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.interop.proxy.JavetProxySymbolIterableConverter;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
+import com.caoccao.javet.values.virtual.V8VirtualIterator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -144,6 +145,7 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle {
         proxyGetByStringMap.put(UNSHIFT, this::unshift);
         proxyGetByStringMap.put(VALUES, this::values);
         proxyGetByStringMap.put(WITH, this::with);
+        proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::values);
     }
 
     /**
@@ -336,7 +338,10 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle {
         List<List<Object>> entries = IntStream.range(0, length)
                 .mapToObj(i -> SimpleList.of(i, list.get(i)))
                 .collect(Collectors.toList());
-        return new JavetProxySymbolIterableConverter<>(v8Runtime, entries).getV8ValueFunction();
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                ENTRIES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(entries.iterator()))));
     }
 
     /**
@@ -1667,7 +1672,11 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle {
      */
     public V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
-        return new JavetProxySymbolIterableConverter<>(v8Runtime, targetObject).getV8ValueFunction();
+        final List<?> list = (List<?>) targetObject;
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                VALUES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(list.iterator()))));
     }
 
     /**
