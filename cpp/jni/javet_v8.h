@@ -61,6 +61,7 @@ using V8LocalRegExp = v8::Local<v8::RegExp>;
 using V8LocalScript = v8::Local<v8::Script>;
 using V8LocalSet = v8::Local<v8::Set>;
 using V8LocalString = v8::Local<v8::String>;
+using V8LocalStringObject = v8::Local<v8::StringObject>;
 using V8LocalSymbol = v8::Local<v8::Symbol>;
 using V8LocalSymbolObject = v8::Local<v8::SymbolObject>;
 using V8LocalValue = v8::Local<v8::Value>;

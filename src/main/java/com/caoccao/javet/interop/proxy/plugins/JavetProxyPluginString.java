@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * The type Javet proxy plugin string.
@@ -53,6 +54,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
             "toString"};
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING =
             "Target object must be an instance of String.";
+    protected static final String LENGTH = "length";
     private static final JavetProxyPluginString instance = new JavetProxyPluginString();
     /**
      * The proxyable methods.
@@ -79,8 +81,28 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
     }
 
     @Override
+    public Object getByIndex(Object targetObject, int index) {
+        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
+        final String string = (String) targetObject;
+        if (index >= 0 && index < string.length()) {
+            return String.valueOf(string.charAt(index));
+        }
+        return null;
+    }
+
+    @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public Object[] getOwnKeys(Object targetObject) {
+        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
+        final String string = (String) targetObject;
+        List<Object> keys = new ArrayList<>();
+        IntStream.range(0, string.length()).boxed().forEach(keys::add);
+        keys.add(LENGTH);
+        return keys.toArray();
     }
 
     /**

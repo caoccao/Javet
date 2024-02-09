@@ -211,8 +211,12 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void testString() throws JavetException {
         v8Runtime.getGlobalObject().set("s", "test");
         assertEquals("test", v8Runtime.getExecutor("s").executeObject());
-        assertEquals("[\"t\",\"e\",\"s\",\"t\"]", v8Runtime.getExecutor("JSON.stringify([...s])").executeString());
         assertEquals("test", v8Runtime.getExecutor("s.toV8Value()").executeString());
+        assertEquals("test", v8Runtime.getExecutor("s.toString()").executeString());
+        assertEquals("t", v8Runtime.getExecutor("s[0]").executeObject());
+        assertEquals("[\"t\",\"e\",\"s\",\"t\"]", v8Runtime.getExecutor("JSON.stringify([...s])").executeString());
+        // TODO This test case needs to be investigated.
+//        assertEquals("[\"0\":\"t\",\"1\",\"e\",\"2\":\"s\",\"3\":\"t\"]", v8Runtime.getExecutor("JSON.stringify({...s})").executeString());
         assertEquals("test", v8Runtime.getExecutor("s[Symbol.toPrimitive]()").executeString());
         assertEquals("abc test", v8Runtime.getExecutor("'abc ' + s").executeString());
         assertEquals('t', (Character) v8Runtime.getExecutor("s.charAt(0)").executeObject());
