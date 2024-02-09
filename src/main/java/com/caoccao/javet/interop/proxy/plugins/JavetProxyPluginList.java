@@ -52,13 +52,6 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle {
     protected static final String AT = "at";
     protected static final String CONCAT = "concat";
     protected static final String COPY_WITHIN = "copyWithin";
-    /**
-     * The constant DEFAULT_PROXYABLE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
-            "forEach", "indexOf", "lastIndexOf", "sort", "toString"};
     protected static final String ENTRIES = "entries";
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST =
             "Target object must be an instance of List.";
@@ -88,6 +81,13 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle {
     protected static final String SLICE = "slice";
     protected static final String SOME = "some";
     protected static final String SORT = "sort";
+    /**
+     * The constant DEFAULT_PROXYABLE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
+            FOR_EACH, INDEX_OF, LAST_INDEX_OF, SORT, TO_STRING};
     protected static final String SPLICE = "splice";
     protected static final String TO_REVERSED = "toReversed";
     protected static final String TO_SORTED = "toSorted";

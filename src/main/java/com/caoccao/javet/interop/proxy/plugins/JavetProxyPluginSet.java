@@ -51,13 +51,6 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle {
     public static final String NAME = Set.class.getName();
     protected static final String ADD = "add";
     protected static final String CLEAR = "clear";
-    /**
-     * The constant DEFAULT_PROXYABLE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
-            "add", "clear", "forEach", "size", "toString"};
     protected static final String DELETE = "delete";
     protected static final String ENTRIES = "entries";
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET =
@@ -67,6 +60,13 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle {
     protected static final String KEYS = "keys";
     protected static final String OBJECT_SET = "[object Set]";
     protected static final String SIZE = "size";
+    /**
+     * The constant DEFAULT_PROXYABLE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
+            ADD, CLEAR, FOR_EACH, SIZE, TO_STRING};
     protected static final String VALUES = "values";
     private static final JavetProxyPluginSet instance = new JavetProxyPluginSet();
     /**

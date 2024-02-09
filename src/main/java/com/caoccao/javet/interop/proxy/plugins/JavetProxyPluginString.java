@@ -45,16 +45,16 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public static final String NAME = String.class.getName();
+    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING =
+            "Target object must be an instance of String.";
+    protected static final String LENGTH = "length";
     /**
      * The constant DEFAULT_PROXYABLE_METHODS.
      *
      * @since 3.0.4
      */
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
-            "toString"};
-    protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING =
-            "Target object must be an instance of String.";
-    protected static final String LENGTH = "length";
+            LENGTH, TO_STRING};
     private static final JavetProxyPluginString instance = new JavetProxyPluginString();
     /**
      * The proxyable methods.
@@ -66,6 +66,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
     public JavetProxyPluginString() {
         super();
         proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);
+        proxyGetByStringMap.put(LENGTH, this::length);
         proxyGetByStringMap.put(TO_STRING, this::toString);
         proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::symbolIterator);
     }
@@ -123,6 +124,22 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
     @Override
     public boolean isProxyable(Class<?> targetClass) {
         return targetClass != null && String.class.isAssignableFrom(targetClass);
+    }
+
+    /**
+     * Polyfill String: length.
+     * The length data property of a String value contains the length of the string in UTF-16 code units.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value length(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
+        final String string = (String) targetObject;
+        return Objects.requireNonNull(v8Runtime).createV8ValueInteger(string.length());
     }
 
     /**

@@ -54,12 +54,6 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
     protected static final String AT = "at";
     protected static final String CONCAT = "concat";
     protected static final String COPY_WITHIN = "copyWithin";
-    /**
-     * The constant DEFAULT_PROXYABLE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{"length", "toString"};
     protected static final String ENTRIES = "entries";
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY =
             "Target object must be an array.";
@@ -79,6 +73,13 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
     protected static final String KEYS = "keys";
     protected static final String LAST_INDEX_OF = "lastIndexOf";
     protected static final String LENGTH = "length";
+    /**
+     * The constant DEFAULT_PROXYABLE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
+            LENGTH, TO_STRING};
     protected static final String MAP = "map";
     protected static final String POP = "pop";
     protected static final String PUSH = "push";

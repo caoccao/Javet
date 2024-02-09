@@ -51,13 +51,6 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      */
     public static final String NAME = Map.class.getName();
     protected static final String CLEAR = "clear";
-    /**
-     * The constant DEFAULT_PROXYABLE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
-            "clear", "forEach", "get", "size", "toString"};
     protected static final String DELETE = "delete";
     protected static final String ENTRIES = "entries";
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP =
@@ -69,6 +62,13 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
     protected static final String OBJECT_MAP = "[object Map]";
     protected static final String SET = "set";
     protected static final String SIZE = "size";
+    /**
+     * The constant DEFAULT_PROXYABLE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
+            CLEAR, FOR_EACH, GET, SIZE, TO_STRING};
     protected static final String VALUES = "values";
     private static final JavetProxyPluginMap instance = new JavetProxyPluginMap();
     /**
