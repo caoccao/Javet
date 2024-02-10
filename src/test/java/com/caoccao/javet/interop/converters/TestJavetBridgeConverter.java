@@ -208,6 +208,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(
                 "[\"x\",\"y\",\"z\"]",
                 v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
+        assertEquals(
+                "[\"x\",\"y\",\"z\"]",
+                v8Runtime.getExecutor("JSON.stringify([...set]);").executeString());
         v8Runtime.getGlobalObject().delete("set");
     }
 
@@ -226,8 +229,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals('t', (Character) v8Runtime.getExecutor("s.charAt(0)").executeObject());
         assertEquals(1, (Integer) v8Runtime.getExecutor("s.indexOf('e')").executeObject());
         assertEquals("[\"t\",\"e\",\"s\",\"t\"]", v8Runtime.getExecutor("JSON.stringify([...s])").executeString());
-        // TODO This test case needs to be investigated.
-//        assertEquals("{\"0\":\"t\",\"1\",\"e\",\"2\":\"s\",\"3\":\"t\"}", v8Runtime.getExecutor("JSON.stringify({...s})").executeString());
+        assertEquals("{\"0\":\"t\",\"1\":\"e\",\"2\":\"s\",\"3\":\"t\"}", v8Runtime.getExecutor("JSON.stringify({...s})").executeString());
         v8Runtime.getGlobalObject().delete("s");
     }
 
@@ -248,9 +250,8 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(
                 "[\"x\",\"y\"]",
                 v8Runtime.getExecutor("JSON.stringify(a.toV8Value())").executeString());
-        // TODO This test case needs to be investigated.
-//        assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify([...a])").executeString());
-//        assertEquals("{\"0\":\"x\",\"1\",\"y\"}", v8Runtime.getExecutor("JSON.stringify({...a})").executeString());
+        assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify([...a])").executeString());
+        assertEquals("{\"0\":\"x\",\"1\":\"y\"}", v8Runtime.getExecutor("JSON.stringify({...a})").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 
@@ -268,9 +269,8 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(
                 "{}",
                 v8Runtime.getExecutor("JSON.stringify(l[Symbol.iterator]())").executeString());
-        // TODO This test case needs to be investigated.
-//        assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify([...l])").executeString());
-//        assertEquals("{\"0\":\"x\",\"1\",\"y\"}", v8Runtime.getExecutor("JSON.stringify({...l})").executeString());
+        assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify([...l])").executeString());
+        assertEquals("{\"0\":\"x\",\"1\":\"y\"}", v8Runtime.getExecutor("JSON.stringify({...l})").executeString());
         v8Runtime.getGlobalObject().delete("l");
     }
 }

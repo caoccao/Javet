@@ -81,6 +81,12 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
      */
     protected static final String METHOD_NAME_TO_MAP = "toMap";
     /**
+     * The constant OBJECT_CONVERTER.
+     *
+     * @since 3.0.4
+     */
+    protected static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
+    /**
      * The constant PRIVATE_PROPERTY_CUSTOM_OBJECT_CLASS_NAME.
      *
      * @since 0.9.6
@@ -437,7 +443,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             v8Value = v8Runtime.createV8ValueSymbol(javetEntitySymbol.getDescription(), true);
         } else if (object instanceof IJavetEntityObject) {
             final IJavetEntityObject<?> javetEntityObject = (IJavetEntityObject<?>) object;
-            v8Value = toV8Value(v8Runtime, javetEntityObject.getValue(), depth + 1);
+            v8Value = OBJECT_CONVERTER.toV8Value(v8Runtime, javetEntityObject.getValue(), depth + 1);
         } else if (object instanceof IJavetEntityPropertyDescriptor) {
             final IJavetEntityPropertyDescriptor<?> javetEntityPropertyDescriptor = (IJavetEntityPropertyDescriptor<?>) object;
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {

@@ -107,16 +107,18 @@ public class JavetProxyConverter extends JavetObjectConverter {
                         }
                         break;
                     default:
-                        V8ValueObject v8ValueObjectTarget = null;
+                        V8Value v8ValueTarget = null;
                         try {
                             if (object instanceof List || object.getClass().isArray()) {
-                                v8ValueObjectTarget = v8Runtime.createV8ValueArray();
+                                v8ValueTarget = v8Runtime.createV8ValueArray();
                             } else if (object instanceof Set) {
-                                v8ValueObjectTarget = v8Runtime.createV8ValueSet();
+                                v8ValueTarget = v8Runtime.createV8ValueSet();
+                            } else if (object instanceof String) {
+                                v8ValueTarget = v8Runtime.createV8ValueString((String) object);
                             }
-                            v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueObjectTarget);
+                            v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueTarget);
                         } finally {
-                            JavetResourceUtils.safeClose(v8ValueObjectTarget);
+                            JavetResourceUtils.safeClose(v8ValueTarget);
                         }
                         break;
                 }

@@ -70,6 +70,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
         super();
         proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);
         proxyGetByStringMap.put(LENGTH, this::length);
+        proxyGetByStringMap.put(TO_JSON, this::toJSON);
         proxyGetByStringMap.put(TO_STRING, this::toString);
         proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::symbolIterator);
     }
@@ -111,10 +112,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
 
     @Override
     public <T> IJavetEntityPropertyDescriptor<T> getProxyOwnPropertyDescriptor(Object targetObject, Object propertyName) {
-        if (propertyName instanceof String) {
-            return new JavetEntityPropertyDescriptor<>(true, !LENGTH.equals(propertyName), false);
-        }
-        return new JavetEntityPropertyDescriptor<>(false, false, false);
+        return new JavetEntityPropertyDescriptor<>(false, !LENGTH.equals(propertyName), false);
     }
 
     /**
@@ -180,6 +178,24 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
         } finally {
             JavetResourceUtils.safeClose(list);
         }
+    }
+
+    /**
+     * Polyfill List.toJSON().
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
+        final String string = (String) targetObject;
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueString(string)));
     }
 
     /**
