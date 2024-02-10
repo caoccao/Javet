@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.virtual.V8VirtualIterator;
 import org.junit.jupiter.api.AfterEach;
@@ -169,10 +170,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
 
     @Test
     public void testMap() throws JavetException {
-        Map<String, Object> map = new HashMap<String, Object>() {{
-            put("x", 1);
-            put("y", "2");
-        }};
+        Map<String, Object> map = SimpleMap.of("x", 1, "y", "2");
         v8Runtime.getGlobalObject().set("map", map);
         assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
         assertTrue((Boolean) v8Runtime.getExecutor("map.containsKey('x')").executeObject());
@@ -185,6 +183,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals("3", map.get("z"));
         assertEquals("4", v8Runtime.getExecutor("map.z = '4'; map.z;").executeObject());
         assertEquals("4", map.get("z"));
+        assertEquals(
+                "[\"x\",\"y\",\"z\"]",
+                v8Runtime.getExecutor("JSON.stringify(Object.keys(map));").executeString());
         assertEquals(
                 "[\"x\",\"y\",\"z\"]",
                 v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(map));").executeString());
@@ -201,6 +202,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertFalse((Boolean) v8Runtime.getExecutor("set.contains('z')").executeObject());
         assertEquals(set, v8Runtime.getExecutor("set.add('z')").executeObject());
         assertTrue((Boolean) v8Runtime.getExecutor("set.contains('z')").executeObject());
+        assertEquals(
+                "[]",
+                v8Runtime.getExecutor("JSON.stringify(Object.keys(set));").executeString());
         assertEquals(
                 "[\"x\",\"y\",\"z\"]",
                 v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set));").executeString());
@@ -233,6 +237,8 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(2, (Integer) v8Runtime.getExecutor("a.length").executeObject());
         assertEquals("x", v8Runtime.getExecutor("a[0]").executeObject());
         assertEquals("y", v8Runtime.getExecutor("a[1]").executeObject());
+        assertEquals("[\"0\",\"1\",\"length\"]", v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(a))").executeString());
+        assertEquals("[\"0\",\"1\"]", v8Runtime.getExecutor("JSON.stringify(Object.keys(a))").executeString());
         assertEquals(
                 "[\"x\",\"y\"]",
                 v8Runtime.getExecutor("JSON.stringify(a[Symbol.toPrimitive]())").executeString());
@@ -243,8 +249,8 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
                 "[\"x\",\"y\"]",
                 v8Runtime.getExecutor("JSON.stringify(a.toV8Value())").executeString());
         // TODO This test case needs to be investigated.
-//        assertEquals("[\"0\",\"1\",\"length\"]", v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(a))").executeString());
-//        assertEquals("[\"0\",\"1\"]", v8Runtime.getExecutor("JSON.stringify(Object.keys(a))").executeString());
+//        assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify([...a])").executeString());
+//        assertEquals("{\"0\":\"x\",\"1\",\"y\"}", v8Runtime.getExecutor("JSON.stringify({...a})").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 

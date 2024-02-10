@@ -17,7 +17,9 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
-import com.caoccao.javet.entities.*;
+import com.caoccao.javet.entities.JavetEntityFunction;
+import com.caoccao.javet.entities.JavetEntityMap;
+import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
@@ -248,10 +250,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals("abc", map.get("x"));
             assertNull(map.get("z"));
         }
-        try (V8ValueObject v8ValueObject = converter.toV8Value(
-                v8Runtime, new HashMap<String, Object>() {{
-                    put("x", "abc");
-                }})) {
+        try (V8ValueObject v8ValueObject = converter.toV8Value(v8Runtime, SimpleMap.of("x", "abc"))) {
             assertEquals("abc", v8ValueObject.getString("x"));
         }
     }
